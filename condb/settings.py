@@ -34,7 +34,7 @@ DATETIME_FORMAT = 'd.m.y H:i'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'fi'
+LANGUAGE_CODE = 'en-UK'
 
 SITE_ID = 1
 
@@ -112,7 +112,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/home/mieleton/work/condb/backend/templates',
+    '/Users/mieleton/Work/condb/backend/templates',
 )
 
 INSTALLED_APPS = (
