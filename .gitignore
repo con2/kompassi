@@ -1,0 +1,6 @@
+*.pyc
+*.sqlite3
+/static/
+build/
+nohup.out
+pip-log.txt
