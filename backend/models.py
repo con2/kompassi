@@ -1,7 +1,8 @@
 import datetime
+
 from django.db import models
 
-# Category
+
 class Category(models.Model):
     title = models.CharField(max_length=1023)
     style = models.CharField(max_length=15)
@@ -15,7 +16,6 @@ class Category(models.Model):
         verbose_name_plural = "categories"
 
 
-# Room
 class Room(models.Model):
     name = models.CharField(max_length=1023)
     order = models.IntegerField(unique=True)
@@ -29,20 +29,19 @@ class Room(models.Model):
         ordering = ['order']
 
 
-# Person
 class Person(models.Model):
     first_name = models.CharField(max_length=1023)
     surname = models.CharField(max_length=1023)
-    nick = models.CharField(blank=True,max_length=1023)
-    email = models.EmailField(blank=True,max_length=254)
-    phone = models.CharField(blank=True,max_length=255)
+    nick = models.CharField(blank=True, max_length=1023)
+    email = models.EmailField(blank=True, max_length=254)
+    phone = models.CharField(blank=True, max_length=255)
     anonymous = models.BooleanField()
     notes = models.TextField(blank=True)
 
     @property
     def full_name(self):
         if self.nick:
-            return self.first_name + " \"" + self.nick + "\" " + self.surname
+            return self.first_name + '"' + self.nick + '"' + self.surname
         else:
             return self.first_name + " " + self.surname
 
@@ -65,7 +64,6 @@ class Person(models.Model):
         ordering = ['surname']
 
 
-# Role
 class Role(models.Model):
     title = models.CharField(max_length=1023)
     require_contact_info = models.BooleanField(default=True)
@@ -75,9 +73,8 @@ class Role(models.Model):
 
     class Meta:
         ordering = ['title']
-    
 
-# Programme
+
 class Programme(models.Model):
     title = models.CharField(max_length=1023)
     description = models.TextField()
@@ -92,16 +89,15 @@ class Programme(models.Model):
 
     @property
     def end_time(self):
-        return (self.start_time + datetime.timedelta(minutes = self.length))
+        return (self.start_time + datetime.timedelta(minutes=self.length))
 
     def __unicode__(self):
         return self.title
 
     class Meta:
-        ordering = ['start_time','room']
+        ordering = ['start_time', 'room']
 
 
-# ProgramRole
 class ProgramRole(models.Model):
     person = models.ForeignKey(Person)
     programme = models.ForeignKey(Programme)
