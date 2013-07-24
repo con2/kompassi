@@ -85,7 +85,7 @@ class Programme(models.Model):
     notes = models.TextField(blank=True)
     category = models.ForeignKey(Category)
     room = models.ForeignKey(Room)
-    organizers = models.ManyToManyField(Person, through='ProgramRole')
+    organizers = models.ManyToManyField(Person, through='ProgrammeRole')
 
     @property
     def end_time(self):
@@ -98,7 +98,7 @@ class Programme(models.Model):
         ordering = ['start_time', 'room']
 
 
-class ProgramRole(models.Model):
+class ProgrammeRole(models.Model):
     person = models.ForeignKey(Person)
     programme = models.ForeignKey(Programme)
     role = models.ForeignKey(Role)

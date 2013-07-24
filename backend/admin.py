@@ -5,7 +5,7 @@ from django.contrib import admin
 from backend.models import Category, Room, Person, Role, Programme
 
 
-class ProgramRoleInline(admin.TabularInline):
+class ProgrammeRoleInline(admin.TabularInline):
     model = Programme.organizers.through
     verbose_name = 'organizer'
     verbose_name_plural = 'organizers'
@@ -31,7 +31,7 @@ class ProgrammeAdmin(admin.ModelAdmin):
     ]
 
     inlines = [
-        ProgramRoleInline,
+        ProgrammeRoleInline,
     ]
 
     list_display = ('title', 'category', 'room', 'start_time', 'length', 'end_time')
