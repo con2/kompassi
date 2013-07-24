@@ -103,5 +103,10 @@ class ProgrammeRole(models.Model):
     programme = models.ForeignKey(Programme)
     role = models.ForeignKey(Role)
 
+    def clean(self):
+        if self.role.require_contact_info and not (self.person.email or self.person.phone):
+            from django.core.exceptions import ValidationError
+            raise ValidationError('Contacts of this type require some contact info')
+
     def __unicode__(self):
         return self.role.title
