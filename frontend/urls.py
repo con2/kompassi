@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
-from .views import programme_view
+from .views import schedule_view
 
 urlpatterns = patterns('',
-    url(r'^$', programme_view, name='programme_view')
+    url(r'^$', schedule_view, name='schedule_view')
 )
