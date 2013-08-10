@@ -29,7 +29,7 @@ class Room(models.Model):
         latest_programme = self.programme_set.filter(
             start_time__lt=the_time,
             **conditions
-        ).order_by('start_time')[:1]
+        ).order_by('-start_time')[:1]
         if latest_programme:
             return the_time < latest_programme[0].end_time
         else:
