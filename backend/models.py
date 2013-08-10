@@ -41,7 +41,11 @@ class Person(models.Model):
     @property
     def full_name(self):
         if self.nick:
-            return self.first_name + '"' + self.nick + '"' + self.surname
+            return '{0} "{1}" {2}'.format(
+                self.first_name,
+                self.nick,
+                self.surname
+            )
         else:
             return self.first_name + " " + self.surname
 
@@ -91,8 +95,42 @@ class Programme(models.Model):
     def end_time(self):
         return (self.start_time + datetime.timedelta(minutes=self.length))
 
+    @property
+    def formatted_hosts(self):
+        return ', '.join(p.full_name for p in self.organizers.all())
+
     def __unicode__(self):
         return self.title
+
+    @property
+    def rowspan(self):
+        return len(Programme.start_times(
+            start_time__gte=self.start_time,
+            start_time__lt=self.end_time,
+            public=True
+        ))
+
+    @staticmethod
+    def programmes_by_start_time():
+        rooms = Room.objects.filter(public=True)
+
+        results = []
+        for start_time in Programme.start_times(public=True, room__public=True):
+            cur_row = []
+            results.append((start_time, cur_row))
+            for room in rooms:
+                try:
+                    cur_row.append(Programme.objects.get(room=room, start_time=start_time, room__public=True, public=True))
+                except Programme.DoesNotExist:
+                    pass
+                except Programme.MultipleObjectsReturned:
+                    raise ValueError('Room {room} has multiple programs starting at {start_time}'.format(**locals()))
+
+        return results
+
+    @staticmethod
+    def start_times(**conditions):
+        return sorted(list(set(p.start_time for p in Programme.objects.filter(**conditions))))
 
     class Meta:
         ordering = ['start_time', 'room']

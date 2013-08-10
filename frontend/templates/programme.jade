@@ -1,0 +1,25 @@
+extends base.jade
+block content
+  table.programme
+    thead
+      tr
+        th  
+        for room in rooms
+          th: {{ room.name }}
+    tbody
+      for start_time, programmes in programmes_by_start_time
+        tr
+          th: {{ start_time }}
+          for programme in programmes
+            td(rowspan='{{ programme.rowspan }}'): {{ programme.title }}
+
+  .descriptions
+    h2 Tarkemmat ohjelmatiedot
+
+    for start_time, programmes in programmes_by_start_time
+      h3 {{ start_time }}
+      for programme in programmes
+        .programme
+          h4.title: {{ programme.title }}
+          em.host: {{ programme.formatted_hosts }}
+          .description: {{ programme.description }}
