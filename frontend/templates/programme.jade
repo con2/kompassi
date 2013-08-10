@@ -11,7 +11,10 @@ block content
         tr
           th: {{ start_time|date:"H:i" }}
           for programme in programmes
-            td(rowspan='{{ programme.rowspan }}'): {{ programme.title }}
+            if programme
+              td(rowspan='{{ programme.rowspan }}'): {{ programme.title }}
+            else
+              td.blank
 
   .descriptions
     h2 Tarkemmat ohjelmatiedot
@@ -19,7 +22,8 @@ block content
     for start_time, programmes in programmes_by_start_time
       h3 {{ start_time }}
       for programme in programmes
-        .programme
-          h4.title: {{ programme.title }}
-          em.host: {{ programme.formatted_hosts }}
-          .description: {{ programme.description }}
+        if programme
+          .programme
+            h4.title: {{ programme.title }}
+            em.host: {{ programme.formatted_hosts }}
+            .description: {{ programme.description }}

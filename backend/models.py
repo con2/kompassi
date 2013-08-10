@@ -25,6 +25,16 @@ class Room(models.Model):
     def __unicode__(self):
         return self.name
 
+    def programme_continues_at(self, the_time, **conditions):
+        latest_programme = self.programme_set.filter(
+            start_time__lt=the_time,
+            **conditions
+        ).order_by('start_time')[:1]
+        if latest_programme:
+            return the_time < latest_programme[0].end_time
+        else:
+            return False
+
     class Meta:
         ordering = ['order']
 
@@ -102,6 +112,10 @@ class Programme(models.Model):
     def formatted_hosts(self):
         return u', '.join(p.full_name for p in self.organizers.all())
 
+    @property
+    def is_blank(self):
+        return False
+
     def __unicode__(self):
         return self.title
 
@@ -123,9 +137,19 @@ class Programme(models.Model):
             results.append((start_time, cur_row))
             for room in rooms:
                 try:
-                    cur_row.append(Programme.objects.get(room=room, start_time=start_time, room__public=True, public=True))
+                    cur_row.append(Programme.objects.get(
+                        room=room,
+                        start_time=start_time,
+                        public=True,
+                        room__public=True
+                    ))
                 except Programme.DoesNotExist:
-                    pass
+                    if room.programme_continues_at(start_time):
+                        # programme still continues, handled by rowspan
+                        pass
+                    else:
+                        # there is no (visible) programme in the room at start_time, insert a blank
+                        cur_row.append(None)
                 except Programme.MultipleObjectsReturned:
                     raise ValueError('Room {room} has multiple programs starting at {start_time}'.format(**locals()))
 
