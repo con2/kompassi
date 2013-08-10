@@ -41,13 +41,16 @@ class Person(models.Model):
     @property
     def full_name(self):
         if self.nick:
-            return '{0} "{1}" {2}'.format(
+            return u'{0} "{1}" {2}'.format(
                 self.first_name,
                 self.nick,
                 self.surname
             )
         else:
-            return self.first_name + " " + self.surname
+            return u'{0} {1}'.format(
+                self.first_name,
+                self.surname
+            )
 
     @property
     def display_name(self):
@@ -97,7 +100,7 @@ class Programme(models.Model):
 
     @property
     def formatted_hosts(self):
-        return ', '.join(p.full_name for p in self.organizers.all())
+        return u', '.join(p.full_name for p in self.organizers.all())
 
     def __unicode__(self):
         return self.title
