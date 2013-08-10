@@ -173,4 +173,6 @@ LOGGING = {
     }
 }
 
-EVENT_NAME = "Example Event"
+EVENT_NAME = "Tracon 8"
+EVENT_NAME_GENITIVE = "Tracon 8:n"
+EVENT_URL = "http://2013.tracon.fi"
