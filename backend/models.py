@@ -110,7 +110,7 @@ class Programme(models.Model):
 
     @property
     def formatted_hosts(self):
-        return u', '.join(p.full_name for p in self.organizers.all())
+        return u', '.join(p.display_name for p in self.organizers.all())
 
     @property
     def is_blank(self):
