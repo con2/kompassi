@@ -16,7 +16,11 @@ block content
               for programme, rowspan in programmes
                 if programme
                     td.programme(rowspan='{{ rowspan }}', class='{{ programme.css_classes }}')
-                      a(href='#p{{ programme.pk }}') {{ programme.title }}
+                      a(href='#p{{ programme.pk }}')
+                        span.title {{ programme.title }}
+                        for tag in programme.tags.all
+                          | 
+                          span.label(class='{{ tag.style }}') {{ tag.title }}
                 else
                   td.blank
 
@@ -28,7 +32,11 @@ block content
       for programme, rowspan in programmes
         if programme
           .programme
-            h4.title(id='p{{ programme.id }}'): {{ programme.title }}
+            h4(id='p{{ programme.id }}')
+              span.title{{ programme.title }}
+              for tag in programme.tags.all
+                | 
+                span.label(class='{{ tag.style }}') {{ tag.title }}
             em.room: {{ programme.room.name }}
             em.host: {{ programme.formatted_hosts }}
             .description: {{ programme.description }}

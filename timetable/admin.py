@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib import admin
 
-from .models import Category, Room, Person, Role, Programme, View
+from .models import Category, Room, Person, Role, Tag, Programme, View
 
 
 class ProgrammeRoleInline(admin.TabularInline):
@@ -24,7 +24,7 @@ class PersonAdmin(admin.ModelAdmin):
 
 class ProgrammeAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Basic information', {'fields': ['title', 'description', 'category']}),
+        ('Basic information', {'fields': ['title', 'description', 'category', 'tags']}),
         ('Time and location', {'fields': ['room', ('start_time', 'length')]}),
         ('Display', {'fields': ['hilight', 'public']}),
         ('Notes', {'fields': ['notes']}),
@@ -46,5 +46,6 @@ admin.site.register(Category)
 admin.site.register(Room)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Role)
+admin.site.register(Tag)
 admin.site.register(Programme, ProgrammeAdmin)
 admin.site.register(View, ViewAdmin)
