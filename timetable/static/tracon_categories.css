@@ -1,31 +1,43 @@
-.muu, .rope, .anime, .cosplay, .goh, .miitti {
+.programme a {
+	color: white;
+}
+
+.muu, .rope, .anime, .cosplay, .goh, .miitti, .sisainen {
 	color: white;
 }
 
 .muu {
-	background-color: #2C562A;
+	background-color: #5eb95e;
 }
 
 .rope {
-	background-color: #581065;
+	background-color: #8058a5;
 }
 
 .anime {
-	background-color: #291793;
+	background-color: #0e90d2;
 }
 
 .cosplay {
-	background-color: #76030E;
+	background-color: #dd514c;
 }
 
 .goh {
-	background-color: #FAFAC3;
-	color: navy;
+	background-color: #fad232;
+	color: black;
 	font-weight: bold;
 }
 
+.goh a {
+	color: black;
+}
+
 .miitti {
-	background-color: #63430b;
+	background-color: #f37b1d;
+}
+
+.sisainen {
+	background-image: url('/static/stripe.png');
 }
 
 .hilight {
