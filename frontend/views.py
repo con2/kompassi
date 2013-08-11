@@ -8,4 +8,4 @@ def schedule_view(request):
       programmes_by_start_time=Programme.programmes_by_start_time()
     )
 
-    return render(request, 'programme.jade', vars)
+    return render(request, 'schedule.jade', vars)

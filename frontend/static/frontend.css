@@ -1,3 +1,7 @@
 .content {
     margin-top: 60px;
 }
+
+.schedule td.blank {
+	border: none !important;
+}

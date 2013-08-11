@@ -1,6 +1,6 @@
 extends base.jade
 block content
-  table.programme.table.table-bordered
+  table.schedule.table.table-bordered
     thead
       tr
         th  
@@ -12,7 +12,7 @@ block content
           th: {{ start_time|date:"H:i" }}
           for programme in programmes
             if programme
-              td(rowspan='{{ programme.rowspan }}'): {{ programme.title }}
+              td.programme(rowspan='{{ programme.rowspan }}'): {{ programme.title }}
             else
               td.blank
 
