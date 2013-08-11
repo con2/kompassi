@@ -3,5 +3,6 @@
 }
 
 .schedule td.blank {
-	border: none !important;
+	border-top: none !important;
+	border-bottom: none !important;
 }
