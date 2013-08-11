@@ -41,7 +41,7 @@ DATETIME_FORMAT = 'd.m.y H:i'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-UK'
+LANGUAGE_CODE = 'fi-FI'
 
 SITE_ID = 1
 

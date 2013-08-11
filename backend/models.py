@@ -127,6 +127,18 @@ class Programme(models.Model):
             public=True
         ))
 
+    @property
+    def css_classes(self):
+        classes = []
+
+        if self.hilight:
+            classes.append('hilight')
+
+        if self.category.style:
+            classes.append(self.category.style)
+
+        return ' '.join(classes)
+
     @staticmethod
     def programmes_by_start_time():
         rooms = Room.objects.filter(public=True)
