@@ -6,7 +6,3 @@
 	border-top: none !important;
 	border-bottom: none !important;
 }
-
-.descriptions .room:after {
-	content: " – ";
-}
