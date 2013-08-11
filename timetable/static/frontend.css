@@ -6,3 +6,12 @@
 	border-top: none !important;
 	border-bottom: none !important;
 }
+
+footer {
+  background-color: #eee;
+  border-top: 1px solid #ddd;
+}
+
+footer .credit {
+  padding-top: 10px;
+}
