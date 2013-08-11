@@ -1,45 +1,56 @@
-.programme a {
+.timetable a {
 	color: white;
 }
 
-.muu, .rope, .anime, .cosplay, .goh, .miitti, .sisainen {
-	color: white;
-}
-
-.muu {
+.timetable .muu {
 	background-color: #5eb95e;
 }
 
-.rope {
+.timetable .rope {
 	background-color: #8058a5;
 }
 
-.anime {
+.timetable .anime {
 	background-color: #0e90d2;
 }
 
-.cosplay {
+.timetable .cosplay {
 	background-color: #dd514c;
 }
 
-.goh {
-	background-color: #fad232;
-	color: black;
-	font-weight: bold;
-}
-
-.goh a {
-	color: black;
-}
-
-.miitti {
+.timetable .miitti {
 	background-color: #f37b1d;
 }
 
-.sisainen {
+.timetable .sisainen {
 	background-image: url('/static/stripe.png');
 }
 
-.hilight {
+.timetable .hilight {
 	border: 3px solid #ddd !important;
+}
+
+.descriptions .programme {
+	margin: 0px 0px 20px 1px;
+	padding-left: 8px;
+}
+
+.descriptions .muu {
+	border-left: 5px solid #5eb95e;
+}
+
+.descriptions .rope {
+	border-left: 5px solid #8058a5;
+}
+
+.descriptions .anime {
+	border-left: 5px solid #0e90d2;
+}
+
+.descriptions .cosplay {
+	border-left: 5px solid #dd514c;
+}
+
+.descriptions .miitti {
+	border-left: 5px solid #f37b1d;
 }
