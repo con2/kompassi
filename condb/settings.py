@@ -28,6 +28,17 @@ DATABASES = {
     }
 }
 
+# Uncomment if you have memcached
+# CACHES = {
+#     'default' : dict(
+#         BACKEND = 'johnny.backends.memcached.MemcachedCache',
+#         LOCATION = ['127.0.0.1:11211'],
+#         JOHNNY_CACHE = True,
+#     )
+# }
+
+JOHNNY_MIDDLEWARE_KEY_PREFIX='condb_johnny_dev'
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
@@ -101,7 +112,12 @@ TEMPLATE_LOADERS = (
     )),
 )
 
+# add johnny's middleware
 MIDDLEWARE_CLASSES = (
+    # Uncomment if you have memcached
+    # 'johnny.middleware.LocalStoreClearMiddleware',
+    # 'johnny.middleware.QueryCacheMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
