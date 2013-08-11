@@ -120,14 +120,6 @@ class Programme(models.Model):
         return self.title
 
     @property
-    def rowspan(self):
-        return len(Programme.start_times(
-            start_time__gte=self.start_time,
-            start_time__lt=self.end_time,
-            public=True
-        ))
-
-    @property
     def css_classes(self):
         classes = []
 
@@ -138,38 +130,6 @@ class Programme(models.Model):
             classes.append(self.category.style)
 
         return ' '.join(classes)
-
-    @staticmethod
-    def programmes_by_start_time():
-        rooms = Room.objects.filter(public=True)
-
-        results = []
-        for start_time in Programme.start_times(public=True, room__public=True):
-            cur_row = []
-            results.append((start_time, cur_row))
-            for room in rooms:
-                try:
-                    cur_row.append(Programme.objects.get(
-                        room=room,
-                        start_time=start_time,
-                        public=True,
-                        room__public=True
-                    ))
-                except Programme.DoesNotExist:
-                    if room.programme_continues_at(start_time):
-                        # programme still continues, handled by rowspan
-                        pass
-                    else:
-                        # there is no (visible) programme in the room at start_time, insert a blank
-                        cur_row.append(None)
-                except Programme.MultipleObjectsReturned:
-                    raise ValueError('Room {room} has multiple programs starting at {start_time}'.format(**locals()))
-
-        return results
-
-    @staticmethod
-    def start_times(**conditions):
-        return sorted(list(set(p.start_time for p in Programme.objects.filter(**conditions))))
 
     class Meta:
         ordering = ['start_time', 'room']

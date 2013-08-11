@@ -1,27 +1,30 @@
 extends base.jade
 block content
-  table.schedule.table.table-bordered
-    thead
-      tr
-        th  
-        for room in rooms
-          th: {{ room.name }}
-    tbody
-      for start_time, programmes in programmes_by_start_time
-        tr
-          th: {{ start_time|date:"H:i" }}
-          for programme in programmes
-            if programme
-                td.programme(rowspan='{{ programme.rowspan }}', class='{{ programme.css_classes }}'): {{ programme.title }}
-            else
-              td.blank
+  .schedule
+    h2 Ohjelmakartta
+    for view in views
+      table.table.table-bordered
+        thead
+          tr
+            th  
+            for room in view.public_rooms
+              th: {{ room.name }}
+        tbody
+          for start_time, programmes in view.programmes_by_start_time
+            tr
+              th: {{ start_time|date:"H:i" }}
+              for programme, rowspan in programmes
+                if programme
+                    td.programme(rowspan='{{ rowspan }}', class='{{ programme.css_classes }}'): {{ programme.title }}
+                else
+                  td.blank
 
   .descriptions
     h2 Tarkemmat ohjelmatiedot
 
-    for start_time, programmes in programmes_by_start_time
+    for start_time, programmes in all_programmes_by_start_time
       h3 {{ start_time|date:"l H:i"|capfirst }}
-      for programme in programmes
+      for programme, rowspan in programmes
         if programme
           .programme
             h4.title: {{ programme.title }}
