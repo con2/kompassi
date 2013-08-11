@@ -15,12 +15,15 @@ block content
               th: {{ start_time|date:"H:i" }}
               for programme, rowspan in programmes
                 if programme
+                  if programme.public
                     td.programme(rowspan='{{ rowspan }}', class='{{ programme.css_classes }}')
                       a(href='#p{{ programme.pk }}')
                         span.title {{ programme.title }}
                         for tag in programme.tags.all
                           | 
                           span.label(class='{{ tag.style }}') {{ tag.title }}
+                  else
+                    td.concealed.sisainen(rowspan='{{ rowspan }}')
                 else
                   td.blank
 
@@ -30,7 +33,7 @@ block content
     for start_time, programmes in all_programmes_by_start_time
       h3 {{ start_time|date:"l H:i"|capfirst }}
       for programme, rowspan in programmes
-        if programme
+        if programme and programme.public
           .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')
             h4
               span.title{{ programme.title }}
