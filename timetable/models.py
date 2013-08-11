@@ -7,6 +7,7 @@ class Category(models.Model):
     title = models.CharField(max_length=1023)
     style = models.CharField(max_length=15)
     notes = models.TextField(blank=True)
+    public = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.title
@@ -109,7 +110,6 @@ class Programme(models.Model):
     start_time = models.DateTimeField()
     length = models.IntegerField()
     hilight = models.BooleanField()
-    public = models.BooleanField(default=True)
     notes = models.TextField(blank=True)
     category = models.ForeignKey(Category)
     room = models.ForeignKey(Room)
@@ -142,6 +142,10 @@ class Programme(models.Model):
             classes.append(self.category.style)
 
         return ' '.join(classes)
+
+    @property
+    def public(self):
+        return self.category.public
 
     class Meta:
         ordering = ['start_time', 'room']
