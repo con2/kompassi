@@ -31,8 +31,8 @@ block content
       h3 {{ start_time|date:"l H:i"|capfirst }}
       for programme, rowspan in programmes
         if programme
-          .programme(class='{{ programme.css_classes }}')
-            h4(id='p{{ programme.id }}')
+          .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')
+            h4
               span.title{{ programme.title }}
               for tag in programme.tags.all
                 | 
