@@ -1,0 +1,33 @@
+.Muu, .Rope, .Anime, .Cosplay, .GoH, .Miitti {
+	color: white;
+}
+
+.Muu {
+	background-color: #2C562A;
+}
+
+.Rope {
+	background-color: #581065;
+}
+
+.Anime {
+	background-color: #291793;
+}
+
+.Cosplay {
+	background-color: #76030E;
+}
+
+.GoH {
+	background-color: #FAFAC3;
+	color: navy;
+	font-weight: bold;
+}
+
+.Miitti {
+	background-color: #63430b;
+}
+
+.hilight {
+	border: 2pt solid white;
+}
