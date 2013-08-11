@@ -1,10 +1,8 @@
 from django.shortcuts import render
 
-from backend.models import Room
-
 from .models import View, AllRoomsPseudoView
 
-def schedule_view(request):
+def timetable_view(request):
     all_rooms = AllRoomsPseudoView()
 
     vars = dict(
@@ -12,4 +10,4 @@ def schedule_view(request):
         all_programmes_by_start_time=all_rooms.programmes_by_start_time
     )
 
-    return render(request, 'schedule.jade', vars)
+    return render(request, 'timetable.jade', vars)

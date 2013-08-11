@@ -140,7 +140,7 @@ TEMPLATE_DIRS = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = defaults.TEMPLATE_CONTEXT_PROCESSORS + (
-    'frontend.context_processors.frontend_context',
+    'timetable.context_processors.frontend_context',
 )
 
 INSTALLED_APPS = (
@@ -153,11 +153,9 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     
     'south',
-    'backend',
     'pyjade',
 
-    'backend',
-    'frontend'
+    'timetable',
 )
 
 # A sample logging configuration. The only tangible logging

@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib import admin
 
-from backend.models import Category, Room, Person, Role, Programme
+from .models import Category, Room, Person, Role, Programme, View
 
 
 class ProgrammeRoleInline(admin.TabularInline):
@@ -38,8 +38,13 @@ class ProgrammeAdmin(admin.ModelAdmin):
     list_filter = ('room', 'start_time', 'category')
 
 
+class ViewAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
 admin.site.register(Category)
 admin.site.register(Room)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Role)
 admin.site.register(Programme, ProgrammeAdmin)
+admin.site.register(View, ViewAdmin)
