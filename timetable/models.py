@@ -114,7 +114,7 @@ class Programme(models.Model):
     category = models.ForeignKey(Category)
     room = models.ForeignKey(Room)
     organizers = models.ManyToManyField(Person, through='ProgrammeRole')
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     @property
     def end_time(self):
