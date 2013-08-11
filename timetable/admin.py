@@ -26,7 +26,7 @@ class ProgrammeAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Basic information', {'fields': ['title', 'description', 'category', 'tags']}),
         ('Time and location', {'fields': ['room', ('start_time', 'length')]}),
-        ('Display', {'fields': ['hilight', 'public']}),
+        ('Display', {'fields': ['hilight']}),
         ('Notes', {'fields': ['notes']}),
     ]
 

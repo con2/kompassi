@@ -7,6 +7,7 @@ class Category(models.Model):
     title = models.CharField(max_length=1023)
     style = models.CharField(max_length=15)
     notes = models.TextField(blank=True)
+    public = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.title
@@ -109,7 +110,6 @@ class Programme(models.Model):
     start_time = models.DateTimeField()
     length = models.IntegerField()
     hilight = models.BooleanField()
-    public = models.BooleanField(default=True)
     notes = models.TextField(blank=True)
     category = models.ForeignKey(Category)
     room = models.ForeignKey(Room)
@@ -143,6 +143,10 @@ class Programme(models.Model):
 
         return ' '.join(classes)
 
+    @property
+    def public(self):
+        return self.category.public
+
     class Meta:
         ordering = ['start_time', 'room']
 
@@ -165,14 +169,13 @@ class ViewMethodsMixin(object):
     @property
     def programmes_by_start_time(self):
         results = []
-        for start_time in self.start_times(public=True, room__public=True):
+        for start_time in self.start_times(room__public=True):
             cur_row = []
             results.append((start_time, cur_row))
             for room in self.rooms.filter(public=True):
                 try:
                     programme = room.programme_set.get(
                         start_time=start_time,
-                        public=True,
                         room__public=True
                     )
                     rowspan = self.rowspan(programme)
@@ -199,8 +202,7 @@ class ViewMethodsMixin(object):
     def rowspan(self, programme):
         return len(self.start_times(
             start_time__gte=programme.start_time,
-            start_time__lt=programme.end_time,
-            public=True
+            start_time__lt=programme.end_time
         ))
 
 
