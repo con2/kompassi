@@ -15,7 +15,8 @@ block content
               th: {{ start_time|date:"H:i" }}
               for programme, rowspan in programmes
                 if programme
-                    td.programme(rowspan='{{ rowspan }}', class='{{ programme.css_classes }}'): {{ programme.title }}
+                    td.programme(rowspan='{{ rowspan }}', class='{{ programme.css_classes }}')
+                      a(href='#p{{ programme.pk }}') {{ programme.title }}
                 else
                   td.blank
 
@@ -27,7 +28,7 @@ block content
       for programme, rowspan in programmes
         if programme
           .programme
-            h4.title: {{ programme.title }}
+            h4.title(id='p{{ programme.id }}'): {{ programme.title }}
             em.room: {{ programme.room.name }}
             em.host: {{ programme.formatted_hosts }}
             .description: {{ programme.description }}
