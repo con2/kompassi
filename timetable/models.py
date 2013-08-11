@@ -92,6 +92,14 @@ class Role(models.Model):
         ordering = ['title']
 
 
+class Tag(models.Model):
+    title = models.CharField(max_length=15)
+    order = models.IntegerField(default=0)
+    style = models.CharField(max_length=15, default='label-default')
+
+    class Meta:
+        ordering = ['order']
+
 class Programme(models.Model):
     title = models.CharField(max_length=1023)
     description = models.TextField()
@@ -103,6 +111,7 @@ class Programme(models.Model):
     category = models.ForeignKey(Category)
     room = models.ForeignKey(Room)
     organizers = models.ManyToManyField(Person, through='ProgrammeRole')
+    tags = models.ManyToManyField(Tag)
 
     @property
     def end_time(self):
