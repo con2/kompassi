@@ -2,6 +2,8 @@
 
 import os
 
+import django.conf.global_settings as defaults
+
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', *parts))
 
@@ -39,7 +41,7 @@ DATETIME_FORMAT = 'd.m.y H:i'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-UK'
+LANGUAGE_CODE = 'fi-FI'
 
 SITE_ID = 1
 
@@ -93,9 +95,10 @@ SECRET_KEY = 'jhdjl*kxcet2aaz)%ixmois*j_p+d*q79%legoz+9el(c%zc$%'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    ('pyjade.ext.django.Loader',(
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
 )
 
 MIDDLEWARE_CLASSES = (
@@ -120,6 +123,10 @@ TEMPLATE_DIRS = (
     mkpath('condb','templates'),
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = defaults.TEMPLATE_CONTEXT_PROCESSORS + (
+    'frontend.context_processors.frontend_context',
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -131,6 +138,10 @@ INSTALLED_APPS = (
     
     'south',
     'backend',
+    'pyjade',
+
+    'backend',
+    'frontend'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -161,3 +172,7 @@ LOGGING = {
         },
     }
 }
+
+EVENT_NAME = "Tracon 8"
+EVENT_NAME_GENITIVE = "Tracon 8:n"
+EVENT_URL = "http://2013.tracon.fi"

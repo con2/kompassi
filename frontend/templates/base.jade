@@ -1,0 +1,19 @@
+doctype 5
+html
+  head
+    title {{ EVENT_NAME }}: Ohjelmakartta
+    link(rel='stylesheet', href='{{ STATIC_URL }}bootstrap/bootstrap.min.css')
+    link(rel='stylesheet', href='{{ STATIC_URL }}frontend.css')
+    link(rel='stylesheet', href='{{ STATIC_URL }}tracon_categories.css')
+  body
+    .navbar.navbar-inverse.navbar-fixed-top
+      .navbar-inner
+        .container
+          .navbar-brand {{ EVENT_NAME }}
+          ul.nav.navbar-nav
+            li: a(href='{{ EVENT_URL }}') Takaisin {{ EVENT_NAME_GENITIVE }} sivuille
+
+    .container.content
+      block content
+
+    script(src='{{ STATIC_URL }}bootstrap/bootstrap.min.js')

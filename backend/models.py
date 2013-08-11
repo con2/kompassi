@@ -25,6 +25,16 @@ class Room(models.Model):
     def __unicode__(self):
         return self.name
 
+    def programme_continues_at(self, the_time, **conditions):
+        latest_programme = self.programme_set.filter(
+            start_time__lt=the_time,
+            **conditions
+        ).order_by('-start_time')[:1]
+        if latest_programme:
+            return the_time < latest_programme[0].end_time
+        else:
+            return False
+
     class Meta:
         ordering = ['order']
 
@@ -41,9 +51,16 @@ class Person(models.Model):
     @property
     def full_name(self):
         if self.nick:
-            return self.first_name + '"' + self.nick + '"' + self.surname
+            return u'{0} "{1}" {2}'.format(
+                self.first_name,
+                self.nick,
+                self.surname
+            )
         else:
-            return self.first_name + " " + self.surname
+            return u'{0} {1}'.format(
+                self.first_name,
+                self.surname
+            )
 
     @property
     def display_name(self):
@@ -91,8 +108,28 @@ class Programme(models.Model):
     def end_time(self):
         return (self.start_time + datetime.timedelta(minutes=self.length))
 
+    @property
+    def formatted_hosts(self):
+        return u', '.join(p.full_name for p in self.organizers.all())
+
+    @property
+    def is_blank(self):
+        return False
+
     def __unicode__(self):
         return self.title
+
+    @property
+    def css_classes(self):
+        classes = []
+
+        if self.hilight:
+            classes.append('hilight')
+
+        if self.category.style:
+            classes.append(self.category.style)
+
+        return ' '.join(classes)
 
     class Meta:
         ordering = ['start_time', 'room']

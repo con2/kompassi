@@ -1,0 +1,12 @@
+.content {
+    margin-top: 60px;
+}
+
+.schedule td.blank {
+	border-top: none !important;
+	border-bottom: none !important;
+}
+
+.descriptions .room:after {
+	content: " – ";
+}
