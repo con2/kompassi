@@ -27,7 +27,15 @@
 }
 
 .timetable .hilight {
-	border: 3px solid #ddd !important;
+	background: url(jean_victor_balin_icon_star_24px.png) no-repeat;
+	padding: 5px;
+	color: transparent;
+}
+
+.descriptions .hilight {
+	background: url(jean_victor_balin_icon_star_32px.png) no-repeat;
+	padding: 5px;
+	color: transparent;
 }
 
 .descriptions .programme {
