@@ -109,7 +109,6 @@ class Programme(models.Model):
     description = models.TextField()
     start_time = models.DateTimeField()
     length = models.IntegerField()
-    hilight = models.BooleanField()
     notes = models.TextField(blank=True)
     category = models.ForeignKey(Category)
     room = models.ForeignKey(Room)
@@ -133,15 +132,7 @@ class Programme(models.Model):
 
     @property
     def css_classes(self):
-        classes = []
-
-        if self.hilight:
-            classes.append('hilight')
-
-        if self.category.style:
-            classes.append(self.category.style)
-
-        return ' '.join(classes)
+        return self.category.style if self.category.style else ''
 
     @property
     def public(self):
