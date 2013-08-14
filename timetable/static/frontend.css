@@ -7,6 +7,25 @@
 	border-bottom: none !important;
 }
 
+.legend {
+  float: right;
+}
+
+.legend .categories {
+  margin: 0;
+  padding: 0;
+}
+
+.legend .categories li {
+  display: inline-block;
+  list-style-type: none;
+  margin-left: 3px;
+  padding: 5px;
+  color: white;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
 footer {
   background-color: #eee;
   border-top: 1px solid #ddd;

@@ -1,6 +1,10 @@
 extends base.jade
 block content
   .timetable
+    .legend
+      ul.categories
+        for category in categories
+          li(class='{{ category.style }}') {{ category.title }}
     h2 Ohjelmakartta
     for view in views
       table.table.table-bordered
