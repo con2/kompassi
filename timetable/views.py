@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.cache import cache_page, cache_control
 
 from .models import View, AllRoomsPseudoView
 
+@cache_control(public=True, max_age=5 * 60)
+@cache_page(5 * 60) # XXX remove once nginx cache is in place
 def timetable_view(request):
     return render_timetable(request, internal_programmes=False)
 
