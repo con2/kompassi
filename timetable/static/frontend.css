@@ -1,3 +1,7 @@
+.navbar {
+  border-radius: 0;
+}
+
 .timetable td.blank {
 	border-top: none !important;
 	border-bottom: none !important;
