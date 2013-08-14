@@ -21,14 +21,14 @@ def render_timetable(request, internal_programmes=False):
 def internal_dumpdata_view(request):
     from django.core import management
     from django.http import HttpResponse
-    import cStringIO as StringIO
+    from cStringIO import StringIO
 
-    s = StringIO.StringIO()
-    management.call_command('dumpdata', 'timetable', stdout=s)
-    r = HttpResponse(s.getvalue(), 'application/json')
-    s.close()
+    buffer = StringIO()
+    management.call_command('dumpdata', 'timetable', stdout=buffer)
+    response = HttpResponse(buffer.getvalue(), 'application/json')
+    buffer.close()
 
-    return r
+    return response
 
 #@login_required
 def internal_timetable_view(request):
