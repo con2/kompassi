@@ -1,11 +1,16 @@
 # Django settings for condb project.
 
 import os
+from datetime import datetime, timedelta
 
 import django.conf.global_settings as defaults
 
+from tzlocal import get_localzone
+
+
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', *parts))
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -191,3 +196,9 @@ EVENT_NAME = "Tracon 8"
 EVENT_NAME_GENITIVE = "Tracon 8:n"
 EVENT_URL = "http://2013.tracon.fi"
 LOGIN_URL = '/admin/'
+
+ALLOW_INCONTINUITY_BETWEEN = (
+    datetime(2013, 9, 15,  1, 0, 0, tzinfo=get_localzone()),
+    datetime(2013, 9, 15, 10, 0, 0, tzinfo=get_localzone())
+)
+MIN_TIMETABLE_RESOLUTION = timedelta(hours=1)

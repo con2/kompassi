@@ -1,6 +1,12 @@
 import datetime
 
 from django.db import models
+from django.conf import settings
+
+from .utils import window, next_full_hour, full_hours_between
+
+
+ALLOW_INCONTINUITY_BEGIN, ALLOW_INCONTINUITY_END = settings.ALLOW_INCONTINUITY_BETWEEN
 
 
 class Category(models.Model):
@@ -160,10 +166,10 @@ class ViewMethodsMixin(object):
     @property
     def programmes_by_start_time(self):
         results = []
-        for start_time in self.start_times(room__public=True):
+        for start_time in self.start_times():
             cur_row = []
             results.append((start_time, cur_row))
-            for room in self.rooms.filter(public=True):
+            for room in self.public_rooms:
                 try:
                     programme = room.programme_set.get(
                         start_time=start_time,
@@ -184,12 +190,31 @@ class ViewMethodsMixin(object):
         return results
 
     def start_times(self, **conditions):
-        return sorted(list(set(p.start_time for p in Programme.objects.filter(room__in=self.public_rooms, **conditions))))
+        start_time_set = set()
+        for p in Programme.objects.filter(
+            room__in=self.public_rooms,
+            **conditions
+        ):
+            start_time_set.add(p.start_time)
+
+        first_time = next_full_hour(min(start_time_set))
+        last_time = next_full_hour(max(start_time_set))
+
+        start_time_set.update(
+            full_hours_between(
+                first_time,
+                last_time,
+                unless=lambda t: ALLOW_INCONTINUITY_BEGIN < t < ALLOW_INCONTINUITY_END
+            )
+        )
+
+        return sorted(start_time_set)
 
     @property
     def public_rooms(self):
         return self.rooms.filter(public=True)
 
+    # FIXME
     def rowspan(self, programme):
         return len(self.start_times(
             start_time__gte=programme.start_time,
