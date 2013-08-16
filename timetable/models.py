@@ -6,9 +6,6 @@ from django.conf import settings
 from .utils import window, next_full_hour, full_hours_between
 
 
-ALLOW_INCONTINUITY_BEGIN, ALLOW_INCONTINUITY_END = settings.ALLOW_INCONTINUITY_BETWEEN
-
-
 class Category(models.Model):
     title = models.CharField(max_length=1023)
     style = models.CharField(max_length=15)
@@ -189,37 +186,30 @@ class ViewMethodsMixin(object):
 
         return results
 
-    def start_times(self, **conditions):
-        start_time_set = set()
-        for p in Programme.objects.filter(
-            room__in=self.public_rooms,
-            **conditions
-        ):
-            start_time_set.add(p.start_time)
+    def start_times(self, programme=None):
+        result = settings.TIMETABLE_SPECIAL_TIMES[::]
+        ONE_HOUR = datetime.timedelta(hours=1)
 
-        first_time = next_full_hour(min(start_time_set))
-        last_time = next_full_hour(max(start_time_set))
+        for (start_time, end_time) in settings.TIMETABLE_TIME_BLOCKS:
+            cur = start_time
+            while cur <= end_time:
+                result.append(cur)
+                cur += ONE_HOUR
 
-        start_time_set.update(
-            full_hours_between(
-                first_time,
-                last_time,
-                unless=lambda t: ALLOW_INCONTINUITY_BEGIN < t < ALLOW_INCONTINUITY_END
-            )
-        )
+        if programme:
+            result = [
+                i for i in result if
+                    programme.start_time <= i < programme.end_time
+            ]
 
-        return sorted(start_time_set)
+        return sorted(set(result))
 
     @property
     def public_rooms(self):
         return self.rooms.filter(public=True)
 
-    # FIXME
     def rowspan(self, programme):
-        return len(self.start_times(
-            start_time__gte=programme.start_time,
-            start_time__lt=programme.end_time
-        ))
+        return len(self.start_times(programme=programme))
 
 
 class View(models.Model, ViewMethodsMixin):

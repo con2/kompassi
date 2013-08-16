@@ -2,6 +2,5 @@ Django==1.5.1
 South==0.8.1
 -e git+https://github.com/jmoiron/johnny-cache@017803e2d6c5995bf576103307adf4809eb5d519#egg=johnny-cache
 pyjade==2.0.2
-pytz==2013b
-tzlocal==1.0
+python-dateutil==2.1
 python-memcached==1.53

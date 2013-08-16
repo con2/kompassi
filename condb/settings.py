@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 import django.conf.global_settings as defaults
 
-from tzlocal import get_localzone
+from dateutil.tz import tzlocal
 
 
 def mkpath(*parts):
@@ -197,8 +197,18 @@ EVENT_NAME_GENITIVE = "Tracon 8:n"
 EVENT_URL = "http://2013.tracon.fi"
 LOGIN_URL = '/admin/'
 
-ALLOW_INCONTINUITY_BETWEEN = (
-    datetime(2013, 9, 15,  1, 0, 0, tzinfo=get_localzone()),
-    datetime(2013, 9, 15, 10, 0, 0, tzinfo=get_localzone())
-)
-MIN_TIMETABLE_RESOLUTION = timedelta(hours=1)
+tz = tzlocal()
+
+TIMETABLE_TIME_BLOCKS = [
+    (
+        datetime(2013, 9, 14, 11, 0, 0, tzinfo=tz),
+        datetime(2013, 9, 15, 1 , 0, 0, tzinfo=tz)
+    ),
+    (
+        datetime(2013, 9, 15, 9 , 0, 0, tzinfo=tz),
+        datetime(2013, 9, 15, 17, 0, 0, tzinfo=tz)
+    )
+]
+TIMETABLE_SPECIAL_TIMES = [
+    datetime(2013, 9, 14, 10, 30, 0, tzinfo=tz)
+]
