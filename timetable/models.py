@@ -6,6 +6,9 @@ from django.conf import settings
 from .utils import window, next_full_hour, full_hours_between
 
 
+ONE_HOUR = datetime.timedelta(hours=1)
+
+
 class Category(models.Model):
     title = models.CharField(max_length=1023)
     style = models.CharField(max_length=15)
@@ -163,9 +166,16 @@ class ViewMethodsMixin(object):
     @property
     def programmes_by_start_time(self):
         results = []
+        prev_start_time = None
+
         for start_time in self.start_times():
             cur_row = []
-            results.append((start_time, cur_row))
+
+            incontinuity = prev_start_time and (start_time - prev_start_time > ONE_HOUR)
+            incontinuity = 'incontinuity' if incontinuity else ''
+            prev_start_time = start_time
+
+            results.append((start_time, incontinuity, cur_row))
             for room in self.public_rooms:
                 try:
                     programme = room.programme_set.get(
@@ -188,7 +198,6 @@ class ViewMethodsMixin(object):
 
     def start_times(self, programme=None):
         result = settings.TIMETABLE_SPECIAL_TIMES[::]
-        ONE_HOUR = datetime.timedelta(hours=1)
 
         for (start_time, end_time) in settings.TIMETABLE_TIME_BLOCKS:
             cur = start_time
