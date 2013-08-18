@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.cache import cache_page, cache_control
@@ -27,6 +29,7 @@ def render_timetable(request, internal_programmes=False):
 
     return render(request, 'timetable.jade', vars)
 
+
 @user_passes_test(lambda u: u.is_superuser)
 def internal_dumpdata_view(request):
     from django.core import management
@@ -40,6 +43,13 @@ def internal_dumpdata_view(request):
 
     return response
 
+
 #@login_required
 def internal_timetable_view(request):
     return render_timetable(request, internal_programmes=True)
+
+
+@login_required
+def internal_adobe_taggedtext_view(request):
+    vars = dict(programmes_by_start_time=AllRoomsPseudoView().programmes_by_start_time)
+    return render(request, 'timetable.taggedtext', vars, content_type='text/plain; charset=utf-8')
