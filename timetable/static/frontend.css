@@ -30,6 +30,16 @@
   border: 1px solid #ddd;
 }
 
+.meta {
+  font-style: italic;
+  color: #808080;
+  font-size: 90%;
+}
+
+.popover-title {
+  font-weight: bold;
+}
+
 footer {
   background-color: #eee;
   border-top: 1px solid #ddd;
