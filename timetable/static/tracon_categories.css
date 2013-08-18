@@ -26,16 +26,17 @@
 	background-image: url('/static/stripe.png');
 }
 
-.timetable .hilight {
+.timetable .hilight, .descriptions .hilight {
 	background: url(jean_victor_balin_icon_star_24px.png) no-repeat;
 	padding: 5px;
-	color: transparent;
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	color: transparent; /* XXX hack */
 }
 
 .descriptions .hilight {
-	background: url(jean_victor_balin_icon_star_32px.png) no-repeat;
-	padding: 5px;
-	color: transparent;
+	vertical-align: bottom;
 }
 
 .descriptions .programme {

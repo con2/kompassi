@@ -44,10 +44,11 @@ block content
               for tag in programme.tags.all
                 | 
                 span.label(class='{{ tag.style }}') {{ tag.title }}
-            em.meta
-              span.room: {{ programme.room.name }}
-              span  klo 
-              span.times: {{ programme.start_time|date:"H:i"}}&ndash;{{ programme.end_time|date:"H:i"}}
-              |  &ndash; 
-              span.host: {{ programme.formatted_hosts }}
-            .description: {{ programme.description }}
+            .programme-info
+              .meta
+                span.room: {{ programme.room.name }}
+                span  klo 
+                span.times: {{ programme.start_time|date:"H:i"}}&ndash;{{ programme.end_time|date:"H:i"}}
+                |  &ndash; 
+                span.host: {{ programme.formatted_hosts }}
+              .description: {{ programme.description }}
