@@ -59,7 +59,7 @@ def internal_adobe_taggedtext_view(request):
     # force all line endings to CRLF (Windows)
     data = data.replace('\r\n', '\n').replace('\n', '\r\n')
 
-    # encode to UTF-16, removing the Byte Order Mark (two first bytes)
-    data = data.encode('UTF-16')[2:]
+    # encode to UTF-16; the LE at the end means no BOM, which is absolutely critical
+    data = data.encode('UTF-16LE')
 
     return HttpResponse(data, 'text/plain; charset=utf-16')
