@@ -1,11 +1,16 @@
 # Django settings for condb project.
 
 import os
+from datetime import datetime, timedelta
 
 import django.conf.global_settings as defaults
 
+from dateutil.tz import tzlocal
+
+
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', *parts))
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -191,3 +196,19 @@ EVENT_NAME = "Tracon 8"
 EVENT_NAME_GENITIVE = "Tracon 8:n"
 EVENT_URL = "http://2013.tracon.fi"
 LOGIN_URL = '/admin/'
+
+tz = tzlocal()
+
+TIMETABLE_TIME_BLOCKS = [
+    (
+        datetime(2013, 9, 14, 11, 0, 0, tzinfo=tz),
+        datetime(2013, 9, 15, 1 , 0, 0, tzinfo=tz)
+    ),
+    (
+        datetime(2013, 9, 15, 9 , 0, 0, tzinfo=tz),
+        datetime(2013, 9, 15, 17, 0, 0, tzinfo=tz)
+    )
+]
+TIMETABLE_SPECIAL_TIMES = [
+    datetime(2013, 9, 14, 10, 30, 0, tzinfo=tz)
+]

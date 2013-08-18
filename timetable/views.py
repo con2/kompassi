@@ -4,6 +4,7 @@ from django.views.decorators.cache import cache_page, cache_control
 
 from .models import View, AllRoomsPseudoView, Category, Tag
 
+
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60) # XXX remove once nginx cache is in place
 def timetable_view(request):

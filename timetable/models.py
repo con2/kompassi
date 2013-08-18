@@ -1,6 +1,12 @@
 import datetime
 
 from django.db import models
+from django.conf import settings
+
+from .utils import window, next_full_hour, full_hours_between
+
+
+ONE_HOUR = datetime.timedelta(hours=1)
 
 
 class Category(models.Model):
@@ -160,10 +166,17 @@ class ViewMethodsMixin(object):
     @property
     def programmes_by_start_time(self):
         results = []
-        for start_time in self.start_times(room__public=True):
+        prev_start_time = None
+
+        for start_time in self.start_times():
             cur_row = []
-            results.append((start_time, cur_row))
-            for room in self.rooms.filter(public=True):
+
+            incontinuity = prev_start_time and (start_time - prev_start_time > ONE_HOUR)
+            incontinuity = 'incontinuity' if incontinuity else ''
+            prev_start_time = start_time
+
+            results.append((start_time, incontinuity, cur_row))
+            for room in self.public_rooms:
                 try:
                     programme = room.programme_set.get(
                         start_time=start_time,
@@ -183,18 +196,29 @@ class ViewMethodsMixin(object):
 
         return results
 
-    def start_times(self, **conditions):
-        return sorted(list(set(p.start_time for p in Programme.objects.filter(room__in=self.public_rooms, **conditions))))
+    def start_times(self, programme=None):
+        result = settings.TIMETABLE_SPECIAL_TIMES[::]
+
+        for (start_time, end_time) in settings.TIMETABLE_TIME_BLOCKS:
+            cur = start_time
+            while cur <= end_time:
+                result.append(cur)
+                cur += ONE_HOUR
+
+        if programme:
+            result = [
+                i for i in result if
+                    programme.start_time <= i < programme.end_time
+            ]
+
+        return sorted(set(result))
 
     @property
     def public_rooms(self):
         return self.rooms.filter(public=True)
 
     def rowspan(self, programme):
-        return len(self.start_times(
-            start_time__gte=programme.start_time,
-            start_time__lt=programme.end_time
-        ))
+        return len(self.start_times(programme=programme))
 
 
 class View(models.Model, ViewMethodsMixin):
