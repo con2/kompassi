@@ -40,15 +40,15 @@ block content
         if programme and programme.public or programme and internal_programmes
           .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')
             h4
-              span.title{{ programme.title }}
+              span.title {{ programme.title }}
               for tag in programme.tags.all
                 | 
                 span.label(class='{{ tag.style }}') {{ tag.title }}
             .programme-info
               .meta
-                span.room: {{ programme.room.name }}
+                span.room {{ programme.room.name }}
                 span  klo 
-                span.times: {{ programme.start_time|date:"H:i"}}&ndash;{{ programme.end_time|date:"H:i"}}
+                span.times {{ programme.start_time|date:"H:i"}}&ndash;{{ programme.end_time|date:"H:i"}}
                 |  &ndash; 
-                span.host: {{ programme.formatted_hosts }}
-              .description: {{ programme.description }}
+                span.host {{ programme.formatted_hosts }}
+              .description {{ programme.description|safe|linebreaks }}
