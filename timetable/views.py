@@ -1,7 +1,10 @@
 # encoding: utf-8
 
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page, cache_control
 
 from .models import View, AllRoomsPseudoView, Category, Tag
@@ -33,7 +36,6 @@ def render_timetable(request, internal_programmes=False):
 @user_passes_test(lambda u: u.is_superuser)
 def internal_dumpdata_view(request):
     from django.core import management
-    from django.http import HttpResponse
     from cStringIO import StringIO
 
     buffer = StringIO()
@@ -49,7 +51,9 @@ def internal_timetable_view(request):
     return render_timetable(request, internal_programmes=True)
 
 
-@login_required
+#@login_required
 def internal_adobe_taggedtext_view(request):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView().programmes_by_start_time)
-    return render(request, 'timetable.taggedtext', vars, content_type='text/plain; charset=utf-8')
+    data = render_to_string('timetable.taggedtext', vars, RequestContext(request, {}))
+    data = data.replace('\r\n', '\n').replace('\n', '\r\n')
+    return HttpResponse(data, 'text/plain; charset=utf-8')
