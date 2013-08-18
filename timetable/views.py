@@ -55,5 +55,11 @@ def internal_timetable_view(request):
 def internal_adobe_taggedtext_view(request):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView().programmes_by_start_time)
     data = render_to_string('timetable.taggedtext', vars, RequestContext(request, {}))
+
+    # force all line endings to CRLF (Windows)
     data = data.replace('\r\n', '\n').replace('\n', '\r\n')
-    return HttpResponse(data, 'text/plain; charset=utf-8')
+
+    # encode to UTF-16, removing the Byte Order Mark (two first bytes)
+    data = data.encode('UTF-16')[2:]
+
+    return HttpResponse(data, 'text/plain; charset=utf-16')
