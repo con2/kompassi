@@ -1,14 +1,17 @@
 # encoding: utf-8
 
+from datetime import datetime
+
+from dateutil.tz import tzlocal
+
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page, cache_control
 
-from .models import View, AllRoomsPseudoView, Category, Tag
-
+from .models import View, AllRoomsPseudoView, Category, Tag, Programme
 
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60) # XXX remove once nginx cache is in place
@@ -44,6 +47,32 @@ def internal_dumpdata_view(request):
     buffer.close()
 
     return response
+
+
+def mobile_timetable_view(request):
+    all_rooms = AllRoomsPseudoView()
+
+    programmes_by_room = []
+    for room in all_rooms.public_rooms:
+        now = datetime.now()
+        programmes = list(reversed(room.programme_set.filter(start_time__lte=now, category__public=True).order_by('-start_time')[0:2]))
+        programmes_by_room.append((room, programmes))
+
+    vars = dict(
+        programmes_by_room=programmes_by_room
+    )
+
+    return render(request, 'mobile_timetable.jade', vars)
+
+
+def mobile_programme_detail_view(request, programme_id):
+    programme = get_object_or_404(Programme, id=programme_id)
+
+    vars = dict(
+        programme=programme
+    )
+
+    return render(request, 'mobile_programme_detail.jade', vars)
 
 
 #@login_required
