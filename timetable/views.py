@@ -48,7 +48,8 @@ def internal_dumpdata_view(request):
 
     return response
 
-
+@cache_control(public=True, max_age=1 * 60)
+@cache_page(1 * 60) # XXX remove once nginx cache is in place
 def mobile_timetable_view(request):
     all_rooms = AllRoomsPseudoView()
 
@@ -64,7 +65,8 @@ def mobile_timetable_view(request):
 
     return render(request, 'mobile_timetable.jade', vars)
 
-
+@cache_control(public=True, max_age=1 * 60)
+@cache_page(1 * 60) # XXX remove once nginx cache is in place
 def mobile_programme_detail_view(request, programme_id):
     programme = get_object_or_404(Programme, id=programme_id)
 
