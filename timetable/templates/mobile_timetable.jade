@@ -4,5 +4,8 @@ block content
     h1 Ohjelma nyt ja seuraavaksi
     for room, programmes in programmes_by_room
       h2 {{ room.name }}
-      for programme in programmes
-        p: a(href="/m/timetable/{{ programme.pk }}") {{ programme.start_time|date:'H:i'}}&ndash;{{ programme.end_time|date:'H:i'}} {{ programme.title }}
+      for label, programme in programmes
+        if programme
+          p
+            label {{ label }}:
+            a(href="/m/timetable/{{ programme.pk }}") {{ programme.start_time|date:'H:i'}}&ndash;{{ programme.end_time|date:'H:i'}} {{ programme.title }}

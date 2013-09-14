@@ -56,8 +56,14 @@ def mobile_timetable_view(request):
     programmes_by_room = []
     for room in all_rooms.public_rooms:
         now = datetime.now()
-        programmes = list(reversed(room.programme_set.filter(start_time__lte=now, category__public=True).order_by('-start_time')[0:2]))
-        programmes_by_room.append((room, programmes))
+        current_programme = room.programme_set.filter(start_time__lte=now, category__public=True).order_by('-start_time')[0:1]
+        current_programme = current_programme[0] if current_programme else None
+        ref_time = current_programme.end_time if current_programme else now
+
+        next_programme = room.programme_set.filter(start_time__gte=ref_time, category__public=True).order_by('start_time')[0:1]
+        next_programme = next_programme[0] if next_programme else None
+
+        programmes_by_room.append((room, [("Nyt", current_programme), ("Seuraavaksi", next_programme)]))
 
     vars = dict(
         programmes_by_room=programmes_by_room
