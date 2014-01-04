@@ -164,6 +164,7 @@ INSTALLED_APPS = (
     'core',
     'programme',
     'labour',
+    'labour_common_qualifications',
     'tracon9',
 )
 

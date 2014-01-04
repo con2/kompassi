@@ -20,13 +20,40 @@ class Signup(models.Model):
 
 
 class SignupExtraBase(models.Model):
-	signup = models.OneToOneField(Signup, related_name="-")
+	signup = models.OneToOneField(Signup, related_name="+", primary_key=True)
 
 	@classmethod
 	def init_form(cls, *args, **kwargs):
-		raise NotImplemented('Remember to override form_class in your SignupExtra model')
+		raise NotImplemented('Remember to override init_form in your SignupExtra model')
 
 	class Meta:
 		abstract = True
 
 
+class Qualification(models.Model):
+	name = models.CharField(max_length=31)
+	qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', null=True, blank=True)
+
+	@property
+	def qualification_extra_model(self):
+	    return self.qualification_extra_content_type.model_class() if self.qualification_extra_content_type else None
+
+
+class PersonQualification(models.Model):
+	person = models.ForeignKey('core.Person')
+	qualification = models.ForeignKey(Qualification)
+
+	@property
+	def qualification_extra(self):
+		return self.qualification.qualification_extra_model.objects.get(personqualification=self)
+
+
+class QualificationExtraBase(models.Model):
+	personqualification = models.OneToOneField(PersonQualification, related_name="+", primary_key=True)
+
+	@classmethod
+	def init_form(cls, *args, **kwargs):
+		raise NotImplemented('Remember to override init_form in your QualificationExtra model')
+
+	class Meta:
+		abstract = True
