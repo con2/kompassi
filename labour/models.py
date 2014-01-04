@@ -19,7 +19,7 @@ class Signup(models.Model):
 		return self.event.signup_extra_model.objects.get(signup=self)	
 
 
-class SignupExtra(models.Model):
+class SignupExtraBase(models.Model):
 	signup = models.OneToOneField(Signup, related_name="-")
 
 	class Meta:

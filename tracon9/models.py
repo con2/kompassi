@@ -1,6 +1,6 @@
 from django.db import models
 
-from labour.models import SignupExtra
+from labour.models import SignupExtraBase
 
 
 SHIRT_SIZES = [
@@ -24,5 +24,5 @@ SHIRT_SIZES = [
 ]
 
 
-class Tracon9SignupExtra(SignupExtra):
+class SignupExtra(SignupExtraBase):
 	shirt_size = models.CharField(max_length=8, choices=SHIRT_SIZES)
