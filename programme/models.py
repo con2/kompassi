@@ -9,19 +9,6 @@ from .utils import window, next_full_hour, full_hours_between
 ONE_HOUR = datetime.timedelta(hours=1)
 
 
-class Event(models.Model):
-    name = models.CharField(max_length=31)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
-
-    @property
-    def name_and_year(self):
-        return u"{name} ({year})".format(
-            name=self.name,
-            year=self.start_time.year
-        )
-
-
 class Category(models.Model):
     title = models.CharField(max_length=1023)
     style = models.CharField(max_length=15)
@@ -124,7 +111,7 @@ class Tag(models.Model):
         ordering = ['order']
 
 class Programme(models.Model):
-    event = models.ForeignKey(Event, null=True, blank=True)
+    event = models.ForeignKey('core.Event', null=True, blank=True)
     title = models.CharField(max_length=1023)
     description = models.TextField()
     start_time = models.DateTimeField()

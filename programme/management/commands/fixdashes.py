@@ -2,7 +2,7 @@
 
 from django.core.management.base import BaseCommand
 
-from timetable.models import Programme
+from programme.models import Programme
 
 class Command(BaseCommand):
     args = ''

@@ -160,7 +160,8 @@ INSTALLED_APPS = (
     'south',
     'pyjade',
 
-    'timetable',
+    'core',
+    'programme'
 )
 
 # A sample logging configuration. The only tangible logging
