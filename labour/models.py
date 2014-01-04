@@ -22,6 +22,10 @@ class Signup(models.Model):
 class SignupExtraBase(models.Model):
 	signup = models.OneToOneField(Signup, related_name="-")
 
+	@classmethod
+	def init_form(cls, *args, **kwargs):
+		raise NotImplemented('Remember to override form_class in your SignupExtra model')
+
 	class Meta:
 		abstract = True
 

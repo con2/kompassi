@@ -159,11 +159,12 @@ INSTALLED_APPS = (
     
     'south',
     'pyjade',
+    'crispy_forms',
 
     'core',
     'programme',
     'labour',
-    'tracon9'
+    'tracon9',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -215,3 +216,5 @@ TIMETABLE_TIME_BLOCKS = [
 TIMETABLE_SPECIAL_TIMES = [
     datetime(2013, 9, 14, 10, 30, 0, tzinfo=tz)
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
