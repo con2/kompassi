@@ -1,16 +1,53 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
+from datetime import date
 
-Replace this with more appropriate tests for your application.
-"""
-
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from core.models import Person
+from labour.models import Qualification, PersonQualification
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
+from .models import JVKortti
+
+
+class JVKorttiTest(TestCase):
+    def test_card_number(self):
         """
-        Tests that 1 + 1 always equals 2.
+        Tests that only well-formed JV card numbers are accepted.
         """
-        self.assertEqual(1 + 1, 2)
+
+        person = Person.create_dummy()
+        qualification = Qualification.create_dummy()
+        personqualification = PersonQualification.objects.create(
+            person=person,
+            qualification=qualification,
+        )
+
+        today = date.today()
+
+        valid_examples = [
+            '8330/J1234/09',
+            '8520/J0000/13',
+        ]
+
+        for valid_example in valid_examples:
+            JVKortti(
+                personqualification=personqualification,
+                card_number=valid_example,
+                expiration_date=today
+            ).full_clean()
+
+        invalid_examples = [
+            'lol',
+            '8330/J1234/0',
+            None,
+            ''
+        ]
+
+        for invalid_example in invalid_examples:
+            invalid = JVKortti(
+                personqualification=personqualification,
+                card_number=invalid_example,
+                expiration_date=today
+            )
+
+            self.assertRaises(ValidationError, lambda: invalid.full_clean())

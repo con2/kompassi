@@ -56,6 +56,16 @@ class Person(models.Model):
             from django.core.exceptions import ValidationError
             raise ValidationError('If real name is hidden a nick must be provided')
 
+    @classmethod
+    def create_dummy(cls):
+        return cls.objects.create(
+            first_name='Dummy',
+            surname='Dummyson',
+            nick='Dummie',
+            email='dummy@example.com',
+            anonymous=False
+        )
+
     def __unicode__(self):
         return self.full_name
 

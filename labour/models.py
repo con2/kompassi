@@ -38,6 +38,12 @@ class Qualification(models.Model):
 	def qualification_extra_model(self):
 	    return self.qualification_extra_content_type.model_class() if self.qualification_extra_content_type else None
 
+	@classmethod
+	def create_dummy(cls):
+		return cls.objects.create(
+			name='Dummy qualification'
+		)
+
 
 class PersonQualification(models.Model):
 	person = models.ForeignKey('core.Person')
