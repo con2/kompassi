@@ -1,19 +1,17 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-import timetable.urls
-
 admin.autodiscover()
 
+def if_installed(appname, *args, **kwargs):
+    ret = url(*args, **kwargs)
+    if appname not in settings.INSTALLED_APPS:
+        ret.resolve = lambda *args: None
+    return ret
+
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'condb.views.home', name='home'),
-    # url(r'^condb/', include('condb.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'', include(timetable.urls))
+    if_installed('labour', r'^labour/', include('labour.urls')),
+    if_installed('programme', r'^programme/', include('programme.urls')),
+    (r'^admin/', include(admin.site.urls)),
 )

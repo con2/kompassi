@@ -3,9 +3,8 @@
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 
-from core.models import Event
+from core.models import Event, Venue
 from labour.models import EventMeta
-from programme.models import Venue
 from ...models import SignupExtra
 
 class Command(BaseCommand):
@@ -15,7 +14,8 @@ class Command(BaseCommand):
     def handle(*args, **options):
     	venue, unused = Venue.objects.get_or_create(name="Tampere-talo")
     	content_type = ContentType.objects.get_for_model(SignupExtra)
-    	event, unused = Event.objects.get_or_create(name="Tracon 9", defaults=dict(
+    	event, unused = Event.objects.get_or_create(slug="tracon9", defaults=dict(
+    		name="Tracon 9",
     		venue=venue
     	))
     	event_meta, unused = EventMeta.objects.get_or_create(event=event, defaults=dict(

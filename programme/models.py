@@ -7,10 +7,6 @@ from .utils import window, next_full_hour, full_hours_between
 
 
 ONE_HOUR = datetime.timedelta(hours=1)
-
-
-class Venue(models.Model):
-    name = models.CharField(max_length=31)
     
 
 class Category(models.Model):
@@ -30,7 +26,7 @@ class Category(models.Model):
 
 class Room(models.Model):
     name = models.CharField(max_length=1023)
-    venue = models.ForeignKey(Venue)
+    venue = models.ForeignKey('core.Venue')
     order = models.IntegerField(unique=True)
     public = models.BooleanField(default=True)
     notes = models.TextField(blank=True)

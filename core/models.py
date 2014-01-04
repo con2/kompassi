@@ -1,8 +1,14 @@
 from django.db import models
 
 
-class Event(models.Model):
+class Venue(models.Model):
     name = models.CharField(max_length=31)
+
+
+class Event(models.Model):
+    slug = models.CharField(max_length=31, unique=True)
+    name = models.CharField(max_length=31)
+    venue = models.ForeignKey(Venue)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
 
@@ -18,7 +24,7 @@ class Person(models.Model):
     first_name = models.CharField(max_length=1023)
     surname = models.CharField(max_length=1023)
     nick = models.CharField(blank=True, max_length=1023)
-    email = models.EmailField(blank=True, max_length=254)
+    email = models.EmailField(blank=True, max_length=255)
     phone = models.CharField(blank=True, max_length=255)
     anonymous = models.BooleanField()
     notes = models.TextField(blank=True)

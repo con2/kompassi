@@ -1,0 +1,8 @@
+from django.conf.urls import patterns, include, url
+from django.shortcuts import redirect
+
+from .views import *
+
+urlpatterns = patterns('',
+	url(r'^(?P<event>[a-z0-9-]+)/signup', labour_signup_view),
+)

@@ -145,7 +145,7 @@ TEMPLATE_DIRS = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = defaults.TEMPLATE_CONTEXT_PROCESSORS + (
-    'timetable.context_processors.frontend_context',
+    'programme.context_processors.frontend_context',
 )
 
 INSTALLED_APPS = (
