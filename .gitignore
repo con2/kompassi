@@ -4,3 +4,4 @@
 build/
 nohup.out
 pip-log.txt
+virtualenv/
