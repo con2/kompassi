@@ -6,15 +6,15 @@ from labour.models import SignupExtraBase
 SHIRT_SIZES = [
 	(u'NO_SHIRT', u'Ei paitaa'),
 
-	(u'XS', u'XS'),
-	(u'S', u'S'),
-	(u'M', u'M'),
-	(u'L', u'L'),
-	(u'XL', u'XL'),
-	(u'XXL', u'XXL'),
-	(u'3XL', u'3XL'),
-	(u'4XL', u'4XL'),
-	(u'5XL', u'5XL'),
+	(u'XS', u'XS Unisex'),
+	(u'S', u'S Unisex'),
+	(u'M', u'M Unisex'),
+	(u'L', u'L Unisex'),
+	(u'XL', u'XL Unisex'),
+	(u'XXL', u'XXL Unisex'),
+	(u'3XL', u'3XL Unisex'),
+	(u'4XL', u'4XL Unisex'),
+	(u'5XL', u'5XL Unisex'),
 
 	(u'LF_XS', u'XS Ladyfit'),
 	(u'LF_S', u'S Ladyfit'),
@@ -25,7 +25,7 @@ SHIRT_SIZES = [
 
 
 class SignupExtra(SignupExtraBase):
-	shirt_size = models.CharField(max_length=8, choices=SHIRT_SIZES)
+	shirt_size = models.CharField(max_length=8, choices=SHIRT_SIZES, verbose_name=u'Paidan koko')
 
 	@classmethod
 	def init_form(cls, *args, **kwargs):
