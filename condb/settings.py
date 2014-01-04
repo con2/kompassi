@@ -161,7 +161,9 @@ INSTALLED_APPS = (
     'pyjade',
 
     'core',
-    'programme'
+    'programme',
+    'labour',
+    'tracon9'
 )
 
 # A sample logging configuration. The only tangible logging
