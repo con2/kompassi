@@ -4,3 +4,5 @@ South==0.8.1
 pyjade==2.0.2
 python-dateutil==2.1
 python-memcached==1.53
+django-crispy-forms==1.4.0
+
