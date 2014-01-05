@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 
 
@@ -5,9 +7,24 @@ class EventMeta(models.Model):
 	event = models.OneToOneField('core.Event', primary_key=True)
 	signup_extra_content_type = models.ForeignKey('contenttypes.ContentType')
 
+	registration_opens = models.DateTimeField(null=True, blank=True)
+	registration_closes = models.DateTimeField(null=True, blank=True)
+
 	@property
 	def signup_extra_model(self):
 	    return self.signup_extra_content_type.model_class()
+
+	@property
+	def active_events(self):
+		from core.models import Event
+		now = datetime.now()
+		return Event.objects.filter(
+			registration_opens__isnull=False,
+			registration_opens__lte=now,
+		).exclude(
+			registration_closes__isnull=False,
+			registration_closes__lte=now,
+		)
 
 
 class Signup(models.Model):

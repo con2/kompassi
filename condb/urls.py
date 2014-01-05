@@ -11,7 +11,8 @@ def if_installed(appname, *args, **kwargs):
     return ret
 
 urlpatterns = patterns('',
-    if_installed('labour', r'^labour/', include('labour.urls')),
-    if_installed('programme', r'^programme/', include('programme.urls')),
-    (r'^admin/', include(admin.site.urls)),
+    url(r'', include('core.urls')),
+    if_installed('labour', r'', include('labour.urls')),
+    if_installed('programme', r'', include('programme.urls')),
+    url(r'^admin/', include(admin.site.urls)),
 )
