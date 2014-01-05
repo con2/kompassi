@@ -7,13 +7,13 @@ from .forms import SignupForm
 
 
 def labour_signup_view(request, event):
-	print event
-	event = get_object_or_404(Event, slug=event)
+    print event
+    event = get_object_or_404(Event, slug=event)
 
-	vars = dict(
-		event=event,
-		signup_form=SignupForm(),
-		signup_extra_form=event.eventmeta.signup_extra_model.init_form()
-	)
+    vars = dict(
+        event=event,
+        signup_form=SignupForm(),
+        signup_extra_form=event.eventmeta.signup_extra_model.init_form()
+    )
 
-	return render(request, 'labour_signup.jade', vars)
+    return render(request, 'labour_signup.jade', vars)

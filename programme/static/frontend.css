@@ -7,8 +7,8 @@ body {
 }
 
 .timetable td.blank {
-	border-top: none !important;
-	border-bottom: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
 }
 
 .timetable .incontinuity {
