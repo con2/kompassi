@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     url(r'^event/(?P<event>[a-z0-9-]+)$', core_event_view, name='core_event_view'),
     url(r'^login$', login, dict(
         template_name='core_login_view.jade',
-        authentication_form=LoginForm
+        authentication_form=LoginForm,
+        extra_context=dict(login_page=True)
     ), name='core_login_view'),
 )

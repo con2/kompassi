@@ -1,0 +1,20 @@
+if user.is_authenticated
+  li.dropdown
+    a(href="#", class="dropdown-toggle", data-toggle="dropdown")
+      //
+        i.glyphicon.glyphicon-user
+      | {{ user }}
+      b.caret
+    ul.dropdown-menu
+      li: a(href='#') Profiili
+      li: a(href='#') Asetukset
+      li.divider
+      li: a(href='#') Kirjaudu ulos
+elif not login_page
+  form.navbar-form(role='form', action='/login', method='POST')
+    {% csrf_token %}
+    .form-group
+      input.form-control(type='text', placeholder='Käyttäjätunnus', name='username')
+    .form-group
+      input.form-control(type='password', placeholder='Salasana', name='password')
+    button.btn.btn-success(type='submit') Kirjaudu

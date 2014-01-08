@@ -8,11 +8,19 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
   body
     .navbar.navbar-inverse.navbar-fixed-top
-      .navbar-inner
-        .container
+      .container
+        .navbar-header
+          button(type="button", class="navbar-toggle", data-toggle="collapse", data-target="#base-navbar-collapse")
+            span(class="sr-only") Avaa valikko
+            span(class="icon-bar")
+            span(class="icon-bar")
+            span(class="icon-bar")
           .navbar-brand {{ EVENT_NAME }}
+        .collapse.navbar-collapse#base-navbar-collapse
           ul.nav.navbar-nav
             li: a(href='{{ EVENT_URL }}') Takaisin {{ EVENT_NAME_GENITIVE }} sivuille
+          ul.nav.navbar-nav.navbar-right
+            include core_navbar_user.jade
 
     .container.content
       block content
