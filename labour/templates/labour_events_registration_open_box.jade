@@ -1,0 +1,6 @@
+h2 Tapahtumat, joiden työvoimahaku on käynnissä
+
+ul
+  for the_event in events_registration_open
+    li
+      a(href="{% url 'core_event_view' the_event.slug %}") {{ the_event.name }}

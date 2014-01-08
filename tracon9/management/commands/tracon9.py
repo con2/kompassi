@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import get_default_timezone, now
 
 from core.models import Event, Venue
-from labour.models import EventMeta
+from labour.models import LabourEventMeta
 from ...models import SignupExtra
 
 class Command(BaseCommand):
@@ -24,6 +24,8 @@ class Command(BaseCommand):
     )
 
     def handle(*args, **options):
+        tz = get_default_timezone()
+
         venue, unused = Venue.objects.get_or_create(name="Tampere-talo")
         content_type = ContentType.objects.get_for_model(SignupExtra)
         event, unused = Event.objects.get_or_create(slug="tracon9", defaults=dict(
@@ -47,4 +49,4 @@ class Command(BaseCommand):
                 registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=tz)
             )
 
-        event_meta, unused = EventMeta.objects.get_or_create(event=event, defaults=event_meta_defaults)
+        event_meta, unused = LabourEventMeta.objects.get_or_create(event=event, defaults=event_meta_defaults)

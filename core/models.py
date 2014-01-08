@@ -6,7 +6,7 @@ class Venue(models.Model):
 
 
 class Event(models.Model):
-    slug = models.CharField(max_length=31, unique=True)
+    slug = models.CharField(max_length=31, primary_key=True)
     name = models.CharField(max_length=31)
     venue = models.ForeignKey(Venue)
     start_time = models.DateTimeField(null=True, blank=True)

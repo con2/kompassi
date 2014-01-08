@@ -1,9 +1,8 @@
-from datetime import datetime
-
 from django.db import models
+from django.utils.timezone import now
 
 
-class EventMeta(models.Model):
+class LabourEventMeta(models.Model):
     event = models.OneToOneField('core.Event', primary_key=True)
     signup_extra_content_type = models.ForeignKey('contenttypes.ContentType')
 
@@ -14,17 +13,23 @@ class EventMeta(models.Model):
     def signup_extra_model(self):
         return self.signup_extra_content_type.model_class()
 
-    @property
-    def active_events(self):
+    @classmethod
+    def events_registration_open(cls):
         from core.models import Event
-        now = datetime.now()
+        t = now()
         return Event.objects.filter(
-            registration_opens__isnull=False,
-            registration_opens__lte=now,
+            laboureventmeta__registration_opens__isnull=False,
+            laboureventmeta__registration_opens__lte=t,
         ).exclude(
-            registration_closes__isnull=False,
-            registration_closes__lte=now,
+            laboureventmeta__registration_closes__isnull=False,
+            laboureventmeta__registration_closes__lte=t,
         )
+
+    @property
+    def is_registration_open(self):
+        t = now()
+        return self.registration_opens and self.registration_opens <= t and \
+            not (self.registration_closes and self.registration_closes <= t)
 
 
 class Signup(models.Model):

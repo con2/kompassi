@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 from django.views.decorators.cache import cache_page, cache_control
 
 from .models import View, AllRoomsPseudoView, Category, Tag, Programme
@@ -55,10 +56,10 @@ def mobile_timetable_view(request):
 
     programmes_by_room = []
     for room in all_rooms.public_rooms:
-        now = datetime.now()
-        current_programme = room.programme_set.filter(start_time__lte=now, category__public=True).order_by('-start_time')[0:1]
+        t = now()
+        current_programme = room.programme_set.filter(start_time__lte=t, category__public=True).order_by('-start_time')[0:1]
         current_programme = current_programme[0] if current_programme else None
-        ref_time = current_programme.end_time if current_programme else now
+        ref_time = current_programme.end_time if current_programme else t
 
         next_programme = room.programme_set.filter(start_time__gte=ref_time, category__public=True).order_by('start_time')[0:1]
         next_programme = next_programme[0] if next_programme else None
