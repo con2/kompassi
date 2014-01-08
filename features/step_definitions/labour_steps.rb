@@ -1,6 +1,6 @@
 When /^I move to sign up for an event$/ do
-  pending
-  #find('.events-registration-open a:contains("Tracon 9")').click
+  click_on 'Tracon 9'
+  find('.core-event-view h2').should have_content 'Tracon 9'
 end
 
 When /^I fill in the requested extra details$/ do
