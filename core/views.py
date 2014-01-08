@@ -18,6 +18,14 @@ def core_frontpage_view(request):
     return render(request, 'core_frontpage_view.jade', vars)
 
 
+def core_login_view(request):
+    vars = dict(
+        form=LoginForm(request.POST)
+    )
+
+
+
+
 def core_event_view(request, event):
     event = get_object_or_404(Event, pk=event)
 
