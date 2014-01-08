@@ -14,3 +14,9 @@ Simple web app for managing (Tra)con stuff. Work in progress.
     ./manage.py syncdb
     ./manage.py migrate
     ./manage.py runserver
+
+## Running tests
+
+    bundle install
+    ./manage.py runserver
+    bundle exec rake cucumber
