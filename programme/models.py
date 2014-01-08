@@ -201,3 +201,16 @@ class AllRoomsPseudoView(ViewMethodsMixin):
         self.public = True
         self.order = 0
         self.rooms = Room.objects.all()
+
+
+__all__ = [
+    'AllRoomsPseudoView',
+    'Category',
+    'Programme',
+    'ProgrammeRole',
+    'Role',
+    'Room',
+    'Tag',
+    'View',
+    'ViewMethodsMixin',
+]

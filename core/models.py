@@ -71,3 +71,10 @@ class Person(models.Model):
 
     class Meta:
         ordering = ['surname']
+
+
+__all__ = [
+    'Event',
+    'Person',
+    'Venue',
+]

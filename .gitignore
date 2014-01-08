@@ -6,3 +6,4 @@ nohup.out
 pip-log.txt
 virtualenv/
 .bundle/
+tmp/

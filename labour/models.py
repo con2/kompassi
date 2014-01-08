@@ -80,3 +80,13 @@ class QualificationExtraBase(models.Model):
 
     class Meta:
         abstract = True
+
+
+__all__ = [
+	'EventMeta',
+	'PersonQualification',
+	'Qualification',
+	'QualificationExtraBase'
+	'Signup',
+	'SignupExtraBase',
+]

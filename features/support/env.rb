@@ -6,6 +6,8 @@ require 'capybara-webkit'
 require 'capybara-screenshot'
 require 'capybara-screenshot/cucumber'
 
+require './features/support/django_helper'
+
 Capybara.default_selector = :css
 Capybara.default_driver = :webkit
 Capybara.app_host = "http://localhost:8000"
