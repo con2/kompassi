@@ -23,4 +23,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['test']:
+            print "Setting up core in test mode"
             Person.create_dummy()
+        else:
+            print "Setting up core in production mode"

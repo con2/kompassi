@@ -11,6 +11,11 @@ class Command(BaseCommand):
     help = 'Setup common labour qualifications'
 
     def handle(*args, **options):
+        if options['test']:
+            print 'Setting up labour_common_qualifications in test mode'
+        else:
+            print 'Setting up labour_common_qualifications in production mode'
+
         for model in [JVKortti]:
             content_type = ContentType.objects.get_for_model(model)
             Qualification.objects.get_or_create(

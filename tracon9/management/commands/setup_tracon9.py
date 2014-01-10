@@ -24,6 +24,11 @@ class Command(BaseCommand):
     )
 
     def handle(*args, **options):
+        if options['test']:
+            print 'Setting up tracon9 in test mode'
+        else:
+            print 'Setting up tracon9 in production mode'
+
         tz = get_default_timezone()
 
         venue, unused = Venue.objects.get_or_create(name='Tampere-talo')
