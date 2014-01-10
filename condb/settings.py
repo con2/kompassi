@@ -145,7 +145,8 @@ TEMPLATE_DIRS = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = defaults.TEMPLATE_CONTEXT_PROCESSORS + (
-    'programme.context_processors.frontend_context',
+    'django.core.context_processors.request',
+    'core.context_processors.core_context',
 )
 
 INSTALLED_APPS = (
@@ -197,10 +198,7 @@ LOGGING = {
     }
 }
 
-EVENT_NAME = "Tracon 8"
-EVENT_NAME_GENITIVE = "Tracon 8:n"
-EVENT_URL = "http://2013.tracon.fi"
-LOGIN_URL = '/admin/'
+LOGIN_URL = '/login'
 
 tz = tzlocal()
 

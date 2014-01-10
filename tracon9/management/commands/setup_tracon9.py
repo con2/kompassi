@@ -26,10 +26,12 @@ class Command(BaseCommand):
     def handle(*args, **options):
         tz = get_default_timezone()
 
-        venue, unused = Venue.objects.get_or_create(name="Tampere-talo")
+        venue, unused = Venue.objects.get_or_create(name='Tampere-talo')
         content_type = ContentType.objects.get_for_model(SignupExtra)
-        event, unused = Event.objects.get_or_create(slug="tracon9", defaults=dict(
-            name="Tracon 9",
+        event, unused = Event.objects.get_or_create(slug='tracon9', defaults=dict(
+            name='Tracon 9',
+            name_genitive='Tracon 9:n',
+            homepage_url='http://2014.tracon.fi',
             venue=venue
         ))
 

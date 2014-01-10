@@ -2,3 +2,6 @@ extends base.jade
 block content
   .core-event-view
     h2 {{ event.name }}
+
+    if 'labour' in settings.INSTALLED_APPS
+      include labour_event_box.jade
