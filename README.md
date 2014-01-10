@@ -11,9 +11,14 @@ Simple web app for managing (Tra)con stuff. Work in progress.
     pip install -r requirements.txt
     pip install <db_adapter> (psycopg2 or similar)
     vim condb/settings.py
-    ./manage.py syncdb
+    ./manage.py syncdb --noinput
     ./manage.py migrate
+    ./manage.py setup_core --test
+    ./manage.py setup_tracon9 --test
     ./manage.py runserver
+    iexplore http://localhost:8000
+
+`./manage.py setup_core --test` created a test user account `mahti` with password `mahti`.
 
 ## Running tests
 
