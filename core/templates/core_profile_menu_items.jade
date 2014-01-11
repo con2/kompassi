@@ -1,3 +1,4 @@
 li.active: a(href='{% url "core_profile_view" %}') Profiili
-li: a(href='#') Pätevyydet
+if 'labour' in settings.INSTALLED_APPS
+  li: a(href='{% url "labour_qualifications_view" %}') Pätevyydet
 li: a(href='#') Salasanan vaihtaminen

@@ -19,6 +19,9 @@ class Command(BaseCommand):
         for model in [JVKortti]:
             content_type = ContentType.objects.get_for_model(model)
             Qualification.objects.get_or_create(
-                name=u"JV-kortti",
-                qualification_extra_content_type=content_type
+                slug='jvkortti',
+                defaults=dict(
+                    name=u"JV-kortti",
+                    qualification_extra_content_type=content_type
+                )
             )

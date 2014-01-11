@@ -1,0 +1,16 @@
+extends core_profile_base
+- load crispy_forms_tags
+block profile_content
+  h3 Pätevyydet
+
+  if person_qualifications
+    h4 Sinulle on kirjattu seuraavat pätevyydet
+    ul
+      for person_qualification in person_qualifications
+        li: a(href='{% url "labour_person_qualification_view" person_qualification.qualification.pk %}') {{ person_qualification.qualification.name }}
+  
+  if available_qualifications
+    h4 Onko sinulla jokin seuraavista pätevyyksistä?
+    ul
+      for available_qualification in available_qualifications
+        li: a(href='{% url "labour_person_qualification_view" available_qualification.pk %}') {{ available_qualification.name }}

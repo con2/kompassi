@@ -25,15 +25,16 @@ def core_frontpage_view(request):
 
 
 def core_event_view(request, event):
-    from labour.views import labour_event_box_context
-
     event = get_object_or_404(Event, pk=event)
 
     vars = dict(
         event=event,
         settings=settings,
-        **labour_event_box_context(request, event)
     )
+
+    if 'labour' in settings.INSTALLED_APPS:
+        from labour.views import labour_event_box_context
+        vars.update(labour_event_box_context(request, event))
 
     return render(request, 'core_event_view.jade', vars)
 
@@ -52,7 +53,6 @@ def core_profile_view(request):
             messages.success(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
     vars = dict(
-        person=person,
         form=form
     )
 

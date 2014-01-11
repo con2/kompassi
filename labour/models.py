@@ -47,6 +47,7 @@ class LabourEventMeta(models.Model):
 
 
 class Qualification(models.Model):
+    slug = models.CharField(max_length=31, primary_key=True)
     name = models.CharField(max_length=31)
     description = models.TextField()
     qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', null=True, blank=True)
@@ -77,15 +78,25 @@ class PersonQualification(models.Model):
 
     @property
     def qualification_extra(self):
-        return self.qualification.qualification_extra_model.objects.get(personqualification=self)
+        if not self.qualification:
+            return None
+
+        QualificationExtra = self.qualification.qualification_extra_model
+        if not QualificationExtra:
+            return None
+
+        try:
+            return QualificationExtra.objects.get(personqualification=self)
+        except QualificationExtra.DoesNotExist:
+            return QualificationExtra(personqualification=self)
 
 
 class QualificationExtraBase(models.Model):
     personqualification = models.OneToOneField(PersonQualification, related_name="+", primary_key=True)
 
     @classmethod
-    def init_form(cls, *args, **kwargs):
-        raise NotImplemented('Remember to override init_form in your QualificationExtra model')
+    def get_form_class(cls):
+        raise NotImplemented('Remember to override get_form_class in your QualificationExtra model')
 
     class Meta:
         abstract = True

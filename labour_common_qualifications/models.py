@@ -14,7 +14,8 @@ class JVKortti(QualificationExtraBase):
     card_number = models.CharField(
         max_length='13',
         validators=[validate_jv_card_number,],
-        verbose_name=u"JV-kortin numero"
+        verbose_name=u"JV-kortin numero",
+        help_text=u"Muoto: 0000/J0000/00"
     )
 
     expiration_date = models.DateField(verbose_name=u"Viimeinen voimassaolopäivä")
@@ -23,9 +24,9 @@ class JVKortti(QualificationExtraBase):
         return "JV-kortti ({0})".format(self.card_number)
 
     @classmethod
-    def init_form(cls, *args, **kwargs):
+    def get_form_class(cls):
         from .forms import JVKorttiForm
-        return JVKorttiForm(*args, **kwargs)
+        return JVKorttiForm
 
     class Meta:
         verbose_name = u"JV-kortti"

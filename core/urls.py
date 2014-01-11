@@ -7,7 +7,7 @@ from .views import core_frontpage_view, core_event_view, core_profile_view
 
 urlpatterns = patterns('',
     url(r'^$', core_frontpage_view, name='core_frontpage_view'),
-    url(r'^event/(?P<event>[a-z0-9-]+)$', core_event_view, name='core_event_view'),
+    url(r'^events/(?P<event>[a-z0-9-]+)$', core_event_view, name='core_event_view'),
     url(r'^login$', login, dict(
         template_name='core_login_view.jade',
         authentication_form=LoginForm,
