@@ -1,8 +1,7 @@
 module LoginHelper
   def login
-    click_on 'Kirjaudu sisään...'
-    fill_in 'Käyttäjätunnus', with: known_users[:ahto][:username]
-    fill_in 'Salasana',       with: known_users[:ahto][:password]
+    fill_in 'Käyttäjätunnus', with: 'mahti'
+    fill_in 'Salasana',       with: 'mahti'
     click_on 'Kirjaudu'
   end
 end
@@ -10,12 +9,12 @@ end
 World(LoginHelper)
 
 Given /^I am not yet logged in$/ do
-  visit '/'
+  visit '/logout'
   page.title.should == 'ConDB'
 end
 
 Given /^I am logged in$/ do
-  visit '/'
+  visit '/login'
   login
 end
 

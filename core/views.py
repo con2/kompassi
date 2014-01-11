@@ -20,11 +20,14 @@ def core_frontpage_view(request):
 
 
 def core_event_view(request, event):
+    from labour.views import labour_event_box_context
+
     event = get_object_or_404(Event, pk=event)
 
     vars = dict(
         event=event,
-        settings=settings
+        settings=settings,
+        **labour_event_box_context(request, event)
     )
 
     return render(request, 'core_event_view.jade', vars)

@@ -31,6 +31,9 @@ class LabourEventMeta(models.Model):
         return self.registration_opens and self.registration_opens <= t and \
             not (self.registration_closes and self.registration_closes <= t)
 
+    def is_person_signed_up(self, person):
+        return Signup.objects.filter(person=person, event=self.event).exists()
+
 
 class Signup(models.Model):
     person = models.ForeignKey('core.Person')
