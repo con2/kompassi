@@ -23,11 +23,10 @@ def labour_signup_view(request, event):
         return redirect('core_event_view', event.pk)
 
     signup = event.laboureventmeta.get_signup_for_person(request.user.person)
-    extra = signup.signup_extra
-
+    signup_extra = signup.signup_extra
     SignupExtraForm = event.laboureventmeta.signup_extra_model.get_form_class()
     signup_form = initialize_form(SignupForm, request, instance=signup, prefix='signup')
-    signup_extra_form = initialize_form(SignupExtraForm, request, instance=extra, prefix='extra')
+    signup_extra_form = initialize_form(SignupExtraForm, request, instance=signup_extra, prefix='extra')
 
     if request.method == 'POST':
         if signup_form.is_valid() and signup_extra_form.is_valid():
@@ -35,7 +34,9 @@ def labour_signup_view(request, event):
                 message = u'Kiitos ilmoittautumisestasi!'
             else:
                 message = u'Ilmoittautumisesi on päivitetty.'
-            signup_form.save()
+
+            signup = signup_form.save()
+            signup_extra.signup = signup
             signup_extra_form.save()
 
             messages.success(request, message)

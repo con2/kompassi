@@ -10,7 +10,7 @@ block content
       legend Lähetä ilmoittautuminen
       input.btn.btn-primary(type='submit', name='submit', value='Lähetä ilmoittautuminen')
       | 
-      a.btn.btn-danger(href='{% url "core_event_view" event.pk %}') Peruuta
+      a.btn.btn-default(href='{% url "core_event_view" event.pk %}') Peruuta
       p
         // XXX why is this extra p necessary to preserve spacing
 
