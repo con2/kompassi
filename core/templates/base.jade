@@ -39,9 +39,12 @@ html
     footer
       .container
         p.muted.credit
-          | {{ EVENT_NAME_GENITIVE }} järjestää 
-          a(href="http://ry.tracon.fi") Tracon ry
-          | . Ohjelmakarttatyökalu &copy; 2013 Jussi Sorjonen ja Santtu Pajukanta. 
+          if event
+            a(href='{{ event.homepage_url }}', target='_blank') {{ event.name_genitive }}
+            |  järjestää
+            a(href='{{ event.organization_url }}', target='_blank')  {{ event.organization_name }}
+            | .
+          | ConDB &copy; 2013&ndash;2014 Jussi Sorjonen ja Santtu Pajukanta. 
 
     script(src='{{ STATIC_URL }}jquery-1.10.2.min.js')
     script(src='{{ STATIC_URL }}bootstrap/bootstrap.min.js')

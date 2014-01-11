@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from django.db import models
 from django.utils.timezone import now
 
@@ -34,30 +36,20 @@ class LabourEventMeta(models.Model):
     def is_person_signed_up(self, person):
         return Signup.objects.filter(person=person, event=self.event).exists()
 
-
-class Signup(models.Model):
-    person = models.ForeignKey('core.Person')
-    event = models.ForeignKey('core.Event')
-
-    @property
-    def signup_extra(self):
-        return self.event.signup_extra_model.objects.get(signup=self)    
-
-
-class SignupExtraBase(models.Model):
-    signup = models.OneToOneField(Signup, related_name="+", primary_key=True)
-
-    @classmethod
-    def init_form(cls, *args, **kwargs):
-        raise NotImplemented('Remember to override init_form in your SignupExtra model')
-
-    class Meta:
-        abstract = True
+    def get_signup_for_person(self, person):
+        try:
+            return Signup.objects.get(person=person, event=self.event)
+        except Signup.DoesNotExist:
+            return Signup(person=person, event=self.event)
 
 
 class Qualification(models.Model):
     name = models.CharField(max_length=31)
+    description = models.TextField()
     qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
 
     @property
     def qualification_extra_model(self):
@@ -90,8 +82,55 @@ class QualificationExtraBase(models.Model):
         abstract = True
 
 
+class JobCategory(models.Model):
+    event = models.ForeignKey('core.Event')
+
+    name = models.CharField(max_length=31)
+    description = models.TextField()
+    public = models.BooleanField(default=True)
+
+    required_qualifications = models.ManyToManyField(Qualification, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class Signup(models.Model):
+    person = models.ForeignKey('core.Person')
+    event = models.ForeignKey('core.Event')
+
+    job_categories = models.ManyToManyField(JobCategory, verbose_name=u'Haettavat tehtävät', help_text=u'Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään tapahtumassa.')
+
+    allergies = models.TextField(blank=True, verbose_name=u'Ruoka-aineallergiat', help_text=u'Tapahtuman järjestäjä pyrkii ottamaan allergiat huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.')
+    prior_experience = models.TextField(blank=True, verbose_name=u'Työkokemus', help_text=u'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä hakemassasi tehtävässä.')
+    free_text = models.TextField(blank=True, verbose_name=u'Vapaa alue')
+
+    notes = models.TextField(blank=True, verbose_name=u'Käsittelijän merkinnät', help_text=u'Tämä kenttä ei normaalisti näy henkilölle itselleen, mutta jos tämä pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.')
+
+    @property
+    def signup_extra(self):
+        SignupExtra = self.event.laboureventmeta.signup_extra_model
+
+        try:
+            return SignupExtra.objects.get(signup=self)
+        except SignupExtra.DoesNotExist:
+            return SignupExtra(signup=self)
+
+
+class SignupExtraBase(models.Model):
+    signup = models.OneToOneField(Signup, related_name="+", primary_key=True)
+
+    @classmethod
+    def get_form_class(cls):
+        raise NotImplemented('Remember to implement form_class in your SignupExtra class')
+
+    class Meta:
+        abstract = True
+
+
 __all__ = [
 	'EventMeta',
+    'JobCategory',
 	'PersonQualification',
 	'Qualification',
 	'QualificationExtraBase'

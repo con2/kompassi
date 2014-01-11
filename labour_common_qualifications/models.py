@@ -19,6 +19,9 @@ class JVKortti(QualificationExtraBase):
 
     expiration_date = models.DateField(verbose_name=u"Viimeinen voimassaolopäivä")
 
+    def __unicode__(self):
+        return "JV-kortti ({0})".format(self.card_number)
+
     @classmethod
     def init_form(cls, *args, **kwargs):
         from .forms import JVKorttiForm

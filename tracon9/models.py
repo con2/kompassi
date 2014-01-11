@@ -28,6 +28,6 @@ class SignupExtra(SignupExtraBase):
     shirt_size = models.CharField(max_length=8, choices=SHIRT_SIZES, verbose_name=u'Paidan koko')
 
     @classmethod
-    def init_form(cls, *args, **kwargs):
+    def get_form_class(cls):
         from .forms import SignupExtraForm
-        return SignupExtraForm(*args, **kwargs)
+        return SignupExtraForm

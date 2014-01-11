@@ -15,6 +15,8 @@ class Event(models.Model):
     name = models.CharField(max_length=31)
     name_genitive = models.CharField(max_length=31)
     homepage_url = models.CharField(max_length=255)
+    organization_name = models.CharField(max_length=63)
+    organization_url = models.CharField(max_length=255)
     venue = models.ForeignKey(Venue)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)

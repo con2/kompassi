@@ -6,6 +6,7 @@ from django.views.decorators.http import require_http_methods
 
 from .models import Event
 from .forms import PersonForm
+from .helpers import initialize_form
 
 def core_frontpage_view(request):
     vars = dict(
@@ -34,11 +35,6 @@ def core_event_view(request, event):
 
     return render(request, 'core_event_view.jade', vars)
 
-def initialize_form(FormClass, request, *args, **kwargs):
-    if request.method == 'POST':
-        return FormClass(request.POST, *args, **kwargs)
-    else:
-        return FormClass(*args, **kwargs)
 
 @login_required
 @require_http_methods(['GET', 'POST'])
