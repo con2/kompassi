@@ -1,4 +1,5 @@
 extends base
+- load crispy_forms_tags
 block content
   .core-profile-view
     h2 Omat tiedot
@@ -7,4 +8,4 @@ block content
         ul.nav.nav-pills.nav-stacked
           include core_profile_menu_items.jade
       .col-md-9
-        include crispy_form.html
+        - crispy form

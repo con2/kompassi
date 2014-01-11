@@ -1,9 +1,11 @@
 extends base.jade
+- load crispy_forms_tags
 block content
   h2 {{ event.name }}
 
   form(action='{% url "labour_signup_view" event.pk %}', method='POST', role='form')
-    include labour_signup_forms.html
+    - crispy signup_form
+    - crispy signup_extra_form
     p
       // XXX why is this extra p necessary to preserve spacing
     fieldset
