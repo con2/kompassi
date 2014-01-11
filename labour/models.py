@@ -147,11 +147,11 @@ class SignupExtraBase(models.Model):
 
 
 __all__ = [
-	'LabourEventMeta',
+    'LabourEventMeta',
     'JobCategory',
-	'PersonQualification',
-	'Qualification',
-	'QualificationExtraBase',
-	'Signup',
-	'SignupExtraBase',
+    'PersonQualification',
+    'Qualification',
+    'QualificationExtraBase',
+    'Signup',
+    'SignupExtraBase',
 ]
