@@ -1,4 +1,5 @@
-li.active: a(href='{% url "core_profile_view" %}') Profiili
-if 'labour' in settings.INSTALLED_APPS
-  li: a(href='{% url "labour_qualifications_view" %}') Pätevyydet
-li: a(href='#') Salasanan vaihtaminen
+for item_active, item_url, item_text in core_profile_menu_items
+  if item_active
+    li.active: a(href='{{ item_url }}') {{ item_text }}
+  else
+    li: a(href='{{ item_url }}') {{ item_text }}

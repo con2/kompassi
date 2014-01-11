@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_http_methods
 
@@ -57,3 +58,21 @@ def core_profile_view(request):
     )
 
     return render(request, 'core_profile_view.jade', vars)
+
+def core_profile_menu_items(request):
+    items = []
+
+    if not request.user.is_authenticated():
+        return items
+
+    profile_url = reverse('core_profile_view')
+    profile_active = request.path == profile_url
+    profile_text = u'Omat tiedot'
+
+    items.append((profile_active, profile_url, profile_text))
+
+    if 'labour' in settings.INSTALLED_APPS:
+        from labour.views import labour_profile_menu_items
+        items.extend(labour_profile_menu_items(request))
+
+    return items

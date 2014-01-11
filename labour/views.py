@@ -2,6 +2,7 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
@@ -120,3 +121,10 @@ def labour_person_qualification_view(request, qualification):
     )
 
     return render(request, 'labour_person_qualification_view.jade', vars)
+
+def labour_profile_menu_items(request):
+    qualifications_url = reverse('labour_qualifications_view')
+    qualifications_active = request.path.startswith(qualifications_url)
+    qualifications_text = u"Pätevyydet"
+
+    return [(qualifications_active, qualifications_url, qualifications_text)]
