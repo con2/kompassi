@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -46,6 +48,8 @@ def core_profile_view(request):
         if form.is_valid():
             person = form.save()
             messages.success(request, u'Tiedot tallennettiin.')
+        else:
+            messages.success(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
     vars = dict(
         person=person,

@@ -6,7 +6,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
 
-from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH
+from core.helpers import DateField
+
+from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH, BIRTH_DATE_HELP_TEXT
 from .helpers import horizontal_form_helper, indented_without_label
 
 
@@ -23,7 +25,7 @@ class LoginForm(AuthenticationForm):
 
 
 class PersonForm(forms.ModelForm):
-    birth_date = forms.DateField(required=True, label=u'Syntymäaika')
+    birth_date = DateField(required=True, label=u'Syntymäaika', help_text=BIRTH_DATE_HELP_TEXT)
     email = forms.EmailField(required=True, max_length=EMAIL_LENGTH, label=u'Sähköpostiosoite')
     phone = forms.CharField(required=True, max_length=PHONE_NUMBER_LENGTH, label=u'Puhelinnumero')
 

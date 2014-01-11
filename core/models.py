@@ -4,6 +4,8 @@ from datetime import date, datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.dateformat import format as format_date
+from django.conf import settings
 
 
 class Venue(models.Model):
@@ -30,13 +32,14 @@ class Event(models.Model):
 
 
 EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255
+BIRTH_DATE_HELP_TEXT = u'Syntymäaika muodossa {0}'.format(format_date(date(1994, 2, 24), settings.DATE_FORMAT))
 
 
 class Person(models.Model):
     first_name = models.CharField(max_length=1023, verbose_name=u'Etunimi')
     surname = models.CharField(max_length=1023, verbose_name=u'Sukunimi')
     nick = models.CharField(blank=True, max_length=1023, help_text='Lempi- tai kutsumanimi')
-    birth_date = models.DateField(null=True, blank=True, verbose_name=u'Syntymäaika')
+    birth_date = models.DateField(null=True, blank=True, verbose_name=u'Syntymäaika', help_text=BIRTH_DATE_HELP_TEXT)
     email = models.EmailField(blank=True, max_length=EMAIL_LENGTH, verbose_name=u'Sähköpostiosoite')
     phone = models.CharField(blank=True, max_length=PHONE_NUMBER_LENGTH, verbose_name=u'Puhelinnumero')
     anonymous = models.BooleanField(default=False, verbose_name=u'Piilota etu- ja sukunimi', help_text=u'Jos valitset tämän, sinusta näytetään vain nick-kentässä asetettu kutsumanimi. Etu- ja sukunimi on tällöinkin annettava, jolloin ne näkyvät vain tapahtuman järjestäjille.')
@@ -107,6 +110,7 @@ class Person(models.Model):
 
 
 __all__ = [
+    'BIRTH_DATE_HELP_TEXT',
     'Event',
     'EMAIL_LENGTH',
     'Person',

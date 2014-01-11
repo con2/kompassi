@@ -41,6 +41,8 @@ def labour_signup_view(request, event):
 
             messages.success(request, message)
             return redirect('core_event_view', event.pk)
+        else:
+            messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
     vars = dict(
         event=event,

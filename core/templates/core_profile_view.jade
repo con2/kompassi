@@ -2,4 +2,9 @@ extends base
 block content
   .core-profile-view
     h2 Omat tiedot
-    include crispy_form.html
+    .row
+      .col-md-3
+        ul.nav.nav-pills.nav-stacked
+          include core_profile_menu_items.jade
+      .col-md-9
+        include crispy_form.html

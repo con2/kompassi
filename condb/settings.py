@@ -223,3 +223,7 @@ from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
+
+DATE_FORMAT = 'j.n.Y'
+DATETIME_FORMAT = 'j.n.Y G:i:s'
+USE_L10N = True
