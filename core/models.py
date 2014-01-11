@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from datetime import date, datetime, timedelta
 
 from django.contrib.auth.models import User
@@ -29,14 +31,14 @@ EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255
 
 
 class Person(models.Model):
-    first_name = models.CharField(max_length=1023)
-    surname = models.CharField(max_length=1023)
-    nick = models.CharField(blank=True, max_length=1023)
-    birth_date = models.DateField(null=True, blank=True)
-    email = models.EmailField(blank=True, max_length=EMAIL_LENGTH)
-    phone = models.CharField(blank=True, max_length=PHONE_NUMBER_LENGTH)
-    anonymous = models.BooleanField(default=False)
-    notes = models.TextField(blank=True)
+    first_name = models.CharField(max_length=1023, verbose_name=u'Etunimi')
+    surname = models.CharField(max_length=1023, verbose_name=u'Sukunimi')
+    nick = models.CharField(blank=True, max_length=1023, help_text='Lempi- tai kutsumanimi')
+    birth_date = models.DateField(null=True, blank=True, verbose_name=u'Syntymäaika')
+    email = models.EmailField(blank=True, max_length=EMAIL_LENGTH, verbose_name=u'Sähköpostiosoite')
+    phone = models.CharField(blank=True, max_length=PHONE_NUMBER_LENGTH, verbose_name=u'Puhelinnumero')
+    anonymous = models.BooleanField(default=False, verbose_name=u'Piilota etu- ja sukunimi', help_text=u'Jos valitset tämän, sinusta näytetään vain nick-kentässä asetettu kutsumanimi. Etu- ja sukunimi on tällöinkin annettava, jolloin ne näkyvät vain tapahtuman järjestäjille.')
+    notes = models.TextField(blank=True, verbose_name=u'Käsittelijän merkinnät')
     user = models.OneToOneField('auth.User', null=True, blank=True)
 
     @property

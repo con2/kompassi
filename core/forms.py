@@ -33,9 +33,27 @@ class LoginForm(AuthenticationForm):
 
 
 class PersonForm(forms.ModelForm):
-    birth_date = forms.DateField(required=True)
-    email = forms.EmailField(required=True, max_length=EMAIL_LENGTH)
-    phone = forms.CharField(required=True, max_length=PHONE_NUMBER_LENGTH)
+    birth_date = forms.DateField(required=True, label=u'Syntymäaika')
+    email = forms.EmailField(required=True, max_length=EMAIL_LENGTH, label=u'Sähköpostiosoite')
+    phone = forms.CharField(required=True, max_length=PHONE_NUMBER_LENGTH, label=u'Puhelinnumero')
+
+    def __init__(self, *args, **kwargs):
+        super(PersonForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.layout = Layout(
+            Fieldset(u'Perustiedot',
+                'first_name',
+                'surname',
+                'nick',
+                'birth_date'
+            ),
+            Fieldset(u'Yhteystiedot',
+                'email',
+                'phone'
+            ),
+            indented_without_label(Submit('submit', u'Tallenna', css_class='btn-primary'))
+
+        )
 
     class Meta:
         model = Person

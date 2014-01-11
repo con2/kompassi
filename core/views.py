@@ -1,6 +1,8 @@
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.http import require_http_methods
 
 from .models import Event
 from .forms import PersonForm
@@ -32,14 +34,26 @@ def core_event_view(request, event):
 
     return render(request, 'core_event_view.jade', vars)
 
+def initialize_form(FormClass, request, *args, **kwargs):
+    if request.method == 'POST':
+        return FormClass(request.POST, *args, **kwargs)
+    else:
+        return FormClass(*args, **kwargs)
 
 @login_required
+@require_http_methods(['GET', 'POST'])
 def core_profile_view(request):
     person = request.user.person
+    form = initialize_form(PersonForm, request, instance=person, prefix='person')
+
+    if request.method == 'POST':
+        if form.is_valid():
+            person = form.save()
+            messages.success(request, u'Tiedot tallennettiin.')
 
     vars = dict(
         person=person,
-        person_form=PersonForm(person, prefix='person')
+        form=form
     )
 
-    return render(request, 'labour_ownprofile_view.jade', vars)
+    return render(request, 'core_profile_view.jade', vars)

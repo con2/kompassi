@@ -28,6 +28,12 @@ html
             include core_navbar_user.jade
 
     .container.content
+      if messages
+        for message in messages
+          if message.tags
+            .alert(class="alert-{{ message.tags }}") {{ message }}
+          else
+            .alert {{ message }}
       block content
 
     footer

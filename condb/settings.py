@@ -146,6 +146,7 @@ TEMPLATE_DIRS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = defaults.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
     'core.context_processors.core_context',
 )
 
