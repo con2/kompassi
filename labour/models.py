@@ -108,7 +108,7 @@ class Signup(models.Model):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
 
-    job_categories = models.ManyToManyField(JobCategory, verbose_name=u'Haettavat tehtävät', help_text=u'TODO miellyttävämpi kenttätyyppi tulee kun kerkiää. Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään tapahtumassa.')
+    job_categories = models.ManyToManyField(JobCategory, verbose_name=u'Haettavat tehtävät', help_text=u'TODO kuvaukset tulee näkyviin kun kerkiää. Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään tapahtumassa.')
 
     allergies = models.TextField(blank=True, verbose_name=u'Ruoka-aineallergiat', help_text=u'Tapahtuman järjestäjä pyrkii ottamaan allergiat huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.')
     prior_experience = models.TextField(blank=True, verbose_name=u'Työkokemus', help_text=u'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä hakemassasi tehtävässä.')

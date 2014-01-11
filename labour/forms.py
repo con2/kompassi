@@ -36,3 +36,7 @@ class SignupForm(forms.ModelForm):
             'prior_experience',
             'free_text',
         )
+
+        widgets = dict(
+            job_categories=forms.CheckboxSelectMultiple
+        )
