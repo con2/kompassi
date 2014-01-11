@@ -1,5 +1,5 @@
 Given /^there is an event that is open for applications$/ do
-  manage :tracon9, '--test'
+  manage :setup_tracon9, '--test'
 end
 
 When /^I move to sign up for an event$/ do
