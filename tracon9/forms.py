@@ -22,4 +22,4 @@ class SignupExtraForm(forms.ModelForm):
 
     class Meta:
         model = SignupExtra
-        exclude = ('signup')
+        exclude = ('signup',)
