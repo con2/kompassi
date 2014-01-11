@@ -52,3 +52,28 @@ footer {
 footer .credit {
   padding-top: 10px;
 }
+
+
+
+
+
+
+
+
+/* Fixed footer black magic */
+html,
+body {
+  height: 100%;
+}
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -45px;
+}
+#push, footer {
+  height: 45px;
+}
+footer {
+  background-color: #eee;
+}

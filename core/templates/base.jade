@@ -27,14 +27,16 @@ html
           ul.nav.navbar-nav.navbar-right
             include core_navbar_user.jade
 
-    .container.content
-      if messages
-        for message in messages
-          if message.tags
-            .alert(class="alert-{{ message.tags }}") {{ message }}
-          else
-            .alert {{ message }}
-      block content
+    #wrap
+      .container.content
+        if messages
+          for message in messages
+            if message.tags
+              .alert(class="alert-{{ message.tags }}") {{ message }}
+            else
+              .alert {{ message }}
+        block content
+        #push
 
     footer
       .container
