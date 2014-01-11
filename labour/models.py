@@ -11,6 +11,9 @@ class LabourEventMeta(models.Model):
     registration_opens = models.DateTimeField(null=True, blank=True)
     registration_closes = models.DateTimeField(null=True, blank=True)
 
+    def __unicode__(self):
+        return self.event.name if self.event else 'None'
+
     @property
     def signup_extra_model(self):
         return self.signup_extra_content_type.model_class()
@@ -66,6 +69,12 @@ class PersonQualification(models.Model):
     person = models.ForeignKey('core.Person')
     qualification = models.ForeignKey(Qualification)
 
+    def __unicode__(self):
+        p = self.person.full_name if self.person else 'None'
+        q = self.qualification.name if self.qualification else 'None'
+
+        return "{p} / {q}".format(**locals())
+
     @property
     def qualification_extra(self):
         return self.qualification.qualification_extra_model.objects.get(personqualification=self)
@@ -107,6 +116,12 @@ class Signup(models.Model):
 
     notes = models.TextField(blank=True, verbose_name=u'Käsittelijän merkinnät', help_text=u'Tämä kenttä ei normaalisti näy henkilölle itselleen, mutta jos tämä pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.')
 
+    def __unicode__(self):
+        p = self.person.full_name if self.person else 'None'
+        e = self.event.name if self.event else 'None'
+
+        return '{p} / {e}'.format(**locals())
+
     @property
     def signup_extra(self):
         SignupExtra = self.event.laboureventmeta.signup_extra_model
@@ -120,6 +135,9 @@ class Signup(models.Model):
 class SignupExtraBase(models.Model):
     signup = models.OneToOneField(Signup, related_name="+", primary_key=True)
 
+    def __unicode__(self):
+        return self.signup.__unicode__() if self.signup else 'None'        
+
     @classmethod
     def get_form_class(cls):
         raise NotImplemented('Remember to implement form_class in your SignupExtra class')
@@ -129,11 +147,11 @@ class SignupExtraBase(models.Model):
 
 
 __all__ = [
-	'EventMeta',
+	'LabourEventMeta',
     'JobCategory',
 	'PersonQualification',
 	'Qualification',
-	'QualificationExtraBase'
+	'QualificationExtraBase',
 	'Signup',
 	'SignupExtraBase',
 ]
