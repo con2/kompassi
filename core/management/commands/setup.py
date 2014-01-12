@@ -21,6 +21,7 @@ class Command(BaseCommand):
         test = options['test']
 
         management_commands = (
+            (('collectstatic',), dict(interactive=False)),
             (('syncdb',), dict(interactive=False)),
             (('migrate',), dict()),
             (('setup_core',), dict(test=test)),
