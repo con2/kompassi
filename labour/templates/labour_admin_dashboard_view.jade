@@ -22,9 +22,5 @@ block admin_content
     .col-md-12
       .panel.panel-default
         .panel-heading: strong Viimeisimmät ilmoittautuneet
-        table.table
-          thead
-            include labour_admin_signup_table_heading.jade
-          tbody
-            for signup in latest_signups
-              include labour_admin_signup_table_row.jade
+        table.table.table-striped
+          include labour_admin_signup_table_contents.jade

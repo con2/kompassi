@@ -1,0 +1,36 @@
+thead
+  tr
+    th Sukunimi
+    th Etunimi
+    th Nick
+    th
+      | Tehtäväalueet
+      span(style='display: inline-block').legend.pull-right
+        span.label.label-default Haettu
+        | &thinsp;
+        span.label.label-info Hyväksytty, vuoroja puuttuu
+        | &thinsp;
+        span.label.label-success Hyväksytty, vuorotettu
+        | &thinsp;
+        span.label.label-warning Reklamoitu
+        | &thinsp;
+        span.label.label-danger Hylätty
+tbody
+  for signup in signups
+    tr
+      td {{ signup.person.surname }}
+      td {{ signup.person.first_name }}
+      td {{ signup.person.nick }}
+      td
+        if signup.is_shifts_complete
+          span.label.label-success {{ signup.job_accepted.name }}
+        elif signup.job_accepted
+          span.label.label-info {{ signup.job_accepted.name }}
+        elif signup.is_rejected
+          span.label.label-danger Hylätty
+        else
+          for job_category in signup.get_first_categories
+            span.label.label-default: {{ job_category.name }}
+            | &nbsp;
+          if signup.is_more_categories
+            span.label.label-default(title='{{ signup.get_redacted_category_names }}') ...

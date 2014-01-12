@@ -193,6 +193,9 @@ class JobCategory(models.Model):
         return self.name
 
 
+NUM_FIRST_CATEGORIES = 5
+
+
 class Signup(models.Model):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
@@ -200,7 +203,8 @@ class Signup(models.Model):
     job_categories = models.ManyToManyField(JobCategory,
         verbose_name=u'Haettavat tehtävät',
         help_text=u'TODO kuvaukset tulee näkyviin kun kerkiää. Valitse kaikki ne tehtävät, '
-            u'joissa olisit valmis työskentelemään tapahtumassa.'
+            u'joissa olisit valmis työskentelemään tapahtumassa.',
+        related_name='signup_set'
     )
 
     allergies = models.TextField(
@@ -229,6 +233,13 @@ class Signup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
 
+    job_accepted = models.ForeignKey(JobCategory,
+        blank=True,
+        null=True,
+        related_name='accepted_signup_set'
+    )
+    is_rejected = models.BooleanField(default=False)
+
     class Meta:
         verbose_name = u'ilmoittautuminen'
         verbose_name_plural=u'ilmoittautumiset'
@@ -239,6 +250,11 @@ class Signup(models.Model):
 
         return '{p} / {e}'.format(**locals())
 
+    def clean(self):
+        if self.is_rejected and self.job_accepted:
+            from django.core.exceptions import ValidationError
+            raise ValidationError(u'Hakija ei voi olla yhtä aikaa hyväksytty ja hylätty.')
+
     @property
     def signup_extra(self):
         SignupExtra = self.event.laboureventmeta.signup_extra_model
@@ -247,6 +263,21 @@ class Signup(models.Model):
             return SignupExtra.objects.get(signup=self)
         except SignupExtra.DoesNotExist:
             return SignupExtra(signup=self)
+
+    def get_first_categories(self):
+        return self.job_categories.all()[:NUM_FIRST_CATEGORIES]
+
+    @property
+    def is_more_categories(self):
+        return self.job_categories.count() > NUM_FIRST_CATEGORIES
+
+    def get_redacted_category_names(self):
+        return u', '.join(cat.name for cat in self.job_categories.all()[NUM_FIRST_CATEGORIES:])
+
+    @property
+    def is_shifts_complete(self):
+        # TODO
+        return False
 
 
 class SignupExtraBase(models.Model):

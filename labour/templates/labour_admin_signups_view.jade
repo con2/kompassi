@@ -1,6 +1,6 @@
 extends labour_admin_base
 block admin_content
-  h4 Tapahtumaan ilmoittautuneet henkilöt
-  ul
-    for signup in signups
-      li: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}') {{ signup.person.full_name }}
+  .panel.panel-default
+    .panel-heading: strong Tapahtumaan ilmoittautuneet henkilöt
+    table.table.table-striped
+      include labour_admin_signup_table_contents.jade

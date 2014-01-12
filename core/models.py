@@ -176,7 +176,7 @@ class Person(models.Model):
     def clean(self):
         if self.anonymous and not self.nick:
             from django.core.exceptions import ValidationError
-            raise ValidationError('If real name is hidden a nick must be provided')
+            raise ValidationError(u'Jos oikea nimi piilotetaan, nick täytyy antaa.')
 
     @property
     def full_name(self):

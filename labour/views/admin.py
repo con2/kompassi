@@ -18,7 +18,7 @@ from ..models import LabourEventMeta, Qualification, PersonQualification, Signup
 @labour_admin_required
 def labour_admin_dashboard_view(request, vars, event):
     vars.update(
-        latest_signups=event.signup_set.order_by('-created_at')[:5]
+        signups=event.signup_set.order_by('-created_at')[:5]
     )
 
     return render(request, 'labour_admin_dashboard_view.jade', vars)
