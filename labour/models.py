@@ -207,22 +207,6 @@ class Signup(models.Model):
         related_name='signup_set'
     )
 
-    allergies = models.TextField(
-        blank=True, verbose_name=u'Ruoka-aineallergiat',
-        help_text=u'Tapahtuman järjestäjä pyrkii ottamaan allergiat huomioon, mutta kaikkia '
-            u'erikoisruokavalioita ei välttämättä pystytä järjestämään.'
-    )
-
-    prior_experience = models.TextField(
-        blank=True,
-        verbose_name=u'Työkokemus',
-        help_text=u'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
-            u'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
-            u'hakemassasi tehtävässä.'
-    )
-
-    free_text = models.TextField(blank=True, verbose_name=u'Vapaa alue')
-
     notes = models.TextField(
         blank=True,
         verbose_name=u'Käsittelijän merkinnät',
@@ -238,6 +222,7 @@ class Signup(models.Model):
         null=True,
         related_name='accepted_signup_set'
     )
+
     is_rejected = models.BooleanField(default=False)
 
     class Meta:

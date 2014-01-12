@@ -27,6 +27,22 @@ SHIRT_SIZES = [
 class SignupExtra(SignupExtraBase):
     shirt_size = models.CharField(max_length=8, choices=SHIRT_SIZES, verbose_name=u'Paidan koko')
 
+    allergies = models.TextField(
+        blank=True, verbose_name=u'Ruoka-aineallergiat',
+        help_text=u'Tapahtuman järjestäjä pyrkii ottamaan allergiat huomioon, mutta kaikkia '
+            u'erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+    )
+
+    prior_experience = models.TextField(
+        blank=True,
+        verbose_name=u'Työkokemus',
+        help_text=u'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
+            u'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
+            u'hakemassasi tehtävässä.'
+    )
+
+    free_text = models.TextField(blank=True, verbose_name=u'Vapaa alue')
+
     @classmethod
     def get_form_class(cls):
         from .forms import SignupExtraForm

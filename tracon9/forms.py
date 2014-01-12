@@ -16,10 +16,18 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.layout = Layout(
             Fieldset(u'Lisätiedot',
                 'shirt_size'
+                'allergies',
+                'prior_experience',
+                'free_text'
             )
         )
 
 
     class Meta:
         model = SignupExtra
-        exclude = ('signup',)
+        fields = (
+            'shirt_size'
+            'allergies',
+            'prior_experience',
+            'free_text'
+        )

@@ -21,21 +21,11 @@ class SignupForm(forms.ModelForm):
             Fieldset(u'Tehtävät',
                 'job_categories'
             ),
-            Fieldset(u'Perustiedot',
-                'prior_experience',
-                'allergies',
-                'free_text'
-            )
         )
 
     class Meta:
         model = Signup
-        fields = (
-            'job_categories',
-            'allergies',
-            'prior_experience',
-            'free_text',
-        )
+        fields = ('job_categories',)
 
         widgets = dict(
             job_categories=forms.CheckboxSelectMultiple
