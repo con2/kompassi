@@ -1,0 +1,9 @@
+extends base
+block content
+  h2 Työvoiman hallinta
+  .row
+    .col-md-3
+      ul.nav.nav-pills.nav-stacked
+        include labour_admin_menu_items.jade
+    .col-md-9
+      block admin_content

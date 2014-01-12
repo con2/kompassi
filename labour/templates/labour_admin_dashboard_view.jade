@@ -1,0 +1,26 @@
+extends labour_admin_base
+block admin_content
+  .row
+    .col-md-4
+      .panel.panel-default
+        .panel-heading: strong Ilmoittautuneita
+        .panel-body: h1 {{ event.signup_set.all.count }}
+    .col-md-4
+      .panel.panel-warning
+        .panel-heading: strong Uusia peruutuksia
+        .panel-body: h1 0
+    .col-md-4
+      .panel.panel-danger
+        .panel-heading: strong Täyttämättömiä vaatimuksia
+        .panel-body: h1 1337
+
+  .row
+    .col-md-12
+      .panel.panel-default
+        .panel-heading: strong Viimeisimmät ilmoittautuneet
+        table.table
+          thead
+            include labour_admin_signup_table_heading.jade
+          tbody
+            for signup in latest_signups
+              include labour_admin_signup_table_row.jade

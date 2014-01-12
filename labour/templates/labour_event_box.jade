@@ -2,7 +2,11 @@ if event.laboureventmeta.is_registration_open
   h3 Tapahtuman työvoimahaku on avoinna
   p
     a(href='{% url "labour_signup_view" event.slug %}')
-      if current_user_signed_up
+      if is_signed_up
         | Muokkaa ilmoittautumistasi
       else
         | Hae töihin tapahtumaan
+
+  if is_labour_admin
+    h3 Sinulla on työvoimavastaavan oikeudet tähän tapahtumaan
+    p: a(href='{% url "labour_admin_dashboard_view" event.slug %}') Siirry ylläpitäjän näkymään

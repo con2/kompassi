@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django import forms
+from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -60,3 +61,7 @@ class SlugField(models.CharField):
         )
         my_kwargs = dict(defaults, **kwargs)
         super(SlugField, self).__init__(*args, **my_kwargs)
+
+
+def url(view_name, *args):
+    return reverse(view_name, args=args)

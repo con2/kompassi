@@ -20,7 +20,7 @@ def core_frontpage_view(request):
     if 'labour' in settings.INSTALLED_APPS:
         from labour.models import LabourEventMeta
         vars.update(
-            events_registration_open=LabourEventMeta.events_registration_open()
+            events_registration_open=LabourEventMeta.events_registration_open(),
         )
 
     return render(request, 'core_frontpage_view.jade', vars)

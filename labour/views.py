@@ -7,11 +7,12 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 
+from core.helpers import initialize_form, url
 from core.models import Event
-from core.helpers import initialize_form
 
-from .models import LabourEventMeta, Qualification, PersonQualification
 from .forms import SignupForm
+from .helpers import labour_admin_required
+from .models import LabourEventMeta, Qualification, PersonQualification, Signup
 
 
 @login_required
@@ -53,15 +54,6 @@ def labour_signup_view(request, event):
     )
 
     return render(request, 'labour_signup_view.jade', vars)
-
-
-def labour_event_box_context(request, event):
-    if request.user.is_authenticated():
-        current_user_signed_up = event.laboureventmeta.is_person_signed_up(request.user.person)
-    else:
-        current_user_signed_up = False
-
-    return dict(current_user_signed_up=current_user_signed_up)
 
 
 @login_required
@@ -156,9 +148,81 @@ def labour_person_disqualify_view(request, qualification):
     return redirect('labour_qualifications_view')
 
 
+@labour_admin_required
+def labour_admin_dashboard_view(request, vars, event):
+    return render(request, 'labour_admin_dashboard_view.jade', vars)
+
+
+@labour_admin_required
+def labour_admin_signup_view(request, vars, event, person):
+    signup = get_object_or_404(Signup, person=int(person), event=event)
+
+    vars.update(
+        signup=signup,
+    )
+
+    return render(request, 'labour_admin_signup_view.jade', vars)
+
+
+@labour_admin_required
+def labour_admin_signups_view(request, vars, event):
+    signups = event.signup_set.all()
+
+    vars.update(
+        signups=signups,
+    )
+
+    return render(request, 'labour_admin_signups_view.jade', vars)
+
+
 def labour_profile_menu_items(request):
-    qualifications_url = reverse('labour_qualifications_view')
+    qualifications_url = url('labour_qualifications_view')
     qualifications_active = request.path.startswith(qualifications_url)
     qualifications_text = u"Pätevyydet"
 
     return [(qualifications_active, qualifications_url, qualifications_text)]
+
+
+def labour_admin_menu_items(request, event):
+    dashboard_url = url('labour_admin_dashboard_view', event.slug)
+    dashboard_active = request.path == dashboard_url
+    dashboard_text = u"Kojelauta"
+
+    signups_url = url('labour_admin_signups_view', event.slug)
+    signups_active = request.path.startswith(signups_url)
+    signups_text = u"Tapahtumaan ilmoittautuneet henkilöt"
+
+    return [
+        (dashboard_active, dashboard_url, dashboard_text),
+        (signups_active, signups_url, signups_text),
+    ]
+
+
+
+def labour_event_box_context(request, event):
+    if request.user.is_authenticated():
+        is_signed_up = event.laboureventmeta.is_person_signed_up(request.user.person)
+        is_labour_admin = event.laboureventmeta.is_user_admin(request.user)
+    else:
+        is_signed_up = False
+        is_labour_admin = False
+
+    return dict(
+        is_signed_up=is_signed_up,
+        is_labour_admin=is_labour_admin,
+    )
+
+
+__all__ = [
+    'labour_admin_dashboard_view',
+    'labour_admin_menu_items',
+    'labour_admin_signup_view',
+    'labour_admin_signups_view',
+    'labour_event_box_context',
+    'labour_person_disqualify_view',
+    'labour_person_qualification_view',
+    'labour_person_qualify_view',
+    'labour_profile_menu_items',
+    'labour_qualifications_view',
+    'labour_signup_view',
+]

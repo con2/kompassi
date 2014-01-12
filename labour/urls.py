@@ -11,4 +11,8 @@ urlpatterns = patterns('',
     # XXX make these DELETE and POST of labour_person_qualification_view
     url(r'^profile/qualifications/(?P<qualification>[a-z0-9-]+)/delete$', labour_person_disqualify_view, name='labour_person_disqualify_view'),
     url(r'^profile/qualifications/(?P<qualification>[a-z0-9-]+)/add$', labour_person_qualify_view, name='labour_person_qualify_view'),
+
+    url(r'^events/(?P<event>[a-z0-9-]+)/admin$', labour_admin_dashboard_view, name='labour_admin_dashboard_view'),
+    url(r'^events/(?P<event>[a-z0-9-]+)/admin/signups$', labour_admin_signups_view, name='labour_admin_signups_view'),
+    url(r'^events/(?P<event>[a-z0-9-]+)/admin/signups/(?P<person>\d+)$', labour_admin_signup_view, name='labour_admin_signup_view'),
 )

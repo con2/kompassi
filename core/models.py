@@ -50,6 +50,8 @@ class Event(models.Model):
         help_text=u'Esimerkki: Susiconissa',
     )
 
+    description = models.TextField(blank=True, verbose_name=u'Kuvaus')
+
     venue = models.ForeignKey(Venue,
         verbose_name=u'Tapahtumapaikka',
     )

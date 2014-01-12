@@ -226,6 +226,9 @@ class Signup(models.Model):
             u'pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.'
     )
 
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
+
     class Meta:
         verbose_name = u'ilmoittautuminen'
         verbose_name_plural=u'ilmoittautumiset'
