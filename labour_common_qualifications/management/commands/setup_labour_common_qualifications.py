@@ -16,12 +16,20 @@ class Command(BaseCommand):
         else:
             print 'Setting up labour_common_qualifications in production mode'
 
-        for model in [JVKortti]:
-            content_type = ContentType.objects.get_for_model(model)
-            Qualification.objects.get_or_create(
-                slug='jvkortti',
-                defaults=dict(
-                    name=u"JV-kortti",
-                    qualification_extra_content_type=content_type
-                )
+        content_type = ContentType.objects.get_for_model(JVKortti)
+        Qualification.objects.get_or_create(
+            slug='jv-kortti',
+            defaults=dict(
+                name=u"JV-kortti",
+                qualification_extra_content_type=content_type
             )
+        )
+
+        for slug, name in [
+            ('b-ajokortti', u"Henkilöauton ajokortti (B)"),
+            ('c-ajokortti', u"Kuorma-auton ajokortti (C)"),
+            ('ea1', u"Ensiapukoulutus EA1"),
+            ('ea2', u"Ensiapukoulutus EA2"),
+            ('hygieniapassi', u"Hygieniapassi"),
+        ]:
+            Qualification.objects.get_or_create(slug=slug, defaults=dict(name=name))

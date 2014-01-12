@@ -7,7 +7,7 @@ from django.db import models
 from django.utils.dateformat import format as format_date
 from django.conf import settings
 
-from .helpers import validate_slug
+from .helpers import validate_slug, SlugField
 
 class Venue(models.Model):
     name = models.CharField(max_length=31)
@@ -21,16 +21,7 @@ class Venue(models.Model):
 
 
 class Event(models.Model):
-    slug = models.CharField(
-        max_length=31,
-        unique=True,
-        validators=[validate_slug,],
-        verbose_name=u'Tekninen nimi',
-        help_text=u'Tapahtuman tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja '
-            u'merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi '
-            u'muuttaa tapahtuman luomisen jälkeen.',
-    )
-
+    slug = SlugField()
     name = models.CharField(max_length=31, verbose_name=u'Tapahtuman nimi')
 
     name_genitive = models.CharField(

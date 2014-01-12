@@ -2,8 +2,10 @@ extends core_profile_base
 - load crispy_forms_tags
 block profile_content
   h3 {{ person_qualification.qualification.name }}
-  form(action='{% url "labour_person_qualification_view" person_qualification.qualification.pk %}', method='POST', role='form').form-horizontal
+  form(action='{% url "labour_person_qualification_view" person_qualification.qualification.slug %}', method='POST', role='form').form-horizontal
     - crispy form
-    input.btn.btn-primary(type='submit', name='submit', value='Tallenna pätevyys')
-    | 
-    a.btn.btn-default(href='{% url "labour_qualifications_view" %}') Peruuta
+    .btn-group
+      input.btn.btn-primary(type='submit', name='submit', value='Tallenna pätevyys')
+      if person_qualification.pk
+        a.btn.btn-danger(href='{% url "labour_person_disqualify_view" person_qualification.qualification.slug %}') Poista pätevyys
+      a.btn.btn-default(href='{% url "labour_qualifications_view" %}') Peruuta

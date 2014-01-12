@@ -122,6 +122,40 @@ def labour_person_qualification_view(request, qualification):
 
     return render(request, 'labour_person_qualification_view.jade', vars)
 
+@login_required
+def labour_person_qualify_view(request, qualification):
+    person = request.user.person
+    qualification = get_object_or_404(Qualification, slug=qualification)
+
+    if qualification.qualification_extra_model:
+        return redirect('labour_person_qualification_view', qualification.slug)
+
+    person_qualification, created = PersonQualification.objects.get_or_create(
+        person=person,
+        qualification=qualification
+    )
+
+    if created:
+        messages.success(request, u"Pätevyys lisättiin.")
+
+    return redirect('labour_qualifications_view')
+
+@login_required
+def labour_person_disqualify_view(request, qualification):
+    person = request.user.person
+    qualification = get_object_or_404(Qualification, slug=qualification)
+
+    try:
+        person_qualification = get_object_or_404(PersonQualification,
+            person=person, qualification=qualification)
+        person_qualification.delete()
+        messages.success(request, u"Pätevyys poistettiin.")
+    except:
+        pass
+
+    return redirect('labour_qualifications_view')
+
+
 def labour_profile_menu_items(request):
     qualifications_url = reverse('labour_qualifications_view')
     qualifications_active = request.path.startswith(qualifications_url)

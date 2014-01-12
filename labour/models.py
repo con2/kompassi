@@ -3,6 +3,8 @@
 from django.db import models
 from django.utils.timezone import now
 
+from core.helpers import SlugField
+
 
 class LabourEventMeta(models.Model):
     event = models.OneToOneField('core.Event', primary_key=True)
@@ -19,7 +21,7 @@ class LabourEventMeta(models.Model):
         blank=True,
         verbose_name=u'työvoimahaku päättyy'
     )
-    
+
     class Meta:
         verbose_name = u'tapahtuman työvoimatiedot'
         verbose_name_plural = u'tapahtuman työvoimatiedot'
@@ -60,9 +62,11 @@ class LabourEventMeta(models.Model):
 
 
 class Qualification(models.Model):
-    slug = models.CharField(max_length=31, unique=True)
-    name = models.CharField(max_length=31)
-    description = models.TextField()
+    slug = SlugField()
+
+    name = models.CharField(max_length=31, verbose_name=u'pätevyyden nimi')
+    description = models.TextField(blank=True, verbose_name=u'kuvaus')
+    
     qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', null=True, blank=True)
 
     class Meta:
@@ -74,7 +78,10 @@ class Qualification(models.Model):
 
     @property
     def qualification_extra_model(self):
-        return self.qualification_extra_content_type.model_class() if self.qualification_extra_content_type else None
+        if self.qualification_extra_content_type:
+            return self.qualification_extra_content_type.model_class()
+        else:
+            return None
 
     @classmethod
     def create_dummy(cls):
@@ -84,18 +91,15 @@ class Qualification(models.Model):
 
 
 class PersonQualification(models.Model):
-    person = models.ForeignKey('core.Person')
-    qualification = models.ForeignKey(Qualification)
+    person = models.ForeignKey('core.Person', verbose_name=u'henkilö')
+    qualification = models.ForeignKey(Qualification, verbose_name=u'pätevyys')
 
     class Meta:
-        verbose_name = u'henkilön pätevyys'
-        verbose_name_plural=u'henkilön pätevyydet'
+        verbose_name = u'pätevyyden haltija'
+        verbose_name_plural=u'pätevyyden haltijat'
 
     def __unicode__(self):
-        p = self.person.full_name if self.person else 'None'
-        q = self.qualification.name if self.qualification else 'None'
-
-        return "{p} / {q}".format(**locals())
+        return self.qualification.name if self.qualification else 'None'
 
     @property
     def qualification_extra(self):
@@ -113,24 +117,40 @@ class PersonQualification(models.Model):
 
 
 class QualificationExtraBase(models.Model):
-    personqualification = models.OneToOneField(PersonQualification, related_name="+", primary_key=True)
+    personqualification = models.OneToOneField(PersonQualification,
+        related_name="+",
+        primary_key=True)
 
     @classmethod
     def get_form_class(cls):
-        raise NotImplemented('Remember to override get_form_class in your QualificationExtra model')
+        raise NotImplemented(
+            'Remember to override get_form_class in your QualificationExtra model'
+        )
 
     class Meta:
         abstract = True
 
 
 class JobCategory(models.Model):
-    event = models.ForeignKey('core.Event')
+    event = models.ForeignKey('core.Event', verbose_name=u'tapahtuma')
 
-    name = models.CharField(max_length=31)
-    description = models.TextField()
-    public = models.BooleanField(default=True)
+    name = models.CharField(max_length=31, verbose_name=u'tehtäväalueen nimi')
 
-    required_qualifications = models.ManyToManyField(Qualification, blank=True)
+    description = models.TextField(
+        verbose_name=u'tehtäväalueen kuvaus',
+        help_text=u'Kuvaus näkyy hakijoille hakulomakkeella. Kerro ainakin, mikäli tehtävään tarvitaan erityisiä tietoja tai taitoja.'
+    )
+
+    public = models.BooleanField(
+        default=True,
+        verbose_name=u'avoimessa haussa',
+        help_text=u'Tehtäviin, jotka eivät ole avoimessa haussa, voi hakea vain työvoimavastaavan lähettämällä hakulinkillä.'
+    )
+
+    required_qualifications = models.ManyToManyField(Qualification,
+        blank=True,
+        verbose_name=u'vaaditut pätevyydet'
+    )
 
     class Meta:
         verbose_name = u'tehtäväalue'
@@ -144,13 +164,34 @@ class Signup(models.Model):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
 
-    job_categories = models.ManyToManyField(JobCategory, verbose_name = u'Haettavat tehtävät', help_text=u'TODO kuvaukset tulee näkyviin kun kerkiää. Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään tapahtumassa.')
+    job_categories = models.ManyToManyField(JobCategory,
+        verbose_name=u'Haettavat tehtävät',
+        help_text=u'TODO kuvaukset tulee näkyviin kun kerkiää. Valitse kaikki ne tehtävät, '
+            u'joissa olisit valmis työskentelemään tapahtumassa.'
+    )
 
-    allergies = models.TextField(blank=True, verbose_name = u'Ruoka-aineallergiat', help_text=u'Tapahtuman järjestäjä pyrkii ottamaan allergiat huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.')
-    prior_experience = models.TextField(blank=True, verbose_name = u'Työkokemus', help_text=u'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä hakemassasi tehtävässä.')
-    free_text = models.TextField(blank=True, verbose_name = u'Vapaa alue')
+    allergies = models.TextField(
+        blank=True, verbose_name=u'Ruoka-aineallergiat',
+        help_text=u'Tapahtuman järjestäjä pyrkii ottamaan allergiat huomioon, mutta kaikkia '
+            u'erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+    )
 
-    notes = models.TextField(blank=True, verbose_name = u'Käsittelijän merkinnät', help_text=u'Tämä kenttä ei normaalisti näy henkilölle itselleen, mutta jos tämä pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.')
+    prior_experience = models.TextField(
+        blank=True,
+        verbose_name=u'Työkokemus',
+        help_text=u'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
+            u'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
+            u'hakemassasi tehtävässä.'
+    )
+
+    free_text = models.TextField(blank=True, verbose_name=u'Vapaa alue')
+
+    notes = models.TextField(
+        blank=True,
+        verbose_name=u'Käsittelijän merkinnät',
+        help_text=u'Tämä kenttä ei normaalisti näy henkilölle itselleen, mutta jos tämä '
+            u'pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.'
+    )
 
     class Meta:
         verbose_name = u'ilmoittautuminen'

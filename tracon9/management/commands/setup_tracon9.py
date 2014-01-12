@@ -96,3 +96,11 @@ class Command(BaseCommand):
         )
         jv.required_qualifications = [jvkortti]
         jv.save()
+
+        b_ajokortti = Qualification.objects.get(slug='b-ajokortti')
+        logistiikka = JobCategory.objects.get(
+            event=event,
+            name=u'Logistiikka',
+        )
+        logistiikka.required_qualifications = [b_ajokortti]
+        logistiikka.save()

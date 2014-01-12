@@ -1,7 +1,9 @@
 # encoding: utf-8
 
-from django.db import models
+from django.conf import settings
 from django.core.validators import RegexValidator
+from django.db import models
+from django.utils.dateformat import format as format_date
 
 from labour.models import QualificationExtraBase
 
@@ -21,7 +23,10 @@ class JVKortti(QualificationExtraBase):
     expiration_date = models.DateField(verbose_name=u"Viimeinen voimassaolopäivä")
 
     def __unicode__(self):
-        return "JV-kortti ({0})".format(self.card_number)
+        n = self.card_number
+        d = format_date(self.expiration_date, settings.DATE_FORMAT)
+
+        return u"{n}, voimassa {d} asti".format(**locals())
 
     @classmethod
     def get_form_class(cls):
