@@ -1,7 +1,7 @@
 def core_context(request):
     from django.conf import settings
     from .views import core_profile_menu_items
-    
+
     return dict(
         settings=settings,
         core_profile_menu_items=core_profile_menu_items(request),

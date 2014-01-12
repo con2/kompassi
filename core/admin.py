@@ -23,6 +23,7 @@ if 'labour' in settings.INSTALLED_APPS:
 else:
     LABOUR_EVENTADMIN_INLINES = ()
 
+
 class EventAdmin(admin.ModelAdmin):
     inlines = LABOUR_EVENTADMIN_INLINES
 
@@ -49,7 +50,8 @@ class EventAdmin(admin.ModelAdmin):
     )
 
     def get_readonly_fields(self, request, obj=None):
-        # slug may be edited when creating but not when modifying existing event (breaks urls and kills puppies)
+        # slug may be edited when creating but not when modifying existing event
+        # (breaks urls and kills puppies)
         if obj:
             return self.readonly_fields + ('slug',)
 

@@ -9,6 +9,7 @@ from django.conf import settings
 
 from .helpers import validate_slug, SlugField
 
+
 class Venue(models.Model):
     name = models.CharField(max_length=31)
 
@@ -69,7 +70,7 @@ class Event(models.Model):
         max_length=63,
         verbose_name=u'Järjestävä taho',
     )
-    
+
     organization_url = models.CharField(
         blank=True,
         max_length=255,
@@ -124,13 +125,13 @@ class Person(models.Model):
         max_length=EMAIL_LENGTH,
         verbose_name=u'Sähköpostiosoite'
     )
-    
+
     phone = models.CharField(
         blank=True,
         max_length=PHONE_NUMBER_LENGTH,
         verbose_name=u'Puhelinnumero'
     )
-    
+
     anonymous = models.BooleanField(
         default=False,
         verbose_name=u'Piilota etu- ja sukunimi',
@@ -198,7 +199,7 @@ class Person(models.Model):
                 first_name=user.first_name,
                 surname=user.last_name,
                 nick='Mahti',
-                birth_date=date(1984,1,1),
+                birth_date=date(1984, 1, 1),
                 email='mahti@example.com',
                 phone='+358 50 555 1234'
             )

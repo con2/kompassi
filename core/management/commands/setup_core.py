@@ -8,6 +8,7 @@ from django.utils.timezone import get_default_timezone, now
 
 from ...models import Person
 
+
 class Command(BaseCommand):
     args = ''
     help = 'Setup core specific stuff'

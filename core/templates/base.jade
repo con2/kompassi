@@ -30,11 +30,13 @@ html
     #wrap
       .container.content
         if messages
-          for message in messages
-            if message.tags
-              .alert(class="alert-{{ message.tags }}") {{ message }}
-            else
-              .alert {{ message }}
+          .messages
+            for message in messages
+              if message.tags
+                .alert(class="alert-{{ message.tags }}") {{ message }}
+              else
+                .alert {{ message }}
+                
         block content
         #push
 

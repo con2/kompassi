@@ -41,7 +41,10 @@ class DateField(forms.DateField):
         super(DateField, self).__init__(*args, **my_kwargs)
 
 
-validate_slug = RegexValidator(regex=r'[a-z0-9-]+', message=u'Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä väliviivoja.')
+validate_slug = RegexValidator(
+    regex=r'[a-z0-9-]+',
+    message=u'Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä väliviivoja.'
+)
 
 
 class SlugField(models.CharField):
@@ -49,7 +52,7 @@ class SlugField(models.CharField):
         defaults = dict(
             max_length=31,
             unique=True,
-            validators=[validate_slug,],
+            validators=[validate_slug],
             verbose_name=u'Tekninen nimi',
             help_text=u'Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja '
                 u'merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi '

@@ -3,6 +3,7 @@
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, make_option
 
+
 class Command(BaseCommand):
     args = ''
     help = 'Setup all the things'

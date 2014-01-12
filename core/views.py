@@ -11,6 +11,7 @@ from .models import Event
 from .forms import PersonForm
 from .helpers import initialize_form
 
+
 def core_frontpage_view(request):
     vars = dict(
         settings=settings
@@ -58,6 +59,7 @@ def core_profile_view(request):
     )
 
     return render(request, 'core_profile_view.jade', vars)
+
 
 def core_profile_menu_items(request):
     items = []

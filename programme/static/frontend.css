@@ -2,6 +2,10 @@ body {
   padding-top: 50px;
 }
 
+.messages {
+  padding-top: 20px;
+}
+
 .navbar {
   border-radius: 0;
 }
