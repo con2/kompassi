@@ -15,7 +15,7 @@ class JVKorttiTest(TestCase):
         Tests that only well-formed JV card numbers are accepted.
         """
 
-        person = Person.create_dummy()
+        person, unused = Person.get_or_create_dummy()
         qualification = Qualification.create_dummy()
         personqualification = PersonQualification.objects.create(
             person=person,

@@ -7,7 +7,7 @@ from crispy_forms.layout import Layout, Fieldset
 from core.models import Person
 from core.helpers import horizontal_form_helper
 
-from .models import Signup, JobCategory
+from .models import Signup, JobCategory, EmptySignupExtra
 
 
 class SignupForm(forms.ModelForm):
@@ -40,3 +40,14 @@ class SignupForm(forms.ModelForm):
         widgets = dict(
             job_categories=forms.CheckboxSelectMultiple
         )
+
+
+class EmptySignupExtraForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SignupExtraForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = EmptySignupExtra
+        exclude = ('signup',)

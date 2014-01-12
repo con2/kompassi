@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.dateformat import format as format_date
+from django.utils.timezone import now
 from django.conf import settings
 
 from .helpers import validate_slug, SlugField
@@ -19,6 +20,12 @@ class Venue(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    def create_dummy(cls):
+        return cls.objects.create(
+            name='Dummy venue'
+        )
 
 
 class Event(models.Model):
@@ -104,6 +111,19 @@ class Event(models.Model):
         )
 
 
+    @classmethod
+    def create_dummy(cls):
+        venue = Venue.create_dummy()
+        t = now()
+
+        return cls.objects.create(
+            name='Dummy event',
+            venue=venue,
+            start_time=t + timedelta(days=60),
+            end_time=t + timedelta(days=61),
+        )
+
+
 EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255
 BIRTH_DATE_HELP_TEXT = u'Syntymäaika muodossa {0}'.format(
     format_date(date(1994, 2, 24), settings.DATE_FORMAT)
@@ -178,14 +198,14 @@ class Person(models.Model):
             return self.full_name
 
     @classmethod
-    def create_dummy(cls):
+    def get_or_create_dummy(cls, superuser=True):
         user, unused = User.objects.get_or_create(
             username='mahti',
             defaults=dict(
                 first_name='Markku',
                 last_name='Mahtinen',
-                is_staff=True,
-                is_superuser=True,
+                is_staff=superuser,
+                is_superuser=superuser,
             ),
         )
 
@@ -193,7 +213,7 @@ class Person(models.Model):
             user.set_password('mahti')
             user.save()
 
-        person, unused = cls.objects.get_or_create(
+        return cls.objects.get_or_create(
             user=user,
             defaults=dict(
                 first_name=user.first_name,
@@ -204,8 +224,6 @@ class Person(models.Model):
                 phone='+358 50 555 1234'
             )
         )
-
-        return person
 
 
 __all__ = [

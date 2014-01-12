@@ -2,12 +2,14 @@
 
 from datetime import datetime, timedelta
 
-from django.core.management.base import BaseCommand, make_option
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import get_default_timezone, now
 
-from core.models import Event, Venue
+from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Qualification
+
 from ...models import SignupExtra
 
 class Command(BaseCommand):
@@ -44,17 +46,24 @@ class Command(BaseCommand):
             venue=venue
         ))
 
+        group, unused = Group.objects.get_or_create(name='Tracon 9 -työvoimavastaavat')
+
+        person, unused = Person.get_or_create_dummy()
+        group.user_set.add(person.user)
+
         tz = get_default_timezone()
 
         if options['test']:
             t = now()
             event_meta_defaults = dict(
+                admin_group=group,
                 signup_extra_content_type=content_type,
                 registration_opens=t - timedelta(days=60),
                 registration_closes=t + timedelta(days=60)
             )
         else:
             event_meta_defaults = dict(
+                admin_group=group,
                 signup_extra_content_type=content_type,
                 registration_opens=datetime(2014, 3, 1, 0, 0, tzinfo=tz),
                 registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=tz)

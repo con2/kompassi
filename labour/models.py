@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from datetime import date, datetime, timedelta
+
 from django.db import models
 from django.utils.timezone import now
 
@@ -21,6 +23,8 @@ class LabourEventMeta(models.Model):
         blank=True,
         verbose_name=u'työvoimahaku päättyy'
     )
+
+    admin_group = models.ForeignKey('auth.Group')
 
     class Meta:
         verbose_name = u'tapahtuman työvoimatiedot'
@@ -45,6 +49,26 @@ class LabourEventMeta(models.Model):
             laboureventmeta__registration_closes__lte=t,
         )
 
+    @classmethod
+    def create_dummy(cls):
+        from core.models import Event
+        from django.contrib.auth.models import Group
+        from django.contrib.contenttypes.models import ContentType
+
+        event = Event.create_dummy()
+        group = Group.objects.create(name='Dummy group')
+        content_type = ContentType.objects.get_for_model(EmptySignupExtra)
+
+        t = now()
+
+        return cls.objects.create(
+            event=event,
+            admin_group=group,
+            signup_extra_content_type=content_type,
+            registration_opens=t - timedelta(days=60),
+            registration_closes=t + timedelta(days=60)
+        )
+
     @property
     def is_registration_open(self):
         t = now()
@@ -60,13 +84,22 @@ class LabourEventMeta(models.Model):
         except Signup.DoesNotExist:
             return Signup(person=person, event=self.event)
 
+    def is_user_admin(self, user):
+        if not user.is_authenticated():
+            return False
+
+        if user.is_superuser:
+            return True
+
+        return user.groups.filter(pk=self.admin_group.pk).exists()
+
 
 class Qualification(models.Model):
     slug = SlugField()
 
     name = models.CharField(max_length=31, verbose_name=u'pätevyyden nimi')
     description = models.TextField(blank=True, verbose_name=u'kuvaus')
-    
+
     qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', null=True, blank=True)
 
     class Meta:
@@ -217,7 +250,7 @@ class SignupExtraBase(models.Model):
     signup = models.OneToOneField(Signup, related_name="+", primary_key=True)
 
     def __unicode__(self):
-        return self.signup.__unicode__() if self.signup else 'None'        
+        return self.signup.__unicode__() if self.signup else 'None'
 
     @classmethod
     def get_form_class(cls):
@@ -225,6 +258,13 @@ class SignupExtraBase(models.Model):
 
     class Meta:
         abstract = True
+
+
+class EmptySignupExtra(SignupExtraBase):
+    @classmethod
+    def get_form_class(cls):
+        from .forms import EmptySignupExtraForm
+        return EmptySignupExtraForm
 
 
 __all__ = [
