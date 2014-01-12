@@ -26,7 +26,7 @@ def core_frontpage_view(request):
 
 
 def core_event_view(request, event):
-    event = get_object_or_404(Event, pk=event)
+    event = get_object_or_404(Event, slug=event)
 
     vars = dict(
         event=event,

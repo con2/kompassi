@@ -36,6 +36,8 @@ class Command(BaseCommand):
         event, unused = Event.objects.get_or_create(slug='tracon9', defaults=dict(
             name='Tracon 9',
             name_genitive='Tracon 9 -tapahtuman',
+            name_illative='Tracon 9 -tapahtumaan',
+            name_inessive='Tracon 9 -tapahtumassa',
             homepage_url='http://2014.tracon.fi',
             organization_name='Tracon ry',
             organization_url='http://ry.tracon.fi',

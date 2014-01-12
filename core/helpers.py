@@ -1,4 +1,7 @@
+# encoding: utf-8
+
 from django import forms
+from django.core.validators import RegexValidator
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
@@ -35,3 +38,6 @@ class DateField(forms.DateField):
         )
         my_kwargs = dict(defaults, **kwargs)
         super(DateField, self).__init__(*args, **my_kwargs)
+
+
+validate_slug = RegexValidator(regex=r'[a-z0-9-]+', message=u'Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä väliviivoja.')

@@ -22,7 +22,7 @@ def labour_signup_view(request, event):
     # TODO should the user be allowed to change their registration after the registration period is over?
     if not event.laboureventmeta.is_registration_open:
         messages.error(request, u'Ilmoittautuminen tähän tapahtumaan ei ole avoinna.')
-        return redirect('core_event_view', event.pk)
+        return redirect('core_event_view', event.slug)
 
     signup = event.laboureventmeta.get_signup_for_person(request.user.person)
     signup_extra = signup.signup_extra
@@ -42,7 +42,7 @@ def labour_signup_view(request, event):
             signup_extra_form.save()
 
             messages.success(request, message)
-            return redirect('core_event_view', event.pk)
+            return redirect('core_event_view', event.slug)
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
@@ -82,7 +82,7 @@ def labour_qualifications_view(request):
 @require_http_methods(['GET', 'POST'])
 def labour_person_qualification_view(request, qualification):
     person = request.user.person
-    qualification = get_object_or_404(Qualification, pk=qualification)
+    qualification = get_object_or_404(Qualification, slug=qualification)
 
     try:
         person_qualification = qualification.personqualification_set.get(person=person)

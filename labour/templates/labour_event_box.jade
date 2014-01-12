@@ -1,7 +1,7 @@
 if event.laboureventmeta.is_registration_open
   h3 Tapahtuman työvoimahaku on avoinna
   p
-    a(href='{% url "labour_signup_view" event.pk %}')
+    a(href='{% url "labour_signup_view" event.slug %}')
       if current_user_signed_up
         | Muokkaa ilmoittautumistasi
       else

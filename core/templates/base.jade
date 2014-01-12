@@ -17,7 +17,7 @@ html
             span(class="icon-bar")
           
           if event
-            a.navbar-brand(href='{% url "core_event_view" event.pk %}') {{ event.name }}
+            a.navbar-brand(href='{% url "core_event_view" event.slug %}') {{ event.name }}
           else
             a.navbar-brand(href='{% url "core_frontpage_view" %}') ConDB
         .collapse.navbar-collapse#base-navbar-collapse
@@ -41,7 +41,7 @@ html
     footer
       .container
         p.muted.credit
-          if event
+          if event and event.homepage_url and event.organization_url and event.organization_name
             a(href='{{ event.homepage_url }}', target='_blank') {{ event.name_genitive }}
             |  järjestää
             a(href='{{ event.organization_url }}', target='_blank')  {{ event.organization_name }}

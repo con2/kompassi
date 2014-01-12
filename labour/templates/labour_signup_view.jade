@@ -3,7 +3,7 @@ extends base.jade
 block content
   h2 {{ event.name }}
 
-  form(action='{% url "labour_signup_view" event.pk %}', method='POST', role='form').form-horizontal
+  form(action='{% url "labour_signup_view" event.slug %}', method='POST', role='form').form-horizontal
     - crispy signup_form
     - crispy signup_extra_form
     p
@@ -12,7 +12,7 @@ block content
       legend Lähetä ilmoittautuminen
       input.btn.btn-primary(type='submit', name='submit', value='Lähetä ilmoittautuminen')
       | 
-      a.btn.btn-default(href='{% url "core_event_view" event.pk %}') Peruuta
+      a.btn.btn-default(href='{% url "core_event_view" event.slug %}') Peruuta
       p
         // XXX why is this extra p necessary to preserve spacing
 

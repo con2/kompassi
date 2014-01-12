@@ -7,21 +7,102 @@ from django.db import models
 from django.utils.dateformat import format as format_date
 from django.conf import settings
 
+from .helpers import validate_slug
 
 class Venue(models.Model):
     name = models.CharField(max_length=31)
 
+    class Meta:
+        verbose_name = u'Tapahtumapaikka'
+        verbose_name_plural = u'Tapahtumapaikat'
+
+    def __unicode__(self):
+        return self.name
+
 
 class Event(models.Model):
-    slug = models.CharField(max_length=31, primary_key=True)
-    name = models.CharField(max_length=31)
-    name_genitive = models.CharField(max_length=31)
-    homepage_url = models.CharField(max_length=255)
-    organization_name = models.CharField(max_length=63)
-    organization_url = models.CharField(max_length=255)
-    venue = models.ForeignKey(Venue)
-    start_time = models.DateTimeField(null=True, blank=True)
-    end_time = models.DateTimeField(null=True, blank=True)
+    slug = models.CharField(
+        max_length=31,
+        unique=True,
+        validators=[validate_slug,],
+        verbose_name=u'Tekninen nimi',
+        help_text=u'Tapahtuman tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja '
+            u'merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi '
+            u'muuttaa tapahtuman luomisen jälkeen.',
+    )
+
+    name = models.CharField(max_length=31, verbose_name=u'Tapahtuman nimi')
+
+    name_genitive = models.CharField(
+        max_length=31,
+        verbose_name=u'Tapahtuman nimi genetiivissä',
+        help_text=u'Esimerkki: Susiconin',
+    )
+
+    name_illative = models.CharField(
+        max_length=31,
+        verbose_name=u'Tapahtuman nimi illatiivissä',
+        help_text=u'Esimerkki: Susiconiin',
+    )
+
+    name_inessive = models.CharField(
+        max_length=31,
+        verbose_name=u'Tapahtuman nimi inessiivissä',
+        help_text=u'Esimerkki: Susiconissa',
+    )
+
+    venue = models.ForeignKey(Venue,
+        verbose_name=u'Tapahtumapaikka',
+    )
+
+    start_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Alkamisaika',
+    )
+
+    end_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Päättymisaika',
+    )
+
+    homepage_url = models.CharField(
+        blank=True,
+        max_length=255,
+        verbose_name=u'Tapahtuman kotisivu',
+    )
+
+    organization_name = models.CharField(
+        blank=True,
+        max_length=63,
+        verbose_name=u'Järjestävä taho',
+    )
+    
+    organization_url = models.CharField(
+        blank=True,
+        max_length=255,
+        verbose_name=u'Järjestävän tahon kotisivu'
+    )
+
+    class Meta:
+        verbose_name = u'Tapahtuma'
+        verbose_name_plural = u'Tapahtumat'
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.name:
+            for field, suffix in [
+                ('name_genitive', 'in'),
+                ('name_illative', 'iin'),
+                ('name_inessive', 'issa')
+            ]:
+                if not getattr(self, field, None):
+                    setattr(self, field, self.name + suffix)
+
+        return super(Event, self).save(*args, **kwargs)
 
     @property
     def name_and_year(self):
@@ -32,19 +113,56 @@ class Event(models.Model):
 
 
 EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255
-BIRTH_DATE_HELP_TEXT = u'Syntymäaika muodossa {0}'.format(format_date(date(1994, 2, 24), settings.DATE_FORMAT))
+BIRTH_DATE_HELP_TEXT = u'Syntymäaika muodossa {0}'.format(
+    format_date(date(1994, 2, 24), settings.DATE_FORMAT)
+)
 
 
 class Person(models.Model):
     first_name = models.CharField(max_length=1023, verbose_name=u'Etunimi')
     surname = models.CharField(max_length=1023, verbose_name=u'Sukunimi')
     nick = models.CharField(blank=True, max_length=1023, help_text='Lempi- tai kutsumanimi')
-    birth_date = models.DateField(null=True, blank=True, verbose_name=u'Syntymäaika', help_text=BIRTH_DATE_HELP_TEXT)
-    email = models.EmailField(blank=True, max_length=EMAIL_LENGTH, verbose_name=u'Sähköpostiosoite')
-    phone = models.CharField(blank=True, max_length=PHONE_NUMBER_LENGTH, verbose_name=u'Puhelinnumero')
-    anonymous = models.BooleanField(default=False, verbose_name=u'Piilota etu- ja sukunimi', help_text=u'Jos valitset tämän, sinusta näytetään vain nick-kentässä asetettu kutsumanimi. Etu- ja sukunimi on tällöinkin annettava, jolloin ne näkyvät vain tapahtuman järjestäjille.')
+    birth_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=u'Syntymäaika',
+        help_text=BIRTH_DATE_HELP_TEXT)
+
+    email = models.EmailField(
+        blank=True,
+        max_length=EMAIL_LENGTH,
+        verbose_name=u'Sähköpostiosoite'
+    )
+    
+    phone = models.CharField(
+        blank=True,
+        max_length=PHONE_NUMBER_LENGTH,
+        verbose_name=u'Puhelinnumero'
+    )
+    
+    anonymous = models.BooleanField(
+        default=False,
+        verbose_name=u'Piilota etu- ja sukunimi',
+        help_text=u'Jos valitset tämän, sinusta näytetään vain nick-kentässä asetettu '
+            u'kutsumanimi. Etu- ja sukunimi on tällöinkin annettava, jolloin ne näkyvät '
+            u'vain tapahtuman järjestäjille.'
+    )
+
     notes = models.TextField(blank=True, verbose_name=u'Käsittelijän merkinnät')
     user = models.OneToOneField('auth.User', null=True, blank=True)
+
+    class Meta:
+        ordering = ['surname']
+        verbose_name = u'Henkilö'
+        verbose_name_plural = u'Henkilöt'
+
+    def __unicode__(self):
+        return self.full_name
+
+    def clean(self):
+        if self.anonymous and not self.nick:
+            from django.core.exceptions import ValidationError
+            raise ValidationError('If real name is hidden a nick must be provided')
 
     @property
     def full_name(self):
@@ -66,11 +184,6 @@ class Person(models.Model):
             return self.nick
         else:
             return self.full_name
-
-    def clean(self):
-        if self.anonymous and not self.nick:
-            from django.core.exceptions import ValidationError
-            raise ValidationError('If real name is hidden a nick must be provided')
 
     @classmethod
     def create_dummy(cls):
@@ -101,12 +214,6 @@ class Person(models.Model):
         )
 
         return person
-
-    def __unicode__(self):
-        return self.full_name
-
-    class Meta:
-        ordering = ['surname']
 
 
 __all__ = [
