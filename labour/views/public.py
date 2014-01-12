@@ -10,9 +10,9 @@ from django.views.decorators.http import require_http_methods
 from core.helpers import initialize_form, url
 from core.models import Event
 
-from .forms import SignupForm
-from .helpers import labour_admin_required
-from .models import LabourEventMeta, Qualification, PersonQualification, Signup
+from ..forms import SignupForm
+from ..helpers import labour_admin_required
+from ..models import LabourEventMeta, Qualification, PersonQualification, Signup
 
 
 @login_required
@@ -148,55 +148,12 @@ def labour_person_disqualify_view(request, qualification):
     return redirect('labour_qualifications_view')
 
 
-@labour_admin_required
-def labour_admin_dashboard_view(request, vars, event):
-    return render(request, 'labour_admin_dashboard_view.jade', vars)
-
-
-@labour_admin_required
-def labour_admin_signup_view(request, vars, event, person):
-    signup = get_object_or_404(Signup, person=int(person), event=event)
-
-    vars.update(
-        signup=signup,
-    )
-
-    return render(request, 'labour_admin_signup_view.jade', vars)
-
-
-@labour_admin_required
-def labour_admin_signups_view(request, vars, event):
-    signups = event.signup_set.all()
-
-    vars.update(
-        signups=signups,
-    )
-
-    return render(request, 'labour_admin_signups_view.jade', vars)
-
-
 def labour_profile_menu_items(request):
     qualifications_url = url('labour_qualifications_view')
     qualifications_active = request.path.startswith(qualifications_url)
     qualifications_text = u"Pätevyydet"
 
     return [(qualifications_active, qualifications_url, qualifications_text)]
-
-
-def labour_admin_menu_items(request, event):
-    dashboard_url = url('labour_admin_dashboard_view', event.slug)
-    dashboard_active = request.path == dashboard_url
-    dashboard_text = u"Kojelauta"
-
-    signups_url = url('labour_admin_signups_view', event.slug)
-    signups_active = request.path.startswith(signups_url)
-    signups_text = u"Tapahtumaan ilmoittautuneet henkilöt"
-
-    return [
-        (dashboard_active, dashboard_url, dashboard_text),
-        (signups_active, signups_url, signups_text),
-    ]
-
 
 
 def labour_event_box_context(request, event):
@@ -211,18 +168,3 @@ def labour_event_box_context(request, event):
         is_signed_up=is_signed_up,
         is_labour_admin=is_labour_admin,
     )
-
-
-__all__ = [
-    'labour_admin_dashboard_view',
-    'labour_admin_menu_items',
-    'labour_admin_signup_view',
-    'labour_admin_signups_view',
-    'labour_event_box_context',
-    'labour_person_disqualify_view',
-    'labour_person_qualification_view',
-    'labour_person_qualify_view',
-    'labour_profile_menu_items',
-    'labour_qualifications_view',
-    'labour_signup_view',
-]

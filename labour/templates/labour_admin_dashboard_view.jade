@@ -1,18 +1,22 @@
 extends labour_admin_base
 block admin_content
   .row
-    .col-md-4
+    .col-md-3
       .panel.panel-default
         .panel-heading: strong Ilmoittautuneita
         .panel-body: h1 {{ event.signup_set.all.count }}
-    .col-md-4
+    .col-md-3
       .panel.panel-warning
         .panel-heading: strong Uusia peruutuksia
         .panel-body: h1 0
-    .col-md-4
+    .col-md-3
       .panel.panel-danger
-        .panel-heading: strong Täyttämättömiä vaatimuksia
+        .panel-heading: strong Täyttämättä
         .panel-body: h1 1337
+    .col-md-3
+      .panel.panel-default
+        .panel-heading: strong Vailla tehtävää
+        .panel-body: h1 666
 
   .row
     .col-md-12
