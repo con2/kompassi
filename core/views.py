@@ -34,9 +34,13 @@ def core_event_view(request, event):
         settings=settings,
     )
 
-    if 'labour' in settings.INSTALLED_APPS:
+    if event.labour_event_meta:
         from labour.views import labour_event_box_context
         vars.update(labour_event_box_context(request, event))
+
+    if event.programme_event_meta:
+        from programme.views import programme_event_box_context
+        vars.update(programme_event_box_context(request, event))
 
     return render(request, 'core_event_view.jade', vars)
 
@@ -76,5 +80,10 @@ def core_profile_menu_items(request):
     if 'labour' in settings.INSTALLED_APPS:
         from labour.views import labour_profile_menu_items
         items.extend(labour_profile_menu_items(request))
+
+    if 'programme' in settings.INSTALLED_APPS:
+        from programme.views import programme_profile_menu_items
+        items.extend(programme_profile_menu_items(request))
+
 
     return items

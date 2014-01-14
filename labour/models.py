@@ -245,7 +245,7 @@ class Signup(models.Model):
 
     @property
     def signup_extra(self):
-        SignupExtra = self.event.laboureventmeta.signup_extra_model
+        SignupExtra = self.event.labour_event_meta.signup_extra_model
 
         try:
             return SignupExtra.objects.get(signup=self)

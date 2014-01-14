@@ -49,7 +49,7 @@ def labour_admin_signups_view(request, vars, event):
 def labour_admin_roster_vars(request, event):
     from programme.utils import full_hours_between
 
-    hours = full_hours_between(event.laboureventmeta.work_begins, event.laboureventmeta.work_ends)
+    hours = full_hours_between(event.labour_event_meta.work_begins, event.labour_event_meta.work_ends)
 
     return dict(
         hours=hours,

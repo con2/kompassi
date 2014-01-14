@@ -3,5 +3,8 @@ block content
   .core-event-view
     h2 {{ event.name }}
 
-    if 'labour' in settings.INSTALLED_APPS
+    if event.labour_event_meta
       include labour_event_box.jade
+
+    if event.programme_event_meta
+      include programme_event_box.jade

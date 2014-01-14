@@ -125,6 +125,30 @@ class Event(models.Model):
             end_time=t + timedelta(days=61),
         )
 
+    @property
+    def labour_event_meta(self):
+        if 'labour' not in settings.INSTALLED_APPS:
+            return None
+
+        from labour.models import LabourEventMeta
+
+        try:
+            return self.laboureventmeta
+        except LabourEventMeta.DoesNotExist:
+            return None
+
+    @property
+    def programme_event_meta(self):
+        if 'programme' not in settings.INSTALLED_APPS:
+            return None
+
+        from programme.models import ProgrammeEventMeta
+
+        try:
+            return self.programmeeventmeta
+        except ProgrammeEventMeta.DoesNotExist:
+            return None
+
 
 EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255
 BIRTH_DATE_HELP_TEXT = u'Syntymäaika muodossa {0}'.format(

@@ -12,21 +12,21 @@ from core.models import Event
 
 from ..forms import SignupForm
 from ..models import LabourEventMeta, Qualification, PersonQualification, Signup
+from ..helpers import labour_event_required
 
 
 @login_required
+@labour_event_required
 @require_http_methods(['GET', 'POST'])
 def labour_signup_view(request, event):
-    event = get_object_or_404(Event, slug=event)
-
     # TODO should the user be allowed to change their registration after the registration period is over?
-    if not event.laboureventmeta.is_registration_open:
+    if not event.labour_event_meta.is_registration_open:
         messages.error(request, u'Ilmoittautuminen tähän tapahtumaan ei ole avoinna.')
         return redirect('core_event_view', event.slug)
 
-    signup = event.laboureventmeta.get_signup_for_person(request.user.person)
+    signup = event.labour_event_meta.get_signup_for_person(request.user.person)
     signup_extra = signup.signup_extra
-    SignupExtraForm = event.laboureventmeta.signup_extra_model.get_form_class()
+    SignupExtraForm = event.labour_event_meta.signup_extra_model.get_form_class()
     signup_form = initialize_form(SignupForm, request, instance=signup, prefix='signup')
     signup_extra_form = initialize_form(SignupExtraForm, request, instance=signup_extra, prefix='extra')
 
@@ -157,8 +157,8 @@ def labour_profile_menu_items(request):
 
 def labour_event_box_context(request, event):
     if request.user.is_authenticated():
-        is_signed_up = event.laboureventmeta.is_person_signed_up(request.user.person)
-        is_labour_admin = event.laboureventmeta.is_user_admin(request.user)
+        is_signed_up = event.labour_event_meta.is_person_signed_up(request.user.person)
+        is_labour_admin = event.labour_event_meta.is_user_admin(request.user)
     else:
         is_signed_up = False
         is_labour_admin = False

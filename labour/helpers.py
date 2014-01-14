@@ -1,5 +1,8 @@
+# encoding: utf-8
+
 from functools import wraps
 
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 
 from .utils import login_redirect
@@ -12,7 +15,13 @@ def labour_admin_required(view_func):
         from .views import labour_admin_menu_items
 
         event = get_object_or_404(Event, slug=event)
-        if not event.laboureventmeta.is_user_admin(request.user):
+        meta = event.labour_event_meta
+
+        if not meta:
+            messages.error(request, u"Tämä tapahtuma ei käytä ConDB:tä työvoiman hallintaan.")
+            return redirect('core_event_view', event.slug)
+
+        if not event.labour_event_meta.is_user_admin(request.user):
             return login_redirect(request)
 
         vars = dict(
@@ -21,4 +30,20 @@ def labour_admin_required(view_func):
         )
 
         return view_func(request, vars, event, *args, **kwargs)
+    return wrapper
+
+
+def labour_event_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, event, *args, **kwargs):
+        from core.models import Event
+
+        event = get_object_or_404(Event, slug=event)
+        meta = event.labour_event_meta
+
+        if not meta:
+            messages.error(request, u"Tämä tapahtuma ei käytä ConDB:tä työvoiman hallintaan.")
+            return redirect('core_event_view', event.slug)
+
+        return view_func(request, event, *args, **kwargs)
     return wrapper

@@ -158,7 +158,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    
+
     'south',
     'pyjade',
     'crispy_forms',
@@ -167,6 +167,8 @@ INSTALLED_APPS = (
     'programme',
     'labour',
     'labour_common_qualifications',
+
+    'tracon8',
     'tracon9',
 )
 

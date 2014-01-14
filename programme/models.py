@@ -7,7 +7,11 @@ from .utils import window, next_full_hour, full_hours_between
 
 
 ONE_HOUR = datetime.timedelta(hours=1)
-    
+
+
+class ProgrammeEventMeta(models.Model):
+    event = models.OneToOneField('core.Event')
+
 
 class Category(models.Model):
     event = models.ForeignKey('core.Event')
@@ -25,8 +29,8 @@ class Category(models.Model):
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=1023)
     venue = models.ForeignKey('core.Venue')
+    name = models.CharField(max_length=1023)
     order = models.IntegerField(unique=True)
     public = models.BooleanField(default=True)
     notes = models.TextField(blank=True)
@@ -45,7 +49,7 @@ class Room(models.Model):
             return False
 
     class Meta:
-        ordering = ['order']
+        ordering = ['venue', 'order']
 
 
 class Role(models.Model):
@@ -71,16 +75,19 @@ class Tag(models.Model):
         ordering = ['order']
 
 class Programme(models.Model):
-    event = models.ForeignKey('core.Event', null=True, blank=True)
+    category = models.ForeignKey(Category)
     title = models.CharField(max_length=1023)
     description = models.TextField()
     start_time = models.DateTimeField()
     length = models.IntegerField()
     notes = models.TextField(blank=True)
-    category = models.ForeignKey(Category)
     room = models.ForeignKey(Room)
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole')
     tags = models.ManyToManyField(Tag, blank=True)
+
+    @property
+    def event(self):
+        return self.category.event
 
     @property
     def end_time(self):
@@ -140,6 +147,7 @@ class ViewMethodsMixin(object):
             for room in self.public_rooms:
                 try:
                     programme = room.programme_set.get(
+                        category__event=event,
                         start_time=start_time,
                         room__public=True
                     )
@@ -183,6 +191,7 @@ class ViewMethodsMixin(object):
 
 
 class View(models.Model, ViewMethodsMixin):
+    event = models.ForeignKey('core.Event')
     name = models.CharField(max_length=32)
     public = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
@@ -196,17 +205,19 @@ class View(models.Model, ViewMethodsMixin):
 
 
 class AllRoomsPseudoView(ViewMethodsMixin):
-    def __init__(self):
+    def __init__(self, event):
         self.name = 'All rooms'
         self.public = True
         self.order = 0
-        self.rooms = Room.objects.all()
+        self.rooms = Room.objects.filter(venue=event.venue)
+        self.event = event
 
 
 __all__ = [
     'AllRoomsPseudoView',
     'Category',
     'Programme',
+    'ProgrammeEventMeta',
     'ProgrammeRole',
     'Role',
     'Room',

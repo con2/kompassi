@@ -12,15 +12,21 @@ from django.template.loader import render_to_string
 from django.utils.timezone import now
 from django.views.decorators.cache import cache_page, cache_control
 
+from core.utils import render_string
+
 from .models import View, AllRoomsPseudoView, Category, Tag, Programme
+from .helpers import programme_event_required
+
 
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60) # XXX remove once nginx cache is in place
-def timetable_view(request):
-    return render_timetable(request, internal_programmes=False)
+@programme_event_required
+def timetable_view(request, event):
+    return render_timetable(request, event, internal_programmes=False)
 
-def render_timetable(request, internal_programmes=False):
-    all_rooms = AllRoomsPseudoView()
+
+def render_timetable(request, event, internal_programmes=False):
+    all_rooms = AllRoomsPseudoView(event)
 
     if internal_programmes:
         category_query = dict()
@@ -34,7 +40,7 @@ def render_timetable(request, internal_programmes=False):
         all_programmes_by_start_time=all_rooms.programmes_by_start_time
     )
 
-    return render(request, 'timetable.jade', vars)
+    return render(request, 'programme_timetable.jade', vars)
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -49,10 +55,12 @@ def internal_dumpdata_view(request):
 
     return response
 
+
 @cache_control(public=True, max_age=1 * 60)
 @cache_page(1 * 60) # XXX remove once nginx cache is in place
-def mobile_timetable_view(request):
-    all_rooms = AllRoomsPseudoView()
+@programme_event_required
+def mobile_timetable_view(request, event):
+    all_rooms = AllRoomsPseudoView(event)
 
     programmes_by_room = []
     for room in all_rooms.public_rooms:
@@ -70,18 +78,21 @@ def mobile_timetable_view(request):
         programmes_by_room=programmes_by_room
     )
 
-    return render(request, 'mobile_timetable.jade', vars)
+    return render(request, 'programme_mobile_timetable.jade', vars)
+
 
 @cache_control(public=True, max_age=1 * 60)
 @cache_page(1 * 60) # XXX remove once nginx cache is in place
-def mobile_programme_detail_view(request, programme_id):
+@programme_event_required
+def mobile_programme_detail_view(request, event, programme_id):
     programme = get_object_or_404(Programme, id=programme_id)
 
     vars = dict(
-        programme=programme
+        event=event,
+        programme=programme,
     )
 
-    return render(request, 'mobile_programme_detail.jade', vars)
+    return render(request, 'programme_mobile_detail.jade', vars)
 
 
 #@login_required
@@ -92,7 +103,7 @@ def internal_timetable_view(request):
 #@login_required
 def internal_adobe_taggedtext_view(request):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView().programmes_by_start_time)
-    data = render_to_string('timetable.taggedtext', vars, RequestContext(request, {}))
+    data = render_string(request, 'programme_timetable.taggedtext', vars)
 
     # force all line endings to CRLF (Windows)
     data = data.replace('\r\n', '\n').replace('\n', '\r\n')
@@ -101,3 +112,11 @@ def internal_adobe_taggedtext_view(request):
     data = data.encode('UTF-16LE')
 
     return HttpResponse(data, 'text/plain; charset=utf-16')
+
+
+def programme_profile_menu_items(request):
+    return []
+
+
+def programme_event_box_context(request, event):
+    return dict()
