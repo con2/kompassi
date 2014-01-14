@@ -50,8 +50,9 @@ class Command(BaseCommand):
 
         group, unused = Group.objects.get_or_create(name='Tracon 9 -työvoimavastaavat')
 
-        person, unused = Person.get_or_create_dummy()
-        group.user_set.add(person.user)
+        if options['test']:
+            person, unused = Person.get_or_create_dummy()
+            group.user_set.add(person.user)
 
         event_meta_defaults = dict(
             admin_group=group,

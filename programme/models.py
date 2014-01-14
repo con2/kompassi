@@ -147,7 +147,7 @@ class ViewMethodsMixin(object):
             for room in self.public_rooms:
                 try:
                     programme = room.programme_set.get(
-                        category__event=event,
+                        category__event=self.event,
                         start_time=start_time,
                         room__public=True
                     )
