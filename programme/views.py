@@ -34,6 +34,7 @@ def render_timetable(request, event, internal_programmes=False):
         category_query = dict(public=True)
 
     vars = dict(
+        event=event,
         views=View.objects.filter(public=True),
         categories=Category.objects.filter(**category_query),
         internal_programmes=internal_programmes,
@@ -75,6 +76,7 @@ def mobile_timetable_view(request, event):
         programmes_by_room.append((room, [("Nyt", current_programme), ("Seuraavaksi", next_programme)]))
 
     vars = dict(
+        event=event,
         programmes_by_room=programmes_by_room
     )
 
