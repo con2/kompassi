@@ -2,7 +2,7 @@
 
 from django import forms
 
-from core.helpers import DateField, horizontal_form_helper
+from core.utils import DateField, horizontal_form_helper
 
 from .models import JVKortti
 

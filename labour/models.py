@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from django.db import models
 from django.utils.timezone import now
 
-from core.helpers import SlugField
+from core.utils import SlugField
 
 
 class LabourEventMeta(models.Model):
@@ -23,6 +23,9 @@ class LabourEventMeta(models.Model):
         blank=True,
         verbose_name=u'työvoimahaku päättyy'
     )
+
+    work_begins = models.DateTimeField(verbose_name=u'Ensimmäiset työvuorot alkavat')
+    work_ends = models.DateTimeField(verbose_name=u'Viimeiset työvuorot päättyvät')
 
     admin_group = models.ForeignKey('auth.Group')
 

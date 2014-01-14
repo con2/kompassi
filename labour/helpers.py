@@ -1,15 +1,8 @@
 from functools import wraps
-from urllib import urlencode
 
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 
-
-def login_redirect(request):
-    path = reverse('core_login_view')
-    query = urlencode(dict(next=request.path))
-    return HttpResponseRedirect("{path}?{query}".format(**locals()))
+from .utils import login_redirect
 
 
 def labour_admin_required(view_func):

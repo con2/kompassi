@@ -6,10 +6,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
 
-from core.helpers import DateField
+from core.utils import DateField
 
 from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH, BIRTH_DATE_HELP_TEXT
-from .helpers import horizontal_form_helper, indented_without_label
+from .utils import horizontal_form_helper, indented_without_label
 
 
 class LoginForm(AuthenticationForm):

@@ -15,4 +15,16 @@ urlpatterns = patterns('',
     url(r'^events/(?P<event>[a-z0-9-]+)/admin$', labour_admin_dashboard_view, name='labour_admin_dashboard_view'),
     url(r'^events/(?P<event>[a-z0-9-]+)/admin/signups$', labour_admin_signups_view, name='labour_admin_signups_view'),
     url(r'^events/(?P<event>[a-z0-9-]+)/admin/signups/(?P<person>\d+)$', labour_admin_signup_view, name='labour_admin_signup_view'),
+
+    url(
+        r'^events/(?P<event>[a-z0-9-]+)/admin/roster$',
+        labour_admin_roster_view,
+        name='labour_admin_roster_view'
+    ),
+
+    url(
+        r'^events/(?P<event>[a-z0-9-]+)/admin/roster/jobcategories/(?P<job_category>\d+).json$',
+        labour_admin_roster_job_category_fragment,
+        name='labour_admin_roster_job_category_fragment'
+    ),
 )

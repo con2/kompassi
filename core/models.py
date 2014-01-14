@@ -8,7 +8,7 @@ from django.utils.dateformat import format as format_date
 from django.utils.timezone import now
 from django.conf import settings
 
-from .helpers import validate_slug, SlugField
+from .utils import validate_slug, SlugField
 
 
 class Venue(models.Model):

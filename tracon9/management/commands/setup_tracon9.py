@@ -43,7 +43,9 @@ class Command(BaseCommand):
             homepage_url='http://2014.tracon.fi',
             organization_name='Tracon ry',
             organization_url='http://ry.tracon.fi',
-            venue=venue
+            start_time=datetime(2014, 9, 13, 10, 0, tzinfo=tz),
+            end_time=datetime(2014, 9, 14, 18, 0, tzinfo=tz),
+            venue=venue,
         ))
 
         group, unused = Group.objects.get_or_create(name='Tracon 9 -työvoimavastaavat')
@@ -51,22 +53,24 @@ class Command(BaseCommand):
         person, unused = Person.get_or_create_dummy()
         group.user_set.add(person.user)
 
-        tz = get_default_timezone()
+        event_meta_defaults = dict(
+            admin_group=group,
+            signup_extra_content_type=content_type,
+            work_begins=datetime(2014, 9, 12, 8, 0, tzinfo=tz),
+            work_ends=datetime(2014, 9, 14, 22, 0, tzinfo=tz),
+        )
 
         if options['test']:
             t = now()
-            event_meta_defaults = dict(
-                admin_group=group,
-                signup_extra_content_type=content_type,
+            event_meta_defaults.update(
                 registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60)
+                registration_closes=t + timedelta(days=60),
+
             )
         else:
-            event_meta_defaults = dict(
-                admin_group=group,
-                signup_extra_content_type=content_type,
+            event_meta_defaults.update(
                 registration_opens=datetime(2014, 3, 1, 0, 0, tzinfo=tz),
-                registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=tz)
+                registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=tz),
             )
 
         event_meta, unused = LabourEventMeta.objects.get_or_create(event=event, defaults=event_meta_defaults)

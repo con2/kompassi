@@ -1,9 +1,14 @@
 # encoding: utf-8
 
+import json
+
 from django import forms
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
+from django.http import HttpResponse
 from django.db import models
+from django.template import RequestContext
+from django.template.loader import render_to_string
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
@@ -65,3 +70,11 @@ class SlugField(models.CharField):
 
 def url(view_name, *args):
     return reverse(view_name, args=args)
+
+
+def json_response(data, **kwargs):
+    return HttpResponse(json.dumps(data), content_type='text/json', **kwargs)
+
+
+def render_string(request, template_name, vars):
+    return render_to_string(template_name, vars, context_instance=RequestContext(request))

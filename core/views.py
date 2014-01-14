@@ -9,7 +9,7 @@ from django.views.decorators.http import require_http_methods
 
 from .models import Event
 from .forms import PersonForm
-from .helpers import initialize_form
+from .utils import initialize_form
 
 
 def core_frontpage_view(request):

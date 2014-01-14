@@ -15,7 +15,7 @@ html
             span(class="icon-bar")
             span(class="icon-bar")
             span(class="icon-bar")
-          
+
           if event
             a.navbar-brand(href='{% url "core_event_view" event.slug %}') {{ event.name }}
           else
@@ -28,17 +28,20 @@ html
             include core_navbar_user.jade
 
     #wrap
+      if messages
+        .messages.container
+          for message in messages
+            if message.tags
+              .alert(class="alert-{{ message.tags }}") {{ message }}
+            else
+              .alert {{ message }}
+
+      block content_full_width
+
       .container.content
-        if messages
-          .messages
-            for message in messages
-              if message.tags
-                .alert(class="alert-{{ message.tags }}") {{ message }}
-              else
-                .alert {{ message }}
-                
         block content
-        #push
+
+      #push
 
     footer
       .container
@@ -48,8 +51,9 @@ html
             |  järjestää
             a(href='{{ event.organization_url }}', target='_blank')  {{ event.organization_name }}
             | .
-          | ConDB &copy; 2013&ndash;2014 Jussi Sorjonen ja Santtu Pajukanta. 
+          | ConDB &copy; 2013&ndash;2014 Jussi Sorjonen ja Santtu Pajukanta.
 
     script(src='{{ STATIC_URL }}jquery-1.10.2.min.js')
     script(src='{{ STATIC_URL }}bootstrap/bootstrap.min.js')
     script(src='{{ STATIC_URL }}timetable.js')
+    block extra_scripts

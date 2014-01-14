@@ -1,4 +1,4 @@
-from .public import (
+from .public_views import (
     labour_event_box_context,
     labour_person_disqualify_view,
     labour_person_qualification_view,
@@ -8,9 +8,11 @@ from .public import (
     labour_signup_view,
 )
 
-from .admin import (
+from .admin_views import (
     labour_admin_dashboard_view,
     labour_admin_menu_items,
+    labour_admin_roster_job_category_fragment,
+    labour_admin_roster_view,
     labour_admin_signup_view,
     labour_admin_signups_view,
 )

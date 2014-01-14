@@ -7,11 +7,10 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 
-from core.helpers import initialize_form, url
+from core.utils import initialize_form, url
 from core.models import Event
 
 from ..forms import SignupForm
-from ..helpers import labour_admin_required
 from ..models import LabourEventMeta, Qualification, PersonQualification, Signup
 
 
