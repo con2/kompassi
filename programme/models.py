@@ -3,14 +3,16 @@ import datetime
 from django.db import models
 from django.conf import settings
 
+from core.models import EventMetaBase
+
 from .utils import window, next_full_hour, full_hours_between
 
 
 ONE_HOUR = datetime.timedelta(hours=1)
 
 
-class ProgrammeEventMeta(models.Model):
-    event = models.OneToOneField('core.Event')
+class ProgrammeEventMeta(EventMetaBase):
+    public = models.BooleanField(default=True)
 
 
 class Category(models.Model):

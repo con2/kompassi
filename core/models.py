@@ -12,7 +12,12 @@ from .utils import validate_slug, SlugField
 
 
 class Venue(models.Model):
-    name = models.CharField(max_length=31)
+    name = models.CharField(max_length=31, verbose_name=u'Tapahtumapaikan nimi')
+    name_inessive = models.CharField(
+        max_length=31,
+        verbose_name=u'Tapahtumapaikan nimi inessiivissä',
+        help_text=u'Esimerkki: Paasitornissa',
+    )
 
     class Meta:
         verbose_name = u'Tapahtumapaikka'
@@ -20,6 +25,12 @@ class Venue(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.name_inessive:
+            self.name_inessive = self.name + 'ssa'
+
+        return super(Venue, self).save(*args, **kwargs)
 
     @classmethod
     def create_dummy(cls):
@@ -84,6 +95,12 @@ class Event(models.Model):
         blank=True,
         max_length=255,
         verbose_name=u'Järjestävän tahon kotisivu'
+    )
+
+    public = models.BooleanField(
+        default=True,
+        verbose_name=u'Julkinen',
+        help_text=u'Julkiset tapahtumat näytetään etusivulla.'
     )
 
     class Meta:
@@ -252,9 +269,30 @@ class Person(models.Model):
         )
 
 
+
+
+
+class EventMetaBase(models.Model):
+    event = models.OneToOneField('core.Event', primary_key=True, related_name='%(class)s')
+    admin_group = models.ForeignKey('auth.Group')
+
+    class Meta:
+        abstract = True
+
+    def is_user_admin(self, user):
+        if not user.is_authenticated():
+            return False
+
+        if user.is_superuser:
+            return True
+
+        return user.groups.filter(pk=self.admin_group.pk).exists()
+
+
 __all__ = [
     'BIRTH_DATE_HELP_TEXT',
     'Event',
+    'EventMetaBase',
     'EMAIL_LENGTH',
     'Person',
     'PHONE_NUMBER_LENGTH',

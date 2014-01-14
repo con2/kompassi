@@ -9,6 +9,7 @@ from django.utils.timezone import get_default_timezone, now
 
 from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Qualification
+from programme.models import ProgrammeEventMeta
 
 from ...models import SignupExtra
 
@@ -48,14 +49,14 @@ class Command(BaseCommand):
             venue=venue,
         ))
 
-        group, unused = Group.objects.get_or_create(name='Tracon 9 -työvoimavastaavat')
+        labour_admin_group, unused = Group.objects.get_or_create(name='Tracon 9 -työvoimavastaavat')
 
         if options['test']:
             person, unused = Person.get_or_create_dummy()
-            group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)
 
-        event_meta_defaults = dict(
-            admin_group=group,
+        labour_event_meta_defaults = dict(
+            admin_group=labour_admin_group,
             signup_extra_content_type=content_type,
             work_begins=datetime(2014, 9, 12, 8, 0, tzinfo=tz),
             work_ends=datetime(2014, 9, 14, 22, 0, tzinfo=tz),
@@ -63,18 +64,24 @@ class Command(BaseCommand):
 
         if options['test']:
             t = now()
-            event_meta_defaults.update(
+            labour_event_meta_defaults.update(
                 registration_opens=t - timedelta(days=60),
                 registration_closes=t + timedelta(days=60),
 
             )
         else:
-            event_meta_defaults.update(
+            labour_event_meta_defaults.update(
                 registration_opens=datetime(2014, 3, 1, 0, 0, tzinfo=tz),
                 registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=tz),
             )
 
-        event_meta, unused = LabourEventMeta.objects.get_or_create(event=event, defaults=event_meta_defaults)
+        programme_admin_group, unused = Group.objects.get_or_create(name='Tracon 9 -ohjelmavastaavat')
+
+        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(event=event, defaults=labour_event_meta_defaults)
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group
+        ))
 
         for name, description in [
             (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen'),

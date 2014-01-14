@@ -5,11 +5,11 @@ from datetime import date, datetime, timedelta
 from django.db import models
 from django.utils.timezone import now
 
+from core.models import EventMetaBase
 from core.utils import SlugField
 
 
-class LabourEventMeta(models.Model):
-    event = models.OneToOneField('core.Event', primary_key=True)
+class LabourEventMeta(EventMetaBase):
     signup_extra_content_type = models.ForeignKey('contenttypes.ContentType')
 
     registration_opens = models.DateTimeField(
@@ -26,8 +26,6 @@ class LabourEventMeta(models.Model):
 
     work_begins = models.DateTimeField(verbose_name=u'Ensimmäiset työvuorot alkavat')
     work_ends = models.DateTimeField(verbose_name=u'Viimeiset työvuorot päättyvät')
-
-    admin_group = models.ForeignKey('auth.Group')
 
     class Meta:
         verbose_name = u'tapahtuman työvoimatiedot'

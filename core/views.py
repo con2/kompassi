@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
+from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods
 
 from .models import Event
@@ -13,15 +14,14 @@ from .utils import initialize_form
 
 
 def core_frontpage_view(request):
-    vars = dict(
-        settings=settings
-    )
+    t = now()
 
-    if 'labour' in settings.INSTALLED_APPS:
-        from labour.models import LabourEventMeta
-        vars.update(
-            events_registration_open=LabourEventMeta.events_registration_open(),
-        )
+    vars = dict(
+        settings=settings,
+        past_events=Event.objects.filter(public=True, end_time__lte=t).order_by('-start_time'),
+        current_events=Event.objects.filter(public=True, start_time__lte=t, end_time__gt=t).order_by('-start_time'),
+        future_events=Event.objects.filter(public=True, start_time__gt=t).order_by('-start_time'),
+    )
 
     return render(request, 'core_frontpage_view.jade', vars)
 

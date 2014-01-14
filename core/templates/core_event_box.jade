@@ -1,0 +1,19 @@
+.panel.panel-default
+  .panel-heading: strong: a(href='{% url "core_event_view" event.slug %}') {{ event.name }}
+  .panel-body
+    p {{ event.venue.name_inessive }}
+    if event.start_time
+      p {{ event.start_time|date }} &ndash; {{ event.end_time|date }}
+    p
+      if event.labour_event_meta
+        if event.labour_event_meta.is_registration_open
+          span.label.label-primary: a(href='{% url "labour_signup_view" event.slug %}') Työvoimahaku käynnissä
+        else
+          span.label.label-default Työvoima
+        | &thinsp;
+      if event.programme_event_meta
+        if event.programme_event_meta.public
+          span.label.label-primary: a(href='{% url "programme_timetable_view" event.slug %}') Ohjelmakartta
+        else
+          span.label.label-default Ohjelma
+        | &thinsp;

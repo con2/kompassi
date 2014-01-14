@@ -57,7 +57,9 @@ footer .credit {
   padding-top: 10px;
 }
 
-
+.label-primary a {
+  color: white;
+}
 
 
 
