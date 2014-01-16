@@ -76,7 +76,7 @@ class RegistrationForm(forms.Form):
     password_again = forms.CharField(
         required=True,
         max_length=1023,
-        label=u'Salasana',
+        label=u'Salasana uudestaan',
         widget=forms.PasswordInput,
     )
 

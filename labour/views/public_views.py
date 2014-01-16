@@ -30,6 +30,11 @@ def labour_signup_view(request, event):
     signup_form = initialize_form(SignupForm, request, instance=signup, prefix='signup')
     signup_extra_form = initialize_form(SignupExtraForm, request, instance=signup_extra, prefix='extra')
 
+    if signup.pk is not None:
+        submit_text = 'Tallenna muutokset'
+    else:
+        submit_text = 'Lähetä ilmoittautuminen'
+
     if request.method == 'POST':
         if signup_form.is_valid() and signup_extra_form.is_valid():
             if signup.pk is None:
@@ -50,6 +55,7 @@ def labour_signup_view(request, event):
         event=event,
         signup_form=signup_form,
         signup_extra_form=signup_extra_form,
+        submit_text=submit_text,
     )
 
     return render(request, 'labour_signup_view.jade', vars)

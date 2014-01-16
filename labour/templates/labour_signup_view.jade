@@ -10,9 +10,11 @@ block content
       // XXX why is this extra p necessary to preserve spacing
     fieldset
       legend Lähetä ilmoittautuminen
-      input.btn.btn-primary(type='submit', name='submit', value='Lähetä ilmoittautuminen')
-      | 
-      a.btn.btn-default(href='{% url "core_event_view" event.slug %}') Peruuta
+      .form-group
+        .controls.col-md-5.col-md-offset-3
+          .btn-group
+            input.btn.btn-primary(type='submit', name='submit', value='{{ submit_text }}')
+            a.btn.btn-default(href='{% url "core_event_view" event.slug %}') Peruuta
       p
         // XXX why is this extra p necessary to preserve spacing
 
