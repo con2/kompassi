@@ -2,14 +2,16 @@
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods
 
 from .models import Event
-from .forms import PersonForm
+from .forms import PersonForm, RegistrationForm
 from .utils import initialize_form
 
 
@@ -43,6 +45,49 @@ def core_event_view(request, event):
         vars.update(programme_event_box_context(request, event))
 
     return render(request, 'core_event_view.jade', vars)
+
+
+@require_http_methods(['GET','POST'])
+def core_registration_view(request):
+    person_form = initialize_form(PersonForm, request, prefix='person')
+    person_form.helper.form_tag = False
+    registration_form = initialize_form(RegistrationForm, request, prefix='registration')
+
+    if request.method == 'POST':
+        if person_form.is_valid() and registration_form.is_valid():
+            username = registration_form.cleaned_data['username']
+            password = registration_form.cleaned_data['password']
+
+            person = person_form.save(commit=False)
+            user = User(
+                username=username,
+                is_active=True,
+                is_staff=False,
+                is_superuser=False,
+            )
+
+            user.set_password(password)
+            user.save()
+
+            person.user = user
+            person.save()
+
+            user = authenticate(username=username, password=password)
+            login(request, user)
+
+            # TODO next
+            messages.success(request, u'Käyttäjätunnuksesi on luotu. Tervetuloa ConDB:hen!')
+            return redirect('core_frontpage_view')
+        else:
+            messages.error(request, u'Ole hyvä ja tarkista lomake.')
+
+    vars = dict(
+        person_form=person_form,
+        registration_form=registration_form,
+        login_page=True
+    )
+
+    return render(request, 'core_registration_view.jade', vars)
 
 
 @login_required

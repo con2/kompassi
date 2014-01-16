@@ -22,7 +22,7 @@ def initialize_form(FormClass, request, *args, **kwargs):
 
 
 def indented_without_label(input):
-    return Div(Div(input, css_class='controls col-md-5 col-md-offset-3'), css_class='form-group')
+    return Div(Div(input, css_class='controls col-md-offset-3 col-md-9'), css_class='form-group')
 
 
 def horizontal_form_helper():

@@ -268,6 +268,21 @@ class Person(models.Model):
             )
         )
 
+    def save(self, *args, **kwargs):
+        ret_val = super(Person, self).save(*args, **kwargs)
+
+        if self.user:
+            # Update first_name, last_name and email in User if they differ from those in Person
+            for person_attr, user_attr in [
+                ('first_name', 'first_name'),
+                ('surname', 'last_name'),
+                ('email', 'email'),
+            ]:
+                setattr(self.user, user_attr, getattr(self, person_attr))
+
+            self.user.save()
+
+        return ret_val
 
 
 

@@ -10,13 +10,15 @@ if user.is_authenticated
       li.divider
       li: a(href='/logout') Kirjaudu ulos
 elif not login_page
-  form.navbar-form(role='form', action='/login', method='POST')
-    {% csrf_token %}
-    input(type='hidden', name='next', value='{{ request.path }}')
-    .form-group
-      input.form-control(type='text', placeholder='Käyttäjätunnus', name='username')
-    | &thinsp;
-    .form-group
-      input.form-control(type='password', placeholder='Salasana', name='password')
-    | &thinsp;
-    button.btn.btn-success(type='submit') Kirjaudu
+  li: a(href='{% url "core_registration_view" %}') Rekisteröidy
+  li
+    form.navbar-form(role='form', action='/login', method='POST')
+      {% csrf_token %}
+      input(type='hidden', name='next', value='{{ request.path }}')
+      .form-group
+        input.form-control(type='text', placeholder='Käyttäjätunnus', name='username')
+      | &thinsp;
+      .form-group
+        input.form-control(type='password', placeholder='Salasana', name='password')
+      | &thinsp;
+      button.btn.btn-success(type='submit') Kirjaudu

@@ -3,7 +3,12 @@ from django.shortcuts import redirect
 from django.contrib.auth.views import login, logout
 
 from .forms import LoginForm
-from .views import core_frontpage_view, core_event_view, core_profile_view
+from .views import (
+    core_event_view,
+    core_frontpage_view,
+    core_profile_view,
+    core_registration_view,
+)
 
 
 urlpatterns = patterns(
@@ -19,6 +24,7 @@ urlpatterns = patterns(
         ),
         name='core_login_view'
     ),
+    url(r'^register$', core_registration_view, name='core_registration_view'),
     url(r'^logout$', logout, dict(next_page='/'), name='core_logout_view'),
     url(r'^profile$', core_profile_view, name='core_profile_view'),
 )

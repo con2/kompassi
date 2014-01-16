@@ -32,6 +32,12 @@ class PersonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PersonForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
+
+        if self.instance.pk is None:
+            save_button_text = u'Rekisteröidy'
+        else:
+            save_button_text = u'Tallenna tiedot'
+
         self.helper.layout = Layout(
             Fieldset(u'Perustiedot',
                 'first_name',
@@ -43,8 +49,7 @@ class PersonForm(forms.ModelForm):
                 'email',
                 'phone'
             ),
-            indented_without_label(Submit('submit', u'Tallenna', css_class='btn-primary'))
-
+            indented_without_label(Submit('submit', save_button_text, css_class='btn-primary'))
         )
 
     class Meta:
@@ -57,3 +62,58 @@ class PersonForm(forms.ModelForm):
             'email',
             'phone',
         )
+
+
+class RegistrationForm(forms.Form):
+    username = forms.CharField(required=True, max_length=30, label=u'Käyttäjänimi')
+
+    password = forms.CharField(
+        required=True,
+        max_length=1023,
+        label=u'Salasana',
+        widget=forms.PasswordInput,
+    )
+    password_again = forms.CharField(
+        required=True,
+        max_length=1023,
+        label=u'Salasana',
+        widget=forms.PasswordInput,
+    )
+
+    accept_terms_and_conditions = forms.BooleanField(
+        required=True,
+        label=u'Annan luvan henkilötietojeni käsittelyyn rekisteriselosteen mukaisesti (TODO rekisteriseloste)'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrationForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset(u'Käyttäjätunnus ja salasana',
+                'username',
+                'password',
+                'password_again'
+            ),
+            Fieldset(u'Suostumus henkilötietojen käsittelyyn',
+                indented_without_label('accept_terms_and_conditions')
+            ),
+        )
+
+    def clean_username(self):
+        from django.contrib.auth.models import User
+
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError(u'Käyttäjänimi on jo käytössä.')
+
+        return username
+
+    def clean_password_again(self):
+        password = self.cleaned_data.get('password')
+        password_again = self.cleaned_data.get('password_again')
+
+        if password and password_again and password != password_again:
+            raise forms.ValidationError(u'Salasanat eivät täsmää.')
+
+        return password_again
