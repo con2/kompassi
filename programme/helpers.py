@@ -18,7 +18,7 @@ def programme_event_required(view_func):
             messages.error(request, u"Tämä tapahtuma ei käytä ConDB:tä ohjelman hallintaan.")
             return redirect('core_event_view', event.slug)
 
-        if not meta.public or event.programme_event_meta.is_user_admin(request.user):
+        if not (meta.public or event.programme_event_meta.is_user_admin(request.user)):
             messages.error(request, u"Tämän tapahtuman ohjelma ei ole vielä julkinen.")
             return redirect('core_event_view', event.slug)
 
