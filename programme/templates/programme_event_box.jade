@@ -1,3 +1,4 @@
-h3 Tapahtuman ohjelmakartta löytyy ConDB:stä
+if event.programme_event_meta.public
+    h3 Tapahtuman ohjelmakartta löytyy ConDB:stä
 
-p: a(href='{% url "programme_timetable_view" event.slug %}') Tutustu ohjelmakarttaan
+    p: a(href='{% url "programme_timetable_view" event.slug %}') Tutustu ohjelmakarttaan
