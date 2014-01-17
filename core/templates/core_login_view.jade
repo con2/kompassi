@@ -3,4 +3,10 @@ extends base.jade
 block content
   .core-login-view
     h2 Kirjaudu sisään
-    - crispy form
+    form(method='POST', action='{% url "core_login_view" %}', role='form').form.form-horizontal
+      input(type='hidden', name='next', value='{{ next }}')
+      - crispy form
+      .form-group
+        .controls.col-md-9.col-md-offset-3
+          input.btn.btn-primary(type='submit', value='Kirjaudu sisään')
+          a.btn.btn-link(href='{% url "core_registration_view" %}?next={{ next }}') Rekisteröidy

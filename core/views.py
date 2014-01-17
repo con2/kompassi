@@ -54,6 +54,7 @@ def core_registration_view(request):
     registration_form = initialize_form(RegistrationForm, request, prefix='registration')
 
     if request.method == 'POST':
+        next = request.POST.get('next', None)
         if person_form.is_valid() and registration_form.is_valid():
             username = registration_form.cleaned_data['username']
             password = registration_form.cleaned_data['password']
@@ -75,13 +76,15 @@ def core_registration_view(request):
             user = authenticate(username=username, password=password)
             login(request, user)
 
-            # TODO next
             messages.success(request, u'Käyttäjätunnuksesi on luotu. Tervetuloa ConDB:hen!')
-            return redirect('core_frontpage_view')
+            return redirect(next if next else 'core_frontpage_view')
         else:
             messages.error(request, u'Ole hyvä ja tarkista lomake.')
+    else:
+        next = request.GET.get('next', None)
 
     vars = dict(
+        next=next,
         person_form=person_form,
         registration_form=registration_form,
         login_page=True

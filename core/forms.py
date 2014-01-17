@@ -16,11 +16,10 @@ class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             'username',
             'password',
-            Hidden('next', '/'), # XXX
-            indented_without_label(Submit('submit', u'Kirjaudu sisään', css_class='btn-primary'))
         )
 
 

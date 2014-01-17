@@ -1,7 +1,7 @@
 extends base.jade
 - load crispy_forms_tags
 block content
-  h2 {{ event.name }}
+  h2 Ilmoittaudu vapaaehtoistyöhön {{ event.name_illative }}
 
   form(action='{% url "labour_signup_view" event.slug %}', method='POST', role='form').form-horizontal
     - crispy signup_form
