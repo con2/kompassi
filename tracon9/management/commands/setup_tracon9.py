@@ -11,7 +11,7 @@ from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Qualification
 from programme.models import ProgrammeEventMeta
 
-from ...models import SignupExtra
+from ...models import SignupExtra, SpecialDiet
 
 class Command(BaseCommand):
     args = ''
@@ -125,3 +125,12 @@ class Command(BaseCommand):
         )
         logistiikka.required_qualifications = [b_ajokortti]
         logistiikka.save()
+
+        for diet_name in [
+            u'Laktoositon',
+            u'Maidoton',
+            u'Gluteeniton',
+            u'Lakto-ovo-vegaaninen',
+            u'Vegaaninen'
+        ]:
+            SpecialDiet.objects.get_or_create(name=diet_name)

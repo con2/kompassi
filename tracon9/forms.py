@@ -20,7 +20,8 @@ class SignupExtraForm(forms.ModelForm):
             ),
             Fieldset(u'Lisätiedot',
                 'shirt_size',
-                'allergies',
+                'special_diet',
+                'special_diet_other',
                 'prior_experience',
                 'free_text',
             )
@@ -33,10 +34,16 @@ class SignupExtraForm(forms.ModelForm):
             'want_certificate',
             'certificate_delivery_address',
             'shirt_size',
-            'allergies',
+            'special_diet',
+            'special_diet_other',
             'prior_experience',
             'free_text',
         )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple
+        )
+
 
 
     def clean_certificate_delivery_address(self):
