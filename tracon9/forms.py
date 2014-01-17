@@ -8,6 +8,7 @@ from core.utils import horizontal_form_helper, indented_without_label
 
 from .models import SignupExtra
 
+
 class SignupExtraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SignupExtraForm, self).__init__(*args, **kwargs)

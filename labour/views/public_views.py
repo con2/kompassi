@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -11,7 +13,7 @@ from core.utils import initialize_form, url
 from core.models import Event
 
 from ..forms import SignupForm
-from ..models import LabourEventMeta, Qualification, PersonQualification, Signup
+from ..models import LabourEventMeta, Qualification, PersonQualification, Signup, JobCategory
 from ..helpers import labour_event_required
 
 
@@ -51,11 +53,16 @@ def labour_signup_view(request, event):
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
+    job_cats = JobCategory.objects.filter(event=event, public=True)
+
     vars = dict(
         event=event,
         signup_form=signup_form,
         signup_extra_form=signup_extra_form,
         submit_text=submit_text,
+
+        # XXX HACK descriptions injected using javascript
+        job_descriptions_json=json.dumps(dict((cat.pk, cat.description) for cat in job_cats)),
     )
 
     return render(request, 'labour_signup_view.jade', vars)

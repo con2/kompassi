@@ -18,3 +18,7 @@ block content
       p
         // XXX why is this extra p necessary to preserve spacing
 
+block extra_scripts
+  script
+    window.labourJobDescriptions = {{job_descriptions_json|safe}};
+  script(src='{{ STATIC_URL }}job_descriptions.js')
