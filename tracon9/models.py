@@ -27,6 +27,18 @@ SHIRT_SIZES = [
 
 
 class SignupExtra(SignupExtraBase):
+    want_certificate = models.BooleanField(
+        default=False,
+        verbose_name=u'Haluan todistuksen työskentelystäni Traconissa',
+    )
+
+    certificate_delivery_address = models.TextField(
+        blank=True,
+        verbose_name=u'Työtodistuksen toimitusosoite',
+        help_text=u'Jos haluat työtodistuksen, täytä tähän kenttään postiosoite (katuosoite, '
+            u'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
+    )
+
     shirt_size = models.CharField(max_length=8, choices=SHIRT_SIZES, verbose_name=u'Paidan koko')
 
     allergies = models.TextField(
