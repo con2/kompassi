@@ -9,7 +9,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 
-from core.utils import initialize_form, url
+from core.utils import initialize_form
 from core.models import Event
 
 from ..forms import SignupForm
@@ -161,7 +161,7 @@ def labour_person_disqualify_view(request, qualification):
 
 
 def labour_profile_menu_items(request):
-    qualifications_url = url('labour_qualifications_view')
+    qualifications_url = reverse('labour_qualifications_view')
     qualifications_active = request.path.startswith(qualifications_url)
     qualifications_text = u"Pätevyydet"
 
