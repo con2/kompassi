@@ -71,8 +71,14 @@ def labour_admin_roster_job_category_fragment(request, vars, event, job_category
     job_category = get_object_or_404(JobCategory, event=event, pk=job_category)
 
     vars.update(
-        job_category=job_category,
         **labour_admin_roster_vars(request, event)
+    )
+
+    hours = vars['hours']
+
+    vars.update(
+        job_category=job_category,
+        totals=[0 for i in hours],
     )
 
     return json_response(dict(

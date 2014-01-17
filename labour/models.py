@@ -2,6 +2,7 @@
 
 from datetime import date, datetime, timedelta
 
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.timezone import now
 
@@ -93,6 +94,11 @@ class LabourEventMeta(EventMetaBase):
             return True
 
         return user.groups.filter(pk=self.admin_group.pk).exists()
+
+    @property
+    def work_hours(self):
+        from programme.utils import full_hours_between
+        return full_hours_between(self.work_begins, self.work_ends)
 
 
 class Qualification(models.Model):
@@ -194,6 +200,61 @@ class JobCategory(models.Model):
         return self.name
 
 
+ONE_HOUR = timedelta(hours=1)
+
+
+class Job(models.Model):
+    job_category = models.ForeignKey(JobCategory, verbose_name=u'tehtäväalue')
+    title = models.CharField(max_length=31, verbose_name=u'tehtävän nimi')
+
+    class Meta:
+        verbose_name = u'tehtävä'
+        verbose_name_plural = u'tehtävät'
+
+    def __unicode__(self):
+        return self.title
+
+    @property
+    def expanded_requirements(self):
+        requirements = []
+        
+        for hour in self.job_category.event.labour_event_meta.work_hours:
+            try:
+                job_requirement = self.jobrequirement_set.get(
+                    start_time__lte=hour,
+                    end_time__gt=hour,
+                )
+                count = job_requirement.count
+            except JobRequirement.DoesNotExist:
+                count = 0
+
+            requirements.append(JobRequirement(
+                job=self,
+                start_time=hour,
+                end_time=hour + ONE_HOUR,
+                count=count
+            ))
+
+        return requirements
+
+
+class JobRequirement(models.Model):
+    job = models.ForeignKey(Job, verbose_name=u'tehtävä')
+
+    count = models.IntegerField(
+        verbose_name=u'vaadittu henkilömäärä',
+        validators=[MinValueValidator(0)],
+        default=0
+    )
+
+    start_time = models.DateTimeField(verbose_name=u'vaatimuksen alkuaika')
+    end_time = models.DateTimeField(verbose_name=u'vaatimuksen päättymisaika')
+
+    class Meta:
+        verbose_name = u'henkilöstövaatimus'
+        verbose_name_plural = u'henkilöstövaatimukset'
+
+
 NUM_FIRST_CATEGORIES = 5
 
 
@@ -203,8 +264,8 @@ class Signup(models.Model):
 
     job_categories = models.ManyToManyField(JobCategory,
         verbose_name=u'Haettavat tehtävät',
-        help_text=u'TODO kuvaukset tulee näkyviin kun kerkiää. Valitse kaikki ne tehtävät, '
-            u'joissa olisit valmis työskentelemään tapahtumassa.',
+        help_text=u'Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään '
+            u'tapahtumassa.',
         related_name='signup_set'
     )
 
@@ -289,6 +350,7 @@ class EmptySignupExtra(SignupExtraBase):
 
 __all__ = [
     'LabourEventMeta',
+    'Job',
     'JobCategory',
     'PersonQualification',
     'Qualification',

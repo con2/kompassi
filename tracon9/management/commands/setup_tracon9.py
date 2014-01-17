@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import get_default_timezone, now
 
 from core.models import Event, Person, Venue
-from labour.models import LabourEventMeta, JobCategory, Qualification
+from labour.models import LabourEventMeta, JobCategory, Job, Qualification
 from programme.models import ProgrammeEventMeta
 
 from ...models import SignupExtra, SpecialDiet
@@ -125,6 +125,23 @@ class Command(BaseCommand):
         )
         logistiikka.required_qualifications = [b_ajokortti]
         logistiikka.save()
+
+        for job_category_name, job_names in [
+            (u'Järjestyksenvalvoja', (
+                u'Järjestyksenvalvojain vuoroesimies',
+                u'Järjestyksenvalvoja',
+            )),
+            (u'Yleisvänkäri', (
+                u'TS-1 -ryhmän ylivänkäri',
+                u'TS-1 -ryhmän yleisvänkäri',
+                u'TS-2 -ryhmän ylivänkäri',
+                u'TS-2 -ryhmän yleisvänkäri',
+            )),
+        ]:
+            job_category = JobCategory.objects.get(event=event, name=job_category_name)
+            for job_name in job_names:
+                Job.objects.get_or_create(job_category=job_category, title=job_name)
+
 
         for diet_name in [
             u'Laktoositon',
