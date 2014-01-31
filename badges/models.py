@@ -1,5 +1,7 @@
 from django.db import models
 
+from core.models import EventMetaBase
+
 
 class BadgesEventMeta(EventMetaBase):
     @classmethod
@@ -7,6 +9,7 @@ class BadgesEventMeta(EventMetaBase):
         from core.models import Event
         event, unused = Event.get_or_create_dummy()
         return cls.get_or_create(event=event)
+
 
 class Template(models.Model):
     event = models.ForeignKey('core.Event')
