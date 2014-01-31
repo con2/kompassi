@@ -52,23 +52,27 @@ class LabourEventMeta(EventMetaBase):
         )
 
     @classmethod
-    def create_dummy(cls):
+    def get_or_create_dummy(cls):
         from core.models import Event
         from django.contrib.auth.models import Group
         from django.contrib.contenttypes.models import ContentType
 
-        event = Event.create_dummy()
-        group = Group.objects.create(name='Dummy group')
+        event, unused = Event.get_or_create_dummy()
+        group, unused = Group.objects.get_or_create(name='Dummy group')
         content_type = ContentType.objects.get_for_model(EmptySignupExtra)
 
         t = now()
 
-        return cls.objects.create(
+        return cls.objects.get_or_create(
             event=event,
-            admin_group=group,
-            signup_extra_content_type=content_type,
-            registration_opens=t - timedelta(days=60),
-            registration_closes=t + timedelta(days=60)
+            defaults=dict(
+                admin_group=group,
+                signup_extra_content_type=content_type,
+                registration_opens=t - timedelta(days=60),
+                registration_closes=t + timedelta(days=60),
+                work_begins=event.start_time - timedelta(days=1),
+                work_ends=event.end_time + timedelta(days=1),
+            )
         )
 
     @property

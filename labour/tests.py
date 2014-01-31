@@ -9,7 +9,7 @@ from .models import LabourEventMeta
 class LabourEventAdminTest(TestCase):
     def test_event_adminship(self):
         person, unused = Person.get_or_create_dummy(superuser=False)
-        labour_event_meta = LabourEventMeta.create_dummy()
+        labour_event_meta, unused = LabourEventMeta.get_or_create_dummy()
 
         assert not labour_event_meta.is_user_admin(person.user)
 
@@ -19,6 +19,6 @@ class LabourEventAdminTest(TestCase):
 
     def test_event_adminship_superuser(self):
         person, unused = Person.get_or_create_dummy(superuser=True)
-        labour_event_meta = LabourEventMeta.create_dummy()
+        labour_event_meta, unused = LabourEventMeta.get_or_create_dummy()
 
         assert labour_event_meta.is_user_admin(person.user)

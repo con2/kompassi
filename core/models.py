@@ -115,7 +115,7 @@ class Event(models.Model):
             for field, suffix in [
                 ('name_genitive', 'in'),
                 ('name_illative', 'iin'),
-                ('name_inessive', 'issa')
+                ('name_inessive', 'issa'),
             ]:
                 if not getattr(self, field, None):
                     setattr(self, field, self.name + suffix)
@@ -126,20 +126,22 @@ class Event(models.Model):
     def name_and_year(self):
         return u"{name} ({year})".format(
             name=self.name,
-            year=self.start_time.year
+            year=self.start_time.year,
         )
 
 
     @classmethod
-    def create_dummy(cls):
+    def get_or_create_dummy(cls):
         venue = Venue.create_dummy()
         t = now()
 
-        return cls.objects.create(
+        return cls.objects.get_or_create(
             name='Dummy event',
-            venue=venue,
-            start_time=t + timedelta(days=60),
-            end_time=t + timedelta(days=61),
+            defaults=dict(
+                venue=venue,
+                start_time=t + timedelta(days=60),
+                end_time=t + timedelta(days=61),
+            ),
         )
 
     @property
@@ -164,6 +166,18 @@ class Event(models.Model):
         try:
             return self.programmeeventmeta
         except ProgrammeEventMeta.DoesNotExist:
+            return None
+
+    @property
+    def badges_event_meta(self):
+        if 'badges' not in settings.INSTALLED_APPS:
+            return None
+
+        from badges.models import BadgesEventMeta
+
+        try:
+            return self.badgeseventmeta
+        except BadgesEventMeta.DoesNotExist:
             return None
 
 
