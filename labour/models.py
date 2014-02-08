@@ -222,10 +222,11 @@ class WorkPeriod(models.Model):
         verbose_name_plural=u'työvuorotoiveet'
 
     def __unicode__(self):
+        datetime_format = '%a %H:%M:%S'
         return u'{description} ({start_time} - {end_time})'.format(
             description=self.description,
-            start_time=format_datetime(self.start_time),
-            end_time=format_datetime(self.end_time),
+            start_time=self.start_time.strftime(datetime_format),
+            end_time=self.end_time.strftime(datetime_format),
         )
 
 
@@ -295,6 +296,14 @@ class Signup(models.Model):
         verbose_name=u'Haettavat tehtävät',
         help_text=u'Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään '
             u'tapahtumassa.',
+        related_name='signup_set'
+    )
+
+    work_periods = models.ManyToManyField(WorkPeriod,
+        verbose_name=u'Työvuorotoiveet',
+        help_text=u'Valitse kaikki ne ajanjaksot, joina voit työskennellä tapahtumassa. '
+            u'Tämä ei ole lopullinen työvuorosi, vaan työvoimatiimi pyrkii sijoittamaan '
+            u'työvuorosi näille ajoille.',
         related_name='signup_set'
     )
 

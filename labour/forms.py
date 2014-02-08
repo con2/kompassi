@@ -21,14 +21,18 @@ class SignupForm(forms.ModelForm):
             Fieldset(u'Tehtävät',
                 'job_categories'
             ),
+            Fieldset(u'Työvuorotoiveet',
+                'work_periods'
+            ),
         )
 
     class Meta:
         model = Signup
-        fields = ('job_categories',)
+        fields = ('job_categories', 'work_periods')
 
         widgets = dict(
-            job_categories=forms.CheckboxSelectMultiple
+            job_categories=forms.CheckboxSelectMultiple,
+            work_periods=forms.CheckboxSelectMultiple,
         )
 
 
