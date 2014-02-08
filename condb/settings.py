@@ -227,5 +227,9 @@ MESSAGE_TAGS = {
 }
 
 DATE_FORMAT = 'j.n.Y'
+DATE_FORMAT_STRFTIME = '%d.%m.%Y'
+
 DATETIME_FORMAT = 'j.n.Y G:i:s'
+DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
+
 USE_L10N = True

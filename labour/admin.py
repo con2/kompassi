@@ -2,7 +2,14 @@
 
 from django.contrib import admin
 
-from .models import JobCategory, LabourEventMeta, PersonQualification, Qualification, Signup
+from .models import (
+    JobCategory,
+    LabourEventMeta,
+    PersonQualification,
+    Qualification,
+    Signup,
+    WorkPeriod,
+)
 
 class InlineLabourEventMetaAdmin(admin.StackedInline):
     model = LabourEventMeta
@@ -29,5 +36,6 @@ class JobCategoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Signup)
+admin.site.register(WorkPeriod)
 admin.site.register(JobCategory, JobCategoryAdmin)
 admin.site.register(Qualification, QualificationAdmin)

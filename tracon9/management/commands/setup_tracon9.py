@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import get_default_timezone, now
 
 from core.models import Event, Person, Venue
-from labour.models import LabourEventMeta, JobCategory, Job, Qualification
+from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
 from programme.models import ProgrammeEventMeta
 
 from ...models import SignupExtra, SpecialDiet
@@ -142,6 +142,21 @@ class Command(BaseCommand):
             for job_name in job_names:
                 Job.objects.get_or_create(job_category=job_category, title=job_name)
 
+        period_length = timedelta(hours=8)
+        for period_description, period_start in [
+            ("Lauantain aamuvuoro", event.start_time.replace(hour=8)),
+            ("Lauantain iltavuoro", event.start_time.replace(hour=16)),
+            ("Lauantai-sunnuntai-yövuoro", event.end_time.replace(hour=0)),
+            ("Sunnuntain aamuvuoro", event.end_time.replace(hour=8)),
+        ]:
+            WorkPeriod.objects.get_or_create(
+                event=event,
+                description=period_description,
+                defaults=dict(
+                    start_time=period_start,
+                    end_time=period_start + period_length
+                )
+            )
 
         for diet_name in [
             u'Laktoositon',

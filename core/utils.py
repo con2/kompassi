@@ -3,6 +3,7 @@
 import json
 
 from django import forms
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.http import HttpResponse
@@ -78,3 +79,11 @@ def json_response(data, **kwargs):
 
 def render_string(request, template_name, vars):
     return render_to_string(template_name, vars, context_instance=RequestContext(request))
+
+
+def format_date(date):
+    return date.strftime(settings.DATE_FORMAT_STRFTIME)
+
+
+def format_datetime(datetime):
+    return datetime.strftime(settings.DATETIME_FORMAT_STRFTIME)

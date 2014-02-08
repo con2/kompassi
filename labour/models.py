@@ -2,12 +2,13 @@
 
 from datetime import date, datetime, timedelta
 
+from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.timezone import now
 
 from core.models import EventMetaBase
-from core.utils import SlugField
+from core.utils import SlugField, format_datetime
 
 
 class LabourEventMeta(EventMetaBase):
@@ -202,6 +203,30 @@ class JobCategory(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class WorkPeriod(models.Model):
+    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
+
+    description = models.CharField(
+        blank=True,
+        max_length=63,
+        verbose_name=u'Kuvaus'
+    )
+
+    start_time = models.DateTimeField(verbose_name=u'Alkuaika')
+    end_time = models.DateTimeField(verbose_name=u'Loppuaika')
+
+    class Meta:
+        verbose_name = u'työvuorotoive'
+        verbose_name_plural=u'työvuorotoiveet'
+
+    def __unicode__(self):
+        return u'{description} ({start_time} - {end_time})'.format(
+            description=self.description,
+            start_time=format_datetime(self.start_time),
+            end_time=format_datetime(self.end_time),
+        )
 
 
 ONE_HOUR = timedelta(hours=1)
