@@ -104,7 +104,7 @@ def core_profile_view(request):
             person = form.save()
             messages.success(request, u'Tiedot tallennettiin.')
         else:
-            messages.success(request, u'Ole hyvä ja korjaa virheelliset kentät.')
+            messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
     vars = dict(
         form=form
