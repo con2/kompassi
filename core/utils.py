@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
+from django.utils.timezone import get_default_timezone
 
 
 def initialize_form(FormClass, request, *args, **kwargs):
@@ -86,4 +87,4 @@ def format_date(date):
 
 
 def format_datetime(datetime):
-    return datetime.strftime(settings.DATETIME_FORMAT_STRFTIME)
+    return datetime.astimezone(get_default_timezone()).strftime(settings.DATETIME_FORMAT_STRFTIME)
