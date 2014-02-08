@@ -143,8 +143,8 @@ class Event(models.Model):
                 end_time=t + timedelta(days=61),
             ),
         )
-
-    labour_event_meta = property(_labour_event_meta)
+    
+    @property
     def labour_event_meta(self):
         if 'labour' not in settings.INSTALLED_APPS:
             return None
