@@ -13,7 +13,7 @@ class BadgesEventMeta(EventMetaBase):
 
 class Template(models.Model):
     event = models.ForeignKey('core.Event')
-    affiliation = models.CharField(max_length=31)
+    affiliation = models.CharField(max_length=63)
 
 
 class Badge(models.Model):

@@ -12,9 +12,9 @@ from .utils import validate_slug, SlugField
 
 
 class Venue(models.Model):
-    name = models.CharField(max_length=31, verbose_name=u'Tapahtumapaikan nimi')
+    name = models.CharField(max_length=63, verbose_name=u'Tapahtumapaikan nimi')
     name_inessive = models.CharField(
-        max_length=31,
+        max_length=63,
         verbose_name=u'Tapahtumapaikan nimi inessiivissä',
         help_text=u'Esimerkki: Paasitornissa',
     )
@@ -41,22 +41,22 @@ class Venue(models.Model):
 
 class Event(models.Model):
     slug = SlugField()
-    name = models.CharField(max_length=31, verbose_name=u'Tapahtuman nimi')
+    name = models.CharField(max_length=63, verbose_name=u'Tapahtuman nimi')
 
     name_genitive = models.CharField(
-        max_length=31,
+        max_length=63,
         verbose_name=u'Tapahtuman nimi genetiivissä',
         help_text=u'Esimerkki: Susiconin',
     )
 
     name_illative = models.CharField(
-        max_length=31,
+        max_length=63,
         verbose_name=u'Tapahtuman nimi illatiivissä',
         help_text=u'Esimerkki: Susiconiin',
     )
 
     name_inessive = models.CharField(
-        max_length=31,
+        max_length=63,
         verbose_name=u'Tapahtuman nimi inessiivissä',
         help_text=u'Esimerkki: Susiconissa',
     )
@@ -144,7 +144,7 @@ class Event(models.Model):
             ),
         )
 
-    @property
+    labour_event_meta = property(_labour_event_meta)
     def labour_event_meta(self):
         if 'labour' not in settings.INSTALLED_APPS:
             return None

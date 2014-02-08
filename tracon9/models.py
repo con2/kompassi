@@ -27,7 +27,7 @@ SHIRT_SIZES = [
 
 
 class SpecialDiet(models.Model):
-    name = models.CharField(max_length=31)
+    name = models.CharField(max_length=63)
 
     def __unicode__(self):
         return self.name

@@ -109,7 +109,7 @@ class LabourEventMeta(EventMetaBase):
 class Qualification(models.Model):
     slug = SlugField()
 
-    name = models.CharField(max_length=31, verbose_name=u'pätevyyden nimi')
+    name = models.CharField(max_length=63, verbose_name=u'pätevyyden nimi')
     description = models.TextField(blank=True, verbose_name=u'kuvaus')
 
     qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', null=True, blank=True)
@@ -179,7 +179,7 @@ class QualificationExtraBase(models.Model):
 class JobCategory(models.Model):
     event = models.ForeignKey('core.Event', verbose_name=u'tapahtuma')
 
-    name = models.CharField(max_length=31, verbose_name=u'tehtäväalueen nimi')
+    name = models.CharField(max_length=63, verbose_name=u'tehtäväalueen nimi')
 
     description = models.TextField(
         verbose_name=u'tehtäväalueen kuvaus',
@@ -235,7 +235,7 @@ ONE_HOUR = timedelta(hours=1)
 
 class Job(models.Model):
     job_category = models.ForeignKey(JobCategory, verbose_name=u'tehtäväalue')
-    title = models.CharField(max_length=31, verbose_name=u'tehtävän nimi')
+    title = models.CharField(max_length=63, verbose_name=u'tehtävän nimi')
 
     class Meta:
         verbose_name = u'tehtävä'

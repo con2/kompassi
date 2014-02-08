@@ -57,7 +57,7 @@ validate_slug = RegexValidator(
 class SlugField(models.CharField):
     def __init__(self, *args, **kwargs):
         defaults = dict(
-            max_length=31,
+            max_length=63,
             unique=True,
             validators=[validate_slug],
             verbose_name=u'Tekninen nimi',
