@@ -19,7 +19,7 @@ In `condb/settings.py`:
 
 ## Setting up your environment for FreeIPA integration development
 
-This is a short HOWTO for setting up your development environment on a Linux machine that is not integrated into the `TRACON.FI` Kerberos realm.
+If you need to do development on the FreeIPA integration, follow this short HOWTO for setting up your development environment on a Linux machine that is not integrated into the `TRACON.FI` Kerberos realm.
 
 ### Install Kerberos libraries and utilities
 
