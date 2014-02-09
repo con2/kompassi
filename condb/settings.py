@@ -238,3 +238,4 @@ USE_L10N = True
 
 CONDB_INSTALLATION_NAME = 'localdev'
 CONDB_IPA_JSONRPC = 'https://moukari.tracon.fi/ipa/json'
+CONDB_IPA_CACERT_PATH = '/etc/ipa/ca.crt'
