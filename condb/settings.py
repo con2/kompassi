@@ -205,6 +205,8 @@ LOGIN_URL = '/login'
 
 tz = tzlocal()
 
+# XXX this should go in the database
+# Tracon 8 specific
 TIMETABLE_TIME_BLOCKS = [
     (
         datetime(2013, 9, 14, 11, 0, 0, tzinfo=tz),
@@ -233,3 +235,5 @@ DATETIME_FORMAT = 'j.n.Y G:i:s'
 DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 
 USE_L10N = True
+
+CONDB_INSTALLATION_NAME = 'localdev'
