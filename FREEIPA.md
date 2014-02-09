@@ -19,11 +19,12 @@ In `condb/settings.py`:
 
 ## Setting up your environment for FreeIPA integration development
 
-If you need to do development on the FreeIPA integration, follow this short HOWTO for setting up your development environment on a Linux machine that is not integrated into the `TRACON.FI` Kerberos realm.
+If you need to do development on the FreeIPA integration, follow this short HOWTO for setting up your development environment on a (Ubuntu) Linux machine that is not integrated into the `TRACON.FI` Kerberos realm.
 
 ### Install Kerberos libraries and utilities
 
-    sudo apt-get install krb5-user
+    sudo apt-get install krb5-user libkrb5-dev python-dev build-essential
+    pip install -r requirements-kerberos.txt
 
 ### Get the FreeIPA CA certificate
 
