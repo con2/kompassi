@@ -25,6 +25,10 @@ This is a short HOWTO for setting up your development environment on a Linux mac
 
     sudo apt-get install krb5-user
 
+### Get the FreeIPA CA certificate
+
+Visit https://moukari.tracon.fi/ipa/config/ca.crt in your browser. Save the certificate file in eg. `/etc/ipa/ca.crt`.
+
 ### Set up SSH tunnels
 
 You need to do this every time it gets disconnected.
