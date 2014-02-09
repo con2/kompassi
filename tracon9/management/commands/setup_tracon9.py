@@ -11,7 +11,7 @@ from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
 from programme.models import ProgrammeEventMeta
 
-from ...models import SignupExtra, SpecialDiet
+from ...models import SignupExtra, SpecialDiet, Night
 
 class Command(BaseCommand):
     args = ''
@@ -159,10 +159,15 @@ class Command(BaseCommand):
             )
 
         for diet_name in [
+            u'Gluteeniton',
             u'Laktoositon',
             u'Maidoton',
-            u'Gluteeniton',
-            u'Lakto-ovo-vegaaninen',
-            u'Vegaaninen'
+            u'Vegaaninen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
+
+        for night in [
+            u'Perjantain ja lauantain välinen yö',
+            u'Lauantain ja sunnuntain välinen yö',
+        ]:
+            Night.objects.get_or_create(name=night)

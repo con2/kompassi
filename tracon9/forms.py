@@ -15,6 +15,11 @@ class SignupExtraForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
+            'shift_type',
+            'total_work',
+            indented_without_label('construction'),
+            indented_without_label('overseer'),
+
             Fieldset(u'Työtodistus',
                 indented_without_label('want_certificate'),
                 'certificate_delivery_address',
@@ -23,6 +28,7 @@ class SignupExtraForm(forms.ModelForm):
                 'shirt_size',
                 'special_diet',
                 'special_diet_other',
+                'lodging_needs',
                 'prior_experience',
                 'free_text',
             )
@@ -32,17 +38,23 @@ class SignupExtraForm(forms.ModelForm):
     class Meta:
         model = SignupExtra
         fields = (
+            'shift_type',
+            'total_work',
+            'construction',
+            'overseer',
             'want_certificate',
             'certificate_delivery_address',
             'shirt_size',
             'special_diet',
             'special_diet_other',
+            'lodging_needs',
             'prior_experience',
             'free_text',
         )
 
         widgets = dict(
-            special_diet=forms.CheckboxSelectMultiple
+            special_diet=forms.CheckboxSelectMultiple,
+            lodging_needs=forms.CheckboxSelectMultiple,
         )
 
 

@@ -25,15 +25,60 @@ SHIRT_SIZES = [
     (u'LF_XL', u'XL Ladyfit'),
 ]
 
+SHIFT_TYPE_CHOICES = [
+    (u'yksipitka', 'Yksi pitkä vuoro'),
+    (u'montalyhytta', 'Monta lyhyempää vuoroa'),
+    (u'kaikkikay', 'Kumpi tahansa käy'),
+]
 
-class SpecialDiet(models.Model):
+TOTAL_WORK_CHOICES = [
+    (u'8h', '8 tuntia (1 lämmin ateria)'),
+    (u'12h', '12 tuntia (2 lämmintä ateriaa)'),
+    (u'yli12h', 'Työn Sankari! Yli 12 tuntia! (2 lämmintä ateriaa)'),
+]
+
+
+class SimpleChoice(models.Model):
     name = models.CharField(max_length=63)
 
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        abstract = True
+
+
+class SpecialDiet(SimpleChoice):
+    pass
+
+
+class Night(SimpleChoice):
+    pass
+
 
 class SignupExtra(SignupExtraBase):
+    shift_type = models.CharField(max_length=15,
+        verbose_name=u'Toivottu työvuoron pituus',
+        help_text=u'Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
+        choices=SHIFT_TYPE_CHOICES,
+    )
+
+    total_work = models.CharField(max_length=15,
+        verbose_name=u'Toivottu kokonaistyömäärä',
+        help_text=u'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana?',
+        choices=TOTAL_WORK_CHOICES,
+    )
+
+    construction = models.BooleanField(
+        verbose_name=u'Voin osallistua perjantain kasaustalkoisiin',
+        help_text=u'Kasaustalkoisiin osallistumista ei lasketa tapahtuman aikaiseen kokonaistyömäärään.',
+    )
+
+    overseer = models.BooleanField(
+        verbose_name=u'Olen kiinnostunut vänkärikersantin tehtävistä',
+        help_text=u'Ylivänkärit eli kersantit ovat kokeneempia conityöläisiä, jotka toimivat oman tehtäväalueensa tiiminvetäjänä.',
+    )
+
     want_certificate = models.BooleanField(
         default=False,
         verbose_name=u'Haluan todistuksen työskentelystäni Traconissa',
@@ -60,6 +105,13 @@ class SignupExtra(SignupExtraBase):
         help_text=u'Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
             u'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
             u'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+    )
+
+    lodging_needs = models.ManyToManyField(Night,
+        blank=True,
+        verbose_name=u'Tarvitsen lattiamajoitusta',
+        help_text=u'Ruksaa ne yöt, joille tarvitset lattiamajoitusta. Lattiamajoitus sijaitsee '
+            u'kävelymatkan päässä tapahtumapaikalta.',
     )
 
     prior_experience = models.TextField(
