@@ -237,3 +237,4 @@ DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 USE_L10N = True
 
 CONDB_INSTALLATION_NAME = 'localdev'
+CONDB_IPA_JSONRPC = 'https://moukari.tracon.fi/ipa/json'
