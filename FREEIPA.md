@@ -6,7 +6,10 @@ ConDB supports optional integration with FreeIPA via LDAP, Kerberos and JSON-RPC
 
 In `condb/settings.py`:
 
+* `INSTALLED_APPS`: If `external_auth` is installed, integrates with IPA.
 * `CONDB_INSTALLATION_NAME`: Used as a prefix in many things such as FreeIPA groups.
+* `CONDB_IPA_JSONRPC`: The FreeIPA JSON-RPC endpoint.
+* `CONDB_IPA_CACERT_PATH`
 
 ## FreeIPA groups
 
