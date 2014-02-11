@@ -167,6 +167,7 @@ INSTALLED_APPS = (
     'programme',
     'labour',
     'labour_common_qualifications',
+    'external_auth',
 
     'tracon8',
     'tracon9',
@@ -236,6 +237,60 @@ DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 
 USE_L10N = True
 
-CONDB_INSTALLATION_NAME = 'localdev'
+CONDB_INSTALLATION_NAME = 'turskadev'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+if 'external_auth' in INSTALLED_APPS:
+    if DEBUG:
+        import logging
+
+        logger = logging.getLogger('django_auth_ldap')
+        logger.addHandler(logging.StreamHandler())
+        logger.setLevel(logging.DEBUG)
+
+    AUTHENTICATION_BACKENDS = (
+        'django_auth_ldap.backend.LDAPBackend',
+    ) + AUTHENTICATION_BACKENDS
+
+    CONDB_LDAP_DOMAIN = 'dc=tracon,dc=fi'
+    CONDB_LDAP_USERS = 'cn=users,cn=accounts,{CONDB_LDAP_DOMAIN}'.format(**locals())
+    CONDB_LDAP_GROUPS = 'cn=groups,cn=accounts,{CONDB_LDAP_DOMAIN}'.format(**locals())
+
+    import ldap
+    from django_auth_ldap.config import LDAPSearch, PosixGroupType, GroupOfNamesType
+
+    AUTH_LDAP_SERVER_URI = "ldap://localhost:64389" # ssh tunnel, see FREEIPA.md
+    
+    # AUTH_LDAP_BIND_DN = ""
+    # AUTH_LDAP_BIND_PASSWORD = ""
+    # AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,{CONDB_LDAP_USERS}".format(**locals())
+    AUTH_LDAP_USER_SEARCH = LDAPSearch(
+        CONDB_LDAP_USERS,
+        ldap.SCOPE_SUBTREE,
+        "(uid=%(user)s)"
+    )
+
+    AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+        CONDB_LDAP_GROUPS,
+        ldap.SCOPE_SUBTREE,
+        "(objectClass=posixGroup)"
+    )
+    AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
+
+    AUTH_LDAP_REQUIRE_GROUP = "cn={CONDB_INSTALLATION_NAME}-users,{CONDB_LDAP_GROUPS}".format(**locals())
+    # AUTH_LDAP_DENY_GROUP = "cn={CONDB_INSTALLATION_NAME}-banned,{CONDB_LDAP_GROUPS}".format(**locals())
+
+    AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+        "is_active": "cn={CONDB_INSTALLATION_NAME}-users,{CONDB_LDAP_GROUPS}".format(**locals()),
+        "is_staff": "cn={CONDB_INSTALLATION_NAME}-admins,{CONDB_LDAP_GROUPS}".format(**locals()),
+        "is_superuser": "cn={CONDB_INSTALLATION_NAME}-admins,{CONDB_LDAP_GROUPS}".format(**locals()),
+    }
+
+    AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
+
+
 CONDB_IPA_JSONRPC = 'https://moukari.tracon.fi/ipa/json'
 CONDB_IPA_CACERT_PATH = '/etc/ipa/ca.crt'
