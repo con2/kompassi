@@ -244,12 +244,13 @@ AUTHENTICATION_BACKENDS = (
 )
 
 if 'external_auth' in INSTALLED_APPS:
-    if DEBUG:
-        import logging
+    # in case of emergency, break glass
+    # if DEBUG:
+    #     import logging
 
-        logger = logging.getLogger('django_auth_ldap')
-        logger.addHandler(logging.StreamHandler())
-        logger.setLevel(logging.DEBUG)
+    #     logger = logging.getLogger('django_auth_ldap')
+    #     logger.addHandler(logging.StreamHandler())
+    #     logger.setLevel(logging.DEBUG)
 
     AUTHENTICATION_BACKENDS = (
         'django_auth_ldap.backend.LDAPBackend',
@@ -276,9 +277,10 @@ if 'external_auth' in INSTALLED_APPS:
     AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
         CONDB_LDAP_GROUPS,
         ldap.SCOPE_SUBTREE,
-        "(objectClass=posixGroup)"
+        "(objectClass=groupOfNames)"
     )
     AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
+    AUTH_LDAP_MIRROR_GROUPS = True
 
     AUTH_LDAP_REQUIRE_GROUP = "cn={CONDB_INSTALLATION_NAME}-users,{CONDB_LDAP_GROUPS}".format(**locals())
     # AUTH_LDAP_DENY_GROUP = "cn={CONDB_INSTALLATION_NAME}-banned,{CONDB_LDAP_GROUPS}".format(**locals())

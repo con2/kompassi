@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand, make_option
@@ -49,7 +50,11 @@ class Command(BaseCommand):
             venue=venue,
         ))
 
-        labour_admin_group, unused = Group.objects.get_or_create(name='Tracon 9 -työvoimavastaavat')
+        labour_admin_group_name = "{installation_name}-{event_slug}-labour-admins".format(
+            installation_name=settings.CONDB_INSTALLATION_NAME,
+            event_slug=event.slug,
+        )
+        labour_admin_group, unused = Group.objects.get_or_create(name=labour_admin_group_name)
 
         if options['test']:
             person, unused = Person.get_or_create_dummy()
@@ -75,7 +80,11 @@ class Command(BaseCommand):
                 registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=tz),
             )
 
-        programme_admin_group, unused = Group.objects.get_or_create(name='Tracon 9 -ohjelmavastaavat')
+        programme_admin_group_name = "{installation_name}-{event_slug}-programme-admins".format(
+            installation_name=settings.CONDB_INSTALLATION_NAME,
+            event_slug=event.slug,
+        )
+        programme_admin_group, unused = Group.objects.get_or_create(name=programme_admin_group_name)
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(event=event, defaults=labour_event_meta_defaults)
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(

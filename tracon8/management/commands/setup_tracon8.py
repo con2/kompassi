@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import get_default_timezone, now
@@ -45,7 +46,11 @@ class Command(BaseCommand):
             venue=venue,
         ))
 
-        admin_group, unused = Group.objects.get_or_create(name='Tracon 8 -ohjelmavastaavat')
+        admin_group_name = "{installation_name}-{event_slug}-programme-admins".format(
+            installation_name=settings.CONDB_INSTALLATION_NAME,
+            event_slug=event.slug,
+        )
+        admin_group, unused = Group.objects.get_or_create(name=admin_group_name)
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
             public=True,
             admin_group=admin_group
