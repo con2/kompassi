@@ -12,7 +12,7 @@ from django.views.decorators.http import require_http_methods
 
 from .models import Event, Person
 from .forms import PersonForm, RegistrationForm
-from .utils import initialize_form, get_next
+from .utils import initialize_form, get_next, next_redirect
 from .helpers import person_required
 
 
@@ -53,9 +53,9 @@ def core_registration_view(request):
     person_form = initialize_form(PersonForm, request, prefix='person')
     person_form.helper.form_tag = False
     registration_form = initialize_form(RegistrationForm, request, prefix='registration')
+    next = get_next(request)
 
     if request.method == 'POST':
-        next = request.POST.get('next', None)
         if person_form.is_valid() and registration_form.is_valid():
             username = registration_form.cleaned_data['username']
             password = registration_form.cleaned_data['password']
@@ -78,11 +78,9 @@ def core_registration_view(request):
             login(request, user)
 
             messages.success(request, u'Käyttäjätunnuksesi on luotu. Tervetuloa ConDB:hen!')
-            return redirect(next if next else 'core_frontpage_view')
+            return redirect(next)
         else:
             messages.error(request, u'Ole hyvä ja tarkista lomake.')
-    else:
-        next = request.GET.get('next', None)
 
     vars = dict(
         next=next,

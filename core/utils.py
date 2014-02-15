@@ -100,11 +100,13 @@ def login_redirect(request, view='core_login_view'):
 
 def get_next(request, default='core_frontpage_view'):
     if request.method == 'GET':
-        return request.GET.get('next', default)
+        next = request.GET.get('next', None)
     elif request.method == 'POST':
-        return request.POST.get('next', default)
+        next = request.POST.get('next', None)
     else:
         raise NotImplemented(request.method)
+
+    return next if next else default
 
 
 def next_redirect(request, default='core_frontpage_view'):
