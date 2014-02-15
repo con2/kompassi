@@ -164,7 +164,7 @@ def core_password_view(request):
     if request.method == 'POST':
         if form.is_valid():
             old_password = form.cleaned_data['old_password']
-            new_password = form.cleaned_data['old_password']
+            new_password = form.cleaned_data['new_password']
 
             if 'external_auth' in settings.INSTALLED_APPS:
                 from external_auth.utils import change_current_user_password
