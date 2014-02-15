@@ -20,7 +20,7 @@ class IPAError(RuntimeError):
 
  
 def add_user_to_group(username, groupname):
-    raise NotImplemented()
+    return json_rpc('group_add_member', [groupname], dict(user=[username]))
 
 
 def remove_user_from_group(username, groupname):
@@ -49,7 +49,7 @@ def json_rpc(method_name, *params):
 
     payload = {
         "params": params,
-        "method": "user_add",
+        "method": method_name,
         "id": 0,
     }
 
