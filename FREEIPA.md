@@ -74,3 +74,16 @@ You should also be able to authenticate an SSH session to Moukari with Kerberos:
 Look for
 
     debug1: Authentication succeeded (gssapi-with-mic).
+
+### Starting the staging and production instances
+
+This is a bit tricky due to `krbcontext` being unusable on Ubuntu 12.04. You need to start the service within an environment that has kerberos tickets for the `turskasync@TRACON.FI` user.
+
+    sudo -iu condbdev
+    source virtualenv/bin/activate
+    cd app
+
+    kinit -t /etc/ipa/turskasync.keytab -k turskasync@TRACON.FI
+    gunicorn_django --workers=4 -b 127.0.0.1:9006
+
+What's especially stupid is that you need to renew the ticket using `kinit` manually every week or so.
