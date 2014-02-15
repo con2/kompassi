@@ -299,7 +299,7 @@ if 'external_auth' in INSTALLED_APPS:
     AUTH_LDAP_GLOBAL_OPTIONS = {
         ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_ALLOW,
         ldap.OPT_X_TLS_CACERTFILE: CONDB_IPA_CACERT_PATH,
-	ldap.OPT_REFERRALS: 0,
+	    ldap.OPT_REFERRALS: 0,
     }
 
     from sets import Set
