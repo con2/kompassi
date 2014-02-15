@@ -121,7 +121,13 @@ def core_personify_view(request):
     except Person.DoesNotExist:
         pass
 
-    form = initialize_form(PersonForm, request, prefix='person')
+    initial = dict(
+        first_name=request.user.first_name,
+        surname=request.user.last_name,
+        email=request.user.email,
+    )
+
+    form = initialize_form(PersonForm, request, initial=initial, prefix='person')
     next = get_next(request)
 
     if request.method == 'POST':
