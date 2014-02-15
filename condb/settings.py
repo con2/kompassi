@@ -308,6 +308,3 @@ if 'external_auth' in INSTALLED_APPS:
         # actual installation
         'turska-users',
     ])
-
-    CONDB_KRB5_PRINCIPAL = 'turskasync@TRACON.FI'
-    CONDB_KRB5_KEYTAB = '/etc/ipa/turskasync.keytab'

@@ -10,7 +10,6 @@ import ldap
 import ldap.sasl
 import requests
 from requests_kerberos import HTTPKerberosAuth
-from krbcontext import krbcontext
 
 
 @contextmanager
@@ -19,19 +18,13 @@ def ldap_session():
         ldap.set_option(key, value)
 
     with NamedTemporaryFile() as ccache_file:
-        with krbcontext(
-            using_keytab=True,
-            principal=settings.CONDB_KRB5_PRINCIPAL,
-            keytab_file=settings.CONDB_KRB5_KEYTAB,
-            ccache_file=ccache_file.name,
-        ):
-            try:
-                l = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
-                auth = ldap.sasl.gssapi("")
-                l.sasl_interactive_bind_s("", auth)
-                yield l
-            finally:
-                l.unbind_s()
+        try:
+            l = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+            auth = ldap.sasl.gssapi("")
+            l.sasl_interactive_bind_s("", auth)
+            yield l
+        finally:
+            l.unbind_s()
 
 
 class IPAError(RuntimeError):
@@ -48,7 +41,7 @@ def remove_user_from_group(username, groupname):
 
 def change_user_password(dn, new_password):
     return ldap_modify(dn,
-        (ldap.MOD_REPLACE, 'krbpasswordexpiration', '20170101000000Z'),
+        (ldap.MOD_REPLACE, 'krbPasswordExpiration', '20170101000000Z'),
         (ldap.MOD_REPLACE, 'userPassword', new_password),
     )
 
