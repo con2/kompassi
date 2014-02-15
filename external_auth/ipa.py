@@ -39,11 +39,16 @@ def remove_user_from_group(username, groupname):
     return json_rpc('group_remove_member', [groupname], dict(user=[username]))
 
 
-def change_user_password(dn, new_password):
-    return ldap_modify(dn,
-        (ldap.MOD_REPLACE, 'krbPasswordExpiration', '20170101000000Z'),
-        (ldap.MOD_REPLACE, 'userPassword', new_password),
-    )
+def change_user_password(dn, old_password, new_password):
+    # return ldap_modify(dn,
+    #     (ldap.MOD_REPLACE, 'krbPasswordExpiration', '20170101000000Z'),
+    #     (ldap.MOD_REPLACE, 'userPassword', new_password),
+    # )
+
+    with ldap_session() as l:
+        l.simple_bind_s(dn, old_password)
+        l.passwd_s(dn, old_password, new_password)
+
 
 def ldap_modify(dn, *modlist):
     try:
