@@ -2,21 +2,36 @@
 
 from contextlib import contextmanager
 import json
+from tempfile import NamedTemporaryFile
 
 from django.conf import settings
 
 import ldap
+import ldap.sasl
 import requests
 from requests_kerberos import HTTPKerberosAuth
+from krbcontext import krbcontext
 
 
 @contextmanager
 def ldap_session():
-    try:
-        l = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
-        yield l
-    finally:
-        l.unbind_s()
+    for key, value in settings.AUTH_LDAP_GLOBAL_OPTIONS.iteritems():
+        ldap.set_option(key, value)
+
+    with NamedTemporaryFile() as ccache_file:
+        with krbcontext(
+            using_keytab=True,
+            principal=settings.CONDB_KRB5_PRINCIPAL,
+            keytab_file=settings.CONDB_KRB5_KEYTAB,
+            ccache_file=ccache_file.name,
+        ):
+            try:
+                l = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+                auth = ldap.sasl.gssapi("")
+                l.sasl_interactive_bind_s("", auth)
+                yield l
+            finally:
+                l.unbind_s()
 
 
 class IPAError(RuntimeError):
@@ -31,12 +46,16 @@ def remove_user_from_group(username, groupname):
     return json_rpc('group_remove_member', [groupname], dict(user=[username]))
 
 
-def change_current_user_password(request, old_password, new_password):
+def change_user_password(dn, new_password):
+    return ldap_modify(dn,
+        (ldap.MOD_REPLACE, 'krbpasswordexpiration', '20170101000000Z'),
+        (ldap.MOD_REPLACE, 'userPassword', new_password),
+    )
+
+def ldap_modify(dn, *modlist):
     try:
         with ldap_session() as l:
-            dn = request.user.ldap_user.dn
-            l.simple_bind_s(dn, old_password)
-            l.passwd_s(request.user.ldap_user.dn, old_password, new_password)
+            l.modify_s(dn, modlist)
     except ldap.LDAPError, e:
         raise IPAError(e)
 
@@ -77,3 +96,9 @@ def json_rpc(method_name, *params):
         raise IPAError(error)
 
     print response.headers, response.content
+
+
+def reset_password_expiry(dn, username):
+    ldap_modify(dn,
+        (ldap.MOD_REPLACE, 'krbpasswordexpiration', '20170101000000Z'),
+    )

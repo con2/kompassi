@@ -26,7 +26,7 @@ If you need to do development on the FreeIPA integration, follow this short HOWT
 
 ### Install Kerberos & LDAP libraries and utilities
 
-    sudo apt-get install krb5-user libkrb5-dev libldap2-dev libsasl2-dev python-dev build-essential
+    sudo apt-get install krb5-user libkrb5-dev libldap2-dev libsasl2-dev libsasl2-modules-gssapi-mit python-dev build-essential
     pip install -r requirements-external_auth.txt
 
 ### Get the FreeIPA CA certificate

@@ -265,7 +265,7 @@ if 'external_auth' in INSTALLED_APPS:
     import ldap
     from django_auth_ldap.config import LDAPSearch, PosixGroupType, GroupOfNamesType
 
-    AUTH_LDAP_SERVER_URI = "ldaps://localhost:64636" # ssh tunnel, see FREEIPA.md
+    AUTH_LDAP_SERVER_URI = "ldaps://moukari.tracon.fi"
     
     # AUTH_LDAP_BIND_DN = ""
     # AUTH_LDAP_BIND_PASSWORD = ""
@@ -297,7 +297,7 @@ if 'external_auth' in INSTALLED_APPS:
     AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
     AUTH_LDAP_GLOBAL_OPTIONS = {
         ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_ALLOW,
-        ldap.OPT_X_TLS_CACERTFILE: CONDB_IPA_CACERT_PATH
+        ldap.OPT_X_TLS_CACERTFILE: CONDB_IPA_CACERT_PATH,
     }
 
     from sets import Set
@@ -308,3 +308,6 @@ if 'external_auth' in INSTALLED_APPS:
         # actual installation
         'turska-users',
     ])
+
+    CONDB_KRB5_PRINCIPAL = 'turskasync@TRACON.FI'
+    CONDB_KRB5_KEYTAB = '/etc/ipa/turskasync.keytab'
