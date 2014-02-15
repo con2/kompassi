@@ -91,7 +91,7 @@ def json_rpc(method_name, *params):
     print response.headers, response.content
 
 
-def reset_password_expiry(dn, username):
+def reset_password_expiry(dn):
     ldap_modify(dn,
         (ldap.MOD_REPLACE, 'krbpasswordexpiration', '20170101000000Z'),
     )
