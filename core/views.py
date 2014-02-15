@@ -68,11 +68,17 @@ def core_registration_view(request):
                 is_superuser=False,
             )
 
-            user.set_password(password)
+            if 'external_auth' not in settings.INSTALLED_APPS:
+                user.set_password(password)
+
             user.save()
 
             person.user = user
             person.save()
+
+            if 'external_auth' in settings.INSTALLED_APPS:
+                from external_auth.utils import create_user
+                create_user(user, password)
 
             user = authenticate(username=username, password=password)
             login(request, user)

@@ -275,6 +275,7 @@ if 'external_auth' in INSTALLED_APPS:
         ldap.SCOPE_SUBTREE,
         "(uid=%(user)s)"
     )
+    AUTH_LDAP_ALWAYS_UPDATE_USER = True
 
     AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
         CONDB_LDAP_GROUPS,
@@ -298,3 +299,12 @@ if 'external_auth' in INSTALLED_APPS:
         ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_ALLOW,
         ldap.OPT_X_TLS_CACERTFILE: CONDB_IPA_CACERT_PATH
     }
+
+    from sets import Set
+    CONDB_NEW_USER_INITIAL_GROUPS = Set([
+        "{CONDB_INSTALLATION_NAME}-users".format(**locals()),
+        
+        # to make sure users created via condbdev.tracon.fi can also access the
+        # actual installation
+        'turska-users',
+    ])
