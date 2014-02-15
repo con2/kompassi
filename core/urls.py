@@ -6,6 +6,7 @@ from .forms import LoginForm
 from .views import (
     core_event_view,
     core_frontpage_view,
+    core_personify_view,
     core_profile_view,
     core_registration_view,
 )
@@ -27,4 +28,5 @@ urlpatterns = patterns(
     url(r'^register$', core_registration_view, name='core_registration_view'),
     url(r'^logout$', logout, dict(next_page='/'), name='core_logout_view'),
     url(r'^profile$', core_profile_view, name='core_profile_view'),
+    url(r'^profile/new$', core_personify_view, name='core_personify_view'),
 )

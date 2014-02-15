@@ -25,7 +25,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'condb.sqlite3',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
@@ -245,12 +244,12 @@ AUTHENTICATION_BACKENDS = (
 
 if 'external_auth' in INSTALLED_APPS:
     # in case of emergency, break glass
-    # if DEBUG:
-    #     import logging
+    if DEBUG:
+        import logging
 
-    #     logger = logging.getLogger('django_auth_ldap')
-    #     logger.addHandler(logging.StreamHandler())
-    #     logger.setLevel(logging.DEBUG)
+        logger = logging.getLogger('django_auth_ldap')
+        logger.addHandler(logging.StreamHandler())
+        logger.setLevel(logging.DEBUG)
 
     AUTHENTICATION_BACKENDS = (
         'django_auth_ldap.backend.LDAPBackend',
@@ -260,10 +259,13 @@ if 'external_auth' in INSTALLED_APPS:
     CONDB_LDAP_USERS = 'cn=users,cn=accounts,{CONDB_LDAP_DOMAIN}'.format(**locals())
     CONDB_LDAP_GROUPS = 'cn=groups,cn=accounts,{CONDB_LDAP_DOMAIN}'.format(**locals())
 
+    CONDB_IPA_JSONRPC = 'https://moukari.tracon.fi/ipa/json'
+    CONDB_IPA_CACERT_PATH = '/etc/ipa/ca.crt'
+
     import ldap
     from django_auth_ldap.config import LDAPSearch, PosixGroupType, GroupOfNamesType
 
-    AUTH_LDAP_SERVER_URI = "ldap://localhost:64389" # ssh tunnel, see FREEIPA.md
+    AUTH_LDAP_SERVER_URI = "ldaps://localhost:64636" # ssh tunnel, see FREEIPA.md
     
     # AUTH_LDAP_BIND_DN = ""
     # AUTH_LDAP_BIND_PASSWORD = ""
@@ -292,7 +294,7 @@ if 'external_auth' in INSTALLED_APPS:
     }
 
     AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
-
-
-CONDB_IPA_JSONRPC = 'https://moukari.tracon.fi/ipa/json'
-CONDB_IPA_CACERT_PATH = '/etc/ipa/ca.crt'
+    AUTH_LDAP_GLOBAL_OPTIONS = {
+        ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_ALLOW,
+        ldap.OPT_X_TLS_CACERTFILE: CONDB_IPA_CACERT_PATH
+    }

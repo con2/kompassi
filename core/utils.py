@@ -1,13 +1,15 @@
 # encoding: utf-8
 
 import json
+from urllib import urlencode
 
 from django import forms
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db import models
+from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
@@ -88,3 +90,23 @@ def format_date(date):
 
 def format_datetime(datetime):
     return datetime.astimezone(get_default_timezone()).strftime(settings.DATETIME_FORMAT_STRFTIME)
+
+
+def login_redirect(request, view='core_login_view'):
+    path = reverse(view)
+    query = urlencode(dict(next=request.path))
+    return HttpResponseRedirect("{path}?{query}".format(**locals()))
+
+
+def get_next(request, default='core_frontpage_view'):
+    if request.method == 'GET':
+        return request.GET.get('next', default)
+    elif request.method == 'POST':
+        return request.POST.get('next', default)
+    else:
+        raise NotImplemented(request.method)
+
+
+def next_redirect(request, default='core_frontpage_view'):
+    next = get_next(request, default)
+    return redirect(next)

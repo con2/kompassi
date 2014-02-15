@@ -1,18 +1,22 @@
 # encoding: utf-8
 
+from contextlib import contextmanager
 import json
 
 from django.conf import settings
 
+import ldap
 import requests
 from requests_kerberos import HTTPKerberosAuth
 
-DEFAULT_GROUPS = [
-    'ipausers',
-    'confluence-users',
-    'jira-users',
-    'crowd-users',
-]
+
+@contextmanager
+def ldap_session():
+    try:
+        l = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+        yield l
+    finally:
+        l.unbind_s()
 
 
 class IPAError(RuntimeError):
@@ -24,11 +28,17 @@ def add_user_to_group(username, groupname):
 
 
 def remove_user_from_group(username, groupname):
-    raise NotImplemented()
+    return json_rpc('group_remove_member', [groupname], dict(user=[username]))
 
 
-def change_user_password(username, password):
-    raise NotImplemented()
+def change_current_user_password(request, old_password, new_password):
+    try:
+        with ldap_session() as l:
+            dn = request.user.ldap_user.dn
+            l.simple_bind_s(dn, old_password)
+            l.passwd_s(request.user.ldap_user.dn, old_password, new_password)
+    except ldap.LDAPError, e:
+        raise IPAError(e)
 
 
 def create_user(username, first_name, surname, password):

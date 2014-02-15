@@ -9,16 +9,17 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 
-from core.utils import initialize_form
+from core.helpers import person_required
 from core.models import Event
+from core.utils import initialize_form
 
 from ..forms import SignupForm
 from ..models import LabourEventMeta, Qualification, PersonQualification, Signup, JobCategory
 from ..helpers import labour_event_required
 
 
-@login_required
 @labour_event_required
+@person_required
 @require_http_methods(['GET', 'POST'])
 def labour_signup_view(request, event):
     # TODO should the user be allowed to change their registration after the registration period is over?
@@ -68,7 +69,7 @@ def labour_signup_view(request, event):
     return render(request, 'labour_signup_view.jade', vars)
 
 
-@login_required
+@person_required
 def labour_qualifications_view(request):
     person_qualifications = request.user.person.personqualification_set.all()
     qualification_pks = [q.qualification.pk for q in person_qualifications]
@@ -82,7 +83,7 @@ def labour_qualifications_view(request):
     return render(request, 'labour_qualifications_view.jade', vars)
 
 
-@login_required
+@person_required
 @require_http_methods(['GET', 'POST'])
 def labour_person_qualification_view(request, qualification):
     person = request.user.person
@@ -126,7 +127,7 @@ def labour_person_qualification_view(request, qualification):
 
     return render(request, 'labour_person_qualification_view.jade', vars)
 
-@login_required
+@person_required
 def labour_person_qualify_view(request, qualification):
     person = request.user.person
     qualification = get_object_or_404(Qualification, slug=qualification)
@@ -144,7 +145,7 @@ def labour_person_qualify_view(request, qualification):
 
     return redirect('labour_qualifications_view')
 
-@login_required
+@person_required
 def labour_person_disqualify_view(request, qualification):
     person = request.user.person
     qualification = get_object_or_404(Qualification, slug=qualification)

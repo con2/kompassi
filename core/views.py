@@ -10,9 +10,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods
 
-from .models import Event
+from .models import Event, Person
 from .forms import PersonForm, RegistrationForm
-from .utils import initialize_form
+from .utils import initialize_form, get_next
+from .helpers import person_required
 
 
 def core_frontpage_view(request):
@@ -93,7 +94,7 @@ def core_registration_view(request):
     return render(request, 'core_registration_view.jade', vars)
 
 
-@login_required
+@person_required
 @require_http_methods(['GET', 'POST'])
 def core_profile_view(request):
     person = request.user.person
@@ -111,6 +112,38 @@ def core_profile_view(request):
     )
 
     return render(request, 'core_profile_view.jade', vars)
+
+
+@login_required
+@require_http_methods(['GET', 'POST'])
+def core_personify_view(request):
+    try:
+        person = request.user.person
+        return redirect('core_profile_view')
+    except Person.DoesNotExist:
+        pass
+
+    form = initialize_form(PersonForm, request, prefix='person')
+    next = get_next(request)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            person = form.save(commit=False)
+            person.user = request.user
+            person.save()
+            messages.success(request, u'Tiedot tallennettiin.')
+            return redirect(next)
+        else:
+            messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
+    else:
+        messages.info(request, u'Tämän toiminnon käyttäminen edellyttää, että täytät yhteystietosi.')
+
+    vars = dict(
+        person_form=form,
+        next=next
+    )
+
+    return render(request, 'core_personify_view.jade', vars)
 
 
 def core_profile_menu_items(request):
@@ -132,6 +165,5 @@ def core_profile_menu_items(request):
     if 'programme' in settings.INSTALLED_APPS:
         from programme.views import programme_profile_menu_items
         items.extend(programme_profile_menu_items(request))
-
 
     return items
