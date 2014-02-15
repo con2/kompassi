@@ -265,7 +265,8 @@ if 'external_auth' in INSTALLED_APPS:
     import ldap
     from django_auth_ldap.config import LDAPSearch, PosixGroupType, GroupOfNamesType
 
-    AUTH_LDAP_SERVER_URI = "ldaps://moukari.tracon.fi"
+    #AUTH_LDAP_SERVER_URI = "ldaps://moukari.tracon.fi"
+    AUTH_LDAP_SERVER_URI = "ldaps://localhost:64636"
     
     # AUTH_LDAP_BIND_DN = ""
     # AUTH_LDAP_BIND_PASSWORD = ""

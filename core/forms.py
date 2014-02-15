@@ -2,6 +2,7 @@
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
@@ -116,3 +117,63 @@ class RegistrationForm(forms.Form):
             raise forms.ValidationError(u'Salasanat eivät täsmää.')
 
         return password_again
+
+
+class PasswordForm(forms.Form):
+    old_password = forms.CharField(
+        required=True,
+        max_length=1023,
+        label=u'Vanha salasana',
+        widget=forms.PasswordInput,
+    )
+
+    new_password = forms.CharField(
+        required=True,
+        max_length=1023,
+        label=u'Uusi salasana',
+        widget=forms.PasswordInput,
+    )
+
+    new_password_again = forms.CharField(
+        required=True,
+        max_length=1023,
+        label=u'Salasana uudestaan',
+        widget=forms.PasswordInput,
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('the_request')
+
+        super(PasswordForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.layout = Layout(
+            Fieldset(u'Salasanan vaihto',
+                'old_password',
+                'new_password',
+                'new_password_again',
+            ),
+            indented_without_label(Submit('submit', "Vaihda salasana", css_class='btn-primary'))
+        )
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get('old_password')
+
+        authenticated_user = authenticate(
+            username=self.request.user.username,
+            password=old_password
+        )
+
+        if not authenticated_user:
+            raise forms.ValidationError(u'Vanha salasana on väärä.')
+
+        return old_password
+
+    def clean_new_password_again(self):
+        new_password = self.cleaned_data.get('new_password')
+        new_password_again = self.cleaned_data.get('new_password_again')
+
+        if new_password and new_password_again and new_password != new_password_again:
+            raise forms.ValidationError(u'Salasanat eivät täsmää.')
+
+        return new_password_again

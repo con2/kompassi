@@ -11,7 +11,7 @@ from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods
 
 from .models import Event, Person
-from .forms import PersonForm, RegistrationForm
+from .forms import PersonForm, RegistrationForm, PasswordForm
 from .utils import initialize_form, get_next, next_redirect
 from .helpers import person_required
 
@@ -156,6 +156,44 @@ def core_personify_view(request):
     return render(request, 'core_personify_view.jade', vars)
 
 
+@login_required
+@require_http_methods(['GET', 'POST'])
+def core_password_view(request):
+    form = initialize_form(PasswordForm, request, the_request=request)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            old_password = form.cleaned_data['old_password']
+            new_password = form.cleaned_data['old_password']
+
+            if 'external_auth' in settings.INSTALLED_APPS:
+                from external_auth.utils import change_current_user_password
+                from external_auth.ipa import IPAError
+
+                try:
+                    change_current_user_password(request,
+                        old_password=old_password,
+                        new_password=new_password,
+                    )
+                except IPAError, e:
+                    # XXX need to tell the user if this is due to too simple pw
+                    messages.error(request, u'Salasanan vaihto epäonnistui.')
+                else:
+                    messages.success(request, u'Salasanasi on vaihdettu.')
+            else:
+                request.user.set_password(new_password)
+                request.user.save()
+                messages.success(request, u'Salasanasi on vaihdettu.')
+        else:
+            messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
+
+    vars = dict(
+        form=form,
+    )
+
+    return render(request, 'core_profile_view.jade', vars)
+
+
 def core_profile_menu_items(request):
     items = []
 
@@ -167,6 +205,12 @@ def core_profile_menu_items(request):
     profile_text = u'Omat tiedot'
 
     items.append((profile_active, profile_url, profile_text))
+
+    password_url = reverse('core_password_view')
+    password_active = request.path == password_url
+    password_text = u'Salasanan vaihto'
+
+    items.append((password_active, password_url, password_text))
 
     if 'labour' in settings.INSTALLED_APPS:
         from labour.views import labour_profile_menu_items

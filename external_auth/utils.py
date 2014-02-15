@@ -14,3 +14,11 @@ def create_user(user, password):
 
     for group_name in settings.CONDB_NEW_USER_INITIAL_GROUPS:
         ipa.add_user_to_group(user.username, group_name)
+
+
+def change_current_user_password(request, old_password, new_password):
+    ipa.change_user_password(
+        dn=request.user.ldap_user.dn,
+        old_password=old_password,
+        new_password=new_password
+    )
