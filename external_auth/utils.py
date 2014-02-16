@@ -8,7 +8,7 @@ from django.forms import ValidationError
 from . import ipa
 
 def create_user(user, password):
-    temporary_password = 'A very long 1-time temporary password'
+    temporary_password = "".join(chr(randint(ord('0'), ord('z'))) for _ in range(64))
 
     ipa.create_user(
         username=user.username,
