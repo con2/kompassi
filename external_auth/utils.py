@@ -17,7 +17,7 @@ def create_user(user, password):
     for group_name in settings.CONDB_NEW_USER_INITIAL_GROUPS:
         ipa.add_user_to_group(user.username, group_name)
     
-    dn = 'uid=%s,%s' % (user.username, settings.CONDB_LDAP_USERS)
+    dn = 'uid={0},{1}'.format(user.username, settings.CONDB_LDAP_USERS)
     
     ipa.change_user_password(
         dn=dn,
