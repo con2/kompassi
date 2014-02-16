@@ -1,13 +1,13 @@
-# Tracon ConDB
+# Turska, the Tracon Convention Management System
 
 Simple web app for managing (Tra)con stuff. Work in progress.
 
 ## Getting Started
 
-    virtualenv venv-condb
-    source venv-condb/bin/activate
-    git clone https://github.com/mieleton/condb.git
-    cd condb
+    virtualenv venv-turska
+    source venv-turska/bin/activate
+    git clone https://github.com/mieleton/turska.git
+    cd turska
     pip install -r requirements.txt
     ./manage.py setup --test
     ./manage.py runserver
@@ -29,12 +29,12 @@ Simple web app for managing (Tra)con stuff. Work in progress.
 
 ## Developing on Windows - Caveats
 
-It is mostly possible to develop ConDB on Microsoft(R) Windows(R) (tested: 8.1, 7). GitHub for Windows is recommended. The Getting Started procedure in Git Shell (PowerShell) is as follows:
+It is mostly possible to develop Turska on Microsoft(R) Windows(R) (tested: 8.1, 7). GitHub for Windows is recommended. The Getting Started procedure in Git Shell (PowerShell) is as follows:
 
-    virtualenv venv-condb
-    venv-condb\Scripts\activate.ps1
-    git clone https://github.com/mieleton/condb.git
-    cd condb
+    virtualenv venv-turska
+    venv-turska\Scripts\activate.ps1
+    git clone https://github.com/mieleton/turska.git
+    cd turska
     pip install -r requirements.txt
     python manage.py setup --test
     python manage.py runserver

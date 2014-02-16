@@ -2,7 +2,7 @@ extends base
 - load crispy_forms_tags
 block content
   .core-registration-view
-    h2 Rekisteröidy ConDB:n käyttäjäksi
+    h2 Rekisteröi {{ settings.TURSKA_ACCOUNT_BRANDING }}
     form(action='{% url "core_registration_view" %}', method='POST', role='form').form.form-horizontal
       input(type='hidden', name='next', value='{{ next }}')
       - crispy registration_form

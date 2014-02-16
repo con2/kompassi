@@ -83,7 +83,10 @@ def core_registration_view(request):
             user = authenticate(username=username, password=password)
             login(request, user)
 
-            messages.success(request, u'Käyttäjätunnuksesi on luotu. Tervetuloa ConDB:hen!')
+            messages.success(request,
+                u'Käyttäjätunnuksesi on luotu. Tervetuloa {{ site_name_illative }}!'
+                .format(site_name_illative=settings.TURSKA_INSTALLATION_NAME_ILLATIVE)
+            )
             return redirect(next)
         else:
             messages.error(request, u'Ole hyvä ja tarkista lomake.')

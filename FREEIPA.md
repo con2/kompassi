@@ -1,15 +1,15 @@
-# FreeIPA integration in ConDB
+# FreeIPA integration in Turska
 
-ConDB supports optional integration with FreeIPA via LDAP, Kerberos and JSON-RPC.
+Turska supports optional integration with FreeIPA via LDAP, Kerberos and JSON-RPC.
 
 ## Configuration
 
-In `condb/settings.py`:
+In `turska/settings.py`:
 
 * `INSTALLED_APPS`: If `external_auth` is installed, integrates with IPA.
-* `CONDB_INSTALLATION_NAME`: Used as a prefix in many things such as FreeIPA groups.
-* `CONDB_IPA_JSONRPC`: The FreeIPA JSON-RPC endpoint.
-* `CONDB_IPA_CACERT_PATH`
+* `TURSKA_INSTALLATION_SLUG`: Used as a prefix in many things such as FreeIPA groups.
+* `TURSKA_IPA_JSONRPC`: The FreeIPA JSON-RPC endpoint.
+* `TURSKA_IPA_CACERT_PATH`
 
 ## FreeIPA groups
 
@@ -79,7 +79,7 @@ Look for
 
 This is a bit tricky due to `krbcontext` being unusable on Ubuntu 12.04. You need to start the service within an environment that has kerberos tickets for the `turskasync@TRACON.FI` user.
 
-    sudo -iu condbdev
+    sudo -iu TURSKAdev
     source virtualenv/bin/activate
     cd app
 

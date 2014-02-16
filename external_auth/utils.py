@@ -19,10 +19,10 @@ def create_user(user, password):
         password=temporary_password,
     )
 
-    for group_name in settings.CONDB_NEW_USER_INITIAL_GROUPS:
+    for group_name in settings.TURSKA_NEW_USER_INITIAL_GROUPS:
         ipa.add_user_to_group(user.username, group_name)
     
-    dn = 'uid={0},{1}'.format(user.username, settings.CONDB_LDAP_USERS)
+    dn = 'uid={0},{1}'.format(user.username, settings.TURSKA_LDAP_USERS)
     
     ipa.change_user_password(
         dn=dn,
@@ -49,8 +49,8 @@ CHARACTER_CLASSES = [re.compile(r) for r in [
 
 def check_password_strength(
     password,
-    min_length=settings.CONDB_PASSWORD_MIN_LENGTH,
-    min_classes=settings.CONDB_PASSWORD_MIN_CLASSES
+    min_length=settings.TURSKA_PASSWORD_MIN_LENGTH,
+    min_classes=settings.TURSKA_PASSWORD_MIN_CLASSES
 ):
     if min_length and len(password) < min_length:
         raise ValidationError(

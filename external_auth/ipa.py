@@ -65,7 +65,7 @@ def create_user(username, first_name, surname, password):
 
 def json_rpc(method_name, *params):
     headers = {
-        "Referer": settings.CONDB_IPA_JSONRPC,
+        "Referer": settings.TURSKA_IPA_JSONRPC,
         "Content-Type": "application/json",
     }
 
@@ -75,11 +75,11 @@ def json_rpc(method_name, *params):
         "id": 0,
     }
 
-    response = requests.post(settings.CONDB_IPA_JSONRPC,
+    response = requests.post(settings.TURSKA_IPA_JSONRPC,
         auth=HTTPKerberosAuth(),
         data=json.dumps(payload),
         headers=headers,
-        verify=settings.CONDB_IPA_CACERT_PATH,
+        verify=settings.TURSKA_IPA_CACERT_PATH,
     )
 
     result = response.json()
@@ -91,7 +91,7 @@ def json_rpc(method_name, *params):
     print response.headers, response.content
 
 
-def reset_password_expiry(dn):
+def reset_password_expiry(dn, username):
     ldap_modify(dn,
         (ldap.MOD_REPLACE, 'krbpasswordexpiration', '20170101000000Z'),
     )

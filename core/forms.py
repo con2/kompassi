@@ -139,8 +139,8 @@ class PasswordForm(forms.Form):
         help_text=u'Salasanan tulee olla vähintään {min_length} merkkiä pitkä ja sisältää '
             'ainakin {min_classes} seuraavista: pieni kirjain, iso kirjain, numero, erikoismerkki.'
             .format(
-                min_classes=settings.CONDB_PASSWORD_MIN_CLASSES,
-                min_length=settings.CONDB_PASSWORD_MIN_LENGTH,
+                min_classes=settings.TURSKA_PASSWORD_MIN_CLASSES,
+                min_length=settings.TURSKA_PASSWORD_MIN_LENGTH,
             )
     )
 

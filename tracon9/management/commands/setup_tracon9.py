@@ -51,7 +51,7 @@ class Command(BaseCommand):
         ))
 
         labour_admin_group_name = "{installation_name}-{event_slug}-labour-admins".format(
-            installation_name=settings.CONDB_INSTALLATION_NAME,
+            installation_name=settings.TURSKA_INSTALLATION_SLUG,
             event_slug=event.slug,
         )
         labour_admin_group, unused = Group.objects.get_or_create(name=labour_admin_group_name)
@@ -81,7 +81,7 @@ class Command(BaseCommand):
             )
 
         programme_admin_group_name = "{installation_name}-{event_slug}-programme-admins".format(
-            installation_name=settings.CONDB_INSTALLATION_NAME,
+            installation_name=settings.TURSKA_INSTALLATION_SLUG,
             event_slug=event.slug,
         )
         programme_admin_group, unused = Group.objects.get_or_create(name=programme_admin_group_name)

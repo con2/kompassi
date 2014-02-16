@@ -1,4 +1,4 @@
-# Django settings for condb project.
+# Django settings for turska project.
 
 import os
 from datetime import datetime, timedelta
@@ -24,7 +24,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'condb.sqlite3',                      # Or path to database file if using sqlite3.
+        'NAME': 'turska.sqlite3',                      # Or path to database file if using sqlite3.
         'USER': '',
         'PASSWORD': '',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
@@ -41,7 +41,7 @@ DATABASES = {
 #     )
 # }
 
-JOHNNY_MIDDLEWARE_KEY_PREFIX='condb_johnny_dev'
+JOHNNY_MIDDLEWARE_KEY_PREFIX='turska_johnny_dev'
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -131,16 +131,16 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'condb.urls'
+ROOT_URLCONF = 'turska.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'condb.wsgi.application'
+WSGI_APPLICATION = 'turska.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    mkpath('condb','templates'),
+    mkpath('turska','templates'),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = defaults.TEMPLATE_CONTEXT_PROCESSORS + (
@@ -236,14 +236,17 @@ DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 
 USE_L10N = True
 
-CONDB_INSTALLATION_NAME = 'turskadev'
+TURSKA_INSTALLATION_NAME = u'Turska (DEV)'
+TURSKA_INSTALLATION_NAME_ILLATIVE = u'Turskan kehitysinstanssiin'
+TURSKA_INSTALLATION_SLUG = 'turskadev'
+TURSKA_ACCOUNT_BRANDING = u'Tracon-tunnus'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-CONDB_PASSWORD_MIN_LENGTH = 8
-CONDB_PASSWORD_MIN_CLASSES = 3
+TURSKA_PASSWORD_MIN_LENGTH = 8
+TURSKA_PASSWORD_MIN_CLASSES = 3
 
 if 'external_auth' in INSTALLED_APPS:
     # in case of emergency, break glass
@@ -258,12 +261,12 @@ if 'external_auth' in INSTALLED_APPS:
         'django_auth_ldap.backend.LDAPBackend',
     ) + AUTHENTICATION_BACKENDS
 
-    CONDB_LDAP_DOMAIN = 'dc=tracon,dc=fi'
-    CONDB_LDAP_USERS = 'cn=users,cn=accounts,{CONDB_LDAP_DOMAIN}'.format(**locals())
-    CONDB_LDAP_GROUPS = 'cn=groups,cn=accounts,{CONDB_LDAP_DOMAIN}'.format(**locals())
+    TURSKA_LDAP_DOMAIN = 'dc=tracon,dc=fi'
+    TURSKA_LDAP_USERS = 'cn=users,cn=accounts,{TURSKA_LDAP_DOMAIN}'.format(**locals())
+    TURSKA_LDAP_GROUPS = 'cn=groups,cn=accounts,{TURSKA_LDAP_DOMAIN}'.format(**locals())
 
-    CONDB_IPA_JSONRPC = 'https://moukari.tracon.fi/ipa/json'
-    CONDB_IPA_CACERT_PATH = '/etc/ipa/ca.crt'
+    TURSKA_IPA_JSONRPC = 'https://moukari.tracon.fi/ipa/json'
+    TURSKA_IPA_CACERT_PATH = '/etc/ipa/ca.crt'
 
     import ldap
     from django_auth_ldap.config import LDAPSearch, PosixGroupType, GroupOfNamesType
@@ -273,43 +276,43 @@ if 'external_auth' in INSTALLED_APPS:
     
     # AUTH_LDAP_BIND_DN = ""
     # AUTH_LDAP_BIND_PASSWORD = ""
-    # AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,{CONDB_LDAP_USERS}".format(**locals())
+    # AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,{TURSKA_LDAP_USERS}".format(**locals())
     AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        CONDB_LDAP_USERS,
+        TURSKA_LDAP_USERS,
         ldap.SCOPE_SUBTREE,
         "(uid=%(user)s)"
     )
     AUTH_LDAP_ALWAYS_UPDATE_USER = True
 
     AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-        CONDB_LDAP_GROUPS,
+        TURSKA_LDAP_GROUPS,
         ldap.SCOPE_SUBTREE,
         "(objectClass=groupOfNames)"
     )
     AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
     AUTH_LDAP_MIRROR_GROUPS = True
 
-    AUTH_LDAP_REQUIRE_GROUP = "cn={CONDB_INSTALLATION_NAME}-users,{CONDB_LDAP_GROUPS}".format(**locals())
-    # AUTH_LDAP_DENY_GROUP = "cn={CONDB_INSTALLATION_NAME}-banned,{CONDB_LDAP_GROUPS}".format(**locals())
+    AUTH_LDAP_REQUIRE_GROUP = "cn={TURSKA_INSTALLATION_SLUG}-users,{TURSKA_LDAP_GROUPS}".format(**locals())
+    # AUTH_LDAP_DENY_GROUP = "cn={TURSKA_INSTALLATION_SLUG}-banned,{TURSKA_LDAP_GROUPS}".format(**locals())
 
     AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-        "is_active": "cn={CONDB_INSTALLATION_NAME}-users,{CONDB_LDAP_GROUPS}".format(**locals()),
-        "is_staff": "cn={CONDB_INSTALLATION_NAME}-admins,{CONDB_LDAP_GROUPS}".format(**locals()),
-        "is_superuser": "cn={CONDB_INSTALLATION_NAME}-admins,{CONDB_LDAP_GROUPS}".format(**locals()),
+        "is_active": "cn={TURSKA_INSTALLATION_SLUG}-users,{TURSKA_LDAP_GROUPS}".format(**locals()),
+        "is_staff": "cn={TURSKA_INSTALLATION_SLUG}-admins,{TURSKA_LDAP_GROUPS}".format(**locals()),
+        "is_superuser": "cn={TURSKA_INSTALLATION_SLUG}-admins,{TURSKA_LDAP_GROUPS}".format(**locals()),
     }
 
     AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
     AUTH_LDAP_GLOBAL_OPTIONS = {
         ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_ALLOW,
-        ldap.OPT_X_TLS_CACERTFILE: CONDB_IPA_CACERT_PATH,
+        ldap.OPT_X_TLS_CACERTFILE: TURSKA_IPA_CACERT_PATH,
 	    ldap.OPT_REFERRALS: 0,
     }
 
     from sets import Set
-    CONDB_NEW_USER_INITIAL_GROUPS = Set([
-        "{CONDB_INSTALLATION_NAME}-users".format(**locals()),
+    TURSKA_NEW_USER_INITIAL_GROUPS = Set([
+        "{TURSKA_INSTALLATION_SLUG}-users".format(**locals()),
         
-        # to make sure users created via condbdev.tracon.fi can also access the
+        # to make sure users created via turskadev.tracon.fi can also access the
         # actual installation
         'turska-users',
     ])

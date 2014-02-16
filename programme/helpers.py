@@ -15,7 +15,7 @@ def programme_event_required(view_func):
         meta = event.programme_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä ConDB:tä ohjelman hallintaan.")
+            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa ohjelman hallintaan.")
             return redirect('core_event_view', event.slug)
 
         if not (meta.public or event.programme_event_meta.is_user_admin(request.user)):

@@ -1,7 +1,7 @@
 doctype 5
 html
   head
-    title ConDB
+    title {{ settings.TURSKA_INSTALLATION_NAME }}
     link(rel='stylesheet', href='{{ STATIC_URL }}bootstrap/bootstrap.min.css')
     link(rel='stylesheet', href='{{ STATIC_URL }}frontend.css')
     link(rel='stylesheet', href='{{ STATIC_URL }}tracon_categories.css')
@@ -19,7 +19,7 @@ html
           if event
             a.navbar-brand(href='{% url "core_event_view" event.slug %}') {{ event.name }}
           else
-            a.navbar-brand(href='{% url "core_frontpage_view" %}') ConDB
+            a.navbar-brand(href='{% url "core_frontpage_view" %}') {{ settings.TURSKA_INSTALLATION_NAME }}
         .collapse.navbar-collapse#base-navbar-collapse
           ul.nav.navbar-nav
             if event.homepage_url
@@ -51,7 +51,7 @@ html
             |  järjestää
             a(href='{{ event.organization_url }}', target='_blank')  {{ event.organization_name }}
             | .
-          | ConDB &copy; 2013&ndash;2014 Jussi Sorjonen ja Santtu Pajukanta.
+          | Turska-ohjelmisto &copy; 2013&ndash;2014 Jussi Sorjonen, Santtu Pajukanta, Jyrki Launonen ja Pekka Wallendahl.
 
     script(src='{{ STATIC_URL }}jquery-1.10.2.min.js')
     script(src='{{ STATIC_URL }}bootstrap/bootstrap.min.js')
