@@ -41,8 +41,6 @@ DATABASES = {
 #     )
 # }
 
-JOHNNY_MIDDLEWARE_KEY_PREFIX='turska_johnny_dev'
-
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
@@ -241,10 +239,13 @@ TURSKA_INSTALLATION_NAME_ILLATIVE = u'Turskan kehitysinstanssiin'
 TURSKA_INSTALLATION_SLUG = 'turskadev'
 TURSKA_ACCOUNT_BRANDING = u'Tracon-tunnus'
 
+JOHNNY_MIDDLEWARE_KEY_PREFIX = TURSKA_INSTALLATION_SLUG
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+# These MUST match those in IPA
 TURSKA_PASSWORD_MIN_LENGTH = 8
 TURSKA_PASSWORD_MIN_CLASSES = 3
 
