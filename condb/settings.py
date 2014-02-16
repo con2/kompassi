@@ -242,6 +242,9 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+CONDB_PASSWORD_MIN_LENGTH = 8
+CONDB_PASSWORD_MIN_CLASSES = 2
+
 if 'external_auth' in INSTALLED_APPS:
     # in case of emergency, break glass
     if DEBUG:

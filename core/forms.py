@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 
@@ -8,6 +9,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
 
 from core.utils import DateField
+from external_auth.utils import check_password_strength
 
 from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH, BIRTH_DATE_HELP_TEXT
 from .utils import horizontal_form_helper, indented_without_label
@@ -132,6 +134,13 @@ class PasswordForm(forms.Form):
         max_length=1023,
         label=u'Uusi salasana',
         widget=forms.PasswordInput,
+        validators=[check_password_strength],
+        help_text=u'Salasanan tulee olla vähintään {min_length} merkkiä pitkä ja sisältää '
+            'ainakin {min_classes} seuraavista: pieni kirjain, iso kirjain, numero.'
+            .format(
+                min_classes=settings.CONDB_PASSWORD_MIN_CLASSES,
+                min_length=settings.CONDB_PASSWORD_MIN_LENGTH,
+            )
     )
 
     new_password_again = forms.CharField(
