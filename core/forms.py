@@ -74,6 +74,7 @@ class RegistrationForm(forms.Form):
         max_length=1023,
         label=u'Salasana',
         widget=forms.PasswordInput,
+        validators=[check_password_strength],
     )
     password_again = forms.CharField(
         required=True,
