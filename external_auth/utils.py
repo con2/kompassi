@@ -43,6 +43,7 @@ CHARACTER_CLASSES = [re.compile(r) for r in [
     r'.*[a-z]',
     r'.*[A-Z]',
     r'.*[0-9]',
+    r'.*[^a-zA-Z0-9]',
 ]]
 
 
@@ -65,5 +66,6 @@ def check_password_strength(
         if class_score < min_classes:
             raise ValidationError(
                 u'Salasanassa tulee olla vähintään {0} seuraavista: pieni kirjain, iso '
-                u'kirjain, numero.'.format(min_classes)
+                u'kirjain, numero, erikoismerkit. Ääkköset lasketaan erikoismerkeiksi'
+                .format(min_classes)
             )

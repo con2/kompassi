@@ -191,7 +191,7 @@ def core_password_view(request):
         form=form,
     )
 
-    return render(request, 'core_profile_view.jade', vars)
+    return render(request, 'core_password_view.jade', vars)
 
 
 def core_profile_menu_items(request):

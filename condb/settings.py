@@ -243,7 +243,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CONDB_PASSWORD_MIN_LENGTH = 8
-CONDB_PASSWORD_MIN_CLASSES = 2
+CONDB_PASSWORD_MIN_CLASSES = 3
 
 if 'external_auth' in INSTALLED_APPS:
     # in case of emergency, break glass

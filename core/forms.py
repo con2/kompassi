@@ -137,7 +137,7 @@ class PasswordForm(forms.Form):
         widget=forms.PasswordInput,
         validators=[check_password_strength],
         help_text=u'Salasanan tulee olla vähintään {min_length} merkkiä pitkä ja sisältää '
-            'ainakin {min_classes} seuraavista: pieni kirjain, iso kirjain, numero.'
+            'ainakin {min_classes} seuraavista: pieni kirjain, iso kirjain, numero, erikoismerkki.'
             .format(
                 min_classes=settings.CONDB_PASSWORD_MIN_CLASSES,
                 min_length=settings.CONDB_PASSWORD_MIN_LENGTH,
