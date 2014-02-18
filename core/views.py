@@ -113,7 +113,7 @@ def core_registration_view(request):
             login(request, user)
 
             messages.success(request,
-                u'Käyttäjätunnuksesi on luotu. Tervetuloa {{ site_name_illative }}!'
+                u'Käyttäjätunnuksesi on luotu. Tervetuloa {site_name_illative}!'
                 .format(site_name_illative=settings.TURSKA_INSTALLATION_NAME_ILLATIVE)
             )
             return redirect(next)

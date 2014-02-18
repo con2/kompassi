@@ -68,6 +68,16 @@ class PersonForm(forms.ModelForm):
         )
 
 
+PASSWORD_HELP_TEXT = (
+    u'Salasanan tulee olla vähintään {min_length} merkkiä pitkä ja sisältää ainakin '
+    u'{min_classes} seuraavista: pieni kirjain, iso kirjain, numero, erikoismerkki.'
+    .format(
+        min_classes=settings.TURSKA_PASSWORD_MIN_CLASSES,
+        min_length=settings.TURSKA_PASSWORD_MIN_LENGTH,
+    )
+)
+
+
 class RegistrationForm(forms.Form):
     username = forms.CharField(required=True, max_length=30, label=u'Käyttäjänimi')
 
@@ -77,6 +87,7 @@ class RegistrationForm(forms.Form):
         label=u'Salasana',
         widget=forms.PasswordInput,
         validators=[check_password_strength],
+        help_text=PASSWORD_HELP_TEXT,
     )
     password_again = forms.CharField(
         required=True,
@@ -138,12 +149,7 @@ class PasswordForm(forms.Form):
         label=u'Uusi salasana',
         widget=forms.PasswordInput,
         validators=[check_password_strength],
-        help_text=u'Salasanan tulee olla vähintään {min_length} merkkiä pitkä ja sisältää '
-            'ainakin {min_classes} seuraavista: pieni kirjain, iso kirjain, numero, erikoismerkki.'
-            .format(
-                min_classes=settings.TURSKA_PASSWORD_MIN_CLASSES,
-                min_length=settings.TURSKA_PASSWORD_MIN_LENGTH,
-            )
+        help_text=PASSWORD_HELP_TEXT,
     )
 
     new_password_again = forms.CharField(
