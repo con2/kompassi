@@ -2,7 +2,6 @@ extends base.jade
 - load crispy_forms_tags
 block content
   .core-login-view
-    h2 Kirjaudu sisään
     form(method='POST', action='{% url "core_login_view" %}', role='form').form.form-horizontal
       input(type='hidden', name='next', value='{{ next }}')
       - crispy form

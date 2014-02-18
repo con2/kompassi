@@ -21,8 +21,10 @@ class LoginForm(AuthenticationForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            'username',
-            'password',
+            Fieldset(u'Kirjaudu sisään',
+                'username',
+                'password',
+            )
         )
 
 

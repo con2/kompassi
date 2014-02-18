@@ -164,7 +164,9 @@ INSTALLED_APPS = (
     'programme',
     'labour',
     'labour_common_qualifications',
-    'external_auth',
+    
+    # Uncomment if you have IPA
+    #'external_auth',
 
     'tracon8',
     'tracon9',
