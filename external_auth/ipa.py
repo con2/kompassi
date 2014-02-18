@@ -30,7 +30,7 @@ def ldap_session():
 class IPAError(RuntimeError):
     pass
 
- 
+
 def add_user_to_group(username, groupname):
     return json_rpc('group_add_member', [groupname], dict(user=[username]))
 
@@ -81,6 +81,11 @@ def json_rpc(method_name, *params):
         headers=headers,
         verify=settings.TURSKA_IPA_CACERT_PATH,
     )
+
+    try:
+        response.raise_for_status()
+    except HTTPError, e:
+        raise IPAError(e)
 
     result = response.json()
 
