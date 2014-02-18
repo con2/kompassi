@@ -1,14 +1,16 @@
 # encoding: utf-8
 
 import json
+import re
 from urllib import urlencode
 
 from django import forms
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
-from django.http import HttpResponse, HttpResponseRedirect
 from django.db import models
+from django.forms import ValidationError
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -112,3 +114,35 @@ def get_next(request, default='core_frontpage_view'):
 def next_redirect(request, default='core_frontpage_view'):
     next = get_next(request, default)
     return redirect(next)
+
+
+CHARACTER_CLASSES = [re.compile(r) for r in [
+    r'.*[a-z]',
+    r'.*[A-Z]',
+    r'.*[0-9]',
+    r'.*[^a-zA-Z0-9]',
+]]
+
+
+def check_password_strength(
+    password,
+    min_length=settings.TURSKA_PASSWORD_MIN_LENGTH,
+    min_classes=settings.TURSKA_PASSWORD_MIN_CLASSES
+):
+    if min_length and len(password) < min_length:
+        raise ValidationError(
+            u'Salasanan tulee olla vähintään {0} merkkiä pitkä.'.format(min_length)
+        )
+
+    if min_classes:
+        class_score = 0
+        for class_re in CHARACTER_CLASSES:
+            if class_re.match(password):
+                class_score += 1
+
+        if class_score < min_classes:
+            raise ValidationError(
+                u'Salasanassa tulee olla vähintään {0} seuraavista: pieni kirjain, iso '
+                u'kirjain, numero, erikoismerkit. Ääkköset lasketaan erikoismerkeiksi'
+                .format(min_classes)
+            )

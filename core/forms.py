@@ -9,10 +9,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
 
 from core.utils import DateField
-from external_auth.utils import check_password_strength
 
 from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH, BIRTH_DATE_HELP_TEXT
-from .utils import horizontal_form_helper, indented_without_label
+from .utils import horizontal_form_helper, indented_without_label, check_password_strength
 
 
 class LoginForm(AuthenticationForm):

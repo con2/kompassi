@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from django.forms import ValidationError
 from django.test import TestCase
 
@@ -32,4 +34,4 @@ class ExternalAuthUtilsTestCase(TestCase):
             )
             assert False
         except ValidationError, e:
-            pass        
+            pass

@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         test = options['test']
 
-        management_commands = (
+        management_commands = [
             (('collectstatic',), dict(interactive=False)),
             (('syncdb',), dict(interactive=False)),
             (('migrate',), dict()),
@@ -28,7 +28,13 @@ class Command(BaseCommand):
             (('setup_labour_common_qualifications',), dict(test=test)),
             (('setup_tracon8',), dict(test=test)),
             (('setup_tracon9',), dict(test=test)),
-        )
+        ]
+
+        if test:
+            management_commands.append(
+                (('test', 'core', 'labour', 'labour_common_qualifications', 'programme',), dict())
+            )
+
 
         for pargs, opts in management_commands:
             call_command(*pargs, **opts)
