@@ -14,7 +14,16 @@ from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH, BIRTH_DATE_HELP_T
 from .utils import horizontal_form_helper, indented_without_label, check_password_strength
 
 
-class LoginForm(AuthenticationForm):
+class LoginForm(forms.Form):
+    username = forms.CharField(required=True, max_length=30, label=u'Käyttäjänimi')
+
+    password = forms.CharField(
+        required=True,
+        max_length=1023,
+        label=u'Salasana',
+        widget=forms.PasswordInput,
+    )
+    
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
