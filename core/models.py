@@ -129,7 +129,6 @@ class Event(models.Model):
             year=self.start_time.year,
         )
 
-
     @classmethod
     def get_or_create_dummy(cls):
         venue = Venue.create_dummy()
@@ -143,7 +142,8 @@ class Event(models.Model):
                 end_time=t + timedelta(days=61),
             ),
         )
-    
+
+    # XXX BEGIN UGLY COPYPASTA
     @property
     def labour_event_meta(self):
         if 'labour' not in settings.INSTALLED_APPS:
@@ -179,6 +179,19 @@ class Event(models.Model):
             return self.badgeseventmeta
         except BadgesEventMeta.DoesNotExist:
             return None
+
+    @property
+    def tickets_event_meta(self):
+        if 'tickets' not in settings.INSTALLED_APPS:
+            return None
+
+        from tickets.models import TicketsEventMeta
+
+        try:
+            return self.ticketseventmeta
+        except TicketsEventMeta.DoesNotExist:
+            return None
+    # XXX END UGLY COPYPASTA
 
 
 EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255

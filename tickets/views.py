@@ -81,6 +81,7 @@ class Phase(object):
     can_cancel = True
     index = None
 
+    @ticket_event_required
     def __call__(self, request, event):
         if request.method not in self.methods:
             return HttpResponseNotAllowed(self.methods)
@@ -93,7 +94,7 @@ class Phase(object):
             else:
                 return redirect(FIRST_PHASE)
 
-        form = self.make_form(request)
+        form = self.make_form(request, event)
 
         if request.method == "POST":
             # Which button was clicked?
@@ -129,7 +130,7 @@ class Phase(object):
                 del request.session['payment_status']
                 if not order.is_confirmed:
                     order.confirm_order()
-                    complete_phase(request, self.name)
+                    complete_phase(request, event, self.name)
                     return self.next(request)
                 else:
                     return redirect("confirm_phase")
@@ -142,8 +143,8 @@ class Phase(object):
         return self.get(request, form, errors)
 
     def available(self, request):
-        order = get_order(request)
-        return is_phase_completed(request, self.prev_phase) and not order.is_confirmed
+        order = get_order(request, event)
+        return is_phase_completed(request, event, self.prev_phase) and not order.is_confirmed
 
     def validate(self, request, form):
         if not form.is_valid():
@@ -153,7 +154,7 @@ class Phase(object):
             return []
 
     def get(self, request, form, errors):
-        order = get_order(request)
+        order = get_order(request, event)
 
         context = RequestContext(request, {})
         phases = []
@@ -179,7 +180,7 @@ class Phase(object):
         vars = dict(self.vars(request, form), form=form, errors=errors, order=order, phase=phase, phases=phases)
         return render_to_response(self.template, vars, context_instance=context)
 
-    def make_form(self, request):
+    def make_form(self, request, event):
         return init_form(NullForm, request, instance=None)
 
     def save(self, request, form):
@@ -192,7 +193,7 @@ class Phase(object):
         return redirect(self.prev_phase)
 
     def cancel(self, request):
-        destroy_order(request)
+        destroy_order(request, event)
         return HttpResponseRedirect(EXIT_URL)
 
     def vars(self, request, form):
@@ -208,16 +209,16 @@ class WelcomePhase(Phase):
     permit_new = True
 
     def save(self, request, form):
-        order = get_order(request)
+        order = get_order(request, event)
         order.save()
-        set_order(request, order)
+        set_order(request, event, order)
 
     def available(self, request):
-        order = get_order(request)
+        order = get_order(request, event)
         return not order.is_confirmed
 
 
-welcome_view = ticket_event_required(WelcomePhase())
+welcome_view = WelcomePhase()
 
 
 class TicketsPhase(Phase):
@@ -227,8 +228,8 @@ class TicketsPhase(Phase):
     prev_phase = "welcome_phase"
     next_phase = "address_phase"
 
-    def make_form(self, request):
-        order = get_order(request)
+    def make_form(self, request, event):
+        order = get_order(request, event)
         forms = []
 
         # XXX When the admin changes the available property of products, existing sessions in the Tickets phase will break.
@@ -272,13 +273,13 @@ class AddressPhase(Phase):
     prev_phase = "tickets_phase"
     next_phase = "confirm_phase"
 
-    def make_form(self, request):
-        order = get_order(request)
+    def make_form(self, request, event):
+        order = get_order(request, event)
 
         return init_form(CustomerForm, request, instance=order.customer)
 
     def save(self, request, form):
-        order = get_order(request)
+        order = get_order(request, event)
         cust = form.save()
 
         order.customer = cust
@@ -299,7 +300,7 @@ class ConfirmPhase(Phase):
 
     def validate(self, request, form):
         errors = multiform_validate(form)
-        order = get_order(request)
+        order = get_order(request, event)
         products = OrderProduct.objects.filter(order=order, count__gt=0)
         if (is_soldout(dict((i.product, i.count) for i in products))):
             errors.append("soldout_confirm")
@@ -307,7 +308,7 @@ class ConfirmPhase(Phase):
         return []
 
     def vars(self, request, form):
-        order = get_order(request)
+        order = get_order(request, event)
         products = OrderProduct.objects.filter(order=order, count__gt=0)
 
         return dict(products=products)
@@ -316,7 +317,7 @@ class ConfirmPhase(Phase):
         pass
 
     def next(self, request):
-        order = get_order(request)
+        order = get_order(request, event)
         # .confirm_* call .save
         if not order.is_confirmed:
             return HttpResponseRedirect("http://localhost:8000/process/?test=1")
@@ -338,11 +339,11 @@ class ThanksPhase(Phase):
     can_cancel = False
 
     def available(self, request):
-        order = get_order(request)
+        order = get_order(request, event)
         return order.is_confirmed
 
     def vars(self, request, form):
-        order = get_order(request)
+        order = get_order(request, event)
         products = OrderProduct.objects.filter(order=order)
 
         return dict(products=products)
@@ -352,7 +353,7 @@ class ThanksPhase(Phase):
 
     def next(self, request):
         # Start a new order
-        clear_order(request)
+        clear_order(request, event)
 
         return redirect(self.next_phase)
 

@@ -1,5 +1,4 @@
 # encoding: utf-8
-# vim: shiftwidth=4 expandtab
 
 from datetime import date
 import re
@@ -7,7 +6,8 @@ import re
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from tickets.models import Order, OrderProduct
+from .models import Order, OrderProduct
+
 
 __all__ = [
     "redirect",
@@ -21,34 +21,44 @@ __all__ = [
     "complete_phase"
 ]
 
-ORDER_KEY = "tickets.order_id"
-PHASE_KEY = "tickets.phases"
+
+ORDER_KEY_TEMPLATE = "{event.slug}.tickets.order_id"
+PHASE_KEY_TEMPLATE = "{event.slug}.tickets.phases"
+
 
 def redirect(view_name, **kwargs):
     return HttpResponseRedirect(reverse(view_name, kwargs=kwargs))
 
-def set_order(request, order):
-    request.session[ORDER_KEY] = order.pk
 
-def get_order(request):
-    order_id = request.session.get(ORDER_KEY)
+def set_order(request, event, order):
+    order_key = ORDER_KEY_TEMPLATE.format(event=event)
+    request.session[order_key] = order.pk
+
+
+def get_order(request, event):
+    order_key = ORDER_KEY_TEMPLATE.format(event=event)
+    order_id = request.session.get(order_key)
 
     if order_id is not None:
         # There is an order in the session; return it
         return Order.objects.get(id=order_id)
     else:
         # No order in the session; return an unsaved order
-        return Order(ip_address=request.META.get("REMOTE_ADDR"))
+        return Order(event=event, ip_address=request.META.get("REMOTE_ADDR"))
 
-def clear_order(request):
-    if request.session.has_key(ORDER_KEY):
-        del request.session[ORDER_KEY]
 
-    if request.session.has_key(PHASE_KEY):
-        del request.session[PHASE_KEY]
+def clear_order(request, event):
+    order_key = ORDER_KEY_TEMPLATE.format(event=event)
+    if request.session.has_key(order_key):
+        del request.session[order_key]
 
-def destroy_order(request):
-    order = get_order(request)
+    phase_key = PHASE_KEY_TEMPLATE.format(event=event)
+    if request.session.has_key(phase_key):
+        del request.session[phase_key]
+
+
+def destroy_order(request, event):
+    order = get_order(request, event)
     if order.pk is None:
         return
 
@@ -58,35 +68,28 @@ def destroy_order(request):
         order.customer.delete()
 
     order.delete()
-    clear_order(request)
+    clear_order(request, event)
 
-def init_form(form_class, request, instance=None, prefix=None):
-    args = []
-    kwargs = {}
 
-    if request.method == "POST":
-        args.append(request.POST)
-    if instance is not None:
-        kwargs["instance"] = instance
-    if prefix is not None:
-        kwargs["prefix"] = prefix
-
-    return form_class(*args, **kwargs)
-
+# XXX
 def is_soldout(productdata):
     for (product, amount) in productdata.iteritems():
         if (product.amount_available < amount):
             return True
     return False
 
-def is_phase_completed(request, phase):
-    completed_phases = request.session.get(PHASE_KEY, set())
+
+def is_phase_completed(request, event, phase):
+    phase_key = PHASE_KEY_TEMPLATE.format(event=event)
+    completed_phases = request.session.get(phase_key, set())
     return phase in completed_phases
 
-def complete_phase(request, phase):
-    completed_phases = request.session.get(PHASE_KEY, set())
+
+def complete_phase(request, event, phase):
+    phase_key = PHASE_KEY_TEMPLATE.format(event=event)
+    completed_phases = request.session.get(phase_key, set())
     completed_phases.add(phase)
-    request.session[PHASE_KEY] = completed_phases
+    request.session[phase_key] = completed_phases
 
 
 PAYMENT_REGEX = re.compile(
@@ -106,6 +109,7 @@ PAYMENT_REGEX = re.compile(
     r'(?P<euros>\d+),(?P<cents>\d+)'
 )
 
+
 class ParseResult(object):
     OK = "ok"
 
@@ -115,6 +119,7 @@ class ParseResult(object):
     PAYMENT_ALREADY_CONFIRMED = "payment_already_confirmed"
     SUM_MISMATCH = "sum_mismatch"
 
+
 def parse_payments(lines):
     """parse_payments(lines) -> gen[(line, result, date, order)]
 
@@ -123,6 +128,7 @@ def parse_payments(lines):
 
     for line in lines:
         yield parse_payment(line)
+
 
 def parse_payment(line):
     # Test #1: Can be parsed by PAYMENT_REGEX
@@ -161,10 +167,12 @@ def parse_payment(line):
     # If all tests passed, the order is ready to be marked as paid.
     return line, ParseResult.OK, payment_date, order
 
+
 def normalize_ref(ref):
     return "".join(i for i in ref if i.isdigit())
 
-def get_order_by_ref(ref):
+
+def get_order_by_ref(event, ref):
     """get_order_by_ref(ref) -> Order
 
     Raises Order.DoesNotExist on failature."""
@@ -181,13 +189,14 @@ def get_order_by_ref(ref):
     # Lose the prefix and checksum
     order_id = int(ref[1:-1])
 
-    order = Order.objects.get(id=order_id)
+    order = event.order_set.get(id=order_id)
 
     # Final validation check
     if ref != order.reference_number:
         raise Order.DoesNotExist
 
     return order
+
 
 SEARCH_CRITERIA_MAP = dict(
     id="id",
@@ -196,10 +205,52 @@ SEARCH_CRITERIA_MAP = dict(
     email="customer__email__icontains"
 )
 
-def perform_search(**kwargs):
-    criteria = dict((SEARCH_CRITERIA_MAP[k], v)
-        for (k, v) in kwargs.iteritems() if v)
-    return Order.objects.filter(
+
+def perform_search(event, **kwargs):
+    criteria = dict((SEARCH_CRITERIA_MAP[k], v) for (k, v) in kwargs.iteritems() if v)
+    return event.order_set.filter(
         confirm_time__isnull=False,
         **criteria
     ).order_by('-confirm_time')
+
+
+def tickets_admin_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, event, *args, **kwargs):
+        from core.models import Event
+        from core.utils import login_redirect
+        from .views import tickets_admin_menu_items
+
+        event = get_object_or_404(Event, slug=event)
+        meta = event.tickets_event_meta
+
+        if not meta:
+            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa työvoiman hallintaan.")
+            return redirect('core_event_view', event.slug)
+
+        if not event.tickets_event_meta.is_user_admin(request.user):
+            return login_redirect(request)
+
+        vars = dict(
+            event=event,
+            admin_menu_items=tickets_admin_menu_items(request, event)
+        )
+
+        return view_func(request, vars, event, *args, **kwargs)
+    return wrapper
+
+
+def tickets_event_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, event, *args, **kwargs):
+        from core.models import Event
+
+        event = get_object_or_404(Event, slug=event)
+        meta = event.tickets_event_meta
+
+        if not meta:
+            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa työvoiman hallintaan.")
+            return redirect('core_event_view', event.slug)
+
+        return view_func(request, event, *args, **kwargs)
+    return wrapper

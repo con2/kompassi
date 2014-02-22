@@ -1,5 +1,4 @@
 # encoding: utf-8
-# vim: shiftwidth=4 expandtab
 
 from __future__ import with_statement
 
@@ -20,8 +19,10 @@ except ImportError:
     from warnings import warn
     warn('Failed to import ReportLab. Generating receipts will fail.')
 
+
 # XXX correct path
 LOGO_FILENAME = os.path.join(settings.STATIC_ROOT, "images", "tracon_logo_kuitille.jpg")
+
 
 @contextmanager
 def state_saved(canvas):
@@ -31,16 +32,19 @@ def state_saved(canvas):
     finally:
         canvas.restoreState()
 
+
 def render_logo(x, y, c):
+    # XXX parametrize over event
     with state_saved(c):
         c.translate(x, y)
         c.drawImage(LOGO_FILENAME, 0, 0, 48*mm, 15.5*mm)
-        
+
+
 def render_receipt(order, c):
     render_logo(135*mm, 265*mm, c)
 
     c.setFont("Times-Roman", 12)
-    c.drawString(135*mm, 260*mm, settings.EVENT_HEADLINE)
+    c.drawString(135*mm, 260*mm, order.event.headline)
 
     c.drawString(BASE_INDENT, 270*mm, order.customer.name)
     c.drawString(BASE_INDENT, 265*mm, order.customer.address)
@@ -48,7 +52,7 @@ def render_receipt(order, c):
 
     c.drawString(BASE_INDENT, 200*mm, u"Hyvä vastaanottaja,")
 
-    c.drawString(BASE_INDENT, 190*mm, u"Tässä tilaamanne {0} -pääsyliput:".format(settings.EVENT_NAME))
+    c.drawString(BASE_INDENT, 190*mm, u"Tässä tilaamanne {0} -pääsyliput:".format(order.event.name))
 
     ypos = 180*mm
 
@@ -68,27 +72,28 @@ def render_receipt(order, c):
             c.drawString(DEEP_INDENT, ypos, op.product.name)
 
             ypos -= 10*mm
-    
+
     c.drawString(BASE_INDENT, ypos, u"Mikäli yllä olevassa luettelossa on virheitä tai kuoren sisältö ei vastaa luetteloa, olkaa hyvä ja")
-    c.drawString(BASE_INDENT, ypos - 5*mm, u"ottakaa viipymättä yhteyttä lipunmyyntivastaavaan sähköpostitse: {0}".format(settings.PLAIN_CONTACT_EMAIL))
+    c.drawString(BASE_INDENT, ypos - 5*mm, u"ottakaa viipymättä yhteyttä lipunmyyntivastaavaan sähköpostitse: {0}".format(order.event.contact_email))
     #c.drawString(BASE_INDENT, ypos - 10*mm, u"tai puhelimitse numeroon 0400 464 988 (Janne Forsell, parhaiten tavoittaa klo 10-18).")
 
     c.drawString(BASE_INDENT, ypos - 15*mm, u"Mainitkaa viestissänne tilausnumeronne #%04d." % order.id)
 
     ypos -= 30*mm
 
-    c.drawString(BASE_INDENT, ypos, u"Lisätietoja {0} -tapahtumasta löydätte kotisivuiltamme: {1}".format(settings.EVENT_NAME, settings.EVENT_URL))
+    c.drawString(BASE_INDENT, ypos, u"Lisätietoja {0} -tapahtumasta löydätte kotisivuiltamme: {1}".format(order.event.name, order.event.homepage_url))
 
     ypos -= 15*mm
 
     c.drawString(BASE_INDENT, ypos, u"Ystävällisin terveisin")
-    c.drawString(BASE_INDENT, ypos - 10*mm, u"{0} järjestäjät".format(settings.EVENT_NAME_GENITIVE))
+    c.drawString(BASE_INDENT, ypos - 10*mm, u"{0} järjestäjät".format(order.event.name_genitive))
 
     c.line(BASE_INDENT, 20*mm, 210*mm - BASE_INDENT, 20*mm)
     c.setFont("Helvetica", 8)
     c.drawString(BASE_INDENT, 16*mm, u"Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi")
 
     c.showPage()
+
 
 def test():
     class DummyCustomer:

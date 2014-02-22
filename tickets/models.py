@@ -1,5 +1,4 @@
 # encoding: utf-8
-# vim: shiftwidth=4 expandtab
 
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
@@ -29,10 +28,7 @@ __all__ = [
 ]
 
 
-SHIPPING_AND_HANDLING_CENTS = getattr(settings, 'SHIPPING_AND_HANDLING_CENTS', 0)
-DUE_DAYS = getattr(settings, 'DUE_DAYS', 7)
-LOW_AVAILABILITY_THRESHOLD = getattr(settings, 'LOW_AVAILABILITY_THRESHOLD', 10)
-DEFAULT_FINAL_DEATH_DAYS = 14 # XXX no longer used
+LOW_AVAILABILITY_THRESHOLD_DAYS = 10
 
 
 class TicketsEventMeta(EventMetaBase):
@@ -50,6 +46,8 @@ class TicketsEventMeta(EventMetaBase):
 
 
 class Batch(models.Model):
+    event = models.ForeignKey('core.Event')
+
     create_time = models.DateTimeField(auto_now=True)
     print_time = models.DateTimeField(null=True, blank=True)
     prepare_time = models.DateTimeField(null=True, blank=True)
@@ -90,7 +88,7 @@ class Batch(models.Model):
         batch = cls()
         batch.save()
 
-        orders = Order.objects.filter(
+        orders = self.event.order_set.filter(
             # Order is confirmed
             confirm_time__isnull=False,
 
@@ -157,7 +155,10 @@ class Batch(models.Model):
             ("can_manage_batches", "Can manage batches"),
         )
 
+
 class Product(models.Model):
+    event = models.ForeignKey('core.Event')
+
     name = models.CharField(max_length=100)
     internal_description = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField()
@@ -182,7 +183,7 @@ class Product(models.Model):
 
     @property
     def availability_low(self):
-        return (self.amount_available < LOW_AVAILABILITY_THRESHOLD)
+        return (self.amount_available < LOW_AVAILABILITY_THRESHOLD_DAYS)
 
     @property
     def amount_available(self):
@@ -190,42 +191,23 @@ class Product(models.Model):
 
     @property
     def amount_sold(self):
-        cnt = OrderProduct.objects.filter(product=self, order__confirm_time__isnull=False, order__cancellation_time__isnull=True).aggregate(models.Sum('count'))
+        cnt = OrderProduct.objects.filter(
+            product=self,
+            order__confirm_time__isnull=False,
+            order__cancellation_time__isnull=True
+        ).aggregate(models.Sum('count'))
+
         sm = cnt['count__sum']
         return sm if sm is not None else 0
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.formatted_price)
 
-class School(models.Model):
-    # REVERSE: order_set
 
-    name = models.CharField(max_length=40)
-    address = models.CharField(max_length=40)
-    max_people = models.IntegerField()
-    priority = models.IntegerField()
-
-    @property
-    def amount_placed(self):
-        if self.id is None:
-            return 0
-
-        total = 0
-        for order in self.order_set.filter(confirm_time__isnull=False, payment_date__isnull=False, cancellation_time__isnull=True):
-            sleepy_op = order.order_product_set.get(product__name__icontains=u'majoitus')
-            total += sleepy_op.count
-        return total
-
-    @property
-    def amount_available(self):
-        return self.max_people - self.amount_placed
-
-    def __unicode__(self):
-        return u"%s (%s/%s)" % (self.name, self.amount_placed, self.max_people)
-
-
+# XXX mayhaps combine with Person someday soon?
 class Customer(models.Model):
     # REVERSE: order = OneToOne(Order)
+
     first_name = models.CharField(max_length=100, verbose_name="Etunimi")
     last_name = models.CharField(max_length=100, verbose_name="Sukunimi")
     email = models.EmailField(verbose_name="Sähköpostiosoite")
@@ -251,8 +233,11 @@ class Customer(models.Model):
     def name_and_email(self):
         return u"%s <%s>" % (self.sanitized_name, self.email)
 
+
 class Order(models.Model):
     # REVERSE: order_product_set = ForeignKeyFrom(OrderProduct)
+
+    event = models.ForeignKey('core.Event')
 
     customer = models.OneToOneField(Customer, null=True, blank=True)
     start_time = models.DateTimeField(auto_now=True)
@@ -381,7 +366,7 @@ class Order(models.Model):
         self.send_confirmation_message('peruutus')
 
     @property
-    def deduplicated_product_messages(self):
+    def messages(self):
         seen = set()
         result = list()
 
@@ -397,15 +382,7 @@ class Order(models.Model):
 
     @property
     def email_vars(self):
-        return dict(
-            order=self,
-            products=self.order_product_set.all(),
-            messages=self.deduplicated_product_messages,
-
-            EVENT_NAME=settings.EVENT_NAME,
-            EVENT_NAME_GENITIVE=settings.EVENT_NAME_GENITIVE,
-            DEFAULT_FROM_EMAIL=settings.DEFAULT_FROM_EMAIL,
-        )
+        return dict(order=self)
 
     @property
     def order_confirmation_message(self):
@@ -461,25 +438,20 @@ class Order(models.Model):
             else:
                 msgbcc = (settings.TICKET_SPAM_EMAIL,)
 
-        subject_vars = dict(
-            EVENT_NAME=settings.EVENT_NAME,
-            order_number=self.pk
-        )
-
         if msgtype == "tilausvahvistus":
-            msgsubject = "{EVENT_NAME}: Tilausvahvistus (#{order_number:04d})".format(**subject_vars)
+            msgsubject = "{self.event.name}: Tilausvahvistus (#{self.pk:04d})".format(self=self)
             msgbody = self.order_confirmation_message
         elif msgtype == "maksuvahvistus":
-            msgsubject = "{EVENT_NAME}: Maksuvahvistus (#{order_number:04d})".format(**subject_vars)
+            msgsubject = "{self.event.name}: Maksuvahvistus (#{self.pk:04d})".format(self=self)
             msgbody = self.payment_confirmation_message
         elif msgtype == "toimitusvahvistus":
-            msgsubject = "{EVENT_NAME}: Toimitusvahvistus (#{order_number:04d})".format(**subject_vars)
+            msgsubject = "{self.event.name}: Toimitusvahvistus (#{self.pk:04d})".format(self=self)
             msgbody = self.delivery_confirmation_message
         elif msgtype == "maksumuistutus":
-            msgsubject = "{EVENT_NAME}: Maksumuistutus (#{order_number:04d})".format(**subject_vars)
+            msgsubject = "{self.event.name}: Maksumuistutus (#{self.pk:04d})".format(self=self)
             msgbody = self.payment_reminder_message
         elif msgtype == "peruutus":
-            msgsubject = "{EVENT_NAME}: Tilaus peruuntunut (#{order_number:04d})".format(**subject_vars)
+            msgsubject = "{self.event.name}: Tilaus peruuntunut (#{self.pk:04d})".format(self=self)
             msgbody = self.cancellation_notice_message
         else:
             raise NotImplementedError(msgtype)
@@ -503,6 +475,7 @@ class Order(models.Model):
 
     class Meta:
         permissions = (("can_manage_payments", "Can manage payments"),)
+
 
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, related_name="order_product_set")

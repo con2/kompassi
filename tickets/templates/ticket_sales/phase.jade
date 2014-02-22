@@ -1,0 +1,23 @@
+extends base.jade
+block content
+  ul.breadcrumb
+    for the_phase in phases
+      if the_phase.available
+        li
+          a(href='{{ the_phase.url }}') {{ forloop.counter }}. {{ the_phase.friendly_name }}
+      else
+        if the_phase.current
+          li.active {{ forloop.counter }}. {{ the_phase.friendly_name }}
+        else
+          li {{ forloop.counter }}. {{ the_phase.friendly_name }}
+
+  block body_text
+    p Sisältö tulee tähän.
+
+  form(method='post', action='{{ phase.url }}').form-horizontal
+    {% csrf_token %}
+
+    block form_content
+      p Lomakkeen sisältö tulee tähän.
+
+    include ticket_sales/buttons.jade

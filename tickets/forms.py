@@ -1,5 +1,4 @@
 # encoding: utf-8
-# vim: shiftwidth=4 expandtab
 
 from django import forms
 from django.contrib.localflavor.fi.forms import FIZipCodeField
@@ -36,8 +35,10 @@ class HappyIntegerField(forms.IntegerField):
         else:
             return super(HappyIntegerField, self).clean(value)
 
+
 class NullForm(forms.Form):
     pass
+
 
 class OrderProductForm(forms.ModelForm):
     count = HappyIntegerField(2)
@@ -45,6 +46,7 @@ class OrderProductForm(forms.ModelForm):
     class Meta:
         exclude = ("order", "product")
         model = OrderProduct
+
 
 class CustomerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -55,17 +57,22 @@ class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
 
+
 class SinglePaymentForm(forms.Form):
     ref_number = forms.CharField(max_length=19, label=u"Viitenumero")
+
 
 class ConfirmSinglePaymentForm(forms.Form):
     order_id = forms.IntegerField()
 
+
 class MultiplePaymentsForm(forms.Form):
     dump = forms.CharField(widget=forms.Textarea(attrs={'rows':15,'cols':'90'}), label=u"Pastee tähän")
 
+
 class CreateBatchForm(forms.Form):
     max_orders = forms.IntegerField(label=u"Kuinka monta tilausta (enintään)?")
+
 
 class SearchForm(forms.Form):
     id = forms.IntegerField(label=u"Tilausnumero", required=False)
