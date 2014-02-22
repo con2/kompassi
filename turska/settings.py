@@ -282,38 +282,3 @@ if 'payments' in INSTALLED_APPS:
         RETURN='http://localhost:8000/process/', # XXX
         DELIVERY_DATE='20130914' # Tracon 8 start
     )
-
-
-PIPELINE_CSS = {
-    'default': {
-        'source_filenames': (
-          'bootstrap/css/bootstrap.css',
-          'bootstrap/css/bootstrap-responsive.css',
-          'newstyle.styl'
-        ),
-        'output_filename': 'default.css',
-        'extra_context': {
-            'media': 'screen,projection',
-        },
-    },
-}
-
-PIPELINE_JS = {
-    'default': {
-        'source_filenames': (
-          #'jquery-1.8.3.js',
-          #'bootstrap/js/bootstrap.js'
-        ),
-        'output_filename': 'default.js',
-    }
-}
-
-PIPELINE_COMPILERS = (
-    'pipeline.compilers.stylus.StylusCompiler',
-)
-
-PIPELINE_STYLUS_BINARY = 'stylus' # hail PATH
-
-# XXX
-PIPELINE_CSS_COMPRESSOR = None
-PIPELINE_JS_COMPRESSOR = None
