@@ -28,12 +28,13 @@ from ..utils import *
 
 
 __all__ = [
+    "tickets_admin_batches_view",
+
     "tickets_cancel_batch_view",
     "tickets_confirm_multiple_payments_view",
     "tickets_confirm_single_payment_view",
     "tickets_create_batch_view",
     "tickets_deliver_batch_view",
-    "tickets_manage_view",
     "tickets_order_view",
     "tickets_payments_view",
     "tickets_process_multiple_payments_view",
@@ -48,12 +49,12 @@ __all__ = [
 
 
 @ticket_admin_required
-def tickets_manage_view(request, event):
+def tickets_admin_batches_view(request, event):
     batches = event.batch_set.all()
 
     vars = dict(batches=batches)
     context = RequestContext(request, {})
-    return render_to_response("ticket_admin/manage.html", vars, context_instance=context)
+    return render_to_response("tickets_admin_batches_view.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -118,12 +119,12 @@ def tickets_stats_view(request, event):
         total_paid_price=total_paid_price
     )
     context = RequestContext(request, {})
-    return render_to_response("ticket_admin/stats.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/stats.html", vars, context_instance=context)
 
 
 @ticket_admin_required
-def tickets_by_date_view(request, raw=False):
-    confirmed_orders = Order.objects.filter(confirm_time__isnull=False, cancellation_time__isnull=True, order_product_set__product__name__contains='lippu').distinct()
+def tickets_by_date_view(request, event, raw=False):
+    confirmed_orders = event.order_set.filter(confirm_time__isnull=False, cancellation_time__isnull=True, order_product_set__product__name__contains='lippu').distinct()
     tickets_by_date = defaultdict(int)
 
     for order in confirmed_orders:
@@ -153,7 +154,7 @@ def tickets_by_date_view(request, raw=False):
     else:
         vars = dict(tsv=tsv)
         context = RequestContext(request, {})
-        return render_to_response("ticket_admin/tickets_by_date.html", vars, context_instance=context)
+        return render_to_response("tickets_admin/tickets_by_date.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -164,7 +165,7 @@ def tickets_payments_view(request, event):
         multiple_form=MultiplePaymentsForm()
     )
     context = RequestContext(request, {})
-    return render_to_response("ticket_admin/payments.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/payments.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -185,7 +186,7 @@ def tickets_process_single_payment_view(request, event):
 
     vars = dict(order=order)
     context = RequestContext(request, {})
-    return render_to_response("ticket_admin/review_single.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/review_single.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -200,7 +201,7 @@ def tickets_confirm_single_payment_view(request, event):
 
     vars = dict(order=order)
     context = RequestContext(request, {})
-    return render_to_response("ticket_admin/single_payment_ok.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/single_payment_ok.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -216,7 +217,7 @@ def tickets_process_multiple_payments_view(request, event):
 
     vars = dict(payments=payments, dump=dump)
     context = RequestContext(request, {})
-    return render_to_response("ticket_admin/review_multiple.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/review_multiple.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -236,7 +237,7 @@ def tickets_confirm_multiple_payments_view(request, event):
 
     vars = dict(payments=payments)
     context = RequestContext(request, {})
-    return render_to_response("ticket_admin/multiple_payments_ok.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/multiple_payments_ok.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -249,13 +250,13 @@ def tickets_create_batch_view(request, event):
 
             vars = dict(batch=batch)
             context = RequestContext(request, {})
-            return render_to_response("ticket_admin/create_batch_ok.html", vars, context_instance=context)
+            return render_to_response("tickets_admin/create_batch_ok.html", vars, context_instance=context)
     else:
         form = CreateBatchForm()
 
     vars = dict(form=form)
     context = RequestContext(request, {})
-    return render_to_response("ticket_admin/create_batch.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/create_batch.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -282,12 +283,12 @@ def tickets_cancel_batch_view(request, event, batch_id):
 
         vars = dict()
         context = RequestContext(request, {})
-        return render_to_response("ticket_admin/cancel_batch_ok.html", vars, context_instance=context)
+        return render_to_response("tickets_admin/cancel_batch_ok.html", vars, context_instance=context)
 
     else:
         vars = dict(batch=batch)
         context = RequestContext(request, {})
-        return render_to_response("ticket_admin/cancel_batch.html", vars, context_instance=context)
+        return render_to_response("tickets_admin/cancel_batch.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -304,10 +305,10 @@ def tickets_deliver_batch_view(request, event, batch_id):
     if request.method == "POST":
         batch.confirm_delivery()
 
-        return render_to_response("ticket_admin/deliver_batch_ok.html", vars, context_instance=context)
+        return render_to_response("tickets_admin/deliver_batch_ok.html", vars, context_instance=context)
 
     else:
-        return render_to_response("ticket_admin/deliver_batch.html", vars, context_instance=context)
+        return render_to_response("tickets_admin/deliver_batch.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -335,7 +336,7 @@ def tickets_search_view(request, event):
     vars = dict(orders=orders, form=form)
     context = RequestContext(request, {})
 
-    return render_to_response("ticket_admin/browse_orders.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/browse_orders.html", vars, context_instance=context)
 
 
 @ticket_admin_required
@@ -402,10 +403,32 @@ def tickets_order_view(request, event):
 
     vars = dict(order=order, customer=customer, products=products)
 
-    return render_to_response("ticket_admin/tickets_order_view.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/tickets_order_view.html", vars, context_instance=context)
 
 
-def admin_error_page(request, error):
+def admin_error_page(request, event, error):
     vars = dict(error=error)
     context = RequestContext(request, {})
-    return render_to_response("ticket_admin/error.html", vars, context_instance=context)
+    return render_to_response("tickets_admin/error.html", vars, context_instance=context)
+
+
+def tickets_admin_menu_items(request, event):
+    stats_url = url('tickets_admin_stats_view', event.slug)
+    stats_active = request.path == stats_url
+    stats_text = u"Myyntitilanne"
+
+    orders_url = url('tickets_admin_orders_view', event.slug)
+    orders_active = request.path.startswith(orders_url)
+    orders_text = u"Tilaukset"
+
+    batches_url = url('tickets_admin_batches_view', event.slug)
+    batches_active = request.path.startswith(batches_url)
+    batches_text = u"Toimituserät"
+
+    items = [
+        (stats_active, stats_url, stats_text),
+        (orders_active, orders_url, orders_text),
+        (batches_active, batches_url, batches_text),
+    ]
+
+    return items
