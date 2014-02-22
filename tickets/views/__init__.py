@@ -11,18 +11,13 @@ from .public_views import (
 )
 
 from .admin_views import (
-    tickets_cancel_batch_view,
-    tickets_confirm_multiple_payments_view,
-    tickets_confirm_single_payment_view,
-    tickets_create_batch_view,
-    tickets_deliver_batch_view,
-    tickets_manage_view,
-    tickets_order_view,
-    tickets_payments_view,
-    tickets_process_multiple_payments_view,
-    tickets_process_single_payment_view,
-    tickets_render_batch_view,
-    tickets_search_view,
-    tickets_stats_view,
-    tickets_tickets_by_date_view,
+    tickets_admin_batch_cancel_view,
+    tickets_admin_batch_create_view,
+    tickets_admin_batch_deliver_view,
+    tickets_admin_batch_view,
+    tickets_admin_batches_view,
+    tickets_admin_order_view,
+    tickets_admin_orders_view,
+    tickets_admin_stats_by_date_view,
+    tickets_admin_stats_view,
 )

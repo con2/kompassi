@@ -31,7 +31,7 @@ __all__ = [
     "tickets_admin_batch_cancel_view",
     "tickets_admin_batch_create_view",
     "tickets_admin_batch_deliver_view",
-    "tickets_admin_batch_render_view",
+    "tickets_admin_batch_view",
     "tickets_admin_batches_view",
     "tickets_admin_order_view",
     "tickets_admin_orders_view",
@@ -41,7 +41,7 @@ __all__ = [
 
 
 
-@ticket_admin_required
+@tickets_admin_required
 def tickets_admin_batches_view(request, vars, event):
     vars.update(
         batches=event.batch_set.all(),
@@ -50,7 +50,7 @@ def tickets_admin_batches_view(request, vars, event):
     return render(request, "tickets_admin_batches_view.html", vars)
 
 
-@ticket_admin_required
+@tickets_admin_required
 def tickets_admin_stats_view(request, vars, event):
     meta = event.tickets_event_meta
 
@@ -115,7 +115,7 @@ def tickets_admin_stats_view(request, vars, event):
     return render(request, "tickets_admin_stats_view.html", vars)
 
 
-@ticket_admin_required
+@tickets_admin_required
 def tickets_admin_stats_by_date_view(request, vars, event, raw=False):
     confirmed_orders = event.order_set.filter(confirm_time__isnull=False, cancellation_time__isnull=True, order_product_set__product__name__contains='lippu').distinct()
     tickets_by_date = defaultdict(int)
@@ -149,7 +149,7 @@ def tickets_admin_stats_by_date_view(request, vars, event, raw=False):
         return render(request, "tickets_admin_stats_by_date_view.html", vars)
 
 
-@ticket_admin_required
+@tickets_admin_required
 @require_http_methods(["POST", "GET"])
 def tickets_admin_batch_create_view(request, vars, event):
     form = initialize_form(CreateBatchForm)
@@ -166,9 +166,9 @@ def tickets_admin_batch_create_view(request, vars, event):
     return render(request, "tickets_admin_batch_create_view.html", vars)
 
 
-@ticket_admin_required
+@tickets_admin_required
 @require_GET
-def tickets_batch_render_view(request, vars, event, batch_id):
+def tickets_admin_batch_view(request, vars, event, batch_id):
     batch = get_object_or_404(Batch, id=int(batch_id), event=event)
 
     response = HttpResponse(mimetype="application/pdf")
@@ -180,7 +180,7 @@ def tickets_batch_render_view(request, vars, event, batch_id):
     return response
 
 
-@ticket_admin_required
+@tickets_admin_required
 @require_POST
 def tickets_admin_batch_cancel_view(request, vars, event, batch_id):
     batch = get_object_or_404(Batch, id=int(batch_id), event=event)
@@ -190,7 +190,7 @@ def tickets_admin_batch_cancel_view(request, vars, event, batch_id):
     return redirect('tickets_admin_batches_view')
 
 
-@ticket_admin_required
+@tickets_admin_required
 @require_POST
 def tickets_admin_batch_deliver_view(request, vars, event, batch_id):
     batch = get_object_or_404(Batch, id=int(batch_id), event=event)
@@ -204,7 +204,7 @@ def tickets_admin_batch_deliver_view(request, vars, event, batch_id):
     return redirect('tickets_admin_batches_view')
 
 
-@ticket_admin_required
+@tickets_admin_required
 @require_http_methods(["GET","POST"])
 def tickets_admin_orders_view(request, vars, event):
     orders = []
@@ -232,7 +232,7 @@ def tickets_admin_orders_view(request, vars, event):
     return render(request, 'tickets_admin_orders_view.html', vars)
 
 
-@ticket_admin_required
+@tickets_admin_required
 @require_http_methods(["GET","POST"])
 def tickets_admin_order_view(request, vars, event):
     try:

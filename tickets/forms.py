@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 from django import forms
-from django.contrib.localflavor.fi.forms import FIZipCodeField
 
 from crispy_forms.helper import FormHelper
 

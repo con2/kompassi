@@ -43,7 +43,6 @@ __all__ = [
 
 FIRST_PHASE = "welcome_phase"
 LAST_PHASE = "thanks_phase"
-EXIT_URL = settings.EVENT_URL
 
 
 class Phase(object):
@@ -58,7 +57,7 @@ class Phase(object):
     can_cancel = True
     index = None
 
-    @ticket_event_required
+    @tickets_event_required
     def __call__(self, request, event):
         if request.method not in self.methods:
             return HttpResponseNotAllowed(self.methods)
@@ -169,9 +168,9 @@ class Phase(object):
     def prev(self, request):
         return redirect(self.prev_phase)
 
-    def cancel(self, request):
+    def cancel(self, request, event):
         destroy_order(request, event)
-        return HttpResponseRedirect(EXIT_URL)
+        return HttpResponseRedirect(event.homepage_url)
 
     def vars(self, request, form):
         return {}
@@ -240,7 +239,7 @@ class TicketsPhase(Phase):
         multiform_save(form)
 
 
-tickets_view = TicketsPhase()
+tickets_tickets_view = TicketsPhase()
 
 
 class AddressPhase(Phase):
@@ -358,6 +357,13 @@ tickets_thanks_view = ThanksPhase()
 tickets_closed_view = ClosedPhase()
 
 
-ALL_PHASES = [tickets_welcome_view, tickets_view, tickets_address_view, tickets_confirm_view, tickets_thanks_view]
+ALL_PHASES = [
+    tickets_welcome_view,
+    tickets_tickets_view,
+    tickets_address_view,
+    tickets_confirm_view,
+    tickets_thanks_view,
+]
+
 for num, phase in enumerate(ALL_PHASES):
     phase.index = num

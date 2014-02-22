@@ -1,8 +1,9 @@
+import hashlib
+
 from django.conf import settings
 from django.db import models
-import md5
 
-# Create your models here.
+
 class Payment(models.Model):
     test = models.IntegerField(blank=True, null=True)
     VERSION = models.CharField(max_length=4)
@@ -14,7 +15,7 @@ class Payment(models.Model):
     MAC = models.CharField(max_length=32)
 
     def _check_mac(self):
-    	computed_mac = md5.new()
+    	computed_mac = hashlib.md5()
     	computed_mac.update(settings.CHECKOUT_PARAMS['PASSWORD'])
         computed_mac.update("&")
     	computed_mac.update(self.VERSION)
@@ -29,6 +30,7 @@ class Payment(models.Model):
         computed_mac.update("&")
     	computed_mac.update(str(self.ALGORITHM))
 
+        # XXX should this read ==?
     	return self.MAC != computed_mac.hexdigest().upper
 
     def clean(self):

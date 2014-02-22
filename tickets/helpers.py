@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from datetime import date
+from functools import wraps
 import re
 
 from django.http import HttpResponseRedirect
@@ -10,14 +11,16 @@ from .models import Order, OrderProduct
 
 
 __all__ = [
+    "clear_order",
+    "complete_phase",
+    "destroy_order",
+    "get_order",
+    "is_phase_completed",
+    "is_soldout",
     "redirect",
     "set_order",
-    "get_order",
-    "clear_order",
-    "destroy_order",
-    "is_soldout",
-    "is_phase_completed",
-    "complete_phase"
+    "tickets_admin_required",
+    "tickets_event_required",
 ]
 
 
@@ -224,10 +227,10 @@ def tickets_admin_required(view_func):
         meta = event.tickets_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa työvoiman hallintaan.")
+            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa lipunmyyntiin.")
             return redirect('core_event_view', event.slug)
 
-        if not event.tickets_event_meta.is_user_admin(request.user):
+        if not meta.is_user_admin(request.user):
             return login_redirect(request)
 
         vars = dict(
@@ -248,7 +251,11 @@ def tickets_event_required(view_func):
         meta = event.tickets_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa työvoiman hallintaan.")
+            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa lipunmyyntiin.")
+            return redirect('core_event_view', event.slug)
+
+        if not (meta.is_ticket_sales_open or meta.is_user_admin(request.user)):
+            messages.error(request, u"Tämän tapahtuman lipunmyynti ei ole vielä alkanut.")
             return redirect('core_event_view', event.slug)
 
         return view_func(request, event, *args, **kwargs)

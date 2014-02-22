@@ -11,6 +11,7 @@ from django.utils.timezone import get_default_timezone, now
 from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
 from programme.models import ProgrammeEventMeta
+from tickets.models import TicketsEventMeta
 
 from ...models import SignupExtra, SpecialDiet, Night
 
@@ -187,11 +188,25 @@ class Command(BaseCommand):
         )
         tickets_admin_group, unused = Group.objects.get_or_create(name=tickets_admin_group_name)
 
+        tickets_event_meta_defaults = dict(
+            admin_group=tickets_admin_group,
+            due_days=14,
+            shipping_and_handling_cents=150,
+        )
+
+        if options['test']:
+            t = now()
+            tickets_event_meta_defaults.update(
+                ticket_sales_starts=t - timedelta(days=60),
+                ticket_sales_ends=t + timedelta(days=60),
+            )
+        else:
+            tickets_event_meta_defaults.update(
+                ticket_sales_starts=datetime(2014, 3, 1, 0, 0, tzinfo=tz),
+                ticket_sales_ends=datetime(2014, 8, 31, 0, 0, tzinfo=tz),
+            )
+
         tickets_meta, unused = TicketsEventMeta.objects.get_or_create(
             event=event,
-            defaults=dict(
-                admin_group=tickets_admin_group,
-                due_days=14,
-                shipping_and_handling_cents=150,
-            )
+            defaults=tickets_event_meta_defaults,
         )

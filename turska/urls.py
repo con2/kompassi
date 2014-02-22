@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     url(r'', include('core.urls')),
     if_installed('labour', r'', include('labour.urls')),
     if_installed('programme', r'', include('programme.urls')),
+    if_installed('tickets', r'', include('tickets.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )

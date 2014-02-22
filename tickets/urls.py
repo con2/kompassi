@@ -1,31 +1,43 @@
 # encoding: utf-8
-# vim: shiftwidth=4 expandtab
 
-from django.conf.urls.defaults import *
-from django.views.generic.simple import redirect_to
+from django.conf.urls import patterns, include, url
+from django.shortcuts import redirect
 
-from tickets.views import *
+from .views import (
+    tickets_address_view,
+    tickets_admin_batch_cancel_view,
+    tickets_admin_batch_create_view,
+    tickets_admin_batch_deliver_view,
+    tickets_admin_batch_view,
+    tickets_admin_batches_view,
+    tickets_admin_order_view,
+    tickets_admin_orders_view,
+    tickets_admin_stats_by_date_view,
+    tickets_admin_stats_view,
+    tickets_closed_view,
+    tickets_confirm_view,
+    tickets_thanks_view,
+    tickets_tickets_view,
+    tickets_welcome_view,
+)
+
 
 urlpatterns = patterns('',
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets$', welcome_view, name="welcome_phase"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/products$', tickets_view, name="tickets_phase"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/delivery$', address_view, name="address_phase"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/confirm$', confirm_view, name="confirm_phase"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/thanks$', thanks_view, name="thanks_phase"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets$', tickets_welcome_view, name="tickets_welcome_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/products$', tickets_tickets_view, name="tickets_tickets_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/address$', tickets_address_view, name="tickets_address_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/confirm$', tickets_confirm_view, name="tickets_confirm_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/thanks$', tickets_thanks_view, name="tickets_thanks_view"),
 
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin$', manage_view, name="manage_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/search$', search_view, name="search_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/orders$', order_view, name="order_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin$', tickets_admin_view, name="tickets_admin_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/orders$', tickets_admin_orders_view, name="tickets_admin_orders_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/orders/(?P<order_id>\d+)/$', tickets_admin_order_view, name="tickets_admin_order_view"),
 
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/payments$', payments_view, name="payments_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/payments/single$', process_single_payment_view, name="process_single_payment_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/payments/single/confirm$', confirm_single_payment_view, name="confirm_single_payment_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/payments/multiple$', process_multiple_payments_view, name="process_multiple_payments_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/payments/multiple/confirm$', confirm_multiple_payments_view, name="confirm_multiple_payments_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/batches/new', name="create_batch_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)/$', render_batch_view, name="render_batch_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)/cancel$', cancel_batch_view, name="cancel_batch_view"),
-    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)/confirm$', deliver_batch_view, name="deliver_batch_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/batches', tickets_admin_batches_view, name="tickets_admin_batches_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/batches/new', tickets_admin_batches_create_view, name="tickets_admin_batches_create_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)$', tickets_admin_batch_view, name="tickets_admin_batch_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)/cancel$', tickets_admin_batches_cancel_view, name="tickets_admin_batches_cancel_view"),
+    url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)/confirm$', tickets_admin_batches_confirm_view, name="tickets_admin_batches_confirm_view"),
 
     url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/stats$', stats_view, name="stats_view"),
     url(r'events/(?P<event>[a-z0-9-]+)/tickets/admin/stats/by-date$', tickets_by_date_view, {'raw': False}, name="tickets_by_date_view"),

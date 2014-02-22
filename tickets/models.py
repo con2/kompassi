@@ -18,13 +18,12 @@ from .receipt import render_receipt
 
 
 __all__ = [
-    "School",
+    "TicketsEventMeta",
     "Batch",
     "Product",
     "Customer",
     "Order",
     "OrderProduct",
-    "SHIPPING_AND_HANDLING_CENTS",
 ]
 
 
@@ -37,10 +36,41 @@ class TicketsEventMeta(EventMetaBase):
         default=0,
     )
 
-    due_days = model.IntegerField(
-        verbose_name=u'Maksuaika (päiviä)'
+    due_days = models.IntegerField(
+        verbose_name=u'Maksuaika (päiviä)',
         default=14,
     )
+
+    ticket_sales_starts = models.DateTimeField(
+        verbose_name=u'Lipunmyynnin alkuaika',
+        null=True,
+        blank=True,
+    )
+
+    ticket_sales_ends = models.DateTimeField(
+        verbose_name=u'Lipunmyynnin päättymisaika',
+        null=True,
+        blank=True,
+    )
+
+    @property
+    def is_ticket_sales_open(self):
+        t = timezone.now()
+
+        # Starting date must be set for the ticket sales to be considered open
+        if not self.ticket_sales_opens:
+            return False
+
+        # Starting date must be in the past for the ticket sales to be considered open
+        elif self.ticket_sales_opens > t:
+            return False
+
+        # If there is an ending date, it must not have been passed yet
+        elif self.ticket_sales_closes:
+            return self.ticket_sales_closes <= t
+
+        else:
+            return True
 
 
 class Batch(models.Model):
@@ -244,7 +274,6 @@ class Order(models.Model):
     payment_date = models.DateField(null=True, blank=True)
     cancellation_time = models.DateTimeField(null=True, blank=True)
     batch = models.ForeignKey(Batch, null=True, blank=True)
-    school = models.ForeignKey(School, null=True, blank=True)
 
     @property
     def is_active(self):

@@ -1,11 +1,11 @@
-import md5
+import hashlib
 
 from django.conf import settings
 
 ENCODING = 'UTF-8'
 
 def compute_payment_request_mac(order):
-    mac = md5.new()
+    mac = hashlib.md5()
     mac.update(settings.CHECKOUT_PARAMS['VERSION'])
     mac.update("+")
     mac.update(str(order.checkout_stamp))

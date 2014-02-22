@@ -18,8 +18,8 @@
           span.label.label-default Ohjelma
         | &thinsp;
       if event.tickets_event_meta
-        if event.tickets_event_meta.public
-          span.label.label-primary: a(href='{% url "tickets_welcome_view" event.slug %}') Ohjelmakartta
+        if event.tickets_event_meta.is_ticket_sales_open
+          span.label.label-primary: a(href='{% url "tickets_welcome_view" event.slug %}') Lipunmyynti käynnissä
         else
           span.label.label-default Lippukauppa
         | &thinsp;
