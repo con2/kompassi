@@ -1,6 +1,6 @@
 Hyvä vastaanottaja,
 
-Kiitos tilauksestanne {{ EVENT_NAME_GENITIVE }} verkkokaupassa! Tilauksenne numero on {{ order.pk|stringformat:"04d" }}.
+Kiitos tilauksestanne {{ event.name_genitive }} verkkokaupassa! Tilauksenne numero on {{ order.pk|stringformat:"04d" }}.
 
 Vahvistamme tilatuiksi seuraavat lipputuotteet:
 
@@ -41,13 +41,13 @@ Viitenumeroa on ehdottomasti käytettävä maksettaessa!
 Vastaanotetut maksut käsitellään viikoittain. Kun maksunne on käsitelty,
 saatte tästä erillisen vahvistusviestin.
 
-{% if order.requires_shipping %}Huomioithan, että lippuja toimitetaan pitkin kesää isommissa erissä, 
-eli rannekeen toimituksessa voi kestää useampi viikko. Kaikki 
-lipputilaukset toimitetaan kuitenkin hyvissä ajoin ennen tapahtumaa eikä 
+{% if order.requires_shipping %}Huomioithan, että lippuja toimitetaan pitkin kesää isommissa erissä,
+eli rannekeen toimituksessa voi kestää useampi viikko. Kaikki
+lipputilaukset toimitetaan kuitenkin hyvissä ajoin ennen tapahtumaa eikä
 kukaan lippunsa ajoissa maksanut jää vaille lippuja.
 
 {% for message in messages %}{{ message }}
 
 {% endfor %}{% endif %}Ystävällisin terveisin
--- 
+--
 {{ DEFAULT_FROM_EMAIL}}

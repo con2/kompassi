@@ -22,11 +22,10 @@ except ImportError:
     warn('Failed to import ReportLab. Generating receipts will fail.')
 
 # XXX * imports
-from ticket_sales.models import *
-from ticket_sales.forms import *
-from ticket_sales.helpers import *
-from ticket_sales.utils import *
-from ticket_sales.format import *
+from .models import *
+from .forms import *
+from .helpers import *
+from .utils import *
 
 
 __all__ = [
@@ -74,7 +73,7 @@ class Phase(object):
     name = "XXX_fill_me_in"
     friendly_name = "XXX Fill Me In"
     methods = ["GET", "POST"]
-    template = "ticket_sales/dummy.html"
+    template = "tickets/dummy.html"
     prev_phase = None
     next_phase = None
     payment_phase = None
@@ -203,7 +202,7 @@ class Phase(object):
 class WelcomePhase(Phase):
     name = "welcome_phase"
     friendly_name = "Tervetuloa"
-    template = "ticket_sales/welcome.jade"
+    template = "tickets/welcome.jade"
     prev_phase = None
     next_phase = "tickets_phase"
     permit_new = True
@@ -224,7 +223,7 @@ welcome_view = ticket_event_required(WelcomePhase())
 class TicketsPhase(Phase):
     name = "tickets_phase"
     friendly_name = "Liput"
-    template = "ticket_sales/tickets.jade"
+    template = "tickets/tickets.jade"
     prev_phase = "welcome_phase"
     next_phase = "address_phase"
 
@@ -269,7 +268,7 @@ tickets_view = TicketsPhase()
 class AddressPhase(Phase):
     name = "address_phase"
     friendly_name = "Toimitusosoite"
-    template = "ticket_sales/address.jade"
+    template = "tickets/address.jade"
     prev_phase = "tickets_phase"
     next_phase = "confirm_phase"
 
@@ -292,7 +291,7 @@ address_view = AddressPhase()
 class ConfirmPhase(Phase):
     name = "confirm_phase"
     friendly_name = "Vahvistaminen"
-    template = "ticket_sales/confirm.jade"
+    template = "tickets/confirm.jade"
     prev_phase = "address_phase"
     next_phase = "thanks_phase"
     payment_phase = True
@@ -332,7 +331,7 @@ confirm_view = ConfirmPhase()
 class ThanksPhase(Phase):
     name = "thanks_phase"
     friendly_name = "Kiitos!"
-    template = "ticket_sales/thanks.jade"
+    template = "tickets/thanks.jade"
     prev_phase = None
     next_phase = "welcome_phase"
     next_text = "Uusi tilaus"
@@ -361,7 +360,7 @@ class ThanksPhase(Phase):
 class ClosedPhase(Phase):
     name = "welcome_phase"
     friendly_name = "Tervetuloa!"
-    template = "ticket_sales/closed.html"
+    template = "tickets/closed.html"
     prev_phase = None
     next_phase = None
     can_cancel = True

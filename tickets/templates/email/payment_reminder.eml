@@ -1,6 +1,6 @@
 Hyvä vastaanottaja,
 
-Kirjanpitomme mukaan emme ole saaneet maksuanne {{ EVENT_NAME }} -lipputilauksestanne
+Kirjanpitomme mukaan emme ole saaneet maksuanne {{ event.name }} -lipputilauksestanne
 numero {{ order.pk|stringformat:"04d" }}.
 
 Olette tilannut seuraavat lipputuotteet:
@@ -48,5 +48,5 @@ Kun maksunne näkyy tilillämme, saatte tästä erillisen maksuvahvistusviestin
 sähköpostiinne.
 
 Ystävällisin terveisin
--- 
+--
 {{ DEFAULT_FROM_EMAIL|safe }}

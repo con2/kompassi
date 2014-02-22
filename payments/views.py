@@ -7,7 +7,7 @@ from django.contrib.messages import add_message, INFO, ERROR, WARNING
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_GET
 
-from ticket_sales.helpers import init_form, get_order, redirect
+from tickets.helpers import init_form, get_order, redirect
 
 from .forms import PaymentForm
 

@@ -1,6 +1,6 @@
 Hyvä vastaanottaja,
 
-{{ EVENT_NAME }} -lipputilauksenne numero {{ order.pk|stringformat:"04d" }} on peruutettu,
+{{ event.name }} -lipputilauksenne numero {{ order.pk|stringformat:"04d" }} on peruutettu,
 koska sitä ei maksettu eräpäivään mennessä.
 
 Tilauksenne sisälsi seuraavat lipputuotteet:
@@ -25,5 +25,5 @@ Mikäli koette tilauksenne peruuntuneen virheellisesti, olkaa hyvä ja
 vastatkaa tähän sähköpostiviestiin välittömästi.
 
 Ystävällisin terveisin
--- 
+--
 {{ DEFAULT_FROM_EMAIL|safe }}

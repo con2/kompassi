@@ -1,7 +1,7 @@
 # encoding: utf-8
 # vim: shiftwidth=4 expandtab
 
-from ticket_sales.models import *
+from tickets.models import *
 from django.contrib import admin
 
 class ProductAdmin(admin.ModelAdmin):

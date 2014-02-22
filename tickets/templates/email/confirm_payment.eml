@@ -1,6 +1,6 @@
 Hyvä vastaanottaja,
 
-Olemme vastaanottaneet {{ order.payment_date|date }} maksun {{ EVENT_NAME }}
+Olemme vastaanottaneet {{ order.payment_date|date }} maksun {{ event.name }}
 -ennakkolipputilauksestanne numero {{ order.pk|stringformat:"04d" }}.
 
 Vahvistamme maksetuiksi seuraavat lipputuotteet:
@@ -25,13 +25,13 @@ Jos ylläolevissa tiedoissa on virheitä, pyydämme ottamaan viipymättä
 yhteyttä lipunmyyntiin joko vastaamalla tähän viestiin tai lähettämällä
 sähköpostia: {{ DEFAULT_FROM_EMAIL|safe }}.
 
-{% if order.requires_shipping %}Huomioithan, että lippuja toimitetaan pitkin kesää isommissa erissä, 
-eli rannekeen toimituksessa voi kestää useampi viikko. Kaikki 
-lipputilaukset toimitetaan kuitenkin hyvissä ajoin ennen tapahtumaa eikä 
+{% if order.requires_shipping %}Huomioithan, että lippuja toimitetaan pitkin kesää isommissa erissä,
+eli rannekeen toimituksessa voi kestää useampi viikko. Kaikki
+lipputilaukset toimitetaan kuitenkin hyvissä ajoin ennen tapahtumaa eikä
 kukaan lippunsa ajoissa maksanut jää vaille lippuja.
 
 Saatte erillisen vahvistusviestin, kun lippunne on postitettu.
 
 {% endif %}Ystävällisin terveisin
--- 
+--
 {{ DEFAULT_FROM_EMAIL|safe }}

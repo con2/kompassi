@@ -6,7 +6,7 @@ from django.contrib.localflavor.fi.forms import FIZipCodeField
 
 from crispy_forms.helper import FormHelper
 
-from ticket_sales.models import *
+from tickets.models import *
 
 __all__ = [
     "NullForm",
@@ -45,7 +45,7 @@ class OrderProductForm(forms.ModelForm):
     class Meta:
         exclude = ("order", "product")
         model = OrderProduct
-        
+
 class CustomerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)

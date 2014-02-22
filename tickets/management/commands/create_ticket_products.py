@@ -3,7 +3,7 @@
 # vim: shiftwidth=4 expandtab
 
 from django.core.management.base import BaseCommand
-from ticket_sales.models import *
+from tickets.models import *
 
 DAYS = [
     (u'Koko viikonlopun lippu', u'koko tapahtuman ajan (la klo 10 - su klo 18)',    (1550, 1750)),

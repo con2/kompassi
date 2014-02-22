@@ -6,7 +6,7 @@ import csv
 import sys
 
 from django.core.management.base import BaseCommand
-from ticket_sales.models import *
+from tickets.models import *
 
 class Command(BaseCommand):
     args = '<id>'

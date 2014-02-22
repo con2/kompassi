@@ -1,6 +1,6 @@
 Hyvä vastaanottaja,
 
-Olemme {{ order.batch.delivery_date|date }} postittaneet {{ EVENT_NAME }} -ennakkolipputilauksenne
+Olemme {{ order.batch.delivery_date|date }} postittaneet {{ event.name }} -ennakkolipputilauksenne
 numero {{ order.pk|stringformat:"04d" }}.
 
 Vahvistamme postitetuiksi seuraavat lipputuotteet:
@@ -28,5 +28,5 @@ sähköpostia: {{ DEFAULT_FROM_EMAIL|safe }}.
 Tervetuloa Traconiin!
 
 Ystävällisin terveisin
--- 
+--
 {{ DEFAULT_FROM_EMAIL|safe }}
