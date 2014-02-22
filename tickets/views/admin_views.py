@@ -28,37 +28,30 @@ from ..utils import *
 
 
 __all__ = [
+    "tickets_admin_batch_cancel_view",
+    "tickets_admin_batch_create_view",
+    "tickets_admin_batch_deliver_view",
+    "tickets_admin_batch_render_view",
     "tickets_admin_batches_view",
-
-    "tickets_cancel_batch_view",
-    "tickets_confirm_multiple_payments_view",
-    "tickets_confirm_single_payment_view",
-    "tickets_create_batch_view",
-    "tickets_deliver_batch_view",
-    "tickets_order_view",
-    "tickets_payments_view",
-    "tickets_process_multiple_payments_view",
-    "tickets_process_single_payment_view",
-    "tickets_render_batch_view",
-    "tickets_search_view",
-    "tickets_stats_view",
-    "tickets_tickets_by_date_view",
-    "tickets_tickets_view",
+    "tickets_admin_order_view",
+    "tickets_admin_orders_view",
+    "tickets_admin_stats_by_date_view",
+    "tickets_admin_stats_view",
 ]
 
 
 
 @ticket_admin_required
-def tickets_admin_batches_view(request, event):
-    batches = event.batch_set.all()
+def tickets_admin_batches_view(request, vars, event):
+    vars.update(
+        batches=event.batch_set.all(),
+    )
 
-    vars = dict(batches=batches)
-    context = RequestContext(request, {})
-    return render_to_response("tickets_admin_batches_view.html", vars, context_instance=context)
+    return render(request, "tickets_admin_batches_view.html", vars)
 
 
 @ticket_admin_required
-def tickets_stats_view(request, event):
+def tickets_admin_stats_view(request, vars, event):
     meta = event.tickets_event_meta
 
     confirmed_orders = event.order_set.filter(confirm_time__isnull=False)
@@ -104,7 +97,7 @@ def tickets_stats_view(request, event):
     total_price = format_price(total_cents)
     total_paid_price = format_price(total_paid_cents)
 
-    vars = dict(
+    vars.update(
         data=data,
         num_confirmed_orders=confirmed_orders.count(),
         num_cancelled_orders=cancelled_orders.count(),
@@ -118,12 +111,12 @@ def tickets_stats_view(request, event):
         total_price=total_price,
         total_paid_price=total_paid_price
     )
-    context = RequestContext(request, {})
-    return render_to_response("tickets_admin/stats.html", vars, context_instance=context)
+
+    return render(request, "tickets_admin_stats_view.html", vars)
 
 
 @ticket_admin_required
-def tickets_by_date_view(request, event, raw=False):
+def tickets_admin_stats_by_date_view(request, vars, event, raw=False):
     confirmed_orders = event.order_set.filter(confirm_time__isnull=False, cancellation_time__isnull=True, order_product_set__product__name__contains='lippu').distinct()
     tickets_by_date = defaultdict(int)
 
@@ -152,116 +145,30 @@ def tickets_by_date_view(request, event, raw=False):
         response['Content-Disposition'] = 'attachment; filename=tickets_by_date.tsv'
         return response
     else:
-        vars = dict(tsv=tsv)
-        context = RequestContext(request, {})
-        return render_to_response("tickets_admin/tickets_by_date.html", vars, context_instance=context)
-
-
-@ticket_admin_required
-@require_GET
-def tickets_payments_view(request, event):
-    vars = dict(
-        single_form=SinglePaymentForm(),
-        multiple_form=MultiplePaymentsForm()
-    )
-    context = RequestContext(request, {})
-    return render_to_response("tickets_admin/payments.html", vars, context_instance=context)
-
-
-@ticket_admin_required
-@require_POST
-def tickets_process_single_payment_view(request, event):
-    form = SinglePaymentForm(request.POST)
-    if not form.is_valid():
-        return admin_error_page(request, u"Tarkista syöte.")
-
-    try:
-        order = get_order_by_ref(form.cleaned_data["ref_number"])
-    except Order.DoesNotExist:
-        return admin_error_page(request, u"Annetulla viitenumerolla ei löydy tilausta.")
-    if not order.is_confirmed:
-        return admin_error_page(request, u"Viitenumeroa vastaavaa tilausta ei ole vahvistettu.")
-    if order.is_paid:
-        return admin_error_page(request, u"Tilaus on jo merkitty maksetuksi %s." % format_date(order.payment_date))
-
-    vars = dict(order=order)
-    context = RequestContext(request, {})
-    return render_to_response("tickets_admin/review_single.html", vars, context_instance=context)
-
-
-@ticket_admin_required
-@require_POST
-def tickets_confirm_single_payment_view(request, event):
-    form = ConfirmSinglePaymentForm(request.POST)
-    if not form.is_valid():
-        return admin_error_page(request, u"Jotain hämärää yritetty!")
-
-    order = get_object_or_404(Order, id=form.cleaned_data["order_id"])
-    order.confirm_payment(date.today())
-
-    vars = dict(order=order)
-    context = RequestContext(request, {})
-    return render_to_response("tickets_admin/single_payment_ok.html", vars, context_instance=context)
-
-
-@ticket_admin_required
-@require_POST
-def tickets_process_multiple_payments_view(request, event):
-    form = MultiplePaymentsForm(request.POST)
-    if not form.is_valid():
-        return admin_error_page(request, u"Älä pliis jätä sitä pastee tähän -kenttää tyhjäks.")
-
-    dump = form.cleaned_data["dump"]
-    lines = dump.split("\n")
-    payments = list(parse_payments(lines))
-
-    vars = dict(payments=payments, dump=dump)
-    context = RequestContext(request, {})
-    return render_to_response("tickets_admin/review_multiple.html", vars, context_instance=context)
-
-
-@ticket_admin_required
-@require_POST
-def tickets_confirm_multiple_payments_view(request, event):
-    form = MultiplePaymentsForm(request.POST)
-    if not form.is_valid():
-        return admin_error_page(request, u"Jotain hämärää yritetty!")
-
-    dump = form.cleaned_data["dump"]
-    lines = dump.split("\n")
-    payments = list(parse_payments(lines))
-
-    for line, result, date, order in payments:
-        if result == ParseResult.OK:
-            order.confirm_payment(date)
-
-    vars = dict(payments=payments)
-    context = RequestContext(request, {})
-    return render_to_response("tickets_admin/multiple_payments_ok.html", vars, context_instance=context)
+        vars.update(tsv=tsv)
+        return render(request, "tickets_admin_stats_by_date_view.html", vars)
 
 
 @ticket_admin_required
 @require_http_methods(["POST", "GET"])
-def tickets_create_batch_view(request, event):
+def tickets_admin_batch_create_view(request, vars, event):
+    form = initialize_form(CreateBatchForm)
+
     if request.method == "POST":
-        form = CreateBatchForm(request.POST)
         if form.is_valid():
             batch = Batch.create(max_orders=form.cleaned_data["max_orders"])
+            messages.success(request, u"Toimituserä {batch.pk} on luotu onnistuneesti".format(batch=batch))
+            return redirect('tickets_admin_batches_view', event.slug)
+        else:
+            messages.error(request, u"Ole hyvä ja korjaa lomakkeen virheet.")
 
-            vars = dict(batch=batch)
-            context = RequestContext(request, {})
-            return render_to_response("tickets_admin/create_batch_ok.html", vars, context_instance=context)
-    else:
-        form = CreateBatchForm()
-
-    vars = dict(form=form)
-    context = RequestContext(request, {})
-    return render_to_response("tickets_admin/create_batch.html", vars, context_instance=context)
+    vars.update(form=form)
+    return render(request, "tickets_admin_batch_create_view.html", vars)
 
 
 @ticket_admin_required
 @require_GET
-def tickets_render_batch_view(request, event, batch_id):
+def tickets_batch_render_view(request, vars, event, batch_id):
     batch = get_object_or_404(Batch, id=int(batch_id), event=event)
 
     response = HttpResponse(mimetype="application/pdf")
@@ -274,74 +181,60 @@ def tickets_render_batch_view(request, event, batch_id):
 
 
 @ticket_admin_required
-@require_http_methods(["POST", "GET"])
-def tickets_cancel_batch_view(request, event, batch_id):
+@require_POST
+def tickets_admin_batch_cancel_view(request, vars, event, batch_id):
     batch = get_object_or_404(Batch, id=int(batch_id), event=event)
+    batch.cancel()
 
-    if request.method == "POST":
-        batch.cancel()
-
-        vars = dict()
-        context = RequestContext(request, {})
-        return render_to_response("tickets_admin/cancel_batch_ok.html", vars, context_instance=context)
-
-    else:
-        vars = dict(batch=batch)
-        context = RequestContext(request, {})
-        return render_to_response("tickets_admin/cancel_batch.html", vars, context_instance=context)
+    messages.success(request, u'Toimituserä on peruttu.')
+    return redirect('tickets_admin_batches_view')
 
 
 @ticket_admin_required
-@require_http_methods(["POST", "GET"])
-def tickets_deliver_batch_view(request, event, batch_id):
+@require_POST
+def tickets_admin_batch_deliver_view(request, vars, event, batch_id):
     batch = get_object_or_404(Batch, id=int(batch_id), event=event)
 
     if batch.is_delivered:
-        return admin_error_page(request, "Already delivered")
-
-    vars = dict(batch=batch)
-    context = RequestContext(request, {})
-
-    if request.method == "POST":
-        batch.confirm_delivery()
-
-        return render_to_response("tickets_admin/deliver_batch_ok.html", vars, context_instance=context)
-
+        messages.error(request, u"Valitsemasi toimituserä on jo merkitty toimitetuksi.")
     else:
-        return render_to_response("tickets_admin/deliver_batch.html", vars, context_instance=context)
+        batch.confirm_delivery()
+        messages.success(request, u"Toimituserä on merkitty toimitetuksi ja toimitusvahvistukset lähetetty.")
+
+    return redirect('tickets_admin_batches_view')
 
 
 @ticket_admin_required
 @require_http_methods(["GET","POST"])
-def tickets_search_view(request, event):
+def tickets_admin_orders_view(request, vars, event):
     orders = []
+    form = initialize_form(SearchForm, request)
 
     if request.method == "POST":
-        form = SearchForm(request.POST)
-
         if form.is_valid():
             orders = perform_search(**form.cleaned_data)
     else:
-        form = SearchForm()
-        orders =  Order.objects.filter(confirm_time__isnull=False).order_by('-confirm_time')
+        orders = event.order_set.filter(confirm_time__isnull=False).order_by('-confirm_time')
+
     try:
         page = int(request.GET.get('page', '1'))
     except ValueError:
         page = 1
+
     paginator = Paginator(orders, 100)
+
     try:
         orders = paginator.page(page)
     except (EmptyPage, InvalidPage):
         orders = paginator.page(paginator.num_pages)
-    vars = dict(orders=orders, form=form)
-    context = RequestContext(request, {})
 
-    return render_to_response("tickets_admin/browse_orders.html", vars, context_instance=context)
+    vars.update(orders=orders, form=form)
+    return render(request, 'tickets_admin_orders_view.html', vars)
 
 
 @ticket_admin_required
 @require_http_methods(["GET","POST"])
-def tickets_order_view(request, event):
+def tickets_admin_order_view(request, vars, event):
     try:
         orderid = int(request.GET.get('id', '1'))
     except ValueError:
@@ -403,13 +296,7 @@ def tickets_order_view(request, event):
 
     vars = dict(order=order, customer=customer, products=products)
 
-    return render_to_response("tickets_admin/tickets_order_view.html", vars, context_instance=context)
-
-
-def admin_error_page(request, event, error):
-    vars = dict(error=error)
-    context = RequestContext(request, {})
-    return render_to_response("tickets_admin/error.html", vars, context_instance=context)
+    return render(request, "tickets_admin_order_view.html", vars)
 
 
 def tickets_admin_menu_items(request, event):

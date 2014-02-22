@@ -50,7 +50,7 @@ class Phase(object):
     name = "XXX_fill_me_in"
     friendly_name = "XXX Fill Me In"
     methods = ["GET", "POST"]
-    template = "tickets/dummy.html"
+    template = "tickets_dummy_phase.html"
     prev_phase = None
     next_phase = None
     payment_phase = None
@@ -180,7 +180,7 @@ class Phase(object):
 class WelcomePhase(Phase):
     name = "welcome_phase"
     friendly_name = "Tervetuloa"
-    template = "tickets/welcome.jade"
+    template = "tickets_welcome_phase.jade"
     prev_phase = None
     next_phase = "tickets_phase"
     permit_new = True
@@ -201,7 +201,7 @@ tickets_welcome_view = WelcomePhase()
 class TicketsPhase(Phase):
     name = "tickets_phase"
     friendly_name = "Liput"
-    template = "tickets/tickets.jade"
+    template = "tickets_tickets_phase.jade"
     prev_phase = "welcome_phase"
     next_phase = "address_phase"
 
@@ -246,7 +246,7 @@ tickets_view = TicketsPhase()
 class AddressPhase(Phase):
     name = "address_phase"
     friendly_name = "Toimitusosoite"
-    template = "tickets/address.jade"
+    template = "tickets_address_phase.jade"
     prev_phase = "tickets_phase"
     next_phase = "confirm_phase"
 
@@ -269,7 +269,7 @@ tickets_address_view = AddressPhase()
 class ConfirmPhase(Phase):
     name = "confirm_phase"
     friendly_name = "Vahvistaminen"
-    template = "tickets/confirm.jade"
+    template = "tickets_confirm_phase.jade"
     prev_phase = "address_phase"
     next_phase = "thanks_phase"
     payment_phase = True
@@ -309,7 +309,7 @@ tickets_confirm_view = ConfirmPhase()
 class ThanksPhase(Phase):
     name = "thanks_phase"
     friendly_name = "Kiitos!"
-    template = "tickets/thanks.jade"
+    template = "tickets_thanks_phase.jade"
     prev_phase = None
     next_phase = "welcome_phase"
     next_text = "Uusi tilaus"
@@ -338,7 +338,7 @@ class ThanksPhase(Phase):
 class ClosedPhase(Phase):
     name = "welcome_phase"
     friendly_name = "Tervetuloa!"
-    template = "tickets/closed.html"
+    template = "tickets_closed_phase.html"
     prev_phase = None
     next_phase = None
     can_cancel = True
