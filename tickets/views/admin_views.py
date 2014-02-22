@@ -156,7 +156,7 @@ def tickets_admin_batch_create_view(request, vars, event):
 
     if request.method == "POST":
         if form.is_valid():
-            batch = Batch.create(max_orders=form.cleaned_data["max_orders"])
+            batch = Batch.create(event=event, max_orders=form.cleaned_data["max_orders"])
             messages.success(request, u"Toimituserä {batch.pk} on luotu onnistuneesti".format(batch=batch))
             return redirect('tickets_admin_batches_view', event.slug)
         else:
@@ -212,7 +212,7 @@ def tickets_admin_orders_view(request, vars, event):
 
     if request.method == "POST":
         if form.is_valid():
-            orders = perform_search(**form.cleaned_data)
+            orders = perform_search(event=event, **form.cleaned_data)
     else:
         orders = event.order_set.filter(confirm_time__isnull=False).order_by('-confirm_time')
 
