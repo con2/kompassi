@@ -17,3 +17,9 @@
         else
           span.label.label-default Ohjelma
         | &thinsp;
+      if event.tickets_event_meta
+        if event.tickets_event_meta.public
+          span.label.label-primary: a(href='{% url "tickets_welcome_view" event.slug %}') Ohjelmakartta
+        else
+          span.label.label-default Lippukauppa
+        | &thinsp;

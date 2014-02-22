@@ -43,8 +43,6 @@ class TicketsEventMeta(EventMetaBase):
     )
 
 
-
-
 class Batch(models.Model):
     event = models.ForeignKey('core.Event')
 

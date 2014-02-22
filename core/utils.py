@@ -27,6 +27,17 @@ def initialize_form(FormClass, request, *args, **kwargs):
         return FormClass(*args, **kwargs)
 
 
+def multiform_validate(forms):
+    return ["syntax"] if not all(
+        i.is_valid() and (i.instance.target.available or i.cleaned_data["count"] == 0)
+        for i in forms
+    ) else []
+
+
+def multiform_save(forms):
+    return [i.save() for i in forms]
+
+
 def indented_without_label(input):
     return Div(Div(input, css_class='controls col-md-offset-3 col-md-9'), css_class='form-group')
 

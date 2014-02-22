@@ -15,7 +15,6 @@ __all__ = [
     "get_order",
     "clear_order",
     "destroy_order",
-    "init_form",
     "is_soldout",
     "is_phase_completed",
     "complete_phase"

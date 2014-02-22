@@ -180,3 +180,18 @@ class Command(BaseCommand):
             u'Lauantain ja sunnuntain välinen yö',
         ]:
             Night.objects.get_or_create(name=night)
+
+        tickets_admin_group_name = "{installation_name}-{event_slug}-tickets-admins".format(
+            installation_name=settings.TURSKA_INSTALLATION_SLUG,
+            event_slug=event.slug,
+        )
+        tickets_admin_group, unused = Group.objects.get_or_create(name=tickets_admin_group_name)
+
+        tickets_meta, unused = TicketsEventMeta.objects.get_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=tickets_admin_group,
+                due_days=14,
+                shipping_and_handling_cents=150,
+            )
+        )
