@@ -1,0 +1,53 @@
+Hyvä vastaanottaja,
+
+Kiitos tilauksestanne {{ EVENT_NAME_GENITIVE }} verkkokaupassa! Tilauksenne numero on {{ order.pk|stringformat:"04d" }}.
+
+Vahvistamme tilatuiksi seuraavat lipputuotteet:
+
+{% for product in products %}{{ product.count }} kpl	{{ product.product.name }}
+	{{ product.count }} x {{ product.product.formatted_price }} = {{ product.formatted_price }}
+{% endfor %}{% if order.requires_shipping %}
+Toimituskulut: {{ order.formatted_shipping_and_handling }}{% endif %}
+
+Yhteensä: {{ order.formatted_price }} (ALV 0%)
+
+{% if order.requires_shipping %}Liput toimitetaan seuraavaan osoitteeseen:{% else %}Antamanne yhteystiedot:{% endif %}
+
+{{ order.customer.name }}
+{{ order.customer.address }}
+{{ order.customer.zip_code }} {{ order.customer.city }}
+
+{% if order.customer.phone_number %}{{ order.customer.phone_number }}
+{% endif %}{{ order.customer.email }}
+
+
+Jos ylläolevissa tiedoissa on virheitä, pyydämme ottamaan viipymättä
+yhteyttä lipunmyyntiin joko vastaamalla tähän viestiin tai lähettämällä
+sähköpostia: {{ DEFAULT_FROM_EMAIL|safe }}.
+
+Jos ylläolevat tiedot ovat oikein, maksakaa tilaus seuraavilla tiedoilla:
+
+Suomalainen tilinumero	451077-236912
+IBAN                    FI51 4510 7720 0369 12
+SWIFT/BIC               HELSFIHH
+
+Saaja			Tracon ry
+Viitenumero		{{ order.formatted_reference_number }}
+Summa			{{ order.formatted_price }}
+Eräpäivä	 	{{ order.due_date|date }}
+
+Viitenumeroa on ehdottomasti käytettävä maksettaessa!
+
+Vastaanotetut maksut käsitellään viikoittain. Kun maksunne on käsitelty,
+saatte tästä erillisen vahvistusviestin.
+
+{% if order.requires_shipping %}Huomioithan, että lippuja toimitetaan pitkin kesää isommissa erissä, 
+eli rannekeen toimituksessa voi kestää useampi viikko. Kaikki 
+lipputilaukset toimitetaan kuitenkin hyvissä ajoin ennen tapahtumaa eikä 
+kukaan lippunsa ajoissa maksanut jää vaille lippuja.
+
+{% for message in messages %}{{ message }}
+
+{% endfor %}{% endif %}Ystävällisin terveisin
+-- 
+{{ DEFAULT_FROM_EMAIL}}

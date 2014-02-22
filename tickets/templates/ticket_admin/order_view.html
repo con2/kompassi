@@ -1,0 +1,64 @@
+{% extends "ticket_admin/base.html" %}
+{% comment %}
+vim: shiftwidth=2 expandtab
+encoding: utf-8
+{% endcomment %}
+{% block content %}
+<script type="text/javascript">
+/*<![CDATA[*/
+function cancel() {
+	if (confirm("Oletko varma, että haluat {% if order.cancellation_time %}palauttaa{% else %}peruuttaa{% endif %} tilauksen?")) {
+		window.location.href = '{% url order_view %}?id={{ order.id }}&cancel=1';
+	}
+}
+/*]]>*/
+</script>
+
+<h1>Tilauksen tiedot</h1>
+<a href="{% url search_view %}">Takaisin listaukseen</a><br /><br />
+
+<form method="post" action="{% url order_view %}?id={{ order.id }}">{% csrf_token %}
+<div style="width:400px;float:left">
+<table>
+{% if order.cancellation_time %}<tr><td><b>Tilaus peruttu</b></td><td><b>{{ order.cancellation_time|date:"d.m.Y H:i" }}</b></td></tr>{% endif %}
+<tr><td style="width:130px;">Tilauspvm</td><td>{{ order.confirm_time|date:"d.m.Y" }}</td></tr>
+<tr><td>Eräpvm</td><td>{{ order.due_date|date:"d.m.Y" }}</td></tr>
+<tr><td>Maksettu</td><td>{% if order.payment_date %}{{ order.payment_date|date:"d.m.Y" }}{% else %}Ei maksettu{% endif %}</td></tr>
+<tr><td>Viitenumero</td><td>{{ order.formatted_reference_number }}</td></tr>
+<tr><td>Summa</td><td>{{ order.formatted_price }}</td></tr>
+<tr><td>Tilinumero</td><td>FI51 4510 7720 0369 12</td></tr>
+<tr><td>BIC</td><td>HELSFIHH</td></tr>
+<tr><td>Majoituskoulu</td><td>{{ order.school.name }}</td></tr>
+<tr><td>Toimituserä</td><td>{{ order.batch|default_if_none:"" }}</td></tr>
+</table>
+</div>
+<div style="float:left">
+<table>
+<tr><td style="width:130px;">Etunimi</td><td>{{ customer.first_name }}</td></tr>
+<tr><td>Sukunimi</td><td>{{ customer.last_name }}</td></tr>
+<tr><td>Osoite</td><td>{{ customer.address }}</td></tr>
+<tr><td>Postinumero</td><td>{{ customer.zip_code }}</td></tr>
+<tr><td>Postitoimipaikka</td><td>{{ customer.city }}</td></tr>
+<tr><td>Sähköposti</td><td>{{ customer.email }}</td></tr>
+<tr><td>Puhelinnumero</td><td>{{ customer.phone_number }}</td></tr>
+</table>
+</div><div style="clear:both"></div>
+<h2>Tuotteet</h2>
+<table>
+{% for product in products %}
+<tr>
+<td style="border-bottom:1px solid #ccc;padding-right:10px;">{{ product.instance.product.name }}</td>
+<td style="border-bottom:1px solid #ccc">{{ product.count }} kpl</td>
+</tr>
+{% endfor %}
+</table><br />
+<button type="submit" value="save" name="action" {% if order.cancellation_time %}disabled="disabled"{% endif %}>Tallenna muutokset</button></form><br />
+
+<button onclick="cancel();">{% if order.cancellation_time %}Palauta tilaus{% else %}Peru tilaus{% endif %}</button>
+<button onclick="window.location.href='{% url order_view %}?id={{ order.id }}&payment=1'" {% if order.cancellation_time %}disabled="disabled"{% endif %}>{% if order.payment_date %}Merkitse maksamattomaksi{% else %}Merkitse maksetuksi{% endif %}</button><br />
+<h3>Lähetä sähköpostiviestejä uudelleen</h3>
+<button onclick="window.location.href='{% url order_view %}?id={{ order.id }}&email=1'" {% if order.cancellation_time %}disabled="disabled"{% endif %}>Lähetä vahvistussähköposti</button>
+<button onclick="window.location.href='{% url order_view %}?id={{ order.id }}&email_payment=1'" {% if not order.payment_date or order.cancellation_time %}disabled="disabled"{% endif %}>Lähetä maksun saapumisilmoitus</button>
+
+</form>
+{% endblock content %}

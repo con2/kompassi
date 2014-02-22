@@ -1,0 +1,86 @@
+[
+  {
+    "pk": 1,
+    "model": "ticket_sales.product",
+    "fields": {
+      "available": true,
+      "price_cents": 1500,
+      "name": "Koko viikonlopun lippu",
+      "requires_shipping": true,
+      "sell_limit": 3000,
+      "ilmoitus_mail": "",
+      "mail_description": "",
+      "description": "Tähän kuvaus"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "ticket_sales.product",
+    "fields": {
+      "available": true,
+      "price_cents": 1000,
+      "name": "Lauantailippu",
+      "requires_shipping": true,
+      "sell_limit": 3000,
+      "ilmoitus_mail": "",
+      "mail_description": "",
+      "description": "Tähän kuvaus"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "ticket_sales.product",
+    "fields": {
+      "available": true,
+      "price_cents": 1000,
+      "name": "Sunnuntailippu",
+      "requires_shipping": true,
+      "sell_limit": 3000,
+      "ilmoitus_mail": "",
+      "mail_description": "",
+      "description": "Tähän kuvaus"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "ticket_sales.product",
+    "fields": {
+      "available": true,
+      "price_cents": 1000,
+      "name": "Lattiamajoitus pe-la",
+      "requires_shipping": false,
+      "sell_limit": 200,
+      "ilmoitus_mail": "",
+      "mail_description": "",
+      "description": "Tähän kuvaus"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "ticket_sales.product",
+    "fields": {
+      "available": true,
+      "price_cents": 1000,
+      "name": "Lattiamajoitus la-su",
+      "requires_shipping": false,
+      "sell_limit": 200,
+      "ilmoitus_mail": "",
+      "mail_description": "",
+      "description": "Tähän kuvaus"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "ticket_sales.product",
+    "fields": {
+      "available": true,
+      "price_cents": 1500,
+      "name": "Taidekujapöytä",
+      "requires_shipping": false,
+      "sell_limit": 50,
+      "ilmoitus_mail": "",
+      "mail_description": "",
+      "description": "Tähän kuvaus"
+    }
+  }
+]

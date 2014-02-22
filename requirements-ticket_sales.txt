@@ -1,0 +1,2 @@
+reportlab==3.0
+pillow==2.3.0

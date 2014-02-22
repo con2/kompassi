@@ -1,0 +1,47 @@
+{% extends "ticket_admin/base.html" %}
+{% comment %}
+vim: shiftwidth=2 expandtab
+encoding: utf-8
+{% endcomment %}
+{% block content %}
+<h1>Lipputilausten haku</h1>
+<form method="post" action="{% url search_view %}">{% csrf_token %}
+  <table>
+    {{ form.as_table }}
+    <tr>
+      <td></td>
+      <td><input type="submit" value="Hae" /></td>
+    </tr>
+  </table>
+</form>
+<hr />
+
+{% for order in orders %}
+  {% if order.is_cancelled %}
+    <pre>{{ order.cancellation_notice_message }}</pre>
+  {% else %}
+    {% if order.is_delivered %}
+      <pre>{{ order.delivery_confirmation_message }}</pre>
+    {% else %}
+      {% if order.is_paid %}
+        <pre>{{ order.payment_confirmation_message }}</pre>
+      {% else %}
+        {% if order.is_confirmed %}
+          <pre>{{ order.order_confirmation_message }}</pre>
+        {% else %}
+          <pre>THIS SHOULDN'T HAPPEN</pre>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+
+  {% if not for.last %}
+    <hr />
+  {% endif %}
+{% endfor %}
+
+{% with orders.count as num_orders %}
+  <p>({{ num_orders }} tulos{{ num_orders|pluralize:"ta"}})</p>
+{% endwith %}
+
+{% endblock content %}

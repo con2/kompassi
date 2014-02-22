@@ -1,0 +1,29 @@
+Hyvä vastaanottaja,
+
+{{ EVENT_NAME }} -lipputilauksenne numero {{ order.pk|stringformat:"04d" }} on peruutettu,
+koska sitä ei maksettu eräpäivään mennessä.
+
+Tilauksenne sisälsi seuraavat lipputuotteet:
+
+{% for product in products %}{{ product.count }} kpl	{{ product.product.name }}
+	{{ product.count }} x {{ product.product.formatted_price }} = {{ product.formatted_price }}
+{% endfor %}{% if order.requires_shipping %}
+Toimituskulut: {{ order.formatted_shipping_and_handling }}{% endif %}
+
+Yhteensä: {{ order.formatted_price }} (ALV 0%)
+
+Antamanne yhteystiedot:
+
+{{ order.customer.name }}
+{{ order.customer.address }}
+{{ order.customer.zip_code }} {{ order.customer.city }}
+
+{% if order.customer.phone_number %}{{ order.customer.phone_number }}
+{% endif %}{{ order.customer.email }}
+
+Mikäli koette tilauksenne peruuntuneen virheellisesti, olkaa hyvä ja
+vastatkaa tähän sähköpostiviestiin välittömästi.
+
+Ystävällisin terveisin
+-- 
+{{ DEFAULT_FROM_EMAIL|safe }}

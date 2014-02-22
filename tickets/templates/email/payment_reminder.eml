@@ -1,0 +1,52 @@
+Hyvä vastaanottaja,
+
+Kirjanpitomme mukaan emme ole saaneet maksuanne {{ EVENT_NAME }} -lipputilauksestanne
+numero {{ order.pk|stringformat:"04d" }}.
+
+Olette tilannut seuraavat lipputuotteet:
+
+{% for product in products %}{{ product.count }} kpl	{{ product.product.name }}
+	{{ product.count }} x {{ product.product.formatted_price }} = {{ product.formatted_price }}
+{% endfor %}{% if order.requires_shipping %}
+Toimituskulut: {{ order.formatted_shipping_and_handling }}{% endif %}
+
+Yhteensä: {{ order.formatted_price }} (ALV 0%)
+
+{% if order.requires_shipping %}Liput toimitetaan seuraavaan osoitteeseen:{% else %}Antamanne yhteystiedot:{% endif %}
+
+{{ order.customer.name }}
+{{ order.customer.address }}
+{{ order.customer.zip_code }} {{ order.customer.city }}
+
+{% if order.customer.phone_number %}{{ order.customer.phone_number }}
+{% endif %}{{ order.customer.email }}
+
+Mikäli olette jo maksanut tilauksen, olkaa hyvä ja vastatkaa tähän
+sähköpostiviestiin välittömästi ja vastauksessanne kertokaa, milloin
+maksoitte tilauksenne.
+
+Mikäli ette haluakaan tilaamianne tuotteita, voitte jättää tämän viestin
+huomiotta. Tilaukset, joita ei ole maksettu {{ final_death|date}} mennessä,
+perutaan automaattisesti. Saatte tilauksenne peruuntumisesta ilmoituksen
+sähköpostitse.
+
+Muussa tapauksessa olkaa hyvä ja maksakaa tilauksenne ensi tilassa
+seuraavilla maksutiedoilla:
+
+Suomalainen tilinumero  451077-236912
+IBAN                    FI51 4510 7720 0369 12
+SWIFT/BIC               HELSFIHH
+
+Saaja			Tracon ry
+Viitenumero		{{ order.formatted_reference_number }}
+Summa			{{ order.formatted_price }}
+Eräpäivä	 	{{ order.due_date|date }}
+
+Viitenumeroa on ehdottomasti käytettävä maksettaessa!
+
+Kun maksunne näkyy tilillämme, saatte tästä erillisen maksuvahvistusviestin
+sähköpostiinne.
+
+Ystävällisin terveisin
+-- 
+{{ DEFAULT_FROM_EMAIL|safe }}

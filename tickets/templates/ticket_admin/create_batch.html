@@ -1,0 +1,13 @@
+{% extends "ticket_admin/base.html" %}
+{% load wizard_ui %}
+{% comment %}
+vim: shiftwidth=2 expandtab
+encoding: utf-8
+{% endcomment %}
+{% block content %}
+<h1>Luo toimituserä</h1>
+<form action="{% url create_batch_view %}" method="post">{% csrf_token %}
+{{ form }}
+<p><input type="submit" value="Luo toimituserä" /></p>
+</form>
+{% endblock content %}

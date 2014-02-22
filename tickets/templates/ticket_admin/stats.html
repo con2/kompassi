@@ -1,0 +1,58 @@
+{% extends "ticket_admin/base.html" %}
+{% comment %}
+vim: shiftwidth=2 expandtab
+encoding: utf-8
+
+{% endcomment %}
+{% block content %}
+<h1>Lipunmyynnin raportti</h1>
+
+<ul>
+  <li>Tilauksia <b>{{ num_confirmed_orders }} kpl, joista</b>
+    <ul>
+      <li>maksettu <b>{{ num_paid_orders }} kpl</b></li>
+      <li>toimitettu <b>{{ num_delivered_orders }} kpl</b></li>
+      <li>peruttu <b>{{ num_cancelled_orders }} kpl</b></li>
+    </ul>
+  </li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tuote</th>
+      <th>Myyty kpl</th>
+      <th>Myyty €</th>
+      <th>Maksettu kpl</th>
+      <th>Maksettu €</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in data %}
+      <tr>
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.count }}</td>
+        <td>{{ item.cents }}</td>
+        <td>{{ item.paid_count }}</td>
+        <td>{{ item.paid_cents }}</td>
+      </tr>
+    {% endfor %}
+    <tr>
+      <td>Toimituskulut</td>
+      <td>{{ num_req_delivery }}</td>
+      <td>{{ shipping_and_handling_total }}</td>
+      <td>{{ num_req_delivery_paid }}</td>
+      <td>{{ shipping_and_handling_paid }}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Yhteensä</th>
+      <th></th>
+      <th>{{ total_price }}</th>
+      <th></th>
+      <th>{{ total_paid_price }}</th>
+    </tr>
+  </tfoot>
+</table>
+{% endblock content %}

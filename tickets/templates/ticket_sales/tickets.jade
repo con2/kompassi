@@ -1,0 +1,24 @@
+extends base/base.jade
+block body_text
+  h2 Valitse ostettavat tuotteet
+block form_content
+  p Kirjoita kenttiin, montako mitäkin tuotetta haluat. Voit tilata useita tuotteita samalla kertaa. Sinulla on tilaisuus tarkistaa tiedot vielä myöhemmin ennen kuin vahvistat tilauksen.
+  table.table.table-striped.table-bordered
+    thead
+      tr
+        th Tuote
+        th Kappalehinta
+        th Määrä
+    tbody
+      for iform in form
+        tr
+          td
+            p.product-name {{ iform.instance.product.name }}
+            p.product-description.hidden-phone {{ iform.instance.product.description }}
+          td {{ iform.instance.product.formatted_price }}
+          td
+            if iform.instance.product.in_stock
+              {{ iform.count }}
+            else
+              // XXX fugly
+              | Loppuunmyyty

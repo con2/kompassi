@@ -1,0 +1,11 @@
+{% extends "ticket_admin/base.html" %}
+{% load wizard_ui %}
+{% comment %}
+vim: shiftwidth=2 expandtab
+encoding: utf-8
+{% endcomment %}
+{% block content %}
+<h1>Toimituserä luotu</h1>
+<p>Toimituserä {{ batch.id }} luotu onnistuneesti. Toimituserässä on {{ batch.order_set.count }} tilausta.</p>
+<p><a href="{% url render_batch_view batch_id=batch.id %}">Näytä PDF...</a></p>
+{% endblock content %}

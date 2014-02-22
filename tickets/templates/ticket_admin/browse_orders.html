@@ -1,0 +1,47 @@
+{% extends "ticket_admin/base.html" %}
+{% comment %}
+vim: shiftwidth=2 expandtab
+encoding: utf-8
+{% endcomment %}
+{% block content %}
+<h1>Lipputilaukset</h1>
+<form method="post" action="{% url search_view %}">{% csrf_token %}
+  <table>
+    {{ form.as_table }}
+    <tr>
+      <td></td>
+      <td><input type="submit" value="Hae" /></td>
+    </tr>
+  </table>
+</form>
+<table cellspacing="1" cellpadding="4" border="1" style="min-width:800px"><thead><tr>
+<th style="text-align:left">Nro</th>
+<th style="text-align:left">Tilaaja</th>
+<th style="text-align:right">Tilauspvm</th>
+<th style="text-align:right">Maksettu</th>
+<th style="text-align:right">Peruttu</th>
+</tr></thead><tbody>
+{% for order in orders.object_list %}
+<tr>
+<td{% if order.cancellation_time %} style="background:#ddd;color:#888;"{% endif %}><a href="{% url order_view %}?id={{ order.id }}">{{ order.pk|stringformat:"04d" }}</a></td>
+<td{% if order.cancellation_time %} style="background:#ddd;color:#888;"{% endif %}>{{ order.customer.name }}</td>
+<td style="text-align:right;{% if order.cancellation_time %}background:#ddd;color:#888;{% endif %}">{{ order.confirm_time|date:"d.m.Y" }}</td>
+<td style="text-align:right;{% if order.cancellation_time %}background:#ddd;color:#888;{% endif %}">{% if order.payment_date %}{{ order.payment_date|date:"d.m.Y" }}{% else %}Ei maksettu{% endif %}</td>
+<td style="text-align:right;{% if order.cancellation_time %}background:#ddd;color:#888;{% endif %}">{% if order.cancellation_time %}{{ order.cancellation_time|date:"d.m.Y H:i" }}{% else %}Ei peruttu{% endif %}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+
+<br />
+{% if orders.has_previous %}
+<a href="?page={{ orders.previous_page_number }}">previous</a>
+{% endif %}
+
+<span class="current">
+Sivu {{ orders.number }} ({{ orders.paginator.num_pages }}).
+</span>
+{% if orders.has_next %}
+<a href="?page={{ orders.next_page_number }}">next</a>
+{% endif %}
+
+{% endblock content %}

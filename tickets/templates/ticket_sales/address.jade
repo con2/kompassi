@@ -1,0 +1,9 @@
+extends base/base.jade
+{% load crispy_forms_tags %}
+block body_text
+  h2 Toimitusosoite
+block form_content
+  p Tarvitsemme vielä osoitteen, johon lähetämme tilaamasi Tracon-lippupaketit. Tilausvahvistuksen ja maksuohjeet saat sähköpostitse. Puhelinnumeroa käytämme, mikäli ongelmia syntyy. Emme luovuta yhteystietojasi eteenpäin.
+  p Tähdellä merkityt kentät ovat pakollisia.
+  .well
+    {% crispy form %}

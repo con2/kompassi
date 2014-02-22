@@ -1,0 +1,32 @@
+Hyvä vastaanottaja,
+
+Olemme {{ order.batch.delivery_date|date }} postittaneet {{ EVENT_NAME }} -ennakkolipputilauksenne
+numero {{ order.pk|stringformat:"04d" }}.
+
+Vahvistamme postitetuiksi seuraavat lipputuotteet:
+
+{% for product in products %}{{ product.count }} kpl	{{ product.product.name }}
+	{{ product.count }} x {{ product.product.formatted_price }} = {{ product.formatted_price }}
+{% endfor %}{% if order.requires_shipping %}
+Toimituskulut: {{ order.formatted_shipping_and_handling }}{% endif %}
+
+Yhteensä: {{ order.formatted_price }} (ALV 0%)
+
+Liput on postitettu seuraavaan osoitteeseen:
+
+{{ order.customer.name }}
+{{ order.customer.address }}
+{{ order.customer.zip_code }} {{ order.customer.city }}
+
+{% if order.customer.phone_number %}{{ order.customer.phone_number }}
+{% endif %}{{ order.customer.email }}
+
+Jos ylläolevissa tiedoissa on virheitä, pyydämme ottamaan viipymättä
+yhteyttä lipunmyyntiin joko vastaamalla tähän viestiin tai lähettämällä
+sähköpostia: {{ DEFAULT_FROM_EMAIL|safe }}.
+
+Tervetuloa Traconiin!
+
+Ystävällisin terveisin
+-- 
+{{ DEFAULT_FROM_EMAIL|safe }}

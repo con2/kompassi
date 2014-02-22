@@ -1,0 +1,35 @@
+{% extends "ticket_admin/base.html" %}
+{% load wizard_ui %}
+{% comment %}
+vim: shiftwidth=2 expandtab
+encoding: utf-8
+{% endcomment %}
+{% block content %}
+<h2>Toiminto suoritettu</h2>
+<p>Seuraavat tilaukset merkittiin maksetuiksi:</p>
+
+{% for line, result, payment_date, order in payments %}
+  <pre class="payment">{{ line.strip }}</pre>
+  {% ifequal result "ok" %}
+    <p class="ok">Tämä tilaus merkittiin maksetuksi.</p>
+  {% endifequal %}
+  {% ifequal result "no_match" %}
+    <p class="error">Tältä riviltä ei löytynyt maksutietoja.</p>
+  {% endifequal %}
+  {% ifequal result "order_not_found" %}
+    <p class="error">Tällä viitenumerolla ei löytynyt tilausta.</p>
+  {% endifequal %}
+  {% ifequal result "order_not_confirmed" %}
+    <p class="error">Viitenumeroa vastaavaa tilausta ei ole vahvistettu.</p>
+  {% endifequal %}
+  {% ifequal result "payment_already_confirmed" %}
+    <p class="error">Tämä tilaus oli jo merkitty maksetuksi (maksupäivä {{ order.payment_date|date }}).</p>
+  {% endifequal %}
+  {% ifequal result "sum_mismatch" %}
+    <p class="error">Summa ei täsmää. Oikea summa on {{ order.formatted_price }}.</p>
+  {% endifequal %}
+  {% if order %}
+    {% render_order_compact order %}
+  {% endif %}
+{% endfor %}
+{% endblock content %}

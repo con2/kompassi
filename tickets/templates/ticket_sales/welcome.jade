@@ -1,0 +1,10 @@
+extends base/base.jade
+block body_text
+  .hero-unit
+    h2 Tervetuloa ostamaan {{ event.name }} -lippuja!
+    p
+      | Tervetuloa {{ event.name }}:n ennakkolippukauppaan. Tästä verkkokaupasta voit ostaa itsellesi ja vaikka myös kavereillesi etukäteen liput ja majoitukset ensi kesän tapahtumaan. Lisätietoja
+      a(href='{{ event.homepage_url }}', target='_blank') {{ event.name }}:n web-sivuilta
+      | !
+    p Aloita valitsemalla Seuraava.
+block form_content

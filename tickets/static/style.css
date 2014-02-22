@@ -1,0 +1,524 @@
+/* --------------------------------------------------------------
+
+   reset.css
+   * Resets default browser CSS.
+
+-------------------------------------------------------------- */
+
+html { 
+	margin:0; 
+	padding:0; 
+	border:0; 
+}
+
+body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, code,
+del, dfn, em, img, q, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, dialog, figure, footer, header,
+hgroup, nav, section {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+/* This helps to make newer HTML5 elements behave like DIVs in older browers */ 
+article, aside, dialog, figure, footer, header,
+hgroup, nav, section {
+    display:block;
+}
+
+/* Line-height should always be unitless! */
+body {
+  line-height: 1.5;
+  background: white; 
+}
+
+/* Tables still need 'cellspacing="0"' in the markup. */
+table { 
+	border-collapse: separate; 
+	border-spacing: 0; 
+}
+/* float:none prevents the span-x classes from breaking table-cell display */
+caption, th, td { 
+	text-align: left; 
+	font-weight: normal; 
+	float:none !important; 
+}
+table, th, td { 
+	vertical-align: middle; 
+}
+
+/* Remove possible quote marks (") from <q>, <blockquote>. */
+blockquote:before, blockquote:after, q:before, q:after { content: ''; }
+blockquote, q { quotes: "" ""; }
+
+/* Remove annoying border on linked images. */
+a img { border: none; }
+
+/* Remember to define your own focus styles! */
+:focus { outline: 0; }
+
+
+/*
+Theme Name: Tracon VI (Teaser)
+Theme URI: http://2011.tracon.fi/
+Description: Tracon VI (Teaser)
+Author: Tracon ry
+Author URI: http://ry.tracon.fi/
+Version: 0.2
+
+Tyyliohje:
+  Pid� attribuutit t�ss� j�rjestyksess�:
+    1. paikka (display, position, top, left, ...), koko (width, height), margin ja padding
+    2. content, tausta, v�rit
+    3. tekstityylit (font-*, list-style-type, ...)
+  Erota ryhm�t toisistaan tyhjill� riveill�.
+  Tyyliohjetta saa rikkoa paikallisesti jos se tuntuu tyhm�lt�.
+*/
+
+body {
+	background: #CBCBCB url('images/background.png') repeat-x scroll center top;
+	
+	font-family: Georgia, "Bitstream Charter", serif;
+	font-size: 15px;
+	line-height: 1.3;
+}
+
+#swirlhack {
+	position: relative;
+	width: 950px;
+	margin: 0 auto 0 auto;
+	
+}
+
+#swirl {
+	position: absolute;
+	left: 450px;
+	width: 567px;
+	height: 152px;
+	
+	background: transparent url('images/swirl.png') no-repeat scroll left top;
+}
+
+#header {
+	position: relative;
+	width: 800px;
+	height: 100px;
+	margin: 0 auto 0 auto;
+
+	background: transparent url('images/header.png') no-repeat scroll right top;
+}
+
+#topmenu {
+	padding: 67px 0 0 0px;
+	margin-left: -50px;
+}
+
+#topmenu li {
+	display: inline;
+	padding-left: 8px;
+	
+	color: #E1E1E1;
+
+	list-style-type: none;
+}
+
+#topmenu li:after {
+	position: relative;
+	top: 15px;
+	
+/*	content: url('images/menuviiva.png'); */
+}
+
+#topmenu a {
+	padding-right: 13px;
+
+	color: #E1E1E1;
+
+	text-decoration: none;
+	text-transform: uppercase;
+	font-size: 18px;
+	font-weight: bold;
+	font-family: "Trebuchet MS", Geneva, Arial, sans-serif;
+}
+
+/*#homeicon {
+	position: relative;
+	top: 2px;
+	width: 24px;
+	height: 20px;
+}*/
+
+#glasspane {
+	position: relative;
+	width: 950px;
+	height: 220px;
+	margin: 0 auto 0 auto;
+	
+	background: transparent url('images/glasspane.png') no-repeat scroll left top; 
+}
+
+#showcase {
+	position: absolute;
+	left: 55px;
+	top: 14px;
+	width: 836px;
+	height: 170px;
+	
+	background: transparent url('images/peace.png') no-repeat scroll left top;
+}
+#eyecatcher {
+	position: absolute;
+	left: 65px;
+	top: 130px;
+	width: 260px;
+	height: 50px;
+	
+	background: transparent;
+	color: white;
+	
+	font-weight: bold;
+	font-size: 15px;
+	font-family: Tahoma, Geneva, sans-serif;
+	line-height: 1.2;
+}
+
+#contentwrapper {
+	position: relative;
+	width: 950px;
+	margin: 0 auto 0 auto;
+	
+	background: transparent url('images/content.png') repeat-y scroll left top;
+}
+
+#content {
+	width: 797px;
+	margin: 0 0 0 75px;
+	padding: 0 20px 5px 0;
+}
+
+#comments li {
+	margin-bottom: 15px;
+}
+
+input, textarea {
+	padding: 3px;
+	
+	border: 1px solid #CBCBCB;
+}
+
+#banners {
+	position: absolute;
+	top: 0px;
+	right: 75px;
+	width: 120px;
+}
+
+#sponsorlink {
+	text-align: center;
+	margin: 0 0 5px 0;
+}
+
+#sponsorlink a {
+	font-family: "Trebuchet MS", Tahoma, Arial, sans-serif;
+	font-size: 12px;
+}
+
+#boxen {
+	position: relative;
+	height: 150px;
+}
+
+#boxen h2 {
+	border-bottom: 1px solid #CBCBCB;
+	margin-bottom: 10px;
+}
+
+#boxen ul {
+	padding: 0px;
+}
+
+#boxen li {
+	list-style-type: none;
+}
+
+#frontleft {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 313px;
+}
+
+#frontright {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 313px;
+}
+
+#footer {
+	width: 950px;
+	height: 138px;
+	margin: 0 auto 0 auto;
+	
+	background: transparent url('images/footer.png') no-repeat scroll left top;
+}
+
+#footer a, #footer p {
+	margin-top: 0;
+	padding: 45px 0 0 0;
+	
+	color: #666666;
+	
+	font-family: "Trebuchet MS", "Tahoma", "Arial", sans-serif;
+	font-size: 12px;
+	text-align: center;
+	text-decoration: none;
+}
+
+.alignright {
+	float: right;
+}
+
+.postmetadata, .commentmetadata {
+	font-family: "Trebuchet MS", "Tahoma", "Arial", sans-serif;
+	font-size: 12px;
+}
+
+a {
+	color: #880000;
+}
+
+p {
+	margin: 10px 0 5px 0;
+}
+
+li {
+	margin: 5px 0 0 0;
+}
+
+ul, ol {
+	padding: 0 0 0 25px;
+}
+
+h1, h2, h3 {
+	color: #5E0000;
+}
+
+h2, h3 {
+	margin: 25px 0 15px 0;
+
+	font-weight: bold;
+	font-family: "Trebuchet MS", "Tahoma", "Arial", sans-serif;
+}
+
+h1 {
+	font-size: 24px;
+}
+
+h2 {
+	font-size: 20px;
+}
+
+h3 {
+	font-size: 16px;
+}
+
+hr {
+	height: 1px;
+	margin-top: 25px;
+	
+	border: 0;
+	background: #CBCBCB;
+	color: #CBCBCB;
+}
+
+table {
+	border: 1px solid #bebebe;
+	margin: 10px 0 0 0;
+	width:585px;
+	-moz-border-radius:10px 10px 0 0;
+	-webkit-border-radius:10px 10px 0 0;
+	-khtml-border-radius:10px 10px 0 0;
+	border-radius:10px 10px 0 0;
+	background:#ddd;
+}
+
+thead th + th {
+	border-bottom: 1px solid #bebebe;
+}
+
+th, td {
+	padding: 7px;
+}
+
+th {
+	color: #444;
+	font-family: "Trebuchet MS", "Tahoma", "Arial", sans-serif;
+	font-size: 13px;
+	font-weight: bold;
+	padding-top:10px;padding-bottom:10px;
+}
+td.tcount,th.input,td.right,th.right{text-align:right}
+td.tcount{padding-left:20px;}
+td{border-top:1px solid #ddd;background:#fafafa;vertical-align:top}
+td.productimage{width:80px;}
+td.productimage img{border:none;}
+tr td{font-size:17px}
+tr.large td{font-size:20px}
+tr.small td{font-size:14px}
+td.productname{font-weight:bold;color:#666;}
+td div.description{padding-top:0.5em;font-weight:normal;color:#333}
+tr td div.description{font-size:14px;}
+tr.large td div.description{font-size:16px;}
+tr.large td div.tuotesaldo{font-size:16px;padding-top:0.5em;}
+td div.loppuunmyyty{text-transform:uppercase;padding-top:0.5em;font-size:18px;}
+tr.loppuunmyyty td{background:#f4f4f4;color:#999}
+tr.loppuunmyyty td div.description{color:#777}
+tr.loppuunmyyty td.productimage img{filter:alpha(opacity=50);opacity: 0.5;-moz-opacity:0.5;}
+em {
+	font-style: italic;
+}
+
+#facebooklike {
+	padding-top: 25px;
+}
+
+#frontpagebuttons {
+	clear: both;
+}
+
+.frontpagebutton12 {
+	margin-right: 7px;
+}
+
+#ticketpricetable {
+	width: 300px;
+}
+
+#ticketpricetable th, #ticketpricetable td {
+	width: 100px;
+}
+
+#rekisteriseloste, #rekisteriseloste a{
+	padding-top:0 !important;
+}
+
+#breadcrumb ul{
+	margin:0;padding:0
+}
+
+#breadcrumb ul li{
+	padding:6px 12px;
+	float:left;
+	list-style:none;
+	border:1px solid #ccc;
+	margin-right:10px;
+	background:#fafafa;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	-khtml-border-radius:10px;
+	border-radius:10px;
+}
+#breadcrumb ul li.selected{
+	background:#ccc;
+}
+#breadcrumb ul li a:link,#breadcrumb ul li a:visited{
+	text-decoration:none
+}
+#top{
+	clear:both;
+	padding-top:15px;
+}
+
+#navi{
+	padding-top:5px;
+	margin-top:20px;
+	border-top:1px dotted #aaa;
+}
+
+button.buttongradient{
+	background:url(images/buttongradient.png) repeat-x;
+	border:1px solid #888;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	-khtml-border-radius:10px;
+	border-radius:10px;
+	padding:5px 10px;
+	cursor:pointer;cursor:hand;
+}
+button.btndisabled{
+	background:#eee;
+	border:1px solid #aaa;
+	cursor:default;
+}
+fieldset label{
+	clear:left;
+	float:left;
+	display:block;
+	width:160px
+}
+fieldset div.req, fieldset div.opt{
+	border-bottom:1px dotted #ddd;
+	width:400px;
+	padding:6px 0;
+}
+fieldset div.last{border:none;}
+fieldset div.addrfirst{border:none;padding:6px 0 3px 0;}
+fieldset div.addr{border:none;padding:3px 0;}
+fieldset div.addrlast{padding:3px 0 6px 0;}
+fieldset div input{
+	width:220px;
+}
+#address_container,div.box{
+	margin-top:10px;
+	padding:10px;
+	border: 1px solid #bebebe;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	-khtml-border-radius:10px;
+	border-radius:10px;
+	width:400px;
+	background:#fafafa;
+}
+td.tcount input{
+	text-align:right
+}
+button.enterhack{
+	color:#fff;background:#fff;border:none;width:1px;height:1px;
+}
+#updateie{
+	border:1px solid #b00;
+	background:#fee;
+	padding:6px;
+	font-size:16px;
+	margin-bottom:10px;
+	color:#600;
+}
+#errors{
+	border:1px solid #b00;
+	background:#fee;
+	padding:0px 10px 5px 10px;
+	color:#600;
+	margin:10px 0;
+	width:560px;
+}
+#t_right{background:url(images/kuva_right.png) no-repeat 50% 50%;height:339px;width:190px;float:right;margin-left:15px;}
+#bottom{clear:both;}
+
+#takaisin {
+    background: url("images/icon-home.png") no-repeat scroll 0 0 transparent;
+    padding: 24px 13px 0 57px !important;
+}
+
+#takaisin:hover {
+	background-position: 0 -51px;
+}

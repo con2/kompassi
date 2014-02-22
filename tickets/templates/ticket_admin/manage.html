@@ -1,0 +1,59 @@
+{% extends "ticket_admin/base.html" %}
+{% comment %}
+vim: shiftwidth=2 expandtab
+encoding: utf-8
+{% endcomment %}
+{% block content %}
+<h1>Lipunmyynnin hallinta</h1>
+<p>Tervemenoa, {{ user }}! <a href="{% url logout %}">Kirjaudu ulos</a></p>
+
+<h2>Tiedot</h2>
+<ul>
+  <li><a href="{% url stats_view %}">Lipunmyynnin raportti</a></li>
+  <li><a href="{% url tickets_by_date_view %}">le tickets_by_date</a></li>
+  {% comment %}XXX väärä perm {% endcomment %}
+  {% if perms.ticket_sales.can_manage_batches %}
+    <li><a href="{% url search_view %}">Lipputilausten haku</a></li>
+  {% endif %}
+</ul>
+
+{% if perms.ticket_sales.can_manage_payments %}
+  <h2>Maksut</h2>
+  <ul>
+    <li><a href="{% url payments_view %}">Merkitse tilauksia maksetuiksi</a></li>
+  </ul>
+{% endif %}
+
+{% if perms.ticket_sales.can_manage_batches %}
+  <h2>Toimituserät</h2>
+
+  <ul>
+    {% for batch in batches %}
+      <li>
+        <a href="{% url render_batch_view batch_id=batch.id %}">Erä {{ batch.id }}</a>
+        {% if batch.is_delivered %}
+          (toimitettu)
+        {% else %}
+          (odottaa toimitusta)
+          <ul>
+            {% if not batch.is_delivered %}
+              <li><a href="{% url deliver_batch_view batch_id=batch.id %}">Merkitse toimitetuksi</a></li>
+              <li><a href="{% url cancel_batch_view batch_id=batch.id %}">Peruuta toimituserä</a></li>
+            {% endif %}
+          </ul>
+        {% endif %}
+      </li>
+    {% endfor %}
+    <li><a href="{% url create_batch_view %}">Uusi toimituserä</a></li>
+  </ul>
+{% endif %}
+
+{% if user.is_staff %}
+  <h2>Djangon hallinta</h2>
+  <ul>
+    {% comment %}XXX hardcoded{% endcomment %}
+    <li><a href="/admin/">Djangon hallintapaneeli</a></li>
+  </ul>
+{% endif %}
+
+{% endblock content %}

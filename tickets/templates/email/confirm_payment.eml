@@ -1,0 +1,37 @@
+Hyvä vastaanottaja,
+
+Olemme vastaanottaneet {{ order.payment_date|date }} maksun {{ EVENT_NAME }}
+-ennakkolipputilauksestanne numero {{ order.pk|stringformat:"04d" }}.
+
+Vahvistamme maksetuiksi seuraavat lipputuotteet:
+
+{% for product in products %}{{ product.count }} kpl	{{ product.product.name }}
+	{{ product.count }} x {{ product.product.formatted_price }} = {{ product.formatted_price }}
+{% endfor %}{% if order.requires_shipping %}
+Toimituskulut: {{ order.formatted_shipping_and_handling }}{% endif %}
+
+Yhteensä: {{ order.formatted_price }} (ALV 0%)
+
+{% if order.requires_shipping %}Liput toimitetaan seuraavaan osoitteeseen:{% else %}Antamanne yhteystiedot:{% endif %}
+
+{{ order.customer.name }}
+{{ order.customer.address }}
+{{ order.customer.zip_code }} {{ order.customer.city }}
+
+{% if order.customer.phone_number %}{{ order.customer.phone_number }}
+{% endif %}{{ order.customer.email }}
+
+Jos ylläolevissa tiedoissa on virheitä, pyydämme ottamaan viipymättä
+yhteyttä lipunmyyntiin joko vastaamalla tähän viestiin tai lähettämällä
+sähköpostia: {{ DEFAULT_FROM_EMAIL|safe }}.
+
+{% if order.requires_shipping %}Huomioithan, että lippuja toimitetaan pitkin kesää isommissa erissä, 
+eli rannekeen toimituksessa voi kestää useampi viikko. Kaikki 
+lipputilaukset toimitetaan kuitenkin hyvissä ajoin ennen tapahtumaa eikä 
+kukaan lippunsa ajoissa maksanut jää vaille lippuja.
+
+Saatte erillisen vahvistusviestin, kun lippunne on postitettu.
+
+{% endif %}Ystävällisin terveisin
+-- 
+{{ DEFAULT_FROM_EMAIL|safe }}

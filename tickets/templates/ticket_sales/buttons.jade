@@ -1,0 +1,17 @@
+p
+  if phase.payment_phase
+    span
+  elif phase.next_phase and phase.can_cancel
+    button.btn.btn-primary.btn-block.btn-large(type='submit', name='action', value='next') Seuraava &rarr;
+  else
+    a.btn.btn-primary.btn-block.btn-large(href='{{ event.homepage_url }}') Takaisin {{ event.name_genitive }} sivuille &rarr;
+p
+  if phase.prev_phase
+    button.btn(type='submit', name='action', value='prev') &larr; Edellinen
+  else
+    button.btn.disabled(type='submit', name='action', value='prev', disabled='disabled') &larr; Edellinen
+
+  if phase.can_cancel
+    button.btn.btn-danger(type='submit', name='action', value='cancel') &times; Keskeytä
+  else
+    button.btn.btn-success(type='submit', name='action', value='next') &#10044; Uusi tilaus

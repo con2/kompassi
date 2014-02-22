@@ -1,0 +1,31 @@
+{% extends "ticket_admin/base.html" %}
+{% comment %}
+vim: shiftwidth=2 expandtab
+encoding: utf-8
+{% endcomment %}
+{% block content %}
+
+{% if form.errors %}
+<p>Sisäänkirjautuminen epäonnistui.</p>
+{% endif %}
+
+<h1>{{ event.name }}: Lipunmyynnin hallinta</h1>
+
+<form method="post" action="{% url django.contrib.auth.views.login %}">
+{% csrf_token %}
+<table>
+<tr>
+  <td>Käyttäjätunnus</td>
+  <td>{{ form.username }}</td>
+</tr>
+<tr>
+  <td>Salasana</td>
+  <td>{{ form.password }}</td>
+</tr>
+</table>
+
+<input type="submit" value="login" />
+<input type="hidden" name="next" value="{{ next }}" />
+</form>
+
+{% endblock %}
