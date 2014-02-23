@@ -32,7 +32,7 @@ class Command(BaseCommand):
 
         if test:
             management_commands.append(
-                (('test', 'core', 'labour', 'labour_common_qualifications', 'programme',), dict())
+                (('test', 'core', 'labour', 'labour_common_qualifications', 'programme', 'tickets'), dict())
             )
 
 
