@@ -4,8 +4,8 @@ from datetime import date
 from functools import wraps
 import re
 
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 
 from .models import Order, OrderProduct
 
@@ -17,7 +17,6 @@ __all__ = [
     "get_order",
     "is_phase_completed",
     "is_soldout",
-    "redirect",
     "set_order",
     "tickets_admin_required",
     "tickets_event_required",
@@ -26,10 +25,6 @@ __all__ = [
 
 ORDER_KEY_TEMPLATE = "{event.slug}.tickets.order_id"
 PHASE_KEY_TEMPLATE = "{event.slug}.tickets.phases"
-
-
-def redirect(view_name, **kwargs):
-    return HttpResponseRedirect(reverse(view_name, kwargs=kwargs))
 
 
 def set_order(request, event, order):
@@ -83,15 +78,16 @@ def is_soldout(productdata):
 
 def is_phase_completed(request, event, phase):
     phase_key = PHASE_KEY_TEMPLATE.format(event=event)
-    completed_phases = request.session.get(phase_key, set())
+    completed_phases = request.session.get(phase_key, [])
     return phase in completed_phases
 
 
 def complete_phase(request, event, phase):
     phase_key = PHASE_KEY_TEMPLATE.format(event=event)
-    completed_phases = request.session.get(phase_key, set())
+    completed_phases = request.session.get(phase_key, [])
+    completed_phases = set(completed_phases)
     completed_phases.add(phase)
-    request.session[phase_key] = completed_phases
+    request.session[phase_key] = list(completed_phases)
 
 
 PAYMENT_REGEX = re.compile(
@@ -218,12 +214,12 @@ def perform_search(event, **kwargs):
 
 def tickets_admin_required(view_func):
     @wraps(view_func)
-    def wrapper(request, event, *args, **kwargs):
+    def wrapper(request, event_id, *args, **kwargs):
         from core.models import Event
         from core.utils import login_redirect
         from .views import tickets_admin_menu_items
 
-        event = get_object_or_404(Event, slug=event)
+        event = get_object_or_404(Event, slug=event_id)
         meta = event.tickets_event_meta
 
         if not meta:
@@ -244,10 +240,10 @@ def tickets_admin_required(view_func):
 
 def tickets_event_required(view_func):
     @wraps(view_func)
-    def wrapper(request, event, *args, **kwargs):
+    def wrapper(request, event_id, *args, **kwargs):
         from core.models import Event
 
-        event = get_object_or_404(Event, slug=event)
+        event = get_object_or_404(Event, slug=event_id)
         meta = event.tickets_event_meta
 
         if not meta:

@@ -58,16 +58,16 @@ class TicketsEventMeta(EventMetaBase):
         t = timezone.now()
 
         # Starting date must be set for the ticket sales to be considered open
-        if not self.ticket_sales_opens:
+        if not self.ticket_sales_starts:
             return False
 
         # Starting date must be in the past for the ticket sales to be considered open
-        elif self.ticket_sales_opens > t:
+        elif self.ticket_sales_starts > t:
             return False
 
         # If there is an ending date, it must not have been passed yet
-        elif self.ticket_sales_closes:
-            return self.ticket_sales_closes <= t
+        elif self.ticket_sales_ends:
+            return t <= self.ticket_sales_ends
 
         else:
             return True
