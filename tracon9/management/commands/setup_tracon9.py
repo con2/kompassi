@@ -191,7 +191,7 @@ class Command(BaseCommand):
         tickets_event_meta_defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
-            shipping_and_handling_cents=150,
+            shipping_and_handling_cents=100,
             reference_number_template='9{:05d}',
             ticket_spam_email='japsu@tracon.fi',
         )
@@ -230,36 +230,12 @@ class Command(BaseCommand):
         for product_info in [
             dict(
                 name=u'Koko viikonlopun lippu (e-lippu)',
-                description=u'Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
+                description=u'Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona. Ei toimituskuluja.',
                 limit_groups=[
                     limit_group('Lauantain liput', 5000),
                     limit_group('Sunnuntain liput', 5000),
                 ],
                 price_cents=1800,
-                requires_shipping=False,
-                available=True,
-                ordering=ordering()
-            ),
-
-            dict(
-                name=u'Lauantailippu (e-lippu)',
-                description=u'Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan sähköpostitse PDF-tiedostona.',
-                limit_groups=[
-                    limit_group('Lauantain liput', 5000),
-                ],
-                price_cents=1300,
-                requires_shipping=False,
-                available=True,
-                ordering=ordering()
-            ),
-
-            dict(
-                name=u'Sunnuntailippu (e-lippu)',
-                description=u'Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
-                limit_groups=[
-                    limit_group('Sunnuntain liput', 5000),
-                ],
-                price_cents=1300,
                 requires_shipping=False,
                 available=True,
                 ordering=ordering()
@@ -267,7 +243,7 @@ class Command(BaseCommand):
 
             dict(
                 name=u'Koko viikonlopun lippu (postitse)',
-                description=u'Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan kirjeenä kotiisi.',
+                description=u'Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan kirjeenä kotiisi. Toimituskulut 1,00 €/tilaus.',
                 limit_groups=[
                     limit_group('Lauantain liput', 5000),
                     limit_group('Sunnuntain liput', 5000),
@@ -279,56 +255,69 @@ class Command(BaseCommand):
             ),
 
             dict(
-                name=u'Lauantailippu (postitse)',
-                description=u'Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan kirjeenä kotiisi.',
+                name=u'Lauantailippu (e-lippu)',
+                description=u'Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan sähköpostitse PDF-tiedostona. Ei toimituskuluja.',
                 limit_groups=[
                     limit_group('Lauantain liput', 5000),
                 ],
-                price_cents=1300,
+                price_cents=1200,
+                requires_shipping=False,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Lauantailippu (postitse)',
+                description=u'Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan kirjeenä kotiisi. Toimituskulut 1,00 €/tilaus.',
+                limit_groups=[
+                    limit_group('Lauantain liput', 5000),
+                ],
+                price_cents=1200,
                 requires_shipping=True,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Sunnuntailippu (e-lippu)',
+                description=u'Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona. Ei toimituskuluja.',
+                limit_groups=[
+                    limit_group('Sunnuntain liput', 5000),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
                 available=True,
                 ordering=ordering()
             ),
 
             dict(
                 name=u'Sunnuntailippu (postitse)',
-                description=u'Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan kirjeenä kotiisi.',
+                description=u'Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan kirjeenä kotiisi. Toimituskulut 1,00 €/tilaus.',
                 limit_groups=[
                     limit_group('Sunnuntain liput', 5000),
                 ],
-                price_cents=1300,
+                price_cents=1000,
                 requires_shipping=True,
                 available=True,
                 ordering=ordering()
             ),
 
             dict(
-                name=u'Lattiamajoitus pe-la (Aleksanterin koulu)',
-                description=u'Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koululta.',
+                name=u'Lattiamajoitus 2 yötä pe-su (Aleksanterin koulu)',
+                description=u'Lattiamajoituspaikka pe-la ja la-su välisiksi öiksi Aleksanterin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspakoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
                 limit_groups=[
                     limit_group('Lattiamajoitus pe-la, Aleksanterin koulu', 80),
-                ],
-                price_cents=1000,
-                requires_shipping=False,
-                available=True,
-                ordering=ordering()
-            ),
-
-            dict(
-                name=u'Lattiamajoitus la-su (Aleksanterin koulu)',
-                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Aleksanterin koululta.',
-                limit_groups=[
                     limit_group('Lattiamajoitus la-su, Aleksanterin koulu', 130),
                 ],
-                price_cents=1000,
+                price_cents=2000,
                 requires_shipping=False,
                 available=True,
                 ordering=ordering()
             ),
 
             dict(
-                name=u'Lattiamajoitus la-su (Amurin koulu)',
-                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koululta.',
+                name=u'Lattiamajoitus 1 yö la-su (Amurin koulu)',
+                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspakoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
                 limit_groups=[
                     limit_group('Lattiamajoitus la-su, Amurin koulu', 250),
                 ],

@@ -243,6 +243,7 @@ class LimitGroup(models.Model):
 
         return [limit_saturday, limit_sunday]
 
+
 class Product(models.Model):
     event = models.ForeignKey('core.Event')
 
