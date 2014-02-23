@@ -13,8 +13,8 @@ block form_content
       for iform in form
         tr
           td
-            p.product-name {{ iform.instance.product.name }}
-            p.product-description.hidden-phone {{ iform.instance.product.description }}
+            p: strong {{ iform.instance.product.name }}
+            p.hidden-phone {{ iform.instance.product.description }}
           td {{ iform.instance.product.formatted_price }}
           td
             if iform.instance.product.in_stock

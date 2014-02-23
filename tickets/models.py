@@ -72,6 +72,15 @@ class TicketsEventMeta(EventMetaBase):
         else:
             return True
 
+    @classmethod
+    def get_or_create_dummy(cls):
+        from django.contrib.auth.models import Group
+        from core.models import Event
+
+        group, unused = Group.objects.get_or_create(name='Dummy ticket admin group')
+        event, unused = Event.get_or_create_dummy()
+        return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
+
 
 class Batch(models.Model):
     event = models.ForeignKey('core.Event')
@@ -184,6 +193,41 @@ class Batch(models.Model):
         )
 
 
+class LimitGroup(models.Model):
+    # REVERSE: product_set = ManyToMany(Product)
+
+    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
+    description = models.CharField(max_length=255, verbose_name=u'Kuvaus')
+    limit = models.IntegerField(verbose_name=u'Enimmäismäärä')
+
+    def __unicode__(self):
+        return u"{self.description} ({self.amount_available}/{self.limit}".format(self=self)
+
+    class Meta:
+        verbose_name = u'Loppuunmyyntiryhmä'
+        verbose_name_plural = u'Loppuunmyyntiryhmät'
+
+    @property
+    def amount_available(self):
+        amount_sold = OrderProduct.objects.filter(
+            product__limit_groups=self,
+            order__confirm_time__isnull=False,
+            order__cancellation_time__isnull=True
+        ).aggregate(models.Sum('count'))['count__sum']
+        amount_sold = amount_sold if amount_sold is not None else 0
+
+        return self.limit - amount_sold
+
+    @classmethod
+    def get_or_create_dummies(cls):
+        from core.models import Event
+        event, unused = Event.get_or_create_dummy()
+
+        limit_saturday, unused = cls.objects.get_or_create(event=event, description='Testing saturday', defaults=dict(limit=5000))
+        limit_sunday, unused = cls.objects.get_or_create(event=event, description='Testing sunday', defaults=dict(limit=5000))
+
+        return [limit_saturday, limit_sunday]
+
 class Product(models.Model):
     event = models.ForeignKey('core.Event')
 
@@ -191,15 +235,21 @@ class Product(models.Model):
     internal_description = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField()
     mail_description = models.TextField(null=True, blank=True)
-    sell_limit = models.IntegerField()
+    limit_groups = models.ManyToManyField(LimitGroup, blank=True)
     price_cents = models.IntegerField()
     requires_shipping = models.BooleanField(default=True)
     available = models.BooleanField(default=True)
-    ilmoitus_mail = models.CharField(max_length=100, null=True, blank=True)
+    notify_email = models.CharField(max_length=100, null=True, blank=True)
     ordering = models.IntegerField(default=0)
 
     class Meta:
         ordering = ('ordering', 'id')
+
+    @property
+    def sell_limit(self):
+        from warnings import warn
+        warn(DeprecationWarning('sell_limit is deprecated, convert everything to use LimitGroup and amount_available directly'))
+        return self.amount_available
 
     @property
     def formatted_price(self):
@@ -215,7 +265,7 @@ class Product(models.Model):
 
     @property
     def amount_available(self):
-        return self.sell_limit - self.amount_sold
+        return min(group.amount_available for group in self.limit_groups.all())
 
     @property
     def amount_sold(self):
@@ -230,6 +280,37 @@ class Product(models.Model):
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.formatted_price)
+
+    @classmethod
+    def get_or_create_dummy(cls, name='Dummy product', limit_groups=[]):
+        meta, unused = TicketsEventMeta.get_or_create_dummy()
+
+        dummy, created = cls.objects.get_or_create(
+            event=meta.event,
+            name=name,
+            defaults=dict(
+                description=u'Dummy product for testing',
+                price_cents=1800,
+                requires_shipping=True,
+                available=True,
+                ordering=100,
+            )
+        )
+
+        dummy.limit_groups = limit_groups
+        dummy.save()
+
+        return dummy, created
+
+    @classmethod
+    def get_or_create_dummies(cls):
+        [limit_saturday, limit_sunday] = LimitGroup.get_or_create_dummies()
+
+        weekend, unused = cls.get_or_create_dummy('Weekend test product', [limit_saturday, limit_sunday])
+        saturday, unused = cls.get_or_create_dummy('Saturday test product', [limit_saturday])
+        sunday, unused = cls.get_or_create_dummy('Sunday test product', [limit_sunday])
+
+        return [weekend, saturday, sunday]
 
 
 # XXX mayhaps combine with Person someday soon?
@@ -260,6 +341,19 @@ class Customer(models.Model):
     @property
     def name_and_email(self):
         return u"%s <%s>" % (self.sanitized_name, self.email)
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        return cls.objects.get_or_create(
+            first_name=u'Dummy',
+            last_name=u'Testinen',
+            defaults=dict(
+                email=u'dummy@example.com',
+                address=u'Testikuja 5 A 19',
+                zip_code=u'12354',
+                city=u'Testilä',
+            )
+        )
 
 
 class Order(models.Model):
@@ -460,8 +554,8 @@ class Order(models.Model):
     def send_confirmation_message(self, msgtype):
         # don't fail silently, warn admins instead
         for op in self.order_product_set.filter(count__gt=0):
-            if op.product.ilmoitus_mail:
-                msgbcc = (settings.TICKET_SPAM_EMAIL, op.product.ilmoitus_mail)
+            if op.product.notify_email:
+                msgbcc = (settings.TICKET_SPAM_EMAIL, op.product.notify_email)
             else:
                 msgbcc = (settings.TICKET_SPAM_EMAIL,)
 
@@ -502,6 +596,21 @@ class Order(models.Model):
 
     class Meta:
         permissions = (("can_manage_payments", "Can manage payments"),)
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        from core.models import Event
+
+        event, unused = Event.get_or_create_dummy()
+        customer, unused = Customer.get_or_create_dummy()
+        t = timezone.now()
+
+        return cls.objects.get_or_create(
+            event=event,
+            customer=customer,
+            confirm_time=t,
+            payment_date=t.date(),
+        )
 
 
 class OrderProduct(models.Model):

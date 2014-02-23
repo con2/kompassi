@@ -8,7 +8,7 @@
       "name": "Koko viikonlopun lippu",
       "requires_shipping": true,
       "sell_limit": 3000,
-      "ilmoitus_mail": "",
+      "notify_email": "",
       "mail_description": "",
       "description": "Tähän kuvaus"
     }
@@ -22,7 +22,7 @@
       "name": "Lauantailippu",
       "requires_shipping": true,
       "sell_limit": 3000,
-      "ilmoitus_mail": "",
+      "notify_email": "",
       "mail_description": "",
       "description": "Tähän kuvaus"
     }
@@ -36,7 +36,7 @@
       "name": "Sunnuntailippu",
       "requires_shipping": true,
       "sell_limit": 3000,
-      "ilmoitus_mail": "",
+      "notify_email": "",
       "mail_description": "",
       "description": "Tähän kuvaus"
     }
@@ -50,7 +50,7 @@
       "name": "Lattiamajoitus pe-la",
       "requires_shipping": false,
       "sell_limit": 200,
-      "ilmoitus_mail": "",
+      "notify_email": "",
       "mail_description": "",
       "description": "Tähän kuvaus"
     }
@@ -64,7 +64,7 @@
       "name": "Lattiamajoitus la-su",
       "requires_shipping": false,
       "sell_limit": 200,
-      "ilmoitus_mail": "",
+      "notify_email": "",
       "mail_description": "",
       "description": "Tähän kuvaus"
     }
@@ -78,7 +78,7 @@
       "name": "Taidekujapöytä",
       "requires_shipping": false,
       "sell_limit": 50,
-      "ilmoitus_mail": "",
+      "notify_email": "",
       "mail_description": "",
       "description": "Tähän kuvaus"
     }

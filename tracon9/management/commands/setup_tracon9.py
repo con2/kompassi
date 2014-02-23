@@ -11,7 +11,7 @@ from django.utils.timezone import get_default_timezone, now
 from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
 from programme.models import ProgrammeEventMeta
-from tickets.models import TicketsEventMeta
+from tickets.models import TicketsEventMeta, LimitGroup, Product
 
 from ...models import SignupExtra, SpecialDiet, Night
 
@@ -210,3 +210,134 @@ class Command(BaseCommand):
             event=event,
             defaults=tickets_event_meta_defaults,
         )
+
+        def limit_group(description, limit):
+            limit_group, unused = LimitGroup.objects.get_or_create(
+                event=event,
+                description=description,
+                defaults=dict(limit=limit),
+            )
+
+            return limit_group
+
+        def ordering():
+            ordering.counter += 10
+            return ordering.counter
+        ordering.counter = 0
+
+        for product_info in [
+            dict(
+                name=u'Koko viikonlopun lippu (e-lippu)',
+                description=u'Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
+                limit_groups=[
+                    limit_group('Lauantain liput', 5000),
+                    limit_group('Sunnuntain liput', 5000),
+                ],
+                price_cents=1800,
+                requires_shipping=False,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Lauantailippu (e-lippu)',
+                description=u'Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan sähköpostitse PDF-tiedostona.',
+                limit_groups=[
+                    limit_group('Lauantain liput', 5000),
+                ],
+                price_cents=1300,
+                requires_shipping=False,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Sunnuntailippu (e-lippu)',
+                description=u'Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
+                limit_groups=[
+                    limit_group('Sunnuntain liput', 5000),
+                ],
+                price_cents=1300,
+                requires_shipping=False,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Koko viikonlopun lippu (postitse)',
+                description=u'Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan kirjeenä kotiisi.',
+                limit_groups=[
+                    limit_group('Lauantain liput', 5000),
+                    limit_group('Sunnuntain liput', 5000),
+                ],
+                price_cents=1800,
+                requires_shipping=True,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Lauantailippu (postitse)',
+                description=u'Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan kirjeenä kotiisi.',
+                limit_groups=[
+                    limit_group('Lauantain liput', 5000),
+                ],
+                price_cents=1300,
+                requires_shipping=True,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Sunnuntailippu (postitse)',
+                description=u'Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan kirjeenä kotiisi.',
+                limit_groups=[
+                    limit_group('Sunnuntain liput', 5000),
+                ],
+                price_cents=1300,
+                requires_shipping=True,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Lattiamajoitus pe-la (Aleksanterin koulu)',
+                description=u'Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koululta.',
+                limit_groups=[
+                    limit_group('Lattiamajoitus pe-la, Aleksanterin koulu', 80),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Lattiamajoitus la-su (Aleksanterin koulu)',
+                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Aleksanterin koululta.',
+                limit_groups=[
+                    limit_group('Lattiamajoitus la-su, Aleksanterin koulu', 130),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                available=True,
+                ordering=ordering()
+            ),
+
+            dict(
+                name=u'Lattiamajoitus la-su (Amurin koulu)',
+                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koululta.',
+                limit_groups=[
+                    limit_group('Lattiamajoitus la-su, Amurin koulu', 250),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                available=True,
+                ordering=ordering()
+            ),
+        ]:
+            name = product_info.pop('name')
+            limit_groups = product_info.pop('limit_groups')
+            product, unused = Product.objects.get_or_create(event=event, name=name, defaults=product_info)
+            product.limit_groups = limit_groups
+            product.save()

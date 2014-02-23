@@ -40,10 +40,6 @@ __all__ = [
 ]
 
 
-FIRST_PHASE = "tickets_welcome_view"
-LAST_PHASE = "tickets_address_view"
-
-
 def decorate(view_obj):
     """
     Applying decorators to our makeshift class based views seems a bit tricky.
@@ -81,9 +77,9 @@ class Phase(object):
 
         if not self.available(request, event):
             if order.is_confirmed:
-                return redirect(LAST_PHASE)
+                return redirect('tickets_thanks_view', event.slug)
             else:
-                return redirect(FIRST_PHASE)
+                return redirect('tickets_welcome_view', event.slug)
 
         form = self.make_form(request, event)
 
