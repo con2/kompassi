@@ -279,6 +279,5 @@ if 'payments' in INSTALLED_APPS:
     CHECKOUT_PARAMS = dict(CHECKOUT_PARAMS,
         PASSWORD='SAIPPUAKAUPPIAS', # test account
         MERCHANT='375917', # test account
-        RETURN='http://localhost:8000/process/', # XXX
         DELIVERY_DATE='20130914' # Tracon 8 start
     )

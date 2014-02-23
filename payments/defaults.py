@@ -3,7 +3,6 @@ CHECKOUT_PARAMS = dict(
     VERSION='0001',
     LANGUAGE='FI',
     MERCHANT='',
-    RETURN='',
     COUNTRY='FIN',
     CURRENCY='EUR',
     DEVICE='1',
