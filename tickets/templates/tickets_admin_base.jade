@@ -1,0 +1,9 @@
+extends base
+block content
+  h2 Lippukaupan hallinta
+  .row
+    .col-md-3
+      ul.nav.nav-pills.nav-stacked
+        include tickets_admin_menu_items.jade
+    .col-md-9
+      block admin_content

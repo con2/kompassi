@@ -6,7 +6,7 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.messages import add_message, INFO, WARNING, ERROR
@@ -19,6 +19,8 @@ try:
 except ImportError:
     from warnings import warn
     warn('Failed to import ReportLab. Generating receipts will fail.')
+
+from core.utils import url
 
 # XXX * imports
 from ..models import *
@@ -33,6 +35,7 @@ __all__ = [
     "tickets_admin_batch_deliver_view",
     "tickets_admin_batch_view",
     "tickets_admin_batches_view",
+    "tickets_admin_menu_items",
     "tickets_admin_order_view",
     "tickets_admin_orders_view",
     "tickets_admin_stats_by_date_view",

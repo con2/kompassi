@@ -4,6 +4,8 @@ from django import forms
 
 from crispy_forms.helper import FormHelper
 
+from core.utils import horizontal_form_helper
+
 from tickets.models import *
 
 __all__ = [
@@ -50,7 +52,7 @@ class OrderProductForm(forms.ModelForm):
 class CustomerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
+        self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
     class Meta:

@@ -69,6 +69,7 @@ def destroy_order(request, event):
 
 
 # XXX
+# XXX why XXX?
 def is_soldout(productdata):
     for (product, amount) in productdata.iteritems():
         if (product.amount_available < amount):
@@ -116,84 +117,6 @@ class ParseResult(object):
     ORDER_NOT_CONFIRMED = "order_not_confirmed"
     PAYMENT_ALREADY_CONFIRMED = "payment_already_confirmed"
     SUM_MISMATCH = "sum_mismatch"
-
-
-def parse_payments(lines):
-    """parse_payments(lines) -> gen[(line, result, date, order)]
-
-    Parses payments from a copy-paste dump extracted from the e-bank.
-    """
-
-    for line in lines:
-        yield parse_payment(line)
-
-
-def parse_payment(line):
-    # Test #1: Can be parsed by PAYMENT_REGEX
-    match = PAYMENT_REGEX.match(line)
-    if match is None:
-        return line, ParseResult.NO_MATCH, None, None
-
-    # Assemble the payment date
-    year = int(match.group("year"))
-    month = int(match.group("month"))
-    day = int(match.group("day"))
-    payment_date = date(year=year, month=month, day=day)
-
-    # Test #2: An order is found by the reference number
-    ref = match.group("ref")
-    try:
-        order = get_order_by_ref(ref)
-    except Order.DoesNotExist:
-        return line, ParseResult.ORDER_NOT_FOUND, payment_date, None
-
-    # Test #3: The order has been confirmed
-    if not order.is_confirmed:
-        return line, ParseResult.ORDER_NOT_CONFIRMED, order
-
-    # Test #4: The order has not yet been marked as paid
-    if order.is_paid:
-        return line, ParseResult.PAYMENT_ALREADY_CONFIRMED, payment_date, order
-
-    # Test #5: The sum matches that of the order
-    euros = match.group("euros")
-    cents = match.group("cents")
-    total_cents = int(cents) + 100 * int(euros)
-    if total_cents != order.price_cents:
-        return line, ParseResult.SUM_MISMATCH, payment_date, order
-
-    # If all tests passed, the order is ready to be marked as paid.
-    return line, ParseResult.OK, payment_date, order
-
-
-def normalize_ref(ref):
-    return "".join(i for i in ref if i.isdigit())
-
-
-def get_order_by_ref(event, ref):
-    """get_order_by_ref(ref) -> Order
-
-    Raises Order.DoesNotExist on failature."""
-    ref = normalize_ref(ref)
-
-    # XXX hard-coded format in here and models.Order.reference_number_base
-    if not ref.startswith("5"):
-        raise Order.DoesNotExist
-
-    # XXX hard-coded length in here and models.Order.reference_number_base
-    if len(ref) != 6:
-        raise Order.DoesNotExist
-
-    # Lose the prefix and checksum
-    order_id = int(ref[1:-1])
-
-    order = event.order_set.get(id=order_id)
-
-    # Final validation check
-    if ref != order.reference_number:
-        raise Order.DoesNotExist
-
-    return order
 
 
 SEARCH_CRITERIA_MAP = dict(

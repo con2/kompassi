@@ -169,7 +169,10 @@ class Phase(object):
             errors=errors,
             order=order,
             phase=phase,
-            phases=phases
+            phases=phases,
+
+            # XXX hack to hide the login form
+            login_page=True
         )
 
         return render(request, self.template, vars)
@@ -308,7 +311,10 @@ class ConfirmPhase(Phase):
         order = get_order(request, event)
         products = OrderProduct.objects.filter(order=order, count__gt=0)
 
-        return dict(products=products)
+        return dict(
+            products=products,
+            CHECKOUT_PARAMS=settings.CHECKOUT_PARAMS
+        )
 
     def save(self, request, event, form):
         pass

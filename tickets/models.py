@@ -53,6 +53,13 @@ class TicketsEventMeta(EventMetaBase):
         blank=True,
     )
 
+    reference_number_template = models.CharField(
+        max_length=31,
+        default="{:04d}",
+        verbose_name=u'Viitenumeron formaatti',
+        help_text=u'Paikkamerkin {} kohdalle sijoitetaan tilauksen numero. Nollilla täyttäminen esim. {:04d} (4 merkin leveydeltä).',
+    )
+
     @property
     def is_ticket_sales_open(self):
         t = timezone.now()
@@ -313,7 +320,7 @@ class Product(models.Model):
         return [weekend, saturday, sunday]
 
 
-# XXX mayhaps combine with Person someday soon?
+# TODO mayhaps combine with Person someday soon?
 class Customer(models.Model):
     # REVERSE: order = OneToOne(Order)
 
@@ -417,10 +424,7 @@ class Order(models.Model):
     @property
     def requires_shipping(self):
         # TODO do this in the database, too
-        #return any(op.product.requires_shipping for op in self.order_product_set.filter(count__gt=0))
-
-        # XXX PURKKA: tuote id:lla 8 on se viallinen Amuri-tuote johon unohtui toimitusbitti paalle
-        return any((op.product.requires_shipping and op.product.id != 8) for op in self.order_product_set.filter(count__gt=0))
+        return any(op.product.requires_shipping for op in self.order_product_set.filter(count__gt=0))
 
     @property
     def formatted_price(self):
@@ -442,7 +446,7 @@ class Order(models.Model):
 
     @property
     def reference_number_base(self):
-        return settings.REFERENCE_NUMBER_TEMPLATE.format(self.pk)
+        return self.event.tickets_event_meta.reference_number_template.format(self.pk)
 
     @property
     def reference_number(self):

@@ -192,6 +192,7 @@ class Command(BaseCommand):
             admin_group=tickets_admin_group,
             due_days=14,
             shipping_and_handling_cents=150,
+            reference_number_template='9{:05d}',
         )
 
         if options['test']:
