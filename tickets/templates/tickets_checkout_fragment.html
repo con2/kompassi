@@ -5,7 +5,7 @@
 <input type='hidden' name='MESSAGE' value='{{ order.checkout_message }}'>
 <input type='hidden' name='LANGUAGE' value='{{ CHECKOUT_PARAMS.LANGUAGE }}'>
 <input type='hidden' name='MERCHANT' value='{{ CHECKOUT_PARAMS.MERCHANT }}'>
-<input type='hidden' name='RETURN' value='{{ CHECKOUT_PARAMS.RETURN }}'>
+<input type='hidden' name='RETURN' value='{{ checkout_return_url }}'>
 <input type='hidden' name='CANCEL' value=''>
 <input type='hidden' name='REJECT' value=''>
 <input type='hidden' name='DELAYED' value=''>
@@ -21,4 +21,4 @@
 <input type='hidden' name='ADDRESS' value='{{ order.customer.address }}'>
 <input type='hidden' name='POSTCODE' value='{{ order.customer.zip_code }}'>
 <input type='hidden' name='POSTOFFICE' value='{{ order.customer.city}}'>
-<input type='hidden' name='MAC' value='{{ order.checkout_mac }}'>
+<input type='hidden' name='MAC' value='{{ checkout_mac }}'>

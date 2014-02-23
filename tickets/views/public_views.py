@@ -311,9 +311,14 @@ class ConfirmPhase(Phase):
         order = get_order(request, event)
         products = OrderProduct.objects.filter(order=order, count__gt=0)
 
+        print order.checkout_mac(request)
+        print order.checkout_return_url(request)
+
         return dict(
             products=products,
-            CHECKOUT_PARAMS=settings.CHECKOUT_PARAMS
+            checkout_mac=order.checkout_mac(request),
+            checkout_return_url=order.checkout_return_url(request),
+            CHECKOUT_PARAMS=settings.CHECKOUT_PARAMS,
         )
 
     def save(self, request, event, form):
@@ -359,7 +364,7 @@ class ThanksPhase(Phase):
         # Start a new order
         clear_order(request, event)
 
-        return redirect(self.next_phase)
+        return redirect(self.next_phase, event.slug)
 
 
 class ClosedPhase(Phase):

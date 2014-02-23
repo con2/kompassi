@@ -193,6 +193,7 @@ class Command(BaseCommand):
             due_days=14,
             shipping_and_handling_cents=150,
             reference_number_template='9{:05d}',
+            ticket_spam_email='japsu@tracon.fi',
         )
 
         if options['test']:

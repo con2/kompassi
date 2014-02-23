@@ -1,11 +1,10 @@
 # encoding: utf-8
-# vim: shiftwidth=4 expandtab
 
-from django.conf.urls.defaults import *
-from django.views.generic.simple import redirect_to
+from django.conf.urls import patterns, include, url
+from django.shortcuts import redirect
 
-from payments.views import *
+from payments.views import payments_process_view
 
 urlpatterns = patterns('',
-    url(r'process/$', payment_view, name="payment_view")
+    url(r'events/(?P<event_id>[a-z0-9-]+)/payments/process$', payments_process_view, name="payments_process_view")
 )

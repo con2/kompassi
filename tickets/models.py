@@ -11,6 +11,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from core.models import EventMetaBase
+from core.utils import url
 from payments.utils import compute_payment_request_mac
 
 from .utils import format_date, format_datetime, format_price
@@ -59,6 +60,13 @@ class TicketsEventMeta(EventMetaBase):
         verbose_name=u'Viitenumeron formaatti',
         help_text=u'Paikkamerkin {} kohdalle sijoitetaan tilauksen numero. Nollilla täyttäminen esim. {:04d} (4 merkin leveydeltä).',
     )
+
+    ticket_spam_email = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=u'Tarkkailusähköposti',
+        help_text=u'Kaikki järjestelmän lähettämät sähköpostiviestit lähetetään myös tähän osoitteeseen.',
+    )  
 
     @property
     def is_ticket_sales_open(self):
@@ -511,28 +519,30 @@ class Order(models.Model):
 
     @property
     def order_confirmation_message(self):
-        return render_to_string("email/confirm_order.eml", self.email_vars)
+        return render_to_string("tickets_confirm_order.eml", self.email_vars)
 
     @property
     def payment_confirmation_message(self):
-        return render_to_string("email/confirm_payment.eml", self.email_vars)
+        return render_to_string("tickets_confirm_payment.eml", self.email_vars)
 
     @property
     def delivery_confirmation_message(self):
-        return render_to_string("email/confirm_delivery.eml", self.email_vars)
+        return render_to_string("tickets_confirm_delivery.eml", self.email_vars)
 
     @property
     def payment_reminder_message(self):
-        return render_to_string("email/payment_reminder.eml", self.email_vars)
+        return render_to_string("tickets_payment_reminder.eml", self.email_vars)
 
     @property
     def cancellation_notice_message(self):
-        return render_to_string("email/cancellation_notice.eml", self.email_vars)
+        return render_to_string("tickets_cancellation_notice.eml", self.email_vars)
 
     @property
     def due_date(self):
+        meta = self.event.tickets_event_meta
+
         if self.confirm_time:
-            return datetime.combine((self.confirm_time + timedelta(days=DUE_DAYS)).date(), dtime(23, 59, 59)).replace(tzinfo=timezone.get_default_timezone())
+            return datetime.combine((self.confirm_time + timedelta(days=meta.due_days)).date(), dtime(23, 59, 59)).replace(tzinfo=timezone.get_default_timezone())
         else:
             return None
 
@@ -551,17 +561,23 @@ class Order(models.Model):
     def checkout_message(self):
         return ", ".join(i.description for i in self.order_product_set.filter(count__gte=1))
 
-    @property
-    def checkout_mac(self):
-        return compute_payment_request_mac(self)
+    def checkout_mac(self, request):
+        return compute_payment_request_mac(request, self)
+
+    def checkout_return_url(self, request):
+        return request.build_absolute_uri(url('payments_process_view', self.event.slug))
 
     def send_confirmation_message(self, msgtype):
         # don't fail silently, warn admins instead
+        msgbcc = []
+        meta = self.event.tickets_event_meta
+
+        if meta.ticket_spam_email:
+            msgbcc.append(meta.ticket_spam_email)
+
         for op in self.order_product_set.filter(count__gt=0):
             if op.product.notify_email:
-                msgbcc = (settings.TICKET_SPAM_EMAIL, op.product.notify_email)
-            else:
-                msgbcc = (settings.TICKET_SPAM_EMAIL,)
+                msgbcc.append(op.product.notify_email)
 
         if msgtype == "tilausvahvistus":
             msgsubject = "{self.event.name}: Tilausvahvistus (#{self.pk:04d})".format(self=self)
@@ -605,12 +621,12 @@ class Order(models.Model):
     def get_or_create_dummy(cls):
         from core.models import Event
 
-        event, unused = Event.get_or_create_dummy()
+        meta, unused = TicketsEventMeta.get_or_create_dummy()
         customer, unused = Customer.get_or_create_dummy()
         t = timezone.now()
 
         return cls.objects.get_or_create(
-            event=event,
+            event=meta.event,
             customer=customer,
             confirm_time=t,
             payment_date=t.date(),

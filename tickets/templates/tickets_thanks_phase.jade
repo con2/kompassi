@@ -1,11 +1,10 @@
 extends tickets_phase_base.jade
 block body_text
-  .hero-unit(style='background-color: #cec')
-    h2 Kiitos tilauksesta!
-    p Tilauksesi on nyt valmis. Nähdään Traconissa!
-    p Huomioithan, että lippuja toimitetaan pitkin kesää isommissa erissä, eli rannekkeen toimituksessa voi kestää useampi viikko.
-    p
-      | Kaikki lipputilaukset toimitetaan kuitenkin
-      strong hyvissä ajoin ennen tapahtumaa.
+  h2 Kiitos tilauksesta!
+  p Tilauksesi on nyt valmis. Nähdään Traconissa!
+  p Huomioithan, että lippuja toimitetaan pitkin kesää isommissa erissä, eli rannekkeen toimituksessa voi kestää useampi viikko.
+  p
+    | Kaikki lipputilaukset toimitetaan kuitenkin
+    strong hyvissä ajoin ennen tapahtumaa.
 block form_content
-  include ticket_sales/order_statement.jade
+  include tickets_order_fragment.jade
