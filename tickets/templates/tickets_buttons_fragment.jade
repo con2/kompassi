@@ -1,6 +1,6 @@
 p
   if phase.payment_phase
-    span
+    button.btn.btn-success.btn-block.btn-large(type='submit', name='action', value='next') Siirry maksamaan &#10004;
   elif phase.next_phase and phase.can_cancel
     button.btn.btn-primary.btn-block.btn-large(type='submit', name='action', value='next') Seuraava &rarr;
   else

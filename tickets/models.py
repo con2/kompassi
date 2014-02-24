@@ -61,12 +61,24 @@ class TicketsEventMeta(EventMetaBase):
         help_text=u'Paikkamerkin {} kohdalle sijoitetaan tilauksen numero. Nollilla täyttäminen esim. {:04d} (4 merkin leveydeltä).',
     )
 
+    contact_email = models.CharField(
+        max_length=255,
+        verbose_name=u"Asiakaspalvelun sähköpostiosoite",
+        help_text=u"Ongelmatilanteissa käyttäjää kehotetaan ottamaan yhteyttä tähän osoitteeseen.",
+    )
+
     ticket_spam_email = models.CharField(
         max_length=255,
         blank=True,
         verbose_name=u'Tarkkailusähköposti',
         help_text=u'Kaikki järjestelmän lähettämät sähköpostiviestit lähetetään myös tähän osoitteeseen.',
-    )  
+    )
+
+    reservation_seconds = models.IntegerField(
+        verbose_name=u'Varausaika (sekuntia)',
+        help_text=u'Käyttäjällä on tämän verran aikaa siirtyä maksamaan ja maksaa tilauksensa tai tilaus perutaan.',
+        default=1800
+    )
 
     @property
     def is_ticket_sales_open(self):
@@ -479,6 +491,12 @@ class Order(models.Model):
         if send_email:
             self.send_confirmation_message("tilausvahvistus")
 
+    def deconfirm_order(self):
+        assert self.is_confirmed
+
+        self.confirm_time = None
+        self.save()
+
     def confirm_payment(self, payment_date=None, send_email=True):
         assert self.is_confirmed
 
@@ -567,6 +585,10 @@ class Order(models.Model):
 
     def checkout_return_url(self, request):
         return request.build_absolute_uri(url('payments_process_view', self.event.slug))
+
+    @property
+    def reservation_valid_until(self):
+        return self.confirm_time + timedelta(seconds=self.event.tickets_event_meta.reservation_seconds) if self.confirm_time else None
 
     def send_confirmation_message(self, msgtype):
         # don't fail silently, warn admins instead

@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpRespon
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.messages import add_message, INFO, WARNING, ERROR
+from django.contrib import messages
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.db.models import Sum
@@ -68,6 +68,7 @@ class Phase(object):
     next_text = "Seuraava &raquo;"
     can_cancel = True
     index = None
+    delay_complete = False
 
     def __call__(self, request, event):
         if request.method not in self.methods:
@@ -77,11 +78,15 @@ class Phase(object):
 
         if not self.available(request, event):
             if order.is_confirmed:
-                return redirect('tickets_thanks_view', event.slug)
+                if order.is_paid:
+                    return redirect('tickets_thanks_view', event.slug)
+                else:
+                    return redirect('tickets_confirm_view', event.slug)
             else:
                 return redirect('tickets_welcome_view', event.slug)
 
         form = self.make_form(request, event)
+        errors = []
 
         if request.method == "POST":
             # Which button was clicked?
@@ -104,27 +109,18 @@ class Phase(object):
 
                 # The "Next" button should only proceed with valid data.
                 if action == "next":
-                    complete_phase(request, event, self.name)
+                    if not self.delay_complete:
+                        complete_phase(request, event, self.name)
+
                     return self.next(request, event)
 
             # The "Previous" button should work regardless of form validity.
             if action == "prev":
-                return self.prev(request, event)
+                # Clear any nastygrams left behind by validate
+                for message in messages.get_messages(request):
+                    pass
 
-            # "Next" with invalid data falls through.
-        elif request.method == "GET":
-            if request.session.get('payment_status') == 2:
-                del request.session['payment_status']
-                if not order.is_confirmed:
-                    order.confirm_order()
-                    complete_phase(request, event, self.name)
-                    return self.next(request, event)
-                else:
-                    return redirect("tickets_confirm_view")
-            else:
-                errors = []
-        else:
-            errors = []
+                return self.prev(request, event)
 
         # POST with invalid data and GET are handled the same.
         return self.get(request, event, form, errors)
@@ -135,7 +131,7 @@ class Phase(object):
 
     def validate(self, request, event, form):
         if not form.is_valid():
-            add_message(request, ERROR, 'Tarkista lomakkeen sisältö.')
+            messages.error(request, 'Tarkista lomakkeen sisältö.')
             return ["syntax"]
         else:
             return []
@@ -246,12 +242,12 @@ class TicketsPhase(Phase):
             return errors
 
         if sum(i.cleaned_data["count"] for i in form) <= 0:
-            add_message(request, INFO, 'Valitse vähintään yksi tuote.')
+            messages.info(request, u'Valitse vähintään yksi tuote.')
             errors.append("zero")
             return errors
 
-        if (is_soldout(dict((i.instance.product, i.cleaned_data["count"]) for i in form))):
-            add_message(request, ERROR, 'Valitsemasi tuote on valitettavasti juuri myyty loppuun.')
+        if any(i.instance.product.amount_available < i.cleaned_data["count"] for i in form):
+            messages.error(request, u'Valitsemasi tuote on valitettavasti juuri myyty loppuun.')
             errors.append("soldout")
             return errors
 
@@ -294,44 +290,48 @@ class ConfirmPhase(Phase):
     friendly_name = "Vahvistaminen"
     template = "tickets_confirm_phase.jade"
     prev_phase = "tickets_address_view"
-    next_phase = "tickets_address_view"
+    next_phase = "payments_redirect_view"
+    next_text = "Siirry maksamaan &#10003;"
     payment_phase = True
-    next_text ="Siirry maksamaan &#10003;"
+    delay_complete = True
 
     def validate(self, request, event, form):
         errors = multiform_validate(form)
         order = get_order(request, event)
-        products = OrderProduct.objects.filter(order=order, count__gt=0)
-        if (is_soldout(dict((i.product, i.count) for i in products))):
+        order_products = order.order_product_set.filter(count__gt=0)
+
+        if any(i.product.amount_available < i.count for i in order_products):
+            messages.error(request, u'Valitsemasi tuote on valitettavasti juuri myyty loppuun.')
             errors.append("soldout_confirm")
             return errors
+
         return []
 
     def vars(self, request, event, form):
         order = get_order(request, event)
-        products = OrderProduct.objects.filter(order=order, count__gt=0)
-
-        print order.checkout_mac(request)
-        print order.checkout_return_url(request)
+        products = order.order_product_set.filter(order=order, count__gt=0)
 
         return dict(
             products=products,
-            checkout_mac=order.checkout_mac(request),
-            checkout_return_url=order.checkout_return_url(request),
-            CHECKOUT_PARAMS=settings.CHECKOUT_PARAMS,
         )
 
-    def save(self, request, event, form):
-        pass
-
-    def next(self, request, event):
+    def available(self, request, event):
         order = get_order(request, event)
-        # .confirm_* call .save
+        return is_phase_completed(request, event, self.prev_phase) and not order.is_paid
+
+    def prev(self, request, event):
+        order = get_order(request, event)
+
+        if order.is_confirmed:
+            order.deconfirm_order()
+
+        return super(ConfirmPhase, self).prev(request, event)
+
+    def save(self, request, event, form):
+        order = get_order(request, event)
+
         if not order.is_confirmed:
-            return HttpResponseRedirect("http://localhost:8000/process/?test=1")
-        else:
-            payment_phase = None # XXX WTF
-            return super(ConfirmPhase, self).next(request)
+            order.confirm_order(send_email=False)
 
 
 tickets_confirm_phase = ConfirmPhase()
@@ -349,7 +349,7 @@ class ThanksPhase(Phase):
 
     def available(self, request, event):
         order = get_order(request, event)
-        return order.is_confirmed
+        return order.is_confirmed and order.is_paid
 
     def vars(self, request, event, form):
         order = get_order(request, event)
@@ -358,13 +358,8 @@ class ThanksPhase(Phase):
         return dict(products=products)
 
     def save(self, request, event, form):
-        pass
-
-    def next(self, request, event):
         # Start a new order
         clear_order(request, event)
-
-        return redirect(self.next_phase, event.slug)
 
 
 class ClosedPhase(Phase):

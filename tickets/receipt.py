@@ -74,7 +74,7 @@ def render_receipt(order, c):
             ypos -= 10*mm
 
     c.drawString(BASE_INDENT, ypos, u"Mikäli yllä olevassa luettelossa on virheitä tai kuoren sisältö ei vastaa luetteloa, olkaa hyvä ja")
-    c.drawString(BASE_INDENT, ypos - 5*mm, u"ottakaa viipymättä yhteyttä lipunmyyntivastaavaan sähköpostitse: {0}".format(order.event.contact_email))
+    c.drawString(BASE_INDENT, ypos - 5*mm, u"ottakaa viipymättä yhteyttä lipunmyyntivastaavaan sähköpostitse: {0}".format(order.event.tickets_event_meta.contact_email))
     #c.drawString(BASE_INDENT, ypos - 10*mm, u"tai puhelimitse numeroon 0400 464 988 (Janne Forsell, parhaiten tavoittaa klo 10-18).")
 
     c.drawString(BASE_INDENT, ypos - 15*mm, u"Mainitkaa viestissänne tilausnumeronne #%04d." % order.id)

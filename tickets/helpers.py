@@ -17,7 +17,6 @@ __all__ = [
     "destroy_order",
     "get_order",
     "is_phase_completed",
-    "is_soldout",
     "set_order",
     "tickets_admin_required",
     "tickets_event_required",
@@ -67,15 +66,6 @@ def destroy_order(request, event):
 
     order.delete()
     clear_order(request, event)
-
-
-# XXX
-# XXX why XXX?
-def is_soldout(productdata):
-    for (product, amount) in productdata.iteritems():
-        if (product.amount_available < amount):
-            return True
-    return False
 
 
 def is_phase_completed(request, event, phase):

@@ -10,9 +10,5 @@ block body_text
     strong Huom!
     |  Muistathan maksun suoritettuasi painaa maksusivulla olevaa "Palaa myyjän sivulle"-nappia.
 
-  include tickets_order_fragment.jade
-
-  form(method='post', action='https://payment.checkout.fi/')
-    include tickets_checkout_fragment.html
-    button.btn.btn-success.btn-block.btn-large(type='submit') Siirry maksamaan &#10004;
 block form_content
+  include tickets_order_fragment.jade
