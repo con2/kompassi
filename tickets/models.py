@@ -108,6 +108,10 @@ class TicketsEventMeta(EventMetaBase):
         event, unused = Event.get_or_create_dummy()
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
+    class Meta:
+        verbose_name = u'tapahtuman lipunmyyntiasetukset'
+        verbose_name_plural = u'tapahtuman lipunmyyntiasetukset'
+
 
 class Batch(models.Model):
     event = models.ForeignKey('core.Event')
@@ -213,11 +217,8 @@ class Batch(models.Model):
         )
 
     class Meta:
-        verbose_name_plural = "batches"
-
-        permissions = (
-            ("can_manage_batches", "Can manage batches"),
-        )
+        verbose_name = u'toimituserä'
+        verbose_name_plural = u'toimituserät'
 
 
 class LimitGroup(models.Model):
@@ -231,8 +232,8 @@ class LimitGroup(models.Model):
         return u"{self.description} ({self.amount_available}/{self.limit}".format(self=self)
 
     class Meta:
-        verbose_name = u'Loppuunmyyntiryhmä'
-        verbose_name_plural = u'Loppuunmyyntiryhmät'
+        verbose_name = u'loppuunmyyntiryhmä'
+        verbose_name_plural = u'loppuunmyyntiryhmät'
 
     @property
     def amount_available(self):
@@ -309,6 +310,10 @@ class Product(models.Model):
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.formatted_price)
 
+    class Meta:
+        verbose_name = u'tuote'
+        verbose_name_plural = u'tuotteet'
+
     @classmethod
     def get_or_create_dummy(cls, name='Dummy product', limit_groups=[]):
         meta, unused = TicketsEventMeta.get_or_create_dummy()
@@ -356,8 +361,11 @@ class Customer(models.Model):
     def __unicode__(self):
         return self.name
 
-    @property
+    class Meta:
+        verbose_name = u'asiakas'
+        verbose_name_plural = u'asiakkaat'
 
+    @property
     def name(self):
         return u"%s %s" % (self.first_name, self.last_name)
 
@@ -638,7 +646,8 @@ class Order(models.Model):
         )
 
     class Meta:
-        permissions = (("can_manage_payments", "Can manage payments"),)
+        verbose_name = u'tilaus'
+        verbose_name_plural = u'tilaukset'
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -682,3 +691,7 @@ class OrderProduct(models.Model):
 
     def __unicode__(self):
         return self.description
+
+    class Meta:
+        verbose_name = u'tilausrivi'
+        verbose_name_plural = u'tilausrivit'

@@ -1,0 +1,41 @@
+doctype html
+html
+  head
+    title {{ event.name }}
+    link(rel='stylesheet', href='{{ STATIC_URL }}bootstrap/bootstrap.min.css')
+  body
+    .container
+      h1 Uudelleenohjaus
+      .row
+        .col-md-5.well
+          p Uudelleenohjataan maksupalveluun. Jos tämä sivu jää pitkäksi aikaa näkyviin, paina allaolevaa nappia.
+
+          form(id='payment_form', method='post', action='https://payment.checkout.fi/')
+            input(type='hidden', name='VERSION', value='{{ CHECKOUT_PARAMS.VERSION }}')
+            input(type='hidden', name='STAMP', value='{{ order.checkout_stamp }}')
+            input(type='hidden', name='AMOUNT', value='{{ order.price_cents }}')
+            input(type='hidden', name='REFERENCE', value='{{ order.reference_number }}')
+            input(type='hidden', name='MESSAGE', value='{{ order.checkout_message }}')
+            input(type='hidden', name='LANGUAGE', value='{{ CHECKOUT_PARAMS.LANGUAGE }}')
+            input(type='hidden', name='MERCHANT', value='{{ CHECKOUT_PARAMS.MERCHANT }}')
+            input(type='hidden', name='RETURN', value='{{ checkout_return_url }}')
+            input(type='hidden', name='CANCEL', value='')
+            input(type='hidden', name='REJECT', value='')
+            input(type='hidden', name='DELAYED', value='')
+            input(type='hidden', name='COUNTRY', value='{{ CHECKOUT_PARAMS.COUNTRY }}')
+            input(type='hidden', name='CURRENCY', value='{{ CHECKOUT_PARAMS.CURRENCY }}')
+            input(type='hidden', name='DEVICE', value='{{ CHECKOUT_PARAMS.DEVICE }}')
+            input(type='hidden', name='CONTENT', value='{{ CHECKOUT_PARAMS.CONTENT }}')
+            input(type='hidden', name='TYPE', value='{{ CHECKOUT_PARAMS.TYPE }}')
+            input(type='hidden', name='ALGORITHM', value='{{ CHECKOUT_PARAMS.ALGORITHM }}')
+            input(type='hidden', name='DELIVERY_DATE', value='{{ CHECKOUT_PARAMS.DELIVERY_DATE }}')
+            input(type='hidden', name='FIRSTNAME', value='{{ order.customer.first_name }}')
+            input(type='hidden', name='FAMILYNAME', value='{{ order.customer.last_name }}')
+            input(type='hidden', name='ADDRESS', value='{{ order.customer.address }}')
+            input(type='hidden', name='POSTCODE', value='{{ order.customer.zip_code }}')
+            input(type='hidden', name='POSTOFFICE', value='{{ order.customer.city}}')
+            input(type='hidden', name='MAC', value='{{ checkout_mac }}')
+            button.btn.btn-success.btn-large.btn-block(type='submit') Siirry maksamaan &#10004;
+
+    script(src='{{ STATIC_URL }}jquery-1.10.2.min.js')
+    script(src='{{ STATIC_URL }}payments_redirect.js')

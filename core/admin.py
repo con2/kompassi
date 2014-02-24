@@ -17,15 +17,23 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'email', 'phone', 'anonymous')
 
 
+extra_inlines = []
+
 if 'labour' in settings.INSTALLED_APPS:
     from labour.admin import InlineLabourEventMetaAdmin
-    LABOUR_EVENTADMIN_INLINES = (InlineLabourEventMetaAdmin,)
-else:
-    LABOUR_EVENTADMIN_INLINES = ()
+    extra_inlines.append(InlineLabourEventMetaAdmin)
+
+if 'programme' in settings.INSTALLED_APPS:
+    from programme.admin import InlineProgrammeEventMetaAdmin
+    extra_inlines.append(InlineProgrammeEventMetaAdmin)
+
+if 'tickets' in settings.INSTALLED_APPS:
+    from tickets.admin import InlineTicketsEventMetaAdmin
+    extra_inlines.append(InlineTicketsEventMetaAdmin)
 
 
 class EventAdmin(admin.ModelAdmin):
-    inlines = LABOUR_EVENTADMIN_INLINES
+    inlines = tuple(extra_inlines)
 
     fieldsets = (
         ('Tapahtuman nimi', dict(fields=(

@@ -2,7 +2,11 @@ import datetime
 
 from django.contrib import admin
 
-from .models import Category, Room, Role, Tag, Programme, View
+from .models import ProgrammeEventMeta, Category, Room, Role, Tag, Programme, View
+
+
+class InlineProgrammeEventMetaAdmin(admin.StackedInline):
+    model = ProgrammeEventMeta
 
 
 class ProgrammeRoleInline(admin.TabularInline):

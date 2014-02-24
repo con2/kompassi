@@ -6,10 +6,16 @@ from .models import (
   Batch,
   Customer,
   Customer,
+  LimitGroup,
   Order,
   OrderProduct,
   Product,
+  TicketsEventMeta,
 )
+
+
+class InlineTicketsEventMetaAdmin(admin.StackedInline):
+    model = TicketsEventMeta
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -23,6 +29,18 @@ class ProductAdmin(admin.ModelAdmin):
       'available',
       'requires_shipping',
     )
+
+
+class LimitGroupAdmin(admin.ModelAdmin):
+  model = Product
+  list_display = (
+    'event',
+    'description',
+    'amount_available',
+    'limit',
+  )
+
+  list_filter = ('event',)
 
 
 class CustomerInline(admin.StackedInline):
@@ -43,6 +61,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)
+admin.site.register(LimitGroup, LimitGroupAdmin)
 
 for cls in (Batch, Customer):
     admin.site.register(cls)

@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import datetime
 
 from django.db import models
@@ -27,7 +29,8 @@ class Category(models.Model):
 
     class Meta:
         ordering = ['title']
-        verbose_name_plural = "categories"
+        verbose_name = u'ohjelmaluokka'
+        verbose_name_plural = u'ohjelmaluokat'
 
 
 class Room(models.Model):
@@ -52,6 +55,8 @@ class Room(models.Model):
 
     class Meta:
         ordering = ['venue', 'order']
+        verbose_name = u'tila'
+        verbose_name_plural = u'tilat'
 
 
 class Role(models.Model):
@@ -62,6 +67,8 @@ class Role(models.Model):
         return self.title
 
     class Meta:
+        verbose_name = u'rooli'
+        verbose_name_plural = u'roolit'
         ordering = ['title']
 
 
@@ -74,6 +81,8 @@ class Tag(models.Model):
         return self.title
 
     class Meta:
+        verbose_name = u'tägi'
+        verbose_name_plural = u'tägit'
         ordering = ['order']
 
 class Programme(models.Model):
@@ -115,6 +124,8 @@ class Programme(models.Model):
         return self.category.public
 
     class Meta:
+        verbose_name = u'ohjelmanumero'
+        verbose_name_plural = u'ohjelmanumerot'
         ordering = ['start_time', 'room']
 
 
@@ -130,6 +141,10 @@ class ProgrammeRole(models.Model):
 
     def __unicode__(self):
         return self.role.title
+
+    class Meta:
+        verbose_name = u'ohjelmanpitäjän rooli'
+        verbose_name_plural = u'ohjelmanpitäjien roolit'
 
 
 class ViewMethodsMixin(object):
@@ -203,6 +218,8 @@ class View(models.Model, ViewMethodsMixin):
         return self.name
 
     class Meta:
+        verbose_name = u'ohjelmakarttanäkymä'
+        verbose_name_plural = u'ohjelmakarttanäkymät'
         ordering = ['order']
 
 
