@@ -660,29 +660,29 @@ class Order(models.Model):
         attachments = []
 
         if msgtype == "order_confirmation":
-            msgsubject = "{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
+            msgsubject = u"{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
             msgbody = self.order_confirmation_message
         elif msgtype == "payment_confirmation":
-            if 'lippukala' in settings.INSTALLED_APPS:
+            if 'lippukala' in settings.INSTALLED_APPS and self.contains_electronic_tickets:
                 from lippukala.printing import OrderPrinter
 
                 printer = OrderPrinter()
                 printer.process_order(self.lippukala_order)
                 attachments.push(('e-lippu.pdf', printer.finish(), 'application/pdf'))
 
-                msgsubject = "{self.event.name}: Maksuvahvistus ({self.formatted_order_number})".format(self=self)
+                msgsubject = u"{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
                 msgbody = self.payment_confirmation_message
             else:
-                msgsubject = "{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
+                msgsubject = u"{self.event.name}: Maksuvahvistus ({self.formatted_order_number})".format(self=self)
                 msgbody = self.electronic_ticket_message
         elif msgtype == "delivery_confirmation":
-            msgsubject = "{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
+            msgsubject = u"{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
             msgbody = self.delivery_confirmation_message
         elif msgtype == "payment_reminder":
-            msgsubject = "{self.event.name}: Maksumuistutus ({self.formatted_order_number})".format(self=self)
+            msgsubject = u"{self.event.name}: Maksumuistutus ({self.formatted_order_number})".format(self=self)
             msgbody = self.payment_reminder_message
         elif msgtype == "cancellation_notice":
-            msgsubject = "{self.event.name}: Tilaus peruuntunut ({self.formatted_order_number})".format(self=self)
+            msgsubject = u"{self.event.name}: Tilaus peruuntunut ({self.formatted_order_number})".format(self=self)
             msgbody = self.cancellation_notice_message
         else:
             raise NotImplementedError(msgtype)
