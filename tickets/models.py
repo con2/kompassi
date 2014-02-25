@@ -77,7 +77,13 @@ class TicketsEventMeta(EventMetaBase):
     reservation_seconds = models.IntegerField(
         verbose_name=u'Varausaika (sekuntia)',
         help_text=u'Käyttäjällä on tämän verran aikaa siirtyä maksamaan ja maksaa tilauksensa tai tilaus perutaan.',
-        default=1800
+        default=1800,
+    )
+
+    ticket_free_text = models.TextField(
+        blank=True,
+        verbose_name=u'E-lipun teksti',
+        help_text=u'Tämä teksti tulostetaan E-lippuun.',
     )
 
     @property
@@ -208,7 +214,7 @@ class Batch(models.Model):
 
     def send_delivery_confirmation_messages(self):
         for order in self.order_set.all():
-            order.send_confirmation_message("toimitusvahvistus")
+            order.send_confirmation_message("delivery_confirmation")
 
     def __unicode__(self):
         return u"#%d (%s)" % (
@@ -487,6 +493,10 @@ class Order(models.Model):
     def formatted_reference_number(self):
         return "".join((i if (n+1) % 5 else i+" ") for (n, i) in enumerate(self.reference_number[::-1]))[::-1]
 
+    @property
+    def formatted_order_number(self):
+        return "#{:05d}".format(self.pk)
+
     def confirm_order(self, send_email=True):
         assert self.customer is not None
         assert not self.is_confirmed
@@ -498,7 +508,7 @@ class Order(models.Model):
         self.save()
 
         if send_email:
-            self.send_confirmation_message("tilausvahvistus")
+            self.send_confirmation_message("order_confirmation")
 
     def deconfirm_order(self):
         assert self.is_confirmed
@@ -507,7 +517,7 @@ class Order(models.Model):
         self.save()
 
     def confirm_payment(self, payment_date=None, send_email=True):
-        assert self.is_confirmed
+        assert self.is_confirmed and not self.is_paid
 
         if payment_date is None:
             payment_date = date.today()
@@ -516,15 +526,18 @@ class Order(models.Model):
 
         self.save()
 
+        if 'lippukala' in settings.INSTALLED_APPS:
+            self.lippukala_create_codes()
+
         if send_email:
-            self.send_confirmation_message("maksuvahvistus")
+            self.send_confirmation_message("payment_confirmation")
 
     def cancel(self):
         assert self.is_confirmed
 
         self.cancellation_time = timezone.now()
         self.save()
-        self.send_confirmation_message('peruutus')
+        self.send_confirmation_message('cancellation_notice')
 
     @property
     def messages(self):
@@ -611,6 +624,27 @@ class Order(models.Model):
         select_queue = settings.LIPPUTURSKA_QUEUE_SELECTOR
         return select_queue(self)
 
+    def lippukala_create_codes(self):
+        if 'lippukala' not in settings.INSTALLED_APPS:
+            raise NotImplementedError('lippukala is not installed')
+
+        from lippukala.models import Order as LippukalaOrder
+
+        lippukala_order = LippukalaOrder.objects.create(
+            address_text=self.formatted_address,
+            free_text=self.event.tickets_event_meta.ticket_free_text,
+            reference_number=self.reference_number,
+        )
+
+    @property
+    def lippukala_order(self):
+        from lippukala.models import Order as LippukalaOrder
+        # XXX reference numbers must be unique across events
+        try:
+            return LippukalaOrder.objects.get(reference_number=self.reference_number)
+        except LippukalaOrder.DoesNotExist:
+            return None
+
     def send_confirmation_message(self, msgtype):
         # don't fail silently, warn admins instead
         msgbcc = []
@@ -623,30 +657,47 @@ class Order(models.Model):
             if op.product.notify_email:
                 msgbcc.append(op.product.notify_email)
 
-        if msgtype == "tilausvahvistus":
-            msgsubject = "{self.event.name}: Tilausvahvistus (#{self.pk:04d})".format(self=self)
+        attachments = []
+
+        if msgtype == "order_confirmation":
+            msgsubject = "{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
             msgbody = self.order_confirmation_message
-        elif msgtype == "maksuvahvistus":
-            msgsubject = "{self.event.name}: Maksuvahvistus (#{self.pk:04d})".format(self=self)
-            msgbody = self.payment_confirmation_message
-        elif msgtype == "toimitusvahvistus":
-            msgsubject = "{self.event.name}: Toimitusvahvistus (#{self.pk:04d})".format(self=self)
+        elif msgtype == "payment_confirmation":
+            if 'lippukala' in settings.INSTALLED_APPS:
+                from lippukala.printing import OrderPrinter
+
+                printer = OrderPrinter()
+                printer.process_order(self.lippukala_order)
+                attachments.push(('e-lippu.pdf', printer.finish(), 'application/pdf'))
+
+                msgsubject = "{self.event.name}: Maksuvahvistus ({self.formatted_order_number})".format(self=self)
+                msgbody = self.payment_confirmation_message
+            else:
+                msgsubject = "{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
+                msgbody = self.electronic_ticket_message
+        elif msgtype == "delivery_confirmation":
+            msgsubject = "{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
             msgbody = self.delivery_confirmation_message
-        elif msgtype == "maksumuistutus":
-            msgsubject = "{self.event.name}: Maksumuistutus (#{self.pk:04d})".format(self=self)
+        elif msgtype == "payment_reminder":
+            msgsubject = "{self.event.name}: Maksumuistutus ({self.formatted_order_number})".format(self=self)
             msgbody = self.payment_reminder_message
-        elif msgtype == "peruutus":
-            msgsubject = "{self.event.name}: Tilaus peruuntunut (#{self.pk:04d})".format(self=self)
+        elif msgtype == "cancellation_notice":
+            msgsubject = "{self.event.name}: Tilaus peruuntunut ({self.formatted_order_number})".format(self=self)
             msgbody = self.cancellation_notice_message
         else:
             raise NotImplementedError(msgtype)
 
-        EmailMessage(
+        message = EmailMessage(
             subject=msgsubject,
             body=msgbody,
             to=(self.customer.name_and_email,),
             bcc=msgbcc
-        ).send(fail_silently=True)
+        )
+
+        for attachment in attachments:
+            message.attach(*attachment)
+
+        message.send()
 
     def render(self, c):
         render_receipt(self, c)
@@ -677,7 +728,7 @@ class Order(models.Model):
             event=event,
             customer=customer,
             confirm_time=t,
-            payment_date=t.date(),
+            # payment_date=t.date(),
         )
 
 

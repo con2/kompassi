@@ -12,6 +12,8 @@ def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', *parts))
 
 
+MKPATH = mkpath
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -125,7 +127,7 @@ INSTALLED_APPS = (
     #'external_auth',
 
     # Uncomment if you do PDF tickets
-    #'lippukala',
+    'lippukala',
 
     'tracon8',
     'tracon9',
@@ -287,6 +289,7 @@ if 'payments' in INSTALLED_APPS:
 
 
 if 'lippukala' in INSTALLED_APPS:
+    # XXX event specific, move to the database
     from tracon9.lippukala_integration import KEYSPACE, select_queue, Queue
 
     LIPPUKALA_PREFIXES = {
@@ -303,8 +306,8 @@ if 'lippukala' in INSTALLED_APPS:
 
     LIPPUTURSKA_QUEUE_SELECTOR = select_queue
 
-    LIPPUKALA_CODE_MIN_N_DIGITS = 6
-    LIPPUKALA_CODE_MAX_N_DIGITS = 10
+    LIPPUKALA_CODE_MIN_N_DIGITS = 7
+    LIPPUKALA_CODE_MAX_N_DIGITS = 7
 
     LIPPUKALA_PRINT_LOGO_PATH = mkpath('static', 'images', 'tracon_logo_kuitille.jpg')
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.84, 1.5)
