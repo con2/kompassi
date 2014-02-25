@@ -1,4 +1,5 @@
 extends tickets_phase_base.jade
+- load crispy_forms_tags
 block body_text
   h2 Valitse ostettavat tuotteet
 block form_content
@@ -8,17 +9,18 @@ block form_content
       tr
         th Tuote
         th Kappalehinta
-        th Määrä
+        th(style='min-width: 80px') Määrä
     tbody
       for iform in form
         tr
           td
             p: strong {{ iform.instance.product.name }}
             p.hidden-phone {{ iform.instance.product.description }}
-          td {{ iform.instance.product.formatted_price }}
+          td: p.lead {{ iform.instance.product.formatted_price }}
           td
-            if iform.instance.product.in_stock
-              {{ iform.count }}
-            else
-              // XXX fugly
-              | Loppuunmyyty
+            div
+              if iform.instance.product.in_stock
+                - crispy iform
+              else
+                // XXX fugly
+                | Loppuunmyyty

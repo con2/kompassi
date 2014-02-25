@@ -20,7 +20,7 @@ except ImportError:
     from warnings import warn
     warn('Failed to import ReportLab. Generating receipts will fail.')
 
-from core.utils import multiform_validate, multiform_save, initialize_form, url
+from core.utils import initialize_form, url
 
 # XXX * imports
 from ..models import *
@@ -38,6 +38,17 @@ __all__ = [
     "tickets_tickets_view",
     "tickets_welcome_view",
 ]
+
+
+def multiform_validate(forms):
+    return ["syntax"] if not all(
+        i.is_valid() and (i.instance.target.available or i.cleaned_data["count"] == 0)
+        for i in forms
+    ) else []
+
+
+def multiform_save(forms):
+    return [i.save() for i in forms]
 
 
 def decorate(view_obj):
@@ -239,6 +250,7 @@ class TicketsPhase(Phase):
 
         # If the above step failed, not all forms have cleaned_data.
         if errors:
+            messages.error(request, u'Tarkista lomakkeen sisältö.')
             return errors
 
         if sum(i.cleaned_data["count"] for i in form) <= 0:
