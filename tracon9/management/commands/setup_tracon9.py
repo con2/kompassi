@@ -238,6 +238,7 @@ class Command(BaseCommand):
                 ],
                 price_cents=1800,
                 requires_shipping=False,
+                electronic_ticket=True,
                 available=True,
                 ordering=ordering()
             ),
@@ -263,6 +264,7 @@ class Command(BaseCommand):
                 ],
                 price_cents=1200,
                 requires_shipping=False,
+                electronic_ticket=True,
                 available=True,
                 ordering=ordering()
             ),
@@ -287,6 +289,7 @@ class Command(BaseCommand):
                 ],
                 price_cents=1000,
                 requires_shipping=False,
+                electronic_ticket=True,
                 available=True,
                 ordering=ordering()
             ),

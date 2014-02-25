@@ -267,6 +267,7 @@ class Product(models.Model):
     limit_groups = models.ManyToManyField(LimitGroup, blank=True)
     price_cents = models.IntegerField()
     requires_shipping = models.BooleanField(default=True)
+    electronic_ticket = models.BooleanField(default=False)
     available = models.BooleanField(default=True)
     notify_email = models.CharField(max_length=100, null=True, blank=True)
     ordering = models.IntegerField(default=0)
@@ -578,6 +579,10 @@ class Order(models.Model):
         return format_date(self.due_date)
 
     @property
+    def formatted_address(self):
+        return u"{self.customer.name}\n{self.customer.address}\n{self.customer.zip_code} {self.customer.city}".format(self=self)
+
+    @property
     def checkout_stamp(self):
         return "{0}{1:010.0f}".format(
             self.reference_number, # 6 digits
@@ -597,6 +602,14 @@ class Order(models.Model):
     @property
     def reservation_valid_until(self):
         return self.confirm_time + timedelta(seconds=self.event.tickets_event_meta.reservation_seconds) if self.confirm_time else None
+
+    @property
+    def lippukala_prefix(self):
+        if 'lippukala' not in settings.INSTALLED_APPS:
+            raise NotImplementedError('lippukala is not installed')
+
+        select_queue = settings.LIPPUTURSKA_QUEUE_SELECTOR
+        return select_queue(self)
 
     def send_confirmation_message(self, msgtype):
         # don't fail silently, warn admins instead
@@ -650,15 +663,18 @@ class Order(models.Model):
         verbose_name_plural = u'tilaukset'
 
     @classmethod
-    def get_or_create_dummy(cls):
-        from core.models import Event
+    def get_or_create_dummy(cls, event=None):
+        if event is None:
+            from core.models import Event
 
-        meta, unused = TicketsEventMeta.get_or_create_dummy()
+            meta, unused = TicketsEventMeta.get_or_create_dummy()
+            event = meta.event
+
         customer, unused = Customer.get_or_create_dummy()
         t = timezone.now()
 
         return cls.objects.get_or_create(
-            event=meta.event,
+            event=event,
             customer=customer,
             confirm_time=t,
             payment_date=t.date(),

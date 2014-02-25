@@ -124,6 +124,9 @@ INSTALLED_APPS = (
     # Uncomment if you have IPA
     #'external_auth',
 
+    # Uncomment if you do PDF tickets
+    #'lippukala',
+
     'tracon8',
     'tracon9',
 )
@@ -281,3 +284,27 @@ if 'payments' in INSTALLED_APPS:
         MERCHANT='375917', # test account
         DELIVERY_DATE='20130914' # Tracon 8 start
     )
+
+
+if 'lippukala' in INSTALLED_APPS:
+    from tracon9.lippukala_integration import KEYSPACE, select_queue, Queue
+
+    LIPPUKALA_PREFIXES = {
+        Queue.SINGLE_WEEKEND_TICKET: "kissa",
+        Queue.TWO_WEEKEND_TICKETS: "koira",
+        Queue.EVERYONE_ELSE: "hiiri",
+    }
+
+    LIPPUKALA_LITERATE_KEYSPACES = {
+        Queue.SINGLE_WEEKEND_TICKET: KEYSPACE,
+        Queue.TWO_WEEKEND_TICKETS: KEYSPACE,
+        Queue.EVERYONE_ELSE: KEYSPACE,
+    }
+
+    LIPPUTURSKA_QUEUE_SELECTOR = select_queue
+
+    LIPPUKALA_CODE_MIN_N_DIGITS = 6
+    LIPPUKALA_CODE_MAX_N_DIGITS = 10
+
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath('static', 'images', 'tracon_logo_kuitille.jpg')
+    LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.84, 1.5)
