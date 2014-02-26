@@ -59,19 +59,15 @@ validate_slug = RegexValidator(
 )
 
 
-class SlugField(models.CharField):
-    def __init__(self, *args, **kwargs):
-        defaults = dict(
-            max_length=63,
-            unique=True,
-            validators=[validate_slug],
-            verbose_name=u'Tekninen nimi',
-            help_text=u'Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja '
-                u'merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi '
-                u'muuttaa luomisen jälkeen.',
-        )
-        my_kwargs = dict(defaults, **kwargs)
-        super(SlugField, self).__init__(*args, **my_kwargs)
+SLUG_FIELD_PARAMS = dict(
+    max_length=63,
+    unique=True,
+    validators=[validate_slug],
+    verbose_name=u'Tekninen nimi',
+    help_text=u'Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja '
+        u'merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi '
+        u'muuttaa luomisen jälkeen.',
+)
 
 
 def url(view_name, *args):

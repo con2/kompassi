@@ -8,7 +8,7 @@ from django.utils.dateformat import format as format_date
 from django.utils.timezone import now
 from django.conf import settings
 
-from .utils import validate_slug, SlugField
+from .utils import validate_slug, SLUG_FIELD_PARAMS
 
 
 class Venue(models.Model):
@@ -40,7 +40,7 @@ class Venue(models.Model):
 
 
 class Event(models.Model):
-    slug = SlugField()
+    slug = models.CharField(**SLUG_FIELD_PARAMS)
     name = models.CharField(max_length=63, verbose_name=u'Tapahtuman nimi')
 
     name_genitive = models.CharField(

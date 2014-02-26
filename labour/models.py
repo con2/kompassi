@@ -8,7 +8,7 @@ from django.db import models
 from django.utils.timezone import now
 
 from core.models import EventMetaBase
-from core.utils import SlugField, format_datetime
+from core.utils import format_datetime, SLUG_FIELD_PARAMS
 
 
 class LabourEventMeta(EventMetaBase):
@@ -107,7 +107,7 @@ class LabourEventMeta(EventMetaBase):
 
 
 class Qualification(models.Model):
-    slug = SlugField()
+    slug = models.CharField(**SLUG_FIELD_PARAMS)
 
     name = models.CharField(max_length=63, verbose_name=u'pätevyyden nimi')
     description = models.TextField(blank=True, verbose_name=u'kuvaus')
@@ -247,7 +247,7 @@ class Job(models.Model):
     @property
     def expanded_requirements(self):
         requirements = []
-        
+
         for hour in self.job_category.event.labour_event_meta.work_hours:
             try:
                 job_requirement = self.jobrequirement_set.get(
