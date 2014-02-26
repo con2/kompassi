@@ -208,6 +208,9 @@ AUTHENTICATION_BACKENDS = (
 TURSKA_PASSWORD_MIN_LENGTH = 8
 TURSKA_PASSWORD_MIN_CLASSES = 3
 
+# Don't actually send email
+EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
 
 if 'external_auth' in INSTALLED_APPS:
     # in case of emergency, break glass

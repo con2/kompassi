@@ -68,6 +68,7 @@ def payments_process_view(request, event):
 
   if order.is_paid:
     messages.error(request, please_contact(order, u"Tilaus on jo maksettu."))
+    return redirect('tickets_thanks_view', event.slug)
 
   try:
     payment_info = PaymentForm(request.GET).save()
