@@ -314,7 +314,7 @@ class Command(BaseCommand):
 
             dict(
                 name=u'Lattiamajoitus 2 yötä pe-su (Aleksanterin koulu)',
-                description=u'Lattiamajoituspaikka pe-la ja la-su välisiksi öiksi Aleksanterin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspakoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
+                description=u'Lattiamajoituspaikka pe-la ja la-su välisiksi öiksi Aleksanterin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspaikoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
                 limit_groups=[
                     limit_group('Lattiamajoitus pe-la, Aleksanterin koulu', 80),
                     limit_group('Lattiamajoitus la-su, Aleksanterin koulu', 130),
@@ -327,7 +327,7 @@ class Command(BaseCommand):
 
             dict(
                 name=u'Lattiamajoitus 1 yö la-su (Amurin koulu)',
-                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspakoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
+                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspaikoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
                 limit_groups=[
                     limit_group('Lattiamajoitus la-su, Amurin koulu', 250),
                 ],
