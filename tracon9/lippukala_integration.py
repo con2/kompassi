@@ -9,7 +9,7 @@ hauki   kirja   avain   pilvi   muovi   torni   viulu   mappi   mekko   kaali   
     kivi    jakso   pouta   nahka   kokko   sello   tasku   paita   jauho   pallo
 hylje   lakki   jalka   sade    naru    salko       vihko   sukka   riisi   pinta
 ilves   lappu   kanta   sähkö   pahvi   maja        kirje       hillo   taso
-kettu   lasi    katu    tuuli   rauta   katos               maksa   jana
+kettu   lasi    katu    tuuli   rauta   katos                  jana
 karhu   lehti   kausi   valo    teräs                   puuro   piste
     levy    kesto   aalto   hiili
 kala    mitta   kone        rikki
@@ -54,7 +54,7 @@ def select_queue(order):
         product = Product.objects.get(event=event, name__icontains='viikonlop', electronic_ticket=True)
         op = order.order_product_set.get(product=product)
     except (ObjectDoesNotExist, MultipleObjectsReturned):
-        return Queue.FALLBACK
+        return Queue.EVERYONE_ELSE
 
     if op.count == 1:
         return Queue.SINGLE_WEEKEND_TICKET
@@ -63,4 +63,4 @@ def select_queue(order):
         return Queue.TWO_WEEKEND_TICKETS
 
     else:
-        return Queue.FALLBACK
+        return Queue.EVERYONE_ELSE

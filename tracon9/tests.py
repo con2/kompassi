@@ -36,6 +36,8 @@ class Tracon9LippukalaTestCase(TestCase):
         order = _create_order(num_tickets)
         product = order.order_product_set.get().product
 
+        order.confirm_order(send_email=False)
+
         lippukala_order = LippukalaOrder.objects.create(
             address_text=order.formatted_address,
             free_text=u"Tervetuloa Traconiin!",
@@ -56,7 +58,7 @@ class Tracon9LippukalaTestCase(TestCase):
         printer = OrderPrinter()
         printer.process_order(lippukala_order)
 
-        with open(settings.MKPATH('tmp', 'temp.pdf'), 'wq') as output_file:
+        with open(settings.MKPATH('tmp', 'test_manual_code_creation.pdf'), 'wq') as output_file:
             output_file.write(printer.finish())
 
     def test_automatic_code_creation(self):
@@ -71,6 +73,10 @@ class Tracon9LippukalaTestCase(TestCase):
         num_tickets = 3
 
         order = _create_order(num_tickets)
+        assert order.contains_electronic_tickets
+        assert order.lippukala_prefix == Queue.EVERYONE_ELSE
+
+        order.confirm_order(send_email=False)
         order.confirm_payment()
 
         assert len(mail.outbox) == 1
@@ -78,3 +84,10 @@ class Tracon9LippukalaTestCase(TestCase):
         msg = mail.outbox[0]
 
         assert len(msg.attachments) == 1
+
+        filename, content, mimetype = msg.attachments[0]
+
+        assert mimetype == 'application/pdf'
+
+        with open(settings.MKPATH('tmp', 'test_automatic_code_creation.pdf'), 'wq') as output_file:
+            output_file.write(content)

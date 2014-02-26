@@ -411,6 +411,7 @@ class Order(models.Model):
     payment_date = models.DateField(null=True, blank=True)
     cancellation_time = models.DateTimeField(null=True, blank=True)
     batch = models.ForeignKey(Batch, null=True, blank=True)
+    reference_number = models.CharField(max_length=31, blank=True)
 
     @property
     def is_active(self):
@@ -484,8 +485,7 @@ class Order(models.Model):
     def reference_number_base(self):
         return self.event.tickets_event_meta.reference_number_template.format(self.pk)
 
-    @property
-    def reference_number(self):
+    def _make_reference_number(self):
         s = self.reference_number_base
         return s + str(-sum(int(x)*[7,3,1][i%3] for i, x in enumerate(s[::-1])) % 10)
 
@@ -503,6 +503,7 @@ class Order(models.Model):
 
         self.order_product_set.filter(count__lte=0).delete()
 
+        self.reference_number = self._make_reference_number()
         self.confirm_time = timezone.now()
 
         self.save()
@@ -513,6 +514,7 @@ class Order(models.Model):
     def deconfirm_order(self):
         assert self.is_confirmed
 
+        self.reference_number = self._make_reference_number()
         self.confirm_time = None
         self.save()
 
@@ -617,6 +619,10 @@ class Order(models.Model):
         return self.confirm_time + timedelta(seconds=self.event.tickets_event_meta.reservation_seconds) if self.confirm_time else None
 
     @property
+    def contains_electronic_tickets(self):
+        return self.order_product_set.filter(count__gt=0, product__electronic_ticket=True).exists()
+
+    @property
     def lippukala_prefix(self):
         if 'lippukala' not in settings.INSTALLED_APPS:
             raise NotImplementedError('lippukala is not installed')
@@ -628,7 +634,10 @@ class Order(models.Model):
         if 'lippukala' not in settings.INSTALLED_APPS:
             raise NotImplementedError('lippukala is not installed')
 
-        from lippukala.models import Order as LippukalaOrder
+        if not self.contains_electronic_tickets:
+            return
+
+        from lippukala.models import Code, Order as LippukalaOrder
 
         lippukala_order = LippukalaOrder.objects.create(
             address_text=self.formatted_address,
@@ -636,10 +645,23 @@ class Order(models.Model):
             reference_number=self.reference_number,
         )
 
+        for op in self.order_product_set.filter(count__gt=0, product__electronic_ticket=True):
+            codes = [Code.objects.create(
+                order=lippukala_order,
+                prefix=self.lippukala_prefix,
+                product_text=op.product.name,
+            ) for i in xrange(op.count)]
+
+        return lippukala_order, codes
+
+    @classmethod
+    def lippukala_get_order(cls, lippukala_order):
+        return cls.objects.get(reference_number=lippukala_order.reference_number)
+
     @property
     def lippukala_order(self):
         from lippukala.models import Order as LippukalaOrder
-        # XXX reference numbers must be unique across events
+
         try:
             return LippukalaOrder.objects.get(reference_number=self.reference_number)
         except LippukalaOrder.DoesNotExist:
@@ -668,13 +690,16 @@ class Order(models.Model):
 
                 printer = OrderPrinter()
                 printer.process_order(self.lippukala_order)
-                attachments.push(('e-lippu.pdf', printer.finish(), 'application/pdf'))
+                attachments.append(('e-lippu.pdf', printer.finish(), 'application/pdf'))
 
                 msgsubject = u"{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
+
+                # XXX
+                #msgbody = self.electronic_ticket_message
                 msgbody = self.payment_confirmation_message
             else:
                 msgsubject = u"{self.event.name}: Maksuvahvistus ({self.formatted_order_number})".format(self=self)
-                msgbody = self.electronic_ticket_message
+                msgbody = self.payment_confirmation_message
         elif msgtype == "delivery_confirmation":
             msgsubject = u"{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
             msgbody = self.delivery_confirmation_message
@@ -727,10 +752,7 @@ class Order(models.Model):
         return cls.objects.get_or_create(
             event=event,
             customer=customer,
-            confirm_time=t,
-            # payment_date=t.date(),
         )
-
 
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, related_name="order_product_set")
