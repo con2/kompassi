@@ -195,6 +195,12 @@ class Command(BaseCommand):
             reference_number_template='9{:05d}',
             contact_email='liput@tracon.fi',
             ticket_spam_email='japsu@tracon.fi',
+            ticket_free_text=u"Tämä on sähköinen lippusi Tracon 9 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
+                u"lipunvaihtopisteessä.\n\n"
+                u"Tervetuloa Traconiin!"
         )
 
         if options['test']:
