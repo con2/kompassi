@@ -2,9 +2,9 @@
 
 from django import forms
 
-from crispy_forms.helper import FormHelper
+from crispy_forms.helper import FormHelper, Layout
 
-from core.utils import horizontal_form_helper
+from core.utils import horizontal_form_helper, indented_without_label
 
 from tickets.models import *
 
@@ -44,6 +44,16 @@ class CustomerForm(forms.ModelForm):
         super(CustomerForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'first_name',
+            'last_name',
+            'address',
+            'zip_code',
+            'city',
+            'phone_number',
+            'email',
+            indented_without_label('allow_marketing_email'),
+        )
 
     class Meta:
         model = Customer

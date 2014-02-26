@@ -343,7 +343,7 @@ class ConfirmPhase(Phase):
         order = get_order(request, event)
 
         if not order.is_confirmed:
-            order.confirm_order(send_email=False)
+            order.confirm_order()
 
 
 tickets_confirm_phase = ConfirmPhase()

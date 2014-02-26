@@ -1,32 +1,26 @@
 Hyvä vastaanottaja,
 
-Olemme {{ order.batch.delivery_date|date }} postittaneet {{ event.name }} -ennakkolipputilauksenne
-numero {{ order.pk|stringformat:"04d" }}.
+Kiitos tilauksestasi {{ order.event.name_genitive }} verkkokaupassa! Tilauksesi numero on {{ order.formatted_order_number }}.
 
-Vahvistamme postitetuiksi seuraavat lipputuotteet:
+Vahvistamme toimitetuiksi seuraavat lipputuotteet:
 
-{% for product in products %}{{ product.count }} kpl	{{ product.product.name }}
-	{{ product.count }} x {{ product.product.formatted_price }} = {{ product.formatted_price }}
-{% endfor %}{% if order.requires_shipping %}
-Toimituskulut: {{ order.formatted_shipping_and_handling }}{% endif %}
+{% for op in order.products_requiring_shipping %}{{ op.count }} kpl  {{ op.product.name }}
+{% endfor %}
 
-Yhteensä: {{ order.formatted_price }} (ALV 0%)
+Tuotteet on postitettu seuraavaan osoitteeseen:
 
-Liput on postitettu seuraavaan osoitteeseen:
-
-{{ order.customer.name }}
-{{ order.customer.address }}
-{{ order.customer.zip_code }} {{ order.customer.city }}
+{{ order.formatted_address }}
 
 {% if order.customer.phone_number %}{{ order.customer.phone_number }}
 {% endif %}{{ order.customer.email }}
 
+
 Jos ylläolevissa tiedoissa on virheitä, pyydämme ottamaan viipymättä
 yhteyttä lipunmyyntiin joko vastaamalla tähän viestiin tai lähettämällä
-sähköpostia: {{ DEFAULT_FROM_EMAIL|safe }}.
-
-Tervetuloa Traconiin!
+sähköpostia: {{ order.event.tickets_event_meta.contact_email }}.
 
 Ystävällisin terveisin
 --
-{{ DEFAULT_FROM_EMAIL|safe }}
+{{ order.event.tickets_event_meta.contact_email }}
+
+Yleishyödyllisenä yhteisönä myyjä ei ole arvonlisäverovelvollinen.

@@ -359,10 +359,20 @@ class Customer(models.Model):
 
     first_name = models.CharField(max_length=100, verbose_name="Etunimi")
     last_name = models.CharField(max_length=100, verbose_name="Sukunimi")
-    email = models.EmailField(verbose_name="Sähköpostiosoite")
     address = models.CharField(max_length=200, verbose_name="Katuosoite")
     zip_code = models.CharField(max_length=5, verbose_name="Postinumero")
     city = models.CharField(max_length=30, verbose_name="Postitoimipaikka")
+
+    email = models.EmailField(
+        verbose_name=u"Sähköpostiosoite",
+        help_text=u'Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus sekä mahdolliset sähköiset liput lähetetään tähän sähköpostiosoitteeseen.',
+    )
+    allow_marketing_email = models.BooleanField(
+        default=True,
+        blank=True,
+        verbose_name=u"Minulle saa lähettää Traconiin liittyviä tiedotteita sähköpostitse",
+    )
+
     phone_number = models.CharField(max_length=30, null=True, blank=True, verbose_name="Puhelinnumero")
 
     def __unicode__(self):
@@ -497,7 +507,7 @@ class Order(models.Model):
     def formatted_order_number(self):
         return "#{:05d}".format(self.pk)
 
-    def confirm_order(self, send_email=True):
+    def confirm_order(self):
         assert self.customer is not None
         assert not self.is_confirmed
 
@@ -505,11 +515,7 @@ class Order(models.Model):
 
         self.reference_number = self._make_reference_number()
         self.confirm_time = timezone.now()
-
         self.save()
-
-        if send_email:
-            self.send_confirmation_message("order_confirmation")
 
     def deconfirm_order(self):
         assert self.is_confirmed
@@ -561,24 +567,8 @@ class Order(models.Model):
         return dict(order=self)
 
     @property
-    def order_confirmation_message(self):
-        return render_to_string("tickets_confirm_order.eml", self.email_vars)
-
-    @property
-    def payment_confirmation_message(self):
-        return render_to_string("tickets_confirm_payment.eml", self.email_vars)
-
-    @property
-    def delivery_confirmation_message(self):
-        return render_to_string("tickets_confirm_delivery.eml", self.email_vars)
-
-    @property
-    def payment_reminder_message(self):
-        return render_to_string("tickets_payment_reminder.eml", self.email_vars)
-
-    @property
-    def cancellation_notice_message(self):
-        return render_to_string("tickets_cancellation_notice.eml", self.email_vars)
+    def products_requiring_shipping(self):
+        return self.order_product_set.filter(count__gt=0, product__requires_shipping=True)
 
     @property
     def due_date(self):
@@ -681,10 +671,7 @@ class Order(models.Model):
 
         attachments = []
 
-        if msgtype == "order_confirmation":
-            msgsubject = u"{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
-            msgbody = self.order_confirmation_message
-        elif msgtype == "payment_confirmation":
+        if msgtype == "payment_confirmation":
             if 'lippukala' in settings.INSTALLED_APPS and self.contains_electronic_tickets:
                 from lippukala.printing import OrderPrinter
 
@@ -693,22 +680,13 @@ class Order(models.Model):
                 attachments.append(('e-lippu.pdf', printer.finish(), 'application/pdf'))
 
                 msgsubject = u"{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
-
-                # XXX
-                #msgbody = self.electronic_ticket_message
-                msgbody = self.payment_confirmation_message
+                msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
             else:
-                msgsubject = u"{self.event.name}: Maksuvahvistus ({self.formatted_order_number})".format(self=self)
-                msgbody = self.payment_confirmation_message
+                msgsubject = u"{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
+                msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
         elif msgtype == "delivery_confirmation":
             msgsubject = u"{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
-            msgbody = self.delivery_confirmation_message
-        elif msgtype == "payment_reminder":
-            msgsubject = u"{self.event.name}: Maksumuistutus ({self.formatted_order_number})".format(self=self)
-            msgbody = self.payment_reminder_message
-        elif msgtype == "cancellation_notice":
-            msgsubject = u"{self.event.name}: Tilaus peruuntunut ({self.formatted_order_number})".format(self=self)
-            msgbody = self.cancellation_notice_message
+            msgbody = render_to_string("tickets_confirm_delivery.eml", self.email_vars)
         else:
             raise NotImplementedError(msgtype)
 
@@ -722,7 +700,7 @@ class Order(models.Model):
         for attachment in attachments:
             message.attach(*attachment)
 
-        message.send()
+        message.send(fail_silently=True)
 
     def render(self, c):
         render_receipt(self, c)

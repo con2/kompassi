@@ -36,7 +36,7 @@ class Tracon9LippukalaTestCase(TestCase):
         order = _create_order(num_tickets)
         product = order.order_product_set.get().product
 
-        order.confirm_order(send_email=False)
+        order.confirm_order()
 
         lippukala_order = LippukalaOrder.objects.create(
             address_text=order.formatted_address,
@@ -76,7 +76,7 @@ class Tracon9LippukalaTestCase(TestCase):
         assert order.contains_electronic_tickets
         assert order.lippukala_prefix == Queue.EVERYONE_ELSE
 
-        order.confirm_order(send_email=False)
+        order.confirm_order()
         order.confirm_payment()
 
         assert len(mail.outbox) == 1

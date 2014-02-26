@@ -18,6 +18,7 @@ class LimitGroupsTestCase(TestCase):
         assert sunday.in_stock
 
         order, unused = Order.get_or_create_dummy()
+        order.confirm_order()
 
         order.order_product_set.create(product=saturday, count=2000)
         order.order_product_set.create(product=sunday, count=1500)
