@@ -125,16 +125,18 @@ class Command(BaseCommand):
             event=event,
             name=u'Järjestyksenvalvoja'
         )
-        jv.required_qualifications = [jvkortti]
-        jv.save()
+        if not jv.required_qualifications.exists():
+            jv.required_qualifications = [jvkortti]
+            jv.save()
 
         b_ajokortti = Qualification.objects.get(slug='b-ajokortti')
         logistiikka = JobCategory.objects.get(
             event=event,
             name=u'Logistiikka',
         )
-        logistiikka.required_qualifications = [b_ajokortti]
-        logistiikka.save()
+        if not logistiikka.required_qualifications.exists():
+            logistiikka.required_qualifications = [b_ajokortti]
+            logistiikka.save()
 
         for job_category_name, job_names in [
             (u'Järjestyksenvalvoja', (
@@ -149,8 +151,9 @@ class Command(BaseCommand):
             )),
         ]:
             job_category = JobCategory.objects.get(event=event, name=job_category_name)
-            for job_name in job_names:
-                Job.objects.get_or_create(job_category=job_category, title=job_name)
+            if not job_category.job_set.exists():
+                for job_name in job_names:
+                    Job.objects.get_or_create(job_category=job_category, title=job_name)
 
         period_length = timedelta(hours=8)
         for period_description, period_start in [
@@ -340,5 +343,6 @@ class Command(BaseCommand):
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
             product, unused = Product.objects.get_or_create(event=event, name=name, defaults=product_info)
-            product.limit_groups = limit_groups
-            product.save()
+            if not product.limit_groups.exists():
+                product.limit_groups = limit_groups
+                product.save()

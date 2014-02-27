@@ -312,8 +312,6 @@ class Person(models.Model):
         return ret_val
 
 
-
-
 class EventMetaBase(models.Model):
     event = models.OneToOneField('core.Event', primary_key=True, related_name='%(class)s')
     admin_group = models.ForeignKey('auth.Group')
