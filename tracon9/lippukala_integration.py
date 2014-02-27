@@ -62,16 +62,17 @@ def select_queue(order):
     All other orders go to the "hiiri" queue.
     """
 
-    from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-
     from core.models import Event
     from tickets.models import Product
 
-    try:
-        event = Event.objects.get(name='Tracon 9')
-        product = Product.objects.get(event=event, name__icontains='viikonlop', electronic_ticket=True)
-        op = order.order_product_set.filter(product__electronic_ticket=True).get()
-    except (ObjectDoesNotExist, MultipleObjectsReturned):
+    event = Event.objects.get(name='Tracon 9')
+    product = Product.objects.get(event=event, name__icontains='viikonlop', electronic_ticket=True)
+    ops = order.order_product_set.filter(product__electronic_ticket=True)
+    if ops.count() != 1:
+        return Queue.EVERYONE_ELSE
+
+    op = ops[0]
+    if op.product != product:
         return Queue.EVERYONE_ELSE
 
     if op.count == 1:

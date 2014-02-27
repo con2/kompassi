@@ -131,3 +131,30 @@ class Tracon9LippukalaTestCase(TestCase):
         order.order_product_set.create(product=saturday, count=1)
 
         assert order.lippukala_prefix == Queue.EVERYONE_ELSE
+
+    def test_orders_with_etickets_other_than_weekend_should_go_to_the_everyone_else_queue(self):
+        call_command('setup_core', test=True)
+        call_command('setup_labour_common_qualifications', test=True)
+        call_command('setup_tracon9', test=True)
+
+        event = Event.objects.get(name='Tracon 9')
+        saturday = Product.objects.get(event=event, name__icontains='lauantai', electronic_ticket=True)
+        sunday = Product.objects.get(event=event, name__icontains='sunnuntai', electronic_ticket=True)
+
+        order = _create_order(num_tickets=1)
+        op = order.order_product_set.get()
+        op.product = saturday
+        op.save()
+
+        assert order.lippukala_prefix == Queue.EVERYONE_ELSE
+
+        op.count = 2
+        op.save()
+
+        assert order.lippukala_prefix == Queue.EVERYONE_ELSE
+
+        op.count = 1
+        op.product = sunday
+        op.save()
+
+        assert order.lippukala_prefix == Queue.EVERYONE_ELSE
