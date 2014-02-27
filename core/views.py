@@ -12,7 +12,7 @@ from django.views.decorators.http import require_http_methods
 
 from .models import Event, Person
 from .forms import PersonForm, RegistrationForm, PasswordForm, LoginForm
-from .utils import initialize_form, get_next, next_redirect
+from .utils import initialize_form, get_next, next_redirect, page_wizard_clear, page_wizard_vars
 from .helpers import person_required
 
 
@@ -51,7 +51,6 @@ def core_event_view(request, event_id):
 @require_http_methods(['GET','POST'])
 def core_login_view(request):
     form = initialize_form(LoginForm, request)
-    next = get_next(request, 'core_frontpage_view')
 
     if request.method == 'POST':
         if form.is_valid():
@@ -61,16 +60,19 @@ def core_login_view(request):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
+                page_wizard_clear(request)
                 messages.success(request, u'Olet nyt kirjautunut sisään.')
+                next = get_next(request, 'core_frontpage_view')
                 return redirect(next)
             else:
                 messages.error(request, u'Sisäänkirjautuminen epäonnistui.')
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
-    vars = dict(
+    vars = page_wizard_vars(request)
+
+    vars.update(
         form=form,
-        next=next,
         login_page=True
     )
 

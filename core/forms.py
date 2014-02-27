@@ -23,10 +23,12 @@ class LoginForm(forms.Form):
         label=u'Salasana',
         widget=forms.PasswordInput,
     )
-    
+
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
+        # self.helper.label_class = 'col-md-4'
+        # self.helper.field_class = 'col-md-8'
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Kirjaudu sisään',

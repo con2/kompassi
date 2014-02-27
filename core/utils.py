@@ -1,8 +1,9 @@
 # encoding: utf-8
 
+from functools import wraps
+from urllib import urlencode
 import json
 import re
-from urllib import urlencode
 
 from django import forms
 from django.conf import settings
@@ -142,3 +143,40 @@ def check_password_strength(
                 u'kirjain, numero, erikoismerkit. Ääkköset lasketaan erikoismerkeiksi'
                 .format(min_classes)
             )
+
+
+def page_wizard_init(request, pages):
+    assert all(len(page) == 2 for page in pages)
+
+    request.session['core.utils.page_wizard.steps'] = [(name, u"{}. {}".format(index, title)) for index, (name, title) in enumerate(pages)]
+    request.session['core.utils.page_wizard.index'] = 0
+
+
+def page_wizard_clear(request):
+    if 'core.utils.page_wizard.steps' in request.session:
+        del request.session['core.utils.page_wizard.steps']
+        del request.session['core.utils.page_wizard.index']
+
+
+def page_wizard_vars(request):
+    next = get_next(request)
+
+    if 'core.utils.page_wizard.steps' in request.session:
+        page_wizard = []
+        active = False
+
+        for name, title in request.session['core.utils.page_wizard.steps']:
+            prev_active = active
+            step_url = name if name.startswith('/') else reverse(name)
+            active = request.path == step_url
+            page_wizard.append((title, active))
+
+            if prev_active:
+                next = step_url
+
+        return dict(
+            page_wizard=page_wizard,
+            next=next,
+        )
+    else:
+        return dict(next=next)

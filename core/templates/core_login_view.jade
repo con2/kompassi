@@ -1,11 +1,12 @@
 extends base.jade
 - load crispy_forms_tags
 block content
-  .core-login-view
-    form(method='POST', action='{% url "core_login_view" %}', role='form').form.form-horizontal
-      input(type='hidden', name='next', value='{{ next }}')
-      - crispy form
-      .form-group
-        .controls.col-md-9.col-md-offset-3
-          input.btn.btn-primary(type='submit', value='Kirjaudu sisään')
-          a.btn.btn-link(href='{% url "core_registration_view" %}?next={{ next }}') Rekisteröidy
+  .row.core-login-view
+    .col-md-6
+      form(method='POST', action='{% url "core_login_view" %}', role='form').form.form-horizontal
+        input(type='hidden', name='next', value='{{ next }}')
+        - crispy form
+        .form-group
+          .controls.col-md-6.col-md-offset-3
+            input.btn.btn-primary(type='submit', value='Kirjaudu sisään')
+            a.btn.btn-link(href='{% url "core_registration_view" %}?next={{ next }}') Rekisteröidy

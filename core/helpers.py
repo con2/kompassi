@@ -68,3 +68,34 @@ def app_event_required(app_label, error_message):
             return view_func(request, event, *args, **kwargs)
         return inner
     return outer
+
+
+def unperson_page_wizard(*pages):
+    """
+    @login_required
+    @unperson_page_wizard('url_or_name', ...)
+    def view_func(request):
+        pass
+
+    Directs any User without Person through a series of pages before letting them perform this view.
+    """
+    assert len(pages) >= 1
+
+    def outer(view_func):
+        @wraps(view_func)
+        def inner(request, *args, **kwargs):
+            assert request.user.is_authenticated()
+
+            try:
+                person = request.user.person
+            except Person.DoesNotExist:
+                pages.append(view_func.__name__)
+
+                page_wizard_init(request, pages)
+                return redirect(pages[0])
+            else:
+                page_wizard_clear(request)
+                return view_func(request, *args, **kwargs)
+
+        return inner
+    return outer

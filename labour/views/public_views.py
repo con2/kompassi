@@ -11,7 +11,7 @@ from django.views.decorators.http import require_http_methods
 
 from core.helpers import person_required
 from core.models import Event, Person
-from core.utils import initialize_form
+from core.utils import initialize_form, page_wizard_init, page_wizard_clear, url, login_redirect
 
 from ..forms import SignupForm
 from ..models import LabourEventMeta, Qualification, PersonQualification, Signup, JobCategory
@@ -19,9 +19,35 @@ from ..helpers import labour_event_required
 
 
 @labour_event_required
-@person_required
 @require_http_methods(['GET', 'POST'])
 def labour_signup_view(request, event):
+    if not request.user.is_authenticated():
+        pages = [
+            ('core_login_view', u'Sisäänkirjautuminen'),
+            ('core_registration_view', u'Rekisteröityminen'),
+            ('labour_qualifications_view', u'Pätevyydet'),
+            (url('labour_signup_view', event.slug), u'Ilmoittautuminen'),
+        ]
+
+        page_wizard_init(request, pages)
+        return login_redirect(request)
+
+    try:
+        person = request.user.person
+    except Person.DoesNotExist:
+        pages = [
+            ('core_personify_view', u'Perustiedot'),
+            ('labour_qualifications_view', u'Pätevyydet'),
+            (url('labour_signup_view', event.slug), u'Ilmoittautuminen'),
+        ]
+
+        page_wizard_init(request, pages)
+        return redirect('core_personify_view')
+    else:
+        return actual_labour_signup_view(request, event)
+
+
+def actual_labour_signup_view(request, event):
     # TODO should the user be allowed to change their registration after the registration period is over?
     if not event.labour_event_meta.is_registration_open:
         messages.error(request, u'Ilmoittautuminen tähän tapahtumaan ei ole avoinna.')
@@ -50,6 +76,7 @@ def labour_signup_view(request, event):
             signup_extra_form.save()
 
             messages.success(request, message)
+            page_wizard_clear(request)
             return redirect('core_event_view', event.slug)
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
