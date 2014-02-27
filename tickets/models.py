@@ -334,6 +334,7 @@ class Product(models.Model):
                 requires_shipping=True,
                 available=True,
                 ordering=100,
+                electronic_ticket=True
             )
         )
 

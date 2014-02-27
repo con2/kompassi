@@ -43,7 +43,25 @@ class Queue:
     TWO_WEEKEND_TICKETS = '92'
     EVERYONE_ELSE = '95'
 
+PREFIXES = {
+    Queue.SINGLE_WEEKEND_TICKET: "kissa",
+    Queue.TWO_WEEKEND_TICKETS: "koira",
+    Queue.EVERYONE_ELSE: "hiiri",
+}
+
+KEYSPACES = {
+    Queue.SINGLE_WEEKEND_TICKET: KEYSPACE,
+    Queue.TWO_WEEKEND_TICKETS: KEYSPACE,
+    Queue.EVERYONE_ELSE: KEYSPACE,
+}
+
 def select_queue(order):
+    """
+    Orders with single weekend e-ticket (and no other e-tickets) go to the "kissa" queue.
+    Orders with two weekend e-tickets (and no other e-tickets) go to the "koira" queue.
+    All other orders go to the "hiiri" queue.
+    """
+
     from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
     from core.models import Event
@@ -52,7 +70,7 @@ def select_queue(order):
     try:
         event = Event.objects.get(name='Tracon 9')
         product = Product.objects.get(event=event, name__icontains='viikonlop', electronic_ticket=True)
-        op = order.order_product_set.get(product=product)
+        op = order.order_product_set.filter(product__electronic_ticket=True).get()
     except (ObjectDoesNotExist, MultipleObjectsReturned):
         return Queue.EVERYONE_ELSE
 

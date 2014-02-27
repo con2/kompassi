@@ -293,21 +293,11 @@ if 'payments' in INSTALLED_APPS:
 
 if 'lippukala' in INSTALLED_APPS:
     # XXX event specific, move to the database
-    from tracon9.lippukala_integration import KEYSPACE, select_queue, Queue
+    import tracon9.lippukala_integration
 
-    LIPPUKALA_PREFIXES = {
-        Queue.SINGLE_WEEKEND_TICKET: "kissa",
-        Queue.TWO_WEEKEND_TICKETS: "koira",
-        Queue.EVERYONE_ELSE: "hiiri",
-    }
-
-    LIPPUKALA_LITERATE_KEYSPACES = {
-        Queue.SINGLE_WEEKEND_TICKET: KEYSPACE,
-        Queue.TWO_WEEKEND_TICKETS: KEYSPACE,
-        Queue.EVERYONE_ELSE: KEYSPACE,
-    }
-
-    LIPPUTURSKA_QUEUE_SELECTOR = select_queue
+    LIPPUKALA_PREFIXES = tracon9.lippukala_integration.PREFIXES
+    LIPPUKALA_LITERATE_KEYSPACES = tracon9.lippukala_integration.KEYSPACES
+    LIPPUTURSKA_QUEUE_SELECTOR = tracon9.lippukala_integration.select_queue
 
     LIPPUKALA_CODE_MIN_N_DIGITS = 7
     LIPPUKALA_CODE_MAX_N_DIGITS = 7

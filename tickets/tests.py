@@ -1,5 +1,7 @@
 from django.test import TestCase
 
+from tracon9.lippukala_integration import Queue
+
 from .models import LimitGroup, Product, Order
 
 

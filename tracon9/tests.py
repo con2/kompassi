@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.test import TestCase
 
 from core.models import Event
-from tickets.models import Product, Order, OrderProduct
+from tickets.models import Product, Order, OrderProduct, LimitGroup
 from lippukala.models import Code, Order as LippukalaOrder
 from lippukala.printing import OrderPrinter
 from tracon9.lippukala_integration import Queue
@@ -91,3 +91,43 @@ class Tracon9LippukalaTestCase(TestCase):
 
         with open(settings.MKPATH('tmp', 'test_automatic_code_creation.pdf'), 'wq') as output_file:
             output_file.write(content)
+
+    def test_orders_with_single_weekend_eticket_should_go_to_the_single_weekend_ticket_queue(self):
+        call_command('setup_core', test=True)
+        call_command('setup_labour_common_qualifications', test=True)
+        call_command('setup_tracon9', test=True)
+
+        event = Event.objects.get(name='Tracon 9')
+        weekend = Product.objects.get(event=event, name__icontains='viikonlop', electronic_ticket=True)
+
+        order = _create_order(num_tickets=1)
+        op = order.order_product_set.get(product=weekend)
+
+        assert order.lippukala_prefix == Queue.SINGLE_WEEKEND_TICKET
+
+        op.count = 2
+        op.save()
+
+        assert order.lippukala_prefix == Queue.TWO_WEEKEND_TICKETS
+
+        op.count = 3
+        op.save()
+
+        assert order.lippukala_prefix == Queue.EVERYONE_ELSE
+
+    def test_orders_with_mixed_etickets_should_go_to_the_everyone_else_queue(self):
+        call_command('setup_core', test=True)
+        call_command('setup_labour_common_qualifications', test=True)
+        call_command('setup_tracon9', test=True)
+
+        event = Event.objects.get(name='Tracon 9')
+        weekend = Product.objects.get(event=event, name__icontains='viikonlop', electronic_ticket=True)
+        saturday = Product.objects.get(event=event, name__icontains='lauantai', electronic_ticket=True)
+
+        order = _create_order(num_tickets=1)
+
+        assert order.lippukala_prefix == Queue.SINGLE_WEEKEND_TICKET
+
+        order.order_product_set.create(product=saturday, count=1)
+
+        assert order.lippukala_prefix == Queue.EVERYONE_ELSE
