@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 
 from core.helpers import person_required
-from core.models import Event
+from core.models import Event, Person
 from core.utils import initialize_form
 
 from ..forms import SignupForm
@@ -170,12 +170,17 @@ def labour_profile_menu_items(request):
 
 
 def labour_event_box_context(request, event):
+    is_signed_up = False
+    is_labour_admin = False
+
     if request.user.is_authenticated():
-        is_signed_up = event.labour_event_meta.is_person_signed_up(request.user.person)
-        is_labour_admin = event.labour_event_meta.is_user_admin(request.user)
-    else:
-        is_signed_up = False
-        is_labour_admin = False
+        try:
+            person = request.user.person
+        except Person.DoesNotExist:
+            pass
+        else:
+            is_signed_up = event.labour_event_meta.is_person_signed_up(person)
+            is_labour_admin = event.labour_event_meta.is_user_admin(request.user)
 
     return dict(
         is_signed_up=is_signed_up,

@@ -155,9 +155,10 @@ def core_profile_view(request):
 def core_personify_view(request):
     try:
         person = request.user.person
-        return redirect('core_profile_view')
     except Person.DoesNotExist:
         pass
+    else:
+        return redirect('core_profile_view')
 
     initial = dict(
         first_name=request.user.first_name,
@@ -209,7 +210,7 @@ def core_password_view(request):
                         new_password=new_password,
                     )
                 except IPAError, e:
-                    # XXX need to tell the user if this is due to too simple pw
+                    # TODO need to tell the user if this is due to too simple pw
                     messages.error(request, u'Salasanan vaihto epäonnistui.')
                 else:
                     messages.success(request, u'Salasanasi on vaihdettu.')
