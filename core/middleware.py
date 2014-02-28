@@ -14,6 +14,8 @@ class PageWizardMiddleware(object):
 
         if related is None:
             pass
+        elif request.method != 'GET':
+            pass
         elif request.path in related:
             pass
         else:
