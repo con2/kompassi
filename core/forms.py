@@ -24,16 +24,22 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput,
     )
 
+    next = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput,
+    )
+
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
-        # self.helper.label_class = 'col-md-4'
-        # self.helper.field_class = 'col-md-8'
-        self.helper.form_tag = False
+        self.helper.label_class = 'col-md-4'
+        self.helper.field_class = 'col-md-8'
         self.helper.layout = Layout(
+            'next',
             Fieldset(u'Kirjaudu sisään',
                 'username',
                 'password',
+                indented_without_label(Submit('submit', u'Kirjaudu sisään', css_class='btn-primary'), css_class='col-md-offset-4 col-md-8')
             )
         )
 

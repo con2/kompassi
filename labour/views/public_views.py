@@ -11,7 +11,14 @@ from django.views.decorators.http import require_http_methods
 
 from core.helpers import person_required
 from core.models import Event, Person
-from core.utils import initialize_form, page_wizard_init, page_wizard_clear, url, login_redirect
+from core.utils import (
+    initialize_form,
+    login_redirect,
+    page_wizard_clear,
+    page_wizard_init,
+    page_wizard_vars,
+    url,
+)
 
 from ..forms import SignupForm
 from ..models import LabourEventMeta, Qualification, PersonQualification, Signup, JobCategory
@@ -98,16 +105,23 @@ def actual_labour_signup_view(request, event):
 
 @person_required
 def labour_qualifications_view(request):
+    vars = page_wizard_vars(request)
+
     person_qualifications = request.user.person.personqualification_set.all()
     qualification_pks = [q.qualification.pk for q in person_qualifications]
     available_qualifications = Qualification.objects.exclude(pk__in=qualification_pks)
 
-    vars = dict(
+    vars.update(
         person_qualifications=person_qualifications,
         available_qualifications=available_qualifications
     )
 
-    return render(request, 'labour_qualifications_view.jade', vars)
+    if 'page_wizard' in vars:
+        template_name = 'labour_new_user_qualifications_view.jade'
+    else:
+        template_name = 'labour_profile_qualifications_view.jade'
+
+    return render(request, template_name, vars)
 
 
 @person_required

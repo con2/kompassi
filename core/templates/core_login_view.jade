@@ -3,10 +3,9 @@ extends base.jade
 block content
   .row.core-login-view
     .col-md-6
-      form(method='POST', action='{% url "core_login_view" %}', role='form').form.form-horizontal
-        input(type='hidden', name='next', value='{{ next }}')
-        - crispy form
-        .form-group
-          .controls.col-md-6.col-md-offset-3
-            input.btn.btn-primary(type='submit', value='Kirjaudu sisään')
-            a.btn.btn-link(href='{% url "core_registration_view" %}?next={{ next }}') Rekisteröidy
+      - crispy form
+    .col-md-6
+      fieldset
+        legend Rekisteröidy
+        p Jos sinulla ei ole vielä {{ settings.TURSKA_ACCOUNT_BRANDING_PARTITIVE }}, voit rekisteröidä sellaisen helposti ja nopeasti.
+        a.btn.btn-success(href='{% url "core_registration_view" %}?next={{ next }}') Rekisteröidy

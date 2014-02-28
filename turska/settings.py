@@ -88,6 +88,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    
+    'core.middleware.PageWizardMiddleware',
 )
 
 ROOT_URLCONF = 'turska.urls'
@@ -196,6 +198,7 @@ TURSKA_INSTALLATION_NAME = u'Turska (DEV)'
 TURSKA_INSTALLATION_NAME_ILLATIVE = u'Turskan kehitysinstanssiin'
 TURSKA_INSTALLATION_SLUG = 'turskadev'
 TURSKA_ACCOUNT_BRANDING = u'Tracon-tunnus'
+TURSKA_ACCOUNT_BRANDING_PARTITIVE = u'Tracon-tunnusta'
 
 JOHNNY_MIDDLEWARE_KEY_PREFIX = TURSKA_INSTALLATION_SLUG
 

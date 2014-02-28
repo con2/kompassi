@@ -28,8 +28,8 @@ def initialize_form(FormClass, request, *args, **kwargs):
         return FormClass(*args, **kwargs)
 
 
-def indented_without_label(input):
-    return Div(Div(input, css_class='controls col-md-offset-3 col-md-9'), css_class='form-group')
+def indented_without_label(input, css_class='col-md-offset-3 col-md-9'):
+    return Div(Div(input, css_class='controls {}'.format(css_class)), css_class='form-group')
 
 
 def horizontal_form_helper():
@@ -146,16 +146,38 @@ def check_password_strength(
 
 
 def page_wizard_init(request, pages):
-    assert all(len(page) == 2 for page in pages)
+    assert all(len(page) in [2, 3] for page in pages)
 
-    request.session['core.utils.page_wizard.steps'] = [(name, u"{}. {}".format(index, title)) for index, (name, title) in enumerate(pages)]
-    request.session['core.utils.page_wizard.index'] = 0
+    steps = []
+    all_related = set()
+
+    for index, page in enumerate(pages):
+        if len(page) == 2:
+            name, title = page
+            cur_related = []
+        else:
+            name, title, cur_related = page
+
+        title = u"{}. {}".format(index + 1, title)
+
+        cur_related = set(cur_related)
+        cur_related.add(name)
+        cur_related = list(i if i.startswith('/') else url(i) for i in cur_related)
+        all_related.update(cur_related)
+
+        steps.append((name, title, cur_related))
+
+    request.session['core.utils.page_wizard.steps'] = steps
+    request.session['core.utils.page_wizard.related'] = list(all_related)
+
+    print 'page_wizard_init', request.session['core.utils.page_wizard.steps']
 
 
 def page_wizard_clear(request):
     if 'core.utils.page_wizard.steps' in request.session:
+        # raise RuntimeError('WHO DARES CALL PAGE_WIZARD_CLEAR')
         del request.session['core.utils.page_wizard.steps']
-        del request.session['core.utils.page_wizard.index']
+        del request.session['core.utils.page_wizard.related']
 
 
 def page_wizard_vars(request):
@@ -165,14 +187,12 @@ def page_wizard_vars(request):
         page_wizard = []
         active = False
 
-        for name, title in request.session['core.utils.page_wizard.steps']:
-            prev_active = active
-            step_url = name if name.startswith('/') else reverse(name)
-            active = request.path == step_url
-            page_wizard.append((title, active))
+        for name, title, related in request.session['core.utils.page_wizard.steps']:
+            if active:
+                next = name if name.startswith('/') else reverse(name)
 
-            if prev_active:
-                next = step_url
+            active = request.path in related
+            page_wizard.append((title, active))
 
         return dict(
             page_wizard=page_wizard,

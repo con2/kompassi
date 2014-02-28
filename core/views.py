@@ -50,7 +50,8 @@ def core_event_view(request, event_id):
 
 @require_http_methods(['GET','POST'])
 def core_login_view(request):
-    form = initialize_form(LoginForm, request)
+    next = get_next(request, 'core_frontpage_view')
+    form = initialize_form(LoginForm, request, initial=dict(next=next))
 
     if request.method == 'POST':
         if form.is_valid():
@@ -62,7 +63,6 @@ def core_login_view(request):
                 login(request, user)
                 page_wizard_clear(request)
                 messages.success(request, u'Olet nyt kirjautunut sisään.')
-                next = get_next(request, 'core_frontpage_view')
                 return redirect(next)
             else:
                 messages.error(request, u'Sisäänkirjautuminen epäonnistui.')
@@ -81,10 +81,15 @@ def core_login_view(request):
 
 @require_http_methods(['GET','POST'])
 def core_registration_view(request):
+    vars = page_wizard_vars(request)
+    next = vars['next']
+
+    if request.user.is_authenticated():
+        return redirect(next)
+
     person_form = initialize_form(PersonForm, request, prefix='person')
     person_form.helper.form_tag = False
     registration_form = initialize_form(RegistrationForm, request, prefix='registration')
-    next = get_next(request)
 
     if request.method == 'POST':
         if person_form.is_valid() and registration_form.is_valid():
@@ -122,7 +127,7 @@ def core_registration_view(request):
         else:
             messages.error(request, u'Ole hyvä ja tarkista lomake.')
 
-    vars = dict(
+    vars.update(
         next=next,
         person_form=person_form,
         registration_form=registration_form,
