@@ -64,7 +64,7 @@ class TicketsEventMeta(EventMetaBase):
     contact_email = models.CharField(
         max_length=255,
         verbose_name=u"Asiakaspalvelun sähköpostiosoite selitteineen",
-        help_text=u"Ongelmatilanteissa käyttäjää kehotetaan ottamaan yhteyttä tähän osoitteeseen. Muoto: Tracon 9 -lipunmyynti <liput@tracon.fi>",
+        help_text=u"Ongelmatilanteissa käyttäjää kehotetaan ottamaan yhteyttä tähän osoitteeseen. Muoto: Tracon 9 -lipunmyynti &lt;liput@tracon.fi&gt;",
         blank=True,
     )
 
