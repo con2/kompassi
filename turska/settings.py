@@ -210,6 +210,7 @@ TURSKA_PASSWORD_MIN_CLASSES = 3
 
 # Don't actually send email
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+DEFAULT_FROM_EMAIL = 'turska@tracon.fi'
 
 
 if 'external_auth' in INSTALLED_APPS:
