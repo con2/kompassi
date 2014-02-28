@@ -28,7 +28,7 @@ sanakoodi ja ilmoita se lipunvaihtopisteessä.
 
 Jos ylläolevissa tiedoissa on virheitä, pyydämme ottamaan viipymättä
 yhteyttä lipunmyyntiin joko vastaamalla tähän viestiin tai lähettämällä
-sähköpostia: {{ order.event.tickets_event_meta.contact_email }}.
+sähköpostia: {{ order.event.tickets_event_meta.plain_contact_email }}.
 
 {% if order.requires_shipping %}Huomioithan, että lippuja toimitetaan isommissa erissä,
 eli tilauksen toimituksessa voi kestää useampi viikko. Kaikki
@@ -39,6 +39,6 @@ kukaan lippunsa ajoissa maksanut jää vaille lippuja.
 
 {% endfor %}Ystävällisin terveisin
 --
-{{ order.event.tickets_event_meta.contact_email }}
+{{ order.event.tickets_event_meta.contact_email|safe }}
 
 Yleishyödyllisenä yhteisönä myyjä ei ole arvonlisäverovelvollinen.

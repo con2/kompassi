@@ -27,7 +27,7 @@ def please_contact(order, reason="Tapahtui virhe."):
   email = settings.DEFAULT_FROM_EMAIL
   return (
     "{reason} "
-    "Ole hyvä ja ota yhteyttä sähköpostiosoitteeseen {order.event.tickets_event_meta.contact_email}. "
+    "Ole hyvä ja ota yhteyttä sähköpostiosoitteeseen {order.event.tickets_event_meta.plain_contact_email}. "
     "Viestissäsi ilmoita tilausnumerosi #{order.pk:05d}."
     .format(**locals())
   )

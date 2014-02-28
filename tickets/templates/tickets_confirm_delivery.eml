@@ -17,10 +17,10 @@ Tuotteet on postitettu seuraavaan osoitteeseen:
 
 Jos ylläolevissa tiedoissa on virheitä, pyydämme ottamaan viipymättä
 yhteyttä lipunmyyntiin joko vastaamalla tähän viestiin tai lähettämällä
-sähköpostia: {{ order.event.tickets_event_meta.contact_email }}.
+sähköpostia: {{ order.event.tickets_event_meta.plain_contact_email }}.
 
 Ystävällisin terveisin
 --
-{{ order.event.tickets_event_meta.contact_email }}
+{{ order.event.tickets_event_meta.contact_email|safe }}
 
 Yleishyödyllisenä yhteisönä myyjä ei ole arvonlisäverovelvollinen.

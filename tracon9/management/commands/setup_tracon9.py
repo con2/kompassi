@@ -196,7 +196,8 @@ class Command(BaseCommand):
             due_days=14,
             shipping_and_handling_cents=100,
             reference_number_template='9{:05d}',
-            contact_email='liput@tracon.fi',
+            contact_email='Tracon 9 -lipunmyynti <liput@tracon.fi>',
+            plain_contact_email='liput@tracon.fi',
             ticket_spam_email='japsu@tracon.fi',
             ticket_free_text=u"Tämä on sähköinen lippusi Tracon 9 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
