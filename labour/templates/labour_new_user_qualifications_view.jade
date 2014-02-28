@@ -1,7 +1,6 @@
 extends base
 - load crispy_forms_tags
 block content
-  h2 Pätevyydet
-  p Ole hyvä ja ilmoita alla, mikäli sinulla on jokin luetelluista pätevyyksistä. Valitse sitten Seuraava.
   include labour_qualifications_fragment.jade
+  p.help-block Kun olet ilmoittanut kaikki pätevyytesi, valitse Seuraava. Voit myöhemmin muokata pätevyyksiäsi profiilisi kautta.
   p: a.btn.btn-success.btn-block(href='{{ next }}') Seuraava
