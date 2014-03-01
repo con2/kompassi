@@ -237,7 +237,7 @@ if 'external_auth' in INSTALLED_APPS:
     TURSKA_IPA_CACERT_PATH = '/etc/ipa/ca.crt'
 
     import ldap
-    from django_auth_ldap.config import LDAPSearch, PosixGroupType, GroupOfNamesType
+    from django_auth_ldap.config import LDAPSearch, PosixGroupType, NestedGroupOfNamesType
 
     #AUTH_LDAP_SERVER_URI = "ldaps://moukari.tracon.fi"
     AUTH_LDAP_SERVER_URI = "ldaps://localhost:64636"
@@ -257,7 +257,7 @@ if 'external_auth' in INSTALLED_APPS:
         ldap.SCOPE_SUBTREE,
         "(objectClass=groupOfNames)"
     )
-    AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
+    AUTH_LDAP_GROUP_TYPE = NestedGroupOfNamesType()
     AUTH_LDAP_MIRROR_GROUPS = True
 
     AUTH_LDAP_REQUIRE_GROUP = "cn={TURSKA_INSTALLATION_SLUG}-users,{TURSKA_LDAP_GROUPS}".format(**locals())
