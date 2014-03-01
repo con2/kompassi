@@ -25,14 +25,34 @@ from ..models import LabourEventMeta, Qualification, PersonQualification, Signup
 from ..helpers import labour_event_required
 
 
+# XXX hackish
+def qualifications_related():
+    result = []
+
+    for qual in Qualification.objects.all():
+        # wouldn't need labour_person_(dis)qualify_view if they used POST as they should
+        for view_name in ['labour_person_qualification_view', 'labour_person_qualify_view', 'labour_person_disqualify_view']:
+            result.append(url(view_name, qual.slug))
+
+    return result
+
+
 @labour_event_required
 @require_http_methods(['GET', 'POST'])
 def labour_signup_view(request, event):
+    """
+    This is the "gate" function. The implementation is in
+    `actual_labour_signup_view`.
+
+    The purpose of this function is to redirect new users through the process
+    of registering an account, entering qualifications and only then signing up.
+    Existing users are welcomed to sign up right away.
+    """
     if not request.user.is_authenticated():
         pages = [
             ('core_login_view', u'Sisäänkirjautuminen'),
             ('core_registration_view', u'Rekisteröityminen'),
-            ('labour_qualifications_view', u'Pätevyydet'),
+            ('labour_qualifications_view', u'Pätevyydet', qualifications_related()),
             (url('labour_signup_view', event.slug), u'Ilmoittautuminen'),
         ]
 
@@ -44,7 +64,7 @@ def labour_signup_view(request, event):
     except Person.DoesNotExist:
         pages = [
             ('core_personify_view', u'Perustiedot'),
-            ('labour_qualifications_view', u'Pätevyydet'),
+            ('labour_qualifications_view', u'Pätevyydet', qualifications_related()),
             (url('labour_signup_view', event.slug), u'Ilmoittautuminen'),
         ]
 
@@ -55,6 +75,7 @@ def labour_signup_view(request, event):
 
 
 def actual_labour_signup_view(request, event):
+    vars = page_wizard_vars(request)
     # TODO should the user be allowed to change their registration after the registration period is over?
     if not event.labour_event_meta.is_registration_open:
         messages.error(request, u'Ilmoittautuminen tähän tapahtumaan ei ole avoinna.')
@@ -83,14 +104,13 @@ def actual_labour_signup_view(request, event):
             signup_extra_form.save()
 
             messages.success(request, message)
-            page_wizard_clear(request)
             return redirect('core_event_view', event.slug)
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
     job_cats = JobCategory.objects.filter(event=event, public=True)
 
-    vars = dict(
+    vars.update(
         event=event,
         signup_form=signup_form,
         signup_extra_form=signup_extra_form,
@@ -127,6 +147,8 @@ def labour_qualifications_view(request):
 @person_required
 @require_http_methods(['GET', 'POST'])
 def labour_person_qualification_view(request, qualification):
+    vars = page_wizard_vars(request)
+
     person = request.user.person
     qualification = get_object_or_404(Qualification, slug=qualification)
 
@@ -161,12 +183,18 @@ def labour_person_qualification_view(request, qualification):
         else:
             messages.error(request, u'Ole hyvä ja korjaa lomakkeen virheet.')
 
-    vars = dict(
+    vars.update(
         person_qualification=person_qualification,
         form=form
     )
 
-    return render(request, 'labour_person_qualification_view.jade', vars)
+    if 'page_wizard' in vars:
+        template_name = 'labour_new_user_person_qualification_view.jade'
+    else:
+        template_name = 'labour_profile_person_qualification_view.jade'
+
+    return render(request, template_name, vars)
+
 
 @person_required
 def labour_person_qualify_view(request, qualification):
@@ -185,6 +213,7 @@ def labour_person_qualify_view(request, qualification):
         messages.success(request, u"Pätevyys lisättiin.")
 
     return redirect('labour_qualifications_view')
+
 
 @person_required
 def labour_person_disqualify_view(request, qualification):
