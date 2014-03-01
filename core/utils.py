@@ -7,6 +7,8 @@ import re
 
 from django import forms
 from django.conf import settings
+from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.db import models
@@ -200,3 +202,9 @@ def page_wizard_vars(request):
         )
     else:
         return dict(next=next)
+
+
+def give_all_app_perms_to_group(app_label, group):
+    for ctype in ContentType.objects.filter(app_label=app_label):
+        for perm in ctype.permission_set.all():
+            perm.group_set.add(group)

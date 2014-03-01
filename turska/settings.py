@@ -265,7 +265,7 @@ if 'external_auth' in INSTALLED_APPS:
 
     AUTH_LDAP_USER_FLAGS_BY_GROUP = {
         "is_active": "cn={TURSKA_INSTALLATION_SLUG}-users,{TURSKA_LDAP_GROUPS}".format(**locals()),
-        "is_staff": "cn={TURSKA_INSTALLATION_SLUG}-admins,{TURSKA_LDAP_GROUPS}".format(**locals()),
+        "is_staff": "cn={TURSKA_INSTALLATION_SLUG}-staff,{TURSKA_LDAP_GROUPS}".format(**locals()),
         "is_superuser": "cn={TURSKA_INSTALLATION_SLUG}-admins,{TURSKA_LDAP_GROUPS}".format(**locals()),
     }
 

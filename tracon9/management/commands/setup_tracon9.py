@@ -8,6 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import get_default_timezone, now
 
+from core.utils import give_all_app_perms_to_group
 from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
 from programme.models import ProgrammeEventMeta
@@ -56,6 +57,7 @@ class Command(BaseCommand):
             event_slug=event.slug,
         )
         labour_admin_group, unused = Group.objects.get_or_create(name=labour_admin_group_name)
+        give_all_app_perms_to_group('labour', labour_admin_group)
 
         if options['test']:
             person, unused = Person.get_or_create_dummy()
@@ -86,6 +88,7 @@ class Command(BaseCommand):
             event_slug=event.slug,
         )
         programme_admin_group, unused = Group.objects.get_or_create(name=programme_admin_group_name)
+        give_all_app_perms_to_group('programme', programme_admin_group)
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(event=event, defaults=labour_event_meta_defaults)
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
@@ -190,6 +193,7 @@ class Command(BaseCommand):
             event_slug=event.slug,
         )
         tickets_admin_group, unused = Group.objects.get_or_create(name=tickets_admin_group_name)
+        give_all_app_perms_to_group('tickets', tickets_admin_group)
 
         tickets_event_meta_defaults = dict(
             admin_group=tickets_admin_group,
