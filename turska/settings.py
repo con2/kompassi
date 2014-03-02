@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     'labour_common_qualifications',
     'tickets',
     'payments',
+    'mailings',
 
     # Uncomment if you have IPA
     #'external_auth',

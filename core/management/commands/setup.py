@@ -31,9 +31,10 @@ class Command(BaseCommand):
         ]
 
         if test:
-            management_commands.append(
-                (('test', 'core', 'labour', 'labour_common_qualifications', 'programme', 'tickets', 'tracon9'), dict())
-            )
+            management_commands.extend((
+                (('test', 'core', 'labour', 'labour_common_qualifications', 'programme', 'tickets', 'tracon9'), dict()),
+                (('behave',), dict()),
+            ))
 
 
         for pargs, opts in management_commands:

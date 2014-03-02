@@ -24,8 +24,8 @@ tbody
       td
         if signup.is_shifts_complete
           span.label.label-success {{ signup.job_accepted.name }}
-        elif signup.job_accepted
-          span.label.label-info {{ signup.job_accepted.name }}
+        elif signup.job_category_accepted
+          span.label.label-info {{ signup.job_category_accepted.name }}
         elif signup.is_rejected
           span.label.label-danger Hylätty
         else

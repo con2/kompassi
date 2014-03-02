@@ -37,9 +37,14 @@ class LabourEventMeta(EventMetaBase):
             u'tähän osoitteeseen.',
     )
 
+    applicants_group = models.ForeignKey('auth.Group',
+        verbose_name=u'Hakijoiden ryhmä',
+        help_text=u'Järjestelmä lisää kaikki työvoimaan hakeneet automaattisesti tähän '
+            u'käyttäjäryhmään pääsynvalvontaa varten.',
+        related_name='+',
+    )
+
     accepted_group = models.ForeignKey('auth.Group',
-        null=True,
-        blank=True,
         verbose_name=u'Työvoimaan hyväksyttyjen ryhmä',
         help_text=u'Järjestelmä lisää kaikki työvoimaan hyväksytyt automaattisesti tähän '
             u'käyttäjäryhmään pääsynvalvontaa varten.',
@@ -70,21 +75,34 @@ class LabourEventMeta(EventMetaBase):
         )
 
     @classmethod
+    def get_or_create_group(cls, event, suffix):
+        from django.contrib.auth.models import Group
+        group_name = '{installation_slug}-{event_slug}-labour-suffix'.format(
+            installation_slug=settings.TURSKA_INSTALLATION_SLUG,
+            event_slug=event.slug,
+            suffix=suffix,
+        )
+        return Group.objects.get_or_create(name=group_name)
+
+    @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
-        from django.contrib.auth.models import Group
         from django.contrib.contenttypes.models import ContentType
 
         event, unused = Event.get_or_create_dummy()
-        group, unused = Group.objects.get_or_create(name='Dummy group')
         content_type = ContentType.objects.get_for_model(EmptySignupExtra)
+        admin_group, unused = cls.get_or_create_group(event, 'admins')
+        accepted_group, unused = cls.get_or_create_group(event, 'accepted')
+        applicants_group, unused = cls.get_or_create_group(event, 'applicants')
 
         t = now()
 
         return cls.objects.get_or_create(
             event=event,
             defaults=dict(
-                admin_group=group,
+                admin_group=admin_group,
+                accepted_group=accepted_group,
+                applicants_group=applicants_group,
                 signup_extra_content_type=content_type,
                 registration_opens=t - timedelta(days=60),
                 registration_closes=t + timedelta(days=60),
@@ -334,7 +352,7 @@ class Signup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
 
-    job_accepted = models.ForeignKey(JobCategory,
+    job_category_accepted = models.ForeignKey(JobCategory,
         blank=True,
         null=True,
         related_name='accepted_signup_set'
@@ -381,6 +399,48 @@ class Signup(models.Model):
         # TODO
         return False
 
+    @classmethod
+    def get_or_create_dummy(cls):
+        from core.models import Person, Event
+
+        person, unused = Person.get_or_create_dummy()
+        event, unused = Event.get_or_create_dummy()
+
+        signup, created = Signup.objects.get_or_create(person=person, event=event)
+        extra = signup.signup_extra
+        extra.save()
+
+        return signup, created
+
+    def accept(self, job_category):
+        self.job_category_accepted = job_category
+        self.save()
+
+        accepted_group = self.event.labour_event_meta.accepted_group
+        accepted_group.user_set.add(self.person.user)
+        if 'external_auth' in settings.INSTALLED_APPS:
+            from external_auth.utils import add_user_to_group
+            add_user_to_group(self.person.user, accepted_group)
+
+        self.send_messages()
+
+    def send_messages(self, resend=False):
+        if 'mailings' not in settings.INSTALLED_APPS:
+            return
+
+        from mailings.models import Message
+        Message.send_messages(self.event, 'labour', self.person)
+
+    def save(self, *args, **kwargs):
+        result = super(Signup, self).save(*args, **kwargs)
+
+        applicants_group = self.event.labour_event_meta.applicants_group
+        applicants_group.user_set.add(self.person.user)
+        if 'external_auth' in settings.INSTALLED_APPS:
+            from external_auth.utils import add_user_to_group
+            add_user_to_group(self.person.user, applicants_group)
+
+        return result
 
 class SignupExtraBase(models.Model):
     signup = models.OneToOneField(Signup, related_name="+", primary_key=True)

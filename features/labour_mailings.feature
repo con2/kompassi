@@ -18,7 +18,7 @@ Feature: Labour messages
   Scenario: Receiving a notice after being accepted
     Given I am a person
     And there is an event that is accepting applications
-    And the evetn has a message that is to be sent to all accepted workers
+    And the event has a message that is to be sent to all accepted workers
 
     When I sign up for the event
     And the workforce manager approves my application

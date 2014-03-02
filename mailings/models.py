@@ -14,8 +14,8 @@ class Message(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    sent_at = models.DateTimeField(blank=True)
-    expired_at = models.DateTimeField(blank=True)
+    sent_at = models.DateTimeField(blank=True, null=True)
+    expired_at = models.DateTimeField(blank=True, null=True)
 
     @property
     def is_sent(self):
@@ -53,6 +53,17 @@ class Message(models.Model):
 
             if created or resend:
                 person_message.send()
+
+    @classmethod
+    def send_messages(cls, event, app_label, person):
+        for message in Message.objects.filter(
+            event=event,
+            app_label=app_label,
+            sent_at__isnull=False,
+            expired_at__isnull=True,
+            recipient_group__in=person.user.groups.all(),
+        ):
+            message.send(recipients=[self.person,], resend=resend)
 
 
 class DedupMixin(object):
