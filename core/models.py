@@ -140,6 +140,7 @@ class Event(models.Model):
                 venue=venue,
                 start_time=t + timedelta(days=60),
                 end_time=t + timedelta(days=61),
+                slug='dummy',
             ),
         )
 
@@ -334,6 +335,21 @@ class EventMetaBase(models.Model):
             return True
 
         return user.groups.filter(pk=self.admin_group.pk).exists()
+
+    @classmethod
+    def get_or_create_group(cls, event, suffix):
+        from django.contrib.auth.models import Group
+        from django.contrib.contenttypes.models import ContentType
+
+        ctype = ContentType.objects.get_for_model(cls)
+
+        group_name = '{installation_slug}-{event_slug}-{app_label}-{suffix}'.format(
+            installation_slug=settings.TURSKA_INSTALLATION_SLUG,
+            event_slug=event.slug,
+            app_label=ctype.app_label,
+            suffix=suffix,
+        )
+        return Group.objects.get_or_create(name=group_name)
 
 
 __all__ = [

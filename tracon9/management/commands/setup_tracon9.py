@@ -52,18 +52,10 @@ class Command(BaseCommand):
             venue=venue,
         ))
 
-        labour_admin_group_name = "{installation_name}-{event_slug}-labour-admins".format(
-            installation_name=settings.TURSKA_INSTALLATION_SLUG,
-            event_slug=event.slug,
-        )
-        labour_admin_group, unused = Group.objects.get_or_create(name=labour_admin_group_name)
+        labour_accepted_group, unused = LabourEventMeta.get_or_create_group(event, 'accepted')
+        labour_applicants_group, unused = LabourEventMeta.get_or_create_group(event, 'applicants')
+        labour_admin_group, unused = LabourEventMeta.get_or_create_group(event, 'admins')
         give_all_app_perms_to_group('labour', labour_admin_group)
-
-        labour_accepted_group_name = "{installation_name}-{event_slug}-labour-accepted".format(
-            installation_name=settings.TURSKA_INSTALLATION_SLUG,
-            event_slug=event.slug,
-        )
-        labour_accepted_group, unused = Group.objects.get_or_create(name=labour_accepted_group_name)
 
         if options['test']:
             person, unused = Person.get_or_create_dummy()
@@ -72,6 +64,7 @@ class Command(BaseCommand):
         labour_event_meta_defaults = dict(
             admin_group=labour_admin_group,
             accepted_group=labour_accepted_group,
+            applicants_group=labour_applicants_group,
             signup_extra_content_type=content_type,
             work_begins=datetime(2014, 9, 12, 8, 0, tzinfo=tz),
             work_ends=datetime(2014, 9, 14, 22, 0, tzinfo=tz),
@@ -90,11 +83,7 @@ class Command(BaseCommand):
                 registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=tz),
             )
 
-        programme_admin_group_name = "{installation_name}-{event_slug}-programme-admins".format(
-            installation_name=settings.TURSKA_INSTALLATION_SLUG,
-            event_slug=event.slug,
-        )
-        programme_admin_group, unused = Group.objects.get_or_create(name=programme_admin_group_name)
+        programme_admin_group, unused = ProgrammeEventMeta.get_or_create_group(event, 'admins')
         give_all_app_perms_to_group('programme', programme_admin_group)
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(event=event, defaults=labour_event_meta_defaults)
@@ -195,11 +184,7 @@ class Command(BaseCommand):
         ]:
             Night.objects.get_or_create(name=night)
 
-        tickets_admin_group_name = "{installation_name}-{event_slug}-tickets-admins".format(
-            installation_name=settings.TURSKA_INSTALLATION_SLUG,
-            event_slug=event.slug,
-        )
-        tickets_admin_group, unused = Group.objects.get_or_create(name=tickets_admin_group_name)
+        tickets_admin_group, unused = TicketsEventMeta.get_or_create_group(event, 'admins')
         give_all_app_perms_to_group('tickets', tickets_admin_group)
 
         tickets_event_meta_defaults = dict(

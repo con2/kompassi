@@ -83,16 +83,6 @@ class LabourEventMeta(EventMetaBase):
         )
 
     @classmethod
-    def get_or_create_group(cls, event, suffix):
-        from django.contrib.auth.models import Group
-        group_name = '{installation_slug}-{event_slug}-labour-suffix'.format(
-            installation_slug=settings.TURSKA_INSTALLATION_SLUG,
-            event_slug=event.slug,
-            suffix=suffix,
-        )
-        return Group.objects.get_or_create(name=group_name)
-
-    @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
         from django.contrib.contenttypes.models import ContentType

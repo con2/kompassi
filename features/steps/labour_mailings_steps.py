@@ -26,7 +26,7 @@ def message_to_be_sent_to_all_applicants(context):
 
 @given(u'the event has a message that is to be sent to all accepted workers')
 def message_to_be_sent_to_all_accepted(context):
-    applicants_group, unused = LabourEventMeta.get_or_create_group(
+    accepted, unused = LabourEventMeta.get_or_create_group(
         event=context.event,
         suffix='accepted'
     )
@@ -34,7 +34,7 @@ def message_to_be_sent_to_all_accepted(context):
     context.message = Message.objects.create(
         event=context.event,
         app_label='labour',
-        recipient_group=applicants_group,
+        recipient_group=accepted,
         subject_template='Test message subject',
         body_template='Test message body',
     )
