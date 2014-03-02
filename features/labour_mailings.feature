@@ -15,11 +15,30 @@ Feature: Labour messages
     Then I should receive the message
 
   @backend
-  Scenario: Receiving a notice after being accepted
+  Scenario: Receiving a notice upon being accepted
     Given I am a person
     And there is an event that is accepting applications
     And the event has a message that is to be sent to all accepted workers
 
     When I sign up for the event
     And the workforce manager approves my application
+    Then I should receive the message
+
+  @backend
+  Scenario: A message is sent to all applicants
+    Given I am a person
+    And there is an event that is accepting applications
+    And I am signed up to the event
+
+    When a message is added that should be sent to all applicants
+    Then I should receive the message
+
+  @backend
+  Scenario: A message is sent to all accepted workers
+    Given I am a person
+    And there is an event that is accepting applications
+    And I am signed up to the event
+    And my application has been accepted
+
+    When a message is added that should be sent to all accepted workers
     Then I should receive the message

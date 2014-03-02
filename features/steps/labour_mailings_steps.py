@@ -7,6 +7,7 @@ from mailings.models import Message, PersonMessage
 from labour.models import LabourEventMeta
 
 @given(u'the event has a message that is to be sent to all applicants')
+@when(u'a message is added that should be sent to all applicants')
 def message_to_be_sent_to_all_applicants(context):
     applicants_group, unused = LabourEventMeta.get_or_create_group(
         event=context.event,
@@ -25,6 +26,7 @@ def message_to_be_sent_to_all_applicants(context):
 
 
 @given(u'the event has a message that is to be sent to all accepted workers')
+@when(u'a message is added that should be sent to all accepted workers')
 def message_to_be_sent_to_all_accepted(context):
     accepted, unused = LabourEventMeta.get_or_create_group(
         event=context.event,

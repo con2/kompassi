@@ -8,10 +8,12 @@ def given_event_accepting_applications(context):
     context.event = context.labour_event_meta.event
 
 @when(u'I sign up for the event')
+@given(u'I am signed up to the event')
 def event_sign_up(context):
     context.signup, unused = Signup.get_or_create_dummy()
     context.signup.sign_up()
 
 @when(u'the workforce manager approves my application')
-def step_impl(context):
+@given(u'my application has been accepted')
+def accept_the_application(context):
     context.signup.accept(context.signup.job_categories.first())
