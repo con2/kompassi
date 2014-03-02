@@ -59,12 +59,19 @@ class Command(BaseCommand):
         labour_admin_group, unused = Group.objects.get_or_create(name=labour_admin_group_name)
         give_all_app_perms_to_group('labour', labour_admin_group)
 
+        labour_accepted_group_name = "{installation_name}-{event_slug}-labour-accepted".format(
+            installation_name=settings.TURSKA_INSTALLATION_SLUG,
+            event_slug=event.slug,
+        )
+        labour_accepted_group, unused = Group.objects.get_or_create(name=labour_accepted_group_name)
+
         if options['test']:
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
         labour_event_meta_defaults = dict(
             admin_group=labour_admin_group,
+            accepted_group=labour_accepted_group,
             signup_extra_content_type=content_type,
             work_begins=datetime(2014, 9, 12, 8, 0, tzinfo=tz),
             work_ends=datetime(2014, 9, 14, 22, 0, tzinfo=tz),
