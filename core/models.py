@@ -168,6 +168,9 @@ class Event(models.Model):
         except ProgrammeEventMeta.DoesNotExist:
             return None
 
+    def app_event_meta(self, app_label):
+        return getattr(self, '{}_event_meta'.format(app_label))
+
     @property
     def badges_event_meta(self):
         if 'badges' not in settings.INSTALLED_APPS:
@@ -259,6 +262,10 @@ class Person(models.Model):
                 self.first_name,
                 self.surname
             )
+
+    @property
+    def name_and_email(self):
+        return "{self.first_name} {self.surname} <{self.email}>".format(self=self)
 
     @property
     def display_name(self):

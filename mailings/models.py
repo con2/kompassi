@@ -1,7 +1,8 @@
 # encoding: utf-8
 
-from django.utils import timezone
 from django.db import models
+from django.template import Template, Context
+from django.utils import timezone
 
 
 class Message(models.Model):
@@ -25,7 +26,6 @@ class Message(models.Model):
     def is_expired(self):
         return self.expired_at is not None
 
-    @property
     def send(self, recipients=None, resend=False):
         from django.contrib.auth.models import User
 
@@ -52,7 +52,7 @@ class Message(models.Model):
             )
 
             if created or resend:
-                person_message.send()
+                person_message.actually_send_email()
 
     @classmethod
     def send_messages(cls, event, app_label, person):
@@ -63,7 +63,11 @@ class Message(models.Model):
             expired_at__isnull=True,
             recipient_group__in=person.user.groups.all(),
         ):
-            message.send(recipients=[self.person,], resend=resend)
+            message.send(recipients=[person,], resend=False)
+
+    @property
+    def app_event_meta(self):
+        return self.event.app_event_meta(self.app_label)
 
 
 class DedupMixin(object):
@@ -99,11 +103,8 @@ class PersonMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        if not self.subject:
-            self.subject, unused = PersonMessageSubject.get_or_create(self.render_subject())
-
-        if not self.body:
-            self.body, unused = PersonMessageText.get_or_create(self.render_body())
+        self.subject, unused = PersonMessageSubject.get_or_create(self.render_message(self.message.subject_template))
+        self.body, unused = PersonMessageBody.get_or_create(self.render_message(self.message.body_template))
 
         return super(PersonMessage, self).save(*args, **kwargs)
 
@@ -111,31 +112,31 @@ class PersonMessage(models.Model):
     def message_vars(self):
         if not hasattr(self, '_message_vars'):
             self._message_vars = dict(
-                event=event,
-                person=person,
-                signup=Signup.objects.get(event=event, person=person),
+                event=self.message.event,
+                person=self.person,
+
+                # TODO need a way to make app-specific vars
+                #signup=Signup.objects.get(event=self.message.event, person=self.person),
             )
 
         return self._message_vars
 
-    def render_message(self):
-        return render_to_string(self.message.body_template, self.message_vars)
+    def render_message(self, template):
+        return Template(template).render(Context(self.message_vars))
 
-    def render_subject(self):
-        return render_to_string(self.message.subject_template, self.message_vars)
-
-    def send(self):
+    def actually_send_email(self):
         from django.core.mail import EmailMessage
 
         msgbcc = []
+        meta = self.message.app_event_meta
 
-        if self.event.labour_event_meta.monitor_email:
-            msgbcc.append(self.event.labour_event_meta.monitor_email)
+        if meta.monitor_email:
+            msgbcc.append(meta.monitor_email)
 
         EmailMessage(
             subject=self.subject.text,
             body=self.body.text,
-            from_email=self.event.labour_event_meta.contact_email,
-            to=(self.customer.name_and_email,),
+            from_email=meta.contact_email,
+            to=(self.person.name_and_email,),
             bcc=msgbcc
         ).send(fail_silently=True)

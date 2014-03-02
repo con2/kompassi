@@ -37,6 +37,14 @@ class LabourEventMeta(EventMetaBase):
             u'tähän osoitteeseen.',
     )
 
+    contact_email = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=u'yhteysosoite',
+        help_text=u'Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
+            u'osoitteesta, ja tämä osoite näytetään työvoimalle yhteysosoitteena. Muoto: Selite <osoite@esimerkki.fi>.',
+    )
+
     applicants_group = models.ForeignKey('auth.Group',
         verbose_name=u'Hakijoiden ryhmä',
         help_text=u'Järjestelmä lisää kaikki työvoimaan hakeneet automaattisesti tähän '
