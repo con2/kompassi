@@ -10,6 +10,7 @@ def given_event_accepting_applications(context):
 @when(u'I sign up for the event')
 def event_sign_up(context):
     context.signup, unused = Signup.get_or_create_dummy()
+    context.signup.sign_up()
 
 @when(u'the workforce manager approves my application')
 def step_impl(context):

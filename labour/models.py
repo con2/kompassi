@@ -106,6 +106,8 @@ class LabourEventMeta(EventMetaBase):
                 registration_closes=t + timedelta(days=60),
                 work_begins=event.start_time - timedelta(days=1),
                 work_ends=event.end_time + timedelta(days=1),
+                contact_email='dummy@example.com',
+                monitor_email='dummy@example.com',
             )
         )
 
@@ -410,6 +412,15 @@ class Signup(models.Model):
 
         return signup, created
 
+    def sign_up(self):
+        applicants_group = self.event.labour_event_meta.applicants_group
+        applicants_group.user_set.add(self.person.user)
+        if 'external_auth' in settings.INSTALLED_APPS:
+            from external_auth.utils import add_user_to_group
+            add_user_to_group(self.person.user, applicants_group)
+
+        self.send_messages()
+
     def accept(self, job_category):
         self.job_category_accepted = job_category
         self.save()
@@ -429,16 +440,6 @@ class Signup(models.Model):
         from mailings.models import Message
         Message.send_messages(self.event, 'labour', self.person)
 
-    def save(self, *args, **kwargs):
-        result = super(Signup, self).save(*args, **kwargs)
-
-        applicants_group = self.event.labour_event_meta.applicants_group
-        applicants_group.user_set.add(self.person.user)
-        if 'external_auth' in settings.INSTALLED_APPS:
-            from external_auth.utils import add_user_to_group
-            add_user_to_group(self.person.user, applicants_group)
-
-        return result
 
 class SignupExtraBase(models.Model):
     signup = models.OneToOneField(Signup, related_name="+", primary_key=True)

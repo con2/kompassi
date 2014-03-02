@@ -49,4 +49,4 @@ def receive_the_message(context):
         message=context.message,
     )
 
-    assert len(mail.outbox) == 2 # one for the person himself, and one for the monitor
+    assert len(mail.outbox) == 1
