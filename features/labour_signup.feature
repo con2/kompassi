@@ -2,6 +2,7 @@ Feature: Signing up for an event
   As a prospective volunteer worker
   I want to sign up for volunteer work in an event
 
+  @fullstack
   Scenario: Signing up for an event
     Given there is an event that is open for applications
     And I am logged in
@@ -11,6 +12,7 @@ Feature: Signing up for an event
 
     Then I should be signed up for the event
 
+  @fullstack
   Scenario: Signing up for an event while not logged in
     Given there is an event that is open for applications
     And I am not yet logged in

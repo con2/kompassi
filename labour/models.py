@@ -37,6 +37,15 @@ class LabourEventMeta(EventMetaBase):
             u'tähän osoitteeseen.',
     )
 
+    accepted_group = models.ForeignKey('auth.Group',
+        null=True,
+        blank=True,
+        verbose_name=u'Työvoimaan hyväksyttyjen ryhmä',
+        help_text=u'Järjestelmä lisää kaikki työvoimaan hyväksytyt automaattisesti tähän '
+            u'käyttäjäryhmään pääsynvalvontaa varten.',
+        related_name='+',
+    )
+
     class Meta:
         verbose_name = u'tapahtuman työvoimatiedot'
         verbose_name_plural = u'tapahtuman työvoimatiedot'
@@ -461,7 +470,7 @@ class PersonMessageSubject(models.Model, DedupMixin):
     text = models.CharField(max_length=255)
 
 
-class PersonMessageText(models.Model, DedupMixin):
+class PersonMessageBody(models.Model, DedupMixin):
     digest = models.CharField(max_length=63, db_index=True)
     text = models.TextField()
 
