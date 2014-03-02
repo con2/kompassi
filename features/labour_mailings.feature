@@ -11,7 +11,7 @@ Feature: Labour messages
 
   @backend
   Scenario: Receiving a thank you note after signing up
-    And the event has a message that is to be sent to all applicants
+    Given the event has a message that is to be sent to all applicants
 
     When I sign up for the event
     Then I should receive the message
