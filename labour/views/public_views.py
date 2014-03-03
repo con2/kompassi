@@ -81,10 +81,24 @@ def actual_labour_signup_view(request, event):
         messages.error(request, u'Ilmoittautuminen tähän tapahtumaan ei ole avoinna.')
         return redirect('core_event_view', event.slug)
 
+    job_categories = JobCategory.objects.filter(event=event, public=True)
+    jcs_qualified = [
+        jc for jc in job_categories if jc.is_person_qualified(request.user.person)
+    ]
+    job_categories = JobCategory.objects.filter(
+        event=event,
+        public=True,
+        id__in=jcs_qualified
+    )
+
     signup = event.labour_event_meta.get_signup_for_person(request.user.person)
     signup_extra = signup.signup_extra
     SignupExtraForm = event.labour_event_meta.signup_extra_model.get_form_class()
-    signup_form = initialize_form(SignupForm, request, instance=signup, prefix='signup')
+    signup_form = initialize_form(SignupForm, request,
+        job_categories=job_categories,
+        instance=signup,
+        prefix='signup'
+    )
     signup_extra_form = initialize_form(SignupExtraForm, request, instance=signup_extra, prefix='extra')
 
     if signup.pk is not None:

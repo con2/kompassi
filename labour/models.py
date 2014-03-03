@@ -169,6 +169,16 @@ class Qualification(models.Model):
             name='Dummy qualification'
         )
 
+    @classmethod
+    def get_or_create_dummies(cls):
+        qual1, unused = Qualification.objects.get_or_create(slug='dummy1', defaults=dict(
+            name='Dummy qualification 1'
+        ))
+        qual2, unused = Qualification.objects.get_or_create(slug='dummy2', defaults=dict(
+            name='Dummy qualification 2'
+        ))
+        return [qual1, qual2]
+
 
 class PersonQualification(models.Model):
     person = models.ForeignKey('core.Person', verbose_name=u'henkilö')
@@ -218,7 +228,8 @@ class JobCategory(models.Model):
 
     description = models.TextField(
         verbose_name=u'tehtäväalueen kuvaus',
-        help_text=u'Kuvaus näkyy hakijoille hakulomakkeella. Kerro ainakin, mikäli tehtävään tarvitaan erityisiä tietoja tai taitoja.'
+        help_text=u'Kuvaus näkyy hakijoille hakulomakkeella. Kerro ainakin, mikäli tehtävään tarvitaan erityisiä tietoja tai taitoja.',
+        blank=True
     )
 
     public = models.BooleanField(
@@ -232,12 +243,29 @@ class JobCategory(models.Model):
         verbose_name=u'vaaditut pätevyydet'
     )
 
+    def is_person_qualified(self, person):
+        if not self.required_qualifications.exists():
+            return True
+
+        else:
+            quals = [pq.qualification for pq in person.personqualification_set.all()]
+            return all(qual in quals for qual in self.required_qualifications.all())
+
     class Meta:
         verbose_name = u'tehtäväalue'
         verbose_name_plural=u'tehtäväalueet'
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    def get_or_create_dummies(cls):
+        from core.models import Event
+        event, unused = Event.get_or_create_dummy()
+        jc1, unused = cls.objects.get_or_create(event=event, name='Dummy 1')
+        jc2, unused = cls.objects.get_or_create(event=event, name='Dummy 2')
+
+        return [jc1, jc2]
 
 
 class WorkPeriod(models.Model):
