@@ -88,7 +88,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    
+
     'core.middleware.PageWizardMiddleware',
 )
 
@@ -308,4 +308,4 @@ if 'lippukala' in INSTALLED_APPS:
     LIPPUKALA_CODE_MAX_N_DIGITS = 7
 
     LIPPUKALA_PRINT_LOGO_PATH = mkpath('static', 'images', 'tracon_logo_kuitille.jpg')
-    LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.84, 1.5)
+    LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.84, 3.13)
