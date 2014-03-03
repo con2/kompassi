@@ -13,7 +13,6 @@ from .models import (
 
 class InlineLabourEventMetaAdmin(admin.StackedInline):
     model = LabourEventMeta
-    fields = ('registration_opens', 'registration_closes')
 
 
 class InlinePersonQualificationAdmin(admin.TabularInline):
