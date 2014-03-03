@@ -10,18 +10,11 @@ from core.utils import horizontal_form_helper
 from .models import Signup, JobCategory, EmptySignupExtra
 
 
-class FakeQueryset(object):
-    def __init__(self, items):
-        self.items = items
-
-    def all(self):
-        return self.items
-
 class SignupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        categories = kwargs.pop('job_categories')
+        job_categories = kwargs.pop('job_categories')
         super(SignupForm, self).__init__(*args, **kwargs)
-        self.fields['job_categories'].queryset = FakeQueryset(job_categories)
+        self.fields['job_categories'].queryset = job_categories
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
