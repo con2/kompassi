@@ -39,3 +39,6 @@ def change_current_user_password(request, old_password, new_password):
     )
 
 
+def add_user_to_group(user, group):
+    ipa.add_user_to_group(user.username, group.name)
+
