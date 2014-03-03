@@ -272,7 +272,6 @@ class WorkPeriod(models.Model):
     event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
 
     description = models.CharField(
-        blank=True,
         max_length=63,
         verbose_name=u'Kuvaus'
     )
@@ -285,12 +284,7 @@ class WorkPeriod(models.Model):
         verbose_name_plural=u'työvuorotoiveet'
 
     def __unicode__(self):
-        datetime_format = '%a %H:%M:%S'
-        return u'{description} ({start_time} - {end_time})'.format(
-            description=self.description,
-            start_time=self.start_time.strftime(datetime_format),
-            end_time=self.end_time.strftime(datetime_format),
-        )
+        return self.description
 
 
 ONE_HOUR = timedelta(hours=1)

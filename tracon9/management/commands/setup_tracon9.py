@@ -94,19 +94,19 @@ class Command(BaseCommand):
 
         for name, description in [
             (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen'),
-            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.'),
+            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.'),
             (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta.'),
             (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.'),
             (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.'),
-            (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös pe-la yölle.'),
-            (u'Myynti', u'Pääsylippujen tai Tracon-oheistavaroiden myyntiä tai lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä.'),
-            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erityisempää erityisosaamista.'),
-            (u'Ohjelma-avustaja', u'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.'),
-            (u'Ravitsemus ja virkistys', u'Työvoiman ruokahuolto Green Roomissa tai tapahtuman jälkeen kaatajaisissa. Hygieniapassi suositeltava.'),
-            (u'Taltiointi', u'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmien taltiointi sekä jo tapahtuman aikana ja varsinkin tapahtuman jälkeen tallenteiden editointi. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro lisätiedoissa aiemmasta videokuvaus kokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.'),
+            (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.'),
+            (u'Myynti', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä.'),
+            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.'),
+            (u'Ohjelma-avustaja', u'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.'),
+            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Hygieniapassi suositeltava.'),
+            (u'Taltiointi', u'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.'),
             (u'Tekniikka', u'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä ongelmanratkaisua.'),
-            (u'Valokuvaus', u'Valokuvaus tapahtuu pääasiassa kuvaajien omalla kalustolla, jota digitaalijärjestelmäkamerat edustavat. Tehtäviä voivat olla Kuvauspalvelu/Studiokuvaus, Salikuvaukset sekä yleinen valokuvaaminen. Kerro lisätiedoissa aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.'),
-            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erityisempää erityisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.'),
+            (u'Valokuvaus', u'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.'),
+            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.'),
         ]:
             JobCategory.objects.get_or_create(
                 event=event,
@@ -116,7 +116,7 @@ class Command(BaseCommand):
                 )
             )
 
-        for name in [u'Conitea', u'Erikoistehtävä']:
+        for name in [u'Conitea']:
             JobCategory.objects.filter(event=event, name=name).update(public=False)
 
         jvkortti = Qualification.objects.get(name='JV-kortti')
@@ -156,10 +156,11 @@ class Command(BaseCommand):
 
         period_length = timedelta(hours=8)
         for period_description, period_start in [
-            ("Lauantain aamuvuoro", event.start_time.replace(hour=8)),
-            ("Lauantain iltavuoro", event.start_time.replace(hour=16)),
-            ("Lauantai-sunnuntai-yövuoro", event.end_time.replace(hour=0)),
-            ("Sunnuntain aamuvuoro", event.end_time.replace(hour=8)),
+            ("Lauantain aamuvuoro (la klo 08-16)", event.start_time.replace(hour=8)),
+            ("Lauantain iltavuoro (la klo 16-24)", event.start_time.replace(hour=16)),
+            ("Lauantai-sunnuntai-yövuoro (su klo 00-08)", event.end_time.replace(hour=0)),
+            ("Sunnuntain aamuvuoro (su klo 08-16)", event.end_time.replace(hour=8)),
+            ("Sunnuntain iltavuoro (su klo 16-20)", event.end_time.replace(hour=16)),
         ]:
             WorkPeriod.objects.get_or_create(
                 event=event,
@@ -175,6 +176,7 @@ class Command(BaseCommand):
             u'Laktoositon',
             u'Maidoton',
             u'Vegaaninen',
+            u'Lakto-ovo-vegaaninen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
