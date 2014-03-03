@@ -15,7 +15,7 @@ class Migration(DataMigration):
                 event_slug=meta.event.slug,
                 app_label='labour',
             )
-            meta.accepted_group, unused = Group.objects.get_or_create(name=group_name)
+            meta.accepted_group, unused = orm['auth.Group'].objects.get_or_create(name=group_name)
             meta.save()
 
         for meta in orm['labour.LabourEventMeta'].objects.filter(applicants_group__isnull=True):
@@ -24,7 +24,7 @@ class Migration(DataMigration):
                 event_slug=meta.event.slug,
                 app_label='labour',
             )
-            meta.applicants_group, unused = Group.objects.get_or_create(name=group_name)
+            meta.applicants_group, unused = orm['auth.Group'].objects.get_or_create(name=group_name)
             meta.save()
 
     def backwards(self, orm):
