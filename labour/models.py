@@ -352,7 +352,9 @@ class Signup(models.Model):
     job_categories = models.ManyToManyField(JobCategory,
         verbose_name=u'Haettavat tehtävät',
         help_text=u'Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään '
-            u'tapahtumassa.',
+            u'tapahtumassa. Huomaathan, että sinulle tarjottavia tehtäviä voi rajoittaa se, '
+            u'mitä pätevyyksiä olet ilmoittanut sinulla olevan. Esimerkiksi järjestyksenvalvojaksi '
+            u'voivat ilmoittautua ainoastaan JV-kortilliset.',
         related_name='signup_set'
     )
 
