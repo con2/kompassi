@@ -10,11 +10,21 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         for meta in orm['labour.LabourEventMeta'].objects.filter(accepted_group__isnull=True):
-            meta.accepted_group, unused = orm['labour.LabourEventMeta'].get_or_create_group(event, 'accepted')
+            group_name = '{installation_slug}-{event_slug}-{app_label}-accepted'.format(
+                installation_slug=settings.TURSKA_INSTALLATION_SLUG,
+                event_slug=meta.event.slug,
+                app_label='labour',
+            )
+            meta.accepted_group, unused = Group.objects.get_or_create(name=group_name)
             meta.save()
 
         for meta in orm['labour.LabourEventMeta'].objects.filter(applicants_group__isnull=True):
-            meta.accepted_group, unused = orm['labour.LabourEventMeta'].get_or_create_group(event, 'applicants')
+            group_name = '{installation_slug}-{event_slug}-{app_label}-applicants'.format(
+                installation_slug=settings.TURSKA_INSTALLATION_SLUG,
+                event_slug=meta.event.slug,
+                app_label='labour',
+            )
+            meta.applicants_group, unused = Group.objects.get_or_create(name=group_name)
             meta.save()
 
     def backwards(self, orm):
