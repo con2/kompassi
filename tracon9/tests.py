@@ -93,6 +93,10 @@ class Tracon9LippukalaTestCase(TestCase):
             output_file.write(content)
 
     def test_orders_with_single_weekend_eticket_should_go_to_the_single_weekend_ticket_queue(self):
+        if 'lippukala' not in settings.INSTALLED_APPS:
+            print 'Test disabled due to lippukala not being installed'
+            return
+
         call_command('setup_core', test=True)
         call_command('setup_labour_common_qualifications', test=True)
         call_command('setup_tracon9', test=True)
@@ -116,6 +120,10 @@ class Tracon9LippukalaTestCase(TestCase):
         assert order.lippukala_prefix == Queue.EVERYONE_ELSE
 
     def test_orders_with_mixed_etickets_should_go_to_the_everyone_else_queue(self):
+        if 'lippukala' not in settings.INSTALLED_APPS:
+            print 'Test disabled due to lippukala not being installed'
+            return
+
         call_command('setup_core', test=True)
         call_command('setup_labour_common_qualifications', test=True)
         call_command('setup_tracon9', test=True)
@@ -133,6 +141,10 @@ class Tracon9LippukalaTestCase(TestCase):
         assert order.lippukala_prefix == Queue.EVERYONE_ELSE
 
     def test_orders_with_etickets_other_than_weekend_should_go_to_the_everyone_else_queue(self):
+        if 'lippukala' not in settings.INSTALLED_APPS:
+            print 'Test disabled due to lippukala not being installed'
+            return
+
         call_command('setup_core', test=True)
         call_command('setup_labour_common_qualifications', test=True)
         call_command('setup_tracon9', test=True)
