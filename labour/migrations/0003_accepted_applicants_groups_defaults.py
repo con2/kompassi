@@ -10,11 +10,11 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         for meta in orm['labour.LabourEventMeta'].objects.filter(accepted_group__isnull=True):
-            meta.accepted_group, unused = orm['auth.Group'].get_or_create_group(event, 'accepted')
+            meta.accepted_group, unused = orm['labour.LabourEventMeta'].get_or_create_group(event, 'accepted')
             meta.save()
 
         for meta in orm['labour.LabourEventMeta'].objects.filter(applicants_group__isnull=True):
-            meta.accepted_group, unused = orm['auth.Group'].get_or_create_group(event, 'applicants')
+            meta.accepted_group, unused = orm['labour.LabourEventMeta'].get_or_create_group(event, 'applicants')
             meta.save()
 
     def backwards(self, orm):
