@@ -42,7 +42,7 @@ class LabourEventMeta(EventMetaBase):
         blank=True,
         verbose_name=u'yhteysosoite',
         help_text=u'Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
-            u'osoitteesta, ja tämä osoite näytetään työvoimalle yhteysosoitteena. Muoto: Selite <osoite@esimerkki.fi>.',
+            u'osoitteesta, ja tämä osoite näytetään työvoimalle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
     )
 
     applicants_group = models.ForeignKey('auth.Group',
