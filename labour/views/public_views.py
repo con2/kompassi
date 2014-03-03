@@ -82,14 +82,8 @@ def actual_labour_signup_view(request, event):
         return redirect('core_event_view', event.slug)
 
     job_categories = JobCategory.objects.filter(event=event, public=True)
-    jcs_qualified = [
-        jc for jc in job_categories if jc.is_person_qualified(request.user.person)
-    ]
-    job_categories = JobCategory.objects.filter(
-        event=event,
-        public=True,
-        id__in=jcs_qualified
-    )
+    jcs_qualified = [jc.pk for jc in job_categories if jc.is_person_qualified(request.user.person)]
+    job_categories = JobCategory.objects.filter(id__in=jcs_qualified) # bc it needs to be a queryset
 
     signup = event.labour_event_meta.get_signup_for_person(request.user.person)
     signup_extra = signup.signup_extra
