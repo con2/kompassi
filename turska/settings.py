@@ -130,7 +130,7 @@ INSTALLED_APPS = (
     #'external_auth',
 
     # Uncomment if you do PDF tickets
-    'lippukala',
+    #'lippukala',
 
     'tracon8',
     'tracon9',
