@@ -75,7 +75,7 @@ class DedupMixin(object):
     def get_or_create(cls, text):
         from hashlib import sha1
         return cls.objects.get_or_create(
-            digest=sha1(text).hexdigest(),
+            digest=sha1(text.encode('UTF-8')).hexdigest(),
             defaults=dict(
                 text=text,
             )
