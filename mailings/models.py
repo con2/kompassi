@@ -69,6 +69,9 @@ class Message(models.Model):
     def app_event_meta(self):
         return self.event.app_event_meta(self.app_label)
 
+    def __unicode__(self):
+        return Template(self.subject_template).render(Context(dict(event=self.event)))
+
 
 class DedupMixin(object):
     @classmethod

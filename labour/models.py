@@ -495,4 +495,5 @@ __all__ = [
     'QualificationExtraBase',
     'Signup',
     'SignupExtraBase',
+    'WorkPeriod',
 ]
