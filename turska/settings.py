@@ -211,7 +211,7 @@ AUTHENTICATION_BACKENDS = (
 
 # These MUST match those in IPA
 TURSKA_PASSWORD_MIN_LENGTH = 8
-TURSKA_PASSWORD_MIN_CLASSES = 3
+TURSKA_PASSWORD_MIN_CLASSES = 2
 
 # Don't actually send email
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
