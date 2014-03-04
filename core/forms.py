@@ -36,7 +36,7 @@ class LoginForm(forms.Form):
         self.helper.field_class = 'col-md-8'
         self.helper.layout = Layout(
             'next',
-            Fieldset(u'Kirjaudu sisään',
+            Fieldset(u'Kirjaudu sisään {}'.format(settings.TURSKA_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE),
                 'username',
                 'password',
                 indented_without_label(Submit('submit', u'Kirjaudu sisään', css_class='btn-primary'), css_class='col-md-offset-4 col-md-8')

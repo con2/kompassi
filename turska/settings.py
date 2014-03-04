@@ -200,6 +200,7 @@ TURSKA_INSTALLATION_NAME_ILLATIVE = u'Turskan kehitysinstanssiin'
 TURSKA_INSTALLATION_SLUG = 'turskadev'
 TURSKA_ACCOUNT_BRANDING = u'Tracon-tunnus'
 TURSKA_ACCOUNT_BRANDING_PARTITIVE = u'Tracon-tunnusta'
+TURSKA_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = u'Tracon-tunnuksellasi'
 TURSKA_ACCOUNT_INFO = u'Tracon-tunnus on uusi, keväällä 2014 käynnistetty projekti, joka yhdistää kaikki Traconin sähköiset palvelut yhden käyttäjätunnuksen ja salasanan taakse. Valitettavasti vanhat Jyrä-, Pora- ja Aniki-tunnukset eivät käy Tracon-tunnuksesta.'
 TURSKA_PRIVACY_POLICY_URL = 'http://media.tracon.fi/2014/tracon9_turska_rekisteriseloste.pdf'
 
