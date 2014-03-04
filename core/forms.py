@@ -59,6 +59,8 @@ class PersonForm(forms.ModelForm):
             save_button_text = u'Tallenna tiedot'
 
         self.helper.layout = Layout(
+            indented_without_label('may_send_info'),
+
             Fieldset(u'Perustiedot',
                 'first_name',
                 'surname',
@@ -75,6 +77,7 @@ class PersonForm(forms.ModelForm):
     class Meta:
         model = Person
         fields = (
+            'may_send_info',
             'first_name',
             'surname',
             'nick',
@@ -114,7 +117,7 @@ class RegistrationForm(forms.Form):
 
     accept_terms_and_conditions = forms.BooleanField(
         required=True,
-        label=u'Annan luvan henkilötietojeni käsittelyyn <a href="{}" target="_blank">rekisteriselosteen</a> mukaisesti'.format(settings.TURSKA_PRIVACY_POLICY_URL)
+        label=u'Annan luvan henkilötietojeni käsittelyyn <a href="{}" target="_blank">rekisteriselosteen</a> mukaisesti <i>(pakollinen)</i>'.format(settings.TURSKA_PRIVACY_POLICY_URL)
     )
 
     def __init__(self, *args, **kwargs):

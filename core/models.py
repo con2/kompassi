@@ -234,6 +234,11 @@ class Person(models.Model):
             u'vain tapahtuman järjestäjille.'
     )
 
+    may_send_info = models.BooleanField(
+        default=False,
+        verbose_name=u'Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>',
+    )
+
     notes = models.TextField(blank=True, verbose_name=u'Käsittelijän merkinnät')
     user = models.OneToOneField('auth.User', null=True, blank=True)
 
