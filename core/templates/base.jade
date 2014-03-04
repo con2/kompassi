@@ -54,7 +54,9 @@ html
               |  järjestää
               a(href='{{ event.organization_url }}', target='_blank')  {{ event.organization_name }}
               | .
-            | Turska-ohjelmisto &copy; 2009&ndash;2014 Petri Haikonen, Jyrki Launonen, Esa Ollitervo, Santtu Pajukanta, Meeri Panula, Jussi Sorjonen ja Pekka Wallendahl .
+            | Turska-ohjelmisto &copy; 2009&ndash;2014 Santtu Pajukanta, Jussi Sorjonen, Petri Haikonen, Meeri Panula, Jyrki Launonen ja Pekka Wallendahl.
+            a(href='{{ settings.TURSKA_PRIVACY_POLICY_URL }}') Rekisteriseloste
+
 
     script(src='{{ STATIC_URL }}jquery-1.10.2.min.js')
     script(src='{{ STATIC_URL }}bootstrap/bootstrap.min.js')

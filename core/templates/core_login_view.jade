@@ -7,5 +7,7 @@ block content
     .col-md-6
       fieldset
         legend Rekisteröidy
+        if settings.TURSKA_ACCOUNT_INFO
+          p {{ settings.TURSKA_ACCOUNT_INFO }}
         p Jos sinulla ei ole vielä {{ settings.TURSKA_ACCOUNT_BRANDING_PARTITIVE }}, voit rekisteröidä sellaisen helposti ja nopeasti.
         a.btn.btn-success(href='{% url "core_registration_view" %}?next={{ next }}') Rekisteröidy
