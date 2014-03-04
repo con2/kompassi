@@ -114,7 +114,7 @@ class RegistrationForm(forms.Form):
 
     accept_terms_and_conditions = forms.BooleanField(
         required=True,
-        label=u'Annan luvan henkilötietojeni käsittelyyn rekisteriselosteen mukaisesti (TODO rekisteriseloste)'
+        label=u'Annan luvan henkilötietojeni käsittelyyn <a href="{}" target="_blank">rekisteriselosteen</a> mukaisesti'.format(settings.TURSKA_PRIVACY_POLICY_URL)
     )
 
     def __init__(self, *args, **kwargs):

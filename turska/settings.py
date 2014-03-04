@@ -200,6 +200,7 @@ TURSKA_INSTALLATION_NAME_ILLATIVE = u'Turskan kehitysinstanssiin'
 TURSKA_INSTALLATION_SLUG = 'turskadev'
 TURSKA_ACCOUNT_BRANDING = u'Tracon-tunnus'
 TURSKA_ACCOUNT_BRANDING_PARTITIVE = u'Tracon-tunnusta'
+TURSKA_PRIVACY_POLICY_URL = 'http://media.tracon.fi/2014/tracon9_turska_rekisteriseloste.pdf'
 
 JOHNNY_MIDDLEWARE_KEY_PREFIX = TURSKA_INSTALLATION_SLUG
 
