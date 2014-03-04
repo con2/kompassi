@@ -32,7 +32,7 @@ SHIFT_TYPE_CHOICES = [
 ]
 
 TOTAL_WORK_CHOICES = [
-    (u'8h', '8 tuntia (1 lämmin ateria)'),
+    (u'8h', 'Minimi - 8 tuntia (1 lämmin ateria)'),
     (u'12h', '12 tuntia (2 lämmintä ateriaa)'),
     (u'yli12h', 'Työn Sankari! Yli 12 tuntia! (2 lämmintä ateriaa)'),
 ]
@@ -65,7 +65,7 @@ class SignupExtra(SignupExtraBase):
 
     total_work = models.CharField(max_length=15,
         verbose_name=u'Toivottu kokonaistyömäärä',
-        help_text=u'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana?',
+        help_text=u'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
         choices=TOTAL_WORK_CHOICES,
     )
 
