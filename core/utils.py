@@ -172,8 +172,6 @@ def page_wizard_init(request, pages):
     request.session['core.utils.page_wizard.steps'] = steps
     request.session['core.utils.page_wizard.related'] = list(all_related)
 
-    print 'page_wizard_init', request.session['core.utils.page_wizard.steps']
-
 
 def page_wizard_clear(request):
     if 'core.utils.page_wizard.steps' in request.session:
