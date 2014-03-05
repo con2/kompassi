@@ -4,6 +4,8 @@ from django.contrib.auth.views import logout
 
 from .forms import LoginForm
 from .views import (
+    core_email_verification_request_view,
+    core_email_verification_view,
     core_event_view,
     core_frontpage_view,
     core_login_view,
@@ -25,4 +27,6 @@ urlpatterns = patterns(
     url(r'^profile$', core_profile_view, name='core_profile_view'),
     url(r'^profile/new$', core_personify_view, name='core_personify_view'),
     url(r'^profile/password$', core_password_view, name='core_password_view'),
+    url(r'^profile/email/request$', core_email_verification_request_view, name='core_email_verification_request_view'),
+    url(r'^profile/email/verify/(?P<code>[a-z0-9-]+)$', core_email_verification_view, name='core_email_verification_view'),
 )

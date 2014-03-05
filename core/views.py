@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_GET
 
 from .models import Event, Person
 from .forms import PersonForm, RegistrationForm, PasswordForm, LoginForm
@@ -111,6 +111,7 @@ def core_registration_view(request):
 
             person.user = user
             person.save()
+            person.email_verification_required()
 
             if 'external_auth' in settings.INSTALLED_APPS:
                 from external_auth.utils import create_user
@@ -145,8 +146,18 @@ def core_profile_view(request):
 
     if request.method == 'POST':
         if form.is_valid():
+            old_email = person.email
             person = form.save()
-            messages.success(request, u'Tiedot tallennettiin.')
+
+            if form.cleaned_data['email'] != old_email:
+                person.setup_email_verification()
+                messages.success(request,
+                    u'Tietosi on tallennettu. Koska muutit sähköpostiosoitettasi, sinun täytyy '
+                    u'vahvistaa sähköpostiosoitteesi uudelleen. Tarkista postilaatikkosi ja '
+                    u'noudata vahvistusviestissä olevia ohjeita.'
+                )
+            else:
+                messages.success(request, u'Tietosi on tallennettu.')
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
@@ -181,7 +192,11 @@ def core_personify_view(request):
             person = form.save(commit=False)
             person.user = request.user
             person.save()
-            messages.success(request, u'Tiedot tallennettiin.')
+            person.setup_email_verification()
+            messages.success(request,
+                u'Tietosi on tallennettu. Ole hyvä ja vahvista sähköpostiosoitteesi. Tarkista '
+                u'postilaatikkosi ja noudata vahvistusviestissä olevia ohjeita.'
+            )
             return redirect(next)
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
@@ -253,6 +268,17 @@ def core_profile_menu_items(request):
 
     items.append((password_active, password_url, password_text))
 
+    try:
+        person = request.user.person
+    except Person.DoesNotExist:
+        pass
+    else:
+        if not person.is_email_verified:
+            email_verification_url = reverse('core_email_verification_request_view')
+            email_verification_active = request.path == email_verification_url
+            email_verification_text = u'Sähköpostiosoitteen vahvistus'
+            items.append((email_verification_active, email_verification_url, email_verification_text))
+
     if 'labour' in settings.INSTALLED_APPS:
         from labour.views import labour_profile_menu_items
         items.extend(labour_profile_menu_items(request))
@@ -262,3 +288,53 @@ def core_profile_menu_items(request):
         items.extend(programme_profile_menu_items(request))
 
     return items
+
+
+EMAIL_VERIFICATION_ERROR_MESSAGES = dict(
+    default=u'Sähköpostiosoitteen vahvistus epäonnistui. Tarkista koodi.',
+    wrong_person=
+        u'Ole hyvä ja kirjaudu ulos ja uudestaan sisään sillä käyttäjällä, jonka '
+        u'sähköpostiosoitetta yrität vahvistaa, ja yritä sitten uudelleen.',
+    code_used=u'Tämä vahvistuslinkki on jo käytetty.',
+    email_changed=
+        u'Sähköpostiosoitteesi on muuttunut sitten vahvistuslinkin lähetyksen. '
+        u'Ole hyvä ja käytä uusinta saamaasi vahvistuslinkkiä.',
+    already_verified=u'Sähköpostiosoitteesi on jo vahvistettu.',
+)
+
+
+@person_required
+@require_GET
+def core_email_verification_view(request, code):
+    person = request.user.person
+
+    try:
+        person.verify_email(code)
+    except EmailVerificationError, e:
+        reason = e.args[0]
+        error_message = EMAIL_VERIFICATION_ERROR_MESSAGES.get(reason,
+            EMAIL_VERIFICATION_ERROR_MESSAGES['default']
+        )
+        messages.error(request, error_message)
+
+    return redirect('core_frontpage_view')
+
+
+@person_required
+@require_http_methods(['GET', 'POST'])
+def core_email_verification_request_view(request):
+    person = request.user.person
+
+    if person.is_email_verified:
+        messages.error(request, u'Sähköpostiosoitteesi on jo vahvistettu.')
+        return redirect('core_profile_view')
+
+    if request.method == 'POST':
+        person.setup_email_verification()
+        messages.info(request,
+            u'Sinulle lähetettiin uusi vahvistuslinkki. Ole hyvä ja tarkista sähköpostisi.'
+        )
+        return redirect('core_profile_view')
+
+    return render(request, 'core_email_verification_request_view.jade')
+

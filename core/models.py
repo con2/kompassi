@@ -2,13 +2,15 @@
 
 from datetime import date, datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.utils.dateformat import format as format_date
-from django.utils.timezone import now
-from django.conf import settings
+from django.utils import timezone
 
-from .utils import validate_slug, SLUG_FIELD_PARAMS
+from .utils import validate_slug, SLUG_FIELD_PARAMS, url
 
 
 class Venue(models.Model):
@@ -132,7 +134,7 @@ class Event(models.Model):
     @classmethod
     def get_or_create_dummy(cls):
         venue = Venue.create_dummy()
-        t = now()
+        t = timezone.now()
 
         return cls.objects.get_or_create(
             name='Dummy event',
@@ -242,6 +244,8 @@ class Person(models.Model):
     notes = models.TextField(blank=True, verbose_name=u'Käsittelijän merkinnät')
     user = models.OneToOneField('auth.User', null=True, blank=True)
 
+    email_verified_at = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         ordering = ['surname']
         verbose_name = u'Henkilö'
@@ -324,6 +328,53 @@ class Person(models.Model):
 
         return ret_val
 
+    @property
+    def is_email_verified(self):
+        return self.email_verified_at is not None
+
+    @property
+    def pending_email_verification(self):
+        try:
+            return EmailVerificationToken.objects.get(person=self, state='valid')
+        except EmailVerificationToken.DoesNotExist:
+            return None
+
+    @property
+    def is_email_verification_pending(self):
+        return self.pending_email_verification is not None
+
+    def setup_email_verification(self, request):
+        self.email_verified_at = None
+        self.save()
+
+        pending_verification = self.pending_email_verification
+        if pending_verification:
+            pending_verification.revoke()
+
+        code = EmailVerificationToken(person=self)
+        code.save()
+        code.send(request)
+
+    def verify_email(self, code):
+        try:
+            code = EmailVerificationToken.objects.get(code=code)
+        except EmailVerificationToken.DoesNotExist, e:
+            raise EmailVerificationError('invalid_code')
+
+        if code.person != self:
+            raise EmailVerificationError('wrong_person')
+        elif code.is_used:
+            raise EmailVerificationError('code_used')
+        elif code.email != self.email:
+            raise EmailVerificationError('email_changed')
+        elif self.is_email_verified:
+            raise EmailVerificationError('already_verified')
+        else:
+            code.mark_used()
+
+            self.email_verified_at = timezone.now()
+            self.save()
+
 
 class EventMetaBase(models.Model):
     event = models.OneToOneField('core.Event', primary_key=True, related_name='%(class)s')
@@ -355,6 +406,105 @@ class EventMetaBase(models.Model):
             suffix=suffix,
         )
         return Group.objects.get_or_create(name=group_name)
+
+
+ONE_TIME_CODE_LENGTH = 40
+ONE_TIME_CODE_ALPHABET = '0123456789abcdef'
+
+
+class OneTimeCode(models.Model):
+    code = models.CharField(max_length=63, unique=True)
+    person = models.ForeignKey(Person)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used_at = models.DateTimeField(null=True, blank=True)
+    state = models.CharField(
+        max_length=8,
+        choices=[
+            ('valid', u'Kelvollinen'),
+            ('used', u'Käytetty'),
+            ('revoked', u'Mitätöity'),
+        ]
+    )
+
+    @property
+    def is_used(self):
+        return self.used_at is not None
+
+    def __unicode__(self):
+        return self.code
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            from random import choice
+            self.code = "".join(choice(ONE_TIME_CODE_ALPHABET) for _ in range(ONE_TIME_CODE_LENGTH))
+
+        return super(OneTimeCode, self).save(*args, **kwargs)
+
+    def revoke(self):
+        assert self.state == 'valid'
+        self.state = 'revoked'
+        self.used_at = timezone.now()
+        self.save()
+
+    def render_message_subject(self, request):
+        raise NotImplemented()
+
+    def render_message_body(self, request):
+        raise NotImplemented()
+
+    def send(self, request):
+        from django.core.mail import EmailMessage
+
+        EmailMessage(
+            subject=self.render_message_subject(request),
+            body=self.render_message_body(request),
+            to=(self.person.name_and_email,),
+        ).send(fail_silently=True)
+
+    def mark_used(self):
+        assert not self.is_used
+        self.used_at = timezone.now()
+        self.save()
+
+    class Meta:
+        abstract = True
+        index_together = [
+            ('person', 'state'),
+        ]
+
+
+class PasswordResetToken(OneTimeCode):
+    ip_address = models.CharField(max_length=45, blank=True) # IPv6
+
+    def render_message_subject(self, request):
+        return u'{settings.TURSKA_INSTALLATION_NAME}: Salasanan vaihto'.format(settings=settings)
+
+    def render_message_body(self, request):
+        vars = dict(
+            link=request.build_absolute_uri(url('core_password_reset_view', self.code))
+        )
+
+        return render_to_string('core_password_reset_message.eml', vars, context_instance=RequestContext(request, {}))
+
+
+class EmailVerificationToken(OneTimeCode):
+    email = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        if self.person and not self.email:
+            self.email = self.person.email
+
+        return super(EmailVerificationToken, self).save(*args, **kwargs)
+
+    def render_message_subject(self, request):
+        return u'{settings.TURSKA_INSTALLATION_NAME}: Vahvista sähköpostiosoitteesi!'.format(settings=settings)
+
+    def render_message_body(self, request):
+        vars = dict(
+            link=request.build_absolute_uri(url('core_email_verification_view', self.code))
+        )
+
+        return render_to_string('core_email_verification_message.eml', vars, context_instance=RequestContext(request, {}))
 
 
 __all__ = [

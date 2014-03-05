@@ -17,6 +17,12 @@ def before_all(context):
     from south.management.commands import patch_for_test_db_setup
     patch_for_test_db_setup()
 
+    from django.test import RequestFactory
+    context.request_factory = RequestFactory()
+
+    from django.contrib.auth.models import AnonymousUser
+    context.anonymous_user = AnonymousUser()
+
 
 def before_scenario(context, scenario):
     context.runner.setup_test_environment()
