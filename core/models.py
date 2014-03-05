@@ -271,7 +271,7 @@ class Person(models.Model):
 
     @property
     def name_and_email(self):
-        return "{self.first_name} {self.surname} <{self.email}>".format(self=self)
+        return u"{self.first_name} {self.surname} <{self.email}>".format(self=self)
 
     @property
     def display_name(self):
