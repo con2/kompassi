@@ -2,13 +2,13 @@ from behave import given, when, then
 
 
 @given(u'I have forgotten my password')
-def step_impl(context):
+def forgot_password(context):
     context.person.user.set_password("can't remember this")
     context.person.user.save()
 
 
 @when(u'request a password reset')
-def step_impl(context):
+def request_password_reset(context):
     request = context.request_factory.get('/')
     request.user = context.anonymous_user
 
@@ -16,7 +16,7 @@ def step_impl(context):
 
 
 @then(u'I should receive a password reset message')
-def step_impl(context):
+def receive_password_reset_message(context):
     from django.core import mail
     assert len(mail.outbox) == 1
 
@@ -24,7 +24,7 @@ def step_impl(context):
 
 
 @when(u'I click the link in the password reset message')
-def step_impl(context):
+def click_password_reset_link(context):
     from core.models import ONE_TIME_CODE_LENGTH
 
     body = context.password_reset_message.body
@@ -35,12 +35,12 @@ def step_impl(context):
 
 
 @when(u'set up a new password')
-def step_impl(context):
+def setup_new_password(context):
     context.person.reset_password(context.code, 'a new password I can remember')
 
 
 @then(u'my password should have been changed')
-def step_impl(context):
+def password_should_have_been_changed(context):
     from django.contrib.auth import authenticate
     assert authenticate(
         username=context.person.user.username,
