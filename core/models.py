@@ -332,28 +332,39 @@ class Person(models.Model):
     def is_email_verified(self):
         return self.email_verified_at is not None
 
-    @property
-    def pending_email_verification(self):
+    def get_pending_code(self, CodeModel):
         try:
-            return EmailVerificationToken.objects.get(person=self, state='valid')
-        except EmailVerificationToken.DoesNotExist:
+            return CodeModel.objects.get(person=self, state='valid')
+        except CodeModel.DoesNotExist:
             return None
 
-    @property
-    def is_email_verification_pending(self):
-        return self.pending_email_verification is not None
+    pending_email_verification = property(
+        lambda self: self.get_pending_code(EmailVerificationToken)
+    )
+
+    pending_password_reset = property(
+        lambda self: self.get_pending_code(PasswordResetToken)
+    )
+
+    def setup_code(self, request, CodeModel, **kwargs):
+        pending_code = self.get_pending_code(CodeModel)
+        if pending_code:
+            pending_code.revoke()
+
+        code = CodeModel(person=self, **kwargs)
+        code.save()
+        code.send(request)
 
     def setup_email_verification(self, request):
         self.email_verified_at = None
         self.save()
 
-        pending_verification = self.pending_email_verification
-        if pending_verification:
-            pending_verification.revoke()
+        self.setup_code(request, EmailVerificationToken)
 
-        code = EmailVerificationToken(person=self)
-        code.save()
-        code.send(request)
+    def setup_password_reset(self, request):
+        from ipware.ip import get_real_ip
+
+        self.setup_code(request, PasswordResetToken, ip_address=get_real_ip(request) or '')
 
     def verify_email(self, code):
         try:
@@ -374,6 +385,22 @@ class Person(models.Model):
 
             self.email_verified_at = timezone.now()
             self.save()
+
+    def reset_password(self, code, new_password):
+        try:
+            code = PasswordResetToken.objects.get(code=code)
+        except PasswordResetToken.DoesNotExist, e:
+            raise PasswordResetError('invalid_code')
+
+        if code.person != self:
+            raise PasswordResetError('wrong_person')
+        elif code.is_used:
+            raise PasswordResetError('code_used')
+        else:
+            code.mark_used()
+            
+            self.user.set_password(new_password)
+            self.user.save()
 
 
 class EventMetaBase(models.Model):

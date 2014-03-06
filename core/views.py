@@ -338,3 +338,10 @@ def core_email_verification_request_view(request):
 
     return render(request, 'core_email_verification_request_view.jade')
 
+
+def core_password_reset_view(request):
+    raise NotImplemented()
+
+
+def core_password_reset_request_view(request):
+    raise NotImplemented()
