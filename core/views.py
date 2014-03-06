@@ -359,8 +359,6 @@ def core_email_verification_view(request, code):
 @person_required
 @require_http_methods(['GET', 'POST'])
 def core_email_verification_request_view(request):
-    from core.models import PasswordResetError
-
     person = request.user.person
 
     if person.is_email_verified:
@@ -380,9 +378,27 @@ def core_email_verification_request_view(request):
     return render(request, 'core_email_verification_request_view.jade', vars)
 
 
-def core_password_reset_view(request):
-    raise NotImplemented()
+def core_password_reset_view(request, code):
+    from core.models import PasswordResetError, PasswordResetToken
+
+    form = initialize_form(PasswordResetForm, request)
+    code_instance = get_object_or_404(PasswordResetToken, code=code, state='valid')
+
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                code_instance.reset_password(form.cleaned_data['new_password'])
+            except PasswordResetError, e:
+                messages.error(request, u'Salasanan nollaus epäonnistui.')
+                return redirect('core_frontpage_view')
+
+            messages.error(request, u'Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi.')
+            return redirect('core_login_view')  
+        else:
+            messages.error(request, u'Ole hyvä ja korjaa lomakkeen virheet.')
 
 
+@require_http_methods(['GET', 'POST'])
 def core_password_reset_request_view(request):
     raise NotImplemented()
+    return render(request, 'core_password_reset_request_view.jade', vars)
