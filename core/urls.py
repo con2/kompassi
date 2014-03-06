@@ -31,6 +31,6 @@ urlpatterns = patterns(
     url(r'^profile/password$', core_password_view, name='core_password_view'),
     url(r'^profile/password/reset$', core_password_reset_request_view, name='core_password_reset_request_view'),
     url(r'^profile/password/reset/(?P<code>[a-f0-9]+)$', core_password_reset_view, name='core_password_reset_view'),
-    url(r'^profile/email/request$', core_email_verification_request_view, name='core_email_verification_request_view'),
+    url(r'^profile/email/verify$', core_email_verification_request_view, name='core_email_verification_request_view'),
     url(r'^profile/email/verify/(?P<code>[a-f0-9]+)$', core_email_verification_view, name='core_email_verification_view'),
 )

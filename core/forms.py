@@ -59,7 +59,6 @@ class PersonForm(forms.ModelForm):
             save_button_text = u'Tallenna tiedot'
 
         self.helper.layout = Layout(
-
             Fieldset(u'Perustiedot',
                 'first_name',
                 'surname',
@@ -214,3 +213,52 @@ class PasswordForm(forms.Form):
             raise forms.ValidationError(u'Salasanat eivät täsmää.')
 
         return new_password_again
+
+
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(required=True, max_length=EMAIL_LENGTH, label=u'Sähköpostiosoite')
+
+    def __init__(self, *args, **kwargs):
+        super(PasswordResetRequestForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.layout = Layout(
+            'email',
+            indented_without_label(Submit('submit', u'Lähetä', css_class='btn-success'))
+        )
+
+class PasswordResetForm(forms.Form):
+    # XXX BEGIN UGLY COPYPASTA
+    new_password = forms.CharField(
+        required=True,
+        max_length=1023,
+        label=u'Uusi salasana',
+        widget=forms.PasswordInput,
+        validators=[check_password_strength],
+        help_text=PASSWORD_HELP_TEXT,
+    )
+
+    new_password_again = forms.CharField(
+        required=True,
+        max_length=1023,
+        label=u'Salasana uudestaan',
+        widget=forms.PasswordInput,
+    )
+
+    def clean_new_password_again(self):
+        new_password = self.cleaned_data.get('new_password')
+        new_password_again = self.cleaned_data.get('new_password_again')
+
+        if new_password and new_password_again and new_password != new_password_again:
+            raise forms.ValidationError(u'Salasanat eivät täsmää.')
+
+        return new_password_again
+    # XXX END UGLY COPYPASTA
+
+    def __init__(self, *args, **kwargs):
+        super(PasswordResetForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.layout = Layout(
+            'new_password',
+            'new_password_again',
+            indented_without_label(Submit('submit', u'Vaihda salasana', css_class='btn-success'))
+        )

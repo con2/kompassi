@@ -386,22 +386,6 @@ class Person(models.Model):
             self.email_verified_at = timezone.now()
             self.save()
 
-    def reset_password(self, code, new_password):
-        try:
-            code = PasswordResetToken.objects.get(code=code)
-        except PasswordResetToken.DoesNotExist, e:
-            raise PasswordResetError('invalid_code')
-
-        if code.person != self:
-            raise PasswordResetError('wrong_person')
-        elif code.is_used:
-            raise PasswordResetError('code_used')
-        else:
-            code.mark_used()
-            
-            self.user.set_password(new_password)
-            self.user.save()
-
 
 class EventMetaBase(models.Model):
     event = models.OneToOneField('core.Event', primary_key=True, related_name='%(class)s')
@@ -495,7 +479,8 @@ class OneTimeCode(models.Model):
         ).send(fail_silently=True)
 
     def mark_used(self):
-        assert not self.is_used
+        assert self.state == 'valid'
+
         self.used_at = timezone.now()
         self.save()
 
@@ -518,6 +503,22 @@ class PasswordResetToken(OneTimeCode):
         )
 
         return render_to_string('core_password_reset_message.eml', vars, context_instance=RequestContext(request, {}))
+
+    def reset_password(self, new_password):
+        if self.state == 'valid':
+            self.mark_used()
+
+            user = self.person.user
+
+            if 'external_auth' in settings.INSTALLED_APPS:
+                from external_auth.utils import reset_user_password
+                reset_user_password(user, new_password)
+            else:
+                user.set_password(new_password)
+                user.save()
+
+        else:
+            raise PasswordResetError('code_used')
 
 
 class EmailVerificationToken(OneTimeCode):

@@ -100,3 +100,7 @@ def reset_password_expiry(dn, username):
     ldap_modify(dn,
         (ldap.MOD_REPLACE, 'krbpasswordexpiration', '20170101000000Z'),
     )
+
+
+def reset_user_password(user, new_password):
+    raise NotImplemented()
