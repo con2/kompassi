@@ -388,10 +388,16 @@ def core_password_reset_view(request, code):
             try:
                 code_instance.reset_password(form.cleaned_data['new_password'])
             except PasswordResetError, e:
-                messages.error(request, u'Salasanan nollaus epäonnistui.')
+                messages.error(request,
+                    u'Salasanan nollaus epäonnistui. Ole hyvä ja ota yhteyttä osoitteeseen '
+                    u'{{ settings.DEFAULT_FROM_EMAIL }}.'
+                    .format(settings=settings)
+                )
                 return redirect('core_frontpage_view')
 
-            messages.error(request, u'Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi.')
+            messages.success(request,
+                u'Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi.'
+            )
             return redirect('core_login_view')
         else:
             messages.error(request, u'Ole hyvä ja korjaa lomakkeen virheet.')
