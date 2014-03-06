@@ -59,7 +59,6 @@ class PersonForm(forms.ModelForm):
             save_button_text = u'Tallenna tiedot'
 
         self.helper.layout = Layout(
-            indented_without_label('may_send_info'),
 
             Fieldset(u'Perustiedot',
                 'first_name',
@@ -69,7 +68,8 @@ class PersonForm(forms.ModelForm):
             ),
             Fieldset(u'Yhteystiedot',
                 'email',
-                'phone'
+                'phone',
+                indented_without_label('may_send_info'),
             ),
             indented_without_label(Submit('submit', save_button_text, css_class='btn-primary'))
         )

@@ -446,6 +446,7 @@ class OneTimeCode(models.Model):
     used_at = models.DateTimeField(null=True, blank=True)
     state = models.CharField(
         max_length=8,
+        default='valid',
         choices=[
             ('valid', u'Kelvollinen'),
             ('used', u'Käytetty'),
@@ -482,9 +483,14 @@ class OneTimeCode(models.Model):
     def send(self, request):
         from django.core.mail import EmailMessage
 
+        body = self.render_message_body(request)
+
+        if settings.DEBUG:
+            print body
+
         EmailMessage(
             subject=self.render_message_subject(request),
-            body=self.render_message_body(request),
+            body=body,
             to=(self.person.name_and_email,),
         ).send(fail_silently=True)
 
@@ -532,6 +538,14 @@ class EmailVerificationToken(OneTimeCode):
         )
 
         return render_to_string('core_email_verification_message.eml', vars, context_instance=RequestContext(request, {}))
+
+
+class EmailVerificationError(RuntimeError):
+    pass
+
+
+class PasswordResetError(RuntimeError):
+    pass
 
 
 __all__ = [
