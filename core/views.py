@@ -390,7 +390,7 @@ def core_password_reset_view(request, code):
             except PasswordResetError, e:
                 messages.error(request,
                     u'Salasanan nollaus epäonnistui. Ole hyvä ja ota yhteyttä osoitteeseen '
-                    u'{{ settings.DEFAULT_FROM_EMAIL }}.'
+                    u'{settings.DEFAULT_FROM_EMAIL}.'
                     .format(settings=settings)
                 )
                 return redirect('core_frontpage_view')
