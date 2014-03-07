@@ -9,8 +9,19 @@ from django.forms import ValidationError
 from . import ipa
 
 
+def create_temporary_password():
+    return "".join(chr(randint(ord('0'), ord('z'))) for _ in range(64))
+
+
+def get_user_dn(uid):
+    return "{uid},{branch}".format(
+        uid=uid,
+        branch=settings.TURSKA_LDAP_USERS
+    )
+
+
 def create_user(user, password):
-    temporary_password = "".join(chr(randint(ord('0'), ord('z'))) for _ in range(64))
+    temporary_password = create_temporary_password()
 
     ipa.create_user(
         username=user.username,
@@ -22,10 +33,8 @@ def create_user(user, password):
     for group_name in settings.TURSKA_NEW_USER_INITIAL_GROUPS:
         ipa.add_user_to_group(user.username, group_name)
 
-    dn = 'uid={0},{1}'.format(user.username, settings.TURSKA_LDAP_USERS)
-
     ipa.change_user_password(
-        dn=dn,
+        dn=get_user_dn(user.username),
         old_password=temporary_password,
         new_password=password,
     )
@@ -44,4 +53,11 @@ def add_user_to_group(user, group):
 
 
 def reset_user_password(user, new_password):
-    ipa.reset_user_password(user.username, new_password)
+    temporary_password = create_temporary_password()
+
+    ipa.admin_set_user_password(user.username, temporary_password)
+    ipa.change_user_password(
+        dn=get_user_dn(user.username),
+        old_password=temporary_password,
+        new_password=new_password
+    )

@@ -32,11 +32,11 @@ class IPAError(RuntimeError):
 
 
 def add_user_to_group(username, groupname):
-    return json_rpc('group_add_member', [groupname], dict(user=[username]))
+    return json_rpc('group_add_member', groupname, user=[username])
 
 
 def remove_user_from_group(username, groupname):
-    return json_rpc('group_remove_member', [groupname], dict(user=[username]))
+    return json_rpc('group_remove_member', groupname, user=[username])
 
 
 def change_user_password(dn, old_password, new_password):
@@ -54,23 +54,21 @@ def ldap_modify(dn, *modlist):
 
 
 def create_user(username, first_name, surname, password):
-    attrs = dict(
+    return json_rpc('user_add', username,
         givenname=first_name,
         sn=surname,
         userpassword=password,
     )
 
-    return json_rpc('user_add', [username], attrs)
 
-
-def json_rpc(method_name, *params):
+def json_rpc(method_name, *args, **kwargs):
     headers = {
         "Referer": settings.TURSKA_IPA_JSONRPC,
         "Content-Type": "application/json",
     }
 
     payload = {
-        "params": params,
+        "params": [args, kwargs],
         "method": method_name,
         "id": 0,
     }
@@ -93,7 +91,7 @@ def json_rpc(method_name, *params):
     if error:
         raise IPAError(error)
 
-    print response.headers, response.content
+    return result
 
 
 def reset_password_expiry(dn, username):
