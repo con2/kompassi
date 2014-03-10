@@ -15,7 +15,7 @@ class Migration(SchemaMigration):
             ('person', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['core.Person'])),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('used_at', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('state', self.gf('django.db.models.fields.CharField')(max_length=8)),
+            ('state', self.gf('django.db.models.fields.CharField')(default='valid', max_length=8)),
             ('ip_address', self.gf('django.db.models.fields.CharField')(max_length=45, blank=True)),
         ))
         db.send_create_signal(u'core', ['PasswordResetToken'])
@@ -30,7 +30,7 @@ class Migration(SchemaMigration):
             ('person', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['core.Person'])),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('used_at', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('state', self.gf('django.db.models.fields.CharField')(max_length=8)),
+            ('state', self.gf('django.db.models.fields.CharField')(default='valid', max_length=8)),
             ('email', self.gf('django.db.models.fields.CharField')(max_length=255)),
         ))
         db.send_create_signal(u'core', ['EmailVerificationToken'])
@@ -105,7 +105,7 @@ class Migration(SchemaMigration):
             'email': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'person': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['core.Person']"}),
-            'state': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
+            'state': ('django.db.models.fields.CharField', [], {'default': "'valid'", 'max_length': '8'}),
             'used_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'})
         },
         u'core.event': {
@@ -132,7 +132,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ip_address': ('django.db.models.fields.CharField', [], {'max_length': '45', 'blank': 'True'}),
             'person': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['core.Person']"}),
-            'state': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
+            'state': ('django.db.models.fields.CharField', [], {'default': "'valid'", 'max_length': '8'}),
             'used_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'})
         },
         u'core.person': {
@@ -143,6 +143,7 @@ class Migration(SchemaMigration):
             'email_verified_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '1023'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'may_send_info': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'nick': ('django.db.models.fields.CharField', [], {'max_length': '1023', 'blank': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
