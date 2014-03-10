@@ -100,5 +100,11 @@ def reset_password_expiry(dn, username):
     )
 
 
-def reset_user_password(user, new_password):
-    raise NotImplemented()
+def admin_set_user_password(username, new_password):
+    return json_rpc('user_mod', username,
+        all=False,
+        rights=False,
+        userpassword=new_password,
+        random=False,
+        raw=False,
+    )
