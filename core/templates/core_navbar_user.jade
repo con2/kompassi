@@ -11,7 +11,9 @@ if user.is_authenticated
       li: a(href='/logout') Kirjaudu ulos
 elif not login_page
   li: a(href='{% url "core_registration_view" %}') Rekisteröidy
-  li: a(href='{% url "core_password_reset_request_view" %}') Salasana unohtunut
+  // XXX hack
+  if 'external_auth' not in settings.INSTALLED_APPS
+    li: a(href='{% url "core_password_reset_request_view" %}') Salasana unohtunut
   li
     form.navbar-form.navbar-input-group(role='form', action='/login', method='POST')
       {% csrf_token %}

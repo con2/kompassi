@@ -3,7 +3,15 @@ extends base.jade
 block content
   .row.core-login-view
     .col-md-6
-      - crispy form
+      form(method='POST', action='{% url "core_login_view" %}', role='form').form.form-horizontal
+        - crispy form
+        .form-group
+          .controls.col-md-8.col-md-offset-4
+            input.btn.btn-primary(type='submit', value='Kirjaudu sisään')
+            // XXX hack
+            if 'external_auth' not in settings.INSTALLED_APPS
+              a.btn.btn-link(href='{% url "core_password_reset_request_view" %}') Salasana unohtunut
+
     .col-md-6
       fieldset
         legend Luo itsellesi {{ settings.TURSKA_ACCOUNT_BRANDING }}

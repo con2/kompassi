@@ -41,12 +41,12 @@ class LoginForm(forms.Form):
         self.helper = horizontal_form_helper()
         self.helper.label_class = 'col-md-4'
         self.helper.field_class = 'col-md-8'
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             'next',
             Fieldset(u'Kirjaudu sisään {}'.format(settings.TURSKA_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE),
                 'username',
                 'password',
-                indented_without_label(Submit('submit', u'Kirjaudu sisään', css_class='btn-primary'), css_class='col-md-offset-4 col-md-8')
             )
         )
 
@@ -240,6 +240,7 @@ class PasswordResetRequestForm(forms.Form):
             'email',
             indented_without_label(Submit('submit', u'Lähetä', css_class='btn-success'))
         )
+
 
 class PasswordResetForm(forms.Form):
     # XXX BEGIN UGLY COPYPASTA
