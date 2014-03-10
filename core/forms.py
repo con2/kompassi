@@ -182,7 +182,6 @@ class PasswordForm(forms.Form):
         label=u'Uusi salasana',
         widget=forms.PasswordInput,
         validators=[check_password_strength],
-        help_text=PASSWORD_HELP_TEXT,
     )
 
     new_password_again = forms.CharField(
@@ -190,6 +189,7 @@ class PasswordForm(forms.Form):
         max_length=1023,
         label=u'Salasana uudestaan',
         widget=forms.PasswordInput,
+        help_text=PASSWORD_HELP_TEXT,
     )
 
     def __init__(self, *args, **kwargs):
@@ -249,7 +249,6 @@ class PasswordResetForm(forms.Form):
         label=u'Uusi salasana',
         widget=forms.PasswordInput,
         validators=[check_password_strength],
-        help_text=PASSWORD_HELP_TEXT,
     )
 
     new_password_again = forms.CharField(
@@ -257,6 +256,7 @@ class PasswordResetForm(forms.Form):
         max_length=1023,
         label=u'Salasana uudestaan',
         widget=forms.PasswordInput,
+        help_text=PASSWORD_HELP_TEXT,
     )
 
     def clean_new_password_again(self):

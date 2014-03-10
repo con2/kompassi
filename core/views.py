@@ -385,7 +385,7 @@ def core_password_reset_view(request, code):
     if request.method == 'POST':
         if form.is_valid():
             try:
-                PasswordresetToken.reset_password(code, form.cleaned_data['new_password'])
+                PasswordResetToken.reset_password(code, form.cleaned_data['new_password'])
             except PasswordResetError, e:
                 messages.error(request,
                     u'Salasanan nollaus epäonnistui. Ole hyvä ja ota yhteyttä osoitteeseen '
