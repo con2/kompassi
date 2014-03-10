@@ -4,6 +4,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
+from django.core.validators import RegexValidator
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
@@ -12,6 +13,12 @@ from core.utils import DateField
 
 from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH, BIRTH_DATE_HELP_TEXT
 from .utils import horizontal_form_helper, indented_without_label, check_password_strength
+
+
+valid_username = RegexValidator(
+    regex=r'[a-z0-9_]{4,30}',
+    message=u'Käyttäjänimi ei kelpaa.'
+)
 
 
 class LoginForm(forms.Form):
@@ -66,8 +73,8 @@ class PersonForm(forms.ModelForm):
                 'birth_date'
             ),
             Fieldset(u'Yhteystiedot',
-                'email',
                 'phone',
+                'email',
                 indented_without_label('may_send_info'),
             ),
             indented_without_label(Submit('submit', save_button_text, css_class='btn-primary'))
@@ -97,7 +104,15 @@ PASSWORD_HELP_TEXT = (
 
 
 class RegistrationForm(forms.Form):
-    username = forms.CharField(required=True, max_length=30, label=u'Käyttäjänimi')
+    username = forms.CharField(
+        required=True,
+        max_length=30,
+        validators=[valid_username],
+        label=u'Käyttäjänimi',
+        help_text=u'Valitse itsellesi 4&ndash;30 merkin pituinen käyttäjänimi. Sallittuja '
+            u'merkkejä ovat kirjaimet <i>a&ndash;z</i>, numerot <i>0&ndash;9</i> sekä '
+            u'alaviiva </i>_</i>.'
+    )
 
     password = forms.CharField(
         required=True,
@@ -105,13 +120,13 @@ class RegistrationForm(forms.Form):
         label=u'Salasana',
         widget=forms.PasswordInput,
         validators=[check_password_strength],
-        help_text=PASSWORD_HELP_TEXT,
     )
     password_again = forms.CharField(
         required=True,
         max_length=1023,
         label=u'Salasana uudestaan',
         widget=forms.PasswordInput,
+        help_text=PASSWORD_HELP_TEXT,
     )
 
     accept_terms_and_conditions = forms.BooleanField(
