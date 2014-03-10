@@ -36,7 +36,8 @@ def click_password_reset_link(context):
 
 @when(u'set up a new password')
 def setup_new_password(context):
-    context.person.reset_password(context.code, 'a new password I can remember')
+    from core.models import PasswordResetToken
+    PasswordResetToken.reset_password(context.code, 'a new password I can remember')
 
 
 @then(u'my password should have been changed')

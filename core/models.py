@@ -504,21 +504,23 @@ class PasswordResetToken(OneTimeCode):
 
         return render_to_string('core_password_reset_message.eml', vars, context_instance=RequestContext(request, {}))
 
-    def reset_password(self, new_password):
-        if self.state == 'valid':
-            self.mark_used()
+    @classmethod
+    def reset_password(cls, code, new_password):
+        try:
+            code = cls.objects.get(code=code, state='valid')
+        except cls.DoesNotExist:
+            raise PasswordResetError('invalid_code')
 
-            user = self.person.user
+        code.mark_used()
 
-            if 'external_auth' in settings.INSTALLED_APPS:
-                from external_auth.utils import reset_user_password
-                reset_user_password(user, new_password)
-            else:
-                user.set_password(new_password)
-                user.save()
+        user = code.person.user
 
+        if 'external_auth' in settings.INSTALLED_APPS:
+            from external_auth.utils import reset_user_password
+            reset_user_password(user, new_password)
         else:
-            raise PasswordResetError('code_used')
+            user.set_password(new_password)
+            user.save()
 
 
 class EmailVerificationToken(OneTimeCode):

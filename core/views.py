@@ -381,12 +381,11 @@ def core_password_reset_view(request, code):
         return redirect('core_password_view')
 
     form = initialize_form(PasswordResetForm, request)
-    code_instance = get_object_or_404(PasswordResetToken, code=code, state='valid')
 
     if request.method == 'POST':
         if form.is_valid():
             try:
-                code_instance.reset_password(form.cleaned_data['new_password'])
+                PasswordresetToken.reset_password(code, form.cleaned_data['new_password'])
             except PasswordResetError, e:
                 messages.error(request,
                     u'Salasanan nollaus epäonnistui. Ole hyvä ja ota yhteyttä osoitteeseen '
