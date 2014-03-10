@@ -14,7 +14,7 @@ def create_temporary_password():
 
 
 def get_user_dn(uid):
-    return "{uid},{branch}".format(
+    return "uid={uid},{branch}".format(
         uid=uid,
         branch=settings.TURSKA_LDAP_USERS
     )
