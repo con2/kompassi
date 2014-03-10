@@ -139,7 +139,7 @@ def core_registration_view(request):
 
             person.user = user
             person.save()
-            person.email_verification_required()
+            person.setup_email_verification(request)
 
             if 'external_auth' in settings.INSTALLED_APPS:
                 from external_auth.utils import create_user
