@@ -16,7 +16,7 @@ from .utils import horizontal_form_helper, indented_without_label, check_passwor
 
 
 valid_username = RegexValidator(
-    regex=r'[a-z0-9_]{4,30}',
+    regex=r'^[a-z0-9_]{4,30}$',
     message=u'Käyttäjänimi ei kelpaa.'
 )
 
