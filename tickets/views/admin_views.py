@@ -115,7 +115,7 @@ def tickets_admin_stats_view(request, vars, event):
         total_paid_price=total_paid_price
     )
 
-    return render(request, "tickets_admin_stats_view.html", vars)
+    return render(request, "tickets_admin_stats_view.jade", vars)
 
 
 @tickets_admin_required

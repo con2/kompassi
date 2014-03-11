@@ -1,0 +1,40 @@
+extends tickets_admin_base.jade
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Lipunmyynnin raportti
+    .panel-body
+    table.table.table-striped
+      thead
+        tr
+          th Tuote
+          th Myyty kpl
+          th Myyty €
+          th Maksettu kpl
+          th Maksettu €
+      tbody
+        for item in data
+          tr
+            td {{ item.product.name }}
+            td {{ item.count }}
+            td {{ item.cents }}
+            td {{ item.paid_count }}
+            td {{ item.paid_cents }}
+        tr
+          td Toimituskulut
+          td {{ num_req_delivery }}
+          td {{ shipping_and_handling_total }}
+          td {{ num_req_delivery_paid }}
+          td {{ shipping_and_handling_paid }}
+      tfoot
+        tr
+          th Yhteensä
+          th
+          th {{ total_price }}
+          th
+          th {{ total_price_paid }}
+
+block extra_scripts
+  script
+    window.turskaTicketData = {{ ticket_json }};
+  script(src="http://mbostock.github.com/d3/d3.v2.js")
+  script(src='{{ STATIC_URL }}js/tickets_by_date.js')
