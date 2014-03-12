@@ -517,7 +517,12 @@ class PasswordResetToken(OneTimeCode):
 
         if 'external_auth' in settings.INSTALLED_APPS:
             from external_auth.utils import reset_user_password
-            reset_user_password(user, new_password)
+            from external_auth.ipa import IPAError
+
+            try:
+                reset_user_password(user, new_password)
+            except IPAError, e:
+                raise PasswordResetError(e)
         else:
             user.set_password(new_password)
             user.save()
