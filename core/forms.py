@@ -110,7 +110,7 @@ class RegistrationForm(forms.Form):
         validators=[valid_username],
         label=u'Käyttäjänimi',
         help_text=u'Valitse itsellesi 4&ndash;30 merkin pituinen käyttäjänimi. Sallittuja '
-            u'merkkejä ovat kirjaimet <i>a&ndash;z</i>, numerot <i>0&ndash;9</i> sekä '
+            u'merkkejä ovat <b>pienet</b> kirjaimet <i>a&ndash;z</i>, numerot <i>0&ndash;9</i> sekä '
             u'alaviiva </i>_</i>.'
     )
 
