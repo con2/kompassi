@@ -177,8 +177,6 @@ def core_profile_view(request):
     if request.method == 'POST':
         if form.is_valid():
             person = form.save()
-            print 'old_email', old_email
-            print 'new_email', form.cleaned_data['email']
 
             if form.cleaned_data['email'] != old_email:
                 person.setup_email_verification(request)
