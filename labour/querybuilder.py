@@ -1,5 +1,64 @@
 # -*- coding: utf-8 -*-
 
+"""
+=============
+QueryBuilder
+=============
+
+1. Write a QueryBuilder subclass for a model.
+2. For query UI request, get available fields and views and output them to JS part.
+3. When JS does request with POST containing filter and view, parse the request.
+4. If the request was acceptable, execute the query and output the results.
+
+
+----------------------
+QueryBuilder subclass
+----------------------
+
+A simple example::
+
+    from django.contrib.auth.models import User
+
+    class UserQuery(QueryBuilder):
+        model = User
+        query_related_exclude = {
+            "": ["password"]
+        }
+        view_related_exclude = {
+            "": ["password"]
+        }
+
+
+------------------------
+Generate content for JS
+------------------------
+
+When processing request::
+
+    import json
+
+    def my_view(request):
+        query = UserQuery()
+        fields, views = query.get_columns()
+        fields, views = json.dumps(fields), json.dumps(views)
+        return render(request, "my_view.html", {"fields": fields, "views": views})
+
+
+-----------------
+Process JS query
+-----------------
+
+Oversimplified AJAX processing::
+
+    def my_results(request):
+        query = UserQuery()
+        query.parse(request.POST)
+        results = query.exec_query()
+        results = json.dumps(results)
+        return HttpResponse(results)
+
+"""
+
 import json
 from labour.models import Signup
 from django.db import models
@@ -279,6 +338,20 @@ class QueryBuilder(object):
         self._fields = {}
         self._find_columns(self.model)
         return self._fields, self._field_titles
+
+    def exec_query(self):
+        """
+        Exec the query that has been parsed.
+
+        :return: Data from the query.
+        :rtype: list[dict]
+        """
+        assert self._query is not None and self._views is not None
+
+        results = self.model.objects.filter(self.query).only("pk", *self.views)
+        results = results.values("pk", *self.views)
+
+        return results
 
     # noinspection PyProtectedMember
     def _find_columns(self, model, prefix=None):
