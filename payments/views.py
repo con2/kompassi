@@ -23,12 +23,11 @@ class PaymentStatus:
 
   CANCELLED_STATUSES = [TIMEOUT, ABORTED, CANCELLED]
 
-def please_contact(order, reason="Tapahtui virhe."):
-  email = settings.DEFAULT_FROM_EMAIL
+def please_contact(order, reason=u"Tapahtui virhe."):
   return (
-    "{reason} "
-    "Ole hyvä ja ota yhteyttä sähköpostiosoitteeseen {order.event.tickets_event_meta.plain_contact_email}. "
-    "Viestissäsi ilmoita tilausnumerosi #{order.pk:05d}."
+    u"{reason} "
+    u"Ole hyvä ja ota yhteyttä sähköpostiosoitteeseen {order.event.tickets_event_meta.plain_contact_email}. "
+    u"Viestissäsi ilmoita tilausnumerosi #{order.pk:05d}."
     .format(**locals())
   )
 
