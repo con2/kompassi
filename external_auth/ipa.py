@@ -82,7 +82,7 @@ def json_rpc(method_name, *args, **kwargs):
 
     try:
         response.raise_for_status()
-    except HTTPError, e:
+    except requests.HTTPError, e:
         raise IPAError(e)
 
     result = response.json()
