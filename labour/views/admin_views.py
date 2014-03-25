@@ -113,12 +113,12 @@ def labour_admin_menu_items(request, event):
     signups_active = request.path.startswith(signups_url)
     signups_text = u"Tapahtumaan ilmoittautuneet henkilöt"
 
-    roster_url = url('labour_admin_roster_view', event.slug)
-    roster_active = request.path == roster_url
-    roster_text = u"Työvuorojen suunnittelu"
+    # roster_url = url('labour_admin_roster_view', event.slug)
+    # roster_active = request.path == roster_url
+    # roster_text = u"Työvuorojen suunnittelu"
 
     return [
         (dashboard_active, dashboard_url, dashboard_text),
         (signups_active, signups_url, signups_text),
-        (roster_active, roster_url, roster_text),
+        # (roster_active, roster_url, roster_text),
     ]
