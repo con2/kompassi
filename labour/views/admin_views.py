@@ -29,7 +29,9 @@ def labour_admin_dashboard_view(request, vars, event):
 
 @labour_admin_required
 def labour_admin_signup_view(request, vars, event, person_id):
-    person = get_object_or_404(Person, pk=person_id)
+    print vars, event, person_id
+
+    person = get_object_or_404(Person, pk=int(person_id))
     signup = get_object_or_404(Signup, person=person, event=event)
 
     signup_form, signup_extra_form = initialize_signup_forms(request, event, signup,
