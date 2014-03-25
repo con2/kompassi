@@ -80,6 +80,14 @@ class PersonForm(forms.ModelForm):
             indented_without_label(Submit('submit', save_button_text, css_class='btn-primary'))
         )
 
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        if Person.objects.filter(email=email).exists():
+            raise forms.ValidationError(u'Sähköpostiosoite on jo käytössä. Jos olet unohtanut salasanasi, ole hyvä ja käytä Salasana unohtunut -toimintoa.')
+
+        return email
+
     class Meta:
         model = Person
         fields = (
