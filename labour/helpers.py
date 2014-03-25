@@ -8,12 +8,12 @@ from django.shortcuts import get_object_or_404, redirect
 
 def labour_admin_required(view_func):
     @wraps(view_func)
-    def wrapper(request, event_id, *args, **kwargs):
+    def wrapper(request, event_slug, *args, **kwargs):
         from core.models import Event
         from core.utils import login_redirect
         from .views import labour_admin_menu_items
 
-        event = get_object_or_404(Event, slug=event_id)
+        event = get_object_or_404(Event, slug=event_slug)
         meta = event.labour_event_meta
 
         if not meta:
@@ -34,10 +34,10 @@ def labour_admin_required(view_func):
 
 def labour_event_required(view_func):
     @wraps(view_func)
-    def wrapper(request, event_id, *args, **kwargs):
+    def wrapper(request, event_slug, *args, **kwargs):
         from core.models import Event
 
-        event = get_object_or_404(Event, slug=event_id)
+        event = get_object_or_404(Event, slug=event_slug)
         meta = event.labour_event_meta
 
         if not meta:

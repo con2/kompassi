@@ -28,8 +28,8 @@ def core_frontpage_view(request):
     return render(request, 'core_frontpage_view.jade', vars)
 
 
-def core_event_view(request, event_id):
-    event = get_object_or_404(Event, slug=event_id)
+def core_event_view(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
 
     vars = dict(
         event=event,

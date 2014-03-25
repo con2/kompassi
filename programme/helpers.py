@@ -8,10 +8,10 @@ from django.shortcuts import redirect, get_object_or_404
 
 def programme_event_required(view_func):
     @wraps(view_func)
-    def wrapper(request, event_id, *args, **kwargs):
+    def wrapper(request, event_slug, *args, **kwargs):
         from core.models import Event
 
-        event = get_object_or_404(Event, slug=event_id)
+        event = get_object_or_404(Event, slug=event_slug)
         meta = event.programme_event_meta
 
         if not meta:

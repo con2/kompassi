@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 
 from core.forms import PersonForm
-from core.models import Event
+from core.models import Event, Person
 from core.utils import initialize_form, url, json_response, render_string
 
 from ..forms import SignupForm
@@ -28,8 +28,9 @@ def labour_admin_dashboard_view(request, vars, event):
 
 
 @labour_admin_required
-def labour_admin_signup_view(request, vars, event, person):
-    signup = get_object_or_404(Signup, person=int(person), event=event)
+def labour_admin_signup_view(request, vars, event, person_id):
+    person = get_object_or_404(Person, pk=person_id)
+    signup = get_object_or_404(Signup, person=person, event=event)
 
     signup_form, signup_extra_form = initialize_signup_forms(request, event, signup,
         readonly=True
