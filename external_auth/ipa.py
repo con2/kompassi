@@ -27,6 +27,10 @@ def ldap_session():
             l.unbind_s()
 
 
+def u(unicode_string):
+    return unicode_string.encode('UTF-8')
+
+
 class IPAError(RuntimeError):
     pass
 
@@ -41,8 +45,8 @@ def remove_user_from_group(username, groupname):
 
 def change_user_password(dn, old_password, new_password):
     with ldap_session() as l:
-        l.simple_bind_s(dn, old_password)
-        l.passwd_s(dn, old_password, new_password)
+        l.simple_bind_s(dn, u(old_password))
+        l.passwd_s(dn, u(old_password), u(new_password))
 
 
 def ldap_modify(dn, *modlist):
@@ -92,12 +96,6 @@ def json_rpc(method_name, *args, **kwargs):
         raise IPAError(error)
 
     return result
-
-
-def reset_password_expiry(dn, username):
-    ldap_modify(dn,
-        (ldap.MOD_REPLACE, 'krbpasswordexpiration', '20170101000000Z'),
-    )
 
 
 def admin_set_user_password(username, new_password):
