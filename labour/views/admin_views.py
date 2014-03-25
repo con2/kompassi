@@ -53,7 +53,7 @@ def labour_admin_signup_view(request, vars, event, person):
 
 @labour_admin_required
 def labour_admin_signups_view(request, vars, event):
-    signups = event.signup_set.all()
+    signups = event.signup_set.all().order_by('person__surname', 'person__first_name')
 
     vars.update(
         signups=signups,
