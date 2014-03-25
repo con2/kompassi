@@ -95,9 +95,13 @@ class PersonForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data['email']
+        qs = Person.objects.filter(email=email, user__isnull=False)
 
-        if Person.objects.filter(email=email).exists():
-            raise forms.ValidationError(u'Sähköpostiosoite on jo käytössä. Jos olet unohtanut salasanasi, ole hyvä ja käytä Salasana unohtunut -toimintoa.')
+        if qs.exists() and self.instance not in qs:
+            raise forms.ValidationError(
+                u'Sähköpostiosoite on jo käytössä. Jos olet unohtanut '
+                u'salasanasi, ole hyvä ja käytä Salasana unohtunut -toimintoa.'
+            )
 
         return email
 
