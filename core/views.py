@@ -221,7 +221,7 @@ def core_personify_view(request):
             person = form.save(commit=False)
             person.user = request.user
             person.save()
-            person.setup_email_verification()
+            person.setup_email_verification(request)
             messages.success(request,
                 u'Tietosi on tallennettu. Ole hyvä ja vahvista sähköpostiosoitteesi. Tarkista '
                 u'postilaatikkosi ja noudata vahvistusviestissä olevia ohjeita.'
