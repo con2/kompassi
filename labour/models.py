@@ -392,7 +392,7 @@ class Signup(models.Model):
         p = self.person.full_name if self.person else 'None'
         e = self.event.name if self.event else 'None'
 
-        return '{p} / {e}'.format(**locals())
+        return u'{p} / {e}'.format(**locals())
 
     def clean(self):
         if self.is_rejected and self.job_accepted:
