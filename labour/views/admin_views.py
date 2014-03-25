@@ -7,12 +7,15 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 
-from core.utils import initialize_form, url, json_response, render_string
+from core.forms import PersonForm
 from core.models import Event
+from core.utils import initialize_form, url, json_response, render_string
 
 from ..forms import SignupForm
 from ..helpers import labour_admin_required
 from ..models import LabourEventMeta, Qualification, PersonQualification, Signup, JobCategory
+
+from .view_helpers import initialize_signup_forms
 
 
 @labour_admin_required
@@ -28,8 +31,21 @@ def labour_admin_dashboard_view(request, vars, event):
 def labour_admin_signup_view(request, vars, event, person):
     signup = get_object_or_404(Signup, person=int(person), event=event)
 
+    signup_form, signup_extra_form = initialize_signup_forms(request, event, signup,
+        readonly=True
+    )
+    person_form = initialize_form(PersonForm, request,
+        instance=signup.person,
+        prefix='person',
+        submit_button=False,
+        readonly=True
+    )
+
     vars.update(
         signup=signup,
+        person_form=person_form,
+        signup_form=signup_form,
+        signup_extra_form=signup_extra_form
     )
 
     return render(request, 'labour_admin_signup_view.jade', vars)

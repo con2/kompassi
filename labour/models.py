@@ -401,12 +401,14 @@ class Signup(models.Model):
 
     @property
     def signup_extra(self):
-        SignupExtra = self.event.labour_event_meta.signup_extra_model
+        if not hasattr(self, '_signup_extra'):
+            SignupExtra = self.event.labour_event_meta.signup_extra_model
+            try:
+                self._signup_extra = SignupExtra.objects.get(signup=self)
+            except SignupExtra.DoesNotExist:
+                self._signup_extra = SignupExtra(signup=self)
 
-        try:
-            return SignupExtra.objects.get(signup=self)
-        except SignupExtra.DoesNotExist:
-            return SignupExtra(signup=self)
+        return self._signup_extra
 
     def get_first_categories(self):
         return self.job_categories.all()[:NUM_FIRST_CATEGORIES]

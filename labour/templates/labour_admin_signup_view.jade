@@ -1,3 +1,10 @@
 extends labour_admin_base
+- load crispy_forms_tags
 block admin_content
-  h4 {{ event.name }} - {{ signup.person.full_name }}
+  .panel.panel-default
+    .panel-heading: strong Hakemus
+    .panel-body
+      .form-horizontal
+        - crispy person_form
+        - crispy signup_form
+        - crispy signup_extra_form

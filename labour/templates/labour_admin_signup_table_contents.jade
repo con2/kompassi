@@ -18,9 +18,9 @@ thead
 tbody
   for signup in signups
     tr
-      td {{ signup.person.surname }}
-      td {{ signup.person.first_name }}
-      td {{ signup.person.nick }}
+      td: a(href='{% url "labour_admin_signup_view" event.slug signup.pk %}') {{ signup.person.surname }}
+      td: a(href='{% url "labour_admin_signup_view" event.slug signup.pk %}') {{ signup.person.first_name }}
+      td: a(href='{% url "labour_admin_signup_view" event.slug signup.pk %}') {{ signup.person.nick }}
       td
         if signup.is_shifts_complete
           span.label.label-success {{ signup.job_accepted.name }}

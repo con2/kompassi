@@ -57,6 +57,11 @@ class PersonForm(forms.ModelForm):
     phone = forms.CharField(required=True, max_length=PHONE_NUMBER_LENGTH, label=u'Puhelinnumero')
 
     def __init__(self, *args, **kwargs):
+        if 'submit_button' in kwargs:
+            submit_button = kwargs.pop('submit_button')
+        else:
+            submit_button = True
+
         super(PersonForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
 
@@ -65,7 +70,7 @@ class PersonForm(forms.ModelForm):
         else:
             save_button_text = u'Tallenna tiedot'
 
-        self.helper.layout = Layout(
+        layout_parts = [
             Fieldset(u'Perustiedot',
                 'first_name',
                 'surname',
@@ -77,8 +82,16 @@ class PersonForm(forms.ModelForm):
                 'email',
                 indented_without_label('may_send_info'),
             ),
-            indented_without_label(Submit('submit', save_button_text, css_class='btn-primary'))
-        )
+        ]
+
+        if submit_button:
+            layout_parts.append(
+                indented_without_label(
+                    Submit('submit', save_button_text, css_class='btn-success')
+                )
+            )
+
+        self.helper.layout = Layout(*layout_parts)
 
     def clean_email(self):
         email = self.cleaned_data['email']

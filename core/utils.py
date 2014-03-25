@@ -24,10 +24,21 @@ from django.utils.timezone import get_default_timezone
 
 
 def initialize_form(FormClass, request, *args, **kwargs):
-    if request.method == 'POST':
-        return FormClass(request.POST, *args, **kwargs)
+    if 'readonly' in kwargs:
+        readonly = kwargs.pop('readonly')
     else:
-        return FormClass(*args, **kwargs)
+        readonly = False
+
+    if request.method == 'POST':
+        form = FormClass(request.POST, *args, **kwargs)
+    else:
+        form = FormClass(*args, **kwargs)
+
+    if readonly:
+        for field in form.fields.values():
+            field.widget.attrs['readonly'] = True
+
+    return form
 
 
 def indented_without_label(input, css_class='col-md-offset-3 col-md-9'):
@@ -38,7 +49,7 @@ def horizontal_form_helper():
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.label_class = 'col-md-3'
-    helper.field_class = 'col-md-5'
+    helper.field_class = 'col-md-9'
     return helper
 
 
