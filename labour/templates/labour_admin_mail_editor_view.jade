@@ -1,0 +1,14 @@
+extends labour_admin_base
+- load crispy_forms_tags
+block admin_content
+  form(role='form', method='POST').form-horizontal
+    .panel.panel-default
+      .panel-heading: strong Työvoimaviestin muokkaus
+      .panel-body
+        - crispy form
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          a(href='{% url "labour_admin_mail_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan
+          if message.sent_at
+            button.btn.btn-danger Vanhenna
+          button.btn.btn-success Esikatselu ja lähetys

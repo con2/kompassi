@@ -27,4 +27,34 @@ urlpatterns = patterns('',
         labour_admin_roster_job_category_fragment,
         name='labour_admin_roster_job_category_fragment'
     ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/admin/mail$',
+        labour_admin_mail_view,
+        name='labour_admin_mail_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/admin/mail/new$',
+        labour_admin_mail_editor_view,
+        name='labour_admin_mail_new_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/admin/mail/(?P<message_id>\d+)$',
+        labour_admin_mail_editor_view,
+        name='labour_admin_mail_editor_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/admin/mail/(?P<message_id>\d+)/preview',
+        labour_admin_mail_preview_view,
+        name='labour_admin_mail_preview_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/admin/mail/(?P<message_id>\d+)/preview/(?P<username>[a-z0-9_]+)',
+        labour_admin_mail_preview_fragment,
+        name='labour_admin_mail_preview_fragment'
+    ),
 )

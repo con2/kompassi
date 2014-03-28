@@ -1,0 +1,13 @@
+extends labour_admin_base
+- load crispy_forms_tags
+block admin_content
+  form(role='form', action='POST').form-horizontal
+    .panel.panel-default
+      .panel-heading: strong Työvoimaviestin esikatselu
+      .panel-body
+        - crispy form
+      .panel-footer
+        .btn-group.pull-right
+          button.btn.btn-default Paluu
+          button.btn.btn-danger Vanhenna
+          button.btn.btn-success Lähetä
