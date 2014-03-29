@@ -131,14 +131,14 @@ class PersonMessage(models.Model):
             )
 
             # TODO need a way to make app-specific vars in the apps themselves
-            if 'labour' in self.INSTALLED_APPS:
+            if 'labour' in settings.INSTALLED_APPS:
                 from labour.models import Signup
 
                 try:
                     signup = Signup.objects.get(event=self.message.event, person=self.person)
                 except Signup.DoesNotExist:
                     signup = None
-                    
+
                 self._message_vars.update(signup=signup)
 
         return self._message_vars
