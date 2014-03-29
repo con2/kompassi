@@ -8,10 +8,21 @@ from django.utils import timezone
 class Message(models.Model):
     event = models.ForeignKey('core.Event')
     app_label = models.CharField(max_length=63)
-    recipient_group = models.ForeignKey('auth.Group')
 
-    subject_template = models.CharField(max_length=255)
-    body_template = models.TextField()
+    recipient_group = models.ForeignKey('auth.Group',
+        verbose_name=u'Vastaanottajaryhmä',
+        help_text=u'Viesti lähetetään kaikille tämän ryhmän jäsenille.',
+    )
+
+    subject_template = models.CharField(
+        max_length=255,
+        verbose_name=u'Otsikko',
+        help_text=u'Ks. <a data-toggle="collapse" data-parent="#editor" href="#formatting">muotoiluohje</a>.',
+    )
+    body_template = models.TextField(
+        verbose_name=u'Viestin teksti',
+        help_text=u'Ks. <a data-toggle="collapse" data-parent="#editor" href="#formatting">muotoiluohje</a>.',
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

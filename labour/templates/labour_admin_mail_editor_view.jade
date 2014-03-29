@@ -1,7 +1,10 @@
 extends labour_admin_base
 - load crispy_forms_tags
 block admin_content
-  form(role='form', method='POST').form-horizontal
+  form(role='form', method='POST').form-horizontal.panel-group#editor
+    .panel.panel-default
+      .panel-heading: a(data-toggle='collapse', data-parent='#editor', href='#formatting') Muotoiluohje
+      .panel-body.panel-collapse.collapse#formatting Lorem ipsum
     .panel.panel-default
       .panel-heading: strong Työvoimaviestin muokkaus
       .panel-body
