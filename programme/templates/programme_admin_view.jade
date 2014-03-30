@@ -1,0 +1,19 @@
+extends core_admin_base
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Ohjelmaluettelo
+    table.table.table-striped
+      thead
+        tr
+          th Alkuaika
+          th Sali
+          th Otsikko
+          th Ohjelmanpitäjä
+      tbody
+        for programme in programmes
+          tr
+            td {{ programme.start_time }}
+            td {{ programme.room.name }}
+            td {{ programme.title }}
+            td {{ programme.formatted_hosts }}
+
