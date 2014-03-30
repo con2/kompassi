@@ -8,6 +8,8 @@ block admin_content
         - crispy form
       .panel-footer
         .btn-group.pull-right
-          button.btn.btn-default Paluu
-          button.btn.btn-danger Vanhenna
-          button.btn.btn-success Lähetä
+          a(href='{% url "labour_admin_mail_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan
+          if message.sent_at
+            button.btn.btn-danger Vanhenna
+          else
+            button.btn.btn-success Lähetä

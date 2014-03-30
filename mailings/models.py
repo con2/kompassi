@@ -11,17 +11,14 @@ class Message(models.Model):
 
     recipient_group = models.ForeignKey('auth.Group',
         verbose_name=u'Vastaanottajaryhmä',
-        help_text=u'Viesti lähetetään kaikille tämän ryhmän jäsenille.',
     )
 
     subject_template = models.CharField(
         max_length=255,
-        verbose_name=u'Otsikko',
-        help_text=u'Ks. <a data-toggle="collapse" data-parent="#editor" href="#formatting">muotoiluohje</a>.',
+        verbose_name=u'Otsikko'
     )
     body_template = models.TextField(
-        verbose_name=u'Viestin teksti',
-        help_text=u'Ks. <a data-toggle="collapse" data-parent="#editor" href="#formatting">muotoiluohje</a>.',
+        verbose_name=u'Viestin teksti'
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

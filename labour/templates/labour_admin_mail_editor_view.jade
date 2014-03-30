@@ -1,10 +1,7 @@
 extends labour_admin_base
 - load crispy_forms_tags
 block admin_content
-  form(role='form', method='POST').form-horizontal.panel-group#editor
-    .panel.panel-default
-      .panel-heading: a(data-toggle='collapse', data-parent='#editor', href='#formatting') Muotoiluohje
-      .panel-body.panel-collapse.collapse#formatting Lorem ipsum
+  form(role='form', method='POST').form-horizontal.panel-group
     .panel.panel-default
       .panel-heading: strong Työvoimaviestin muokkaus
       .panel-body
@@ -14,4 +11,8 @@ block admin_content
           a(href='{% url "labour_admin_mail_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan
           if message.sent_at
             button.btn.btn-danger Vanhenna
-          button.btn.btn-success Esikatselu ja lähetys
+          button.btn.btn-primary Tallenna ja jatka muokkaamista
+          if message.sent_at
+            button.btn.btn-success Esikatselu
+          else
+            button.btn.btn-success Esikatselu ja lähetys
