@@ -11,7 +11,7 @@ from django.utils.timezone import get_default_timezone, now
 from core.utils import give_all_app_perms_to_group
 from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
-from programme.models import ProgrammeEventMeta
+from programme.models import ProgrammeEventMeta, Category, Programme
 from tickets.models import TicketsEventMeta, LimitGroup, Product
 
 from ...models import SignupExtra, SpecialDiet, Night
@@ -91,6 +91,31 @@ class Command(BaseCommand):
             public=False,
             admin_group=programme_admin_group
         ))
+
+        for title, style in [
+            (u'Animeohjelma', u'anime'),
+            (u'Cosplayohjelma', u'cosplay'),
+            (u'Miitti', u'miitti'),
+            (u'Muu ohjelma', u'muu'),
+            (u'Roolipeliohjelma', u'rope'),
+        ]:
+            Category.objects.get_or_create(
+                event=event,
+                style=style,
+                defaults=dict(
+                    title=title,
+                )
+            )
+
+        if options['test']:
+            # create some test programme
+            Programme.objects.get_or_create(
+                category=Category.objects.get(title='Animeohjelma', event=event),
+                title='Yaoi-paneeli',
+                defaults=dict(
+                    description='Kika-kika tirsk',
+                )
+            )
 
         for name, description in [
             (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen'),

@@ -88,12 +88,12 @@ class Tag(models.Model):
 class Programme(models.Model):
     category = models.ForeignKey(Category)
     title = models.CharField(max_length=1023)
-    description = models.TextField()
-    start_time = models.DateTimeField()
-    length = models.IntegerField()
+    description = models.TextField(blank=True)
+    start_time = models.DateTimeField(null=True)
+    length = models.IntegerField(null=True)
     notes = models.TextField(blank=True)
-    room = models.ForeignKey(Room)
-    organizers = models.ManyToManyField('core.Person', through='ProgrammeRole')
+    room = models.ForeignKey(Room, null=True)
+    organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
 
     @property

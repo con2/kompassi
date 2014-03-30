@@ -20,7 +20,7 @@ def programme_admin_view(request, vars, event):
 
 @programme_admin_required
 def programme_admin_detail_view(request, vars, event, programme_id):
-    programme = get_object_or_404(Programme, event=event, pk=int(programme_id))
+    programme = get_object_or_404(Programme, category__event=event, pk=int(programme_id))
 
     # programme_form = initialize_form(ProgrammeForm, request, instance=programme)
     # programme_admin_form = initialize_form(ProgrammeAdminForm, request, instance=programme)
