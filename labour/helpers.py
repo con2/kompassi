@@ -25,7 +25,8 @@ def labour_admin_required(view_func):
 
         vars = dict(
             event=event,
-            admin_menu_items=labour_admin_menu_items(request, event)
+            admin_menu_items=labour_admin_menu_items(request, event),
+            admin_title=u'Työvoiman hallinta'
         )
 
         return view_func(request, vars, event, *args, **kwargs)
