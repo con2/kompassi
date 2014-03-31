@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     ),
 
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/?$', programme_timetable_view, name='programme_timetable_view'),
+    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/fragment?$', programme_timetable_view, dict(template='programme_timetable_fragment.jade'), name='programme_timetable_fragment'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/mobile/?$', programme_mobile_timetable_view, name='programme_mobile_timetable_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/mobile/(\d{1,4})', programme_mobile_detail_view, name='programme_mobile_detail_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/full$', programme_internal_timetable_view, name='programme_internal_timetable_view'),

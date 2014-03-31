@@ -21,11 +21,31 @@ from ..helpers import programme_event_required
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60) # XXX remove once nginx cache is in place
 @programme_event_required
-def programme_timetable_view(request, event):
-    return render_timetable(request, event, internal_programmes=False)
+def programme_timetable_view(
+    request,
+    event,
+    internal_programmes=False,
+    template='programme_timetable_view.jade',
+):
+    return actual_timetable_view(request, event, internal_programmes, template)
+
+# look, no cache
+@programme_event_required
+def programme_internal_timetable_view(
+    request,
+    event,
+    internal_programmes=True,
+    template='programme_timetable_view.jade',
+):
+    return actual_timetable_view(request, event, internal_programmes, template)
 
 
-def render_timetable(request, event, internal_programmes=False):
+def actual_timetable_view(
+    request,
+    event,
+    internal_programmes=False,
+    template='programme_timetable_view.jade',
+):
     all_rooms = AllRoomsPseudoView(event)
 
     category_query = dict(event=event)
@@ -41,7 +61,7 @@ def render_timetable(request, event, internal_programmes=False):
         all_programmes_by_start_time=all_rooms.programmes_by_start_time
     )
 
-    return render(request, 'programme_timetable.jade', vars)
+    return render(request, template, vars)
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -95,11 +115,6 @@ def programme_mobile_detail_view(request, event, programme_id):
     )
 
     return render(request, 'programme_mobile_detail.jade', vars)
-
-
-@programme_event_required
-def programme_internal_timetable_view(request, event):
-    return render_timetable(request, event, internal_programmes=True)
 
 
 @programme_event_required
