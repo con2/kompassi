@@ -105,6 +105,24 @@ class PersonForm(forms.ModelForm):
 
         return email
 
+    def clean_first_name(self):
+        # ipa will barf on leading/trailing whitespace
+        first_name = self.cleaned_data['first_name']
+
+        if first_name:
+            first_name = first_name.strip()
+
+        return first_name
+
+    def clean_surname(self):
+        # ipa will barf on leading/trailing whitespace
+        surname = self.cleaned_data['surname']
+
+        if surname:
+            surname = surname.strip()
+
+        return surname
+
     class Meta:
         model = Person
         fields = (
