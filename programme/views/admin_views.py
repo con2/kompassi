@@ -4,7 +4,7 @@ from core.utils import initialize_form, url
 
 from ..models import Programme
 from ..helpers import programme_admin_required
-# from ..forms import ProgrammeForm, ProgrammeAdminForm
+from ..forms import ProgrammeForm, ProgrammeAdminForm
 
 
 @programme_admin_required
@@ -22,13 +22,19 @@ def programme_admin_view(request, vars, event):
 def programme_admin_detail_view(request, vars, event, programme_id):
     programme = get_object_or_404(Programme, category__event=event, pk=int(programme_id))
 
-    # programme_form = initialize_form(ProgrammeForm, request, instance=programme)
-    # programme_admin_form = initialize_form(ProgrammeAdminForm, request, instance=programme)
+    programme_form = initialize_form(ProgrammeForm, request,
+        instance=programme,
+        prefix='programme_basic',
+    )
+    programme_admin_form = initialize_form(ProgrammeAdminForm, request,
+        instance=programme,
+        prefix='programme_admin',
+    )
 
     vars.update(
         programme=programme,
-        # programme_form=programme_form,
-        # programme_admin_form=programme_admin_form
+        programme_form=programme_form,
+        programme_admin_form=programme_admin_form,
     )
 
     return render(request, 'programme_admin_detail_view.jade', vars)
@@ -36,7 +42,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
 def programme_admin_menu_items(request, event):
     index_url = url('programme_admin_view', event.slug)
-    index_active = request.path == index_url
+    index_active = request.path.startswith(index_url)
     index_text = u'Ohjelmaluettelo'
 
     return [

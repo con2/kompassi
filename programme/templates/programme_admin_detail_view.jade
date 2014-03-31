@@ -1,0 +1,9 @@
+extends core_admin_base
+- load crispy_forms_tags
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Ohjelmanumeron tiedot
+    .panel-body
+      .form-horizontal
+        - crispy programme_admin_form
+        - crispy programme_form

@@ -94,21 +94,61 @@ RECORDING_PERMISSION_CHOICES = [
 
 
 class Programme(models.Model):
-    category = models.ForeignKey(Category)
-    
-    title = models.CharField(max_length=1023)
-    description = models.TextField(blank=True)
-    room_requirements = models.TextField(blank=True)
-    tech_requirements = models.TextField(blank=True)
-    requested_time_slot = models.TextField(blank=True)
-    video_permission = models.CharField(max_length=15, choices=RECORDING_PERMISSION_CHOICES)
+    category = models.ForeignKey(Category, verbose_name=u'Ohjelmaluokka')
 
-    start_time = models.DateTimeField(null=True)
-    length = models.IntegerField(null=True)
-    notes = models.TextField(blank=True)
-    room = models.ForeignKey(Room, null=True)
+    title = models.CharField(
+        max_length=1023,
+        verbose_name=u'Otsikko',
+        help_text=u'Keksi ohjelmanumerollesi lyhyt ja ytimekäs otsikko ohjelmakarttaa sekä ohjelmalehteä varten. Tracon varaa oikeuden muuttaa otsikkoa.',
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name=u'Ohjelmanumeron kuvaus',
+        help_text=u'Ohjelmakuvaus näkyy web-ohjelmakartassa sekä ohjelmalehdessä. Ohjelmakuvauksen tarkoitus on antaa kävijälle riittävät tiedot päättää, osallistuako ohjelmaasi, ja markkinoida ohjelmaasi kävijöille. Tracon varaa oikeuden editoida kuvausta.',
+    )
+    room_requirements = models.TextField(
+        blank=True,
+        verbose_name=u'Tilatarpeet',
+        help_text=u'Kuinka paljon odotat ohjelmanumerosi vetävän yleisöä? Minkälaista salia toivot ohjelmanumerosi käyttöön?',
+    )
+    tech_requirements = models.TextField(
+        blank=True,
+        verbose_name=u'Tekniikkatarpeet',
+        help_text=u'Tarvitsetko ohjelmasi pitämiseen esimerkiksi tietokonetta, videotykkiä, luentoäänentoistoa, musiikkiäänentoistoa, tussi-, fläppi- tai liitutaulua tai muita erityisvälineitä? Oman tietokoneen käyttö on mahdollista vain, jos siitä on sovittu etukäteen.',
+    )
+    requested_time_slot = models.TextField(
+        blank=True,
+        verbose_name=u'Aikatoiveet',
+        help_text=u'Mihin aikaan haluaisit pitää ohjelmanumerosi? Minkä ohjelmanumeroiden kanssa et halua olla päällekäin?'
+    )
+    video_permission = models.CharField(
+        max_length=15,
+        choices=RECORDING_PERMISSION_CHOICES,
+        default=RECORDING_PERMISSION_CHOICES[0][0],
+        verbose_name=u'Videointilupa',
+        help_text=u'Saako luentosi videoida ja julkaista Internetissä?',
+    )
+    notes_from_host = models.TextField(
+        blank=True,
+        verbose_name=u'Vapaamuotoiset terveiset ohjelmavastaaville',
+        help_text=u'Jos haluat sanoa ohjelmanumeroosi liittyen jotain, mikä ei sovi mihinkään yllä olevista kentistä, käytä tätä kenttää.',
+    )
+
+    start_time = models.DateTimeField(null=True, verbose_name=u'Alkuaika')
+    length = models.IntegerField(
+        null=True,
+        verbose_name=u'Kesto (minuuttia)',
+    )
+
+    notes = models.TextField(
+        blank=True,
+        verbose_name=u'Ohjelmavastaavan muistiinpanot',
+        help_text=u'Tämä kenttä ei normaalisti näy ohjelman järjestäjälle, mutta jos henkilö '
+            u'pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.'
+    )
+    room = models.ForeignKey(Room, null=True, verbose_name=u'Tila')
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
-    tags = models.ManyToManyField(Tag, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True, verbose_name=u'Tägit')
 
     @property
     def event(self):
