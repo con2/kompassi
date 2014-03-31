@@ -1,0 +1,52 @@
+.timetable
+  .legend
+    ul.categories
+      for category in categories
+        li(class='{{ category.style }}') {{ category.title }}
+  h2 Ohjelmakartta
+  for view in views
+    table.table.table-bordered
+      thead
+        tr
+          th  
+          for room in view.public_rooms
+            th: {{ room.name }}
+      tbody
+        for start_time, incontinuity_css, programmes in view.programmes_by_start_time
+          tr(class='{{ incontinuity_css }}')
+            th: {{ start_time|date:"H:i" }}
+            for programme, rowspan in programmes
+              if programme
+                if programme.public or internal_programmes
+                  td.programme(rowspan='{{ rowspan }}', class='{{ programme.css_classes }}')
+                    a(href='#p{{ programme.pk }}')
+                      span.title {{ programme.title }}
+                      for tag in programme.tags.all
+                        | 
+                        span.label(class='{{ tag.style }}') {{ tag.title }}
+                else
+                  td.concealed.sisainen(rowspan='{{ rowspan }}')
+              else
+                td.blank
+
+.descriptions
+  h2 Tarkemmat ohjelmatiedot
+
+  for start_time, unused, programmes in all_programmes_by_start_time
+    h3 {{ start_time|date:"l H:i"|capfirst }}
+    for programme, rowspan in programmes
+      if programme and programme.public or programme and internal_programmes
+        .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')
+          h4
+            span.title {{ programme.title }}
+            for tag in programme.tags.all
+              | 
+              span.label(class='{{ tag.style }}') {{ tag.title }}
+          .programme-info
+            .meta
+              span.room {{ programme.room.name }}
+              |  klo 
+              span.times {{ programme.start_time|date:"H:i"}}&ndash;{{ programme.end_time|date:"H:i"}}
+              |  &ndash; 
+              span.host {{ programme.formatted_hosts }}
+            .description {{ programme.description|safe|linebreaks }}

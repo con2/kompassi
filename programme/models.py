@@ -85,10 +85,24 @@ class Tag(models.Model):
         verbose_name_plural = u'tägit'
         ordering = ['order']
 
+
+RECORDING_PERMISSION_CHOICES = [
+    (u'public', u'Ohjelmanumeroni saa videoida ja julkaista'),
+    (u'private', u'Kiellän ohjelmanumeroni julkaisun, mutta sen saa videoida arkistokäyttöön'),
+    (u'forbidden', u'Kiellän ohjelmanumeroni videoinnin'),
+]
+
+
 class Programme(models.Model):
     category = models.ForeignKey(Category)
+    
     title = models.CharField(max_length=1023)
     description = models.TextField(blank=True)
+    room_requirements = models.TextField(blank=True)
+    tech_requirements = models.TextField(blank=True)
+    requested_time_slot = models.TextField(blank=True)
+    video_permission = models.CharField(max_length=15, choices=RECORDING_PERMISSION_CHOICES)
+
     start_time = models.DateTimeField(null=True)
     length = models.IntegerField(null=True)
     notes = models.TextField(blank=True)
