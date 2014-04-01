@@ -134,6 +134,7 @@ INSTALLED_APPS = (
 
     'tracon8',
     'tracon9',
+    'kawacon2014',
 )
 
 LOGGING = {

@@ -28,6 +28,7 @@ class Command(BaseCommand):
             (('setup_labour_common_qualifications',), dict(test=test)),
             (('setup_tracon8',), dict(test=test)),
             (('setup_tracon9',), dict(test=test)),
+            (('setup_kawacon2014',), dict(test=test)),
         ]
 
         if test:
