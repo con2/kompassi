@@ -6,6 +6,7 @@ from django.db import models
 from django.conf import settings
 
 from core.models import EventMetaBase, OneTimeCode
+from core.utils import url
 
 from .utils import window, next_full_hour, full_hours_between
 
@@ -15,6 +16,29 @@ ONE_HOUR = datetime.timedelta(hours=1)
 
 class ProgrammeEventMeta(EventMetaBase):
     public = models.BooleanField(default=True)
+
+    contact_email = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=u'yhteysosoite',
+        help_text=u'Kaikki ohjelmajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
+            u'osoitteesta, ja tämä osoite näytetään ohjelmanjärjestäjälle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
+    )
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        from core.models import Event
+
+        event, unused = Event.get_or_create_dummy()
+        admin_group, unused = cls.get_or_create_group(event, 'admins')
+
+        return cls.objects.get_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=admin_group,
+                public=True
+            )
+        )
 
 
 class Category(models.Model):
@@ -31,6 +55,18 @@ class Category(models.Model):
         ordering = ['title']
         verbose_name = u'ohjelmaluokka'
         verbose_name_plural = u'ohjelmaluokat'
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        meta, unused = ProgrammeEventMeta.get_or_create_dummy()
+
+        return cls.objects.get_or_create(
+            event=meta.event,
+            title='Dummy category',
+            defaults=dict(
+                style='dummy',
+            )
+        )
 
 
 class Room(models.Model):
@@ -58,6 +94,18 @@ class Room(models.Model):
         verbose_name = u'tila'
         verbose_name_plural = u'tilat'
 
+    @classmethod
+    def get_or_create_dummy(cls):
+        from core.models import Venue
+        venue, unused = Venue.get_or_create_dummy()
+        return cls.objects.get_or_create(
+            venue=venue,
+            name=u'Dummy room',
+            defaults=dict(
+                order=0,
+            )
+        )
+
 
 class Role(models.Model):
     title = models.CharField(max_length=1023)
@@ -70,6 +118,13 @@ class Role(models.Model):
         verbose_name = u'rooli'
         verbose_name_plural = u'roolit'
         ordering = ['title']
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        return cls.objects.get_or_create(
+            title=u'Overbaron',
+            require_contact_info=False
+        )
 
 
 class Tag(models.Model):
@@ -181,10 +236,35 @@ class Programme(models.Model):
     def event(self):
         return self.category.event
 
+    def send_edit_codes(self, request):
+        for person in self.organizers.all():
+            code = ProgrammeEditToken(
+                person=person,
+                programme=self,
+            )
+
+            code.save()
+            code.send(request)
+
     class Meta:
         verbose_name = u'ohjelmanumero'
         verbose_name_plural = u'ohjelmanumerot'
         ordering = ['start_time', 'room']
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        category, unused = Category.get_or_create_dummy()
+        room, unused = Room.get_or_create_dummy()
+
+        return cls.objects.get_or_create(
+            title=u'Dummy program',
+            defaults=dict(
+                category=category,
+                room=room,
+            )
+        )
+
+
 
 
 class ProgrammeRole(models.Model):
@@ -203,6 +283,21 @@ class ProgrammeRole(models.Model):
     class Meta:
         verbose_name = u'ohjelmanpitäjän rooli'
         verbose_name_plural = u'ohjelmanpitäjien roolit'
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        from core.models import Person
+
+        person, unused = Person.get_or_create_dummy()
+        role, unused = Role.get_or_create_dummy()
+        programme, unused = Programme.get_or_create_dummy()
+
+        ProgrammeRole.objects.get_or_create(
+            person=person,
+            programme=programme,
+            role=role,
+        )
+
 
 
 class ViewMethodsMixin(object):
@@ -298,11 +393,19 @@ class ProgrammeEditToken(OneTimeCode):
         return u'{self.programme.event.name}: Ilmoita ohjelmanumerosi tiedot'.format(self=self)
 
     def render_message_body(self, request):
+        from django.template import RequestContext
+        from django.template.loader import render_to_string
+
         vars = dict(
+            code=self,
             link=request.build_absolute_uri(url('programme_self_service_view', self.programme.event.slug, self.code))
         )
 
         return render_to_string('programme_self_service_message.eml', vars, context_instance=RequestContext(request, {}))
+
+    def send(self, *args, **kwargs):
+        kwargs.setdefault('from_email', self.programme.event.programme_event_meta.contact_email)
+        super(ProgrammeEditToken, self).send(*args, **kwargs)
 
 
 __all__ = [

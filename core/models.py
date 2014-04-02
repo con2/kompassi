@@ -35,8 +35,8 @@ class Venue(models.Model):
         return super(Venue, self).save(*args, **kwargs)
 
     @classmethod
-    def create_dummy(cls):
-        return cls.objects.create(
+    def get_or_create_dummy(cls):
+        return cls.objects.get_or_create(
             name='Dummy venue'
         )
 
@@ -133,7 +133,7 @@ class Event(models.Model):
 
     @classmethod
     def get_or_create_dummy(cls):
-        venue = Venue.create_dummy()
+        venue, unused = Venue.get_or_create_dummy()
         t = timezone.now()
 
         return cls.objects.get_or_create(
@@ -464,7 +464,7 @@ class OneTimeCode(models.Model):
     def render_message_body(self, request):
         raise NotImplemented()
 
-    def send(self, request):
+    def send(self, request, **kwargs):
         from django.core.mail import EmailMessage
 
         body = self.render_message_body(request)
@@ -472,11 +472,15 @@ class OneTimeCode(models.Model):
         if settings.DEBUG:
             print body
 
-        EmailMessage(
+        opts = dict(
             subject=self.render_message_subject(request),
             body=body,
             to=(self.person.name_and_email,),
-        ).send(fail_silently=True)
+        )
+
+        opts.update(kwargs)
+
+        EmailMessage(**opts).send(fail_silently=True)
 
     def mark_used(self):
         assert self.state == 'valid'

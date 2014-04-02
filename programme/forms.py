@@ -4,6 +4,7 @@ from django import forms
 
 from crispy_forms.layout import Layout, Fieldset
 
+from core.models import Person
 from core.utils import horizontal_form_helper
 
 from .models import Programme
@@ -51,6 +52,16 @@ class ProgrammeForm(forms.ModelForm):
             'title',
             'video_permission',
         )
+
+
+class ProgrammePersonForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ProgrammePersonForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+
+    class Meta:
+        model = Person
+
 
 class ProgrammeAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

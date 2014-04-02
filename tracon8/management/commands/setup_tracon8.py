@@ -55,3 +55,8 @@ class Command(BaseCommand):
             public=True,
             admin_group=admin_group
         ))
+
+        # v5
+        if not programme_event_meta.contact_email:
+            programme_event_meta.contact_email = 'ohjelma@tracon.fi'
+            programme_event_meta.save()
