@@ -11,6 +11,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.timezone import now
 from django.views.decorators.cache import cache_page, cache_control
+from django.views.decorators.http import require_http_methods, require_GET
 
 from core.utils import render_string
 
@@ -21,6 +22,7 @@ from ..helpers import programme_event_required
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60) # XXX remove once nginx cache is in place
 @programme_event_required
+@require_GET
 def programme_timetable_view(
     request,
     event,
@@ -31,6 +33,7 @@ def programme_timetable_view(
 
 # look, no cache
 @programme_event_required
+@require_GET
 def programme_internal_timetable_view(
     request,
     event,
@@ -65,6 +68,7 @@ def actual_timetable_view(
 
 
 @user_passes_test(lambda u: u.is_superuser)
+@require_GET
 def programme_internal_dumpdata_view(request):
     from django.core import management
     from cStringIO import StringIO
@@ -80,6 +84,7 @@ def programme_internal_dumpdata_view(request):
 @cache_control(public=True, max_age=1 * 60)
 @cache_page(1 * 60) # XXX remove once nginx cache is in place
 @programme_event_required
+@require_GET
 def programme_mobile_timetable_view(request, event):
     all_rooms = AllRoomsPseudoView(event)
 
@@ -106,6 +111,7 @@ def programme_mobile_timetable_view(request, event):
 @cache_control(public=True, max_age=1 * 60)
 @cache_page(1 * 60) # XXX remove once nginx cache is in place
 @programme_event_required
+@require_GET
 def programme_mobile_detail_view(request, event, programme_id):
     programme = get_object_or_404(Programme, category__event=event, id=programme_id)
 
@@ -118,6 +124,7 @@ def programme_mobile_detail_view(request, event, programme_id):
 
 
 @programme_event_required
+@require_GET
 def programme_internal_adobe_taggedtext_view(request, event):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).programmes_by_start_time)
     data = render_string(request, 'programme_timetable.taggedtext', vars)
@@ -129,6 +136,31 @@ def programme_internal_adobe_taggedtext_view(request, event):
     data = data.encode('UTF-16LE')
 
     return HttpResponse(data, 'text/plain; charset=utf-16')
+
+
+@programme_event_required
+@require_http_methods(['GET', 'POST'])
+def programme_self_service_view(request, event, programme_edit_code):
+    token = get_object_or_404(ProgrammeEditToken,
+        programme__category__event=event,
+        code=programme_edit_code
+    )
+
+    programme_form = initialize_form(ProgrammeForm, request,
+        instance=token.programme,
+    )
+
+    vars = dict(
+        programme_form=programme_form,
+        login_page=True # XXX
+    )
+
+    if request.method == 'POST':
+        if programme_form.is_valid():
+            programme_form.save()
+            messages.success(u'Ohjelmanumerosi tiedot tallennettiin.')
+
+    return render(request, 'programme_self_service_view.jade', vars)
 
 
 def programme_profile_menu_items(request):

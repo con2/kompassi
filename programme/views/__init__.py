@@ -4,6 +4,7 @@ from .public_views import (
     programme_mobile_detail_view,
     programme_mobile_timetable_view,
     programme_profile_menu_items,
+    programme_self_service_view,
     programme_timetable_view,
 )
 

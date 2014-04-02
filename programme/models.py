@@ -5,7 +5,7 @@ import datetime
 from django.db import models
 from django.conf import settings
 
-from core.models import EventMetaBase
+from core.models import EventMetaBase, OneTimeCode
 
 from .utils import window, next_full_hour, full_hours_between
 
@@ -177,6 +177,10 @@ class Programme(models.Model):
     def public(self):
         return self.category.public
 
+    @property
+    def event(self):
+        return self.category.event
+
     class Meta:
         verbose_name = u'ohjelmanumero'
         verbose_name_plural = u'ohjelmanumerot'
@@ -286,10 +290,26 @@ class AllRoomsPseudoView(ViewMethodsMixin):
         self.event = event
 
 
+# abuses OneTimeCode as these aren't "one-time"
+class ProgrammeEditToken(OneTimeCode):
+    programme = models.ForeignKey(Programme)
+
+    def render_message_subject(self, request):
+        return u'{self.programme.event.name}: Ilmoita ohjelmanumerosi tiedot'.format(self=self)
+
+    def render_message_body(self, request):
+        vars = dict(
+            link=request.build_absolute_uri(url('programme_self_service_view', self.programme.event.slug, self.code))
+        )
+
+        return render_to_string('programme_self_service_message.eml', vars, context_instance=RequestContext(request, {}))
+
+
 __all__ = [
     'AllRoomsPseudoView',
     'Category',
     'Programme',
+    'ProgrammeEditToken',
     'ProgrammeEventMeta',
     'ProgrammeRole',
     'Role',
