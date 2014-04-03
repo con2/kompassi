@@ -27,6 +27,7 @@ urlpatterns = patterns('',
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme.taggedtext$', programme_internal_adobe_taggedtext_view, name='programme_internal_adobe_taggedtext_view'),
 
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin$', programme_admin_view, name='programme_admin_view'),
+    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/new$', programme_admin_detail_view, name='programme_admin_new_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d{1,4})$', programme_admin_detail_view, name='programme_admin_detail_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/token/(?P<programme_edit_code>[0-9a-f]+)$', programme_self_service_view, name='programme_self_service_view'),
 )

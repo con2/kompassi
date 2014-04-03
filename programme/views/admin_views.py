@@ -4,7 +4,7 @@ from core.utils import initialize_form, url
 
 from ..models import Programme
 from ..helpers import programme_admin_required
-from ..forms import ProgrammeForm, ProgrammeAdminForm
+from ..forms import ProgrammeForm, ProgrammeAdminForm, ProgrammeExtraForm
 
 
 @programme_admin_required
@@ -19,8 +19,11 @@ def programme_admin_view(request, vars, event):
 
 
 @programme_admin_required
-def programme_admin_detail_view(request, vars, event, programme_id):
-    programme = get_object_or_404(Programme, category__event=event, pk=int(programme_id))
+def programme_admin_detail_view(request, vars, event, programme_id=None):
+    if programme_id:
+        programme = get_object_or_404(Programme, category__event=event, pk=int(programme_id))
+    else:
+        programme = Programme()
 
     programme_form = initialize_form(ProgrammeForm, request,
         instance=programme,
@@ -29,14 +32,24 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     programme_admin_form = initialize_form(ProgrammeAdminForm, request,
         instance=programme,
         prefix='programme_admin',
+        event=event,
     )
 
     vars.update(
         programme=programme,
         programme_form=programme_form,
         programme_admin_form=programme_admin_form,
-        programme_host_form=programme_host_form,
     )
+
+    if programme.pk:
+        programme_extra_form = initialize_form(ProgrammeExtraForm, request,
+            instance=programme,
+            prefix='programme_extra',
+            self_service=False,
+        )
+        vars.update(
+            programme_extra_form=programme_extra_form
+        )
 
     return render(request, 'programme_admin_detail_view.jade', vars)
 

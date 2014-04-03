@@ -33,9 +33,13 @@ class ProgrammeAdmin(admin.ModelAdmin):
 class ViewAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
+class RoomAdmin(admin.ModelAdmin):
+    list_display = ('venue', 'name',)
+    list_filter = ('venue',)
+
 
 admin.site.register(Category)
-admin.site.register(Room)
+admin.site.register(Room, RoomAdmin)
 admin.site.register(Role)
 admin.site.register(Tag)
 admin.site.register(Programme, ProgrammeAdmin)

@@ -11,7 +11,7 @@ from django.utils.timezone import get_default_timezone, now
 from core.utils import give_all_app_perms_to_group
 from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
-from programme.models import ProgrammeEventMeta, Category, Programme
+from programme.models import ProgrammeEventMeta, Category, Programme, Room
 from tickets.models import TicketsEventMeta, LimitGroup, Product
 
 from ...models import SignupExtra, SpecialDiet, Night
@@ -91,6 +91,31 @@ class Command(BaseCommand):
             public=False,
             admin_group=programme_admin_group
         ))
+
+        room_order = 0
+        for room_name in [
+            'Iso sali',
+            'Pieni sali',
+            'Sopraano',
+            'Rondo',
+            'Studio',
+            'Sonaatti 1',
+            'Sonaatti 2',
+            'Basso',
+            'Opus 1',
+            'Opus 2',
+            'Opus 3',
+            'Opus 4',
+            'Ulkona (teltta)',
+        ]:
+            room_order += 100
+            Room.objects.get_or_create(
+                venue=venue,
+                name=room_name,
+                defaults=dict(
+                    order=room_order
+                )
+            )
 
         # v5
         if not programme_event_meta.contact_email:

@@ -7,23 +7,40 @@ from crispy_forms.layout import Layout, Fieldset
 from core.models import Person
 from core.utils import horizontal_form_helper
 
-from .models import Programme, Role
+from .models import Programme, Role, Category, Room
 
 
 class ProgrammeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ProgrammeForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset(u'Ohjelmanumeron julkiset tiedot',
+                'title',
+                'description',
+            ),
+        )
+
+    class Meta:
+        model = Programme
+        fields = (
+            'title',
+            'description',
+        )
+
+
+class ProgrammeExtraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if 'self_service' in kwargs:
             self_service = kwargs.pop('self_service')
         else:
             self_service = False
 
-        super(ProgrammeForm, self).__init__(*args, **kwargs)
+        super(ProgrammeExtraForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
+        self.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Ohjelmanumeron julkiset tiedot',
-                'title',
-                'description',
-            ),
             Fieldset(u'Järjestäjien tarvitsemat lisätiedot',
                 'room_requirements',
                 'tech_requirements',
@@ -44,13 +61,11 @@ class ProgrammeForm(forms.ModelForm):
     class Meta:
         model = Programme
         fields = (
-            'description',
-            'notes_from_host',
-            'requested_time_slot',
             'room_requirements',
             'tech_requirements',
-            'title',
+            'requested_time_slot',
             'video_permission',
+            'notes_from_host',
         )
 
 
@@ -71,6 +86,7 @@ class ProgrammePersonForm(forms.ModelForm):
                 self.fields[field_name].required = True
 
         self.helper = horizontal_form_helper()
+        self.form_tag = False
         self.helper.layout = Layout(
             'first_name',
             'surname',
@@ -96,20 +112,25 @@ class ProgrammePersonForm(forms.ModelForm):
 
 class ProgrammeAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
         super(ProgrammeAdminForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
+        self.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Ohjelmavastaavan merkinnät (eivät näy ohjelmanjärjestäjälle)',
                 'category',
                 'room',
                 'start_time',
                 'length',
-                'tags',
+                # 'tags',
                 'notes',
             ),
         )
 
         self.fields['length'].widget.attrs['min'] = 0
+        self.fields['category'].queryset = Category.objects.filter(event=event)
+        self.fields['room'].queryset = Room.objects.filter(venue=event.venue)
 
     class Meta:
         model = Programme
@@ -119,7 +140,7 @@ class ProgrammeAdminForm(forms.ModelForm):
             'notes',
             'room',
             'start_time',
-            'tags',
+            # 'tags',
         )
 
         widgets = dict(

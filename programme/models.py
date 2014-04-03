@@ -189,8 +189,9 @@ class Programme(models.Model):
         help_text=u'Jos haluat sanoa ohjelmanumeroosi liittyen jotain, mikä ei sovi mihinkään yllä olevista kentistä, käytä tätä kenttää.',
     )
 
-    start_time = models.DateTimeField(null=True, verbose_name=u'Alkuaika')
+    start_time = models.DateTimeField(blank=True, null=True, verbose_name=u'Alkuaika')
     length = models.IntegerField(
+        blank=True,
         null=True,
         verbose_name=u'Kesto (minuuttia)',
     )
@@ -201,7 +202,7 @@ class Programme(models.Model):
         help_text=u'Tämä kenttä ei normaalisti näy ohjelman järjestäjälle, mutta jos henkilö '
             u'pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.'
     )
-    room = models.ForeignKey(Room, null=True, verbose_name=u'Tila')
+    room = models.ForeignKey(Room, blank=True, null=True, verbose_name=u'Tila')
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
     tags = models.ManyToManyField(Tag, blank=True, verbose_name=u'Tägit')
 
