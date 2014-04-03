@@ -10,7 +10,7 @@ Feature: Inputting programme details as self service
         And I send the edit code to the programme host
         Then the programme host receives the edit code via e-mail
 
-    @backend
+    @fullstack
     Scenario: Editing a programme via an edit code
         Given there is an event that has the programme functionality enabled
         And there is a programme

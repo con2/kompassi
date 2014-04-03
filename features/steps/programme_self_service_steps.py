@@ -34,30 +34,7 @@ def receive_edit_code(context):
 
     # should have used a regex
     idx = body.find('/token/') + len('/token/')
-    context.code = body[idx:idx + ONE_TIME_CODE_LENGTH]
+    code = body[idx:idx + ONE_TIME_CODE_LENGTH]
 
-
-@when(u'clicks the link in the message')
-def check_programme(context):
-    token = ProgrammeEditToken.objects.get(code=context.code)
+    token = ProgrammeEditToken.objects.get(code=code)
     assert token.programme.pk == context.programme.pk
-
-
-@then(u'they should see the self-service editing page for the email')
-def step_impl(context):
-    pass
-
-
-@when(u'the programme host edits the details of the programme')
-def step_impl(context):
-    pass
-
-
-@when(u'submits the changes to the programme')
-def step_impl(context):
-    pass
-
-
-@then(u'the changes to the programme should have been saved')
-def step_impl(context):
-    pass
