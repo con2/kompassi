@@ -35,6 +35,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
         programme=programme,
         programme_form=programme_form,
         programme_admin_form=programme_admin_form,
+        programme_host_form=programme_host_form,
     )
 
     return render(request, 'programme_admin_detail_view.jade', vars)

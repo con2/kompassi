@@ -204,6 +204,18 @@ EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255
 BIRTH_DATE_HELP_TEXT = u'Syntymäaika muodossa {0}'.format(
     format_date(date(1994, 2, 24), settings.DATE_FORMAT)
 )
+NAME_DISPLAY_STYLE_CHOICES = [
+    (u'firstname_nick_surname', u'Etunimi "Nick" Sukunimi'),
+    (u'firstname_surname', u'Etunimi Sukunimi'),
+    (u'firstname', u'Etunimi'),
+    (u'nick', u'Nick'),
+]
+NAME_DISPLAY_STYLE_FORMATS = dict(
+    firstname=u'{self.first_name}',
+    firstname_nick_surname=u'{self.first_name} "{self.nick}" {self.surname}',
+    firstname_surname=u'{self.first_name} {self.surname}',
+    nick=u'{self.nick}',
+)
 
 
 class Person(models.Model):
@@ -228,17 +240,17 @@ class Person(models.Model):
         verbose_name=u'Puhelinnumero'
     )
 
-    anonymous = models.BooleanField(
-        default=False,
-        verbose_name=u'Piilota etu- ja sukunimi',
-        help_text=u'Jos valitset tämän, sinusta näytetään vain nick-kentässä asetettu '
-            u'kutsumanimi. Etu- ja sukunimi on tällöinkin annettava, jolloin ne näkyvät '
-            u'vain tapahtuman järjestäjille.'
-    )
-
     may_send_info = models.BooleanField(
         default=False,
         verbose_name=u'Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>',
+    )
+
+    preferred_name_display_style = models.CharField(
+        max_length=31,
+        verbose_name=u'Nimen esittäminen',
+        help_text=u'Tässä voit vaikuttaa siihen, missä muodossa nimesi esitetään (esim. painetaan badgeesi).',
+        blank=True,
+        choices=NAME_DISPLAY_STYLE_CHOICES,
     )
 
     notes = models.TextField(blank=True, verbose_name=u'Käsittelijän merkinnät')
@@ -255,23 +267,18 @@ class Person(models.Model):
         return self.full_name
 
     def clean(self):
-        if self.anonymous and not self.nick:
+        if self.preferred_name_display_style and 'nick' in self.preferred_name_display_style and not self.nick:
             from django.core.exceptions import ValidationError
-            raise ValidationError(u'Jos oikea nimi piilotetaan, nick täytyy antaa.')
+            raise ValidationError(u'Jos nick on tarkoitus näyttää, se myös täytyy syöttää.')
 
     @property
     def full_name(self):
         if self.nick:
-            return u'{0} "{1}" {2}'.format(
-                self.first_name,
-                self.nick,
-                self.surname
-            )
+            style = 'firstname_nick_surname'
         else:
-            return u'{0} {1}'.format(
-                self.first_name,
-                self.surname
-            )
+            style = 'firstname_surname'
+
+        return NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
 
     @property
     def name_and_email(self):
@@ -279,10 +286,15 @@ class Person(models.Model):
 
     @property
     def display_name(self):
-        if self.anonymous:
-            return self.nick
+        if self.preferred_name_display_style:
+            style = self.preferred_name_display_style
         else:
-            return self.full_name
+            if self.nick:
+                style = 'firstname_nick_surname'
+            else:
+                style = 'firstname_surname'
+
+        NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
 
     @classmethod
     def get_or_create_dummy(cls, superuser=True):

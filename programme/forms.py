@@ -7,7 +7,7 @@ from crispy_forms.layout import Layout, Fieldset
 from core.models import Person
 from core.utils import horizontal_form_helper
 
-from .models import Programme
+from .models import Programme, Role
 
 
 class ProgrammeForm(forms.ModelForm):
@@ -56,11 +56,42 @@ class ProgrammeForm(forms.ModelForm):
 
 class ProgrammePersonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        if 'self_service' in kwargs:
+            self_service = kwargs.pop('self_service')
+        else:
+            self_service = False
+
         super(ProgrammePersonForm, self).__init__(*args, **kwargs)
+
+        if self_service:
+            for field_name in [
+                'email',
+                'phone'
+            ]:
+                self.fields[field_name].required = True
+
         self.helper = horizontal_form_helper()
+        self.helper.layout = Layout(
+            'first_name',
+            'surname',
+            'nick',
+            'preferred_name_display_style',
+            'phone',
+            'email',
+            indented_without_label('may_send_info'),
+        )
 
     class Meta:
         model = Person
+        fields = [
+            'email',
+            'first_name',
+            'may_send_info',
+            'nick',
+            'phone',
+            'preferred_name_display_style',
+            'surname',
+        ]
 
 
 class ProgrammeAdminForm(forms.ModelForm):

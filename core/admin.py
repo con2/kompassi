@@ -10,11 +10,11 @@ class PersonAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Basic information', {'fields': [('first_name', 'surname'), 'nick']}),
         ('Contact information', {'fields': ['email', 'phone']}),
-        ('Display', {'fields': ['anonymous']}),
+        ('Display', {'fields': ['preferred_name_display_style']}),
         ('Notes', {'fields': ['notes']}),
     ]
 
-    list_display = ('full_name', 'email', 'phone', 'anonymous')
+    list_display = ('full_name', 'email', 'phone', 'preferred_name_display_style')
 
 
 extra_inlines = []

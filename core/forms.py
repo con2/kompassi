@@ -52,10 +52,6 @@ class LoginForm(forms.Form):
 
 
 class PersonForm(forms.ModelForm):
-    birth_date = DateField(required=True, label=u'Syntymäaika', help_text=BIRTH_DATE_HELP_TEXT)
-    email = forms.EmailField(required=True, max_length=EMAIL_LENGTH, label=u'Sähköpostiosoite')
-    phone = forms.CharField(required=True, max_length=PHONE_NUMBER_LENGTH, label=u'Puhelinnumero')
-
     def __init__(self, *args, **kwargs):
         if 'submit_button' in kwargs:
             submit_button = kwargs.pop('submit_button')
@@ -63,6 +59,14 @@ class PersonForm(forms.ModelForm):
             submit_button = True
 
         super(PersonForm, self).__init__(*args, **kwargs)
+
+        for field_name in [
+            'birth_date',
+            'email',
+            'phone'
+        ]:
+            self.fields[field_name].required = True
+
         self.helper = horizontal_form_helper()
 
         if self.instance.pk is None:
@@ -75,6 +79,7 @@ class PersonForm(forms.ModelForm):
                 'first_name',
                 'surname',
                 'nick',
+                'preferred_name_display_style',
                 'birth_date'
             ),
             Fieldset(u'Yhteystiedot',
@@ -126,13 +131,14 @@ class PersonForm(forms.ModelForm):
     class Meta:
         model = Person
         fields = (
-            'may_send_info',
-            'first_name',
-            'surname',
-            'nick',
             'birth_date',
             'email',
+            'first_name',
+            'may_send_info',
+            'nick',
             'phone',
+            'preferred_name_display_style',
+            'surname',
         )
 
 
