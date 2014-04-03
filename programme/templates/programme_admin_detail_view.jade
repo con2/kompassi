@@ -14,6 +14,6 @@ block admin_content
         .btn-group.pull-right
           a(href='{% url "programme_admin_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan
           if programme.pk
-            button.btn.btn-danger Poista ohjelmanumero
-          button.btn.btn-success Tallenna ja jatka muokkaamista
+            button(type='submit', name='delete', value='delete').btn.btn-danger Poista ohjelmanumero
+          button(type='submit', name='save', value='save').btn.btn-success Tallenna ja jatka muokkaamista
 

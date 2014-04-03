@@ -14,7 +14,7 @@ class ProgrammeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProgrammeForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
-        self.form_tag = False
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Ohjelmanumeron julkiset tiedot',
                 'title',
@@ -39,7 +39,7 @@ class ProgrammeExtraForm(forms.ModelForm):
 
         super(ProgrammeExtraForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
-        self.form_tag = False
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Järjestäjien tarvitsemat lisätiedot',
                 'room_requirements',
@@ -86,7 +86,7 @@ class ProgrammePersonForm(forms.ModelForm):
                 self.fields[field_name].required = True
 
         self.helper = horizontal_form_helper()
-        self.form_tag = False
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             'first_name',
             'surname',
@@ -116,7 +116,7 @@ class ProgrammeAdminForm(forms.ModelForm):
 
         super(ProgrammeAdminForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
-        self.form_tag = False
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Ohjelmavastaavan merkinnät (eivät näy ohjelmanjärjestäjälle)',
                 'category',

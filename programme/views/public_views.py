@@ -48,7 +48,11 @@ def actual_timetable_view(
     event,
     internal_programmes=False,
     template='programme_timetable_view.jade',
+    vars=None
 ):
+    if not vars:
+        vars = dict()
+
     all_rooms = AllRoomsPseudoView(event)
 
     category_query = dict(event=event)
@@ -56,7 +60,7 @@ def actual_timetable_view(
     if not internal_programmes:
         category_query.update(public=True)
 
-    vars = dict(
+    vars.update(
         event=event,
         views=View.objects.filter(event=event, public=True),
         categories=Category.objects.filter(**category_query),
