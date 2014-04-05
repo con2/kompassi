@@ -1,6 +1,16 @@
 extends core_admin_base
 - load crispy_forms_tags
 block admin_content
+  form(method='POST', role='form').form-horizontal
+    .panel.panel-default
+      .panel-heading: strong Työvoimavastaavan merkinnät
+      .panel-body
+        - crispy signup_admin_form
+      .panel-footer.clearfix
+        .button-group.pull-right
+          button.btn.btn-success(type='submit', name='save-edit', value='save-edit') Tallenna ja jatka muokkaamista
+
+
   .panel.panel-default
     .panel-heading: strong Hakemus
     .panel-body

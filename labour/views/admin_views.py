@@ -11,7 +11,7 @@ from core.forms import PersonForm
 from core.models import Event, Person
 from core.utils import initialize_form, url, json_response, render_string
 
-from ..forms import SignupForm
+from ..forms import SignupForm, SignupAdminForm
 from ..helpers import labour_admin_required
 from ..models import LabourEventMeta, Qualification, PersonQualification, Signup, JobCategory
 
@@ -28,12 +28,17 @@ def labour_admin_dashboard_view(request, vars, event):
 
 
 @labour_admin_required
+@require_http_methods(['GET', 'POST'])
 def labour_admin_signup_view(request, vars, event, person_id):
     person = get_object_or_404(Person, pk=int(person_id))
     signup = get_object_or_404(Signup, person=person, event=event)
 
     signup_form, signup_extra_form = initialize_signup_forms(request, event, signup,
         readonly=True
+    )
+    signup_admin_form = initialize_form(SignupAdminForm, request,
+        instance=signup, 
+        prefix='admin',
     )
     person_form = initialize_form(PersonForm, request,
         instance=signup.person,
@@ -42,11 +47,26 @@ def labour_admin_signup_view(request, vars, event, person_id):
         readonly=True
     )
 
+    if request.method == 'POST':
+        if 'save-edit' in request.POST or 'save-send' in request.POST:
+            if signup_admin_form.is_valid():
+                signup_admin_form.save()
+                messages.success(request, u'Tiedot tallennettiin.')
+            else:
+                messages.error(request, u'Ole hyvä ja tarkista lomake.')
+
+        elif 'cancel' in request.POST:
+            signup.cancel()
+            messages.success(request, u'Hakemus peruttiin.')
+
+            return redirect('labour_admin_signups_view', event.slug)
+
     vars.update(
-        signup=signup,
         person_form=person_form,
+        signup=signup,
+        signup_admin_form=signup_admin_form,
+        signup_extra_form=signup_extra_form,
         signup_form=signup_form,
-        signup_extra_form=signup_extra_form
     )
 
     return render(request, 'labour_admin_signup_view.jade', vars)

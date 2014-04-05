@@ -343,11 +343,29 @@ class JobRequirement(models.Model):
 
 
 NUM_FIRST_CATEGORIES = 5
+SIGNUP_STATE_CHOICES = [
+    (u'new', u'Uusi'),
+    (u'accepted', u'Hyväksytty, odottaa vuoroja'),
+    (u'finished', u'Hyväksytty, vuorot lähetetty'),
+    (u'complained', u'Hyväksytty, vuorot lähetetty, vuoroista reklamoitu'),
+
+    (u'rejected', u'Hylätty (työvoimavastaavan hylkäämä)'),
+    (u'cancelled', u'Peruutettu (hakijan itsensä peruma)'),
+]
 
 
 class Signup(models.Model):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
+
+    state = models.CharField(
+        max_length=15,
+        verbose_name=u'Hakemuksen tila',
+        choices=SIGNUP_STATE_CHOICES,
+        help_text=u'Hakemuksen tilan muuttaminen lähettää automaattisesti henkilölle kyseiseen '
+            u'tilasiirtymään liittyvät sähköpostiviestit.',
+        default='new',
+    )
 
     job_categories = models.ManyToManyField(JobCategory,
         verbose_name=u'Haettavat tehtävät',
@@ -381,8 +399,6 @@ class Signup(models.Model):
         null=True,
         related_name='accepted_signup_set'
     )
-
-    is_rejected = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = u'ilmoittautuminen'

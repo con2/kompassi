@@ -46,3 +46,14 @@ class EmptySignupExtraForm(forms.ModelForm):
     class Meta:
         model = EmptySignupExtra
         exclude = ('signup',)
+
+
+class SignupAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SignupAdminForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = Signup
+        fields = ('state', 'job_category_accepted', 'notes')
