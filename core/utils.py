@@ -7,7 +7,7 @@ import re
 
 from django import forms
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
@@ -217,3 +217,25 @@ def give_all_app_perms_to_group(app_label, group):
     for ctype in ContentType.objects.filter(app_label=app_label):
         for perm in ctype.permission_set.all():
             perm.group_set.add(group)
+
+
+def ensure_user_is_member_of_group(user, group):
+    if type(user) is not User:
+        user = user.user
+
+    group.user_set.add(user)
+
+    if 'external_auth' in settings.INSTALLED_APPS:
+        from external_auth.utils import add_user_to_group
+        add_user_to_group(user, group)
+
+
+def ensure_user_is_not_member_of_group(user, group):
+    if type(user) is not User:
+        user = user.user
+
+    group.user_set.remove(user)
+
+    if 'external_auth' in settings.INSTALLED_APPS:
+        from external_auth.utils import remove_user_from_group
+        remove_user_from_group(user, group)

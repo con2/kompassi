@@ -33,6 +33,8 @@ def labour_admin_signup_view(request, vars, event, person_id):
     person = get_object_or_404(Person, pk=int(person_id))
     signup = get_object_or_404(Signup, person=person, event=event)
 
+    old_state = signup.state
+
     signup_form, signup_extra_form = initialize_signup_forms(request, event, signup,
         readonly=True
     )
@@ -51,6 +53,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
         if 'save-edit' in request.POST or 'save-send' in request.POST:
             if signup_admin_form.is_valid():
                 signup_admin_form.save()
+                signup.state_change_from(old_state)
                 messages.success(request, u'Tiedot tallennettiin.')
             else:
                 messages.error(request, u'Ole hyvä ja tarkista lomake.')

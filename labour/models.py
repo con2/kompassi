@@ -8,8 +8,12 @@ from django.db import models
 from django.utils.timezone import now
 
 from core.models import EventMetaBase
-from core.utils import format_datetime, SLUG_FIELD_PARAMS
-
+from core.utils import (
+    format_datetime,
+    SLUG_FIELD_PARAMS,
+    ensure_user_is_member_of_group,
+    ensure_user_is_not_member_of_group,
+)
 
 class LabourEventMeta(EventMetaBase):
     signup_extra_content_type = models.ForeignKey('contenttypes.ContentType')
@@ -353,6 +357,9 @@ SIGNUP_STATE_CHOICES = [
     (u'cancelled', u'Peruutettu (hakijan itsensä peruma)'),
 ]
 
+ACCEPTED_STATES = ['accepted', 'finished', 'complained']
+NONTERMINAL_STATES = ACCEPTED_STATES + ['new']
+TERMINAL_STATES = ['rejected', 'cancelled']
 
 class Signup(models.Model):
     person = models.ForeignKey('core.Person')
@@ -454,24 +461,23 @@ class Signup(models.Model):
 
         return signup, created
 
-    def sign_up(self):
-        applicants_group = self.event.labour_event_meta.applicants_group
-        applicants_group.user_set.add(self.person.user)
-        if 'external_auth' in settings.INSTALLED_APPS:
-            from external_auth.utils import add_user_to_group
-            add_user_to_group(self.person.user, applicants_group)
+    def state_change_from(self, old_state):
+        new_state = self.state
 
-        self.send_messages()
+        if new_state == old_state:
+            return
 
-    def accept(self, job_category):
-        self.job_category_accepted = job_category
-        self.save()
+        meta = self.event.labour_event_meta
 
-        accepted_group = self.event.labour_event_meta.accepted_group
-        accepted_group.user_set.add(self.person.user)
-        if 'external_auth' in settings.INSTALLED_APPS:
-            from external_auth.utils import add_user_to_group
-            add_user_to_group(self.person.user, accepted_group)
+        if new_state in NONTERMINAL_STATES:
+            ensure_user_is_member_of_group(self.person, meta.applicants_group)
+
+        if new_state in ACCEPTED_STATES:
+            ensure_user_is_member_of_group(self.person, meta.accepted_group)
+
+        if new_state in TERMINAL_STATES:
+            ensure_user_is_not_member_of_group(self.person, meta.accepted_group)
+            ensure_user_is_not_member_of_group(self.person, meta.applicants_group)
 
         self.send_messages()
 

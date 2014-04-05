@@ -11,9 +11,14 @@ def given_event_accepting_applications(context):
 @given(u'I am signed up to the event')
 def event_sign_up(context):
     context.signup, unused = Signup.get_or_create_dummy()
-    context.signup.sign_up()
+    context.signup.state_change_from(None)
 
 @when(u'the workforce manager approves my application')
 @given(u'my application has been accepted')
 def accept_the_application(context):
-    context.signup.accept(context.signup.job_categories.first())
+    old_state = context.signup.state
+
+    context.signup.state = 'accepted'
+    context.signup.save()
+
+    context.signup.state_change_from(old_state)

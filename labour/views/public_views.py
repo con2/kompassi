@@ -101,8 +101,7 @@ def actual_labour_signup_view(request, event):
             signup = signup_form.save()
             signup_extra.signup = signup
             signup_extra_form.save()
-
-            signup.sign_up()
+            signup.state_change_from(None)
 
             messages.success(request, message)
             return redirect('core_event_view', event.slug)
