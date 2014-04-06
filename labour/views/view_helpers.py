@@ -1,9 +1,9 @@
 from ..models import JobCategory
-from ..forms import SignupForm
+from ..forms import SignupForm, SignupAdminForm
 
 from core.utils import initialize_form
 
-def initialize_signup_forms(request, event, signup, **initialize_form_kwargs):
+def initialize_signup_forms(request, event, signup, admin=False):
     job_categories = JobCategory.objects.filter(event=event, public=True)
     jcs_qualified = [jc.pk for jc in job_categories if jc.is_person_qualified(signup.person)]
     job_categories = JobCategory.objects.filter(id__in=jcs_qualified).order_by('name') # bc it needs to be a queryset
@@ -14,12 +14,21 @@ def initialize_signup_forms(request, event, signup, **initialize_form_kwargs):
         job_categories=job_categories,
         instance=signup,
         prefix='signup',
-        **initialize_form_kwargs
+        readonly=admin
     )
     signup_extra_form = initialize_form(SignupExtraForm, request,
         instance=signup_extra,
         prefix='extra',
-        **initialize_form_kwargs
+        readonly=admin
     )
 
-    return signup_form, signup_extra_form
+    if admin:
+        signup_admin_form = initialize_form(SignupAdminForm, request,
+            job_categories=job_categories,
+            instance=signup,
+            prefix='admin',
+        )
+
+        return signup_form, signup_extra_form, signup_admin_form
+    else:
+        return signup_form, signup_extra_form

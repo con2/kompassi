@@ -1,7 +1,7 @@
 extends core_admin_base
 - load crispy_forms_tags
 block admin_content
-  form(method='POST', role='form').form-horizontal
+  form(method='POST', role='form').form-horizontal.labour-admin-form
     .panel.panel-default
       .panel-heading: strong Työvoimavastaavan merkinnät
       .panel-body
@@ -19,3 +19,14 @@ block admin_content
         // TODO add qualifications here
         - crispy signup_form
         - crispy signup_extra_form
+
+block extra_scripts
+  script
+    (function($) {
+      // XXX hack: widget customization is very difficult, so apply styles via JS
+      var nonAppliedCategoryNames = {{ non_applied_category_names_json|safe }};
+      $.each(nonAppliedCategoryNames, function(index, categoryName) {
+        var selector = '.labour-admin-form label.checkbox:contains("' + categoryName + '")';
+        $(selector).addClass('text-muted');
+      });
+    })(jQuery);

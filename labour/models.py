@@ -361,6 +361,14 @@ ACCEPTED_STATES = ['accepted', 'finished', 'complained']
 NONTERMINAL_STATES = ACCEPTED_STATES + ['new']
 TERMINAL_STATES = ['rejected', 'cancelled']
 PROCESSED_STATES = ACCEPTED_STATES + TERMINAL_STATES
+SIGNUP_STATE_LABEL_CLASSES = dict(
+    new=u'label-default',
+    accepted=u'label-primary',
+    finished=u'label-success',
+    complained=u'label-warning',
+    rejected=u'label-danger',
+    cancelledu=u'label-danger',
+)
 
 class Signup(models.Model):
     person = models.ForeignKey('core.Person')
@@ -402,10 +410,13 @@ class Signup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
 
-    job_category_accepted = models.ForeignKey(JobCategory,
+    job_categories_accepted = models.ManyToManyField(JobCategory,
         blank=True,
         null=True,
-        related_name='accepted_signup_set'
+        related_name='accepted_signup_set',
+        verbose_name=u'Tehtäväalueet',
+        help_text=u'Tehtäväalueet, joilla hyväksytty vapaaehtoistyöntekijä tulee työskentelemään. '
+            u'Tämän perusteella henkilölle mm. lähetetään oman tehtäväalueensa työvoimaohjeet.'
     )
 
     class Meta:
@@ -440,9 +451,33 @@ class Signup(models.Model):
         return u', '.join(cat.name for cat in self.job_categories.all()[NUM_FIRST_CATEGORIES:])
 
     @property
-    def is_shifts_complete(self):
-        # TODO
-        return False
+    def job_category_accepted_labels(self):
+        label_class = SIGNUP_STATE_LABEL_CLASSES[self.state]
+
+        if self.state == 'new':
+            label_texts = [cat.name for cat in self.get_first_categories()]
+            labels = [(label_class, label_text, None) for label_text in label_texts]
+
+            if self.is_more_categories:
+                labels.append((label_class, u'...', self.get_redacted_category_names()))
+
+        elif self.state in ACCEPTED_STATES:
+            label_texts = [cat.name for cat in self.job_categories_accepted.all()]
+            labels = [(label_class, label_text, None) for label_text in label_texts]
+
+        elif self.state == 'cancelled':
+            labels = [(label_class, u'Peruutettu', None)]
+
+        elif self.state == 'rejected':
+            labels = [(label_class, u'Hylätty', None)]
+
+        else:
+            from warnings import warn
+            warn(u'Unknown state: {self.state}'.format(self=self))
+            labels = []
+
+        return labels
+
 
     @classmethod
     def get_or_create_dummy(cls):

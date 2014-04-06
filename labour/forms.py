@@ -50,10 +50,16 @@ class EmptySignupExtraForm(forms.ModelForm):
 
 class SignupAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        job_categories = kwargs.pop('job_categories')
         super(SignupAdminForm, self).__init__(*args, **kwargs)
+        self.fields['job_categories_accepted'].queryset = job_categories
+
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
     class Meta:
         model = Signup
-        fields = ('state', 'job_category_accepted', 'notes')
+        fields = ('state', 'job_categories_accepted', 'notes')
+        widgets = dict(
+            job_categories_accepted=forms.CheckboxSelectMultiple,
+        )

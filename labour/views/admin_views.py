@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -35,12 +37,9 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
     old_state = signup.state
 
-    signup_form, signup_extra_form = initialize_signup_forms(request, event, signup,
-        readonly=True
-    )
-    signup_admin_form = initialize_form(SignupAdminForm, request,
-        instance=signup, 
-        prefix='admin',
+    signup_form, signup_extra_form, signup_admin_form = initialize_signup_forms(
+        request, event, signup,
+        admin=True
     )
     person_form = initialize_form(PersonForm, request,
         instance=signup.person,
@@ -55,12 +54,20 @@ def labour_admin_signup_view(request, vars, event, person_id):
             signup.state_change_from(old_state)
             messages.success(request, u'Tiedot tallennettiin.')
 
+    non_applied_categories = list(JobCategory.objects.filter(event=event))
+    for applied_category in signup.job_categories.all():
+        non_applied_categories.remove(applied_category)
+    non_applied_category_names = [cat.name for cat in non_applied_categories]
+
     vars.update(
         person_form=person_form,
         signup=signup,
         signup_admin_form=signup_admin_form,
         signup_extra_form=signup_extra_form,
         signup_form=signup_form,
+
+        # XXX hack: widget customization is very difficult, so apply styles via JS
+        non_applied_category_names_json=json.dumps(non_applied_category_names),
     )
 
     return render(request, 'labour_admin_signup_view.jade', vars)
@@ -168,7 +175,7 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
 @labour_admin_required
 @require_http_methods(['GET', 'POST'])
 def labour_admin_mail_preview_view(request, vars, event, message_id=None):
-    message = get_object_or_404(Message, event=event, pk=int(message_id))    
+    message = get_object_or_404(Message, event=event, pk=int(message_id))
 
     vars.update(
         message=message

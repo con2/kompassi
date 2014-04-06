@@ -22,15 +22,5 @@ tbody
       td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}') {{ signup.person.first_name }}
       td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}') {{ signup.person.nick }}
       td
-        if signup.is_shifts_complete
-          span.label.label-success {{ signup.job_accepted.name }}
-        elif signup.job_category_accepted
-          span.label.label-info {{ signup.job_category_accepted.name }}
-        elif signup.is_rejected
-          span.label.label-danger Hylätty
-        else
-          for job_category in signup.get_first_categories
-            span.label.label-default: {{ job_category.name }}
-            | &nbsp;
-          if signup.is_more_categories
-            span.label.label-default(title='{{ signup.get_redacted_category_names }}') ...
+        for label_class, label_text, label_title in signup.job_category_accepted_labels
+          span.label(class='{{ label_class }}', title='{{ label_title }}') {{ label_text }}
