@@ -135,10 +135,10 @@ def labour_admin_roster_job_category_fragment(request, vars, event, job_category
 def labour_admin_mail_view(request, vars, event):
     from mailings.models import Message
 
-    messages = Message.objects.filter(event=event)
+    messages = Message.objects.filter(event=event, app_label='labour')
 
     vars.update(
-        messages=messages
+        labour_messages=messages
     )
 
     return render(request, 'labour_admin_mail_view.jade', vars)
@@ -158,16 +158,42 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
     form = initialize_form(MessageForm, request, instance=message)
 
     if request.method == 'POST':
-        if form.is_valid():
-            message = form.save(commit=False)
+        if 'delete' in request.POST:
+            assert not message.sent_at
+            message.delete()
+            messages.success(request, u'Viesti poistettiin.')
+            return redirect('labour_admin_mail_view', event.slug)
 
-            message.app_label = 'labour'
-            message.event = event
-            message.save()
-
-            return redirect('labour_admin_mail_preview_view', event.slug, message.pk)
         else:
-            messages.error(request, u'Ole hyvä ja tarkasta lomake.')
+            if form.is_valid():
+                message = form.save(commit=False)
+
+                message.app_label = 'labour'
+                message.event = event
+                message.save()
+
+                if 'save-send' in request.POST:
+                    message.send()
+                    messages.success(request, u'Viesti lähetettiin. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.')
+
+                elif 'save-expire' in request.POST:
+                    message.expire()
+                    messages.success(request, u'Viesti merkittiin vanhentuneeksi. Sitä ei lähetetä enää uusille vastaanottajille.')
+
+                elif 'save-unexpire' in request.POST:
+                    message.unexpire()
+                    messages.success(request, u'Viesti otettiin uudelleen käyttöön. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.')
+
+                elif 'save-return' in request.POST:
+                    messages.success(request, u'Muutokset viestiin tallennettiin.')
+                    return redirect('labour_admin_mail_view', event.slug)
+
+                elif 'save-edit' in request.POST:
+                    messages.success(request, u'Muutokset viestiin tallennettiin.')
+                    return redirect('labour_admin_mail_editor_view', event.slug, message.pk)
+
+            else:
+                messages.error(request, u'Ole hyvä ja tarkasta lomake.')
 
     vars.update(
         message=message,
@@ -176,22 +202,6 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
     )
 
     return render(request, 'labour_admin_mail_editor_view.jade', vars)
-
-@labour_admin_required
-@require_http_methods(['GET', 'POST'])
-def labour_admin_mail_preview_view(request, vars, event, message_id=None):
-    message = get_object_or_404(Message, event=event, pk=int(message_id))
-
-    vars.update(
-        message=message
-    )
-
-    return render(request, 'labour_admin_mail_preview_view.jade', vars)
-
-@labour_admin_required
-@require_GET
-def labour_admin_mail_preview_fragment(request, vars, event, message_id, person_username):
-    pass
 
 
 def labour_admin_menu_items(request, event):

@@ -9,6 +9,7 @@ class MessageForm(forms.ModelForm):
         super(MessageForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
 
     class Meta:
         model = Message

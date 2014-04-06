@@ -1,7 +1,7 @@
 extends core_admin_base
 - load crispy_forms_tags
 block admin_content
-  form(role='form', method='POST').form-horizontal.panel-group
+  form(role='form', method='POST').form-horizontal
     .panel.panel-default
       .panel-heading: strong Työvoimaviestin muokkaus
       .panel-body
@@ -9,10 +9,28 @@ block admin_content
       .panel-footer.clearfix
         .btn-group.pull-right
           a(href='{% url "labour_admin_mail_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan
+          button(type='submit', name='save-return', value='save-return').btn.btn-primary Tallenna ja palaa listaan
+          button(type='submit', name='save-edit', value='save-edit').btn.btn-primary Tallenna ja jatka muokkaamista
+
+    .panel.panel-default
+      .panel-heading: strong Lähetys ja vanhentaminen
+      .panel-body
+        if message.sent_at
+          p.send-status.sent Viesti on lähetetty <em>{{ message.sent_at }}</em>.
+          if message.expired_at
+            p.expire-status.expired Viesti on merkattu vanhentuneeksi <em>{{ message.expired_at }}</em>.
+        else
+          p.send-status.not-sent Viestiä ei ole vielä lähetetty.
+      .panel-footer.clearfix
+        .btn-group.pull-right
           if message.sent_at
-            button.btn.btn-danger Vanhenna
-          button.btn.btn-primary Tallenna ja jatka muokkaamista
-          if message.sent_at
-            button.btn.btn-success Esikatselu
+            if message.expired_at
+              button(type='submit', name='save-unexpire', value='save-unexpire').btn.btn-primary Ota uudelleen käyttöön
+            else
+              button(type='submit', name='save-expire', value='save-expire').btn.btn-danger Merkitse vanhentuneeksi
           else
-            button.btn.btn-success Esikatselu ja lähetys
+            if message.pk
+              button(type='submit', name='delete', value='delete').btn.btn-danger Poista luonnos
+            button(type='submit', name='save-send', value='save-send').btn.btn-success Lähetä viesti
+        p.text-muted Myös nämä toiminnot tallentavat viestiin tehdyt muutokset.
+

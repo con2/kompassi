@@ -6,17 +6,17 @@ block admin_content
     table.table.table-striped
       thead
         tr
-          th Vastaanottaja
           th Otsikko
+          th Vastaanottaja
           th Lähetetty
           th Vanhennettu
       tbody
-        for message in messages
+        for message in labour_messages
           tr
-            th {{ message.recipient_group.name }}
-            th {{ message.subject_template }}
-            th {{ message.sent_at|date }}
-            th {{ message.expired_at|date }}
+            td: a(href='{% url "labour_admin_mail_editor_view" event.slug message.pk %}') {{ message.subject_template }}
+            td {{ message.recipient_group.name }}
+            td {{ message.sent_at|date }}
+            td {{ message.expired_at|date }}
     .panel-footer.clearfix
       .button-group.pull-right
         a.btn.btn-primary(href='{% url "labour_admin_mail_new_view" event.slug %}') Uusi viesti

@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from datetime import datetime
+
 from django.conf import settings
 from django.db import models
 from django.template import Template, Context
@@ -62,6 +64,22 @@ class Message(models.Model):
 
             if created or resend:
                 person_message.actually_send_email()
+
+    def expire(self):
+        assert self.expired_at is None, 're-expiring an expired message does not make sense'
+        assert self.sent_at is not None, 'expiring an unsent message does not make sense'
+
+        self.expired_at = datetime.now()
+        self.save()
+
+    def unexpire(self):
+        assert self.expired_at is not None, 'cannot un-expire a non-expired message'
+
+        self.expired_at = None
+        self.save()
+
+        # Send to those that have been added to recipients while the message was expired
+        self.send()
 
     @classmethod
     def send_messages(cls, event, app_label, person):
