@@ -50,19 +50,10 @@ def labour_admin_signup_view(request, vars, event, person_id):
     )
 
     if request.method == 'POST':
-        if 'save-edit' in request.POST or 'save-send' in request.POST:
-            if signup_admin_form.is_valid():
-                signup_admin_form.save()
-                signup.state_change_from(old_state)
-                messages.success(request, u'Tiedot tallennettiin.')
-            else:
-                messages.error(request, u'Ole hyvä ja tarkista lomake.')
-
-        elif 'cancel' in request.POST:
-            signup.cancel()
-            messages.success(request, u'Hakemus peruttiin.')
-
-            return redirect('labour_admin_signups_view', event.slug)
+        if signup_admin_form.is_valid():
+            signup_admin_form.save()
+            signup.state_change_from(old_state)
+            messages.success(request, u'Tiedot tallennettiin.')
 
     vars.update(
         person_form=person_form,

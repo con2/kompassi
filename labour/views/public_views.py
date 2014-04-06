@@ -21,7 +21,14 @@ from core.utils import (
 )
 
 from ..forms import SignupForm
-from ..models import LabourEventMeta, Qualification, PersonQualification, Signup, JobCategory
+from ..models import (
+    JobCategory,
+    LabourEventMeta,
+    PersonQualification,
+    PROCESSED_STATES,
+    Qualification,
+    Signup,
+)
 from ..helpers import labour_event_required
 
 from .view_helpers import initialize_signup_forms
@@ -77,19 +84,29 @@ def labour_signup_view(request, event):
 
 def actual_labour_signup_view(request, event):
     vars = page_wizard_vars(request)
-    # TODO should the user be allowed to change their registration after the registration period is over?
+
     if not event.labour_event_meta.is_registration_open:
         messages.error(request, u'Ilmoittautuminen tähän tapahtumaan ei ole avoinna.')
         return redirect('core_event_view', event.slug)
 
     signup = event.labour_event_meta.get_signup_for_person(request.user.person)
-    signup_extra = signup.signup_extra
-    signup_form, signup_extra_form = initialize_signup_forms(request, event, signup)
+
+    if signup.state in PROCESSED_STATES:
+        messages.error(request,
+            u'Hakemuksesi on jo käsitelty, joten et voi enää muokata sitä. '
+            u'Tarvittaessa ota yhteyttä työvoimatiimiin.'
+        )
+        return redirect('core_event_view', event.slug)
 
     if signup.pk is not None:
+        old_state = signup.state
         submit_text = 'Tallenna muutokset'
     else:
+        old_state = None
         submit_text = 'Lähetä ilmoittautuminen'
+
+    signup_extra = signup.signup_extra
+    signup_form, signup_extra_form = initialize_signup_forms(request, event, signup)
 
     if request.method == 'POST':
         if signup_form.is_valid() and signup_extra_form.is_valid():
@@ -101,7 +118,7 @@ def actual_labour_signup_view(request, event):
             signup = signup_form.save()
             signup_extra.signup = signup
             signup_extra_form.save()
-            signup.state_change_from(None)
+            signup.state_change_from(old_state)
 
             messages.success(request, message)
             return redirect('core_event_view', event.slug)

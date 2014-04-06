@@ -360,6 +360,7 @@ SIGNUP_STATE_CHOICES = [
 ACCEPTED_STATES = ['accepted', 'finished', 'complained']
 NONTERMINAL_STATES = ACCEPTED_STATES + ['new']
 TERMINAL_STATES = ['rejected', 'cancelled']
+PROCESSED_STATES = ACCEPTED_STATES + TERMINAL_STATES
 
 class Signup(models.Model):
     person = models.ForeignKey('core.Person')
@@ -416,11 +417,6 @@ class Signup(models.Model):
         e = self.event.name if self.event else 'None'
 
         return u'{p} / {e}'.format(**locals())
-
-    def clean(self):
-        if self.is_rejected and self.job_accepted:
-            from django.core.exceptions import ValidationError
-            raise ValidationError(u'Hakija ei voi olla yhtä aikaa hyväksytty ja hylätty.')
 
     @property
     def signup_extra(self):
