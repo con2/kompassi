@@ -13,4 +13,4 @@ def message_send(message_id, recipient_ids=None, resend=False):
     else:
         recipients = Person.objects.filter(pk__in=recipient_ids)
 
-    message.send(recipients, resend)
+    message._send(recipients, resend)
