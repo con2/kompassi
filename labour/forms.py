@@ -68,9 +68,6 @@ class SignupAdminForm(forms.ModelForm):
         state = self.cleaned_data['state']
         job_categories_accepted = self.cleaned_data['job_categories_accepted']
 
-        # XXX
-        print job_categories_accepted
-
         if state in ACCEPTED_STATES and not job_categories_accepted:
             raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi tehtäväalue.')
         elif state in TERMINAL_STATES and job_categories_accepted:
