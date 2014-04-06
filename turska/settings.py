@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import absolute_import
 
 import os
 from datetime import datetime, timedelta
@@ -131,6 +132,9 @@ INSTALLED_APPS = (
 
     # Uncomment if you do PDF tickets
     #'lippukala',
+
+    # Uncomment if you have Celery
+    #'background_tasks',
 
     'tracon8',
     'tracon9',
@@ -314,3 +318,16 @@ if 'lippukala' in INSTALLED_APPS:
 
     LIPPUKALA_PRINT_LOGO_PATH = mkpath('static', 'images', 'tracon_logo_kuitille.jpg')
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.84, 3.13)
+
+
+
+if 'background_tasks' in INSTALLED_APPS:
+    BROKER_URL = 'amqp://guest:{TURSKA_INSTALLATION_SLUG}@localhost//'.format(**locals())
+    CELERY_ACCEPT_CONTENT = ['json']
+
+    INSTALLED_APPS += (
+        'djcelery',
+        'djcelery_email',
+    )
+    
+    EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'

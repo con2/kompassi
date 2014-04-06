@@ -37,8 +37,18 @@ class Message(models.Model):
     def is_expired(self):
         return self.expired_at is not None
 
-    # TODO move this to a celery task
     def send(self, recipients=None, resend=False):
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from mailings.tasks import message_send
+            message_send.call(
+                self.pk,
+                [person.pk for person in recipients] if recipients is not None else None,
+                resend
+            )
+        else:
+            self._send(recipients, resend)
+
+    def _send(self, recipients, resend):
         from django.contrib.auth.models import User
 
         if not self.sent_at:
@@ -46,18 +56,9 @@ class Message(models.Model):
             self.save()
 
         if recipients is None:
-            recipients = self.recipient_group.user_set.all()
+            recipients = [user.person for user in self.recipient_group.user_set.all()]
 
         for person in recipients:
-            if type(person) == User:
-                try:
-                    person = person.person
-                except Person.DoesNotExist:
-                    # XXX whine
-                    continue
-            else:
-                person = person
-
             person_message, created = PersonMessage.objects.get_or_create(
                 person=person,
                 message=self,
