@@ -72,7 +72,7 @@ class Category(models.Model):
 class Room(models.Model):
     venue = models.ForeignKey('core.Venue')
     name = models.CharField(max_length=1023)
-    order = models.IntegerField(unique=True)
+    order = models.IntegerField()
     public = models.BooleanField(default=True)
     notes = models.TextField(blank=True)
 
@@ -93,6 +93,9 @@ class Room(models.Model):
         ordering = ['venue', 'order']
         verbose_name = u'tila'
         verbose_name_plural = u'tilat'
+        unique_together = [
+            ('venue', 'order'),
+        ]
 
     @classmethod
     def get_or_create_dummy(cls):

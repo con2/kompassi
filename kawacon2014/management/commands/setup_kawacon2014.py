@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import get_default_timezone
 
 from core.models import Venue, Event
-from programme.models import ProgrammeEventMeta
+from programme.models import ProgrammeEventMeta, Category, Room
 
 
 class Command(BaseCommand):
@@ -30,6 +30,24 @@ class Command(BaseCommand):
         venue, unused = Venue.objects.get_or_create(name='Peltolan ammattiopisto', defaults=dict(
             name_inessive='Peltolan ammattiopistolla' # XXX not really inessive
         ))
+
+        room_order = 0
+        for room_name in [
+            u'Auditorio',
+            u'Pääsali',
+            u'E-rakennus, luokat',
+            u'Kawaplay, G-rakennus',
+            u'Elokuvateatteri Tapio',
+        ]:
+            room_order += 100
+            Room.objects.get_or_create(
+                venue=venue,
+                name=room_name,
+                defaults=dict(
+                    order=room_order,
+                )
+            )
+
         event, unused = Event.objects.get_or_create(slug='kawacon2014', defaults=dict(
             name='Kawacon 2014',
             name_genitive='Kawacon 2014 -tapahtuman',
@@ -48,3 +66,18 @@ class Command(BaseCommand):
             public=False,
             admin_group=admin_group,
         ))
+
+        for category_name, category_style in [
+            (u'Luento', u'anime'),
+            (u'Non-stop', u'miitti'),
+            (u'Työpaja', u'rope'),
+            (u'Muu ohjelma', u'muu'),
+            (u'Show', u'cosplay'),
+        ]:
+            Category.objects.get_or_create(
+                event=event,
+                title=category_name,
+                defaults=dict(
+                    style=category_style,
+                )
+            )
