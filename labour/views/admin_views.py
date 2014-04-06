@@ -54,6 +54,11 @@ def labour_admin_signup_view(request, vars, event, person_id):
             signup.state_change_from(old_state)
             messages.success(request, u'Tiedot tallennettiin.')
 
+            if 'save-return' in request.POST:
+                return redirect('labour_admin_signups_view', event.slug)
+        else:
+            messages.error(request, u'Ole hyvä ja tarkista lomake.')
+
     non_applied_categories = list(JobCategory.objects.filter(event=event))
     for applied_category in signup.job_categories.all():
         non_applied_categories.remove(applied_category)

@@ -18,6 +18,7 @@ block admin_content
       .panel-footer.clearfix
         .button-group.pull-right
           a.btn.btn-default(href='{% url "labour_admin_signups_view" event.slug %}') Hylkää muutokset ja palaa listaan
+          button.btn.btn-success(type='submit', name='save-return', value='save-return') Tallenna ja palaa listaan
           button.btn.btn-success(type='submit', name='save-edit', value='save-edit') Tallenna ja jatka muokkaamista
 
 block extra_scripts

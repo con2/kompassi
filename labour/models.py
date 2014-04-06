@@ -355,6 +355,8 @@ SIGNUP_STATE_CHOICES = [
 
     (u'rejected', u'Hylätty (työvoimavastaavan hylkäämä)'),
     (u'cancelled', u'Peruutettu (hakijan itsensä peruma)'),
+
+    (u'beyond_logic', u'Perätilassa (irrotettu kaikesta automaattisesta käsittelystä)'),
 ]
 
 ACCEPTED_STATES = ['accepted', 'finished', 'complained']
@@ -367,7 +369,8 @@ SIGNUP_STATE_LABEL_CLASSES = dict(
     finished=u'label-success',
     complained=u'label-warning',
     rejected=u'label-danger',
-    cancelledu=u'label-danger',
+    cancelled=u'label-danger',
+    beyond_logic=u'label-danger',
 )
 
 class Signup(models.Model):
@@ -471,6 +474,9 @@ class Signup(models.Model):
 
         elif self.state == 'rejected':
             labels = [(label_class, u'Hylätty', None)]
+
+        elif self.state == 'beyond_logic':
+            labels = [(label_class, u'Perätilassa', None)]
 
         else:
             from warnings import warn
