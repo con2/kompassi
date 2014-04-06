@@ -23,20 +23,30 @@ from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hid
 from django.utils.timezone import get_default_timezone
 
 
-def initialize_form(FormClass, request, *args, **kwargs):
+def make_field_readonly(field):
+    if type(field.widget) in [
+        forms.widgets.CheckboxSelectMultiple,
+        forms.widgets.CheckboxInput,
+    ]:
+        field.widget.attrs['disabled'] = True
+    else:
+        field.widget.attrs['readonly'] = True
+
+
+def initialize_form(FormClass, request, **kwargs):
     if 'readonly' in kwargs:
         readonly = kwargs.pop('readonly')
     else:
         readonly = False
 
-    if request.method == 'POST':
-        form = FormClass(request.POST, *args, **kwargs)
+    if not readonly and request.method == 'POST':
+        form = FormClass(request.POST, **kwargs)
     else:
-        form = FormClass(*args, **kwargs)
+        form = FormClass(**kwargs)
 
     if readonly:
         for field in form.fields.values():
-            field.widget.attrs['readonly'] = True
+            make_field_readonly(field)
 
     return form
 

@@ -1,6 +1,15 @@
 extends core_admin_base
 - load crispy_forms_tags
 block admin_content
+  .panel.panel-default
+    .panel-heading: strong Hakemus
+    .panel-body
+      .form-horizontal
+        - crispy person_form
+        // TODO add qualifications here
+        - crispy signup_form
+        - crispy signup_extra_form
+
   form(method='POST', role='form').form-horizontal.labour-admin-form
     .panel.panel-default
       .panel-heading: strong Työvoimavastaavan merkinnät
@@ -11,18 +20,13 @@ block admin_content
           a.btn.btn-default(href='{% url "labour_admin_signups_view" event.slug %}') Hylkää muutokset ja palaa listaan
           button.btn.btn-success(type='submit', name='save-edit', value='save-edit') Tallenna ja jatka muokkaamista
 
-  .panel.panel-default
-    .panel-heading: strong Hakemus
-    .panel-body
-      .form-horizontal
-        - crispy person_form
-        // TODO add qualifications here
-        - crispy signup_form
-        - crispy signup_extra_form
-
 block extra_scripts
   script
     (function($) {
+      // Mute the labels of job category checkboxen for non-applied categories to signal the
+      // workforce manager that appointing this worker to this particular category might not be
+      // well-welcomed.
+
       // XXX hack: widget customization is very difficult, so apply styles via JS
       var nonAppliedCategoryNames = {{ non_applied_category_names_json|safe }};
       $.each(nonAppliedCategoryNames, function(index, categoryName) {

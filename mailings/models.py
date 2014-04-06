@@ -153,6 +153,9 @@ class PersonMessage(models.Model):
         if meta.monitor_email:
             msgbcc.append(meta.monitor_email)
 
+        if settings.DEBUG:
+            print self.body.text
+
         EmailMessage(
             subject=self.subject.text,
             body=self.body.text,

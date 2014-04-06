@@ -10,6 +10,18 @@ def initialize_signup_forms(request, event, signup, admin=False):
 
     signup_extra = signup.signup_extra
     SignupExtraForm = event.labour_event_meta.signup_extra_model.get_form_class()
+
+    # Signup form and signup extra form not editable in admin mode
+    if admin:
+        print 'jumalauta'
+        signup_admin_form = initialize_form(SignupAdminForm, request,
+            job_categories=job_categories,
+            instance=signup,
+            prefix='admin',
+        )
+
+        request = None
+
     signup_form = initialize_form(SignupForm, request,
         job_categories=job_categories,
         instance=signup,
@@ -23,12 +35,6 @@ def initialize_signup_forms(request, event, signup, admin=False):
     )
 
     if admin:
-        signup_admin_form = initialize_form(SignupAdminForm, request,
-            job_categories=job_categories,
-            instance=signup,
-            prefix='admin',
-        )
-
         return signup_form, signup_extra_form, signup_admin_form
     else:
         return signup_form, signup_extra_form

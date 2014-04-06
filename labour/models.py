@@ -416,7 +416,8 @@ class Signup(models.Model):
         related_name='accepted_signup_set',
         verbose_name=u'Tehtäväalueet',
         help_text=u'Tehtäväalueet, joilla hyväksytty vapaaehtoistyöntekijä tulee työskentelemään. '
-            u'Tämän perusteella henkilölle mm. lähetetään oman tehtäväalueensa työvoimaohjeet.'
+            u'Tämän perusteella henkilölle mm. lähetetään oman tehtäväalueensa työvoimaohjeet. '
+            u'Harmaalla merkityt tehtäväalueet ovat niitä, joihin hakija ei ole itse hakenut.'
     )
 
     class Meta:
