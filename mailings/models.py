@@ -37,6 +37,7 @@ class Message(models.Model):
     def is_expired(self):
         return self.expired_at is not None
 
+    # TODO move this to a celery task
     def send(self, recipients=None, resend=False):
         from django.contrib.auth.models import User
 
