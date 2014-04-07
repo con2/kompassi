@@ -134,7 +134,7 @@ INSTALLED_APPS = (
     #'lippukala',
 
     # Uncomment if you have Celery
-    #'background_tasks',
+    'background_tasks',
 
     'tracon8',
     'tracon9',
@@ -144,6 +144,14 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },    
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -154,7 +162,12 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'console':{
+            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
     },
     'loggers': {
         'django.request': {
@@ -162,6 +175,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'celery': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'propagate': True
+        }
     }
 }
 
@@ -322,7 +340,7 @@ if 'lippukala' in INSTALLED_APPS:
 
 
 if 'background_tasks' in INSTALLED_APPS:
-    BROKER_URL = 'amqp://guest:{TURSKA_INSTALLATION_SLUG}@localhost//'.format(**locals())
+    BROKER_URL = 'amqp://{TURSKA_INSTALLATION_SLUG}:{TURSKA_INSTALLATION_SLUG}@localhost/{TURSKA_INSTALLATION_SLUG}'.format(**locals())
     CELERY_ACCEPT_CONTENT = ['json']
 
     INSTALLED_APPS += (
@@ -331,3 +349,9 @@ if 'background_tasks' in INSTALLED_APPS:
     )
     
     EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+
+    CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
+    SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'

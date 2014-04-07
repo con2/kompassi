@@ -1,2 +1,2 @@
 Celery==3.1.10
-django-celery-email==1.0.4
+-e git+https://github.com/japsu/django-celery-email#egg=django-celery-email

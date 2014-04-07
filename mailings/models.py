@@ -40,7 +40,7 @@ class Message(models.Model):
     def send(self, recipients=None, resend=False):
         if 'background_tasks' in settings.INSTALLED_APPS:
             from mailings.tasks import message_send
-            message_send.call(
+            message_send.delay(
                 self.pk,
                 [person.pk for person in recipients] if recipients is not None else None,
                 resend

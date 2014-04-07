@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from celery import shared_task
 
 
-@shared_task
+@shared_task(ignore_result=True)
 def message_send(message_id, recipient_ids=None, resend=False):
     from .models import Message
 
