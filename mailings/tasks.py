@@ -7,7 +7,7 @@ from celery import shared_task
 def message_send(message_id, recipient_ids=None, resend=False):
     from .models import Message
 
-    message = message.objects.get(pk=message_id)
+    message = Message.objects.get(pk=message_id)
     if recipient_ids is None:
         recipients = None
     else:
