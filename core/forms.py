@@ -52,6 +52,8 @@ class LoginForm(forms.Form):
 
 
 class PersonForm(forms.ModelForm):
+    birth_date = DateField(required=True, label=u'Syntymäaika', help_text=BIRTH_DATE_HELP_TEXT)
+
     def __init__(self, *args, **kwargs):
         if 'submit_button' in kwargs:
             submit_button = kwargs.pop('submit_button')
@@ -61,7 +63,6 @@ class PersonForm(forms.ModelForm):
         super(PersonForm, self).__init__(*args, **kwargs)
 
         for field_name in [
-            'birth_date',
             'email',
             'phone'
         ]:
