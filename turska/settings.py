@@ -134,7 +134,7 @@ INSTALLED_APPS = (
     #'lippukala',
 
     # Uncomment if you have Celery
-    'background_tasks',
+    # 'background_tasks',
 
     'tracon8',
     'tracon9',
