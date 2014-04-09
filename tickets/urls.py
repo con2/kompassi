@@ -23,11 +23,11 @@ from .views import (
 
 
 urlpatterns = patterns('',
-    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets$', tickets_welcome_view, name="tickets_welcome_view"),
-    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/products$', tickets_tickets_view, name="tickets_tickets_view"),
-    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/address$', tickets_address_view, name="tickets_address_view"),
-    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/confirm$', tickets_confirm_view, name="tickets_confirm_view"),
-    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/thanks$', tickets_thanks_view, name="tickets_thanks_view"),
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/?$', tickets_welcome_view, name="tickets_welcome_view"),
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/products/?$', tickets_tickets_view, name="tickets_tickets_view"),
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/address/?$', tickets_address_view, name="tickets_address_view"),
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/confirm/?$', tickets_confirm_view, name="tickets_confirm_view"),
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/thanks/?$', tickets_thanks_view, name="tickets_thanks_view"),
 
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin$', tickets_admin_stats_view, name="tickets_admin_stats_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/by-date/raw$', tickets_admin_stats_by_date_view, {'raw': True}, name="tickets_admin_stats_by_date_view"),
