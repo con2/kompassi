@@ -151,7 +151,7 @@ LOGGING = {
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
-    },    
+    },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -347,8 +347,8 @@ if 'background_tasks' in INSTALLED_APPS:
         'djcelery',
         'djcelery_email',
     )
-    
-    EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+
+    #EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 
     CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
     SERVER_EMAIL = DEFAULT_FROM_EMAIL

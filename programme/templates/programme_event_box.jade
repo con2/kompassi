@@ -1,4 +1,9 @@
 if event.programme_event_meta.public
-    h3 Tapahtuman ohjelmakartta on julkaistu
+  h3 Tapahtuman ohjelmakartta on julkaistu
 
-    p: a(href='{% url "programme_programme_timetable_view" event.slug %}') Tutustu ohjelmakarttaan
+  p: a(href='{% url "programme_programme_timetable_view" event.slug %}') Tutustu ohjelmakarttaan
+
+if is_programme_admin
+  h3 Sinulla on ohjelmavastaavan oikeudet tähän tapahtumaan
+
+  p: a(href='{% url "programme_admin_view" event.slug %}') Siirry ohjelman hallintaan

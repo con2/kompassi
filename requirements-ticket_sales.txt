@@ -1,2 +1,3 @@
 reportlab==3.0
 pillow==2.3.0
+-e git+https://github.com/kcsry/lippukala#egg=lippukala

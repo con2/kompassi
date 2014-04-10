@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 
-from celery import shared_task
+from turska.celery_app import app
 
 
-@shared_task
+@app.task
 def ping():
     return "pong"
