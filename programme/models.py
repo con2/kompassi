@@ -340,11 +340,11 @@ class ViewMethodsMixin(object):
         return results
 
     def start_times(self, programme=None):
-        result = settings.TIMETABLE_SPECIAL_TIMES[::]
+        result = [t.start_time for t in SpecialStartTime.objects.filter(event=self.event)]
 
-        for (start_time, end_time) in settings.TIMETABLE_TIME_BLOCKS:
-            cur = start_time
-            while cur <= end_time:
+        for time_block in TimeBlock.objects.filter(event=event):
+            cur = time_block.start_time
+            while cur <= time_block.end_time:
                 result.append(cur)
                 cur += ONE_HOUR
 
@@ -410,6 +410,17 @@ class ProgrammeEditToken(OneTimeCode):
     def send(self, *args, **kwargs):
         kwargs.setdefault('from_email', self.programme.event.programme_event_meta.contact_email)
         super(ProgrammeEditToken, self).send(*args, **kwargs)
+
+
+class TimeBlock(models.Model):
+    event = models.ForeignKey('core.event')
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
+
+class SpecialStartTime(models.Model):
+    event = models.ForeignKey('core.event')
+    start_time = models.DateTimeField()
 
 
 __all__ = [

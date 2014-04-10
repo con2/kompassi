@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import get_default_timezone, now
 
 from core.models import Event, Venue
-from programme.models import ProgrammeEventMeta
+from programme.models import ProgrammeEventMeta, TimeBlock, SpecialStartTime
 
 
 class Command(BaseCommand):
@@ -60,3 +60,27 @@ class Command(BaseCommand):
         if not programme_event_meta.contact_email:
             programme_event_meta.contact_email = 'ohjelma@tracon.fi'
             programme_event_meta.save()
+
+        # v6
+        for start_time, end_time in [
+            (
+                datetime(2013, 9, 14, 11, 0, 0, tzinfo=tz),
+                datetime(2013, 9, 15, 1 , 0, 0, tzinfo=tz)
+            ),
+            (
+                datetime(2013, 9, 15, 9 , 0, 0, tzinfo=tz),
+                datetime(2013, 9, 15, 17, 0, 0, tzinfo=tz)
+            )
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+        SpecialStartTime.objects.get_or_create(
+            event=event,
+            start_time=datetime(2013, 9, 14, 10, 30, 0, tzinfo=tz),
+        )
