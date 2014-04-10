@@ -1,9 +1,9 @@
 from __future__ import absolute_import
 
-from turska.celery_app import app
+from celery import shared_task
 
 
-@app.task(ignore_result=True)
+@shared_task(ignore_result=True)
 def message_send(message_id, recipient_ids=None, resend=False):
     from .models import Message
     from core.models import Person
