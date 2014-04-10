@@ -342,7 +342,7 @@ class ViewMethodsMixin(object):
     def start_times(self, programme=None):
         result = [t.start_time for t in SpecialStartTime.objects.filter(event=self.event)]
 
-        for time_block in TimeBlock.objects.filter(event=event):
+        for time_block in TimeBlock.objects.filter(event=self.event):
             cur = time_block.start_time
             while cur <= time_block.end_time:
                 result.append(cur)

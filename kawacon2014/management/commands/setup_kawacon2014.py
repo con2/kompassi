@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import get_default_timezone
 
 from core.models import Venue, Event
-from programme.models import ProgrammeEventMeta, Category, Room
+from programme.models import ProgrammeEventMeta, Category, Room, TimeBlock, View
 
 
 class Command(BaseCommand):
@@ -67,6 +67,14 @@ class Command(BaseCommand):
             admin_group=admin_group,
         ))
 
+        view, unused = View.objects.get_or_create(
+            event=event,
+            name='Ohjelmakartta',
+        )
+
+        view.rooms = Room.objects.filter(venue=venue, public=True)
+        view.save()
+
         for category_name, category_style in [
             (u'Luento', u'anime'),
             (u'Non-stop', u'miitti'),
@@ -79,5 +87,23 @@ class Command(BaseCommand):
                 title=category_name,
                 defaults=dict(
                     style=category_style,
+                )
+            )
+
+        for start_time, end_time in [
+            (
+                datetime(2014, 6, 28, 10, 0, 0, tzinfo=tz),
+                datetime(2014, 6, 28, 18, 0, 0, tzinfo=tz),
+            ),
+            (
+                datetime(2014, 6, 29, 10, 0, 0, tzinfo=tz),
+                datetime(2014, 6, 29, 16, 0, 0, tzinfo=tz),
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
                 )
             )
