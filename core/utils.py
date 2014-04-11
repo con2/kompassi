@@ -15,7 +15,8 @@ from django.db import models
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.template import RequestContext
+from django.utils.timezone import get_default_timezone
+from django.template import RequestContext, defaultfilters
 from django.template.loader import render_to_string
 
 from crispy_forms.helper import FormHelper
@@ -106,7 +107,12 @@ def render_string(request, template_name, vars):
 
 
 def format_date(date):
-    return date.strftime(settings.DATE_FORMAT_STRFTIME)
+    return defaultfilters.date(date, "SHORT_DATE_FORMAT")
+
+
+def format_datetime(datetime):
+    tz = get_default_timezone()
+    return defaultfilters.date(datetime.astimezone(tz), "SHORT_DATETIME_FORMAT")
 
 
 def login_redirect(request, view='core_login_view'):

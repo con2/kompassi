@@ -5,9 +5,9 @@ from django import forms
 from crispy_forms.layout import Layout, Fieldset
 
 from core.models import Person
-from core.utils import horizontal_form_helper
+from core.utils import horizontal_form_helper, format_datetime
 
-from .models import Programme, Role, Category, Room
+from .models import Programme, Role, Category, Room, AllRoomsPseudoView, START_TIME_LABEL
 
 
 class ProgrammeForm(forms.ModelForm):
@@ -111,6 +111,9 @@ class ProgrammePersonForm(forms.ModelForm):
 
 
 class ProgrammeAdminForm(forms.ModelForm):
+    # XXX
+    start_time = forms.ChoiceField(choices=[], label=START_TIME_LABEL, required=False)
+
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
@@ -132,6 +135,22 @@ class ProgrammeAdminForm(forms.ModelForm):
         self.fields['category'].queryset = Category.objects.filter(event=event)
         self.fields['room'].queryset = Room.objects.filter(venue=event.venue)
 
+        # XXX
+        self.fields['start_time'].choices = [('', u'---------')] + [
+            (
+                start_time,
+                format_datetime(start_time)
+            ) for start_time in AllRoomsPseudoView(event).start_times()
+        ]
+
+    # XXX
+    def clean_start_time(self):
+        start_time = self.cleaned_data['start_time']
+        if start_time == '':
+            start_time = None
+
+        return start_time
+
     class Meta:
         model = Programme
         fields = (
@@ -140,7 +159,6 @@ class ProgrammeAdminForm(forms.ModelForm):
             'notes',
             'room',
             'start_time',
-            # 'tags',
         )
 
         widgets = dict(

@@ -149,6 +149,7 @@ RECORDING_PERMISSION_CHOICES = [
     (u'private', u'Kiellän ohjelmanumeroni julkaisun, mutta sen saa videoida arkistokäyttöön'),
     (u'forbidden', u'Kiellän ohjelmanumeroni videoinnin'),
 ]
+START_TIME_LABEL = u'Alkuaika'
 
 
 class Programme(models.Model):
@@ -192,7 +193,7 @@ class Programme(models.Model):
         help_text=u'Jos haluat sanoa ohjelmanumeroosi liittyen jotain, mikä ei sovi mihinkään yllä olevista kentistä, käytä tätä kenttää.',
     )
 
-    start_time = models.DateTimeField(blank=True, null=True, verbose_name=u'Alkuaika')
+    start_time = models.DateTimeField(blank=True, null=True, verbose_name=START_TIME_LABEL)
     length = models.IntegerField(
         blank=True,
         null=True,
