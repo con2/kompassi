@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, make_option
 from django.contrib.contenttypes.models import ContentType
-from django.utils.timezone import get_default_timezone, now
 
 from ...models import Person
 

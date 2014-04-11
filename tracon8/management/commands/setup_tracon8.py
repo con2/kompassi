@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, make_option
-from django.utils.timezone import get_default_timezone, now
+
+from dateutil.tz import tzlocal
 
 from core.models import Event, Venue
 from programme.models import ProgrammeEventMeta, TimeBlock, SpecialStartTime
@@ -30,7 +31,7 @@ class Command(BaseCommand):
         else:
             print 'Setting up tracon8 in production mode'
 
-        tz = get_default_timezone()
+        tz = tzlocal()
 
         venue, unused = Venue.objects.get_or_create(name='Tampere-talo')
         event, unused = Event.objects.get_or_create(slug='tracon8', defaults=dict(

@@ -6,7 +6,9 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand, make_option
-from django.utils.timezone import get_default_timezone, now
+from django.utils.timezone import now
+
+from dateutil.tz import tzlocal
 
 from core.utils import give_all_app_perms_to_group
 from core.models import Event, Person, Venue
@@ -35,7 +37,7 @@ class Command(BaseCommand):
         else:
             print 'Setting up tracon9 in production mode'
 
-        tz = get_default_timezone()
+        tz = tzlocal()
 
         venue, unused = Venue.objects.get_or_create(name='Tampere-talo')
         content_type = ContentType.objects.get_for_model(SignupExtra)

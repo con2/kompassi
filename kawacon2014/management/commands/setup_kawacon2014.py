@@ -3,7 +3,8 @@
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, make_option
-from django.utils.timezone import get_default_timezone
+
+from dateutil.tz import tzlocal
 
 from core.models import Venue, Event
 from programme.models import ProgrammeEventMeta, Category, Room, TimeBlock, View
@@ -25,7 +26,7 @@ class Command(BaseCommand):
         else:
             print 'Setting up kawacon2014 in production mode'
 
-        tz = get_default_timezone()
+        tz = tzlocal()
 
         venue, unused = Venue.objects.get_or_create(name='Peltolan ammattiopisto', defaults=dict(
             name_inessive='Peltolan ammattiopistolla' # XXX not really inessive

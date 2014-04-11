@@ -2,7 +2,17 @@ import datetime
 
 from django.contrib import admin
 
-from .models import ProgrammeEventMeta, Category, Room, Role, Tag, Programme, View
+from .models import (
+    Category,
+    Programme,
+    ProgrammeEventMeta,
+    Role,
+    Room,
+    SpecialStartTime,
+    Tag,
+    TimeBlock,
+    View,
+)
 
 
 class InlineProgrammeEventMetaAdmin(admin.StackedInline):
@@ -44,3 +54,5 @@ admin.site.register(Role)
 admin.site.register(Tag)
 admin.site.register(Programme, ProgrammeAdmin)
 admin.site.register(View, ViewAdmin)
+admin.site.register(TimeBlock)
+admin.site.register(SpecialStartTime)

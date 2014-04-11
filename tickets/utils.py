@@ -7,7 +7,3 @@ def format_price(cents):
 
 def format_date(dt):
     return dt.strftime("%Y-%m-%d")
-
-
-def format_datetime(dt):
-    return dt.strftime("%Y-%m-%d %H:%M:%S")

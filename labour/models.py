@@ -9,7 +9,6 @@ from django.utils.timezone import now
 
 from core.models import EventMetaBase
 from core.utils import (
-    format_datetime,
     SLUG_FIELD_PARAMS,
     ensure_user_is_member_of_group,
     ensure_user_is_not_member_of_group,

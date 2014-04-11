@@ -20,7 +20,6 @@ from django.template.loader import render_to_string
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
-from django.utils.timezone import get_default_timezone
 
 
 def make_field_readonly(field):
@@ -108,10 +107,6 @@ def render_string(request, template_name, vars):
 
 def format_date(date):
     return date.strftime(settings.DATE_FORMAT_STRFTIME)
-
-
-def format_datetime(datetime):
-    return datetime.astimezone(get_default_timezone()).strftime(settings.DATETIME_FORMAT_STRFTIME)
 
 
 def login_redirect(request, view='core_login_view'):

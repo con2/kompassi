@@ -14,7 +14,7 @@ from core.models import EventMetaBase
 from core.utils import url
 from payments.utils import compute_payment_request_mac
 
-from .utils import format_date, format_datetime, format_price
+from .utils import format_date, format_price
 from .receipt import render_receipt
 
 
