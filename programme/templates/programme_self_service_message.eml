@@ -1,9 +1,9 @@
 Hyvä ohjelmanjärjestäjä,
 
-{{ code.programme.event.event_name_genitive }} ohjelmavastaava pyytää sinua täyttämään ohjelmanumerosi tiedot alla olevan linkin takaa löytyvälle lomakkeelle:
+{{ code.programme.event.name_genitive }} ohjelmavastaava pyytää sinua täyttämään ohjelmanumerosi tiedot alla olevan linkin takaa löytyvälle lomakkeelle:
 
 {{ link|safe }}
 
 Ystävällisin terveisin
 --
-{{ code.programme.category.event.contact_email }}
+{{ code.programme.event.event.contact_email }}
