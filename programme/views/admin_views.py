@@ -46,7 +46,7 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
     return actual_detail_view(request, vars, event, programme,
         template='programme_admin_detail_view.jade',
         self_service=False,
-        redirect_success=redirect('programme_admin_detail_view', event.slug, programme.pk),
+        redirect_success=lambda ev, prog: redirect('programme_admin_detail_view', ev.slug, prog.pk),
     )
 
 def actual_detail_view(request, vars, event, programme, template, self_service, redirect_success):
@@ -148,14 +148,14 @@ def actual_detail_view(request, vars, event, programme, template, self_service, 
                     programme.send_edit_codes(request)
                     messages.success(request, u'Linkki ohjelmanumeron tietojen päivityksiin lähetettiin ohjelmanjärjestäjille.')
 
-                return redirect_success
+                return redirect_success(event, programme)
             else:
                 messages.error(request, u'Ole hyvä ja tarkista lomake.')
 
         elif not self_service and 'delete' in request.POST:
             programme.delete()
             messages.success(request, u'Ohjelmanumero poistettiin.')
-            return redirect_success
+            return redirect_success(event, programme)
 
         else:
             messages.error(request, u'Tunnistamaton pyyntö')

@@ -91,7 +91,8 @@ class Command(BaseCommand):
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(event=event, defaults=labour_event_meta_defaults)
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
             public=False,
-            admin_group=programme_admin_group
+            admin_group=programme_admin_group,
+            contact_email='Tracon 9 -ohjelmatiimi <ohjelma@tracon.fi>',
         ))
 
         room_order = 0

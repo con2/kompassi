@@ -169,7 +169,7 @@ def programme_self_service_view(request, event, programme_edit_code):
     return actual_detail_view(request, vars, event, programme,
         template='programme_self_service_view.jade',
         self_service=True,
-        redirect_success=redirect('programme_self_service_view', event.slug, token.code),
+        redirect_success=lambda ev, unused: redirect('programme_self_service_view', ev.slug, token.code),
     )
 
 
