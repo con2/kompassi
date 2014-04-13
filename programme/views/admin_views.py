@@ -7,7 +7,12 @@ from django.views.decorators.http import require_http_methods, require_GET
 from core.models import Person
 from core.utils import initialize_form, initialize_form_set, url
 
-from ..models import Programme
+from ..models import (
+    Programme,
+    ProgrammeEditToken,
+    ProgrammeRole,
+    Role,
+)
 from ..helpers import programme_admin_required
 from ..forms import (
     ProgrammeAdminForm,
@@ -65,6 +70,9 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
 
     forms = [programme_form, programme_admin_form, programme_person_form_set]
 
+    def determine_can_send_link():
+        return programme.pk and any(p.email for p in programme.organizers.all())
+
     if programme.pk:
         programme_extra_form = initialize_form(ProgrammeExtraForm, request,
             instance=programme,
@@ -78,7 +86,7 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
         forms.append(programme_extra_form)
 
     if request.method == 'POST':
-        if 'save' in request.POST:
+        if 'save' in request.POST or 'save-sendlink' in request.POST:
             if all(form.is_valid() for form in forms):
                 programme_form.save(commit=False)
                 programme_admin_form.save(commit=False)
@@ -87,7 +95,26 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
                     programme_extra_form.save(commit=False)
 
                 programme.save()
+
+                hosts = programme_person_form_set.save()
+
+                # XXX
+                role = Role.objects.get(is_default=True)
+
+                for person in hosts:
+                    ProgrammeRole.objects.get_or_create(
+                        programme=programme,
+                        person=person,
+                        defaults=dict(
+                            role=role,
+                        ),
+                    )
+
                 messages.success(request, u'Ohjelmanumeron tiedot tallennettiin.')
+
+                if 'save-sendlink' in request.POST and determine_can_send_link():
+                    programme.send_edit_codes(request)
+
                 return redirect('programme_admin_detail_view', event.slug, programme.pk)
             else:
                 messages.error(request, u'Ole hyvä ja tarkista lomake.')
@@ -99,6 +126,8 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
 
         else:
             messages.error(request, u'Tunnistamaton pyyntö')
+
+    vars.update(can_send_link=determine_can_send_link())
 
     return render(request, 'programme_admin_detail_view.jade', vars)
 

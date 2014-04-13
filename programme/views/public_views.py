@@ -13,9 +13,16 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.http import require_http_methods, require_GET
 
-from core.utils import render_string
+from core.utils import render_string, initialize_form
 
-from ..models import View, AllRoomsPseudoView, Category, Tag, Programme
+from ..models import (
+    View,
+    AllRoomsPseudoView,
+    Category,
+    Tag,
+    Programme,
+    ProgrammeEditToken,
+)
 from ..helpers import programme_event_required
 
 

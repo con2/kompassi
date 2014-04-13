@@ -244,6 +244,9 @@ class Programme(models.Model):
 
     def send_edit_codes(self, request):
         for person in self.organizers.all():
+            if not person.email:
+                continue
+
             code = ProgrammeEditToken(
                 person=person,
                 programme=self,
