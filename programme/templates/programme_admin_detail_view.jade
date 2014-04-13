@@ -9,9 +9,8 @@ block admin_content
       .panel-footer.clearfix
         .btn-group.pull-right
           a(href='{% url "programme_admin_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan
-          if programme.pk
-            button(type='submit', name='delete', value='delete').btn.btn-danger Poista ohjelmanumero
+          button(type='submit', name='save', value='save').btn.btn-success Tallenna ja jatka muokkaamista
           if can_send_link
             button(type='submit', name='save-sendlink', value='save-sendlink').btn.btn-primary Lähetä muokkauslinkki
-          button(type='submit', name='save', value='save').btn.btn-success Tallenna ja jatka muokkaamista
-
+          if programme.pk
+            button(type='submit', name='delete', value='delete').btn.btn-danger Poista ohjelmanumero
