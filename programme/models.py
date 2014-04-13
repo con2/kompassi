@@ -247,12 +247,11 @@ class Programme(models.Model):
             if not person.email:
                 continue
 
-            code = ProgrammeEditToken(
+            code, created = ProgrammeEditToken.objects.get_or_create(
                 person=person,
                 programme=self,
             )
 
-            code.save()
             code.send(request)
 
     class Meta:

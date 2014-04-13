@@ -6,7 +6,7 @@ from dateutil.tz import tzlocal
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.timezone import now
@@ -23,12 +23,12 @@ from ..models import (
     Programme,
     ProgrammeEditToken,
 )
-from ..helpers import programme_event_required
+from ..helpers import programme_event_required, public_programme_required
 
 
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60) # XXX remove once nginx cache is in place
-@programme_event_required
+@public_programme_required
 @require_GET
 def programme_timetable_view(
     request,
@@ -85,7 +85,7 @@ def programme_internal_dumpdata_view(request):
     from cStringIO import StringIO
 
     buffer = StringIO()
-    management.call_command('dumpdata', 'timetable', stdout=buffer)
+    management.call_command('dumpdata', 'programme', stdout=buffer)
     response = HttpResponse(buffer.getvalue(), 'application/json')
     buffer.close()
 
@@ -94,7 +94,7 @@ def programme_internal_dumpdata_view(request):
 
 @cache_control(public=True, max_age=1 * 60)
 @cache_page(1 * 60) # XXX remove once nginx cache is in place
-@programme_event_required
+@public_programme_required
 @require_GET
 def programme_mobile_timetable_view(request, event):
     all_rooms = AllRoomsPseudoView(event)
@@ -121,7 +121,7 @@ def programme_mobile_timetable_view(request, event):
 
 @cache_control(public=True, max_age=1 * 60)
 @cache_page(1 * 60) # XXX remove once nginx cache is in place
-@programme_event_required
+@public_programme_required
 @require_GET
 def programme_mobile_detail_view(request, event, programme_id):
     programme = get_object_or_404(Programme, category__event=event, id=programme_id)
@@ -163,11 +163,13 @@ def programme_self_service_view(request, event, programme_edit_code):
 
     vars = dict(
         event=event,
+        login_page=True, # XXX
     )
 
     return actual_detail_view(request, vars, event, programme,
         template='programme_self_service_view.jade',
         self_service=True,
+        redirect_success=redirect('programme_self_service_view', event.slug, token.code),
     )
 
 

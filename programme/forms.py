@@ -94,20 +94,7 @@ class ProgrammePersonFormHelper(FormHelper):
 
 class ProgrammePersonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        if 'self_service' in kwargs:
-            self_service = kwargs.pop('self_service')
-        else:
-            self_service = False
-
         super(ProgrammePersonForm, self).__init__(*args, **kwargs)
-
-        if self_service:
-            for field_name in [
-                'email',
-                'phone'
-            ]:
-                self.fields[field_name].required = True
-
         self.helper = ProgrammePersonFormHelper()
 
     class Meta:
@@ -123,12 +110,30 @@ class ProgrammePersonForm(forms.ModelForm):
         ]
 
 
-ProgrammePersonFormSet = modelformset_factory(Person,
+class SelfServiceProgrammePersonForm(ProgrammePersonForm):
+    def __init__(self, *args, **kwargs):
+        super(SelfServiceProgrammePersonForm, self).__init__(*args, **kwargs)
+
+        for field_name in [
+            'email',
+            'phone'
+        ]:
+            self.fields[field_name].required = True
+
+
+AdminProgrammePersonFormSet = modelformset_factory(Person,
     form=ProgrammePersonForm,
     can_delete=True,
     can_order=False,
+    extra=1
 )
 
+SelfServiceProgrammePersonFormSet = modelformset_factory(Person,
+    form=SelfServiceProgrammePersonForm,
+    can_delete=False,
+    can_order=False,
+    extra=0
+)
 
 class ProgrammeAdminForm(forms.ModelForm):
     # XXX

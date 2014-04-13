@@ -1,7 +1,17 @@
 extends base
 block content
   h2 Ohjelmanumeron tiedot
-  p {{ event.name_genitive }} ohjelmavastaava on pyytänyt sinua täyttämään ohjelmanumerostasi seuraavat tiedot. Voit palata tälle lomakkeelle samalla osoitteella myöhemmin päivittämään tietoja uudelleen.
+  p {{ event.name_genitive }} ohjelmavastaava on pyytänyt sinua täyttämään ohjelmanumerostasi seuraavat tiedot.
+  p Voit palata tälle lomakkeelle samalla osoitteella myöhemmin päivittämään tietoja uudelleen.
   form(method='POST', role='form').form.form-horizontal
-    include programme_admin_form.jade
+    .why-do-i-need-to-enclose-these-in-a-div-is-this-a-bug-in-pyjade-or-crispy-or-something
+      include programme_admin_form.jade
+      fieldset
+        legend Tallenna ohjelmanumeron tiedot
+        .form-group
+          .controls.col-md-5.col-md-offset-3
+            .btn-group
+              button.btn.btn-primary(type='submit', name='save', value='save') Tallenna tiedot
 
+  // XXX
+  p

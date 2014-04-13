@@ -15,11 +15,12 @@ from ..models import (
 )
 from ..helpers import programme_admin_required
 from ..forms import (
+    AdminProgrammePersonFormSet,
     ProgrammeAdminForm,
     ProgrammeExtraForm,
     ProgrammeForm,
     ProgrammePersonFormHelper,
-    ProgrammePersonFormSet,
+    SelfServiceProgrammePersonFormSet,
 )
 
 
@@ -45,12 +46,18 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
     return actual_detail_view(request, vars, event, programme,
         template='programme_admin_detail_view.jade',
         self_service=False,
+        redirect_success=redirect('programme_admin_detail_view', event.slug, programme.pk),
     )
 
-def actual_detail_view(request, vars, event, programme, template, self_service):
+def actual_detail_view(request, vars, event, programme, template, self_service, redirect_success):
     hosts = Person.objects.filter(programmerole__programme=programme)
 
-    programme_person_form_set = initialize_form_set(ProgrammePersonFormSet, request,
+    if self_service:
+        PersonFormSetClass = SelfServiceProgrammePersonFormSet
+    else:
+        PersonFormSetClass = AdminProgrammePersonFormSet
+
+    programme_person_form_set = initialize_form_set(PersonFormSetClass, request,
         queryset=hosts,
         prefix='programme_person',
     )
@@ -114,7 +121,7 @@ def actual_detail_view(request, vars, event, programme, template, self_service):
                 hosts = programme_person_form_set.save(commit=False)
 
                 for person in hosts:
-                    if host.pk and not ProgrammeRole.objects.filter(
+                    if person.pk and not ProgrammeRole.objects.filter(
                         programme=programme,
                         person=person,
                     ).exists():
@@ -139,15 +146,16 @@ def actual_detail_view(request, vars, event, programme, template, self_service):
 
                 if 'save-sendlink' in request.POST and determine_can_send_link():
                     programme.send_edit_codes(request)
+                    messages.success(request, u'Linkki ohjelmanumeron tietojen päivityksiin lähetettiin ohjelmanjärjestäjille.')
 
-                return redirect('programme_admin_detail_view', event.slug, programme.pk)
+                return redirect_success
             else:
                 messages.error(request, u'Ole hyvä ja tarkista lomake.')
 
         elif not self_service and 'delete' in request.POST:
             programme.delete()
             messages.success(request, u'Ohjelmanumero poistettiin.')
-            return redirect('programme_admin_view', event.slug)
+            return redirect_success
 
         else:
             messages.error(request, u'Tunnistamaton pyyntö')

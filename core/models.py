@@ -231,13 +231,15 @@ class Person(models.Model):
     email = models.EmailField(
         blank=True,
         max_length=EMAIL_LENGTH,
-        verbose_name=u'Sähköpostiosoite'
+        verbose_name=u'Sähköpostiosoite',
+        help_text=u'Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä asioissa.',
     )
 
     phone = models.CharField(
         blank=True,
         max_length=PHONE_NUMBER_LENGTH,
-        verbose_name=u'Puhelinnumero'
+        verbose_name=u'Puhelinnumero',
+        help_text=u'Puhelinnumeroasi käytetään tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan.',
     )
 
     may_send_info = models.BooleanField(
