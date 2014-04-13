@@ -13,7 +13,7 @@ from dateutil.tz import tzlocal
 from core.utils import give_all_app_perms_to_group
 from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
-from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role
+from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role, TimeBlock, SpecialStartTime, View
 from tickets.models import TicketsEventMeta, LimitGroup, Product
 
 from ...models import SignupExtra, SpecialDiet, Night
@@ -161,6 +161,58 @@ class Command(BaseCommand):
                     description='Kika-kika tirsk',
                 )
             )
+
+        # v6
+        for start_time, end_time in [
+            (
+                datetime(2014, 9, 13, 11, 0, 0, tzinfo=tz),
+                datetime(2014, 9, 14, 1 , 0, 0, tzinfo=tz)
+            ),
+            (
+                datetime(2014, 9, 14, 9 , 0, 0, tzinfo=tz),
+                datetime(2014, 9, 14, 17, 0, 0, tzinfo=tz)
+            )
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+        SpecialStartTime.objects.get_or_create(
+            event=event,
+            start_time=datetime(2014, 9, 13, 10, 30, 0, tzinfo=tz),
+        )
+
+        for view_name, room_names in [
+            (u'Pääohjelmatilat', [
+                u'Iso sali',
+                u'Pieni sali',
+                u'Sopraano',
+                u'Rondo',
+                u'Studio',
+                u'Sonaatti 1',
+            ]),
+            (u'Toissijaiset ohjelmatilat', [
+                u'Sonaatti 2',
+                u'Basso',
+                u'Opus 1',
+                u'Opus 2',
+                u'Opus 3',
+                u'Opus 4',
+                u'Ulkona (teltta)',
+            ]),
+        ]:
+            rooms = [Room.objects.get(name__iexact=room_name, venue=venue)
+                for room_name in room_names]
+
+            view, unused = View.objects.get_or_create(event=event, name=view_name)
+
+            view.rooms = rooms
+            view.save()
+
 
         for name, description in [
             (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen'),

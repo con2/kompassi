@@ -199,6 +199,7 @@ class Programme(models.Model):
         blank=True,
         null=True,
         verbose_name=u'Kesto (minuuttia)',
+        help_text=u'Ohjelmalla tulee olla tila, alkuaika ja kesto, jotta se näkyisi ohjelmakartassa.'
     )
 
     notes = models.TextField(
@@ -330,7 +331,8 @@ class ViewMethodsMixin(object):
                     programme = room.programme_set.get(
                         category__event=self.event,
                         start_time=start_time,
-                        room__public=True
+                        room__public=True,
+                        length__isnull=False,
                     )
                     rowspan = self.rowspan(programme)
                     cur_row.append((programme, rowspan))
