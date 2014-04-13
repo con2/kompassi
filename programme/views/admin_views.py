@@ -155,7 +155,7 @@ def actual_detail_view(request, vars, event, programme, template, self_service, 
         elif not self_service and 'delete' in request.POST:
             programme.delete()
             messages.success(request, u'Ohjelmanumero poistettiin.')
-            return redirect_success(event, programme)
+            return redirect('programme_admin_view', event.slug)
 
         else:
             messages.error(request, u'Tunnistamaton pyyntö')
