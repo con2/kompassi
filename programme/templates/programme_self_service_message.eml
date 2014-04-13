@@ -6,4 +6,4 @@ Hyvä ohjelmanjärjestäjä,
 
 Ystävällisin terveisin
 --
-{{ code.programme.event.event.contact_email }}
+{{ code.programme.event.contact_email }}
