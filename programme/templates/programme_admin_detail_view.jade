@@ -9,6 +9,11 @@ block admin_content
           - crispy programme_form
           if programme.pk
             - crispy programme_extra_form
+          - crispy programme_person_form_set.management_form
+          for person_form in programme_person_form_set
+            fieldset
+              legend Ohjelmanpitäjä nro. {{ forloop.counter }}
+              - crispy person_form programme_person_form_helper
           - crispy programme_admin_form
       .panel-footer.clearfix
         .btn-group.pull-right

@@ -113,6 +113,7 @@ class Room(models.Model):
 class Role(models.Model):
     title = models.CharField(max_length=1023)
     require_contact_info = models.BooleanField(default=True)
+    is_default = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.title
@@ -269,7 +270,10 @@ class Programme(models.Model):
             )
         )
 
-
+    @property
+    def formatted_start_time(self):
+        from core.utils import format_datetime
+        return format_datetime(self.start_time) if self.start_time else ''
 
 
 class ProgrammeRole(models.Model):

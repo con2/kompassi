@@ -12,7 +12,7 @@ block admin_content
       tbody
         for programme in programmes
           tr
-            td {{ programme.start_time }}
+            td {{ programme.formatted_start_time }}
             td {{ programme.room.name }}
             td: a(href='{% url "programme_admin_detail_view" event.slug programme.pk %}') {{ programme.title }}
             td {{ programme.formatted_hosts }}

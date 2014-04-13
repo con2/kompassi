@@ -4,11 +4,18 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 
-from core.utils import initialize_form, url
+from core.models import Person
+from core.utils import initialize_form, initialize_form_set, url
 
 from ..models import Programme
 from ..helpers import programme_admin_required
-from ..forms import ProgrammeForm, ProgrammeAdminForm, ProgrammeExtraForm
+from ..forms import (
+    ProgrammeAdminForm,
+    ProgrammeExtraForm,
+    ProgrammeForm,
+    ProgrammePersonFormHelper,
+    ProgrammePersonFormSet,
+)
 
 
 @programme_admin_required
@@ -30,6 +37,14 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
     else:
         programme = Programme()
 
+    hosts = Person.objects.filter(programmerole__programme=programme)
+
+    programme_person_form_set = initialize_form_set(ProgrammePersonFormSet, request,
+        queryset=hosts,
+        prefix='programme_person',
+    )
+    programme_person_form_helper = ProgrammePersonFormHelper()
+
     programme_form = initialize_form(ProgrammeForm, request,
         instance=programme,
         prefix='programme_basic',
@@ -42,11 +57,13 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
 
     vars.update(
         programme=programme,
-        programme_form=programme_form,
         programme_admin_form=programme_admin_form,
+        programme_form=programme_form,
+        programme_person_form_set=programme_person_form_set,
+        programme_person_form_helper=programme_person_form_helper,
     )
 
-    forms = [programme_form, programme_admin_form]
+    forms = [programme_form, programme_admin_form, programme_person_form_set]
 
     if programme.pk:
         programme_extra_form = initialize_form(ProgrammeExtraForm, request,

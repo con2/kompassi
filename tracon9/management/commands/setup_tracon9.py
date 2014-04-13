@@ -13,7 +13,7 @@ from dateutil.tz import tzlocal
 from core.utils import give_all_app_perms_to_group
 from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
-from programme.models import ProgrammeEventMeta, Category, Programme, Room
+from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role
 from tickets.models import TicketsEventMeta, LimitGroup, Product
 
 from ...models import SignupExtra, SpecialDiet, Night
@@ -123,6 +123,18 @@ class Command(BaseCommand):
         if not programme_event_meta.contact_email:
             programme_event_meta.contact_email = 'ohjelma@tracon.fi'
             programme_event_meta.save()
+
+        role, unused = Role.objects.get_or_create(
+            title=u'Ohjelmanjärjestäjä',
+            defaults=dict(
+                is_default=True,
+                require_contact_info=True,
+            )
+        )
+
+        # v8
+        role.is_default = True
+        role.save()
 
         for title, style in [
             (u'Animeohjelma', u'anime'),

@@ -1,11 +1,13 @@
 # encoding: utf-8
 
 from django import forms
+from django.forms.models import modelformset_factory
 
+from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset
 
 from core.models import Person
-from core.utils import horizontal_form_helper, format_datetime
+from core.utils import horizontal_form_helper, format_datetime, indented_without_label, make_horizontal_form_helper
 
 from .models import Programme, Role, Category, Room, AllRoomsPseudoView, START_TIME_LABEL
 
@@ -69,6 +71,22 @@ class ProgrammeExtraForm(forms.ModelForm):
         )
 
 
+class ProgrammePersonFormHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(ProgrammePersonFormHelper, self).__init__(*args, **kwargs)
+        make_horizontal_form_helper(self)
+        self.form_tag = False
+        self.layout = Layout(
+            'first_name',
+            'surname',
+            'nick',
+            'preferred_name_display_style',
+            'phone',
+            'email',
+            indented_without_label('may_send_info'),
+        )
+
+
 class ProgrammePersonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if 'self_service' in kwargs:
@@ -85,17 +103,7 @@ class ProgrammePersonForm(forms.ModelForm):
             ]:
                 self.fields[field_name].required = True
 
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-        self.helper.layout = Layout(
-            'first_name',
-            'surname',
-            'nick',
-            'preferred_name_display_style',
-            'phone',
-            'email',
-            indented_without_label('may_send_info'),
-        )
+        self.helper = ProgrammePersonFormHelper()
 
     class Meta:
         model = Person
@@ -108,6 +116,13 @@ class ProgrammePersonForm(forms.ModelForm):
             'preferred_name_display_style',
             'surname',
         ]
+
+
+ProgrammePersonFormSet = modelformset_factory(Person,
+    form=ProgrammePersonForm,
+    can_delete=True,
+    can_order=False,
+)
 
 
 class ProgrammeAdminForm(forms.ModelForm):
