@@ -14,6 +14,11 @@ from .models import Programme, Role, Category, Room, AllRoomsPseudoView, START_T
 
 class ProgrammeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        if 'self_service' in kwargs:
+            self_service = kwargs.pop('self_service')
+        else:
+            self_service = False
+
         super(ProgrammeForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False

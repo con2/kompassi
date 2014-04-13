@@ -42,6 +42,12 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
     else:
         programme = Programme()
 
+    return actual_detail_view(request, vars, event, programme,
+        template='programme_admin_detail_view.jade',
+        self_service=False,
+    )
+
+def actual_detail_view(request, vars, event, programme, template, self_service):
     hosts = Person.objects.filter(programmerole__programme=programme)
 
     programme_person_form_set = initialize_form_set(ProgrammePersonFormSet, request,
@@ -53,31 +59,38 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
     programme_form = initialize_form(ProgrammeForm, request,
         instance=programme,
         prefix='programme_basic',
+        self_service=self_service,
     )
-    programme_admin_form = initialize_form(ProgrammeAdminForm, request,
-        instance=programme,
-        prefix='programme_admin',
-        event=event,
-    )
+
+    forms = [programme_form, programme_person_form_set]
+
+    if not self_service:
+        programme_admin_form = initialize_form(ProgrammeAdminForm, request,
+            instance=programme,
+            prefix='programme_admin',
+            event=event,
+        )
+
+        forms.append(programme_admin_form)
+
+        vars.update(programme_admin_form=programme_admin_form)
 
     vars.update(
         programme=programme,
-        programme_admin_form=programme_admin_form,
         programme_form=programme_form,
         programme_person_form_set=programme_person_form_set,
         programme_person_form_helper=programme_person_form_helper,
+        self_service=self_service,
     )
 
-    forms = [programme_form, programme_admin_form, programme_person_form_set]
-
     def determine_can_send_link():
-        return programme.pk and any(p.email for p in programme.organizers.all())
+        return not self_service and programme.pk and any(p.email for p in programme.organizers.all())
 
     if programme.pk:
         programme_extra_form = initialize_form(ProgrammeExtraForm, request,
             instance=programme,
             prefix='programme_extra',
-            self_service=False,
+            self_service=self_service,
         )
         vars.update(
             programme_extra_form=programme_extra_form
@@ -89,14 +102,26 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
         if 'save' in request.POST or 'save-sendlink' in request.POST:
             if all(form.is_valid() for form in forms):
                 programme_form.save(commit=False)
-                programme_admin_form.save(commit=False)
+
+                if not self_service:
+                    programme_admin_form.save(commit=False)
 
                 if programme.pk:
                     programme_extra_form.save(commit=False)
 
                 programme.save()
 
-                hosts = programme_person_form_set.save()
+                hosts = programme_person_form_set.save(commit=False)
+
+                for person in hosts:
+                    if host.pk and not ProgrammeRole.objects.filter(
+                        programme=programme,
+                        person=person,
+                    ).exists():
+                        # XXX better reporting
+                        raise RuntimeError('Manipulation of form set id fields detected')
+
+                    person.save()
 
                 # XXX
                 role = Role.objects.get(is_default=True)
@@ -119,7 +144,7 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
             else:
                 messages.error(request, u'Ole hyvä ja tarkista lomake.')
 
-        elif 'delete' in request.POST:
+        elif not self_service and 'delete' in request.POST:
             programme.delete()
             messages.success(request, u'Ohjelmanumero poistettiin.')
             return redirect('programme_admin_view', event.slug)
@@ -129,7 +154,7 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
 
     vars.update(can_send_link=determine_can_send_link())
 
-    return render(request, 'programme_admin_detail_view.jade', vars)
+    return render(request, template, vars)
 
 
 @programme_admin_required

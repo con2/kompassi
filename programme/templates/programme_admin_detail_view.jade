@@ -1,21 +1,11 @@
 extends core_admin_base
-- load crispy_forms_tags
 block admin_content
   form(method='POST', role='form').form-horizontal
     .panel.panel-default
       .panel-heading: strong Ohjelmanumeron tiedot
       .panel-body
         .form-horizontal
-          - crispy programme_form
-          if programme.pk
-            - crispy programme_extra_form
-          - crispy programme_person_form_set.management_form
-          for person_form in programme_person_form_set
-            fieldset
-              legend Ohjelmanpitäjä nro. {{ forloop.counter }}
-              {{ person_form.id }}
-              - crispy person_form programme_person_form_helper
-          - crispy programme_admin_form
+          include programme_admin_form.jade
       .panel-footer.clearfix
         .btn-group.pull-right
           a(href='{% url "programme_admin_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan

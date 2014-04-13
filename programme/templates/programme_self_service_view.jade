@@ -1,4 +1,7 @@
 extends base
-- load crispy_forms_tags
 block content
-  - crispy form
+  h2 Ohjelmanumeron tiedot
+  p {{ event.name_genitive }} ohjelmavastaava on pyytänyt sinua täyttämään ohjelmanumerostasi seuraavat tiedot. Voit palata tälle lomakkeelle samalla osoitteella myöhemmin päivittämään tietoja uudelleen.
+  form(method='POST', role='form').form.form-horizontal
+    include programme_admin_form.jade
+

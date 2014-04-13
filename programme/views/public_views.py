@@ -157,21 +157,18 @@ def programme_self_service_view(request, event, programme_edit_code):
         code=programme_edit_code
     )
 
-    programme_form = initialize_form(ProgrammeForm, request,
-        instance=token.programme,
-    )
+    programme = token.programme
+
+    from .admin_views import actual_detail_view
 
     vars = dict(
-        programme_form=programme_form,
-        login_page=True # XXX
+        event=event,
     )
 
-    if request.method == 'POST':
-        if programme_form.is_valid():
-            programme_form.save()
-            messages.success(u'Ohjelmanumerosi tiedot tallennettiin.')
-
-    return render(request, 'programme_self_service_view.jade', vars)
+    return actual_detail_view(request, vars, event, programme,
+        template='programme_self_service_view.jade',
+        self_service=True,
+    )
 
 
 def programme_profile_menu_items(request):

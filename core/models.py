@@ -294,7 +294,7 @@ class Person(models.Model):
             else:
                 style = 'firstname_surname'
 
-        NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
+        return NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
 
     @classmethod
     def get_or_create_dummy(cls, superuser=True):
