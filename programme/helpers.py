@@ -26,7 +26,9 @@ def public_programme_required(view_func):
     @wraps(view_func)
     @programme_event_required
     def wrapper(request, event, *args, **kwargs):
-        if not (meta.public or event.programme_event_meta.is_user_admin(request.user)):
+        meta = event.programme_event_meta
+
+        if not (meta.public or meta.is_user_admin(request.user)):
             messages.error(request, u"Tämän tapahtuman ohjelma ei ole vielä julkinen.")
             return redirect('core_event_view', event.slug)
 
