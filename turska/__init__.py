@@ -5,3 +5,6 @@ try:
 except ImportError, e:
     from warnings import warn
     warn('Failed to import Celery. Background tasks not available.')
+
+from johnny.cache import enable as enable_johnny_cache
+enable_johnny_cache()
