@@ -178,16 +178,6 @@ def programme_profile_menu_items(request):
 
 
 def programme_event_box_context(request, event):
-    is_programme_admin = False
-
-    if request.user.is_authenticated():
-        try:
-            person = request.user.person
-        except Person.DoesNotExist:
-            pass
-        else:
-            is_programme_admin = event.programme_event_meta.is_user_admin(request.user)
-
     return dict(
-        is_programme_admin=is_programme_admin,
+        is_programme_admin=event.programme_event_meta.is_user_admin(request.user),
     )
