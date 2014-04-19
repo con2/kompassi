@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     'tickets',
     'payments',
     'mailings',
+    'extra_domains',
 
     # Uncomment if you have IPA
     #'external_auth',
@@ -335,3 +336,7 @@ if 'background_tasks' in INSTALLED_APPS:
 
     CELERY_TASK_SERIALIZER = 'json'
     CELERY_RESULT_SERIALIZER = 'json'
+
+
+if 'extra_domains' in INSTALLED_APPS:
+    MIDDLEWARE_CLASSES = ('extra_domains.middleware.ExtraDomainsMiddleware',) + MIDDLEWARE_CLASSES
