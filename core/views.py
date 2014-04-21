@@ -386,8 +386,8 @@ def core_password_reset_view(request, code):
                 PasswordResetToken.reset_password(code, form.cleaned_data['new_password'])
             except PasswordResetError, e:
                 messages.error(request,
-                    u'Salasanan nollaus epäonnistui. Ole hyvä ja ota yhteyttä osoitteeseen '
-                    u'{settings.DEFAULT_FROM_EMAIL}.'
+                    u'Salasanan nollaus epäonnistui. Ole hyvä ja yritä uudestaan. Tarvittaessa voit '
+                    u'ottaa yhteyttä osoitteeseen {settings.DEFAULT_FROM_EMAIL}.'
                     .format(settings=settings)
                 )
                 return redirect('core_frontpage_view')

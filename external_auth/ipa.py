@@ -17,14 +17,15 @@ def ldap_session():
     for key, value in settings.AUTH_LDAP_GLOBAL_OPTIONS.iteritems():
         ldap.set_option(key, value)
 
-    with NamedTemporaryFile() as ccache_file:
-        try:
-            l = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
-            auth = ldap.sasl.gssapi("")
-            l.sasl_interactive_bind_s("", auth)
-            yield l
-        finally:
-            l.unbind_s()
+    try:
+        l = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+        auth = ldap.sasl.gssapi("")
+        l.sasl_interactive_bind_s("", auth)
+        yield l
+    except ldap.LDAPError, e:
+        raise IPAError(e)
+    finally:
+        l.unbind_s()
 
 
 def u(unicode_string):
@@ -50,11 +51,8 @@ def change_user_password(dn, old_password, new_password):
 
 
 def ldap_modify(dn, *modlist):
-    try:
-        with ldap_session() as l:
-            l.modify_s(dn, modlist)
-    except ldap.LDAPError, e:
-        raise IPAError(e)
+    with ldap_session() as l:
+        l.modify_s(dn, modlist)
 
 
 def create_user(username, first_name, surname, password):
