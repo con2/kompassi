@@ -482,8 +482,13 @@ class QueryBuilder(object):
         select_def["values"] = values
         select_def["order"] = order
 
+        title_source = field_object
+        if field_object.verbose_name is None:
+            # TODO: verbose_name is actually never None?
+            title_source = model._meta
+
         self._fields[prefix] = select_def
-        self._object_title(prefix, model._meta)
+        self._object_title(prefix, title_source)
 
     @property
     def fields(self):
