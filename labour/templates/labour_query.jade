@@ -1,0 +1,8 @@
+extends base
+block extra_scripts
+    script(src='{{ STATIC_URL }}querybuilder.js')
+    include querybuilder_init.html
+
+block content
+    h2 Suodata {{ event.name_genitive }} hakemuksia
+    include querybuilder_base

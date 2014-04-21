@@ -1,0 +1,12 @@
+- load query_extras
+
+form(method='post', role='form', id='query_builder_form')
+    // todo...
+label(for='add_query_filter')
+    | Add filter
+select(id='add_query_filter')
+    option(disabled='disabled', selected='selected') ---
+    for key, filter in query_builder_filters
+        option(value=key) {{ query_builder_titles|get_item:key }}
+pre(id='query_debug')
+button(type="button", onclick="query_builder.onUpdateDebug();") Update

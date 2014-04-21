@@ -1,0 +1,20 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var query_filter_def = {{ query_builder_data_filters|safe }};
+        var query_filter_titles = {{ query_builder_data_titles|safe }};
+
+        var query_builder = new QueryBuilder();
+        query_builder.attachAdd("#add_query_filter");
+        query_builder.attachForm("#query_builder_form");
+
+        //noinspection JSUnusedAssignment
+        query_builder.setFilters(query_filter_def);
+
+        //noinspection JSUnusedAssignment
+        query_builder.setTitles(query_filter_titles);
+
+        query_builder.attachDebug("#query_debug");
+
+        window.query_builder = query_builder;
+    });
+</script>
