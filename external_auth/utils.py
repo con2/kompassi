@@ -52,6 +52,10 @@ def add_user_to_group(user, group):
     ipa.add_user_to_group(user.username, group.name)
 
 
+def remove_user_from_group(user, group):
+    ipa.remove_user_from_group(user.username, group.name)
+
+
 def reset_user_password(user, new_password):
     temporary_password = create_temporary_password()
 
