@@ -82,6 +82,7 @@ class Room(models.Model):
     def programme_continues_at(self, the_time, **conditions):
         latest_programme = self.programme_set.filter(
             start_time__lt=the_time,
+            length__isnull=False,
             **conditions
         ).order_by('-start_time')[:1]
         if latest_programme:
