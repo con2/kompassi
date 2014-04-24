@@ -3,6 +3,7 @@
 from django import forms
 
 from crispy_forms.helper import FormHelper, Layout
+from crispy_forms.layout import Fieldset, Submit
 
 from core.utils import horizontal_form_helper, indented_without_label
 
@@ -80,3 +81,15 @@ class SearchForm(forms.Form):
     first_name = forms.CharField(label=u"Etunimi", required=False)
     last_name = forms.CharField(label=u"Sukunimi", required=False)
     email = forms.CharField(label=u"Sähköpostiosoite", required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(SearchForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.layout = Layout(
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            indented_without_label(Submit('submit', u'Hae tilauksia', css_class='btn-primary')),
+        )

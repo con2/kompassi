@@ -1,8 +1,11 @@
 extends core_admin_base.jade
+- load crispy_forms_tags
 block admin_content
   .panel.panel-default
-    .panel-heading Tilaukset
-    table.table
+    .panel-heading: strong Tilausten haku
+    .panel-body
+      - crispy form
+    table.table.table-striped
       thead
         tr
           th Tilausnumero
@@ -10,3 +13,18 @@ block admin_content
           th Tilauspvm
           th Maksettu
           th Peruttu
+      tbody
+        for order in orders
+          tr
+            td: a(href='{% url "tickets_admin_order_view" event.slug order.pk %}') {{ order.formatted_order_number }}
+            td {{ order.customer.name }}
+            td {{ order.confirm_time|date:"SHORT_DATE_FORMAT" }}
+            td {{ order.payment_date|date:"SHORT_DATE_FORMAT" }}
+            td {{ order.cancellation_time|date:"SHORT_DATE_FORMAT" }}
+    .panel-footer
+      ul.pager
+        if orders.has_previous
+          li.previous: a(href='?page={{ orders.previous_page_number }}') &laquo; Edellinen
+        li.current Sivu {{ orders.number }} ({{ orders.paginator.num_pages }})
+        if orders.has_next
+          li.next: a(href='?page={{ orders.next_page_number }}') Seuraava &raquo;          

@@ -20,13 +20,11 @@ except ImportError:
     from warnings import warn
     warn('Failed to import ReportLab. Generating receipts will fail.')
 
-from core.utils import url
+from core.utils import url, initialize_form
 
-# XXX * imports
-from ..models import *
-from ..forms import *
-from ..helpers import *
-from ..utils import *
+from ..forms import SearchForm
+from ..helpers import tickets_admin_required, perform_search
+from ..utils import format_price
 
 
 __all__ = [
@@ -232,7 +230,7 @@ def tickets_admin_orders_view(request, vars, event):
         orders = paginator.page(paginator.num_pages)
 
     vars.update(orders=orders, form=form)
-    return render(request, 'tickets_admin_orders_view.html', vars)
+    return render(request, 'tickets_admin_orders_view.jade', vars)
 
 
 @tickets_admin_required
