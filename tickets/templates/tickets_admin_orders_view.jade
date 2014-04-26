@@ -15,7 +15,7 @@ block admin_content
           th Peruttu
       tbody
         for order in orders
-          tr
+          tr(class="{{ order.css_class }}")
             td: a(href='{% url "tickets_admin_order_view" event.slug order.pk %}') {{ order.formatted_order_number }}
             td {{ order.customer.name }}
             td {{ order.confirm_time|date:"SHORT_DATE_FORMAT" }}
@@ -27,4 +27,4 @@ block admin_content
           li.previous: a(href='?page={{ orders.previous_page_number }}') &laquo; Edellinen
         li.current Sivu {{ orders.number }} ({{ orders.paginator.num_pages }})
         if orders.has_next
-          li.next: a(href='?page={{ orders.next_page_number }}') Seuraava &raquo;          
+          li.next: a(href='?page={{ orders.next_page_number }}') Seuraava &raquo;

@@ -2,7 +2,6 @@ extends core_admin_base.jade
 block admin_content
   .panel.panel-default
     .panel-heading: strong Lipunmyynnin raportti
-    .panel-body
     table.table.table-striped
       thead
         tr
@@ -31,10 +30,27 @@ block admin_content
           th
           th {{ total_price }}
           th
-          th {{ total_price_paid }}
+          th {{ total_paid_price }}
 
-block extra_scripts
-  script
-    window.turskaTicketData = {{ ticket_json }};
-  script(src="http://mbostock.github.com/d3/d3.v2.js")
-  script(src='{{ STATIC_URL }}js/tickets_by_date.js')
+  .panel.panel-default
+    .panel-heading: strong Loppuunmyyntitilanne
+    table.table.table-striped
+      thead
+        tr
+          th Loppuunmyyntiryhmä
+          th Myyty kpl
+          th Jäljellä kpl
+          th Myyntiraja kpl
+      tbody
+        for limit_group in event.limitgroup_set.all
+          tr(class="{{ limit_group.css_class }}")
+            td {{ limit_group.description }}
+            td {{ limit_group.amount_sold }}
+            td {{ limit_group.amount_available }}
+            td {{ limit_group.limit }}
+
+//- block extra_scripts
+//-   script
+//-     window.turskaTicketData = {{ ticket_json }};
+//-   script(src="http://mbostock.github.com/d3/d3.v2.js")
+//-   script(src='{{ STATIC_URL }}js/tickets_by_date.js')

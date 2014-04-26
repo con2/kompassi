@@ -44,6 +44,10 @@ def core_event_view(request, event_slug):
         from programme.views import programme_event_box_context
         vars.update(programme_event_box_context(request, event))
 
+    if event.tickets_event_meta:
+        from tickets.views import tickets_event_box_context
+        vars.update(tickets_event_box_context(request, event))
+
     return render(request, 'core_event_view.jade', vars)
 
 

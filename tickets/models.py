@@ -28,7 +28,7 @@ __all__ = [
 ]
 
 
-LOW_AVAILABILITY_THRESHOLD_DAYS = 10
+LOW_AVAILABILITY_THRESHOLD = 10
 
 
 class TicketsEventMeta(EventMetaBase):
@@ -250,15 +250,35 @@ class LimitGroup(models.Model):
         verbose_name_plural = u'loppuunmyyntiryhmät'
 
     @property
-    def amount_available(self):
+    def amount_sold(self):
         amount_sold = OrderProduct.objects.filter(
             product__limit_groups=self,
             order__confirm_time__isnull=False,
             order__cancellation_time__isnull=True
         ).aggregate(models.Sum('count'))['count__sum']
-        amount_sold = amount_sold if amount_sold is not None else 0
 
-        return self.limit - amount_sold
+        return amount_sold if amount_sold is not None else 0
+
+    @property
+    def amount_available(self):
+        return self.limit - self.amount_sold
+
+    @property
+    def is_sold_out(self):
+        return self.amount_available < 1
+
+    @property
+    def is_availability_low(self):
+        return self.amount_available < LOW_AVAILABILITY_THRESHOLD
+
+    @property
+    def css_class(self):
+        if self.is_sold_out:
+            return "danger"
+        elif self.is_availability_low:
+            return "warning"
+        else:
+            return ""
 
     @classmethod
     def get_or_create_dummies(cls):
@@ -305,7 +325,7 @@ class Product(models.Model):
 
     @property
     def availability_low(self):
-        return (self.amount_available < LOW_AVAILABILITY_THRESHOLD_DAYS)
+        return (self.amount_available < LOW_AVAILABILITY_THRESHOLD)
 
     @property
     def amount_available(self):
@@ -628,6 +648,15 @@ class Order(models.Model):
 
         select_queue = settings.LIPPUTURSKA_QUEUE_SELECTOR
         return select_queue(self)
+
+    @property
+    def css_class(self):
+        if self.is_cancelled:
+            return "danger"
+        elif self.is_overdue:
+            return "warning"
+        else:
+            return ""
 
     def lippukala_create_codes(self):
         if 'lippukala' not in settings.INSTALLED_APPS:

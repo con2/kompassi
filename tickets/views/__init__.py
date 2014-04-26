@@ -8,6 +8,7 @@ from .public_views import (
     tickets_thanks_view,
     tickets_tickets_view,
     tickets_welcome_view,
+    tickets_event_box_context,
 )
 
 from .admin_views import (

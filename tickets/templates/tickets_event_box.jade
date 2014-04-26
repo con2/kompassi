@@ -1,0 +1,9 @@
+if event.tickets_event_meta.is_ticket_sales_open
+  h3 Tapahtuman lipunmyynti on käynnissä
+
+  p: a(href='{% url "tickets_welcome_view" event.slug %}') Osta lippuja
+
+if is_tickets_admin
+  h3 Sinulla on lipunmyyntivastaavan oikeudet tähän tapahtumaan
+
+  p: a(href='{% url "tickets_admin_stats_view" event.slug %}') Siirry lipunmyynnin hallintaan
