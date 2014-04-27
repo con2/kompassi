@@ -142,6 +142,58 @@ class StringFilter extends QueryFilter
       return ["not", flt]
 
 
+# Class for view selection generation and parsing.
+# Selected views are displayed in the result set.
+class ViewSelector
+
+  # Dom class name for the inputs created by this.
+  @inputClass: "query_builder_view_select"
+
+  # Static input id generator.
+  # @param i Index or identifier for certain input.
+  # @return [String] Id string.
+  @idGen: (i) ->
+    "query_view_#{ i }"
+
+  # Constructor.
+  # @param container [JQuery-object] Root object that will contain the view selectors.
+  constructor: (container) ->
+    @choices = {}
+    @order = []
+    @container = container
+
+  # @param views [object] Dictionary containing key:title -mapping.
+  # @param order [Array] Ordered array containing keys.
+  setViews: (views, order) ->
+    @choices = views
+    @order = order
+
+  # Renders the selectors in to a string.
+  #
+  # @return [String] Rendered selectors.
+  renderStr: ->
+    views = ""
+    for key, i in @order
+      title = @choices[key]
+      id = @constructor.idGen(i)
+      views += """<div><input type="checkbox" id="#{ id }" class="#{ @constructor.inputClass }" data-key="#{ key }" /> <label for="#{ id }">#{ title }</label></div>"""
+    return views
+
+  # Renders the selectors directly in the supplied container.
+  render: ->
+    @container.html(@renderStr())
+
+  # Get current selections of views.
+  #
+  # @return [Array] A list of selected (backend) keys.
+  getSelections: ->
+    inputs = @container.find("." + @constructor.inputClass + ":checked")
+    ids = []
+    for element in inputs
+      ids.push($(element).data("key"))
+    return ids
+
+
 # The actual front end Query Builder.
 # This class is made available via window.
 # To use this, {QueryBuilder#attachAdd} and {QueryBuilder#attachForm} must be called to attach functions for the UI.
@@ -162,6 +214,7 @@ class QueryBuilder
     @dataFilters = {}  # Filter data from backend.
     @dataTitles = {}  # Title data from backend.
     @dataOrder = []  # Ordered entries.
+    @viewSelector = null
 
   # Attach add-control to the controller.
   #
@@ -179,6 +232,12 @@ class QueryBuilder
 
   attachDebug: (@uiDebugId) ->
     @uiDebug = $(uiDebugId)
+
+  attachViewSelect: (@uiViewSelectId) ->
+    @uiViewSelect = $(uiViewSelectId)
+    @viewSelector = new ViewSelector(@uiViewSelect)
+    @viewSelector.setViews(@dataTitles, @dataOrder)
+    @viewSelector.render()
 
   setFilters: (@dataFilters) ->
     # dict[str, str | dict[str, str | dict | list]
@@ -258,6 +317,7 @@ class QueryBuilder
       result.push(flt)
 
     asJson = JSON.stringify(result)
+    asJson += "\n\n" + JSON.stringify(@viewSelector.getSelections())
     @uiDebug.text(asJson)
 
 # Publish the class.
