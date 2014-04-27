@@ -161,6 +161,7 @@ class QueryBuilder
       "str": StringFilter
     @dataFilters = {}  # Filter data from backend.
     @dataTitles = {}  # Title data from backend.
+    @dataOrder = []  # Ordered entries.
 
   # Attach add-control to the controller.
   #
@@ -182,8 +183,15 @@ class QueryBuilder
   setFilters: (@dataFilters) ->
     # dict[str, str | dict[str, str | dict | list]
 
-  setTitles: (@dataTitles) ->
-    # dict[str, str]
+  setTitles: (orderedTitles) ->
+    # list[(str, str)]
+    @dataTitles = {}
+    @dataOrder = []
+    for tuple in orderedTitles
+      key = tuple[0]
+      title = tuple[1]
+      @dataTitles[key] = title
+      @dataOrder.push(key)
 
   onSelect: ->
     return if @disableSelect

@@ -21,7 +21,7 @@ def query_index(request, vars, event):
 
     vars.update(
         query_builder_data_filters=json.dumps(fields),
-        query_builder_data_titles=json.dumps(titles),
+        query_builder_data_titles=json.dumps(ordered_titles),
         query_builder_filters=ordered_fields,
         query_builder_titles=titles,
     )
