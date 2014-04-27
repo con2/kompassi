@@ -16,7 +16,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='test',
             default=False,
-            help='Setup kawacon for testing'
+            help='Setup concon9 for testing'
         ),
     )
 
