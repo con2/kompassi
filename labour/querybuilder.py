@@ -366,21 +366,40 @@ class QueryBuilder(object):
         """
         model_meta = model._meta
         prefix_non_empty = prefix if prefix is not None else ""
+        extra_views = set()
 
         use_default_filter = prefix_non_empty not in self.query_related_filter\
             or self.query_related_filter[prefix_non_empty] == "*"
+
         if use_default_filter:
+            # Default, i.e. everything available. This includes all possible filter fields, and view fields.
             fields = model_meta.get_all_field_names()
         else:
+            # Only certain set of filter fields.
+            # View fields are stored in extra_views, and added to the iterable set to get their titles.
             fields = self.query_related_filter[prefix_non_empty]
 
-        for field in fields:
+            # If view includes are defined, use them.
+            if prefix_non_empty in self.view_related_filter:
+                extra_views = set(self.view_related_filter[prefix_non_empty])
+
+        # Convert to set, as fields should not be iterated twice, and extra_views may contain same names.
+        fields = set(fields)
+
+        # Iterate over union of fields and views.
+        for field in fields | extra_views:
             if prefix is not None:
                 full_name = LOOKUP_SEP.join((prefix, field))
             else:
                 full_name = field
 
             field_object, mdl, direct, m2m = model_meta.get_field_by_name(field)
+
+            if not field in fields:
+                # Field is not defined in fields, it must be in views then.
+                # Only the view title is added to title container.
+                self._object_title(full_name, field_object)
+                continue
 
             if isinstance(field_object, models.AutoField) or \
                     self._is_excluded(full_name, prefix_non_empty, field):
@@ -447,6 +466,16 @@ class QueryBuilder(object):
         self._object_title(full_name, field_object)
 
     def _add_title(self, field_object, prefix, full_name):
+        """
+        Adds field title to titles conditionally.
+        Title is added only if the field is explicitly defined in view filter.
+
+        :param field_object: Field object being inspected.
+        :param prefix: Current prefix before the field.
+        :type prefix: str
+        :param full_name: Full name of the field, i.e. with prefix.
+        :type full_name: str
+        """
         if prefix in self.view_related_filter and field_object.name in self.view_related_filter[prefix]:
             self._object_title(full_name, field_object)
 

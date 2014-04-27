@@ -17,7 +17,7 @@ def query_index(request, vars, event):
     ordered_titles = sorted(titles.items(), cmp=lambda lhs, rhs: cmp(lhs[1].lower(), rhs[1].lower()))
 
     # Create ordered list of fields from ordered titles.
-    ordered_fields = [(key, fields[key]) for key, _ in ordered_titles]
+    ordered_fields = [(key, fields[key]) for key, _ in ordered_titles if key in fields]
 
     vars.update(
         query_builder_data_filters=json.dumps(fields),
