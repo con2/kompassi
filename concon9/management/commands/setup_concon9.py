@@ -33,9 +33,9 @@ class Command(BaseCommand):
         tz = tzlocal()
 
         venue, unused = Venue.objects.get_or_create(
-            name='Metropolia AMK Hämeentie',
+            name=u'Metropolia AMK Hämeentie',
             defaults=dict(
-                name_inessive='Metropolia AMK:n Hämeentien toimipisteessä'
+                name_inessive=u'Metropolia AMK:n Hämeentien toimipisteessä'
             )
         )
 
