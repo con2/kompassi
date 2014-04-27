@@ -21,4 +21,5 @@ from .admin_views import (
 
 from .query_views import (
     query_index,
+    query_exec,
 )

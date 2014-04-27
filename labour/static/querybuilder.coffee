@@ -216,6 +216,8 @@ class QueryBuilder
     @dataOrder = []  # Ordered entries.
     @viewSelector = null
 
+    @backendUrl = null
+
   # Attach add-control to the controller.
   #
   # @param uiAddId [String] jQuery query for the control.
@@ -239,6 +241,9 @@ class QueryBuilder
     @viewSelector.setViews(@dataTitles, @dataOrder)
     @viewSelector.render()
 
+  attachResults: (@uiResultsId) ->
+    @uiResults = $(uiResultsId)
+
   setFilters: (@dataFilters) ->
     # dict[str, str | dict[str, str | dict | list]
 
@@ -251,6 +256,9 @@ class QueryBuilder
       title = tuple[1]
       @dataTitles[key] = title
       @dataOrder.push(key)
+
+  setBackend: (url) ->
+    @backendUrl = url
 
   onSelect: ->
     return if @disableSelect
@@ -308,6 +316,11 @@ class QueryBuilder
     return flt
 
   onUpdateDebug: ->
+    asJson = JSON.stringify(@_getFilter())
+    asJson += "\n\n" + JSON.stringify(@_getViews())
+    @uiDebug.text(asJson)
+
+  _getFilter: ->
     result = []
 
     for queryPart in @filterList
@@ -316,9 +329,21 @@ class QueryBuilder
         result.push("and")
       result.push(flt)
 
-    asJson = JSON.stringify(result)
-    asJson += "\n\n" + JSON.stringify(@viewSelector.getSelections())
-    @uiDebug.text(asJson)
+    return result
+
+  _getViews: ->
+    @viewSelector.getSelections()
+
+  onExec: ->
+    postData =
+      "filter": JSON.stringify(@_getFilter())
+      "view": JSON.stringify(@_getViews())
+
+    fn = (data, status, xhdr) => @onDataResult(data, status, xhdr)
+    $.post(@backendUrl, postData, fn, "json")
+
+  onDataResult: (data, status, xhdr) ->
+    @uiResults.text(JSON.stringify(data, null, "  "))
 
 # Publish the class.
 window.QueryBuilder = QueryBuilder
