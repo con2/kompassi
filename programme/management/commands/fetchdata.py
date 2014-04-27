@@ -1,9 +1,5 @@
 # encoding: utf-8
 
-# Enable johnny-cache for workers etc.
-from johnny.cache import enable as enable_johnny_cache
-enable_johnny_cache()
-
 from os import unlink
 from tempfile import NamedTemporaryFile
 import urllib2

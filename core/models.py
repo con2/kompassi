@@ -1,8 +1,14 @@
 # encoding: utf-8
 
+# Enable johnny-cache for workers etc.
+from django.conf import settings
+if 'johnny.middleware.QueryCacheMiddleware' in settings.MIDDLEWARE_CLASSES:
+    from johnny.cache import enable as enable_johnny_cache
+    enable_johnny_cache()
+
+
 from datetime import date, datetime, timedelta
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.template import RequestContext

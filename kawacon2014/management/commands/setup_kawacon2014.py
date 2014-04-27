@@ -1,9 +1,5 @@
 # encoding: utf-8
 
-# Enable johnny-cache for workers etc.
-from johnny.cache import enable as enable_johnny_cache
-enable_johnny_cache()
-
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, make_option

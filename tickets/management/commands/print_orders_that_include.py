@@ -2,10 +2,6 @@
 # encoding: utf-8
 # vim: shiftwidth=4 expandtab
 
-# Enable johnny-cache for workers etc.
-from johnny.cache import enable as enable_johnny_cache
-enable_johnny_cache()
-
 import csv
 import sys
 
