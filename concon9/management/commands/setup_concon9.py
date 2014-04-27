@@ -1,13 +1,20 @@
 # encoding: utf-8
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, make_option
 
 from dateutil.tz import tzlocal
 
 from core.models import Venue, Event
-from programme.models import ProgrammeEventMeta, Category, Room, TimeBlock, View
+from programme.models import (
+    Category,
+    ProgrammeEventMeta,
+    Room,
+    SpecialStartTime,
+    TimeBlock,
+    View,
+)
 
 
 class Command(BaseCommand):
@@ -103,3 +110,12 @@ class Command(BaseCommand):
                     end_time=end_time
                 )
             )
+
+        half_hour = event.start_time + timedelta(minutes=30)
+        while half_hour < end_time:
+            SpecialStartTime.objects.create(
+                event=event,
+                start_time=half_hour,
+            )
+
+            half_hour += timedelta(minutes=60)
