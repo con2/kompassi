@@ -32,9 +32,12 @@ class Command(BaseCommand):
 
         tz = tzlocal()
 
-        venue, unused = Venue.objects.get_or_create(name='Metropolia AMK Hämeentie', defaults=dict(
-            name_inessive='Metropolia AMK:n Hämeentien toimipisteessä'
-        ))
+        venue, unused = Venue.objects.get_or_create(
+            name='Metropolia AMK Hämeentie',
+            defaults=dict(
+                name_inessive='Metropolia AMK:n Hämeentien toimipisteessä'
+            )
+        )
 
         room_order = 0
         for room_name in [
