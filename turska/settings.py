@@ -35,11 +35,12 @@ DATABASES = {
 
 # Uncomment if you have memcached
 # CACHES = {
-#     'default' : dict(
-#         BACKEND = 'johnny.backends.memcached.MemcachedCache',
-#         LOCATION = ['127.0.0.1:11211'],
-#         JOHNNY_CACHE = True,
-#     )
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#         'LOCATION': [
+#             '127.0.0.1:11211'
+#         ]
+#     }
 # }
 
 ALLOWED_HOSTS = []
