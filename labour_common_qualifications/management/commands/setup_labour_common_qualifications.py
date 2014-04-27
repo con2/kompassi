@@ -1,5 +1,9 @@
 # encoding: utf-8
 
+# Enable johnny-cache for workers etc.
+from johnny.cache import enable as enable_johnny_cache
+enable_johnny_cache()
+
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 
