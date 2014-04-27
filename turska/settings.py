@@ -262,7 +262,7 @@ if 'external_auth' in INSTALLED_APPS:
         "(objectClass=groupOfNames)"
     )
     AUTH_LDAP_GROUP_TYPE = NestedGroupOfNamesType()
-    AUTH_LDAP_MIRROR_GROUPS = False
+    AUTH_LDAP_MIRROR_GROUPS = True
 
     AUTH_LDAP_REQUIRE_GROUP = "cn={TURSKA_INSTALLATION_SLUG}-users,{TURSKA_LDAP_GROUPS}".format(**locals())
     # AUTH_LDAP_DENY_GROUP = "cn={TURSKA_INSTALLATION_SLUG}-banned,{TURSKA_LDAP_GROUPS}".format(**locals())
