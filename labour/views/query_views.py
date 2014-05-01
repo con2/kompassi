@@ -1,22 +1,44 @@
+# -*- coding: utf-8 -*-
 import json
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 from django.views.decorators.http import require_POST, require_GET
 import itertools
 from labour.helpers import labour_admin_required
-from labour.querybuilder import Signup9
 
 __author__ = 'jyrkila'
 
 RFC2822TIME = "%a, %d %b %Y %H:%M:%S %z"
 
 
+def get_query(event):
+    """
+    Get event signup query class.
+
+    :param event: Target event to get query class from.
+    :type event: core.models.Event
+    :return: Query class or None if query class was not found.
+    :rtype: T <= QueryBuilder
+    """
+    labour_meta = event.labour_event_meta
+    if labour_meta is None:
+        return None
+    signup_extra = labour_meta.signup_extra_model
+    return signup_extra.get_query_class()
+
+
 @require_GET
 @labour_admin_required
 def query_index(request, vars, event):
-    query_builder = Signup9()
+    query_builder_class = get_query(event)
+    if query_builder_class is None:
+        messages.error(request, u"Tapahtumalla ei ole kyselymäärityksiä. Ota yhteys ylläpitäjään.")
+        return HttpResponseRedirect(reverse("labour_admin_dashboard_view", args=[event.slug]))
+
+    query_builder = query_builder_class()
     fields, titles = query_builder.get_columns()
 
     # Order by case insensitive titles located in 'titles'-dict values.
@@ -80,7 +102,11 @@ def query_exec(request, vars, event):
         # Don't bother with non-ajax requests.
         return HttpResponseRedirect(reverse(query_index, args=[event.slug]))
 
-    query_builder = Signup9()
+    query_builder_class = get_query(event)
+    if query_builder_class is None:
+        return HttpResponseNotFound()
+
+    query_builder = query_builder_class()
     query_builder.parse(request.POST)
 
     q_results = query_builder.exec_query()

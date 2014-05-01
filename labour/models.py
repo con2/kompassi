@@ -536,6 +536,10 @@ class SignupExtraBase(models.Model):
     def get_form_class(cls):
         raise NotImplemented('Remember to implement form_class in your SignupExtra class')
 
+    @staticmethod
+    def get_query_class():
+        return None
+
     class Meta:
         abstract = True
 

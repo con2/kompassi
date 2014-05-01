@@ -3,6 +3,7 @@
 from django.db import models
 
 from labour.models import SignupExtraBase
+from labour.querybuilder import QueryBuilder
 
 
 SHIRT_SIZES = [
@@ -133,3 +134,21 @@ class SignupExtra(SignupExtraBase):
     def get_form_class(cls):
         from .forms import SignupExtraForm
         return SignupExtraForm
+
+    @staticmethod
+    def get_query_class():
+        return Signup9
+
+
+class Signup9(QueryBuilder):
+    model = SignupExtra
+    query_related_exclude = {
+        "signup": ("event",),
+    }
+    query_related_filter = {
+        "signup": "*",
+        "signup__person": ("birth_date",),
+    }
+    view_related_filter = {
+        "signup__person": ("first_name", "surname", "nick", "birth_date", "email", "phone",),
+    }

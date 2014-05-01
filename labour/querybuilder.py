@@ -536,17 +536,3 @@ class Signup2(QueryBuilder):
         "person": ("first_name", "surname", "nick", "birth_date", "email", "phone",)
     }
 
-
-class Signup9(QueryBuilder):
-    from tracon9.models import SignupExtra
-    model = SignupExtra
-    query_related_exclude = {
-        "signup": ("event",),
-    }
-    query_related_filter = {
-        "signup": "*",
-        "signup__person": ("birth_date",),
-    }
-    view_related_filter = {
-        "signup__person": ("first_name", "surname", "nick", "birth_date", "email", "phone",),
-    }
