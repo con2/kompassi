@@ -332,7 +332,8 @@ class QueryBuilder
     return result
 
   _getViews: ->
-    @viewSelector.getSelections()
+    # Cache selections so they can be used when rendering the contents.
+    @queriedViews = @viewSelector.getSelections()
 
   onExec: ->
     postData =
@@ -343,7 +344,61 @@ class QueryBuilder
     $.post(@backendUrl, postData, fn, "json")
 
   onDataResult: (data, status, xhdr) ->
-    @uiResults.text(JSON.stringify(data, null, "  "))
+    view = new ResultView(@uiResults, @dataTitles, @queriedViews, data)
+    view.render()
+
+
+# Class repsonsible of rendering query results to result table.
+class ResultView
+  constructor: (element, titlesDB, views, data) ->
+    @rootElement = element  # <table> jquery element.
+    @titles = titlesDB  # dict[str, str] of field_name:title
+    @views = views  # list[str] of selected view_names
+    @resultData = data  # list[dict[str,?]] of result list with dict of view_names:values
+
+  # Generate table header.
+  genHeader: ->
+    # Create table header element.
+    # thead>tr>th*N  where N is 1 + count(selected views)
+    output = $("<thead>")
+
+    row = $("<tr>")
+    row.append($("<th>").text("ID"))
+
+    # The selected views headings.
+    for field in @views
+      title = @titles[field]
+      content = $("<th>").text(title)
+      row.append(content)
+
+    output.append(row)
+    return output
+
+  # Render the results to table.
+  render: ->
+    # Empty the result element.
+    # table>tbody+thead
+    @rootElement.empty()
+    @rootElement.append(@genHeader())
+
+    # tbody>tr>td*N
+    data = $("<tbody>")
+    for element in @resultData
+      row = $("<tr>")
+
+      # The ID entry.
+      row.append($("<td>").text(element["pk"]))
+
+      # Selected views values.
+      for field in @views
+        value = element[field]  # TODO: Process special values from filter table.
+        content = $("<td>")
+        content.text(value)
+        row.append(content)
+      data.append(row)
+
+    @rootElement.append(data)
+
 
 # Publish the class.
 window.QueryBuilder = QueryBuilder
