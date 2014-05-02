@@ -388,8 +388,8 @@ class Person(models.Model):
 
         if code.person != self:
             raise EmailVerificationError('wrong_person')
-        elif code.is_used:
-            raise EmailVerificationError('code_used')
+        elif code.state != 'valid':
+            raise EmailVerificationError('code_not_valid')
         elif code.email != self.email:
             raise EmailVerificationError('email_changed')
         elif self.is_email_verified:

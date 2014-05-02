@@ -58,8 +58,13 @@ footer .credit {
 }
 
 
-
-
+/* Bootstrap extensions */
+.badge-primary {
+  background-color: #3276b1;
+}
+.badge-success {
+  background-color: #5cb85c;
+}
 
 
 /* Fixed footer black magic */

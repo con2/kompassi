@@ -1,16 +1,35 @@
 extends core_admin_base
 block admin_content
   form(method='POST', role='form').form-horizontal
-    .panel.panel-default
-      .panel-heading: strong Ohjelmanumeron tiedot
-      .panel-body
-        .form-horizontal
-          include programme_admin_form.jade
-      .panel-footer.clearfix
-        .btn-group.pull-right
-          a(href='{% url "programme_admin_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan
-          button(type='submit', name='save', value='save').btn.btn-success Tallenna ja jatka muokkaamista
-          if can_send_link
-            button(type='submit', name='save-sendlink', value='save-sendlink').btn.btn-primary Lähetä muokkauslinkki
-          if programme.pk
-            button(type='submit', name='delete', value='delete').btn.btn-danger Poista ohjelmanumero
+    div
+      .panel.panel-default
+        .panel-heading: strong Ohjelmanumeron tiedot
+        .panel-body
+          .form-horizontal
+            include programme_admin_form.jade
+        .panel-footer.clearfix
+          .btn-group.pull-right
+            a(href='{% url "programme_admin_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan
+            button(type='submit', name='save', value='save').btn.btn-success Tallenna ja jatka muokkaamista
+            if programme.pk
+              button(type='submit', name='delete', value='delete').btn.btn-danger Poista ohjelmanumero
+      if can_send_link
+        .panel.panel-default
+          .panel-heading: strong Muokkauslinkin lähettäminen ohjelmanpitäjälle
+          if programme.programmeedittoken_set.exists
+            .panel-body
+              p Ohjelmanumerolle on lähetetty seuraavat muokkauslinkit:
+            ul.list-group
+              for token in programme.programmeedittoken_set.all
+                li.list-group-item
+                  strong {{ token.person.full_name }}
+                  span.badge.badge-primary lähetetty {{ token.created_at|date:"SHORT_DATETIME_FORMAT" }}
+                  if token.is_used
+                    span.badge.badge-success käytetty viimeksi {{ token.used_at|date:"SHORT_DATETIME_FORMAT" }}
+          else
+            .panel-body
+              p Muokkauslinkkejä ei ole lähetetty.
+          .panel-footer.clearfix
+            p.text-muted Myös nämä toiminnot tallentavat ohjelmanumeron tiedot.
+            .btn-group.pull-right
+              button(type='submit', name='save-sendlink', value='save-sendlink').btn.btn-primary Lähetä muokkauslinkki

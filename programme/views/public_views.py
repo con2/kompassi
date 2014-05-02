@@ -157,6 +157,9 @@ def programme_self_service_view(request, event, programme_edit_code):
         code=programme_edit_code
     )
 
+    token.used_at = now()
+    token.save()
+
     programme = token.programme
 
     from .admin_views import actual_detail_view

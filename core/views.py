@@ -328,7 +328,7 @@ EMAIL_VERIFICATION_ERROR_MESSAGES = dict(
     wrong_person=
         u'Ole hyvä ja kirjaudu ulos ja uudestaan sisään sillä käyttäjällä, jonka '
         u'sähköpostiosoitetta yrität vahvistaa, ja yritä sitten uudelleen.',
-    code_used=u'Tämä vahvistuslinkki on jo käytetty.',
+    code_not_valid=u'Tämä vahvistuslinkki on jo käytetty tai mitätöity.',
     email_changed=
         u'Sähköpostiosoitteesi on muuttunut sitten vahvistuslinkin lähetyksen. '
         u'Ole hyvä ja käytä uusinta saamaasi vahvistuslinkkiä.',
