@@ -432,6 +432,10 @@ class SpecialStartTime(models.Model):
     event = models.ForeignKey('core.event')
     start_time = models.DateTimeField()
 
+    def __unicode__(self):
+        from core.utils import format_datetime
+        return format_datetime(self.start_time) if self.start_time else u'None'
+
 
 __all__ = [
     'AllRoomsPseudoView',

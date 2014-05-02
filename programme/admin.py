@@ -54,6 +54,11 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter = ('event',)
 
 
+class SpecialStartTimeAdmin(admin.ModelAdmin):
+    list_display = ('event', 'start_time')
+    list_filter = ('event',)
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Role)
@@ -61,4 +66,4 @@ admin.site.register(Tag)
 admin.site.register(Programme, ProgrammeAdmin)
 admin.site.register(View, ViewAdmin)
 admin.site.register(TimeBlock)
-admin.site.register(SpecialStartTime)
+admin.site.register(SpecialStartTime, SpecialStartTimeAdmin)
