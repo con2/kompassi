@@ -439,6 +439,10 @@ class SpecialStartTime(models.Model):
     class Meta:
         verbose_name = u'poikkeava alkuaika'
         verbose_name_plural = u'poikkeavat alkuajat'
+        ordering = ['event', 'start_time']
+        unique_together = [
+            ('event', 'start_time'),
+        ]
 
 
 __all__ = [
