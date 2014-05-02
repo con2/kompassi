@@ -429,12 +429,16 @@ class TimeBlock(models.Model):
 
 
 class SpecialStartTime(models.Model):
-    event = models.ForeignKey('core.event')
-    start_time = models.DateTimeField()
+    event = models.ForeignKey('core.event', verbose_name=u'tapahtuma')
+    start_time = models.DateTimeField(verbose_name=u'alkuaika')
 
     def __unicode__(self):
         from core.utils import format_datetime
         return format_datetime(self.start_time) if self.start_time else u'None'
+
+    class Meta:
+        verbose_name = u'poikkeava alkuaika'
+        verbose_name_plural = u'poikkeavat alkuajat'
 
 
 __all__ = [
