@@ -111,11 +111,11 @@ class Command(BaseCommand):
                 )
             )
 
-        half_hour = event.start_time + timedelta(minutes=30)
-        while half_hour < end_time:
-            SpecialStartTime.objects.create(
-                event=event,
-                start_time=half_hour,
-            )
+        # half_hour = event.start_time + timedelta(minutes=30)
+        # while half_hour < end_time:
+        #     SpecialStartTime.objects.create(
+        #         event=event,
+        #         start_time=half_hour,
+        #     )
 
-            half_hour += timedelta(minutes=60)
+        #     half_hour += timedelta(minutes=60)
