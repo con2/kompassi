@@ -84,7 +84,7 @@ class Command(BaseCommand):
         view.save()
 
         for category_name, category_style in [
-            (u'Luento', u'anime'),
+            (u'Ohjelma', u'anime'),
             (u'Tauko', u'muu'),
         ]:
             Category.objects.get_or_create(
