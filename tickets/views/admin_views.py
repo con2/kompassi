@@ -22,9 +22,10 @@ except ImportError:
 
 from core.utils import url, initialize_form
 
-from ..forms import SearchForm
+from ..forms import SearchForm, CustomerForm
 from ..helpers import tickets_admin_required, perform_search
 from ..utils import format_price
+from ..models import Order
 
 
 __all__ = [
@@ -235,69 +236,31 @@ def tickets_admin_orders_view(request, vars, event):
 
 @tickets_admin_required
 @require_http_methods(["GET","POST"])
-def tickets_admin_order_view(request, vars, event):
-    try:
-        orderid = int(request.GET.get('id', '1'))
-    except ValueError:
-        orderid = 0
+def tickets_admin_order_view(request, vars, event, order_id):
+    order = get_object_or_404(Order, pk=int(order_id))
 
-    products = []
-    order = get_object_or_404(Order, id=orderid)
+    customer_form = initialize_form(CustomerForm, request,
+        instance=order.customer,
+        prefix='customer',
+    )
 
-    try:
-        cancel = int(request.GET.get('cancel', '0'))
-    except ValueError:
-        cancel = 0
+    if request.method == 'POST':
+        if customer_form.is_valid():
+            if 'cancel' in request.POST:
+                pass
 
-    if (order.id and cancel == 1):
-        if (not order.cancellation_time):
-            order.cancel()
+            if 'resend-confirmation' in request.POST:
+                pass
+
         else:
-            order.cancellation_time = None
-            order.save()
-        return HttpResponseRedirect(reverse('tickets_order_view') + '?id=' + str(order.id))
+            messages.error(request, u'Ole hyvä ja tarkista lomake.')
 
-    try:
-        payment = int(request.GET.get('payment', '0'))
-    except ValueError:
-        payment = 0
+    vars.update(
+        order=order,
+        customer_form=customer_form,
+    )
 
-    if (order.id and payment == 1 and not order.cancellation_time):
-        if (not order.payment_date):
-            order.confirm_payment(date.today())
-        else:
-            order.payment_date = None
-            order.save()
-        return HttpResponseRedirect(reverse('tickets_order_view') + '?id=' + str(order.id))
-
-    try:
-        email = int(request.GET.get('email', '0'))
-    except ValueError:
-        email = 0
-
-    if (order.id and email == 1 and not order.cancellation_time):
-        order.send_confirmation_message("tilausvahvistus")
-        return HttpResponseRedirect(reverse('tickets_order_view') + '?id=' + str(order.id))
-
-    try:
-        email = int(request.GET.get('email_payment', '0'))
-    except ValueError:
-        email = 0
-
-    if (order.id and email == 1 and not order.cancellation_time and order.payment_date):
-        order.send_confirmation_message("maksuvahvistus")
-        return HttpResponseRedirect(reverse('tickets_order_view') + '?id=' + str(order.id))
-
-    context = RequestContext(request, {})
-    customer = initialize_form(CustomerForm, request, instance=order.customer, prefix="cust")
-
-    for product in OrderProduct.objects.filter(order=order).order_by("id"):
-        form = initialize_form(OrderProductForm, request, instance=product, prefix="o%d" % product.pk)
-        products.append(form)
-
-    vars = dict(order=order, customer=customer, products=products)
-
-    return render(request, "tickets_admin_order_view.html", vars)
+    return render(request, 'tickets_admin_order_view.jade', vars)
 
 
 def tickets_admin_menu_items(request, event):
