@@ -85,9 +85,7 @@ class Command(BaseCommand):
 
         for category_name, category_style in [
             (u'Luento', u'anime'),
-            (u'Keskustelu', u'miitti'),
-            (u'Työpaja', u'rope'),
-            (u'Muu ohjelma', u'muu'),
+            (u'Tauko', u'muu'),
         ]:
             Category.objects.get_or_create(
                 event=event,
