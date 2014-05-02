@@ -44,8 +44,8 @@ class Command(BaseCommand):
 
         room_order = 0
         for room_name in [
-            u'Track 1',
-            u'Track 2',
+            u'Zeus',
+            u'Athene',
         ]:
             room_order += 100
             Room.objects.get_or_create(

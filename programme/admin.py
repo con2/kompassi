@@ -43,12 +43,18 @@ class ProgrammeAdmin(admin.ModelAdmin):
 class ViewAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
+
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('venue', 'name',)
     list_filter = ('venue',)
 
 
-admin.site.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('event', 'title', 'public')
+    list_filter = ('event',)
+
+
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Role)
 admin.site.register(Tag)
