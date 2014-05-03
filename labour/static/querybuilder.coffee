@@ -1,3 +1,46 @@
+# Backend data holder.
+# The data can be set via constructor or with individual setters.
+class BackendData
+  constructor: (filterDefs=null, titleMap=null) ->
+    @setFilterDefs(filterDefs) if filterDefs?
+    @setTitleMap(titleMap) if titleMap?
+
+  # @param filterDefs [Object] Dictionary of id:def.
+  setFilterDefs: (filterDefs) ->
+    @_filterDefs = filterDefs
+
+  # @param titleMap [Array] List of tuples containing id, title.
+  setTitleMap: (titleMap) ->
+    @_titleMap = {}
+    @_order = []
+    for tuple in titleMap
+      key = tuple[0]
+      title = tuple[1]
+      @_titleMap[key] = title
+      @_order.push(key)
+
+  getTitleById: (id) ->
+    return @_titleMap[id]
+
+  getTitleByIndex: (index) ->
+    return @_titleMap[@_order[index]]
+
+  getTitleIdByIndex: (index) ->
+    return @_order[index]
+
+  getFilterCount: ->
+    return @_filterDefs.length
+
+  getTitleCount: ->
+    return @_order.length
+
+  getFilterDefById: (id) ->
+    return @_filterDefs[id]
+
+  getTitleOrder: ->
+    return @_order
+window.BackendData = BackendData
+
 # Base class for various query filter implementations.
 # A subclass must implement {QueryFilter#createUi} and {QueryFilter#createFilter}.
 class QueryFilter
@@ -158,23 +201,19 @@ class ViewSelector
   # Constructor.
   # @param container [JQuery-object] Root object that will contain the view selectors.
   constructor: (container) ->
-    @choices = {}
-    @order = []
     @container = container
 
-  # @param views [object] Dictionary containing key:title -mapping.
-  # @param order [Array] Ordered array containing keys.
-  setViews: (views, order) ->
-    @choices = views
-    @order = order
+  # @param backendData [BackendData] Data from backend.
+  setViews: (backendData) ->
+    @_data = backendData
 
   # Renders the selectors in to a string.
   #
   # @return [String] Rendered selectors.
   renderStr: ->
     views = ""
-    for key, i in @order
-      title = @choices[key]
+    for key, i in @_data.getTitleOrder()
+      title = @_data.getTitleById(key)
       id = @constructor.idGen(i)
       views += """<div><input type="checkbox" id="#{ id }" class="#{ @constructor.inputClass }" data-key="#{ key }" /> <label for="#{ id }">#{ title }</label></div>"""
     return views
@@ -200,7 +239,7 @@ class ViewSelector
 # Additionally, {QueryBuilder#setFilters} and {QueryBuilder#setTitles} must be called to bind backend data to the
 # controller.
 class QueryBuilder
-  constructor: ->
+  constructor: (backendData) ->
     @filterIds = {}  # Map containing index numbers for added filters.
     @filterList = []  # List containing the actual filters.
     @uiDebug = null  # Debug output node.
@@ -211,9 +250,7 @@ class QueryBuilder
       "bool": BoolFilter
       "text": StringFilter
       "str": StringFilter
-    @dataFilters = {}  # Filter data from backend.
-    @dataTitles = {}  # Title data from backend.
-    @dataOrder = []  # Ordered entries.
+    @_data = backendData
     @viewSelector = null
 
     @backendUrl = null
@@ -238,24 +275,11 @@ class QueryBuilder
   attachViewSelect: (@uiViewSelectId) ->
     @uiViewSelect = $(uiViewSelectId)
     @viewSelector = new ViewSelector(@uiViewSelect)
-    @viewSelector.setViews(@dataTitles, @dataOrder)
+    @viewSelector.setViews(@_data)
     @viewSelector.render()
 
   attachResults: (@uiResultsId) ->
     @uiResults = $(uiResultsId)
-
-  setFilters: (@dataFilters) ->
-    # dict[str, str | dict[str, str | dict | list]
-
-  setTitles: (orderedTitles) ->
-    # list[(str, str)]
-    @dataTitles = {}
-    @dataOrder = []
-    for tuple in orderedTitles
-      key = tuple[0]
-      title = tuple[1]
-      @dataTitles[key] = title
-      @dataOrder.push(key)
 
   setBackend: (url) ->
     @backendUrl = url
@@ -271,8 +295,8 @@ class QueryBuilder
     @uiAdd.children(":first").attr("selected", "selected")
     @disableSelect = false
 
-    type = @dataFilters[selected_id]
-    title = @dataTitles[selected_id]
+    type = @_data.getFilterDefById(selected_id)
+    title = @_data.getTitleById(selected_id)
     filterUi = null
     flt = null
 
@@ -344,15 +368,15 @@ class QueryBuilder
     $.post(@backendUrl, postData, fn, "json")
 
   onDataResult: (data, status, xhdr) ->
-    view = new ResultView(@uiResults, @dataTitles, @queriedViews, data)
+    view = new ResultView(@uiResults, @_data, @queriedViews, data)
     view.render()
 
 
 # Class repsonsible of rendering query results to result table.
 class ResultView
-  constructor: (element, titlesDB, views, data) ->
+  constructor: (element, backendData, views, data) ->
     @rootElement = element  # <table> jquery element.
-    @titles = titlesDB  # dict[str, str] of field_name:title
+    @_data = backendData
     @views = views  # list[str] of selected view_names
     @resultData = data  # list[dict[str,?]] of result list with dict of view_names:values
 
@@ -367,7 +391,7 @@ class ResultView
 
     # The selected views headings.
     for field in @views
-      title = @titles[field]
+      title = @_data.getTitleById(field)
       content = $("<th>").text(title)
       row.append(content)
 

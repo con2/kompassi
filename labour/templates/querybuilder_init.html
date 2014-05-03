@@ -4,14 +4,13 @@
         var query_filter_def = {{ query_builder_data_filters|safe }};
         var query_filter_titles = {{ query_builder_data_titles|safe }};
 
-        var query_builder = new QueryBuilder();
-
+        var backend_data = new BackendData();
         //noinspection JSUnusedAssignment
-        query_builder.setFilters(query_filter_def);
-
+        backend_data.setFilterDefs(query_filter_def);
         //noinspection JSUnusedAssignment
-        query_builder.setTitles(query_filter_titles);
+        backend_data.setTitleMap(query_filter_titles);
 
+        var query_builder = new QueryBuilder(backend_data);
         query_builder.setBackend("{% url "labour_admin_query_exec" event.slug %}");
 
         query_builder.attachAdd("#add_query_filter");
