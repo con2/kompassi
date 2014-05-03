@@ -129,7 +129,7 @@ class BoolFilter extends QueryFilter
       throw "Selected value was not any valid boolean value."
 
     selected = "true" == selected
-    return ["is", @idName, selected]
+    return ["eq", @idName, selected]
 
 
 # A filter for string variables.
