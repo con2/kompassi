@@ -97,6 +97,14 @@ class QueryFilter
   title: ->
     return "<span class=\"title\">#{ @uiTitle }</span> "
 
+  # Apply negation, if negative query is requested.
+  # @param isNot [Boolean] If true, query is negated.
+  # @param query [Array] Query / filter array to negate.
+  # @return [Array] Query, or its negated version.
+  applyNOT: (isNot, query) ->
+    return query unless isNot
+    return ["not", query]
+
 
 # A filter for boolean variables.
 # This will display just two radio buttons, "Yes" and "No" that will define the resulting filter.
@@ -178,11 +186,8 @@ class StringFilter extends QueryFilter
       negate = true
 
     flt = [mode, @idName, value]
+    return @applyNOT(negate, flt)
 
-    if not negate
-      return flt
-    else
-      return ["not", flt]
 
 
 # Class for view selection generation and parsing.
@@ -349,6 +354,8 @@ class QueryBuilder
 
     for queryPart in @filterList
       flt = queryPart.createFilter()
+      if flt is null or flt.length == 0
+        continue
       if result.length == 0
         result.push("and")
       result.push(flt)
