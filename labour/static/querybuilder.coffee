@@ -210,13 +210,13 @@ class QueryBuilder
     flt = null
 
     flt_type = QFilterManager.instance().findFilter(type)
-    if flt_type isnt null
+    if flt_type?
       flt = @newFilter(flt_type, selected_id, type)
 
     if flt == null
       filterUi = "Type #{type} not supported."
     else
-      if @uiDebug != null
+      if @uiDebug?
         # Attach debug handler if debug place is defined.
         flt.setDebug("window.query_builder.onUpdateDebug();")
 
