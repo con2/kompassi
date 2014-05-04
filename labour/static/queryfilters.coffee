@@ -8,7 +8,8 @@ class QueryFilter
     @filterDef = filterDef  # Filter definition from backend. A string or object.
 
   # Set display name of the property/filterable.
-  setTitle: (@uiTitle) ->
+  setTitle: (uiTitle) ->
+    @uiTitle = uiTitle
 
   # Set onchange debug script. null to disable.
   setDebug: (@debugHandler) ->
@@ -38,6 +39,9 @@ class QueryFilter
     return "" if @debugHandler is null
     return "#{ attr }=\"#{ @debugHandler }\""
 
+  setDebugAttr: (target, attr = "onchange") ->
+    target.attr(attr, @debugHandler) if @debugHandler?
+
   # Yield label-tag for given name using default display name.
   labelFor: (id, title = @uiTitle) ->
     return "<label for=\"#{ id }\">#{ title }</label>"
@@ -49,7 +53,7 @@ class QueryFilter
 
   # Yield display name -element.
   title: ->
-    return "<span class=\"title\">#{ @uiTitle }</span> "
+    return $("<span class=\"title\">").text(@uiTitle)
 
   # Apply negation, if negative query is requested.
   # @param isNot [Boolean] If true, query is negated.
@@ -156,35 +160,36 @@ class EnumFilter extends QueryFilter
     </select>
     """
 
-  _createOne: (id, key, value_title) ->
-    """
-    <input type="checkbox" id="#{ id }" name="#{ id }" data-key="#{ key }" #{ @createDebugAttr() } />
-    <label for="#{ id }">#{ value_title }</label>
-    """
+  _createOne: (output, id, key, value_title) ->
+    input = $("""<input type="checkbox" id="#{ id }">""")
+    input.data("key", key)
+    @setDebugAttr(input)
 
-  _createValues: ->
+    label = $("""<label for="#{ id }">""")
+    label.text(value_title)
+
+    output.append(input)
+    output.append(label)
+
+  _createValues: (output) ->
     order = @filterDef["order"]
     titles = @filterDef["values"]
-
     @valueIds = []
-    output = ""
 
     for key in order
       title = titles[key]
       id = @id("v" + key)
-      output += @_createOne(id, key, title)
+      @_createOne(output, id, key, title)
       @valueIds.push(id)
-
-    return output
 
   createUi: ->
     # Create span#id>(select#v>option*2)+(input#m$+label)*3
     group_id = @id("g")
-    output = """<span id=#{ group_id }>"""
+    output = $("""<span id="#{ group_id }">""")
+
     mode_id = @id("m")
-    output += @_createMode(mode_id)
-    output += @_createValues()
-    output += "</span>"
+    output.html(@_createMode(mode_id))
+    @_createValues(output)
     return output
 
   createFilter: ->

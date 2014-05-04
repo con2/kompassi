@@ -220,13 +220,10 @@ class QueryBuilder
         # Attach debug handler if debug place is defined.
         flt.setDebug("window.query_builder.onUpdateDebug();")
 
-      filterUi = flt.title() + flt.createUi()
+      filterUi = flt.createUi()
       @filterList.push(flt)
 
-    if filterUi != null and typeof(filterUi) is not "string"
-      filterUi = filterUi.html()
-
-    @uiForm.append("<div>#{ filterUi }</div>")
+    @uiForm.append($("<div>").append(flt.title(), filterUi))
 
   newFilter: (flt_type, selected_id, type) ->
     # Create new filter by typemap.
