@@ -41,6 +41,66 @@ class BackendData
     return @_order
 window.BackendData = BackendData
 
+
+# Query filter nanager.
+# Filters can be registered with {QFilterManager.registerFilter registerFilter},
+# and later found with {QFilterManager#findFilter findFilter}.
+# @example Registering filter
+#   QFilterManager.registerFilter("bool", BooleanFilter)
+#   QFilterManager.registerFilter("fancyText", StringFilter, (def) -> def is "str")
+class QFilterManager
+  # Singleton instance.
+  # @noDoc
+  @_instance = null
+
+  # Get singleton instance of this class.
+  #
+  # @return [QFilterManager] Manager instance.
+  @instance: ->
+    if @_instance is null
+      @_instance = new QFilterManager()
+    return @_instance
+
+  constructor: ->
+    @filters = {}
+    @matchers = {}
+
+  # Register a new filter type.
+  # This is only a convenience function for calling the actual instance version of this.
+  #
+  # @see QFilterManager#registerFilter
+  @registerFilter: (args...) ->
+    QFilterManager.instance().registerFilter(args...)
+
+  # Register a new filter type.
+  #
+  # @param typeName [String] Filter type name used for simple matching and identification.
+  # @param filterClass [QueryFilter] Filter class being registered.
+  # @param matcher [function, optional] Optional matcher function, that will be given the
+  #   filter definition when called.
+  registerFilter: (typeName, filterClass, matcher=null) ->
+    @filters[typeName] = filterClass
+    @matchers[typeName] = matcher unless matcher is null
+
+  # Find suitable filter for filter definition.
+  #
+  # @param filterPart [Object | String] Type name of the filter, or the filter definition object.
+  # @return [QueryFilter] Filter class, or null if no matches were found.
+  findFilter: (filterPart) ->
+    # String name of filter
+    return @filters[filterPart] unless filterPart instanceof Object or filterPart of @matchers
+
+    # Object -> match by matcher
+    for key, matcher of @matchers
+      result = matcher(filterPart)
+      if result is true
+        return @filters[key]
+    return null
+
+QFilterManager.instance()
+window.QFilterManager = QFilterManager
+
+
 # Base class for various query filter implementations.
 # A subclass must implement {QueryFilter#createUi} and {QueryFilter#createFilter}.
 class QueryFilter
@@ -135,6 +195,7 @@ class BoolFilter extends QueryFilter
 
     selected = "true" == selected
     return ["eq", @idName, selected]
+QFilterManager.registerFilter("bool", BoolFilter)
 
 
 # A filter for string variables.
@@ -184,6 +245,8 @@ class StringFilter extends QueryFilter
 
     flt = [mode, @idName, value]
     return @applyNOT(negate, flt)
+QFilterManager.registerFilter("str", StringFilter)
+QFilterManager.registerFilter("text", StringFilter)
 
 
 # EnumFilter aka OR-Object.
@@ -251,6 +314,9 @@ class EnumFilter extends QueryFilter
       return @applyNOT(negate, ["eq", @idName, keys[0]])
 
     return @applyNOT(negate, ["in", @idName, keys])
+QFilterManager.registerFilter("object_or", EnumFilter, (filterDef) ->
+  return "multiple" of filterDef and filterDef.multiple is "or"
+)
 
 
 # Class for view selection generation and parsing.
@@ -312,13 +378,6 @@ class QueryBuilder
     @filterList = []  # List containing the actual filters.
     @uiDebug = null  # Debug output node.
     @disableSelect = false  # Flag to prevent recursive change-events.
-
-    # Map of backend types to frontend classes.
-    @filterTypeMap =
-      "bool": BoolFilter
-      "text": StringFilter
-      "str": StringFilter
-      "object_or": EnumFilter
     @_data = backendData
     @viewSelector = null
 
@@ -368,14 +427,9 @@ class QueryBuilder
     filterUi = null
     flt = null
 
-    if type instanceof Object and "multiple" of type
-      obj_type = "object_" + type.multiple
-      if obj_type of @filterTypeMap
-        flt = @newFilter(selected_id, obj_type, type)
-
-    else if type of @filterTypeMap
-      flt = @newFilter(selected_id, type, type)
-
+    flt_type = QFilterManager.instance().findFilter(type)
+    if flt_type isnt null
+      flt = @newFilter(flt_type, selected_id, type)
 
     if flt == null
       filterUi = "Type #{type} not supported."
@@ -392,9 +446,9 @@ class QueryBuilder
 
     @uiForm.append("<div>#{ filterUi }</div>")
 
-  newFilter: (selected_id, type, def) ->
+  newFilter: (flt_type, selected_id, type) ->
     # Create new filter by typemap.
-    flt = new @filterTypeMap[type](selected_id, def)
+    flt = new flt_type(selected_id, type)
     flt.setTitle(@_data.getTitleById(selected_id))
 
     # Each filter is numbered by count of added number of given type.
