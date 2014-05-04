@@ -3,20 +3,27 @@ extends core_admin_base.jade
 block admin_content
   form.form.form-horizontal(method='POST', role='form')
     .panel.panel-default
-      .panel-heading: strong Tilauksen tiedot
+      .panel-heading: strong Tilauksen {{ order.formatted_order_number }} tiedot
       .panel-body
-        fieldset
-          // - crispy order_form
-        fieldset
-          legend Asiakkaan tiedot
-          - crispy customer_form
-        fieldset
-          legend Tuotteet
-          // - crispy order_product_form_set
-      .panel-footer
-        a.btn.btn-default(href='{% url "tickets_admin_orders_view" event.slug %}') Hylkää muutokset ja palaa listaan
-        button.btn.btn-success(type='submit', name='save', value='save') Tallenna muutokset ja jatka muokkaamista
-        if can_cancel
-          button.btn.btn-danger(type='submit', name='cancel', value='cancel') Tallenna muutokset ja jatka muokkaamista
-        if can_resend
-          button.btn.btn-primary(type='submit', name='resend-confirmation', value='resend-confirmation') Lähetä vahvistusviesti uudelleen        
+        - crispy customer_form
+      table.table.table-striped
+        include tickets_order_product_table.jade
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-default(href='{% url "tickets_admin_orders_view" event.slug %}') Hylkää muutokset ja palaa listaan
+          button.btn.btn-success(type='submit', name='save', value='save') Tallenna muutokset ja jatka muokkaamista
+          if can_cancel
+            button.btn.btn-danger(type='submit', name='cancel', value='cancel') Peru tilaus
+    .panel.panel-default
+      .panel-heading: strong Vahvistusviestit
+      .panel-body Tulossa: vahvistusviestin esikatselu.
+      .panel-footer.clearfix
+        .text-muted Myös nämä toiminnot tallentavat muutokset.
+        .btn-group.pull-right            
+          if can_resend
+            button.btn.btn-primary(type='submit', name='resend-confirmation', value='resend-confirmation') Lähetä vahvistusviesti uudelleen        
+
+  .panel.panel-default
+    .panel-heading: strong Tilauksen tekniset tiedot
+    .panel-body.form-horizontal
+      - crispy order_form

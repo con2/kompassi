@@ -5,9 +5,9 @@ from django import forms
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Fieldset, Submit
 
-from core.utils import horizontal_form_helper, indented_without_label
+from core.utils import horizontal_form_helper, indented_without_label, initialize_form
 
-from tickets.models import *
+from tickets.models import Order, OrderProduct, Customer, Product
 
 __all__ = [
     "NullForm",
@@ -34,6 +34,27 @@ class OrderProductForm(forms.ModelForm):
         self.helper.label_class = 'sr-only'
         self.helper.field_class = 'col-md-12'
         self.helper.form_tag = False
+
+    @classmethod
+    def get_for_order(cls, request, order, admin=False):
+        product_criteria = dict(event=order.event)
+
+        if not admin:
+            product_criteria.update(available=True)
+
+        return [
+            cls.get_for_order_and_product(request, order, product)
+            for product in Product.objects.filter(**product_criteria)
+        ]
+
+    @classmethod
+    def get_for_order_and_product(cls, request, order, product):
+        order_product, unused = OrderProduct.objects.get_or_create(order=order, product=product)
+            
+        return initialize_form(OrderProductForm, request,
+            instance=order_product,
+            prefix="o%d" % order_product.pk
+        )
 
     class Meta:
         exclude = ("order", "product")
@@ -92,4 +113,31 @@ class SearchForm(forms.Form):
             'last_name',
             'email',
             indented_without_label(Submit('submit', u'Hae tilauksia', css_class='btn-primary')),
+        )
+
+class AdminOrderForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AdminOrderForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'reference_number',
+            # 'start_time',
+            'confirm_time',
+            'payment_date',
+            'cancellation_time',
+            'ip_address',
+            'batch',
+        )
+
+    class Meta:
+        model = Order
+        fields = (
+            'batch',
+            'cancellation_time',
+            'confirm_time',
+            'ip_address',
+            'payment_date',
+            'reference_number',
+            # 'start_time',
         )

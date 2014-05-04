@@ -235,15 +235,7 @@ class TicketsPhase(Phase):
 
     def make_form(self, request, event):
         order = get_order(request, event)
-        forms = []
-
-        # XXX When the admin changes the available property of products, existing sessions in the Tickets phase will break.
-        for product in Product.objects.filter(available=True):
-            order_product, created = OrderProduct.objects.get_or_create(order=order, product=product)
-            form = initialize_form(OrderProductForm, request, instance=order_product, prefix="o%d" % order_product.pk)
-            forms.append(form)
-
-        return forms
+        return OrderProductForm.get_for_order(request, order)
 
     def validate(self, request, event, form):
         errors = multiform_validate(form)

@@ -444,13 +444,44 @@ class Order(models.Model):
     event = models.ForeignKey('core.Event')
 
     customer = models.OneToOneField(Customer, null=True, blank=True)
-    start_time = models.DateTimeField(auto_now=True)
-    confirm_time = models.DateTimeField(null=True, blank=True)
-    ip_address = models.CharField(max_length=15, null=True, blank=True)
-    payment_date = models.DateField(null=True, blank=True)
-    cancellation_time = models.DateTimeField(null=True, blank=True)
-    batch = models.ForeignKey(Batch, null=True, blank=True)
-    reference_number = models.CharField(max_length=31, blank=True)
+    start_time = models.DateTimeField(auto_now_add=True)
+
+    confirm_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Tilausaika',
+    )
+
+    ip_address = models.CharField(
+        max_length=15,
+        null=True,
+        blank=True,
+        verbose_name=u'Tilaajan IP-osoite'
+    )
+
+    payment_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=u'Maksupäivä',
+    )
+
+    cancellation_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Peruutusaika',
+    )
+
+    batch = models.ForeignKey(Batch,
+        null=True,
+        blank=True,
+        verbose_name=u'Toimituserä',
+    )
+
+    reference_number = models.CharField(
+        max_length=31,
+        blank=True,
+        verbose_name=u'Viitenumero',
+    )
 
     @property
     def is_active(self):

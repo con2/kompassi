@@ -1,0 +1,22 @@
+- load crispy_forms_tags
+thead
+  tr
+    th Tuote
+    th Kappalehinta
+    th(style='min-width: 80px') Määrä
+tbody
+  for iform in form
+    tr
+      td
+        p: strong {{ iform.instance.product.name }}
+        p.hidden-xs {{ iform.instance.product.description }}
+      td: p.lead {{ iform.instance.product.formatted_price }}
+      td
+        div
+          if iform.instance.product.in_stock
+            - crispy iform
+          elif admin_title
+            - crispy iform
+          else
+            // XXX fugly
+            | Loppuunmyyty

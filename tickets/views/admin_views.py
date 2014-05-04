@@ -22,7 +22,7 @@ except ImportError:
 
 from core.utils import url, initialize_form
 
-from ..forms import SearchForm, CustomerForm
+from ..forms import SearchForm, CustomerForm, AdminOrderForm, OrderProductForm
 from ..helpers import tickets_admin_required, perform_search
 from ..utils import format_price
 from ..models import Order
@@ -124,6 +124,8 @@ def tickets_admin_stats_by_date_view(request, vars, event, raw=False):
 
     for order in confirmed_orders:
         date = order.confirm_time.date()
+
+        # XXX this deserves an "XXX"
         for op in order.order_product_set.filter(product__name__contains='lippu').distinct():
             tickets_by_date[date] += op.count
 
@@ -244,6 +246,14 @@ def tickets_admin_order_view(request, vars, event, order_id):
         prefix='customer',
     )
 
+    order_form = initialize_form(AdminOrderForm, request,
+        instance=order,
+        prefix='order',
+        readonly=True,
+    )
+
+    order_product_forms = OrderProductForm.get_for_order(request, order, admin=True)
+
     if request.method == 'POST':
         if customer_form.is_valid():
             if 'cancel' in request.POST:
@@ -257,7 +267,15 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
     vars.update(
         order=order,
+
         customer_form=customer_form,
+        order_form=order_form,
+
+        can_resend=order.is_confirmed,
+        can_cancel=order.is_confirmed,
+
+        # XXX due to template being shared with public view, needs to be named "form"
+        form=order_product_forms,
     )
 
     return render(request, 'tickets_admin_order_view.jade', vars)
