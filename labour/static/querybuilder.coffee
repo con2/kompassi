@@ -186,6 +186,72 @@ class StringFilter extends QueryFilter
     return @applyNOT(negate, flt)
 
 
+# EnumFilter aka OR-Object.
+class EnumFilter extends QueryFilter
+  _createMode: (id) ->
+    """
+    <select id="#{ id }" #{ @createDebugAttr() }>
+      <option value="in" selected="selected">On joukossa</option>
+      <option value="!in">Ei ole joukossa</option>
+    </select>
+    """
+
+  _createOne: (id, key, value_title) ->
+    """
+    <input type="checkbox" id="#{ id }" name="#{ id }" data-key="#{ key }" #{ @createDebugAttr() } />
+    <label for="#{ id }">#{ value_title }</label>
+    """
+
+  _createValues: ->
+    order = @filterDef["order"]
+    titles = @filterDef["values"]
+
+    @valueIds = []
+    output = ""
+
+    for key in order
+      title = titles[key]
+      id = @id("v" + key)
+      output += @_createOne(id, key, title)
+      @valueIds.push(id)
+
+    return output
+
+  createUi: ->
+    # Create span#id>(select#v>option*2)+(input#m$+label)*3
+    group_id = @id("g")
+    output = """<span id=#{ group_id }>"""
+    mode_id = @id("m")
+    output += @_createMode(mode_id)
+    output += @_createValues()
+    output += "</span>"
+    return output
+
+  createFilter: ->
+    # Get the selection mode.
+    mode = $("#" + @id("m")).val()
+    negate = false
+    if mode[0] == "!"
+      negate = true
+
+    # Find out selected enum values.
+    group = $("#" + @id("g"))
+    keys = []
+    for valueId in @valueIds
+      enumInput = $("#" + valueId + ":checked", group)
+      if enumInput.length == 1
+        keys.push(enumInput.data("key"))
+
+    if keys.length == 0
+      # "Empty" list (only mode and name in the list). No filter, then.
+      return []
+
+    if keys.length == 1
+      # Special case for single selection: equal
+      return @applyNOT(negate, ["eq", @idName, keys[0]])
+
+    return @applyNOT(negate, ["in", @idName, keys])
+
 
 # Class for view selection generation and parsing.
 # Selected views are displayed in the result set.
@@ -252,6 +318,7 @@ class QueryBuilder
       "bool": BoolFilter
       "text": StringFilter
       "str": StringFilter
+      "object_or": EnumFilter
     @_data = backendData
     @viewSelector = null
 
@@ -302,8 +369,9 @@ class QueryBuilder
     flt = null
 
     if type instanceof Object and "multiple" of type
-      filterUi = "Objects not supported yet."
-      # flt = @newFilter(selected_id, "object_" + type.multiple, title)
+      obj_type = "object_" + type.multiple
+      if obj_type of @filterTypeMap
+        flt = @newFilter(selected_id, obj_type, type)
 
     else if type of @filterTypeMap
       flt = @newFilter(selected_id, type, type)
