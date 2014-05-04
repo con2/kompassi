@@ -44,20 +44,17 @@ window.BackendData = BackendData
 # Base class for various query filter implementations.
 # A subclass must implement {QueryFilter#createUi} and {QueryFilter#createFilter}.
 class QueryFilter
-  constructor: ->
+  constructor: (selectedId, filterDef) ->
     @debugHandler = null  # Handler script to execute on element change.
-    @idName = ""  # Backend-related name of the filter.
+    @idName = selectedId  # Backend-related name of the filter.
     @idNumber = null  # Index number of added filter (of type @idName).
-    @uiTitle = ""  # Title/display name of the property this filter filters.
+    @filterDef = filterDef  # Filter definition from backend. A string or object.
 
   # Set display name of the property/filterable.
   setTitle: (@uiTitle) ->
 
   # Set onchange debug script. null to disable.
   setDebug: (@debugHandler) ->
-
-  # Set backend property name.
-  setName: (@idName) ->
 
   # Set index number of added filter.
   setId: (@idNumber) ->
@@ -301,7 +298,6 @@ class QueryBuilder
     @disableSelect = false
 
     type = @_data.getFilterDefById(selected_id)
-    title = @_data.getTitleById(selected_id)
     filterUi = null
     flt = null
 
@@ -310,7 +306,7 @@ class QueryBuilder
       # flt = @newFilter(selected_id, "object_" + type.multiple, title)
 
     else if type of @filterTypeMap
-      flt = @newFilter(selected_id, type, title)
+      flt = @newFilter(selected_id, type, type)
 
 
     if flt == null
@@ -328,10 +324,10 @@ class QueryBuilder
 
     @uiForm.append("<div>#{ filterUi }</div>")
 
-  newFilter: (selected_id, type, title) ->
+  newFilter: (selected_id, type, def) ->
     # Create new filter by typemap.
-    flt = new @filterTypeMap[type]()
-    flt.setTitle(title)
+    flt = new @filterTypeMap[type](selected_id, def)
+    flt.setTitle(@_data.getTitleById(selected_id))
 
     # Each filter is numbered by count of added number of given type.
     if selected_id of @filterIds
@@ -340,7 +336,6 @@ class QueryBuilder
       @filterIds[selected_id] = 0
 
     flt.setId(@filterIds[selected_id])
-    flt.setName(selected_id)
 
     return flt
 
