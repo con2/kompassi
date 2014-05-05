@@ -516,6 +516,7 @@ class QueryBuilder(object):
             # TODO: verbose_name is actually never None?
             title_source = model._meta
 
+        prefix = "{0}__pk".format(prefix)
         self._fields[prefix] = select_def
         self._object_title(prefix, title_source)
 

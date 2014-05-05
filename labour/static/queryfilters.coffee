@@ -195,9 +195,7 @@ class EnumFilter extends QueryFilter
   createFilter: ->
     # Get the selection mode.
     mode = $("#" + @id("m")).val()
-    negate = false
-    if mode[0] == "!"
-      negate = true
+    negate = mode[0] == "!"
 
     # Find out selected enum values.
     group = $("#" + @id("g"))
