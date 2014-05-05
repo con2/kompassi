@@ -218,3 +218,56 @@ QFilterManager.registerFilter("object_or", EnumFilter, (filterDef) ->
   return "multiple" of filterDef and filterDef.multiple is "or"
 )
 
+
+# M2M Filter aka AND-Object.
+class M2MFilter extends QueryFilter
+  _createMode: (id) ->
+     """
+    <select id="#{ id }" #{ @createDebugAttr() }>
+      <option value="eq" selected="selected">On</option>
+      <option value="!eq">Ei ole</option>
+    </select>
+    """
+
+  _createOne: (key, title) ->
+    one = $("<option>")
+    if key?
+      one.data("key", key)
+      one.val(key)
+    else
+      one.attr("disabled", "disabled")
+      one.attr("selected", "selected")
+    one.text(title)
+    return one
+
+  createUi: ->
+    output = $("<span>")
+    output.append(@_createMode(@id("m")))
+
+    sel = $("""<select id="#{ @id("s") }" #{ @createDebugAttr() }>""")
+    sel.append(@_createOne(null, "---"))
+
+    order = @filterDef["order"]
+    titles = @filterDef["values"]
+    for key in order
+      title = titles[key]
+      one = @_createOne(key, title)
+      sel.append(one)
+
+    output.append(sel)
+    return output
+
+  createFilter: ->
+    value_key = $("#" + @id("s") + ">:selected")
+    if value_key.attr("disabled")?
+      return []
+
+    value_key = value_key.data("key")
+
+    mode = $("#" + @id("m")).val()
+    negate = mode[0] == "!"
+
+    return @applyNOT(negate, ["eq", @idName, value_key])
+QFilterManager.registerFilter("object_and", M2MFilter, (filterDef) ->
+  return "multiple" of filterDef and filterDef.multiple is "and"
+)
