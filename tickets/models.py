@@ -603,9 +603,20 @@ class Order(models.Model):
     def cancel(self):
         assert self.is_confirmed
 
+        if 'lippukala' in settings.INSTALLED_APPS:
+            self.lippukala_revoke_codes()
+
         self.cancellation_time = timezone.now()
         self.save()
-        self.send_confirmation_message('cancellation_notice')
+
+    def uncancel(self):
+        assert self.is_cancelled
+
+        if 'lippukala' in settings.INSTALLED_APPS:
+            self.lippukala_reinstate_codes()
+
+        self.cancellation_time = None
+        self.save()
 
     @property
     def messages(self):
@@ -712,6 +723,28 @@ class Order(models.Model):
             ) for i in xrange(op.count)]
 
         return lippukala_order, codes
+
+    def lippukala_revoke_codes(self):
+        if 'lippukala' not in settings.INSTALLED_APPS:
+            raise NotImplementedError('lippukala is not installed')
+
+        if not self.contains_electronic_tickets:
+            return
+
+        from lippukala.models import UNUSED, MANUAL_INTERVENTION_REQUIRED
+
+        self.lippukala_order.code_set.filter(state=UNUSED).update(state=MANUAL_INTERVENTION_REQUIRED)
+
+    def lippukala_reinstate_codes(self):
+        if 'lippukala' not in settings.INSTALLED_APPS:
+            raise NotImplementedError('lippukala is not installed')
+
+        if not self.contains_electronic_tickets:
+            return
+            
+        from lippukala.models import UNUSED, MANUAL_INTERVENTION_REQUIRED
+
+        self.lippukala_order.code_set.filter(state=MANUAL_INTERVENTION_REQUIRED).update(state=UNUSED)
 
     @classmethod
     def lippukala_get_order(cls, lippukala_order):

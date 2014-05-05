@@ -43,17 +43,20 @@ class OrderProductForm(forms.ModelForm):
             product_criteria.update(available=True)
 
         return [
-            cls.get_for_order_and_product(request, order, product)
+            cls.get_for_order_and_product(request, order, product, admin=admin)
             for product in Product.objects.filter(**product_criteria)
         ]
 
     @classmethod
-    def get_for_order_and_product(cls, request, order, product):
+    def get_for_order_and_product(cls, request, order, product, admin=False):
         order_product, unused = OrderProduct.objects.get_or_create(order=order, product=product)
             
         return initialize_form(OrderProductForm, request,
             instance=order_product,
-            prefix="o%d" % order_product.pk
+            prefix="o%d" % order_product.pk,
+
+            # XXX disallow changing amounts of electronic tickets for now
+            readonly=(order.batch is not None and product.requires_shipping) or (admin and product.electronic_ticket),
         )
 
     class Meta:
@@ -114,6 +117,7 @@ class SearchForm(forms.Form):
             'email',
             indented_without_label(Submit('submit', u'Hae tilauksia', css_class='btn-primary')),
         )
+
 
 class AdminOrderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

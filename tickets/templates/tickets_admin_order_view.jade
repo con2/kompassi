@@ -3,23 +3,35 @@ extends core_admin_base.jade
 block admin_content
   form.form.form-horizontal(method='POST', role='form')
     .panel.panel-default
-      .panel-heading: strong Tilauksen {{ order.formatted_order_number }} tiedot
+      .panel-heading
+        strong Tilauksen {{ order.formatted_order_number }} tiedot
+        .pull-right
+          if order.is_confirmed
+            span.badge.badge-primary Vahvistettu
+          if order.is_paid
+            span.badge.badge-success Maksettu
+          if order.is_cancelled
+            span.badge.badge-danger Peruutettu
       .panel-body
         - crispy customer_form
       table.table.table-striped
         include tickets_order_product_table.jade
       .panel-footer.clearfix
+        p.text-muted Toimitettujen tuotteiden määriä ei voi muuttaa.
         .btn-group.pull-right
           a.btn.btn-default(href='{% url "tickets_admin_orders_view" event.slug %}') Hylkää muutokset ja palaa listaan
           button.btn.btn-success(type='submit', name='save', value='save') Tallenna muutokset ja jatka muokkaamista
+    .panel.panel-default
+      .panel-heading: strong Sähköpostia lähettävät toiminnot
+      .panel-footer.clearfix
+        p.text-muted Näistä toiminnoista lähtee sähköpostia asiakkaalle. Myös nämä toiminnot tallentavat muutokset.
+        .btn-group.pull-right
+          if can_mark_paid
+            button.btn.btn-success(type='submit', name='mark-paid', value='mark-paid') Merkitse maksetuksi
           if can_cancel
             button.btn.btn-danger(type='submit', name='cancel', value='cancel') Peru tilaus
-    .panel.panel-default
-      .panel-heading: strong Vahvistusviestit
-      .panel-body Tulossa: vahvistusviestin esikatselu.
-      .panel-footer.clearfix
-        .text-muted Myös nämä toiminnot tallentavat muutokset.
-        .btn-group.pull-right            
+          if can_uncancel
+            button.btn.btn-primary(type='submit', name='uncancel', value='uncancel') Palauta tilaus voimaan            
           if can_resend
             button.btn.btn-primary(type='submit', name='resend-confirmation', value='resend-confirmation') Lähetä vahvistusviesti uudelleen        
 

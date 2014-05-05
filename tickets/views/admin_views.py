@@ -6,14 +6,14 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
-from django.shortcuts import render, get_object_or_404
-from django.template import RequestContext
-from django.core.urlresolvers import reverse
 from django.contrib.messages import add_message, INFO, WARNING, ERROR
-from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.core.urlresolvers import reverse
 from django.db.models import Sum
+from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.template import RequestContext
+from django.views.decorators.http import require_POST, require_GET, require_http_methods
 
 try:
     from reportlab.pdfgen import canvas
@@ -255,25 +255,38 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
     order_product_forms = OrderProductForm.get_for_order(request, order, admin=True)
 
-    can_resend = order.is_confirmed and order.is_paid
+    can_mark_paid = order.is_confirmed and not order.is_paid and not order.is_cancelled
+    can_resend = order.is_confirmed and order.is_paid and not order.is_cancelled
     can_cancel = order.is_confirmed and not order.is_cancelled
+    can_uncancel = order.is_cancelled
 
     if request.method == 'POST':
-        if customer_form.is_valid() and all(i.is_valid() for i in order_product_forms):
+        if customer_form.is_valid() and all(form.fields['count'].widget.attrs.get('readonly', False) or form.is_valid() for form in order_product_forms):
             def save():
                 customer_form.save()
                 for form in order_product_forms:
+                    if form.fields['count'].widget.attrs.get('readonly', False):
+                        continue
+
                     form.save()
 
             if 'cancel' in request.POST and can_cancel:
                 save()
                 order.cancel()
                 messages.success(request, u'Tilaus peruutettiin.')
+                return redirect('tickets_admin_order_view', event.slug, order.pk)
+
+            elif 'uncancel' in request.POST and can_uncancel:
+                save()
+                order.uncancel()
+                messages.success(request, u'Tilaus palautettiin.')
+                return redirect('tickets_admin_order_view', event.slug, order.pk)
 
             elif 'resend-confirmation' in request.POST and can_resend:
                 save()
                 order.send_confirmation_message('payment_confirmation')
                 messages.success(request, u'Vahvistusviesti lähetettiin uudelleen.')
+                return redirect('tickets_admin_order_view', event.slug, order.pk)
 
             elif 'save' in request.POST:
                 save()
@@ -290,8 +303,10 @@ def tickets_admin_order_view(request, vars, event, order_id):
         customer_form=customer_form,
         order_form=order_form,
 
-        can_resend=can_resend,
         can_cancel=can_cancel,
+        can_mark_paid=can_mark_paid,
+        can_resend=can_resend,
+        can_uncancel=can_uncancel,
 
         # XXX due to template being shared with public view, needs to be named "form"
         form=order_product_forms,
