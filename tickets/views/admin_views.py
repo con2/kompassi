@@ -5,6 +5,7 @@ from time import mktime
 from collections import defaultdict
 
 from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
@@ -254,14 +255,32 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
     order_product_forms = OrderProductForm.get_for_order(request, order, admin=True)
 
+    can_resend = order.is_confirmed and order.is_paid
+    can_cancel = order.is_confirmed and not order.is_cancelled
+
     if request.method == 'POST':
-        if customer_form.is_valid():
-            if 'cancel' in request.POST:
-                pass
+        if customer_form.is_valid() and all(i.is_valid() for i in order_product_forms):
+            def save():
+                customer_form.save()
+                for form in order_product_forms:
+                    form.save()
 
-            if 'resend-confirmation' in request.POST:
-                pass
+            if 'cancel' in request.POST and can_cancel:
+                save()
+                order.cancel()
+                messages.success(request, u'Tilaus peruutettiin.')
 
+            elif 'resend-confirmation' in request.POST and can_resend:
+                save()
+                order.send_confirmation_message('payment_confirmation')
+                messages.success(request, u'Vahvistusviesti lähetettiin uudelleen.')
+
+            elif 'save' in request.POST:
+                save()
+                messages.success(request, u'Muutokset tallennettiin.')
+
+            else:
+                messages.error(request, u'Tuntematon tai kielletty toiminto.')
         else:
             messages.error(request, u'Ole hyvä ja tarkista lomake.')
 
@@ -271,8 +290,8 @@ def tickets_admin_order_view(request, vars, event, order_id):
         customer_form=customer_form,
         order_form=order_form,
 
-        can_resend=order.is_confirmed,
-        can_cancel=order.is_confirmed,
+        can_resend=can_resend,
+        can_cancel=can_cancel,
 
         # XXX due to template being shared with public view, needs to be named "form"
         form=order_product_forms,
