@@ -18,6 +18,8 @@
         query_builder.attachViewSelect("#query_builder_views");
         query_builder.attachDebug("#query_debug");
         query_builder.attachResults("#query_results");
+        window.ValueFormatter.timeZone = "{{ TIME_ZONE }}";
+        window.ValueFormatter.locales = "{{ LANGUAGE_CODE }}";
 
         {% if query_builder_results and debug %}
         var results = {{ query_builder_results|safe }};

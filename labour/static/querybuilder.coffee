@@ -82,19 +82,28 @@ class QFilterManager
     @filters[typeName] = filterClass
     @matchers[typeName] = matcher unless matcher is null
 
-  # Find suitable filter for filter definition.
+  # Find name of suitable filter for filter definition.
   #
   # @param filterPart [Object | String] Type name of the filter, or the filter definition object.
-  # @return [QueryFilter] Filter class, or null if no matches were found.
-  findFilter: (filterPart) ->
+  # @return [String] Name of the filter, or null if no matches were found.
+  findFilterName: (filterPart) ->
     # String name of filter
-    return @filters[filterPart] unless filterPart instanceof Object or filterPart of @matchers
+    return filterPart unless filterPart instanceof Object or filterPart of @matchers
 
     # Object -> match by matcher
     for key, matcher of @matchers
       result = matcher(filterPart)
       if result is true
-        return @filters[key]
+        return key
+    return null
+
+  # Find suitable filter for filter definition.
+  #
+  # @param filterPart [Object | String] Type name of the filter, or the filter definition object.
+  # @return [QueryFilter] Filter class, or null if no matches were found.
+  findFilter: (filterPart) ->
+    key = @findFilterName(filterPart)
+    return @filters[key] if key?
     return null
 
 QFilterManager.instance()
@@ -299,6 +308,7 @@ class ResultView
     @_data = backendData
     @views = views  # list[str] of selected view_names
     @resultData = data  # list[dict[str,?]] of result list with dict of view_names:values
+    @formatter = new ValueFormatter(backendData)
 
   # Generate table header.
   genHeader: ->
@@ -337,12 +347,120 @@ class ResultView
       for field in @views
         value = element[field]  # TODO: Process special values from filter table.
         content = $("<td>")
-        content.text(value)
+        formatted = @formatter.format(field, value)
+        content.text(formatted)
         row.append(content)
       data.append(row)
 
     @rootElement.append(data)
 
 
-# Publish the class.
+# Result value formatter class.
+# A result value can be formatted by calling {ValueFormatter#format}.
+# Date locale and time zone should be set to respective class members before constructing instances.
+class ValueFormatter
+
+  # Name of the time zone used in formatting of times / timestamps.
+  @timeZone = null
+
+  # Locale name used to format dates, times and timestamps.
+  @locales = null
+
+  # Yield options passed to Date format functions.
+  @createDateOptions: () ->
+    return timeZone: ValueFormatter.timeZone
+
+  # Test if given Date function supports locales.
+  # @param fn [String] Function name, such as "toLocaleString".
+  # @return [Boolean] True if the function supports locales, false if not.
+  @dateSupportsLocales: (fn) ->
+    try
+      new Date()[fn]("i")
+    catch e
+      return e.name is "RangeError"
+    return false
+
+  @dateSupport:
+    toLocaleDateString: @dateSupportsLocales("toLocaleDateString")
+    toLocaleTimeString: @dateSupportsLocales("toLocaleTimeString")
+    toLocaleString: @dateSupportsLocales("toLocaleString")
+
+  # ValueFormatter constructor.
+  # @param backendData [BackendData] Backend data object.
+  constructor: (backendData) ->
+    @backendData = backendData
+    @dateOptions = null
+
+  # Format a value to human readable format.
+  # @param field [String] Name of the field on which the value is.
+  # @param value [?] Value in the field.
+  # @return [String] Formatted value.
+  format: (field, value) ->
+    type = @backendData.getFilterDefById(field)
+    name = QFilterManager.instance().findFilterName(type)
+    return value unless name?
+
+    fn_name = "_fmt_" + name
+    if fn_name of this
+      return this[fn_name](value, type)
+
+  # Helper function for calling locale-aware toLocale*String functions of date objects.
+  # If the function does not support locales, their un-aware versions are called instead.
+  #
+  # @param dateObj [Date] Object to call the function on.
+  # @param fn [String] Function name to call.
+  # @return [String] Locale-formatted string.
+  # @private
+  _callDateLocale: (dateObj, fn) ->
+    if ValueFormatter.dateSupport[fn]
+      if @dateOptions is null
+        @dateOptions = ValueFormatter.createDateOptions()
+      return dateObj[fn](ValueFormatter.locales, @dateOptions)
+    else
+      return dateObj[fn]()
+
+  # Format a date to string.
+  # @private
+  _fmt_date: (value) ->
+    date = new Date(value)
+    @_callDateLocale(date, "toLocaleDateString")
+
+  # Format a time to string.
+  # @private
+  _fmt_time: (value) ->
+    time = new Date(value)
+    @_callDateLocale(time, "toLocaleTimeString")
+
+  # Format a time stamp to string.
+  # @private
+  _fmt_datetime: (value) ->
+    dt = new Date(value)
+    @_callDateLocale(dt, "toLocaleString")
+
+  # Format a boolean value to string.
+  # @private
+  _fmt_bool: (value) ->
+    return if value then "Kyllä" else "Ei"
+
+  # Format a Enum/FK value to string.
+  # @private
+  _fmt_object_or: (value, type) ->
+    if value of type.values
+      return type.values[value]
+    return value
+
+  # Format a M2M value to string.
+  # @private
+  _fmt_object_and: (value, type) ->
+    # null -> empty string
+    return "" unless value?
+
+    # Use enum formatter to format each entry separately, and join the result array to string.
+    value = [value] if not value instanceof Array
+    results = (@_fmt_object_or(entry, type) for entry in value)
+    return results.join(", ")
+
+
+# Publish some classes.
 window.QueryBuilder = QueryBuilder
+window.ValueFormatter = ValueFormatter
