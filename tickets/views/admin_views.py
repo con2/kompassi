@@ -282,6 +282,12 @@ def tickets_admin_order_view(request, vars, event, order_id):
                 messages.success(request, u'Tilaus palautettiin.')
                 return redirect('tickets_admin_order_view', event.slug, order.pk)
 
+            elif 'mark-paid' in request.POST and can_mark_paid:
+                save()
+                order.confirm_payment()
+                messages.success(request, u'Tilaus merkittiin maksetuksi.')
+                return redirect('tickets_admin_order_view', event.slug, order.pk)
+
             elif 'resend-confirmation' in request.POST and can_resend:
                 save()
                 order.send_confirmation_message('payment_confirmation')
