@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from django.contrib import messages
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponse, HttpResponseNotFound
@@ -30,15 +31,7 @@ def get_query(event):
     return signup_extra.get_query_class()
 
 
-@require_GET
-@labour_admin_required
-def query_index(request, vars, event):
-    query_builder_class = get_query(event)
-    if query_builder_class is None:
-        messages.error(request, u"Tapahtumalla ei ole kyselymäärityksiä. Ota yhteys ylläpitäjään.")
-        return HttpResponseRedirect(reverse("labour_admin_dashboard_view", args=[event.slug]))
-
-    query_builder = query_builder_class()
+def get_query_config(vars, query_builder):
     fields, titles = query_builder.get_columns()
 
     # Order by case insensitive titles located in 'titles'-dict values.
@@ -53,6 +46,18 @@ def query_index(request, vars, event):
         query_builder_filters=ordered_fields,
         query_builder_titles=titles,
     )
+
+
+@require_GET
+@labour_admin_required
+def query_index(request, vars, event):
+    query_builder_class = get_query(event)
+    if query_builder_class is None:
+        messages.error(request, u"Tapahtumalla ei ole kyselymäärityksiä. Ota yhteys ylläpitäjään.")
+        return HttpResponseRedirect(reverse("labour_admin_dashboard_view", args=[event.slug]))
+
+    query_builder = query_builder_class()
+    get_query_config(vars, query_builder)
 
     return render(request, 'labour_query.jade', vars)
 
@@ -98,7 +103,7 @@ def convert_datetimes(values):
 @require_POST
 @labour_admin_required
 def query_exec(request, vars, event):
-    if not request.is_ajax():
+    if not request.is_ajax() and not settings.DEBUG:
         # Don't bother with non-ajax requests.
         return HttpResponseRedirect(reverse(query_index, args=[event.slug]))
 
@@ -112,5 +117,16 @@ def query_exec(request, vars, event):
     q_results = query_builder.exec_query()
     m_results = merge_values(list(q_results))
     convert_datetimes(m_results)
+    j_results = json.dumps(m_results)
 
-    return HttpResponse(json.dumps(m_results))
+    if request.is_ajax():
+        # Normal ajax-request.
+        return HttpResponse(j_results)
+    else:
+        # Debug emitted standard POST-request.
+        get_query_config(vars, query_builder)
+        vars.update(
+            query_builder_results=j_results,
+            query_builder_views=json.dumps(query_builder.views),
+        )
+        return render(request, 'labour_query.jade', vars)

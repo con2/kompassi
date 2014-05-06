@@ -335,8 +335,9 @@ class QueryBuilder(object):
         :return: Transport type for each filter; Title for each view.
         :rtype: dict[str, str | dict[str, str | dict | list]], dict[str, str]
         """
-        self._fields = {}
-        self._find_columns(self.model)
+        if self._fields is None:
+            self._fields = {}
+            self._find_columns(self.model)
         return self._fields, self._field_titles
 
     def exec_query(self):

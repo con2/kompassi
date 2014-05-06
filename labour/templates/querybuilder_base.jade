@@ -1,7 +1,8 @@
 - load query_extras
 
 form(method='post', role='form', id='query_builder_form')
-    // todo...
+    if debug
+        - csrf_token
 label(for='add_query_filter')
     | Add filter
 select(id='add_query_filter')
@@ -11,7 +12,8 @@ select(id='add_query_filter')
 pre(id='query_debug')
 button(type="button", onclick="query_builder.onUpdateDebug();") Update
 button(type="button", onclick="query_builder.onExec();") Exec
-
+if debug
+    button(type="button", onclick="query_builder.onExecPlain();") DEBUG-Submit
 #query_builder_views
 
 table.table.table-striped#query_results

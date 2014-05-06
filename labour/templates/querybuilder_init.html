@@ -19,6 +19,13 @@
         query_builder.attachDebug("#query_debug");
         query_builder.attachResults("#query_results");
 
+        {% if query_builder_results and debug %}
+        var results = {{ query_builder_results|safe }};
+
+        query_builder.queriedViews = {{ query_builder_views|safe }};
+        //noinspection JSUnusedAssignment
+        query_builder.onDataResult(results, null, null);
+        {% endif %}
         window.query_builder = query_builder;
     });
 </script>

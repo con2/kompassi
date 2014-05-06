@@ -262,13 +262,30 @@ class QueryBuilder
     # Cache selections so they can be used when rendering the contents.
     @queriedViews = @viewSelector.getSelections()
 
-  onExec: ->
+  _postData: ->
     postData =
       "filter": JSON.stringify(@_getFilter())
       "view": JSON.stringify(@_getViews())
+    return postData
 
+  onExec: ->
+    postData = @_postData()
     fn = (data, status, xhdr) => @onDataResult(data, status, xhdr)
     $.post(@backendUrl, postData, fn, "json")
+
+  onExecPlain: ->
+    postData = @_postData()
+
+    filter = $("""<input type="hidden" name="filter">""")
+    filter.val(postData.filter)
+    @uiForm.append(filter)
+
+    views = $("""<input type="hidden" name="view">""")
+    views.val(postData.view)
+    @uiForm.append(views)
+
+    @uiForm.attr("action", @backendUrl)
+    @uiForm.submit()
 
   onDataResult: (data, status, xhdr) ->
     view = new ResultView(@uiResults, @_data, @queriedViews, data)
