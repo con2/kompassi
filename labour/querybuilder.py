@@ -348,8 +348,11 @@ class QueryBuilder(object):
         """
         assert self._query is not None and self._views is not None
 
-        results = self.model.objects.filter(self.query).only("pk", *self.views)
-        results = results.values("pk", *self.views)
+        # These two lines do filtering AND result views fetching in one query even as the pk-ids are
+        # supplied to "the second query" as filter argument, and the "pk__in" does not actually
+        # generate an "IN" -filter to the SQL WHERE.
+        pks = self.model.objects.filter(self.query).only("pk").values_list("pk", flat=True)
+        results = self.model.objects.values("pk", *self.views).filter(pk__in=pks)
 
         return results
 
