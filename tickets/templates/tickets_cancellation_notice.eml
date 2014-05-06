@@ -1,0 +1,16 @@
+Hyvä vastaanottaja,
+
+{{ order.event.name_genitive }} verkkokaupassa tekemäsi tilaus numero {{ order.formatted_order_number }} on peruttu.
+
+Tilaus sisälsi seuraavat tuotteet:
+
+{% for op in order.order_product_set.all %}{{ op.count }} kpl  {{ op.product.name }}
+{% endfor %}
+
+Jos epäilet, että tilauksesi on peruuntunut virheellisesti, ole hyvä ja ota yhteyttä sähköpostitse osoitteeseen {{ order.event.tickets_event_meta.plain_contact_email }}.
+
+Ystävällisin terveisin
+--
+{{ order.event.tickets_event_meta.contact_email|safe }}
+
+Yleishyödyllisenä yhteisönä myyjä ei ole arvonlisäverovelvollinen.

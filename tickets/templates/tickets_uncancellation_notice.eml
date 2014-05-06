@@ -1,0 +1,16 @@
+Hyvä vastaanottaja,
+
+{{ order.event.name_genitive }} verkkokaupassa tekemäsi tilaus numero {{ order.formatted_order_number }}, joka aiemmin peruttiin, on nyt palautettu.
+
+Tilaus sisältää seuraavat tuotteet:
+
+{% for op in order.order_product_set.all %}{{ op.count }} kpl  {{ op.product.name }}
+{% endfor %}
+
+Jos sinulla on kysymyksiä koskien tilaustasi, ole hyvä ja ota yhteyttä osoitteeseen {{ order.event.tickets_event_meta.plain_contact_email }}.
+
+Ystävällisin terveisin
+--
+{{ order.event.tickets_event_meta.contact_email|safe }}
+
+Yleishyödyllisenä yhteisönä myyjä ei ole arvonlisäverovelvollinen.

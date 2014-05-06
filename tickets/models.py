@@ -600,7 +600,7 @@ class Order(models.Model):
         if send_email:
             self.send_confirmation_message("payment_confirmation")
 
-    def cancel(self):
+    def cancel(self, send_email=True):
         assert self.is_confirmed
 
         if 'lippukala' in settings.INSTALLED_APPS:
@@ -609,7 +609,10 @@ class Order(models.Model):
         self.cancellation_time = timezone.now()
         self.save()
 
-    def uncancel(self):
+        if send_email:
+            self.send_confirmation_message("cancellation_notice")
+
+    def uncancel(self, send_email=True):
         assert self.is_cancelled
 
         if 'lippukala' in settings.INSTALLED_APPS:
@@ -617,6 +620,9 @@ class Order(models.Model):
 
         self.cancellation_time = None
         self.save()
+
+        if send_email:
+            self.send_confirmation_message("uncancellation_notice")
 
     @property
     def messages(self):
@@ -786,11 +792,24 @@ class Order(models.Model):
             else:
                 msgsubject = u"{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
                 msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
+        
         elif msgtype == "delivery_confirmation":
             msgsubject = u"{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
             msgbody = render_to_string("tickets_confirm_delivery.eml", self.email_vars)
+
+        elif msgtype == "cancellation_notice":
+            msgsubject = u"{self.event.name}: Tilaus peruttu ({self.formatted_order_number})".format(self=self)
+            msgbody = render_to_string("tickets_cancellation_notice.eml", self.email_vars)
+
+        elif msgtype == "uncancellation_notice":
+            msgsubject = u"{self.event.name}: Tilaus palautettu ({self.formatted_order_number})".format(self=self)
+            msgbody = render_to_string("tickets_uncancellation_notice.eml", self.email_vars)
+
         else:
             raise NotImplementedError(msgtype)
+
+        if settings.DEBUG:
+            print msgbody
 
         message = EmailMessage(
             subject=msgsubject,
