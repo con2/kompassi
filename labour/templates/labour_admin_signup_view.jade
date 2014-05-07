@@ -21,6 +21,30 @@ block admin_content
           button.btn.btn-success(type='submit', name='save-return', value='save-return') Tallenna ja palaa listaan
           button.btn.btn-success(type='submit', name='save-edit', value='save-edit') Tallenna ja jatka muokkaamista
 
+  .panel.panel-default
+    .panel-heading: strong Työvoimaviestit
+    table.table.table-striped
+      thead
+        tr
+          th Otsikko
+          th Lähetysaika
+      tbody
+        for message in person_messages
+          tr
+            td: a(href='#', data-toggle='modal', data-target='#personmessage-{{ message.pk }}') {{ message.subject.text }}
+            td {{ message.created_at|date:"SHORT_DATETIME_FORMAT" }}
+
+  for message in person_messages
+    .modal.fade(id='personmessage-{{ message.pk }}')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+            h4 {{ message.subject.text }}
+          .modal-body: {{ message.body.text|linebreaks }}
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Sulje
+
 block extra_scripts
   script
     (function($) {

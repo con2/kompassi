@@ -2,6 +2,7 @@
 
 import json
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -64,12 +65,19 @@ def labour_admin_signup_view(request, vars, event, person_id):
         non_applied_categories.remove(applied_category)
     non_applied_category_names = [cat.name for cat in non_applied_categories]
 
+    if 'mailings' in settings.INSTALLED_APPS:
+        person_messages = person.personmessage_set.filter(message__event=event)
+    else:
+        person_messages = []
+
     vars.update(
         person_form=person_form,
         signup=signup,
         signup_admin_form=signup_admin_form,
         signup_extra_form=signup_extra_form,
         signup_form=signup_form,
+
+        person_messages=person_messages,
 
         # XXX hack: widget customization is very difficult, so apply styles via JS
         non_applied_category_names_json=json.dumps(non_applied_category_names),
