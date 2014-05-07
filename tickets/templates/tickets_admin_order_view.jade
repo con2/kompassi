@@ -9,8 +9,10 @@ block admin_content
           if order.is_confirmed
             span.badge.badge-primary Vahvistettu
           if order.is_paid
+            | &thinsp;
             span.badge.badge-success Maksettu
           if order.is_cancelled
+            | &thinsp;
             span.badge.badge-danger Peruutettu
       .panel-body
         - crispy customer_form

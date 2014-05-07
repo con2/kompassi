@@ -1,0 +1,18 @@
+extends core_admin_base.jade
+- load crispy_forms_tags
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Toimituserät
+    if batches.exists
+      ul.list-group
+        for batch in batches
+          li.list-group-item
+            a(href='{% url "tickets_admin_batch_view" event.slug batch.pk %}', target='_blank') Toimituserä {{ batch.pk }}
+            if batch.is_delivered
+              span.badge.badge-success Toimitettu
+    else
+      .panel-body
+        p Ei toimituseriä.
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        button.btn.btn-success(type='submit', name='save', value='save') Uusi toimituserä

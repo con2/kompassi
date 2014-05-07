@@ -50,7 +50,7 @@ def tickets_admin_batches_view(request, vars, event):
         batches=event.batch_set.all(),
     )
 
-    return render(request, "tickets_admin_batches_view.html", vars)
+    return render(request, "tickets_admin_batches_view.jade", vars)
 
 
 @tickets_admin_required
