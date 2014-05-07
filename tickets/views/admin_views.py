@@ -269,6 +269,8 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
                     form.save()
 
+                order.clean_up_order_products()
+
             if 'cancel' in request.POST and can_cancel:
                 save()
                 order.cancel()

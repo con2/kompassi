@@ -561,11 +561,14 @@ class Order(models.Model):
     def formatted_order_number(self):
         return "#{:05d}".format(self.pk)
 
+    def clean_up_order_products(self):
+        self.order_product_set.filter(count__lte=0).delete()
+
     def confirm_order(self):
         assert self.customer is not None
         assert not self.is_confirmed
 
-        self.order_product_set.filter(count__lte=0).delete()
+        self.clean_up_order_products()
 
         self.reference_number = self._make_reference_number()
         self.confirm_time = timezone.now()

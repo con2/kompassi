@@ -56,7 +56,7 @@ class OrderProductForm(forms.ModelForm):
             prefix="o%d" % order_product.pk,
 
             # XXX disallow changing amounts of electronic tickets for now
-            readonly=(order.batch is not None and product.requires_shipping) or (admin and product.electronic_ticket),
+            readonly=admin and ((order.batch is not None and product.requires_shipping) or (order.is_paid and product.electronic_ticket)),
         )
 
     class Meta:
