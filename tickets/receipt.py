@@ -20,7 +20,7 @@ except ImportError:
     warn('Failed to import ReportLab. Generating receipts will fail.')
 
 
-# XXX correct path
+# XXX hardcoded
 LOGO_FILENAME = os.path.join(settings.STATIC_ROOT, "images", "tracon_logo_kuitille.jpg")
 
 
@@ -37,14 +37,14 @@ def render_logo(x, y, c):
     # XXX parametrize over event
     with state_saved(c):
         c.translate(x, y)
-        c.drawImage(LOGO_FILENAME, 0, 0, 48*mm, 15.5*mm)
+        c.drawImage(LOGO_FILENAME, 0, 0, 48*mm, 25*mm)
 
 
 def render_receipt(order, c):
-    render_logo(135*mm, 265*mm, c)
+    render_logo(135*mm, 255*mm, c)
 
     c.setFont("Times-Roman", 12)
-    c.drawString(135*mm, 260*mm, order.event.headline)
+    c.drawString(135*mm, 250*mm, order.event.headline)
 
     c.drawString(BASE_INDENT, 270*mm, order.customer.name)
     c.drawString(BASE_INDENT, 265*mm, order.customer.address)

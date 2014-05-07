@@ -43,7 +43,15 @@ class Venue(models.Model):
 
 class Event(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
+
     name = models.CharField(max_length=63, verbose_name=u'Tapahtuman nimi')
+    
+    headline = models.CharField(
+        max_length=63,
+        blank=True,
+        default=u'',
+        verbose_name=u'Alaotsikko',
+    )
 
     name_genitive = models.CharField(
         max_length=63,

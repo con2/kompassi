@@ -54,6 +54,11 @@ class Command(BaseCommand):
             venue=venue,
         ))
 
+        # core v7
+        if not event.headline:
+            event.headline = u'Tampere-talossa 13.-14.9.2014'
+            event.save()
+
         labour_accepted_group, unused = LabourEventMeta.get_or_create_group(event, 'accepted')
         labour_applicants_group, unused = LabourEventMeta.get_or_create_group(event, 'applicants')
         labour_admin_group, unused = LabourEventMeta.get_or_create_group(event, 'admins')
@@ -120,7 +125,7 @@ class Command(BaseCommand):
                 )
             )
 
-        # v5
+        # programme v5
         if not programme_event_meta.contact_email:
             programme_event_meta.contact_email = 'ohjelma@tracon.fi'
             programme_event_meta.save()
@@ -133,7 +138,7 @@ class Command(BaseCommand):
             )
         )
 
-        # v8
+        # programme v8
         role.is_default = True
         role.save()
 
@@ -162,7 +167,7 @@ class Command(BaseCommand):
                 )
             )
 
-        # v6
+        # programme v6
         for start_time, end_time in [
             (
                 datetime(2014, 9, 13, 11, 0, 0, tzinfo=tz),
