@@ -215,6 +215,13 @@ class Batch(models.Model):
         self.send_delivery_confirmation_messages()
 
     def send_delivery_confirmation_messages(self):
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from .tasks import batch_send_delivery_confirmation_messages
+            batch_send_delivery_confirmation_messages.delay(self.pk)
+        else:
+            self._send_delivery_confirmation_messages()
+
+    def _send_delivery_confirmation_messages(self):
         for order in self.order_set.all():
             order.send_confirmation_message("delivery_confirmation")
 
