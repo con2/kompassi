@@ -131,17 +131,7 @@ class Batch(models.Model):
     event = models.ForeignKey('core.Event')
 
     create_time = models.DateTimeField(auto_now=True)
-    print_time = models.DateTimeField(null=True, blank=True)
-    prepare_time = models.DateTimeField(null=True, blank=True)
     delivery_time = models.DateTimeField(null=True, blank=True)
-
-    @property
-    def is_printed(self):
-        return self.print_time is not None
-
-    @property
-    def is_prepared(self):
-        return self.prepare_time is not None
 
     @property
     def is_delivered(self):
@@ -155,12 +145,8 @@ class Batch(models.Model):
     def readable_state(self):
         if self.is_delivered:
             return u"Delivered at %s" % format_date(self.delivery_time)
-        elif self.is_prepared:
-            return u"Prepared at %s; awaiting delivery" % format_date(self.prepare_time)
-        elif self.is_printed:
-            return u"Printed at %s; awaiting preparation" % format_date(self.print_time)
         else:
-            return u"Awaiting print"
+            return u"Awaiting delivery"
 
     @classmethod
     def create(cls, event, max_orders=100):

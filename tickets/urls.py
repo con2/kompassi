@@ -5,8 +5,6 @@ from django.shortcuts import redirect
 
 from .views import (
     tickets_address_view,
-    tickets_admin_batch_cancel_view,
-    tickets_admin_batch_deliver_view,
     tickets_admin_batch_view,
     tickets_admin_batches_view,
     tickets_admin_order_view,
@@ -34,6 +32,6 @@ urlpatterns = patterns('',
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders$', tickets_admin_orders_view, name="tickets_admin_orders_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders/(?P<order_id>\d+)/$', tickets_admin_order_view, name="tickets_admin_order_view"),
 
-    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches', tickets_admin_batches_view, name="tickets_admin_batches_view"),
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches$', tickets_admin_batches_view, name="tickets_admin_batches_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)$', tickets_admin_batch_view, name="tickets_admin_batch_view"),
 )

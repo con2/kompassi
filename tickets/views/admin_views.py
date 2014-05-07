@@ -37,8 +37,6 @@ from ..models import Order, Batch
 
 
 __all__ = [
-    "tickets_admin_batch_cancel_view",
-    "tickets_admin_batch_deliver_view",
     "tickets_admin_batch_view",
     "tickets_admin_batches_view",
     "tickets_admin_menu_items",
@@ -94,29 +92,19 @@ def tickets_admin_batches_view(request, vars, event):
 
     return render(request, "tickets_admin_batches_view.jade", vars)
 
-@tickets_admin_required
-@require_POST
-def tickets_admin_batch_cancel_view(request, vars, event, batch_id):
-    batch = get_object_or_404(Batch, id=int(batch_id), event=event)
-    batch.cancel()
-
-    messages.success(request, u'Toimituserä on peruttu.')
-    return redirect('tickets_admin_batches_view')
-
 
 @tickets_admin_required
-@require_POST
-def tickets_admin_batch_deliver_view(request, vars, event, batch_id):
+@require_GET
+def tickets_admin_batch_view(request, vars, event, batch_id):
     batch = get_object_or_404(Batch, id=int(batch_id), event=event)
 
-    if batch.is_delivered:
-        messages.error(request, u"Valitsemasi toimituserä on jo merkitty toimitetuksi.")
-    else:
-        batch.confirm_delivery()
-        messages.success(request, u"Toimituserä on merkitty toimitetuksi ja toimitusvahvistukset lähetetty.")
+    response = HttpResponse(mimetype="application/pdf")
+    response["Content-Disposition"] = 'filename=batch%03d.pdf' % batch.id
+    c = canvas.Canvas(response)
+    batch.render(c)
+    c.save()
 
-    return redirect('tickets_admin_batches_view')
-
+    return response
 
 
 @tickets_admin_required
@@ -218,20 +206,6 @@ def tickets_admin_stats_by_date_view(request, vars, event, raw=False):
     else:
         vars.update(tsv=tsv)
         return render(request, "tickets_admin_stats_by_date_view.html", vars)
-
-
-@tickets_admin_required
-@require_GET
-def tickets_admin_batch_view(request, vars, event, batch_id):
-    batch = get_object_or_404(Batch, id=int(batch_id), event=event)
-
-    response = HttpResponse(mimetype="application/pdf")
-    response["Content-Disposition"] = 'filename=batch%03d.pdf' % batch.id
-    c = canvas.Canvas(response)
-    batch.render(c)
-    c.save()
-
-    return response
 
 
 @tickets_admin_required
