@@ -8,6 +8,7 @@ block admin_content
         for batch in batches
           li.list-group-item
             a(href='{% url "tickets_admin_batch_view" event.slug batch.pk %}', target='_blank') Toimituserä {{ batch.pk }}
+            .pull-right.text-muted {{ batch.order_set.count }} tilaus{{ batch.order_set.count|pluralize:"ta"}}
             if batch.is_delivered
               span.badge.badge-success Toimitettu
     else
@@ -15,4 +16,19 @@ block admin_content
         p Ei toimituseriä.
     .panel-footer.clearfix
       .btn-group.pull-right
-        button.btn.btn-success(type='submit', name='save', value='save') Uusi toimituserä
+        button.btn.btn-primary(type='button', data-toggle='modal', data-target='#new-batch-dialog') Uusi toimituserä...
+
+  #new-batch-dialog.modal.fade
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+          h4 Uusi toimituserä
+        form(method='POST', role='form')
+          div
+            .modal-body
+              - crispy new_batch_form
+            .modal-footer
+              .btn-group
+                button.btn.btn-default(type='button', data-dismiss='modal') Peruuta
+                button.btn.btn-success(type='submit', name='new-batch', value='new-batch') Luo toimituserä

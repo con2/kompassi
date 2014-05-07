@@ -163,14 +163,14 @@ class Batch(models.Model):
             return u"Awaiting print"
 
     @classmethod
-    def create(cls, max_orders=100):
+    def create(cls, event, max_orders=100):
         # XXX concurrency disaster waiting to happen
         # solution: only I do the botching^Wbatching
 
-        batch = cls()
+        batch = cls(event=event)
         batch.save()
 
-        orders = self.event.order_set.filter(
+        orders = event.order_set.filter(
             # Order is confirmed
             confirm_time__isnull=False,
 

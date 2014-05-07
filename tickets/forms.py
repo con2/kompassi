@@ -99,6 +99,10 @@ class MultiplePaymentsForm(forms.Form):
 class CreateBatchForm(forms.Form):
     max_orders = forms.IntegerField(label=u"Kuinka monta tilausta (enintään)?")
 
+    def __init__(self, *args, **kwargs):
+        super(CreateBatchForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
 
 class SearchForm(forms.Form):
     id = forms.IntegerField(label=u"Tilausnumero", required=False)

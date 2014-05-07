@@ -23,15 +23,14 @@ except ImportError:
 
 from core.utils import url, initialize_form
 
-from ..forms import SearchForm, CustomerForm, AdminOrderForm, OrderProductForm
+from ..forms import SearchForm, CustomerForm, AdminOrderForm, OrderProductForm, CreateBatchForm
 from ..helpers import tickets_admin_required, perform_search
 from ..utils import format_price
-from ..models import Order
+from ..models import Order, Batch
 
 
 __all__ = [
     "tickets_admin_batch_cancel_view",
-    "tickets_admin_batch_create_view",
     "tickets_admin_batch_deliver_view",
     "tickets_admin_batch_view",
     "tickets_admin_batches_view",
@@ -46,7 +45,20 @@ __all__ = [
 
 @tickets_admin_required
 def tickets_admin_batches_view(request, vars, event):
+    new_batch_form = initialize_form(CreateBatchForm, request, initial=dict(
+        max_orders=100
+    ))
+
+    if request.method == 'POST':
+        if new_batch_form.is_valid():
+            batch = Batch.create(event=event, max_orders=new_batch_form.cleaned_data["max_orders"])
+            messages.success(request, u"Toimituserä {batch.pk} on luotu onnistuneesti".format(batch=batch))
+            return redirect('tickets_admin_batches_view', event.slug)
+        else:
+            messages.error(request, u"Ole hyvä ja korjaa lomakkeen virheet.")
+
     vars.update(
+        new_batch_form=new_batch_form,
         batches=event.batch_set.all(),
     )
 
@@ -152,23 +164,6 @@ def tickets_admin_stats_by_date_view(request, vars, event, raw=False):
     else:
         vars.update(tsv=tsv)
         return render(request, "tickets_admin_stats_by_date_view.html", vars)
-
-
-@tickets_admin_required
-@require_http_methods(["POST", "GET"])
-def tickets_admin_batch_create_view(request, vars, event):
-    form = initialize_form(CreateBatchForm)
-
-    if request.method == "POST":
-        if form.is_valid():
-            batch = Batch.create(event=event, max_orders=form.cleaned_data["max_orders"])
-            messages.success(request, u"Toimituserä {batch.pk} on luotu onnistuneesti".format(batch=batch))
-            return redirect('tickets_admin_batches_view', event.slug)
-        else:
-            messages.error(request, u"Ole hyvä ja korjaa lomakkeen virheet.")
-
-    vars.update(form=form)
-    return render(request, "tickets_admin_batch_create_view.html", vars)
 
 
 @tickets_admin_required
