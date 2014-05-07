@@ -1,6 +1,12 @@
 extends core_admin_base
 - load crispy_forms_tags
 block admin_content
+  if message.sent_at
+    .panel.panel-danger
+      .panel-heading: strong Ankara varoitus!
+      .panel-body
+        p Tämä viesti on jo lähetetty vastaanottajille. Mikäli muokkaat viestiä, muokkaukset vaikuttavat vain niihin vastaanottajiin, joille tämä viesti lähetetään muokkauksen jälkeen.
+
   form(role='form', method='POST').form-horizontal
     .panel.panel-default
       .panel-heading: strong Työvoimaviestin muokkaus

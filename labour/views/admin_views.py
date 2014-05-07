@@ -66,9 +66,11 @@ def labour_admin_signup_view(request, vars, event, person_id):
     non_applied_category_names = [cat.name for cat in non_applied_categories]
 
     if 'mailings' in settings.INSTALLED_APPS:
-        person_messages = person.personmessage_set.filter(message__event=event)
+        person_messages = person.personmessage_set.filter(message__event=event).order_by('-created_at')
+        have_person_messages = person_messages.exists()
     else:
         person_messages = []
+        have_person_messages = False
 
     vars.update(
         person_form=person_form,
@@ -77,6 +79,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
         signup_extra_form=signup_extra_form,
         signup_form=signup_form,
 
+        have_person_messages=have_person_messages,
         person_messages=person_messages,
 
         # XXX hack: widget customization is very difficult, so apply styles via JS
