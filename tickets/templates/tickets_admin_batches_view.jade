@@ -8,9 +8,19 @@ block admin_content
         for batch in batches
           li.list-group-item
             a(href='{% url "tickets_admin_batch_view" event.slug batch.pk %}', target='_blank') Toimituserä {{ batch.pk }}
-            .pull-right.text-muted {{ batch.order_set.count }} tilaus{{ batch.order_set.count|pluralize:"ta"}}
-            if batch.is_delivered
-              span.badge.badge-success Toimitettu
+            .pull-right
+              if batch.is_delivered
+                span.badge.badge-success Toimitettu
+              else
+                form(method='POST', role='form')
+                  {% csrf_token %}
+                  input(type='hidden', name='batch_id', value='{{ batch.pk }}')
+                  .btn-group.btn-group-xs
+                    button.btn.btn-danger(type='submit', name='cancel-batch', value='cancel-batch') Peruuta
+                    button.btn.btn-success(type='submit', name='deliver-batch', value='deliver-batch') Merkitse toimitetuksi
+            .pull-right
+              .text-muted {{ batch.order_set.count }} tilaus{{ batch.order_set.count|pluralize:"ta"}}&emsp;
+
     else
       .panel-body
         p Ei toimituseriä.

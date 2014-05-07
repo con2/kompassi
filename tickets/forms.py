@@ -149,3 +149,7 @@ class AdminOrderForm(forms.ModelForm):
             'reference_number',
             # 'start_time',
         )
+
+
+class HiddenBatchCrouchingForm(forms.Form):
+    batch_id = forms.IntegerField(required=True)

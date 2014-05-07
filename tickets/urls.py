@@ -36,7 +36,4 @@ urlpatterns = patterns('',
 
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches', tickets_admin_batches_view, name="tickets_admin_batches_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)$', tickets_admin_batch_view, name="tickets_admin_batch_view"),
-    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)/cancel$', tickets_admin_batch_cancel_view, name="tickets_admin_batch_cancel_view"),
-    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)/deliver$', tickets_admin_batch_deliver_view, name="tickets_admin_batch_deliver_view"),
-
 )

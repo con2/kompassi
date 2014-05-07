@@ -23,7 +23,14 @@ except ImportError:
 
 from core.utils import url, initialize_form
 
-from ..forms import SearchForm, CustomerForm, AdminOrderForm, OrderProductForm, CreateBatchForm
+from ..forms import (
+    AdminOrderForm,
+    CreateBatchForm,
+    CustomerForm,
+    HiddenBatchCrouchingForm,
+    OrderProductForm,
+    SearchForm,
+)
 from ..helpers import tickets_admin_required, perform_search
 from ..utils import format_price
 from ..models import Order, Batch
@@ -50,12 +57,35 @@ def tickets_admin_batches_view(request, vars, event):
     ))
 
     if request.method == 'POST':
-        if new_batch_form.is_valid():
-            batch = Batch.create(event=event, max_orders=new_batch_form.cleaned_data["max_orders"])
-            messages.success(request, u"Toimituserä {batch.pk} on luotu onnistuneesti".format(batch=batch))
-            return redirect('tickets_admin_batches_view', event.slug)
-        else:
-            messages.error(request, u"Ole hyvä ja korjaa lomakkeen virheet.")
+        if 'new-batch' in request.POST:
+            if new_batch_form.is_valid():
+                batch = Batch.create(event=event, max_orders=new_batch_form.cleaned_data["max_orders"])
+                messages.success(request, u"Toimituserä {batch.pk} on luotu onnistuneesti".format(batch=batch))
+                return redirect('tickets_admin_batches_view', event.slug)
+            else:
+                messages.error(request, u"Ole hyvä ja korjaa lomakkeen virheet.")
+
+        elif 'cancel-batch' in request.POST or 'deliver-batch' in request.POST:
+            hidden_batch_crouching_form = HiddenBatchCrouchingForm(request.POST)
+
+            if hidden_batch_crouching_form.is_valid():
+                batch = get_object_or_404(Batch,
+                    event=event,
+                    pk=hidden_batch_crouching_form.cleaned_data['batch_id']
+                )
+
+                if 'cancel-batch' in request.POST and batch.can_cancel:
+                    batch.cancel()
+                    messages.success(request, u"Toimituserä peruttiin.")
+                    return redirect('tickets_admin_batches_view', event.slug)
+
+                elif 'deliver-batch' in request.POST and batch.can_deliver:
+                    batch.confirm_delivery()
+                    messages.success(request, u"Toimituserä on merkitty toimitetuksi.")
+                    return redirect('tickets_admin_batches_view', event.slug)
+
+            # error
+            messages.error(request, u"Et ole tulitikku kung-fulleni.")
 
     vars.update(
         new_batch_form=new_batch_form,
@@ -63,6 +93,30 @@ def tickets_admin_batches_view(request, vars, event):
     )
 
     return render(request, "tickets_admin_batches_view.jade", vars)
+
+@tickets_admin_required
+@require_POST
+def tickets_admin_batch_cancel_view(request, vars, event, batch_id):
+    batch = get_object_or_404(Batch, id=int(batch_id), event=event)
+    batch.cancel()
+
+    messages.success(request, u'Toimituserä on peruttu.')
+    return redirect('tickets_admin_batches_view')
+
+
+@tickets_admin_required
+@require_POST
+def tickets_admin_batch_deliver_view(request, vars, event, batch_id):
+    batch = get_object_or_404(Batch, id=int(batch_id), event=event)
+
+    if batch.is_delivered:
+        messages.error(request, u"Valitsemasi toimituserä on jo merkitty toimitetuksi.")
+    else:
+        batch.confirm_delivery()
+        messages.success(request, u"Toimituserä on merkitty toimitetuksi ja toimitusvahvistukset lähetetty.")
+
+    return redirect('tickets_admin_batches_view')
+
 
 
 @tickets_admin_required
@@ -178,30 +232,6 @@ def tickets_admin_batch_view(request, vars, event, batch_id):
     c.save()
 
     return response
-
-
-@tickets_admin_required
-@require_POST
-def tickets_admin_batch_cancel_view(request, vars, event, batch_id):
-    batch = get_object_or_404(Batch, id=int(batch_id), event=event)
-    batch.cancel()
-
-    messages.success(request, u'Toimituserä on peruttu.')
-    return redirect('tickets_admin_batches_view')
-
-
-@tickets_admin_required
-@require_POST
-def tickets_admin_batch_deliver_view(request, vars, event, batch_id):
-    batch = get_object_or_404(Batch, id=int(batch_id), event=event)
-
-    if batch.is_delivered:
-        messages.error(request, u"Valitsemasi toimituserä on jo merkitty toimitetuksi.")
-    else:
-        batch.confirm_delivery()
-        messages.success(request, u"Toimituserä on merkitty toimitetuksi ja toimitusvahvistukset lähetetty.")
-
-    return redirect('tickets_admin_batches_view')
 
 
 @tickets_admin_required

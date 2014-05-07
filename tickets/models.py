@@ -205,12 +205,20 @@ class Batch(models.Model):
         for order in self.order_set.all():
             order.render(c)
 
+    @property
+    def can_cancel(self):
+        return not self.is_delivered
+
     def cancel(self):
         for order in self.order_set.all():
             order.batch = None
             order.save()
 
         self.delete()
+
+    @property
+    def can_deliver(self):
+        return not self.is_delivered
 
     def confirm_delivery(self, delivery_time=None):
         if delivery_time is None:
