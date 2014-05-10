@@ -117,11 +117,16 @@ class ViewSelector
   # Dom class name for the inputs created by this.
   @inputClass: "query_builder_view_select"
 
+  # Dom class name for use with hidden view list.
+  # The class must specify display:none attribute.
+  @hiddenClass: "view-hidden"
+
   # Static input id generator.
-  # @param i Index or identifier for certain input.
+  # @param i [String | Integer, optional] Index or identifier for certain input.
   # @return [String] Id string.
-  @idGen: (i) ->
-    "query_view_#{ i }"
+  @idGen: (i=null) ->
+    return "query_view_#{ i }" unless i is null
+    return "query_view"
 
   # Constructor.
   # @param container [JQuery-object] Root object that will contain the view selectors.
@@ -132,16 +137,49 @@ class ViewSelector
   setViews: (backendData) ->
     @_data = backendData
 
+  # Render one view selector.
+  # @private
+  # @param title [String] View name / title.
+  # @param id [String] View identifier.
+  # @param key [String] Backend view key value.
+  # @return [$] Generated selector view.
+  _renderOne: (title, id, key) ->
+    container = $("<div>")
+
+    input = $("""<input type="checkbox">""")
+    input.attr("id", id)
+    input.addClass(@constructor.inputClass)
+    input.data("key", key)
+
+    label = $("""<label>""")
+    label.attr("for", id)
+    label.text(title)
+
+    container.append(input, label)
+    return container
+
   # Renders the selectors in to a string.
   #
   # @return [String] Rendered selectors.
   renderStr: ->
-    views = ""
+    container = $("<div>")
+
+    toggle = $("""<button type="button">""")
+    toggle.text("Toggle views")
+    toggle.click(() => @onToggleViews())
+    container.append(toggle)
+
+    views = $("<div>")
+    views.attr("id", @constructor.idGen())
+    views.addClass(@constructor.hiddenClass)
+
     for key, i in @_data.getTitleOrder()
       title = @_data.getTitleById(key)
       id = @constructor.idGen(i)
-      views += """<div><input type="checkbox" id="#{ id }" class="#{ @constructor.inputClass }" data-key="#{ key }" /> <label for="#{ id }">#{ title }</label></div>"""
-    return views
+      views.append(@_renderOne(title, id, key))
+
+    container.append(views)
+    return container
 
   # Renders the selectors directly in the supplied container.
   render: ->
@@ -156,6 +194,11 @@ class ViewSelector
     for element in inputs
       ids.push($(element).data("key"))
     return ids
+
+  # Toggle views visibility.
+  onToggleViews: ->
+    container = $("#" + @constructor.idGen())
+    container.toggleClass(@constructor.hiddenClass)
 
 
 # The actual front end Query Builder.
