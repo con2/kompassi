@@ -282,6 +282,6 @@ class M2MFilter extends QueryFilter
     negate = mode[0] == "!"
 
     return @applyNOT(negate, ["eq", @idName, value_key])
-QFilterManager.registerFilter("object_and", M2MFilter, (filterDef) ->
+QFilterManager.registerFilter("object_and", EnumFilter, (filterDef) ->
   return "multiple" of filterDef and filterDef.multiple is "and"
 )

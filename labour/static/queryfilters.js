@@ -318,7 +318,7 @@
 
   })(QueryFilter);
 
-  QFilterManager.registerFilter("object_and", M2MFilter, function(filterDef) {
+  QFilterManager.registerFilter("object_and", EnumFilter, function(filterDef) {
     return "multiple" in filterDef && filterDef.multiple === "and";
   });
 
