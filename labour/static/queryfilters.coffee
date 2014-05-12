@@ -44,7 +44,7 @@ class QueryFilter
 
   # Yield label-tag for given name using default display name.
   labelFor: (id, title = @uiTitle) ->
-    return "<label for=\"#{ id }\">#{ title }</label>"
+    return Widget.label(id).text(title)
 
   # Yield id-name for this filter with optional suffix.
   id: (suff = null) ->
@@ -74,18 +74,17 @@ class BoolFilter extends QueryFilter
   # @param id [String] The actual unique id field name.
   # @param name [String] Name of the radio group.
   # @param value [String] Choice value.
-  # @param attrs [String] Optional attributes to append to the input.
-  createRadio: (id, name, value, attrs="") ->
-    return """ <input type="radio" id="#{ id }" name="#{ name }" value="#{ value }" #{ @createDebugAttr() } #{ attrs }>"""
+  createRadio: (id, name, value) ->
+    return @setDebugAttr(Widget.radio(id).attr("name", name).val(value))
 
   createUi: ->
     name = @id()
     id_true = @id("true")
     id_false = @id("false")
-    return "<span id=\"#{ name }\">" +
-      @labelFor(id_true, "Kyllä") + @createRadio(id_true, name, "true", "checked=\"checked\"") +
-      @labelFor(id_false, "Ei") + @createRadio(id_false, name, "false") +
-      "</span>"
+    output = $("<span id=\"#{ name }\">")
+    output.append(@labelFor(id_true, "Kyllä"), @createRadio(id_true, name, "true").attr("checked", "checked"))
+    output.append(@labelFor(id_false, "Ei"), @createRadio(id_false, name, "false"))
+    return output
 
   createFilter: ->
     name = @id()
@@ -126,15 +125,23 @@ class StringFilter extends QueryFilter
   # @private
   # @param id [String] Unique id for the input.
   createInput: (id) ->
-    return """ <input type="text" id="#{ id }" name="#{ id }" #{ @createDebugAttr() }/>"""
+    return @setDebugAttr(Widget.text(id).attr("name", id))
+
+  createCase: (id) ->
+    return [
+      @setDebugAttr(Widget.checkbox(id).attr("name", id)),
+      Widget.label(id).text("Sama kirjainkoko")
+    ]
 
   createUi: ->
-    # Title [MatchMethod] [StringInput]
-    id = @id()
-    return @createMode(id + "_mode") + @createInput(id)
+    # Title [MatchMethod] [StringInput] [Case sensitive]
+    output = $("<span>")
+    output.append(@createMode(@id("mode")))
+    output.append(@createInput(@id()))
+    output.append(@createCase(@id("case")))
 
   createFilter: ->
-    mode = $("#" + @id() + "_mode").val()
+    mode = $("#" + @id("mode")).val()
     value = $("#" + @id()).val()
     if mode == null or mode == ""
       throw "Invalid select value for string mode."
@@ -143,6 +150,13 @@ class StringFilter extends QueryFilter
     if mode[0] == "!"
       mode = mode.substr(1)
       negate = true
+
+    if mode == "contains" and value == ""
+      return null
+
+    icase = $("#" + @id("case") + ":checked")
+    if icase.size() != 1
+      mode = "i" + mode
 
     flt = [mode, @idName, value]
     return @applyNOT(negate, flt)
@@ -161,11 +175,11 @@ class EnumFilter extends QueryFilter
     """
 
   _createOne: (output, id, key, value_title) ->
-    input = $("""<input type="checkbox" id="#{ id }">""")
+    input = Widget.checkbox(id)
     input.data("key", key)
     @setDebugAttr(input)
 
-    label = $("""<label for="#{ id }">""")
+    label = Widget.label(id)
     label.text(value_title)
 
     output.append(input)

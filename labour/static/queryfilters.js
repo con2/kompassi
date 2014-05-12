@@ -55,7 +55,7 @@
       if (title == null) {
         title = this.uiTitle;
       }
-      return "<label for=\"" + id + "\">" + title + "</label>";
+      return Widget.label(id).text(title);
     };
 
     QueryFilter.prototype.id = function(suff) {
@@ -90,19 +90,19 @@
       return BoolFilter.__super__.constructor.apply(this, arguments);
     }
 
-    BoolFilter.prototype.createRadio = function(id, name, value, attrs) {
-      if (attrs == null) {
-        attrs = "";
-      }
-      return " <input type=\"radio\" id=\"" + id + "\" name=\"" + name + "\" value=\"" + value + "\" " + (this.createDebugAttr()) + " " + attrs + ">";
+    BoolFilter.prototype.createRadio = function(id, name, value) {
+      return this.setDebugAttr(Widget.radio(id).attr("name", name).val(value));
     };
 
     BoolFilter.prototype.createUi = function() {
-      var id_false, id_true, name;
+      var id_false, id_true, name, output;
       name = this.id();
       id_true = this.id("true");
       id_false = this.id("false");
-      return ("<span id=\"" + name + "\">") + this.labelFor(id_true, "Kyllä") + this.createRadio(id_true, name, "true", "checked=\"checked\"") + this.labelFor(id_false, "Ei") + this.createRadio(id_false, name, "false") + "</span>";
+      output = $("<span id=\"" + name + "\">");
+      output.append(this.labelFor(id_true, "Kyllä"), this.createRadio(id_true, name, "true").attr("checked", "checked"));
+      output.append(this.labelFor(id_false, "Ei"), this.createRadio(id_false, name, "false"));
+      return output;
     };
 
     BoolFilter.prototype.createFilter = function() {
@@ -134,18 +134,24 @@
     };
 
     StringFilter.prototype.createInput = function(id) {
-      return " <input type=\"text\" id=\"" + id + "\" name=\"" + id + "\" " + (this.createDebugAttr()) + "/>";
+      return this.setDebugAttr(Widget.text(id).attr("name", id));
+    };
+
+    StringFilter.prototype.createCase = function(id) {
+      return [this.setDebugAttr(Widget.checkbox(id).attr("name", id)), Widget.label(id).text("Sama kirjainkoko")];
     };
 
     StringFilter.prototype.createUi = function() {
-      var id;
-      id = this.id();
-      return this.createMode(id + "_mode") + this.createInput(id);
+      var output;
+      output = $("<span>");
+      output.append(this.createMode(this.id("mode")));
+      output.append(this.createInput(this.id()));
+      return output.append(this.createCase(this.id("case")));
     };
 
     StringFilter.prototype.createFilter = function() {
-      var flt, mode, negate, value;
-      mode = $("#" + this.id() + "_mode").val();
+      var flt, icase, mode, negate, value;
+      mode = $("#" + this.id("mode")).val();
       value = $("#" + this.id()).val();
       if (mode === null || mode === "") {
         throw "Invalid select value for string mode.";
@@ -154,6 +160,13 @@
       if (mode[0] === "!") {
         mode = mode.substr(1);
         negate = true;
+      }
+      if (mode === "contains" && value === "") {
+        return null;
+      }
+      icase = $("#" + this.id("case") + ":checked");
+      if (icase.size() !== 1) {
+        mode = "i" + mode;
       }
       flt = [mode, this.idName, value];
       return this.applyNOT(negate, flt);
@@ -180,10 +193,10 @@
 
     EnumFilter.prototype._createOne = function(output, id, key, value_title) {
       var input, label;
-      input = $("<input type=\"checkbox\" id=\"" + id + "\">");
+      input = Widget.checkbox(id);
       input.data("key", key);
       this.setDebugAttr(input);
-      label = $("<label for=\"" + id + "\">");
+      label = Widget.label(id);
       label.text(value_title);
       output.append(input);
       return output.append(label);

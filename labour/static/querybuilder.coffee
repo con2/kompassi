@@ -42,6 +42,42 @@ class BackendData
 window.BackendData = BackendData
 
 
+# Widget factory producing jquery elements.
+class DefaultWidget
+  id: (id) ->
+    return if id? then "id=\"#{ id }\"" else ""
+
+  hidden: (name) ->
+    return $("""<input type="hidden" name="#{ name }">""")
+
+  label: (forId) ->
+    return $("""<label for="#{ forId }">""")
+
+  button: (id=null) ->
+    return $("""<button type="button" #{ @id(id) }>""")
+
+  select: (id=null) ->
+    return $("""<select #{ @id(id) }>""")
+
+  checkbox: (id=null) ->
+    return $("""<input type="checkbox" #{ @id(id) }>""")
+
+  radio: (id=null) ->
+    return $("""<input type="radio" #{ @id(id) }>""")
+
+  text: (id=null) ->
+    return $("""<input type="text" #{ @id(id) }>""")
+
+
+# Bootstrap-specialized widget factory.
+class BootstrapWidget extends DefaultWidget
+  button: (id=null, type=null) ->
+    btn = super.button(id).addClass("btn")
+    return if type? then btn.addClass("btn-" + type) else btn
+
+window.Widget = new BootstrapWidget()
+
+
 # Query filter nanager.
 # Filters can be registered with {QFilterManager.registerFilter registerFilter},
 # and later found with {QFilterManager#findFilter findFilter}.
@@ -146,13 +182,11 @@ class ViewSelector
   _renderOne: (title, id, key) ->
     container = $("<div>")
 
-    input = $("""<input type="checkbox">""")
-    input.attr("id", id)
+    input = Widget.checkbox(id)
     input.addClass(@constructor.inputClass)
     input.data("key", key)
 
-    label = $("""<label>""")
-    label.attr("for", id)
+    label = Widget.label(id)
     label.text(title)
 
     container.append(input, label)
@@ -164,7 +198,7 @@ class ViewSelector
   renderStr: ->
     container = $("<div>")
 
-    toggle = $("""<button type="button">""")
+    toggle = Widget.button(null, "default")
     toggle.text("Toggle views")
     toggle.click(() => @onToggleViews())
     container.append(toggle)
@@ -328,11 +362,11 @@ class QueryBuilder
   onExecPlain: ->
     postData = @_postData()
 
-    filter = $("""<input type="hidden" name="filter">""")
+    filter = Widget.hidden("filter")
     filter.val(postData.filter)
     @uiForm.append(filter)
 
-    views = $("""<input type="hidden" name="view">""")
+    views = Widget.hidden("view")
     views.val(postData.view)
     @uiForm.append(views)
 
