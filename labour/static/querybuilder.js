@@ -228,7 +228,7 @@
       this.filterIds = {};
       this.filterList = [];
       this.uiDebug = null;
-      this.disableSelect = false;
+      this._disableSelect = false;
       this._data = backendData;
       this.viewSelector = null;
       this.backendUrl = null;
@@ -273,14 +273,14 @@
 
     QueryBuilder.prototype.onSelect = function() {
       var filterUi, flt, flt_type, selected_id, type;
-      if (this.disableSelect) {
+      if (this._disableSelect) {
         return;
       }
       selected_id = this.uiAdd.val();
-      this.disableSelect = true;
+      this._disableSelect = true;
       this.uiAdd.find("option:selected").removeAttr("selected");
       this.uiAdd.children(":first").attr("selected", "selected");
-      this.disableSelect = false;
+      this._disableSelect = false;
       type = this._data.getFilterDefById(selected_id);
       filterUi = null;
       flt = null;

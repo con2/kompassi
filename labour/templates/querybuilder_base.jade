@@ -3,17 +3,17 @@
 form(method='post', role='form', id='query_builder_form')
     if debug
         - csrf_token
-label(for='add_query_filter')
-    | Add filter
+label(for='add_query_filter') Lisää suodatin
 select(id='add_query_filter')
     option(disabled='disabled', selected='selected') ---
     for key, filter in query_builder_filters
         option(value=key) {{ query_builder_titles|get_item:key }}
-pre(id='query_debug')
-button(type="button", onclick="query_builder.onUpdateDebug();") Update
-button(type="button", onclick="query_builder.onExec();") Exec
 if debug
-    button(type="button", onclick="query_builder.onExecPlain();") DEBUG-Submit
+    pre(id='query_debug')
+    button.btn.btn-default(type="button", onclick="query_builder.onUpdateDebug();") Update filter debug
+button.btn.btn-primary(type="button", onclick="query_builder.onExec();") Päivitä tulokset
+if debug
+    button.btn.btn-default(type="button", onclick="query_builder.onExecPlain();") DEBUG-Submit
 #query_builder_views
 
 table.table.table-striped#query_results

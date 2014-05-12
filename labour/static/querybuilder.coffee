@@ -211,7 +211,7 @@ class QueryBuilder
     @filterIds = {}  # Map containing index numbers for added filters.
     @filterList = []  # List containing the actual filters.
     @uiDebug = null  # Debug output node.
-    @disableSelect = false  # Flag to prevent recursive change-events.
+    @_disableSelect = false  # Flag to prevent recursive change-events.
     @_data = backendData
     @viewSelector = null
 
@@ -247,15 +247,15 @@ class QueryBuilder
     @backendUrl = url
 
   onSelect: ->
-    return if @disableSelect
+    return if @_disableSelect
 
     selected_id = @uiAdd.val()
 
     # Change selection back to initial "---"
-    @disableSelect = true
+    @_disableSelect = true
     @uiAdd.find("option:selected").removeAttr("selected")
     @uiAdd.children(":first").attr("selected", "selected")
-    @disableSelect = false
+    @_disableSelect = false
 
     type = @_data.getFilterDefById(selected_id)
     filterUi = null

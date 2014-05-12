@@ -130,7 +130,7 @@
     }
 
     StringFilter.prototype.createMode = function(id) {
-      return "<select id=\"" + id + "\" " + (this.createDebugAttr()) + ">\n  <option value=\"contains\" selected=\"selected\">Sisältää</option>\n  <option value=\"!contains\">Ei sisällä</option>\n  <option value=\"startswith\">Alkaa</option>\n  <option value=\"endswith\">Päättyy</option>\n  <option value=\"is\">On</option>\n  <option value=\"!is\">Ei ole</option>\n  <option value=\"regex\">Regex</option>\n  <option value=\"!regex\">Ei regex</option>\n</select>";
+      return "<select id=\"" + id + "\" " + (this.createDebugAttr()) + ">\n  <option value=\"contains\" selected=\"selected\">Sisältää</option>\n  <option value=\"!contains\">Ei sisällä</option>\n  <option value=\"startswith\">Alkaa</option>\n  <option value=\"endswith\">Päättyy</option>\n  <option value=\"exact\">On</option>\n  <option value=\"!exact\">Ei ole</option>\n  <option value=\"regex\">Regex</option>\n  <option value=\"!regex\">Ei regex</option>\n</select>";
     };
 
     StringFilter.prototype.createInput = function(id) {

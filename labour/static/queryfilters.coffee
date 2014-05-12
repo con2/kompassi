@@ -114,8 +114,8 @@ class StringFilter extends QueryFilter
       <option value="!contains">Ei sisällä</option>
       <option value="startswith">Alkaa</option>
       <option value="endswith">Päättyy</option>
-      <option value="is">On</option>
-      <option value="!is">Ei ole</option>
+      <option value="exact">On</option>
+      <option value="!exact">Ei ole</option>
       <option value="regex">Regex</option>
       <option value="!regex">Ei regex</option>
     </select>
