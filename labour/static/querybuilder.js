@@ -359,7 +359,7 @@
     };
 
     QueryBuilder.prototype.onSelect = function() {
-      var filterUi, flt, flt_type, selected_id, type;
+      var container, flt, flt_type, selected_id, type;
       if (this._disableSelect) {
         return;
       }
@@ -369,22 +369,22 @@
       this.uiAdd.children(":first").attr("selected", "selected");
       this._disableSelect = false;
       type = this._data.getFilterDefById(selected_id);
-      filterUi = null;
       flt = null;
       flt_type = QFilterManager.instance().findFilter(type);
       if (flt_type != null) {
         flt = this.newFilter(flt_type, selected_id, type);
       }
+      container = $("<div>");
       if (flt === null) {
-        filterUi = "Type " + type + " not supported.";
+        container.text("Data type '" + type + "' is currently not supported.");
       } else {
         if (this.uiDebug != null) {
           flt.setDebug("window.query_builder.onUpdateDebug();");
         }
-        filterUi = flt.createUi();
+        container.append(flt.title(), flt.createUi());
         this.filterList.push(flt);
       }
-      return this.uiForm.append($("<div>").append(flt.title(), filterUi));
+      return this.uiForm.append(container);
     };
 
     QueryBuilder.prototype.newFilter = function(flt_type, selected_id, type) {

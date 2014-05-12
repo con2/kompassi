@@ -292,24 +292,24 @@ class QueryBuilder
     @_disableSelect = false
 
     type = @_data.getFilterDefById(selected_id)
-    filterUi = null
     flt = null
 
     flt_type = QFilterManager.instance().findFilter(type)
     if flt_type?
       flt = @newFilter(flt_type, selected_id, type)
 
+    container = $("<div>")
     if flt == null
-      filterUi = "Type #{type} not supported."
+      container.text("Data type '#{type}' is currently not supported.")
     else
       if @uiDebug?
         # Attach debug handler if debug place is defined.
         flt.setDebug("window.query_builder.onUpdateDebug();")
 
-      filterUi = flt.createUi()
+      container.append(flt.title(), flt.createUi())
       @filterList.push(flt)
 
-    @uiForm.append($("<div>").append(flt.title(), filterUi))
+    @uiForm.append(container)
 
   newFilter: (flt_type, selected_id, type) ->
     # Create new filter by typemap.
