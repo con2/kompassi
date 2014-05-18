@@ -11,5 +11,8 @@ block extra_scripts
 
 
 block content
+    .nav.nav-tabs
+        include core_admin_menu_items.jade
+
     h2 Suodata {{ event.name_genitive }} hakemuksia
     include querybuilder_base
