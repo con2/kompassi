@@ -8,3 +8,4 @@ virtualenv/
 .bundle/
 tmp/
 .sublime-*
+node_modules/
