@@ -359,7 +359,7 @@ SIGNUP_STATE_CHOICES = [
 ]
 
 ACCEPTED_STATES = ['accepted', 'finished', 'complained']
-NONTERMINAL_STATES = ACCEPTED_STATES + ['new']
+ACTIVE_STATES = ACCEPTED_STATES + ['new']
 TERMINAL_STATES = ['rejected', 'cancelled']
 PROCESSED_STATES = ACCEPTED_STATES + TERMINAL_STATES
 SIGNUP_STATE_LABEL_CLASSES = dict(
@@ -484,6 +484,13 @@ class Signup(models.Model):
 
         return labels
 
+    @property
+    def is_accepted(self):
+        return self.state in ACCEPTED_STATES
+
+    @property
+    def is_active(self):
+        return self.state in ACTIVE_STATES
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -506,7 +513,7 @@ class Signup(models.Model):
 
         meta = self.event.labour_event_meta
 
-        if new_state in NONTERMINAL_STATES:
+        if new_state in ACTIVE_STATES:
             ensure_user_is_member_of_group(self.person, meta.applicants_group)
 
         if new_state in ACCEPTED_STATES:
