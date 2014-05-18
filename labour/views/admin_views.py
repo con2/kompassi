@@ -232,9 +232,14 @@ def labour_admin_menu_items(request, event):
     # roster_active = request.path == roster_url
     # roster_text = u"Työvuorojen suunnittelu"
 
+    query_url = url('labour_admin_query', event.slug)
+    query_active = request.path == query_url
+    query_text = u"Hakemusten suodatus"
+
     return [
         (dashboard_active, dashboard_url, dashboard_text),
         (signups_active, signups_url, signups_text),
         (mail_active, mail_url, mail_text),
         # (roster_active, roster_url, roster_text),
+        (query_active, query_url, query_text),
     ]

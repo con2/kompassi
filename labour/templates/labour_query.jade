@@ -1,0 +1,15 @@
+extends base
+block extra_scripts
+    script(src='{{ STATIC_URL }}csrf.js')
+    script(src='{{ STATIC_URL }}querybuilder.js')
+    script(src='{{ STATIC_URL }}queryfilters.js')
+    include querybuilder_init.html
+    style(type="text/css")
+        .view-hidden {
+            display: none;
+        }
+
+
+block content
+    h2 Suodata {{ event.name_genitive }} hakemuksia
+    include querybuilder_base

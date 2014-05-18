@@ -51,4 +51,14 @@ urlpatterns = patterns('',
         labour_admin_mail_editor_view,
         name='labour_admin_mail_editor_view'
     ),
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/query$',
+        query_index,
+        name='labour_admin_query'
+    ),
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/query/data$',
+        query_exec,
+        name='labour_admin_query_exec'
+    ),
 )
