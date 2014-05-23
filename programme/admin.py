@@ -41,7 +41,8 @@ class ProgrammeAdmin(admin.ModelAdmin):
 
 
 class ViewAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('event', 'name', 'public')
+    list_filter = ('event',)
 
 
 class RoomAdmin(admin.ModelAdmin):

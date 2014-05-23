@@ -387,7 +387,7 @@ class View(models.Model, ViewMethodsMixin):
     class Meta:
         verbose_name = u'ohjelmakarttanäkymä'
         verbose_name_plural = u'ohjelmakarttanäkymät'
-        ordering = ['order']
+        ordering = ['event', 'order']
 
 
 class AllRoomsPseudoView(ViewMethodsMixin):
