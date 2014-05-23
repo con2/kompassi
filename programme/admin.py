@@ -60,11 +60,16 @@ class SpecialStartTimeAdmin(admin.ModelAdmin):
     list_filter = ('event',)
 
 
+class TimeBlockAdmin(admin.ModelAdmin):
+    list_display = ('event', 'start_time', 'end_time')
+    list_filter = ('event')
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Role)
 admin.site.register(Tag)
 admin.site.register(Programme, ProgrammeAdmin)
 admin.site.register(View, ViewAdmin)
-admin.site.register(TimeBlock)
+admin.site.register(TimeBlock, TimeBlockAdmin)
 admin.site.register(SpecialStartTime, SpecialStartTimeAdmin)
