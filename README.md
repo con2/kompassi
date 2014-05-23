@@ -1,6 +1,6 @@
-# Turska, the Tracon Convention Management System
+# Kompassi Event Management System
 
-Simple web app for managing (Tra)con stuff. Work in progress.
+Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. Work in progress.
 
 ## Getting Started
 
