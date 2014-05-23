@@ -62,7 +62,7 @@ class SpecialStartTimeAdmin(admin.ModelAdmin):
 
 class TimeBlockAdmin(admin.ModelAdmin):
     list_display = ('event', 'start_time', 'end_time')
-    list_filter = ('event')
+    list_filter = ('event',)
 
 
 admin.site.register(Category, CategoryAdmin)
