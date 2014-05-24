@@ -310,6 +310,14 @@ class QueryBuilder
         # Attach debug handler if debug place is defined.
         flt.setDebug("window.query_builder.onUpdateDebug();")
 
+      # Remove-button for the container.
+      containerId = flt.id()
+      rmButton = Widget.button(null, ["default", "sm", "remove"]).text("-")
+      rmButton.click(() => @onRmFilter(containerId))
+      container.attr("id", "container_" + containerId)
+      container.append(rmButton)
+
+      # The actual UI.
       container.append(flt.title(), flt.createUi())
       @filterList.push(flt)
 
@@ -334,6 +342,17 @@ class QueryBuilder
     asJson = JSON.stringify(@_getFilter())
     asJson += "\n\n" + JSON.stringify(@_getViews())
     @uiDebug.text(asJson)
+
+  onRmFilter: (containerId) ->
+    # Remove given container from the form.
+    @uiForm.find("#container_" + containerId).remove()
+
+    # Find the same id from filter list and remove it.
+    for flt, i in @filterList
+      if flt.id() == containerId
+        @filterList.splice(i, 1)
+        return
+    console.error("ID '" + containerId + "' not found in filters.")
 
   _getFilter: ->
     result = []

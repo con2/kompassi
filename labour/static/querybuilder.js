@@ -367,7 +367,7 @@
     };
 
     QueryBuilder.prototype.onSelect = function() {
-      var container, flt, flt_type, selected_id, type;
+      var container, containerId, flt, flt_type, rmButton, selected_id, type;
       if (this._disableSelect) {
         return;
       }
@@ -389,6 +389,15 @@
         if (this.uiDebug != null) {
           flt.setDebug("window.query_builder.onUpdateDebug();");
         }
+        containerId = flt.id();
+        rmButton = Widget.button(null, ["default", "sm", "remove"]).text("-");
+        rmButton.click((function(_this) {
+          return function() {
+            return _this.onRmFilter(containerId);
+          };
+        })(this));
+        container.attr("id", "container_" + containerId);
+        container.append(rmButton);
         container.append(flt.title(), flt.createUi());
         this.filterList.push(flt);
       }
@@ -413,6 +422,20 @@
       asJson = JSON.stringify(this._getFilter());
       asJson += "\n\n" + JSON.stringify(this._getViews());
       return this.uiDebug.text(asJson);
+    };
+
+    QueryBuilder.prototype.onRmFilter = function(containerId) {
+      var flt, i, _i, _len, _ref;
+      this.uiForm.find("#container_" + containerId).remove();
+      _ref = this.filterList;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        flt = _ref[i];
+        if (flt.id() === containerId) {
+          this.filterList.splice(i, 1);
+          return;
+        }
+      }
+      return console.error("ID '" + containerId + "' not found in filters.");
     };
 
     QueryBuilder.prototype._getFilter = function() {
