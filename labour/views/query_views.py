@@ -116,6 +116,9 @@ def query_exec(request, vars, event):
 
     q_results = query_builder.exec_query()
     m_results = merge_values(list(q_results))
+    for result in m_results:
+        result["__url"] = reverse("labour_admin_signup_view", args=[event.slug, result["pk"]])
+
     convert_datetimes(m_results)
     j_results = json.dumps(m_results)
 

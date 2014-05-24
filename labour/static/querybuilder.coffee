@@ -73,7 +73,11 @@ class DefaultWidget
 class BootstrapWidget extends DefaultWidget
   button: (id=null, type=null) ->
     btn = super.button(id).addClass("btn")
-    return if type? then btn.addClass("btn-" + type) else btn
+    if type instanceof Array
+      btn.addClass("btn-" + one) for one in type
+      return btn
+    else
+      return if type? then btn.addClass("btn-" + type) else btn
 
 window.Widget = new BootstrapWidget()
 
@@ -418,7 +422,13 @@ class ResultView
       row = $("<tr>")
 
       # The ID entry.
-      row.append($("<td>").text(element["pk"]))
+      if "__url" of element
+        link = $("<a>").attr("href", element["__url"])
+        button = Widget.button(null, ["default", "xs", "info"]).text(element["pk"])
+        link.append(button)
+        row.append($("<td>").html(link))
+      else
+        row.append($("<td>").text(element["pk"]))
 
       # Selected views values.
       for field in @views

@@ -140,7 +140,7 @@
     }
 
     BootstrapWidget.prototype.button = function(id, type) {
-      var btn;
+      var btn, one, _i, _len;
       if (id == null) {
         id = null;
       }
@@ -148,10 +148,18 @@
         type = null;
       }
       btn = BootstrapWidget.__super__.button.apply(this, arguments).button(id).addClass("btn");
-      if (type != null) {
-        return btn.addClass("btn-" + type);
-      } else {
+      if (type instanceof Array) {
+        for (_i = 0, _len = type.length; _i < _len; _i++) {
+          one = type[_i];
+          btn.addClass("btn-" + one);
+        }
         return btn;
+      } else {
+        if (type != null) {
+          return btn.addClass("btn-" + type);
+        } else {
+          return btn;
+        }
       }
     };
 
@@ -498,7 +506,7 @@
     };
 
     ResultView.prototype.render = function() {
-      var content, data, element, field, formatted, row, value, _i, _j, _len, _len1, _ref, _ref1;
+      var button, content, data, element, field, formatted, link, row, value, _i, _j, _len, _len1, _ref, _ref1;
       this.rootElement.empty();
       this.rootElement.append(this.genHeader());
       data = $("<tbody>");
@@ -506,7 +514,14 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         element = _ref[_i];
         row = $("<tr>");
-        row.append($("<td>").text(element["pk"]));
+        if ("__url" in element) {
+          link = $("<a>").attr("href", element["__url"]);
+          button = Widget.button(null, ["default", "xs", "info"]).text(element["pk"]);
+          link.append(button);
+          row.append($("<td>").html(link));
+        } else {
+          row.append($("<td>").text(element["pk"]));
+        }
         _ref1 = this.views;
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           field = _ref1[_j];
