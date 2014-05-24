@@ -2,10 +2,10 @@ extends base
 block content
   if current_events
     h2 Parhaillaan käynnissä olevat tapahtumat
-      .row
-        for event in future_events
-          .col-md-3
-            include core_event_box.jade
+    .row
+      for event in future_events
+        .col-md-3
+          include core_event_box.jade
   if future_events
     h2 Tulevat tapahtumat
     .row
