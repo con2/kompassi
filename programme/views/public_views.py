@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from datetime import datetime
+import json
 
 from dateutil.tz import tzlocal
 
@@ -8,6 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
+from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.utils.timezone import now
 from django.views.decorators.cache import cache_page, cache_control
@@ -147,6 +149,64 @@ def programme_internal_adobe_taggedtext_view(request, event):
     data = data.encode('UTF-16LE')
 
     return HttpResponse(data, 'text/plain; charset=utf-16')
+
+
+@programme_event_required
+@require_GET
+def programme_internal_konopas_javascript_view(request, event):
+    program = []
+    people = {}
+
+    for programme in Programme.objects.filter(
+        category__event=event,
+        category__public=True,
+        start_time__isnull=False,
+        room__isnull=False,
+    ):
+        program.append(dict(
+            id=str(programme.pk),
+            title=programme.title,
+            tags=[programme.category.title],
+            date=programme.start_time.strftime("%Y-%m-%d"),
+            time="00:00", # TODO
+            mins=programme.length,
+            loc=[programme.room.title],
+            people=[dict(
+                id=person.pk,
+                name=person.display_name,
+            ) for person in programme.organizers.all()],
+            desc=programme.description,
+        ))
+
+        for person in programme.organizers.all():
+            if person.name_display_style == 'nick':
+                name_list = [person.nick, "", "", ""]
+            else:
+                name_list = [person.surname, person.last_name, "", ""]
+
+            people[str(person.pk)] = dict(
+                id=str(person.pk),
+                name=name_list,
+                tags=[],
+                prog=[str(prog.pk) for prog in person.programme_set.filter(
+                    category__event=event,
+                    category__public=True,
+                    start_time__isnull=False,
+                    room__isnull=False,
+                )],
+                links={},
+                bio="",
+            )
+
+    context = RequestContext(request, dict(
+        program=json.dumps(program),
+        people=json.dumps(people),
+    ))
+
+    return TemplateResponse(request, 'programme_internal_konopas_javascript_view.js',
+        context=context,
+        content_type='application/javascript',
+    )
 
 
 @programme_event_required
