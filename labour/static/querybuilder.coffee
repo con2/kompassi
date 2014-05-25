@@ -252,6 +252,7 @@ class QueryBuilder
     @_disableSelect = false  # Flag to prevent recursive change-events.
     @_data = backendData
     @viewSelector = null
+    @_showID = false
 
     @backendUrl = null
 
@@ -398,7 +399,19 @@ class QueryBuilder
 
   onDataResult: (data, status, xhdr) ->
     view = new ResultView(@uiResults, @_data, @queriedViews, data)
+    view.showID = @_showID
     view.render()
+
+  onToggleIDVisibility: (selfID) ->
+    @_showID = not @_showID
+    return unless selfID?
+    self = $("#" + selfID)
+    if @_showID
+      self.addClass("btn-success")
+      self.removeClass("btn-default")
+    else
+      self.addClass("btn-default")
+      self.removeClass("btn-success")
 
 
 # Class repsonsible of rendering query results to result table.
@@ -409,6 +422,7 @@ class ResultView
     @views = views  # list[str] of selected view_names
     @resultData = data  # list[dict[str,?]] of result list with dict of view_names:values
     @formatter = new ValueFormatter(backendData)
+    @showID = false
 
   # Generate table header.
   genHeader: ->
@@ -417,7 +431,8 @@ class ResultView
     output = $("<thead>")
 
     row = $("<tr>")
-    row.append($("<th>").text("ID"))
+    if @showID
+      row.append($("<th>").text("ID"))
 
     # The selected views headings.
     for field in @views
@@ -442,19 +457,22 @@ class ResultView
 
       # The ID entry.
       if "__url" of element
-        link = $("<a>").attr("href", element["__url"])
-        button = Widget.button(null, ["default", "xs", "info"]).text(element["pk"])
-        link.append(button)
-        row.append($("<td>").html(link))
+        link = element["__url"]
+        linkFn = (container, text) ->
+          container.append($("<a>").attr("href", link).text(text))
       else
-        row.append($("<td>").text(element["pk"]))
+        linkFn = (container, text) ->
+          container.text(text)
+
+      if @showID
+        row.append(linkFn($("<td>"), element["pk"]))
 
       # Selected views values.
       for field in @views
         value = element[field]  # TODO: Process special values from filter table.
         content = $("<td>")
         formatted = @formatter.format(field, value)
-        content.text(formatted)
+        linkFn(content, formatted)
         row.append(content)
       data.append(row)
 

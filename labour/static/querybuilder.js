@@ -326,6 +326,7 @@
       this._disableSelect = false;
       this._data = backendData;
       this.viewSelector = null;
+      this._showID = false;
       this.backendUrl = null;
     }
 
@@ -496,7 +497,24 @@
     QueryBuilder.prototype.onDataResult = function(data, status, xhdr) {
       var view;
       view = new ResultView(this.uiResults, this._data, this.queriedViews, data);
+      view.showID = this._showID;
       return view.render();
+    };
+
+    QueryBuilder.prototype.onToggleIDVisibility = function(selfID) {
+      var self;
+      this._showID = !this._showID;
+      if (selfID == null) {
+        return;
+      }
+      self = $("#" + selfID);
+      if (this._showID) {
+        self.addClass("btn-success");
+        return self.removeClass("btn-default");
+      } else {
+        self.addClass("btn-default");
+        return self.removeClass("btn-success");
+      }
     };
 
     return QueryBuilder;
@@ -510,13 +528,16 @@
       this.views = views;
       this.resultData = data;
       this.formatter = new ValueFormatter(backendData);
+      this.showID = false;
     }
 
     ResultView.prototype.genHeader = function() {
       var content, field, output, row, title, _i, _len, _ref;
       output = $("<thead>");
       row = $("<tr>");
-      row.append($("<th>").text("ID"));
+      if (this.showID) {
+        row.append($("<th>").text("ID"));
+      }
       _ref = this.views;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         field = _ref[_i];
@@ -529,7 +550,7 @@
     };
 
     ResultView.prototype.render = function() {
-      var button, content, data, element, field, formatted, link, row, value, _i, _j, _len, _len1, _ref, _ref1;
+      var content, data, element, field, formatted, link, linkFn, row, value, _i, _j, _len, _len1, _ref, _ref1;
       this.rootElement.empty();
       this.rootElement.append(this.genHeader());
       data = $("<tbody>");
@@ -538,12 +559,17 @@
         element = _ref[_i];
         row = $("<tr>");
         if ("__url" in element) {
-          link = $("<a>").attr("href", element["__url"]);
-          button = Widget.button(null, ["default", "xs", "info"]).text(element["pk"]);
-          link.append(button);
-          row.append($("<td>").html(link));
+          link = element["__url"];
+          linkFn = function(container, text) {
+            return container.append($("<a>").attr("href", link).text(text));
+          };
         } else {
-          row.append($("<td>").text(element["pk"]));
+          linkFn = function(container, text) {
+            return container.text(text);
+          };
+        }
+        if (this.showID) {
+          row.append(linkFn($("<td>"), element["pk"]));
         }
         _ref1 = this.views;
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -551,7 +577,7 @@
           value = element[field];
           content = $("<td>");
           formatted = this.formatter.format(field, value);
-          content.text(formatted);
+          linkFn(content, formatted);
           row.append(content);
         }
         data.append(row);
