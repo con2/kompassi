@@ -156,6 +156,74 @@ QFilterManager.instance()
 window.QFilterManager = QFilterManager
 
 
+# Filter select renderer. This is attached to existing <select> element.
+# If group information is present, option groups are rendered too and their group order is used. Otherwise, plain
+# backend order is used.
+class FilterSelector
+
+  # @param container [$] The <select> element to be rendered.
+  constructor: (container) ->
+    @container = container
+
+  # @param backendData [BackendData] Existing backend data container.
+  setBackendData: (backendData) ->
+    @backendData = backendData
+
+  # Clear and render the select contents.
+  render: ->
+    # Clear and add the default item.
+    @container.empty()
+    @container.append($("<option>").text("---"))
+
+    # Determine whether to use grouped render, or plain render.
+    groups = @backendData.getViewGroups()
+    if not groups? or groups.length == 0
+      @_renderPlain()
+    else
+      @_renderGroups()
+
+  # Plain option list render.
+  # @private
+  _renderPlain: ->
+
+    # Over whole title order, add titles that are also filters.
+    for i in [0...@backendData.getTitleCount()]
+      titleId = @backendData.getTitleIdByIndex(i)
+      continue unless @backendData.getFilterDefById(titleId)?
+
+      # A filter. Add its option.
+      title = @backendData.getTitleById(titleId)
+      item = $("<option>").text(title).prop("value", titleId)
+      @container.append(item)
+    return
+
+  # Grouped option list render.
+  # @private
+  _renderGroups: ->
+
+    # Over groups, add group if group contains any items, and the items itself if they are also filters.
+    for groupConfig in @backendData.getViewGroups()
+      groupTitle = groupConfig[0]
+      columns = if groupConfig[1] instanceof Array then groupConfig[1] else groupConfig[1..]
+      group = $("<optgroup>").prop("label", groupTitle)
+      anyItem = false
+
+      for column in columns
+        continue unless @backendData.getFilterDefById(column)?
+
+        # Item in group. Add the item and update flag so the whole group will be added to the select.
+        anyItem = true
+        item = $("<option>")
+        item.text(@backendData.getTitleById(column))
+        item.prop("value", column)
+        group.append(item)
+
+      # Add the group only if it is not empty.
+      @container.append(group) if anyItem
+    return
+
+
+
 # Class for view selection generation and parsing.
 # Selected views are displayed in the result set.
 class ViewSelector
@@ -277,6 +345,9 @@ class QueryBuilder
   attachAdd: (@uiAddId) ->
     @uiAdd = $(uiAddId)
     @uiAdd.change(() => @onSelect())
+    selector = new FilterSelector(@uiAdd)
+    selector.setBackendData(@_data)
+    selector.render()
 
   # Attach form to the controller.
   # This is used for destination for the filter ui.
