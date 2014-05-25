@@ -3,7 +3,8 @@
   var BackendData, BootstrapWidget, DefaultWidget, QFilterManager, QueryBuilder, ResultView, ValueFormatter, ViewSelector,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __slice = [].slice;
+    __slice = [].slice,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   BackendData = (function() {
     function BackendData(filterDefs, titleMap) {
@@ -38,6 +39,14 @@
         _results.push(this._order.push(key));
       }
       return _results;
+    };
+
+    BackendData.prototype.setViewGroups = function(groupConfig) {
+      return this._groupConfig = groupConfig;
+    };
+
+    BackendData.prototype.getViewGroups = function() {
+      return this._groupConfig;
     };
 
     BackendData.prototype.getTitleById = function(id) {
@@ -546,28 +555,59 @@
       this.showID = false;
     }
 
-    ResultView.prototype.genHeader = function() {
-      var content, field, output, row, title, _i, _len, _ref;
+    ResultView.prototype._genGroup = function(root, groups, itemCount, title) {
+      var th;
+      if (title == null) {
+        title = null;
+      }
+      root.append($("<colgroup>").prop("span", itemCount));
+      th = $("<th>").prop("colspan", itemCount);
+      if (title != null) {
+        th.text(title);
+      }
+      return groups.append(th);
+    };
+
+    ResultView.prototype.genHeader = function(to) {
+      var columns, content, groupConfig, groupTitle, groups, item, itemCount, output, title, titles, _i, _j, _len, _len1, _order, _ref;
       output = $("<thead>");
-      row = $("<tr>");
+      groups = $("<tr>");
+      titles = $("<tr>");
+      _order = [];
       if (this.showID) {
-        row.append($("<th>").text("ID"));
+        titles.append($("<th>").text("ID"));
+        this._genGroup(to, groups, 1);
       }
-      _ref = this.views;
+      _ref = this._data.getViewGroups();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        field = _ref[_i];
-        title = this._data.getTitleById(field);
-        content = $("<th>").text(title);
-        row.append(content);
+        groupConfig = _ref[_i];
+        groupTitle = groupConfig[0];
+        itemCount = 0;
+        columns = groupConfig[1] instanceof Array ? groupConfig[1] : groupConfig.slice(1);
+        for (_j = 0, _len1 = columns.length; _j < _len1; _j++) {
+          item = columns[_j];
+          if (__indexOf.call(this.views, item) >= 0) {
+            _order.push(item);
+            itemCount++;
+            title = this._data.getTitleById(item);
+            content = $("<th>").text(title);
+            titles.append(content);
+          }
+        }
+        if (itemCount > 0) {
+          this._genGroup(to, groups, itemCount, groupTitle);
+        }
       }
-      output.append(row);
-      return output;
+      output.append(groups);
+      output.append(titles);
+      to.append(output);
+      return _order;
     };
 
     ResultView.prototype.render = function() {
-      var content, data, element, field, formatted, link, linkFn, row, value, _i, _j, _len, _len1, _ref, _ref1;
+      var content, data, element, field, formatted, link, linkFn, row, value, _i, _j, _len, _len1, _order, _ref;
       this.rootElement.empty();
-      this.rootElement.append(this.genHeader());
+      _order = this.genHeader(this.rootElement.append());
       data = $("<tbody>");
       _ref = this.resultData;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -586,9 +626,8 @@
         if (this.showID) {
           row.append(linkFn($("<td>"), element["pk"]));
         }
-        _ref1 = this.views;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          field = _ref1[_j];
+        for (_j = 0, _len1 = _order.length; _j < _len1; _j++) {
+          field = _order[_j];
           value = element[field];
           content = $("<td>");
           formatted = this.formatter.format(field, value);

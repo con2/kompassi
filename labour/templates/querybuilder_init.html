@@ -3,12 +3,15 @@
         setupAjax();
         var query_filter_def = {{ query_builder_data_filters|safe }};
         var query_filter_titles = {{ query_builder_data_titles|safe }};
+        var query_view_groups = {{ query_builder_view_groups|safe }};
 
         var backend_data = new BackendData();
         //noinspection JSUnusedAssignment
         backend_data.setFilterDefs(query_filter_def);
         //noinspection JSUnusedAssignment
         backend_data.setTitleMap(query_filter_titles);
+        //noinspection JSUnusedAssignment
+        backend_data.setViewGroups(query_view_groups);
 
         var query_builder = new QueryBuilder(backend_data);
         query_builder.setBackend("{% url "labour_admin_query_exec" event.slug %}");

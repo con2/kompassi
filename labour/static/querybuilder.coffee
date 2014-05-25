@@ -19,6 +19,12 @@ class BackendData
       @_titleMap[key] = title
       @_order.push(key)
 
+  setViewGroups: (groupConfig) ->
+    @_groupConfig = groupConfig
+
+  getViewGroups: ->
+    @_groupConfig
+
   getTitleById: (id) ->
     return @_titleMap[id]
 
@@ -433,31 +439,77 @@ class ResultView
     @formatter = new ValueFormatter(backendData)
     @showID = false
 
+  # Generate colgroup and th entries.
+  #
+  # @param root [$] Table container where colgroup is added.
+  # @param groups [$] THead container where th is added.
+  # @param itemCount [Integer] Number of columns in the group.
+  # @param title [String, optional] Title for the group.
+  _genGroup: (root, groups, itemCount, title=null) ->
+    root.append($("<colgroup>").prop("span", itemCount))
+    th = $("<th>").prop("colspan", itemCount)
+    th.text(title) if title?
+    groups.append(th)
+
   # Generate table header.
-  genHeader: ->
+  #
+  # @param to [$] Table container where thead and colgroups are added.
+  genHeader: (to) ->
     # Create table header element.
-    # thead>tr>th*N  where N is 1 + count(selected views)
+    # thead>tr>th*N  where N is count(selected views) (+ optional ID column)
     output = $("<thead>")
 
-    row = $("<tr>")
+    # Headings for column groups.
+    groups = $("<tr>")
+
+    # Headings for individual columns
+    titles = $("<tr>")
+
+    # Key order defined in backend containing only keys that were selected for the query.
+    _order = []
+
     if @showID
-      row.append($("<th>").text("ID"))
+      # Optional ID column.
+      titles.append($("<th>").text("ID"))
+      @_genGroup(to, groups, 1)
 
-    # The selected views headings.
-    for field in @views
-      title = @_data.getTitleById(field)
-      content = $("<th>").text(title)
-      row.append(content)
+    # Iterate through backend group order and find out which groups are visible in the result, and in which
+    # order the items should be presented in the table.
+    for groupConfig in @_data.getViewGroups()
+      groupTitle = groupConfig[0]
+      itemCount = 0
 
-    output.append(row)
-    return output
+      # Either use given array, or the rest of the list.
+      # [title, [item, item..]]  or  [title, item, item..]
+      columns = if groupConfig[1] instanceof Array then groupConfig[1] else groupConfig[1..]
+      for item in columns
+
+        # If the backend column is in the result set, add relevant contents to results.
+        if item in @views
+          _order.push(item)
+          itemCount++
+
+          # Single column title.
+          title = @_data.getTitleById(item)
+          content = $("<th>").text(title)
+          titles.append(content)
+
+      if itemCount > 0
+        # Column group heading generation.
+        @_genGroup(to, groups, itemCount, groupTitle)
+
+    # Add both rows of headings to thead container.
+    output.append(groups)
+    output.append(titles)
+    to.append(output)
+    return _order
 
   # Render the results to table.
   render: ->
     # Empty the result element.
     # table>tbody+thead
     @rootElement.empty()
-    @rootElement.append(@genHeader())
+    _order = @genHeader(@rootElement.append())
 
     # tbody>tr>td*N
     data = $("<tbody>")
@@ -477,7 +529,7 @@ class ResultView
         row.append(linkFn($("<td>"), element["pk"]))
 
       # Selected views values.
-      for field in @views
+      for field in _order
         value = element[field]  # TODO: Process special values from filter table.
         content = $("<td>")
         formatted = @formatter.format(field, value)
