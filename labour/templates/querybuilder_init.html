@@ -16,6 +16,9 @@
         query_builder.attachAdd("#add_query_filter");
         query_builder.attachForm("#query_builder_form");
         query_builder.attachViewSelect("#query_builder_views");
+        {% for key in query_builder_default_views %}
+            query_builder.viewSelector.setEnabled("{{ key }}");
+        {% endfor %}
         {% if debug %}
         query_builder.attachDebug("#query_debug");
         {% endif %}

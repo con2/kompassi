@@ -45,6 +45,7 @@ def get_query_config(vars, query_builder):
         query_builder_data_titles=json.dumps(ordered_titles),
         query_builder_filters=ordered_fields,
         query_builder_titles=titles,
+        query_builder_default_views=query_builder.default_views,
     )
 
 

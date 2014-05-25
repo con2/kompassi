@@ -152,3 +152,8 @@ class Signup9(QueryBuilder):
     view_related_filter = {
         "signup__person": ("first_name", "surname", "nick", "birth_date", "email", "phone",),
     }
+    default_views = [
+        "signup__person__first_name",
+        "signup__person__surname",
+        "signup__person__nick",
+    ]

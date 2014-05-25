@@ -172,6 +172,7 @@ class ViewSelector
   # @param container [JQuery-object] Root object that will contain the view selectors.
   constructor: (container) ->
     @container = container
+    @keyToId = {}
 
   # @param backendData [BackendData] Data from backend.
   setViews: (backendData) ->
@@ -215,6 +216,7 @@ class ViewSelector
       title = @_data.getTitleById(key)
       id = @constructor.idGen(i)
       views.append(@_renderOne(title, id, key))
+      @keyToId[key] = id
 
     container.append(views)
     return container
@@ -237,6 +239,13 @@ class ViewSelector
   onToggleViews: ->
     container = $("#" + @constructor.idGen())
     container.toggleClass(@constructor.hiddenClass)
+
+  setEnabled: (viewKey, enabled=true) ->
+    if viewKey not of @keyToId
+      console.error("Key " + viewKey + " is not in key list.")
+      return
+    id = @keyToId[viewKey]
+    $("#" + id).prop("checked", enabled)
 
 
 # The actual front end Query Builder.

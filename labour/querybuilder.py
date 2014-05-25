@@ -127,6 +127,11 @@ class QueryBuilder(object):
     Django Model to create QueryBuilder on.
     """
 
+    default_views = []
+    """
+    List of view names set visible by default.
+    """
+
     # Adapted from https://djangosnippets.org/snippets/676/
     def build_query_filter_from_spec(self, spec):
         """

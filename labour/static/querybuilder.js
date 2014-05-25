@@ -250,6 +250,7 @@
 
     function ViewSelector(container) {
       this.container = container;
+      this.keyToId = {};
     }
 
     ViewSelector.prototype.setViews = function(backendData) {
@@ -288,6 +289,7 @@
         title = this._data.getTitleById(key);
         id = this.constructor.idGen(i);
         views.append(this._renderOne(title, id, key));
+        this.keyToId[key] = id;
       }
       container.append(views);
       return container;
@@ -312,6 +314,19 @@
       var container;
       container = $("#" + this.constructor.idGen());
       return container.toggleClass(this.constructor.hiddenClass);
+    };
+
+    ViewSelector.prototype.setEnabled = function(viewKey, enabled) {
+      var id;
+      if (enabled == null) {
+        enabled = true;
+      }
+      if (!(viewKey in this.keyToId)) {
+        console.error("Key " + viewKey + " is not in key list.");
+        return;
+      }
+      id = this.keyToId[viewKey];
+      return $("#" + id).prop("checked", enabled);
     };
 
     return ViewSelector;
