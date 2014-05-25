@@ -45,6 +45,8 @@ def get_query_config(vars, query_builder):
         query_builder_data_titles=json.dumps(ordered_titles),
         query_builder_filters=ordered_fields,
         query_builder_titles=titles,
+        query_builder_default_views=query_builder.default_views,
+        query_builder_view_groups=json.dumps(query_builder.view_groups),
     )
 
 
@@ -116,6 +118,9 @@ def query_exec(request, vars, event):
 
     q_results = query_builder.exec_query()
     m_results = merge_values(list(q_results))
+    for result in m_results:
+        result["__url"] = reverse("labour_admin_signup_view", args=[event.slug, result["pk"]])
+
     convert_datetimes(m_results)
     j_results = json.dumps(m_results)
 

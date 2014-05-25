@@ -14,6 +14,7 @@ if debug
 button.btn.btn-primary(type="button", onclick="query_builder.onExec();") Päivitä tulokset
 if debug
     button.btn.btn-default(type="button", onclick="query_builder.onExecPlain();") DEBUG-Submit
+    button.btn.btn-default#qb_toggle_id_vis(type="button", onclick="query_builder.onToggleIDVisibility('qb_toggle_id_vis');") ID
 #query_builder_views
 
-table.table.table-striped#query_results
+table.table.table-striped.table-hover.table-condensed.table-bordered.table-grouped#query_results

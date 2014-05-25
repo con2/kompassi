@@ -19,6 +19,12 @@ class BackendData
       @_titleMap[key] = title
       @_order.push(key)
 
+  setViewGroups: (groupConfig) ->
+    @_groupConfig = groupConfig
+
+  getViewGroups: ->
+    @_groupConfig
+
   getTitleById: (id) ->
     return @_titleMap[id]
 
@@ -73,7 +79,11 @@ class DefaultWidget
 class BootstrapWidget extends DefaultWidget
   button: (id=null, type=null) ->
     btn = super.button(id).addClass("btn")
-    return if type? then btn.addClass("btn-" + type) else btn
+    if type instanceof Array
+      btn.addClass("btn-" + one) for one in type
+      return btn
+    else
+      return if type? then btn.addClass("btn-" + type) else btn
 
 window.Widget = new BootstrapWidget()
 
@@ -146,6 +156,74 @@ QFilterManager.instance()
 window.QFilterManager = QFilterManager
 
 
+# Filter select renderer. This is attached to existing <select> element.
+# If group information is present, option groups are rendered too and their group order is used. Otherwise, plain
+# backend order is used.
+class FilterSelector
+
+  # @param container [$] The <select> element to be rendered.
+  constructor: (container) ->
+    @container = container
+
+  # @param backendData [BackendData] Existing backend data container.
+  setBackendData: (backendData) ->
+    @backendData = backendData
+
+  # Clear and render the select contents.
+  render: ->
+    # Clear and add the default item.
+    @container.empty()
+    @container.append($("<option>").text("---"))
+
+    # Determine whether to use grouped render, or plain render.
+    groups = @backendData.getViewGroups()
+    if not groups? or groups.length == 0
+      @_renderPlain()
+    else
+      @_renderGroups()
+
+  # Plain option list render.
+  # @private
+  _renderPlain: ->
+
+    # Over whole title order, add titles that are also filters.
+    for i in [0...@backendData.getTitleCount()]
+      titleId = @backendData.getTitleIdByIndex(i)
+      continue unless @backendData.getFilterDefById(titleId)?
+
+      # A filter. Add its option.
+      title = @backendData.getTitleById(titleId)
+      item = $("<option>").text(title).prop("value", titleId)
+      @container.append(item)
+    return
+
+  # Grouped option list render.
+  # @private
+  _renderGroups: ->
+
+    # Over groups, add group if group contains any items, and the items itself if they are also filters.
+    for groupConfig in @backendData.getViewGroups()
+      groupTitle = groupConfig[0]
+      columns = if groupConfig[1] instanceof Array then groupConfig[1] else groupConfig[1..]
+      group = $("<optgroup>").prop("label", groupTitle)
+      anyItem = false
+
+      for column in columns
+        continue unless @backendData.getFilterDefById(column)?
+
+        # Item in group. Add the item and update flag so the whole group will be added to the select.
+        anyItem = true
+        item = $("<option>")
+        item.text(@backendData.getTitleById(column))
+        item.prop("value", column)
+        group.append(item)
+
+      # Add the group only if it is not empty.
+      @container.append(group) if anyItem
+    return
+
+
+
 # Class for view selection generation and parsing.
 # Selected views are displayed in the result set.
 class ViewSelector
@@ -155,7 +233,7 @@ class ViewSelector
 
   # Dom class name for use with hidden view list.
   # The class must specify display:none attribute.
-  @hiddenClass: "view-hidden"
+  @hiddenClass: "hidden"
 
   # Static input id generator.
   # @param i [String | Integer, optional] Index or identifier for certain input.
@@ -168,6 +246,7 @@ class ViewSelector
   # @param container [JQuery-object] Root object that will contain the view selectors.
   constructor: (container) ->
     @container = container
+    @keyToId = {}
 
   # @param backendData [BackendData] Data from backend.
   setViews: (backendData) ->
@@ -211,6 +290,7 @@ class ViewSelector
       title = @_data.getTitleById(key)
       id = @constructor.idGen(i)
       views.append(@_renderOne(title, id, key))
+      @keyToId[key] = id
 
     container.append(views)
     return container
@@ -234,6 +314,13 @@ class ViewSelector
     container = $("#" + @constructor.idGen())
     container.toggleClass(@constructor.hiddenClass)
 
+  setEnabled: (viewKey, enabled=true) ->
+    if viewKey not of @keyToId
+      console.error("Key " + viewKey + " is not in key list.")
+      return
+    id = @keyToId[viewKey]
+    $("#" + id).prop("checked", enabled)
+
 
 # The actual front end Query Builder.
 # This class is made available via window.
@@ -248,6 +335,7 @@ class QueryBuilder
     @_disableSelect = false  # Flag to prevent recursive change-events.
     @_data = backendData
     @viewSelector = null
+    @_showID = false
 
     @backendUrl = null
 
@@ -257,6 +345,9 @@ class QueryBuilder
   attachAdd: (@uiAddId) ->
     @uiAdd = $(uiAddId)
     @uiAdd.change(() => @onSelect())
+    selector = new FilterSelector(@uiAdd)
+    selector.setBackendData(@_data)
+    selector.render()
 
   # Attach form to the controller.
   # This is used for destination for the filter ui.
@@ -306,6 +397,14 @@ class QueryBuilder
         # Attach debug handler if debug place is defined.
         flt.setDebug("window.query_builder.onUpdateDebug();")
 
+      # Remove-button for the container.
+      containerId = flt.id()
+      rmButton = Widget.button(null, ["default", "sm", "remove"]).text("-")
+      rmButton.click(() => @onRmFilter(containerId))
+      container.attr("id", "container_" + containerId)
+      container.append(rmButton)
+
+      # The actual UI.
       container.append(flt.title(), flt.createUi())
       @filterList.push(flt)
 
@@ -330,6 +429,17 @@ class QueryBuilder
     asJson = JSON.stringify(@_getFilter())
     asJson += "\n\n" + JSON.stringify(@_getViews())
     @uiDebug.text(asJson)
+
+  onRmFilter: (containerId) ->
+    # Remove given container from the form.
+    @uiForm.find("#container_" + containerId).remove()
+
+    # Find the same id from filter list and remove it.
+    for flt, i in @filterList
+      if flt.id() == containerId
+        @filterList.splice(i, 1)
+        return
+    console.error("ID '" + containerId + "' not found in filters.")
 
   _getFilter: ->
     result = []
@@ -375,7 +485,19 @@ class QueryBuilder
 
   onDataResult: (data, status, xhdr) ->
     view = new ResultView(@uiResults, @_data, @queriedViews, data)
+    view.showID = @_showID
     view.render()
+
+  onToggleIDVisibility: (selfID) ->
+    @_showID = not @_showID
+    return unless selfID?
+    self = $("#" + selfID)
+    if @_showID
+      self.addClass("btn-success")
+      self.removeClass("btn-default")
+    else
+      self.addClass("btn-default")
+      self.removeClass("btn-success")
 
 
 # Class repsonsible of rendering query results to result table.
@@ -386,31 +508,79 @@ class ResultView
     @views = views  # list[str] of selected view_names
     @resultData = data  # list[dict[str,?]] of result list with dict of view_names:values
     @formatter = new ValueFormatter(backendData)
+    @showID = false
+
+  # Generate colgroup and th entries.
+  #
+  # @param root [$] Table container where colgroup is added.
+  # @param groups [$] THead container where th is added.
+  # @param itemCount [Integer] Number of columns in the group.
+  # @param title [String, optional] Title for the group.
+  _genGroup: (root, groups, itemCount, title=null) ->
+    root.append($("<colgroup>").prop("span", itemCount))
+    th = $("<th>").prop("colspan", itemCount)
+    th.text(title) if title?
+    groups.append(th)
 
   # Generate table header.
-  genHeader: ->
+  #
+  # @param to [$] Table container where thead and colgroups are added.
+  genHeader: (to) ->
     # Create table header element.
-    # thead>tr>th*N  where N is 1 + count(selected views)
+    # thead>tr>th*N  where N is count(selected views) (+ optional ID column)
     output = $("<thead>")
 
-    row = $("<tr>")
-    row.append($("<th>").text("ID"))
+    # Headings for column groups.
+    groups = $("<tr>")
 
-    # The selected views headings.
-    for field in @views
-      title = @_data.getTitleById(field)
-      content = $("<th>").text(title)
-      row.append(content)
+    # Headings for individual columns
+    titles = $("<tr>")
 
-    output.append(row)
-    return output
+    # Key order defined in backend containing only keys that were selected for the query.
+    _order = []
+
+    if @showID
+      # Optional ID column.
+      titles.append($("<th>").text("ID"))
+      @_genGroup(to, groups, 1)
+
+    # Iterate through backend group order and find out which groups are visible in the result, and in which
+    # order the items should be presented in the table.
+    for groupConfig in @_data.getViewGroups()
+      groupTitle = groupConfig[0]
+      itemCount = 0
+
+      # Either use given array, or the rest of the list.
+      # [title, [item, item..]]  or  [title, item, item..]
+      columns = if groupConfig[1] instanceof Array then groupConfig[1] else groupConfig[1..]
+      for item in columns
+
+        # If the backend column is in the result set, add relevant contents to results.
+        if item in @views
+          _order.push(item)
+          itemCount++
+
+          # Single column title.
+          title = @_data.getTitleById(item)
+          content = $("<th>").text(title)
+          titles.append(content)
+
+      if itemCount > 0
+        # Column group heading generation.
+        @_genGroup(to, groups, itemCount, groupTitle)
+
+    # Add both rows of headings to thead container.
+    output.append(groups)
+    output.append(titles)
+    to.append(output)
+    return _order
 
   # Render the results to table.
   render: ->
     # Empty the result element.
     # table>tbody+thead
     @rootElement.empty()
-    @rootElement.append(@genHeader())
+    _order = @genHeader(@rootElement.append())
 
     # tbody>tr>td*N
     data = $("<tbody>")
@@ -418,14 +588,23 @@ class ResultView
       row = $("<tr>")
 
       # The ID entry.
-      row.append($("<td>").text(element["pk"]))
+      if "__url" of element
+        link = element["__url"]
+        linkFn = (container, text) ->
+          container.append($("<a>").attr("href", link).text(text))
+      else
+        linkFn = (container, text) ->
+          container.text(text)
+
+      if @showID
+        row.append(linkFn($("<td>"), element["pk"]))
 
       # Selected views values.
-      for field in @views
+      for field in _order
         value = element[field]  # TODO: Process special values from filter table.
         content = $("<td>")
         formatted = @formatter.format(field, value)
-        content.text(formatted)
+        linkFn(content, formatted)
         row.append(content)
       data.append(row)
 

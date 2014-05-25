@@ -76,6 +76,10 @@ Field2Transport = {
 }
 
 
+def add_prefix(prefix, iterable):
+    return map(lambda item: prefix + item, iterable)
+
+
 class QueryBuilder(object):
     """
     --------------------------
@@ -125,6 +129,16 @@ class QueryBuilder(object):
     model = None
     """
     Django Model to create QueryBuilder on.
+    """
+
+    default_views = []
+    """
+    List of view names set visible by default.
+    """
+
+    view_groups = ()
+    """
+    List of tuples containing column group title and its column names.
     """
 
     # Adapted from https://djangosnippets.org/snippets/676/

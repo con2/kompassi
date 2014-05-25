@@ -143,7 +143,7 @@ class StringFilter extends QueryFilter
   createFilter: ->
     mode = $("#" + @id("mode")).val()
     value = $("#" + @id()).val()
-    if mode == null or mode == ""
+    if not mode? or mode == ""
       throw "Invalid select value for string mode."
 
     negate = false
@@ -151,6 +151,7 @@ class StringFilter extends QueryFilter
       mode = mode.substr(1)
       negate = true
 
+    value = "" if not value?
     if mode == "contains" and value == ""
       return null
 
