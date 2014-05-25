@@ -153,13 +153,16 @@
       var flt, icase, mode, negate, value;
       mode = $("#" + this.id("mode")).val();
       value = $("#" + this.id()).val();
-      if (mode === null || mode === "") {
+      if ((mode == null) || mode === "") {
         throw "Invalid select value for string mode.";
       }
       negate = false;
       if (mode[0] === "!") {
         mode = mode.substr(1);
         negate = true;
+      }
+      if (value == null) {
+        value = "";
       }
       if (mode === "contains" && value === "") {
         return null;
