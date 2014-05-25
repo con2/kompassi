@@ -236,7 +236,7 @@
   ViewSelector = (function() {
     ViewSelector.inputClass = "query_builder_view_select";
 
-    ViewSelector.hiddenClass = "view-hidden";
+    ViewSelector.hiddenClass = "hidden";
 
     ViewSelector.idGen = function(i) {
       if (i == null) {

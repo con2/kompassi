@@ -159,7 +159,7 @@ class ViewSelector
 
   # Dom class name for use with hidden view list.
   # The class must specify display:none attribute.
-  @hiddenClass: "view-hidden"
+  @hiddenClass: "hidden"
 
   # Static input id generator.
   # @param i [String | Integer, optional] Index or identifier for certain input.
