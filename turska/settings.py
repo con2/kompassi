@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     # Uncomment if you have Celery
     # 'background_tasks',
 
+    'tracon_branding',
     'tracon8',
     'tracon9',
     'kawacon2014',
@@ -196,12 +197,14 @@ DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 
 USE_L10N = True
 
-TURSKA_INSTALLATION_NAME = u'Turska (DEV)'
-TURSKA_INSTALLATION_NAME_ILLATIVE = u'Turskan kehitysinstanssiin'
-TURSKA_INSTALLATION_NAME_GENITIVE = u'Turskan kehitysinstanssin'
+APPLICATION_NAME = u'Kompassi'
+TURSKA_INSTALLATION_NAME = u'Kompassi (DEV)'
+TURSKA_INSTALLATION_NAME_ILLATIVE = u'Kompassin kehitysinstanssiin'
+TURSKA_INSTALLATION_NAME_GENITIVE = u'Kompassin kehitysinstanssin'
 TURSKA_INSTALLATION_SLUG = 'turskadev'
 TURSKA_ACCOUNT_BRANDING = u'Tracon-tunnus'
 TURSKA_ACCOUNT_BRANDING_PARTITIVE = u'Tracon-tunnusta'
+TURSKA_ACCOUNT_BRANDING_ADESSIVE = u'Tracon-tunnuksella'
 TURSKA_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = u'Tracon-tunnuksellasi'
 TURSKA_ACCOUNT_INFO = u'Tracon-tunnus on uusi, keväällä 2014 käynnistetty projekti, joka yhdistää kaikki Traconin sähköiset palvelut yhden käyttäjätunnuksen ja salasanan taakse. Valitettavasti vanhat Jyrä-, Pora- ja Aniki-tunnukset eivät käy Tracon-tunnuksesta.'
 TURSKA_PRIVACY_POLICY_URL = 'http://media.tracon.fi/2014/tracon9_turska_rekisteriseloste.pdf'

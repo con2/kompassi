@@ -1,5 +1,7 @@
 extends base
 block content
+  if "tracon_branding" in settings.INSTALLED_APPS
+    include tracon_branding_frontpage.jade
   if current_events
     h2 Parhaillaan käynnissä olevat tapahtumat
     .row
