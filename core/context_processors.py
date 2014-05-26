@@ -9,7 +9,7 @@ def core_context(request):
 
     for key in [
         'ANALYTICS_ACCOUNT',
-        'APPLICATION_NAME',
+        'TURSKA_APPLICATION_NAME',
         'DEFAULT_FROM_EMAIL',
         'TURSKA_ACCOUNT_BRANDING',
         'TURSKA_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE',

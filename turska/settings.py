@@ -197,7 +197,7 @@ DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 
 USE_L10N = True
 
-APPLICATION_NAME = u'Kompassi'
+TURSKA_APPLICATION_NAME = u'Kompassi'
 TURSKA_INSTALLATION_NAME = u'Kompassi (DEV)'
 TURSKA_INSTALLATION_NAME_ILLATIVE = u'Kompassin kehitysinstanssiin'
 TURSKA_INSTALLATION_NAME_GENITIVE = u'Kompassin kehitysinstanssin'
