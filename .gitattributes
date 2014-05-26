@@ -1,2 +1,3 @@
 *.py text eol=lf
 *.eml text eol=lf
+*.jade text eol=lf

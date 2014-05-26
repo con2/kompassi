@@ -65,7 +65,7 @@ def create_user(username, first_name, surname, password):
 
 def json_rpc(method_name, *args, **kwargs):
     headers = {
-        "Referer": settings.TURSKA_IPA_JSONRPC,
+        "Referer": settings.KOMPASSI_IPA_JSONRPC,
         "Content-Type": "application/json",
     }
 
@@ -75,11 +75,11 @@ def json_rpc(method_name, *args, **kwargs):
         "id": 0,
     }
 
-    response = requests.post(settings.TURSKA_IPA_JSONRPC,
+    response = requests.post(settings.KOMPASSI_IPA_JSONRPC,
         auth=HTTPKerberosAuth(),
         data=json.dumps(payload),
         headers=headers,
-        verify=settings.TURSKA_IPA_CACERT_PATH,
+        verify=settings.KOMPASSI_IPA_CACERT_PATH,
     )
 
     try:

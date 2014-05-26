@@ -1,7 +1,7 @@
 doctype 5
 html
   head
-    title {{ settings.TURSKA_INSTALLATION_NAME }}
+    title {{ settings.KOMPASSI_INSTALLATION_NAME }}
     link(rel='stylesheet', href='{{ STATIC_URL }}bootstrap/bootstrap.min.css')
     link(rel='stylesheet', href='{{ STATIC_URL }}frontend.css')
     link(rel='stylesheet', href='{{ STATIC_URL }}tracon_categories.css')
@@ -19,7 +19,7 @@ html
           if event
             a.navbar-brand(href='{% url "core_event_view" event.slug %}') {{ event.name }}
           else
-            a.navbar-brand(href='{% url "core_frontpage_view" %}') {{ settings.TURSKA_INSTALLATION_NAME }}
+            a.navbar-brand(href='{% url "core_frontpage_view" %}') {{ settings.KOMPASSI_INSTALLATION_NAME }}
         .collapse.navbar-collapse#base-navbar-collapse
           ul.nav.navbar-nav
             if event.homepage_url
@@ -54,8 +54,8 @@ html
               |  järjestää
               a(href='{{ event.organization_url }}', target='_blank')  {{ event.organization_name }}
               | .
-            | {{ TURSKA_APPLICATION_NAME }} &copy; 2009&ndash;2014 Santtu Pajukanta, Jussi Sorjonen, Petri Haikonen, Meeri Panula, Jyrki Launonen ja Pekka Wallendahl.
-            a(href='{{ settings.TURSKA_PRIVACY_POLICY_URL }}') Rekisteriseloste
+            | {{ KOMPASSI_APPLICATION_NAME }} &copy; 2009&ndash;2014 Santtu Pajukanta, Jussi Sorjonen, Petri Haikonen, Meeri Panula, Jyrki Launonen ja Pekka Wallendahl.
+            a(href='{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}') Rekisteriseloste
 
 
     script(src='{{ STATIC_URL }}jquery-1.10.2.min.js')

@@ -43,7 +43,7 @@ class LoginForm(forms.Form):
         self.helper.field_class = 'col-md-8'
         self.helper.layout = Layout(
             'next',
-            Fieldset(u'Kirjaudu sisään {}'.format(settings.TURSKA_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE),
+            Fieldset(u'Kirjaudu sisään {}'.format(settings.KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE),
                 'username',
                 'password',
                 indented_without_label(Submit('submit', u'Kirjaudu sisään', css_class='btn-primary'), css_class='col-md-offset-4 col-md-8')
@@ -147,8 +147,8 @@ PASSWORD_HELP_TEXT = (
     u'Salasanan tulee olla vähintään {min_length} merkkiä pitkä ja sisältää ainakin '
     u'{min_classes} seuraavista: pieni kirjain, iso kirjain, numero, erikoismerkki.'
     .format(
-        min_classes=settings.TURSKA_PASSWORD_MIN_CLASSES,
-        min_length=settings.TURSKA_PASSWORD_MIN_LENGTH,
+        min_classes=settings.KOMPASSI_PASSWORD_MIN_CLASSES,
+        min_length=settings.KOMPASSI_PASSWORD_MIN_LENGTH,
     )
 )
 
@@ -181,7 +181,7 @@ class RegistrationForm(forms.Form):
 
     accept_terms_and_conditions = forms.BooleanField(
         required=True,
-        label=u'Annan luvan henkilötietojeni käsittelyyn <a href="{}" target="_blank">rekisteriselosteen</a> mukaisesti <i>(pakollinen)</i>'.format(settings.TURSKA_PRIVACY_POLICY_URL)
+        label=u'Annan luvan henkilötietojeni käsittelyyn <a href="{}" target="_blank">rekisteriselosteen</a> mukaisesti <i>(pakollinen)</i>'.format(settings.KOMPASSI_PRIVACY_POLICY_URL)
     )
 
     def __init__(self, *args, **kwargs):

@@ -169,8 +169,8 @@ CHARACTER_CLASSES = [re.compile(r) for r in [
 
 def check_password_strength(
     password,
-    min_length=settings.TURSKA_PASSWORD_MIN_LENGTH,
-    min_classes=settings.TURSKA_PASSWORD_MIN_CLASSES
+    min_length=settings.KOMPASSI_PASSWORD_MIN_LENGTH,
+    min_classes=settings.KOMPASSI_PASSWORD_MIN_CLASSES
 ):
     if min_length and len(password) < min_length:
         raise ValidationError(

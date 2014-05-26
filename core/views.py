@@ -70,7 +70,7 @@ def remind_email_verification_if_needed(request, next=None):
     else:
         messages.warning(request,
             u'Pyydämme kaikkia käyttäjiämme vahvistamaan sähköpostiosoitteensa. Jotkin '
-            u'{settings.TURSKA_INSTALLATION_NAME_GENITIVE} toiminnot edellyttävät vahvistettua '
+            u'{settings.KOMPASSI_INSTALLATION_NAME_GENITIVE} toiminnot edellyttävät vahvistettua '
             u'sähköpostiosoitetta. Saat vahvistuslinkin sähköpostiisi '
             u'<a href="{request_page_url}">vahvistussivulta</a>.'.format(
                 request_page_url=url('core_email_verification_request_view'),
@@ -154,7 +154,7 @@ def core_registration_view(request):
 
             messages.success(request,
                 u'Käyttäjätunnuksesi on luotu. Tervetuloa {site_name_illative}!'
-                .format(site_name_illative=settings.TURSKA_INSTALLATION_NAME_ILLATIVE)
+                .format(site_name_illative=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE)
             )
             return redirect(next)
         else:

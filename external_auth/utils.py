@@ -16,7 +16,7 @@ def create_temporary_password():
 def get_user_dn(uid):
     return "uid={uid},{branch}".format(
         uid=uid,
-        branch=settings.TURSKA_LDAP_USERS
+        branch=settings.KOMPASSI_LDAP_USERS
     )
 
 
@@ -30,7 +30,7 @@ def create_user(user, password):
         password=temporary_password,
     )
 
-    for group_name in settings.TURSKA_NEW_USER_INITIAL_GROUPS:
+    for group_name in settings.KOMPASSI_NEW_USER_INITIAL_GROUPS:
         ipa.add_user_to_group(user.username, group_name)
 
     ipa.change_user_password(

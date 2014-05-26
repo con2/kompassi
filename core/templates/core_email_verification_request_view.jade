@@ -3,7 +3,7 @@ block profile_content
   fieldset
     legend Sähköpostiosoitteen vahvistaminen 
 
-    p Pyydämme kaikkia käyttäjiä vahvistamaan sähköpostiosoitteensa napsauttamalla sähköpostiinsa lähetettyä vahvistuslinkkiä. Jotkin {{ settings.TURSKA_INSTALLATION_NAME_GENITIVE }} toiminnot edellyttävät vahvistettua sähköpostiosoitetta.
+    p Pyydämme kaikkia käyttäjiä vahvistamaan sähköpostiosoitteensa napsauttamalla sähköpostiinsa lähetettyä vahvistuslinkkiä. Jotkin {{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} toiminnot edellyttävät vahvistettua sähköpostiosoitetta.
 
     if code
       p Sähköpostiosoitteeseesi <em>{{ user.person.email }}</em> on {{ code.created_at|date }} lähetetty vahvistuslinkki, jota napsauttamalla voit vahvistaa sähköpostiosoitteesi. Jos viesti ei ole tullut perille tai vahvistaminen ei sen linkillä jostain syystä onnistu, voit pyytää uuden vahvistuslinkin allaolevalla napilla.

@@ -433,7 +433,7 @@ class EventMetaBase(models.Model):
         ctype = ContentType.objects.get_for_model(cls)
 
         group_name = '{installation_slug}-{event_slug}-{app_label}-{suffix}'.format(
-            installation_slug=settings.TURSKA_INSTALLATION_SLUG,
+            installation_slug=settings.KOMPASSI_INSTALLATION_SLUG,
             event_slug=event.slug,
             app_label=ctype.app_label,
             suffix=suffix,
@@ -521,7 +521,7 @@ class PasswordResetToken(OneTimeCode):
     ip_address = models.CharField(max_length=45, blank=True) # IPv6
 
     def render_message_subject(self, request):
-        return u'{settings.TURSKA_INSTALLATION_NAME}: Salasanan vaihto'.format(settings=settings)
+        return u'{settings.KOMPASSI_INSTALLATION_NAME}: Salasanan vaihto'.format(settings=settings)
 
     def render_message_body(self, request):
         vars = dict(
@@ -564,7 +564,7 @@ class EmailVerificationToken(OneTimeCode):
         return super(EmailVerificationToken, self).save(*args, **kwargs)
 
     def render_message_subject(self, request):
-        return u'{settings.TURSKA_INSTALLATION_NAME}: Vahvista sähköpostiosoitteesi!'.format(settings=settings)
+        return u'{settings.KOMPASSI_INSTALLATION_NAME}: Vahvista sähköpostiosoitteesi!'.format(settings=settings)
 
     def render_message_body(self, request):
         vars = dict(
