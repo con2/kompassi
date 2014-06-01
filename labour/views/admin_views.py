@@ -66,7 +66,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
     non_applied_category_names = [cat.name for cat in non_applied_categories]
 
     if 'mailings' in settings.INSTALLED_APPS:
-        person_messages = person.personmessage_set.filter(message__event=event).order_by('-created_at')
+        person_messages = person.personmessage_set.filter(message__recipient__event=event).order_by('-created_at')
         have_person_messages = person_messages.exists()
     else:
         person_messages = []
@@ -146,7 +146,7 @@ def labour_admin_roster_job_category_fragment(request, vars, event, job_category
 def labour_admin_mail_view(request, vars, event):
     from mailings.models import Message
 
-    messages = Message.objects.filter(event=event, app_label='labour')
+    messages = Message.objects.filter(recipient__event=event, recipient__app_label='labour')
 
     vars.update(
         labour_messages=messages
@@ -162,11 +162,11 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
     from mailings.forms import MessageForm
 
     if message_id:
-        message = get_object_or_404(Message, event=event, pk=int(message_id))
+        message = get_object_or_404(Message, recipient__event=event, pk=int(message_id))
     else:
         message = None
 
-    form = initialize_form(MessageForm, request, instance=message)
+    form = initialize_form(MessageForm, request, event=event, instance=message)
 
     if request.method == 'POST':
         if 'delete' in request.POST:
@@ -179,8 +179,6 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
             if form.is_valid():
                 message = form.save(commit=False)
 
-                message.app_label = 'labour'
-                message.event = event
                 message.save()
 
                 if 'save-send' in request.POST:

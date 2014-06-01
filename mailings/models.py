@@ -8,13 +8,27 @@ from django.template import Template, Context
 from django.utils import timezone
 
 
-class Message(models.Model):
-    event = models.ForeignKey('core.Event')
-    app_label = models.CharField(max_length=63)
+APP_LABEL_CHOICES = [
+    ('labour', 'Työvoima')
+]
 
-    recipient_group = models.ForeignKey('auth.Group',
-        verbose_name=u'Vastaanottajaryhmä',
-    )
+
+class RecipientGroup(models.Model):
+    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
+    app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name=u'Sovellus')
+    group = models.ForeignKey('auth.Group', verbose_name=u'Käyttäjäryhmä')
+    verbose_name = models.CharField(max_length=63, verbose_name=u'Nimi')
+
+    def __unicode__(self):
+        return u"{self.event.name}: {self.verbose_name}".format(self=self)
+
+    class Meta:
+        verbose_name = u'vastaanottajaryhmä'
+        verbose_name_plural = u'vastaanottajaryhmät'
+
+
+class Message(models.Model):
+    recipient = models.ForeignKey(RecipientGroup)
 
     subject_template = models.CharField(
         max_length=255,
@@ -56,7 +70,7 @@ class Message(models.Model):
             self.save()
 
         if recipients is None:
-            recipients = [user.person for user in self.recipient_group.user_set.all()]
+            recipients = [user.person for user in self.recipient.group.user_set.all()]
 
         for person in recipients:
             person_message, created = PersonMessage.objects.get_or_create(
@@ -86,13 +100,21 @@ class Message(models.Model):
     @classmethod
     def send_messages(cls, event, app_label, person):
         for message in Message.objects.filter(
-            event=event,
-            app_label=app_label,
+            recipient__app_label=app_label,
+            recipient__event=event,
+            recipient__group__in=person.user.groups.all(),
             sent_at__isnull=False,
             expired_at__isnull=True,
-            recipient_group__in=person.user.groups.all(),
         ):
             message.send(recipients=[person,], resend=False)
+
+    @property
+    def event(self):
+        return self.recipient.event
+
+    @property
+    def app_label(self):
+        return self.recipient.app_label
 
     @property
     def app_event_meta(self):
@@ -100,6 +122,10 @@ class Message(models.Model):
 
     def __unicode__(self):
         return Template(self.subject_template).render(Context(dict(event=self.event)))
+
+    class Meta:
+        verbose_name = u'viesti'
+        verbose_name_plural = u'viestit'
 
 
 class DedupMixin(object):

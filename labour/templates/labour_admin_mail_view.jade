@@ -14,7 +14,7 @@ block admin_content
         for message in labour_messages
           tr
             td: a(href='{% url "labour_admin_mail_editor_view" event.slug message.pk %}') {{ message.subject_template }}
-            td {{ message.recipient_group.name }}
+            td {{ message.recipient }}
             td {{ message.sent_at|date }}
             td {{ message.expired_at|date }}
     .panel-footer.clearfix

@@ -3,7 +3,7 @@ from behave import given, when, then
 from django.utils import timezone
 from django.core import mail
 
-from mailings.models import Message, PersonMessage
+from mailings.models import RecipientGroup, Message, PersonMessage
 from labour.models import LabourEventMeta
 
 @given(u'the event has a message that is to be sent to all applicants')
@@ -15,9 +15,7 @@ def message_to_be_sent_to_all_applicants(context):
     )
 
     context.message = Message.objects.create(
-        event=context.event,
-        app_label='labour',
-        recipient_group=applicants_group,
+        recipient=RecipientGroup.objects.get(group=applicants_group),
         subject_template='Test message subject',
         body_template='Test message body',
     )
@@ -28,15 +26,13 @@ def message_to_be_sent_to_all_applicants(context):
 @given(u'the event has a message that is to be sent to all accepted workers')
 @when(u'a message is added that should be sent to all accepted workers')
 def message_to_be_sent_to_all_accepted(context):
-    accepted, unused = LabourEventMeta.get_or_create_group(
+    accepted_group, unused = LabourEventMeta.get_or_create_group(
         event=context.event,
-        suffix='accepted'
+        suffix='accepted',
     )
 
     context.message = Message.objects.create(
-        event=context.event,
-        app_label='labour',
-        recipient_group=accepted,
+        recipient=RecipientGroup.objects.get(group=accepted_group),
         subject_template='Test message subject',
         body_template='Test message body',
     )

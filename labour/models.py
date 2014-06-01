@@ -14,6 +14,14 @@ from core.utils import (
     ensure_user_is_not_member_of_group,
 )
 
+
+GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
+    admins=u'Työvoimavastaavat',
+    applicants=u'Hakijat',
+    accepted=u'Hyväksytyt',
+)
+
+
 class LabourEventMeta(EventMetaBase):
     signup_extra_content_type = models.ForeignKey('contenttypes.ContentType')
 
@@ -113,6 +121,24 @@ class LabourEventMeta(EventMetaBase):
                 monitor_email='dummy@example.com',
             )
         )
+
+    @classmethod
+    def get_or_create_group(cls, event, suffix):
+        group, created = super(LabourEventMeta, cls).get_or_create_group(event, suffix)
+
+        if 'mailings' in settings.INSTALLED_APPS:
+            from mailings.models import RecipientGroup
+
+            RecipientGroup.objects.get_or_create(
+                event=event,
+                app_label='labour',
+                group=group,
+                defaults=dict(
+                    verbose_name=GROUP_VERBOSE_NAMES_BY_SUFFIX.get(suffix, suffix),
+                )
+            ),
+
+        return group, created
 
     @property
     def is_registration_open(self):
