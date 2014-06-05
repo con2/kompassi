@@ -170,7 +170,7 @@ def programme_internal_konopas_javascript_view(request, event):
             date=programme.start_time.strftime("%Y-%m-%d"),
             time="00:00", # TODO
             mins=programme.length,
-            loc=[programme.room.title],
+            loc=[programme.room.name],
             people=[dict(
                 id=person.pk,
                 name=person.display_name,
