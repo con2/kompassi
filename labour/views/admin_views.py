@@ -10,11 +10,10 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 
-from core.forms import PersonForm
 from core.models import Event, Person
 from core.utils import initialize_form, url, json_response, render_string
 
-from ..forms import SignupForm, SignupAdminForm
+from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
 from ..helpers import labour_admin_required
 from ..models import LabourEventMeta, Qualification, PersonQualification, Signup, JobCategory
 
@@ -42,11 +41,12 @@ def labour_admin_signup_view(request, vars, event, person_id):
         request, event, signup,
         admin=True
     )
-    person_form = initialize_form(PersonForm, request,
+    person_form = initialize_form(AdminPersonForm, request,
         instance=signup.person,
         prefix='person',
         submit_button=False,
-        readonly=True
+        readonly=True,
+        event=event,
     )
 
     if request.method == 'POST':

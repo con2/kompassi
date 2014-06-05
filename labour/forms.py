@@ -1,13 +1,54 @@
 # encoding: utf-8
 
 from django import forms
+from django.utils.timezone import now
 
 from crispy_forms.layout import Layout, Fieldset
 
+from core.forms import PersonForm
 from core.models import Person
-from core.utils import horizontal_form_helper
+from core.utils import horizontal_form_helper, indented_without_label
 
 from .models import Signup, JobCategory, EmptySignupExtra, ACCEPTED_STATES, TERMINAL_STATES
+
+from datetime import date, datetime
+
+
+# http://stackoverflow.com/a/9754466
+def calculate_age(born, today):
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+
+class AdminPersonForm(PersonForm):
+    age_now = forms.IntegerField(required=False, label=u'Ikä nyt')
+    age_event_start = forms.IntegerField(required=False, label=u'Ikä tapahtuman alkaessa')
+
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+        super(AdminPersonForm, self).__init__(*args, **kwargs)
+
+        self.fields['age_now'].initial = calculate_age(self.instance.birth_date, date.today())
+        self.fields['age_now'].widget.attrs['readonly'] = True
+        self.fields['age_event_start'].initial = calculate_age(self.instance.birth_date, event.start_time.date())
+        self.fields['age_event_start'].widget.attrs['readonly'] = True
+
+        # XXX copypasta
+        self.helper.layout = Layout(
+            Fieldset(u'Perustiedot',
+                'first_name',
+                'surname',
+                'nick',
+                'preferred_name_display_style',
+                'birth_date',
+                'age_now', # not in PersonForm
+                'age_event_start', # not in PersonForm
+            ),
+            Fieldset(u'Yhteystiedot',
+                'phone',
+                'email',
+                indented_without_label('may_send_info'),
+            ),
+        )
 
 
 class SignupForm(forms.ModelForm):
