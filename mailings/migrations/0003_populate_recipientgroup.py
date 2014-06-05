@@ -28,6 +28,8 @@ class Migration(DataMigration):
                 ),
             )
 
+            message.save()
+
     def backwards(self, orm):
         pass
 
