@@ -133,6 +133,7 @@ class Role(models.Model):
 
 
 class Tag(models.Model):
+    event = models.ForeignKey('core.Event')
     title = models.CharField(max_length=15)
     order = models.IntegerField(default=0)
     style = models.CharField(max_length=15, default='label-default')

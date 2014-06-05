@@ -13,7 +13,7 @@ from dateutil.tz import tzlocal
 from core.utils import give_all_app_perms_to_group
 from core.models import Event, Person, Venue
 from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
-from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role, TimeBlock, SpecialStartTime, View
+from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role, TimeBlock, SpecialStartTime, View, Tag
 from tickets.models import TicketsEventMeta, LimitGroup, Product
 
 from ...models import SignupExtra, SpecialDiet, Night
@@ -473,3 +473,18 @@ class Command(BaseCommand):
             if not product.limit_groups.exists():
                 product.limit_groups = limit_groups
                 product.save()
+
+        for tag_title, tag_class in [
+            ('Suositeltu', 'hilight'),
+            ('In English', 'label-success'),
+            ('K-18', 'label-danger'),
+            ('K-16', 'label-warning'),
+            ('K-15', 'label-warning'),
+        ]:
+            Tag.objects.get_or_create(
+                event=event,
+                title=tag_title,
+                defaults=dict(
+                    style=tag_class,
+                ),
+            )

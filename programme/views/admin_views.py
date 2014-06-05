@@ -108,15 +108,13 @@ def actual_detail_view(request, vars, event, programme, template, self_service, 
     if request.method == 'POST':
         if 'save' in request.POST or 'save-sendlink' in request.POST:
             if all(form.is_valid() for form in forms):
-                programme_form.save(commit=False)
-
-                if not self_service:
-                    programme_admin_form.save(commit=False)
+                programme_form.save()
 
                 if programme.pk:
-                    programme_extra_form.save(commit=False)
+                    programme_extra_form.save()
 
-                programme.save()
+                if not self_service:
+                    programme_admin_form.save()
 
                 hosts = programme_person_form_set.save(commit=False)
 
