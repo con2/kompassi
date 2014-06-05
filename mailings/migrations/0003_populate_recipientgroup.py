@@ -22,7 +22,7 @@ class Migration(DataMigration):
             message.recipient, unused = orm['mailings.RecipientGroup'].objects.get_or_create(
                 event=message.event,
                 app_label=message.app_label,
-                group=message.group,
+                group=message.recipient_group,
                 defaults=dict(
                     verbose_name=GROUP_VERBOSE_NAMES_BY_SUFFIX.get(suffix, suffix),
                 ),
