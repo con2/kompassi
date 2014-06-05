@@ -15,7 +15,7 @@ GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
 class Migration(DataMigration):
     def forwards(self, orm):
         for message in orm['mailings.Message'].objects.all():
-            group_name_parts = message.group.name.split('-')
+            group_name_parts = message.recipient_group.name.split('-')
             assert len(group_name_parts) == 4
             suffix = group_name_parts[3]
 
