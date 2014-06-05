@@ -179,7 +179,7 @@ def programme_internal_konopas_javascript_view(request, event):
         ))
 
         for person in programme.organizers.all():
-            if person.name_display_style == 'nick':
+            if person.preferred_name_display_style == 'nick':
                 name_list = [person.nick, "", "", ""]
             else:
                 name_list = [person.surname, person.last_name, "", ""]
