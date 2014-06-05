@@ -19,7 +19,7 @@ class Migration(DataMigration):
             assert len(group_name_parts) == 4
             suffix = group_name_parts[3]
 
-            message.recipient, unused = RecipientGroup.objects.get_or_create(
+            message.recipient, unused = orm['mailings.RecipientGroup'].objects.get_or_create(
                 event=message.event,
                 app_label=message.app_label,
                 group=message.group,
