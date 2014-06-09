@@ -104,13 +104,15 @@ def actual_detail_view(request, vars, event, programme, template, self_service, 
         )
 
         forms.append(programme_extra_form)
+    else:
+        programme_extra_form = None
 
     if request.method == 'POST':
         if 'save' in request.POST or 'save-sendlink' in request.POST:
             if all(form.is_valid() for form in forms):
                 programme_form.save()
 
-                if programme.pk:
+                if programme_extra_form:
                     programme_extra_form.save()
 
                 if not self_service:
