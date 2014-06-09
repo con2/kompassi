@@ -4,10 +4,13 @@ block admin_content
   ul.pager
     if previous_signup
       li.previous
-        a(href='{% url "labour_admin_signup_view" event.slug previous_signup.person.id %}') &larr; Edellinen ({{ previous_signup.person.full_name }})
+        a(href='{% url "labour_admin_signup_view" event.slug previous_signup.person.id %}') &larr; {{ previous_signup.person.full_name }}
+
+    li.current: .btn.disabled {{ signup.person.full_name }}
+
     if next_signup
       li.next
-        a(href='{% url "labour_admin_signup_view" event.slug next_signup.person.id %}') Seuraava ({{ next_signup.person.full_name }}) &rarr;
+        a(href='{% url "labour_admin_signup_view" event.slug next_signup.person.id %}') {{ next_signup.person.full_name }} &rarr;
 
   .panel.panel-default
     .panel-heading: strong Hakemus
