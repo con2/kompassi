@@ -558,6 +558,25 @@ class Signup(models.Model):
         from mailings.models import Message
         Message.send_messages(self.event, 'labour', self.person)
 
+    def get_previous_and_next_signup(self):
+        if not self.pk:
+            return None, None
+
+        # TODO inefficient, done using a list
+        signups = list(self.event.signup_set.order_by('person__surname', 'person__first_name', 'id').all())
+
+        previous_signup = None
+        current_signup = None
+
+        for next_signup in signups + [None]:
+            if current_signup and current_signup.pk == self.pk:
+                return previous_signup, next_signup
+
+            previous_signup = current_signup
+            current_signup = next_signup
+
+        return None, None
+
 
 class SignupExtraBase(models.Model):
     signup = models.OneToOneField(Signup, related_name="+", primary_key=True)

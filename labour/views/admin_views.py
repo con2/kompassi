@@ -72,12 +72,17 @@ def labour_admin_signup_view(request, vars, event, person_id):
         person_messages = []
         have_person_messages = False
 
+    previous_signup, next_signup = signup.get_previous_and_next_signup()
+
     vars.update(
         person_form=person_form,
         signup=signup,
         signup_admin_form=signup_admin_form,
         signup_extra_form=signup_extra_form,
         signup_form=signup_form,
+
+        next_signup=next_signup,
+        previous_signup=previous_signup,
 
         have_person_messages=have_person_messages,
         person_messages=person_messages,
