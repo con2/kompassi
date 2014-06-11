@@ -250,6 +250,10 @@ class QualificationExtraBase(models.Model):
         abstract = True
 
 
+def format_job_categories(job_categories):
+    return u"\n".join(u'* {jc.name}'.format(jc=jc) for jc in job_categories)
+
+
 class JobCategory(models.Model):
     event = models.ForeignKey('core.Event', verbose_name=u'tapahtuma')
 
@@ -647,6 +651,15 @@ class Signup(models.Model):
     @property
     def applicant_can_cancel(self):
         return self.state in PREEVENT_STATES
+
+    @property
+    def formatted_job_categories_accepted(self):
+        return format_job_categories(self.job_categories_accepted.all())
+
+    @property
+    def formatted_job_categories(self):
+        return format_job_categories(self.job_categories.all())
+
 
 class SignupExtraBase(models.Model):
     signup = models.OneToOneField(Signup, related_name="+", primary_key=True)
