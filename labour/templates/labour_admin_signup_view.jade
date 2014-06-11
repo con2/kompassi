@@ -28,33 +28,10 @@ block admin_content
     .panel-heading: strong Työvoimaviestit
     .panel-body
       p Tässä näet tälle hakijalle lähteneet työvoimaviestit (massapostitukset). Napsauttamalla viestin otsikkoa voit tarkastella viestin tekstiä sellaisena, kun se on lähtenyt tälle hakijalle.
-    if have_person_messages
-      table.table.table-striped
-        thead
-          tr
-            th Otsikko
-            th Lähetysaika
-        tbody
-          for message in person_messages
-            tr
-              td: a(href='#', data-toggle='modal', data-target='#personmessage-{{ message.pk }}') {{ message.subject.text }}
-              td {{ message.created_at|date:"SHORT_DATETIME_FORMAT" }}
-    else
-      .panel-footer: p.text-muted Ei viestejä.
+    include labour_profile_message_table.jade
 
-  for message in person_messages
-    .modal.fade(id='personmessage-{{ message.pk }}')
-      .modal-dialog
-        .modal-content
-          .modal-header
-            button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
-            h4 {{ message.subject.text }}
-          .modal-body: {{ message.body.text|linebreaks }}
-          .modal-footer
-            .btn-group
-              a.btn.btn-primary(href='{% url "labour_admin_mail_editor_view" event.slug message.pk %}') Avaa viesti editorissa
-              button.btn.btn-default(type='button', data-dismiss='modal') Sulje
-
+  for message in signup.person_messages
+    include labour_profile_message_modal.jade
   include labour_admin_signup_pager.jade
 
 block extra_scripts

@@ -1,0 +1,15 @@
+.modal.fade(id='cancel-{{ signup.pk }}')
+  .modal-dialog
+    .modal-content
+      form(action='', method='POST')
+        {% csrf_token %}
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+          h4 {{ signup.event.name }}: Hakemuksen peruminen
+        .modal-body
+          p: strong Oletko varma, että haluat perua hakemuksesi?
+          p Voit halutessasi jättää peruutuksen yhteydessä viestin työvoimavastaaville.
+        .modal-footer
+          .btn-group
+            button.btn.btn-default(type='button', data-dismiss='modal') Ei, älä peruuta hakemusta
+            button.btn.btn-danger(type='submit') Kyllä, peruuta hakemus

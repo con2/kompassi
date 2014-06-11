@@ -70,13 +70,6 @@ def labour_admin_signup_view(request, vars, event, person_id):
         non_applied_categories.remove(applied_category)
     non_applied_category_names = [cat.name for cat in non_applied_categories]
 
-    if 'mailings' in settings.INSTALLED_APPS:
-        person_messages = person.personmessage_set.filter(message__recipient__event=event).order_by('-created_at')
-        have_person_messages = person_messages.exists()
-    else:
-        person_messages = []
-        have_person_messages = False
-
     previous_signup, next_signup = signup.get_previous_and_next_signup()
 
     vars.update(
@@ -88,9 +81,6 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
         next_signup=next_signup,
         previous_signup=previous_signup,
-
-        have_person_messages=have_person_messages,
-        person_messages=person_messages,
 
         # XXX hack: widget customization is very difficult, so apply styles via JS
         non_applied_category_names_json=json.dumps(non_applied_category_names),

@@ -13,6 +13,12 @@ urlpatterns = patterns('',
     url(r'^profile/qualifications/(?P<qualification>[a-z0-9-]+)/add$', labour_person_qualify_view, name='labour_person_qualify_view'),
 
     url(
+        r'^profile/signups$',
+        labour_profile_signups_view,
+        name='labour_profile_signups_view',
+    ),
+
+    url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/admin(?P<suffix>.*)',
         RedirectView.as_view(url='/events/%(event_slug)s/labour/admin%(suffix)s'),
         name='labour_admin_old_urls_redirect'

@@ -1,3 +1,5 @@
 extends base.jade
 block content
   include programme_timetable_fragment.jade
+block extra_scripts
+  script(src='{{ STATIC_URL }}timetable.js')

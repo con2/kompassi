@@ -4,3 +4,5 @@ block content
     include core_admin_menu_items.jade
 
   include programme_timetable_fragment.jade
+block extra_scripts
+  script(src='{{ STATIC_URL }}timetable.js')

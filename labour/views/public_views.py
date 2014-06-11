@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
+from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods
 
 from core.helpers import person_required
@@ -147,6 +148,26 @@ def actual_labour_signup_view(request, event):
 
 
 @person_required
+def labour_profile_signups_view(request):
+    person = request.user.person
+
+    t = now()
+
+    signups_past_events = person.signup_set.filter(event__end_time__lte=t).order_by('-event__start_time')
+    signups_current_events = person.signup_set.filter(event__start_time__lte=t, event__end_time__gt=t).order_by('-event__start_time')
+    signups_future_events = person.signup_set.filter(event__start_time__gt=t).order_by('-event__start_time')
+
+    vars = dict(
+        signups_past_events=signups_past_events,
+        signups_current_events=signups_current_events,
+        signups_future_events=signups_future_events,
+        no_signups=not any(signups.exists() for signups in [signups_past_events, signups_current_events, signups_future_events]),
+        all_signups=person.signup_set.all(),
+    )
+
+    return render(request, 'labour_profile_signups_view.jade', vars)
+
+@person_required
 def labour_qualifications_view(request):
     vars = page_wizard_vars(request)
 
@@ -255,11 +276,18 @@ def labour_person_disqualify_view(request, qualification):
 
 
 def labour_profile_menu_items(request):
+    signups_url = reverse('labour_profile_signups_view')
+    signups_active = request.path.startswith(signups_url)
+    signups_text = u"Työvoimahakemukset"
+
     qualifications_url = reverse('labour_qualifications_view')
     qualifications_active = request.path.startswith(qualifications_url)
     qualifications_text = u"Pätevyydet"
 
-    return [(qualifications_active, qualifications_url, qualifications_text)]
+    return [
+        (signups_active, signups_url, signups_text),
+        (qualifications_active, qualifications_url, qualifications_text),
+    ]
 
 
 def labour_event_box_context(request, event):

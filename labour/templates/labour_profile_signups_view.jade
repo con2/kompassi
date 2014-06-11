@@ -1,0 +1,20 @@
+extends core_profile_base
+block profile_content
+  if signups_current_events.exists
+    .panel.panel-default
+      .panel-heading: strong Työskentely käynnissä olevissa tapahtumissa
+  if signups_future_events.exists
+    p: strong Hakemukset tuleviin tapahtumiin
+    for signup in signups_future_events
+      include labour_profile_signup_box.jade
+  if signups_past_events.exists
+    .panel.panel-default
+      .panel-heading: strong Työskentely aikaisemmissa tapahtumissa
+  if no_signups
+    h2 Ei työvoimahakemuksia
+    p Et ole hakenut töihin yhteenkään {{ KOMPASSI_INSTALLATION_NAME_PARTITIVE }} työvoimanhallintaan käyttävään tapahtumaan.
+
+  for signup in all_signups
+    include labour_profile_signup_cancel_modal.jade
+    for message in signup.person_messages
+      include labour_profile_message_modal.jade

@@ -378,16 +378,24 @@ SIGNUP_STATE_CHOICES = [
     (u'finished', u'Hyväksytty, vuorot lähetetty'),
     (u'complained', u'Hyväksytty, vuorot lähetetty, vuoroista reklamoitu'),
 
-    (u'rejected', u'Hylätty (työvoimavastaavan hylkäämä)'),
+    (u'rejected', u'Hylätty (työvoimavastaava ei hyväksynyt töihin)'),
     (u'cancelled', u'Peruutettu (hakijan itsensä peruma)'),
+
+    (u'arrived', u'Saapunut tapahtumaan'),
+
+    (u'honr_discharged', u'Työpanos suoritettu hyväksytysti'),
+    (u'dish_discharged', u'Erotettu tehtävästään'),
+    (u'no_show', u'Jätti saapumatta paikalle'),
+    (u'relieved', u'Vapautettu tehtävästään'),
 
     (u'beyond_logic', u'Perätilassa (irrotettu kaikesta automaattisesta käsittelystä)'),
 ]
 
-ACCEPTED_STATES = ['accepted', 'finished', 'complained']
+ACCEPTED_STATES = ['accepted', 'finished', 'complained', 'arrived']
 ACTIVE_STATES = ACCEPTED_STATES + ['new']
-TERMINAL_STATES = ['rejected', 'cancelled']
+TERMINAL_STATES = ['retired', 'rejected', 'cancelled', 'honr_discharged', 'dish_discharged', 'no_show', 'relieved']
 PROCESSED_STATES = ACCEPTED_STATES + TERMINAL_STATES
+PREEVENT_STATES = ['new', 'accepted', 'finished', 'complained']
 SIGNUP_STATE_LABEL_CLASSES = dict(
     new=u'label-default',
     accepted=u'label-info',
@@ -395,6 +403,11 @@ SIGNUP_STATE_LABEL_CLASSES = dict(
     complained=u'label-warning',
     rejected=u'label-danger',
     cancelled=u'label-danger',
+    arrived=u'label-success',
+    honr_discharged=u'label-success',
+    dish_discharged=u'label-danger',
+    no_show=u'label-danger',
+    relieved=u'label-danger',
     beyond_logic=u'label-danger',
 )
 
@@ -478,6 +491,13 @@ class Signup(models.Model):
 
     def get_redacted_category_names(self):
         return u', '.join(cat.name for cat in self.job_categories.all()[NUM_FIRST_CATEGORIES:])
+
+    @property
+    def job_categories_label(self):
+        if self.state == 'new':
+            return u'Haetut tehtävät'
+        else:
+            return u'Hyväksytyt tehtävät'
 
     @property
     def job_category_accepted_labels(self):
@@ -577,6 +597,48 @@ class Signup(models.Model):
 
         return None, None
 
+    @property
+    def formatted_state(self):
+        return dict(SIGNUP_STATE_CHOICES)[self.state]
+
+    @property
+    def state_label_class(self):
+        return SIGNUP_STATE_LABEL_CLASSES[self.state]
+
+    @property
+    def person_messages(self):
+        if 'mailings' in settings.INSTALLED_APPS:
+            if getattr(self, '_person_messages', None) is None:
+                self._person_messages = self.person.personmessage_set.filter(
+                    message__recipient__event=self.event,
+                    message__recipient__app_label='labour',
+                ).order_by('-created_at')
+
+            return self._person_messages
+        else:
+            return []
+
+    @property
+    def have_person_messages(self):
+        if 'mailings' in settings.INSTALLED_APPS:
+            return self.person_messages.exists()
+        else:
+            return False
+
+    @property
+    def applicant_has_actions(self):
+        return any([
+            self.applicant_can_edit,
+            self.applicant_can_cancel,
+        ])
+
+    @property
+    def applicant_can_edit(self):
+        return self.state == 'new'
+
+    @property
+    def applicant_can_cancel(self):
+        return self.state in PREEVENT_STATES
 
 class SignupExtraBase(models.Model):
     signup = models.OneToOneField(Signup, related_name="+", primary_key=True)

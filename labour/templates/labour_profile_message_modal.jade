@@ -1,0 +1,12 @@
+.modal.fade(id='personmessage-{{ message.pk }}')
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+        h4 {{ message.subject.text }}
+      .modal-body: {{ message.body.text|linebreaks }}
+      .modal-footer
+        .btn-group
+          if admin_title
+            a.btn.btn-primary(href='{% url "labour_admin_mail_editor_view" event.slug message.pk %}') Avaa viesti editorissa
+          button.btn.btn-default(type='button', data-dismiss='modal') Sulje

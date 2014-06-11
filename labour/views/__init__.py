@@ -4,6 +4,7 @@ from .public_views import (
     labour_person_qualification_view,
     labour_person_qualify_view,
     labour_profile_menu_items,
+    labour_profile_signups_view,
     labour_qualifications_view,
     labour_signup_view,
 )

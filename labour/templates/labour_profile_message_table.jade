@@ -1,0 +1,13 @@
+if signup.have_person_messages
+  table.table.table-striped
+    thead
+      tr
+        th Viestin otsikko
+        th Lähetysaika
+    tbody
+      for message in signup.person_messages
+        tr
+          td: a(href='#', data-toggle='modal', data-target='#personmessage-{{ message.pk }}') {{ message.subject.text }}
+          td {{ message.created_at|date:"SHORT_DATETIME_FORMAT" }}
+else
+  .panel-footer: p.text-muted Ei viestejä.

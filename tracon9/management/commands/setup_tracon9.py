@@ -100,6 +100,11 @@ class Command(BaseCommand):
             contact_email='Tracon 9 -ohjelmatiimi <ohjelma@tracon.fi>',
         ))
 
+        # labour v7
+        if not labour_event_meta.contact_email:
+            labour_event_meta.contact_email = 'Tracon 9 -työvoimatiimi <tyovoima@tracon.fi>'
+            labour_event_meta.save()
+
         room_order = 0
         for room_name in [
             'Iso sali',
