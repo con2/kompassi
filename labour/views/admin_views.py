@@ -60,6 +60,11 @@ def labour_admin_signup_view(request, vars, event, person_id):
         else:
             messages.error(request, u'Ole hyvä ja tarkista lomake.')
 
+    non_qualified_category_names = [
+        jc.name for jc in JobCategory.objects.filter(event=event)
+        if not jc.is_person_qualified(signup.person)
+    ]
+
     non_applied_categories = list(JobCategory.objects.filter(event=event))
     for applied_category in signup.job_categories.all():
         non_applied_categories.remove(applied_category)
@@ -89,6 +94,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
         # XXX hack: widget customization is very difficult, so apply styles via JS
         non_applied_category_names_json=json.dumps(non_applied_category_names),
+        non_qualified_category_names_json=json.dumps(non_qualified_category_names),
     )
 
     return render(request, 'labour_admin_signup_view.jade', vars)

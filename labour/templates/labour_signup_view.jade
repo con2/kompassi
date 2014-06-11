@@ -4,7 +4,8 @@ block content
   h2 Ilmoittaudu vapaaehtoistyöhön {{ event.name_illative }}
 
   form(action='{% url "labour_signup_view" event.slug %}', method='POST', role='form').form-horizontal
-    - crispy signup_form
+    .labour-signup-form
+      - crispy signup_form
     - crispy signup_extra_form
     p
       // XXX why is this extra p necessary to preserve spacing
@@ -22,3 +23,12 @@ block extra_scripts
   script
     window.labourJobDescriptions = {{job_descriptions_json|safe}};
   script(src='{{ STATIC_URL }}job_descriptions.js')
+
+  script
+    var nonQualifiedCategoryNames = {{ non_qualified_category_names_json|safe }};
+    $.each(nonQualifiedCategoryNames, function(index, categoryName) {
+      var selector = '.labour-signup-form label.checkbox:contains("' + categoryName + '")',
+          $label = $(selector);
+      $label.addClass('text-muted');
+      $label.find('input').attr('disabled', true);
+    });     

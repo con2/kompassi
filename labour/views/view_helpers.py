@@ -5,8 +5,6 @@ from core.utils import initialize_form
 
 def initialize_signup_forms(request, event, signup, admin=False):
     job_categories = JobCategory.objects.filter(event=event, public=True)
-    jcs_qualified = [jc.pk for jc in job_categories if jc.is_person_qualified(signup.person)]
-    job_categories = JobCategory.objects.filter(id__in=jcs_qualified).order_by('name') # bc it needs to be a queryset
 
     signup_extra = signup.signup_extra
     SignupExtraForm = event.labour_event_meta.signup_extra_model.get_form_class()

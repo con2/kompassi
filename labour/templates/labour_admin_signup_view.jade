@@ -9,7 +9,8 @@ block admin_content
       .form-horizontal
         - crispy person_form
         // TODO add qualifications here
-        - crispy signup_form
+        .labour-signup-form
+          - crispy signup_form
         - crispy signup_extra_form
 
   form(method='POST', role='form').form-horizontal.labour-admin-form
@@ -69,4 +70,10 @@ block extra_scripts
         var selector = '.labour-admin-form label.checkbox:contains("' + categoryName + '")';
         $(selector).addClass('text-muted');
       });
+      
+      var nonQualifiedCategoryNames = {{ non_qualified_category_names_json|safe }};
+      $.each(nonQualifiedCategoryNames, function(index, categoryName) {
+        var selector = '.labour-signup-form label.checkbox:contains("' + categoryName + '")';
+        $(selector).addClass('text-muted');
+      });      
     })(jQuery);

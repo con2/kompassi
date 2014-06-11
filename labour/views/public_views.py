@@ -127,6 +127,11 @@ def actual_labour_signup_view(request, event):
 
     job_cats = JobCategory.objects.filter(event=event, public=True)
 
+    non_qualified_category_names = [
+        jc.name for jc in job_cats
+        if not jc.is_person_qualified(request.user.person)
+    ]
+
     vars.update(
         event=event,
         signup_form=signup_form,
@@ -135,6 +140,7 @@ def actual_labour_signup_view(request, event):
 
         # XXX HACK descriptions injected using javascript
         job_descriptions_json=json.dumps(dict((cat.pk, cat.description) for cat in job_cats)),
+        non_qualified_category_names_json=json.dumps(non_qualified_category_names),
     )
 
     return render(request, 'labour_signup_view.jade', vars)

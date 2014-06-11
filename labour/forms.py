@@ -68,6 +68,14 @@ class SignupForm(forms.ModelForm):
             ),
         )
 
+    def clean_job_categories(self):
+        job_categories = self.cleaned_data['job_categories']
+
+        if not all(jc.is_person_qualified(self.instance.person) for jc in job_categories):
+            raise forms.ValidationError(u'Sinulla ei ole vaadittuja pätevyyksiä valitsemiisi tehtäviin.')
+
+        return job_categories
+
     class Meta:
         model = Signup
         fields = ('job_categories', 'work_periods')
