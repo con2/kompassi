@@ -34,20 +34,16 @@ class AdminPersonForm(PersonForm):
 
         # XXX copypasta
         self.helper.layout = Layout(
-            Fieldset(u'Perustiedot',
-                'first_name',
-                'surname',
-                'nick',
-                'preferred_name_display_style',
-                'birth_date',
-                'age_now', # not in PersonForm
-                'age_event_start', # not in PersonForm
-            ),
-            Fieldset(u'Yhteystiedot',
-                'phone',
-                'email',
-                indented_without_label('may_send_info'),
-            ),
+            'first_name',
+            'surname',
+            'nick',
+            'preferred_name_display_style',
+            'birth_date',
+            'age_now', # not in PersonForm
+            'age_event_start', # not in PersonForm
+            'phone',
+            'email',
+            indented_without_label('may_send_info'),
         )
 
 

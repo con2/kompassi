@@ -4,19 +4,25 @@ block admin_content
   include labour_admin_signup_pager.jade
 
   .panel.panel-default
-    .panel-heading: strong Hakemus
+    .panel-heading: strong Hakijan tiedot
     .panel-body
       .form-horizontal
         - crispy person_form
         // TODO add qualifications here
+    .panel-footer
+      p.text-muted Nämä tiedot ovat vain henkilön itsensä muokattavissa.
+
+  form(method='POST', role='form').form-horizontal
+    .panel.panel-default
+      .panel-heading: strong Hakemus
+      .panel-body
         .labour-signup-form
           - crispy signup_form
         - crispy signup_extra_form
 
-  form(method='POST', role='form').form-horizontal.labour-admin-form
     .panel.panel-default
       .panel-heading: strong Työvoimavastaavan merkinnät
-      .panel-body
+      .panel-body.labour-admin-form
         - crispy signup_admin_form
       .panel-footer.clearfix
         .btn-group.pull-right

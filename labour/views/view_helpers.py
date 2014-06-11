@@ -14,12 +14,10 @@ def initialize_signup_forms(request, event, signup, admin=False):
         job_categories=job_categories,
         instance=signup,
         prefix='signup',
-        readonly=admin
     )
     signup_extra_form = initialize_form(SignupExtraForm, request,
         instance=signup_extra,
         prefix='extra',
-        readonly=admin
     )
 
     if admin:

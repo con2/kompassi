@@ -50,7 +50,9 @@ def labour_admin_signup_view(request, vars, event, person_id):
     )
 
     if request.method == 'POST':
-        if signup_admin_form.is_valid():
+        if signup_form.is_valid() and signup_extra_form.is_valid() and signup_admin_form.is_valid():
+            signup_form.save()
+            signup_extra_form.save()
             signup_admin_form.save()
             signup.state_change_from(old_state)
             messages.success(request, u'Tiedot tallennettiin.')
