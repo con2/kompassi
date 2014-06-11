@@ -13,8 +13,3 @@ block profile_content
   if no_signups
     h2 Ei työvoimahakemuksia
     p Et ole hakenut töihin yhteenkään {{ KOMPASSI_INSTALLATION_NAME_PARTITIVE }} työvoimanhallintaan käyttävään tapahtumaan.
-
-  for signup in all_signups
-    include labour_profile_signup_cancel_modal.jade
-    for message in signup.person_messages
-      include labour_profile_message_modal.jade

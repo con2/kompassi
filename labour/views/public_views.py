@@ -291,7 +291,7 @@ def labour_profile_menu_items(request):
 
 
 def labour_event_box_context(request, event):
-    is_signed_up = False
+    signup = None
     is_labour_admin = False
 
     if request.user.is_authenticated():
@@ -300,10 +300,14 @@ def labour_event_box_context(request, event):
         except Person.DoesNotExist:
             pass
         else:
-            is_signed_up = event.labour_event_meta.is_person_signed_up(person)
             is_labour_admin = event.labour_event_meta.is_user_admin(request.user)
 
+            try:
+                signup = Signup.objects.get(event=event, person=person)
+            except Signup.DoesNotExist:
+                pass
+
     return dict(
-        is_signed_up=is_signed_up,
+        signup=signup,
         is_labour_admin=is_labour_admin,
     )

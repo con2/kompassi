@@ -410,6 +410,10 @@ SIGNUP_STATE_LABEL_CLASSES = dict(
     relieved=u'label-danger',
     beyond_logic=u'label-danger',
 )
+SIGNUP_STATE_DESCRIPTIONS = dict(
+    new=u'Hakemuksesi on vastaanotettu, ja työvoimavastaavat käsittelevät sen lähiaikoina. Saat tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sähköpostitse.',
+    accepted=u'Työvoimavastaavat ovat alustavasti hyväksyneet sinut vapaaehtoistyöhön tähän tapahtumaan, mutta sinulle ei ole vielä määritelty työvuoroja. Saat tiedon työvuoroistasi myöhemmin sähköpostitse.',
+)
 
 class Signup(models.Model):
     person = models.ForeignKey('core.Person')
@@ -599,11 +603,15 @@ class Signup(models.Model):
 
     @property
     def formatted_state(self):
-        return dict(SIGNUP_STATE_CHOICES)[self.state]
+        return dict(SIGNUP_STATE_CHOICES).get(self.state, '')
 
     @property
     def state_label_class(self):
         return SIGNUP_STATE_LABEL_CLASSES[self.state]
+
+    @property
+    def state_description(self):
+        return SIGNUP_STATE_DESCRIPTIONS.get(self.state, '')
 
     @property
     def person_messages(self):

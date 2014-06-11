@@ -7,6 +7,7 @@
       .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}
   if signup.is_active
     .panel-body
+      p.help-block {{ signup.state_description }}
       .row
         .col-md-3: label Hakemus lähetetty
         .col-md-9: {{ signup.created_at }}
@@ -24,3 +25,7 @@
           //  a.btn.btn-danger(data-toggle='modal', href='#cancel-{{ signup.pk }}') Peru hakemus
           if signup.applicant_can_edit
             a.btn.btn-primary(href='{% url "labour_signup_view" signup.event.slug %}') Muokkaa hakemusta
+
+include labour_profile_signup_cancel_modal.jade
+for message in signup.person_messages
+  include labour_profile_message_modal.jade

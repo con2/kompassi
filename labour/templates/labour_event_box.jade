@@ -1,12 +1,12 @@
+h3 Työvoima
 if event.laboureventmeta.is_registration_open
-  h3 Tapahtuman työvoimahaku on avoinna
-  p
-    a(href='{% url "labour_signup_view" event.slug %}')
-      if is_signed_up
-        | Muokkaa ilmoittautumistasi
-      else
-        | Hae töihin tapahtumaan
+  if signup
+    h4 Työvoimahakemuksesi tähän tapahtumaan
+    include labour_profile_signup_box.jade
+  else
+    h4 Voit hakea töihin tähän tapahtumaan
+    a(href='{% url "labour_signup_view" event.slug %}') Hae töihin tapahtumaan
 
-  if is_labour_admin
-    h3 Sinulla on työvoimavastaavan oikeudet tähän tapahtumaan
-    p: a(href='{% url "labour_admin_dashboard_view" event.slug %}') Siirry ylläpitäjän näkymään
+if is_labour_admin
+  h4 Sinulla on työvoimavastaavan oikeudet tähän tapahtumaan
+  p: a(href='{% url "labour_admin_dashboard_view" event.slug %}') Siirry ylläpitäjän näkymään
