@@ -104,7 +104,7 @@ class SignupAdminForm(forms.ModelForm):
 
     class Meta:
         model = Signup
-        fields = ('state', 'job_categories_accepted', 'notes')
+        fields = ('state', 'job_categories_accepted', 'xxx_interim_shifts', 'notes')
         widgets = dict(
             job_categories_accepted=forms.CheckboxSelectMultiple,
         )

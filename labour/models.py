@@ -469,6 +469,16 @@ class Signup(models.Model):
             u'Harmaalla merkityt tehtäväalueet ovat niitä, joihin hakija ei ole itse hakenut.'
     )
 
+    xxx_interim_shifts = models.TextField(
+        blank=True,
+        null=True,
+        default=u"",
+        verbose_name=u"Työvuorot",
+        help_text=u"Tämä tekstikenttä on väliaikaisratkaisu, jolla vänkärin työvuorot voidaan "
+            u"merkitä Kompassiin ja lähettää vänkärille työvoimaviestissä jo ennen kuin "
+            u"lopullinen työvuorotyökalu on käyttökunnossa."
+    )
+
     class Meta:
         verbose_name = u'ilmoittautuminen'
         verbose_name_plural=u'ilmoittautumiset'
@@ -659,6 +669,10 @@ class Signup(models.Model):
     @property
     def formatted_job_categories(self):
         return format_job_categories(self.job_categories.all())
+
+    @property
+    def formatted_shifts(self):
+        return self.xxx_interim_shifts if self.xxx_interim_shifts is not None else u""
 
 
 class SignupExtraBase(models.Model):
