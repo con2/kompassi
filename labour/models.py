@@ -145,8 +145,8 @@ class LabourEventMeta(EventMetaBase):
                 group=group,
                 defaults=dict(
                     verbose_name=GROUP_VERBOSE_NAMES_BY_SUFFIX.get(suffix, suffix),
-                )
-            ),
+                ),
+            )
 
         return group, created
 

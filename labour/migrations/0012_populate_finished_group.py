@@ -4,15 +4,35 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
+from django.conf import settings
+
+
 class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
         for labour_event_meta in orm.LabourEventMeta.objects.all():
-            labour_event_meta.finished_group = LabourEventMeta.get_or_create_group(
-                event=labour_event_meta.event,
+            # inlined get_or_create_group
+            group_name = '{installation_slug}-{event_slug}-{app_label}-{suffix}'.format(
+                installation_slug=settings.KOMPASSI_INSTALLATION_SLUG,
+                event_slug=labour_event_meta.event.slug,
+                app_label='labour',
                 suffix='finished',
             )
+            
+            finished_group = orm['auth.Group'].objects.get_or_create(name=group_name)
+
+            if 'mailings' in settings.INSTALLED_APPS:
+                orm['mailings.RecipientGroup'].objects.get_or_create(
+                    event=event,
+                    app_label='labour',
+                    group=finished_group,
+                    defaults=dict(
+                        verbose_name=u'Työvuorotetut',
+                    ),
+                )
+
+            labour_event_meta.finished_group = finished_group
             labour_event_meta.save()
 
     def backwards(self, orm):
