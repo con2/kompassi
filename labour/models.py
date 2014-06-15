@@ -19,6 +19,7 @@ GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
     admins=u'Työvoimavastaavat',
     applicants=u'Hakijat',
     accepted=u'Hyväksytyt',
+    finished=u'Työvuorotetut',
 )
 
 
@@ -70,6 +71,13 @@ class LabourEventMeta(EventMetaBase):
         related_name='+',
     )
 
+    finished_group = models.ForeignKey('auth.Group',
+        verbose_name=u'Vuorotettujen vänkärien ryhmä',
+        help_text=u'Järjestelmä lisää tähän ryhmään automaattisesti kaikki ne hyväksytyt '
+            u'vänkärit, joille on tehty työvuorot valmiiksi.',
+        related_name='+',
+    )
+
     class Meta:
         verbose_name = u'tapahtuman työvoimatiedot'
         verbose_name_plural = u'tapahtuman työvoimatiedot'
@@ -103,6 +111,7 @@ class LabourEventMeta(EventMetaBase):
         admin_group, unused = cls.get_or_create_group(event, 'admins')
         accepted_group, unused = cls.get_or_create_group(event, 'accepted')
         applicants_group, unused = cls.get_or_create_group(event, 'applicants')
+        finished_group, unused = cls.get_or_create_group(event, 'finished')
 
         t = now()
 
@@ -112,6 +121,7 @@ class LabourEventMeta(EventMetaBase):
                 admin_group=admin_group,
                 accepted_group=accepted_group,
                 applicants_group=applicants_group,
+                finished_group=finished_group,
                 signup_extra_content_type=content_type,
                 registration_opens=t - timedelta(days=60),
                 registration_closes=t + timedelta(days=60),
@@ -396,8 +406,9 @@ SIGNUP_STATE_CHOICES = [
 ]
 
 ACCEPTED_STATES = ['accepted', 'finished', 'complained', 'arrived']
+FINISHED_STATES = ['finished', 'complained', 'arrived']
 ACTIVE_STATES = ACCEPTED_STATES + ['new']
-TERMINAL_STATES = ['retired', 'rejected', 'cancelled', 'honr_discharged', 'dish_discharged', 'no_show', 'relieved']
+TERMINAL_STATES = ['rejected', 'cancelled', 'dish_discharged', 'no_show', 'relieved']
 PROCESSED_STATES = ACCEPTED_STATES + TERMINAL_STATES
 PREEVENT_STATES = ['new', 'accepted', 'finished', 'complained']
 SIGNUP_STATE_LABEL_CLASSES = dict(
@@ -582,6 +593,9 @@ class Signup(models.Model):
 
         if new_state in ACCEPTED_STATES:
             ensure_user_is_member_of_group(self.person, meta.accepted_group)
+
+        if new_state in FINISHED_STATES:
+            ensure_user_is_member_of_group(self.person, meta.finished_group)
 
         if new_state in TERMINAL_STATES:
             ensure_user_is_not_member_of_group(self.person, meta.accepted_group)

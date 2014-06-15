@@ -25,6 +25,17 @@ Feature: Labour messages
     Then I should receive the message
 
   @backend
+  Scenario: Receiving shifts in an email
+    Given the event has a message that is to be sent to all workers with finished shifts
+
+    When I sign up for the event
+    And the workforce manager approves my application
+    And the workforce manager assigns me to shifts
+    
+    Then I should receive the message
+    And the message should include my shifts
+
+  @backend
   Scenario: A message is sent to all applicants
     Given I am signed up to the event
 

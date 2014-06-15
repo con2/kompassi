@@ -1,0 +1,21 @@
+digraph "states" {
+    new -> accepted;
+    new -> rejected;
+    new -> cancelled;
+
+    accepted -> finished;
+    accepted -> cancelled;
+
+    finished -> complained;
+    finished -> cancelled;
+    finished -> arrived;
+    finished -> no_show;
+    finished -> relieved;
+
+    complained -> finished;
+    complained -> relieved;
+    
+    arrived -> honr_discharged;
+    arrived -> dish_discharged;
+    arrived -> relieved;
+}

@@ -48,3 +48,24 @@ def receive_the_message(context):
     )
 
     assert len(mail.outbox) == 1
+
+
+@given(u'the event has a message that is to be sent to all workers with finished shifts')
+def step_impl(context):
+    finished_group, unused = LabourEventMeta.get_or_create_group(
+        event=context.event,
+        suffix='finished',
+    )
+
+    context.message = Message.objects.create(
+        recipient=RecipientGroup.objects.get(group=finished_group),
+        subject_template='Test message subject',
+        body_template='Test message body {{ signup.formatted_shifts }}',
+    )
+
+    context.message.send()
+
+
+@then(u'the message should include my shifts')
+def step_impl(context):
+    assert 'VUOROT' in mail.outbox[0].body

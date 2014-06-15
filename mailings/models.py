@@ -28,7 +28,7 @@ class RecipientGroup(models.Model):
 
 
 class Message(models.Model):
-    recipient = models.ForeignKey(RecipientGroup)
+    recipient = models.ForeignKey(RecipientGroup, verbose_name=u'Vastaanottajaryhmä')
 
     subject_template = models.CharField(
         max_length=255,
