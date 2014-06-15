@@ -20,7 +20,7 @@ class Migration(DataMigration):
                 suffix='finished',
             )
             
-            finished_group = orm['auth.Group'].objects.get_or_create(name=group_name)
+            finished_group, unused = orm['auth.Group'].objects.get_or_create(name=group_name)
 
             labour_event_meta.finished_group = finished_group
             labour_event_meta.save()
