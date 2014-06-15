@@ -22,16 +22,6 @@ class Migration(DataMigration):
             
             finished_group = orm['auth.Group'].objects.get_or_create(name=group_name)
 
-            if 'mailings' in settings.INSTALLED_APPS:
-                orm['mailings.RecipientGroup'].objects.get_or_create(
-                    event=event,
-                    app_label='labour',
-                    group=finished_group,
-                    defaults=dict(
-                        verbose_name=u'Työvuorotetut',
-                    ),
-                )
-
             labour_event_meta.finished_group = finished_group
             labour_event_meta.save()
 
