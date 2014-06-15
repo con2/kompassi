@@ -36,3 +36,13 @@ def step_impl(context):
     context.signup.save()
     
     context.signup.state_change_from(old_state)
+
+
+@given(u'my application has been rejected')
+def step_impl(context):
+    old_state = context.signup.state
+
+    context.signup.state = 'rejected'
+    context.signup.save()
+    
+    context.signup.state_change_from(old_state)

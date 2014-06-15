@@ -49,3 +49,11 @@ Feature: Labour messages
 
     When a message is added that should be sent to all accepted workers
     Then I should receive the message
+
+  @backend
+  Scenario: A message is sent to all rejected workers
+    Given I am signed up to the event
+    And my application has been rejected
+
+    When a message is added that should be sent to all rejected workers
+    Then I should receive the message

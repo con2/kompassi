@@ -252,7 +252,10 @@ def give_all_app_perms_to_group(app_label, group):
             perm.group_set.add(group)
 
 
-def ensure_user_is_member_of_group(user, group):
+def ensure_user_is_member_of_group(user, group, group_membership=True):
+    if not group_membership:
+        return ensure_user_is_not_member_of_group(user, group)
+
     if type(user) is not User:
         user = user.user
 

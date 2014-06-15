@@ -63,6 +63,7 @@ class Command(BaseCommand):
         labour_applicants_group, unused = LabourEventMeta.get_or_create_group(event, 'applicants')
         labour_finished_group, unused = LabourEventMeta.get_or_create_group(event, 'finished')
         labour_admin_group, unused = LabourEventMeta.get_or_create_group(event, 'admins')
+        labour_rejected_group, unused = LabourEventMeta.get_or_create_group(event, 'rejected')
         give_all_app_perms_to_group('labour', labour_admin_group)
 
         if options['test']:
@@ -74,6 +75,7 @@ class Command(BaseCommand):
             accepted_group=labour_accepted_group,
             applicants_group=labour_applicants_group,
             finished_group=labour_finished_group,
+            rejected_group=labour_rejected_group,
             signup_extra_content_type=content_type,
             work_begins=datetime(2014, 9, 12, 8, 0, tzinfo=tz),
             work_ends=datetime(2014, 9, 14, 22, 0, tzinfo=tz),

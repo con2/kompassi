@@ -20,6 +20,7 @@ GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
     applicants=u'Hakijat',
     accepted=u'Hyväksytyt',
     finished=u'Työvuorotetut',
+    rejected=u'Hylätyt',
 )
 
 
@@ -78,6 +79,13 @@ class LabourEventMeta(EventMetaBase):
         related_name='+',
     )
 
+    rejected_group = models.ForeignKey('auth.Group',
+        verbose_name=u'Hylättyjen vänkäriehdokkaiden ryhmä',
+        help_text=u'Järjestelmä lisää tähän ryhmään automaattisesti kaikki ne vänkärihakijat, '
+            u'joiden hakemukset työvoimavastaava on hylännyt.',
+        related_name='+',
+    )
+
     class Meta:
         verbose_name = u'tapahtuman työvoimatiedot'
         verbose_name_plural = u'tapahtuman työvoimatiedot'
@@ -112,6 +120,7 @@ class LabourEventMeta(EventMetaBase):
         accepted_group, unused = cls.get_or_create_group(event, 'accepted')
         applicants_group, unused = cls.get_or_create_group(event, 'applicants')
         finished_group, unused = cls.get_or_create_group(event, 'finished')
+        rejected_group, unused = cls.get_or_create_group(event, 'rejected')
 
         t = now()
 
@@ -122,6 +131,7 @@ class LabourEventMeta(EventMetaBase):
                 accepted_group=accepted_group,
                 applicants_group=applicants_group,
                 finished_group=finished_group,
+                rejected_group=rejected_group,
                 signup_extra_content_type=content_type,
                 registration_opens=t - timedelta(days=60),
                 registration_closes=t + timedelta(days=60),
@@ -588,18 +598,10 @@ class Signup(models.Model):
 
         meta = self.event.labour_event_meta
 
-        if new_state in ACTIVE_STATES:
-            ensure_user_is_member_of_group(self.person, meta.applicants_group)
-
-        if new_state in ACCEPTED_STATES:
-            ensure_user_is_member_of_group(self.person, meta.accepted_group)
-
-        if new_state in FINISHED_STATES:
-            ensure_user_is_member_of_group(self.person, meta.finished_group)
-
-        if new_state in TERMINAL_STATES:
-            ensure_user_is_not_member_of_group(self.person, meta.accepted_group)
-            ensure_user_is_not_member_of_group(self.person, meta.applicants_group)
+        ensure_user_is_member_of_group(self.person, meta.applicants_group, new_state in ACTIVE_STATES)
+        ensure_user_is_member_of_group(self.person, meta.accepted_group,   new_state in ACCEPTED_STATES)
+        ensure_user_is_member_of_group(self.person, meta.finished_group,   new_state in FINISHED_STATES)
+        ensure_user_is_member_of_group(self.person, meta.rejected_group,   new_state == 'rejected')
 
         self.send_messages()
 

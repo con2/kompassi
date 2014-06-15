@@ -69,3 +69,18 @@ def step_impl(context):
 @then(u'the message should include my shifts')
 def step_impl(context):
     assert 'VUOROT' in mail.outbox[0].body
+
+@when(u'a message is added that should be sent to all rejected workers')
+def step_impl(context):
+    rejected_group, unused = LabourEventMeta.get_or_create_group(
+        event=context.event,
+        suffix='rejected',
+    )
+
+    context.message = Message.objects.create(
+        recipient=RecipientGroup.objects.get(group=rejected_group),
+        subject_template='Test message subject',
+        body_template='Test message body',
+    )
+
+    context.message.send()
