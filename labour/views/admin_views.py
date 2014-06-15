@@ -182,27 +182,34 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
             if form.is_valid():
                 message = form.save(commit=False)
 
-                message.save()
-
                 if 'save-send' in request.POST:
+                    message.save()
                     message.send()
                     messages.success(request, u'Viesti lähetettiin. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.')
 
                 elif 'save-expire' in request.POST:
+                    message.save()
                     message.expire()
                     messages.success(request, u'Viesti merkittiin vanhentuneeksi. Sitä ei lähetetä enää uusille vastaanottajille.')
 
                 elif 'save-unexpire' in request.POST:
+                    message.save()
                     message.unexpire()
                     messages.success(request, u'Viesti otettiin uudelleen käyttöön. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.')
 
                 elif 'save-return' in request.POST:
+                    message.save()
                     messages.success(request, u'Muutokset viestiin tallennettiin.')
                     return redirect('labour_admin_mail_view', event.slug)
 
                 elif 'save-edit' in request.POST:
+                    message.save()
                     messages.success(request, u'Muutokset viestiin tallennettiin.')
-                    return redirect('labour_admin_mail_editor_view', event.slug, message.pk)
+
+                else:
+                    messages.error(request, u'Tuntematon toiminto.')
+                
+                return redirect('labour_admin_mail_editor_view', event.slug, message.pk)
 
             else:
                 messages.error(request, u'Ole hyvä ja tarkasta lomake.')
