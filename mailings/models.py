@@ -35,7 +35,10 @@ class Message(models.Model):
         verbose_name=u'Otsikko'
     )
     body_template = models.TextField(
-        verbose_name=u'Viestin teksti'
+        verbose_name=u'Viestin teksti',
+        help_text=u'Teksti {{ signup.formatted_job_categories_accepted }} korvataan '
+            u'listalla hyväksytyn vänkärin tehtäväalueista ja teksti '
+            u'{{ signup.formatted_shifts }} korvataan vänkärin vuoroilla.',
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
