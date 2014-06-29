@@ -111,19 +111,22 @@ class Command(BaseCommand):
 
         room_order = 0
         for room_name in [
-            'Iso sali',
-            'Pieni sali',
-            'Sopraano',
-            'Rondo',
-            'Studio',
-            'Sonaatti 1',
-            'Sonaatti 2',
-            'Basso',
-            'Opus 1',
-            'Opus 2',
-            'Opus 3',
-            'Opus 4',
-            'Ulkona (teltta)',
+            u'Iso sali',
+            u'Pieni sali',
+            u'Sopraano',
+            u'Rondo',
+            u'Studio',
+            u'Sonaatti 1',
+            u'Sonaatti 2',
+            u'Basso',
+            u'Opus 1',
+            u'Opus 2',
+            u'Opus 3',
+            u'Opus 4',
+            u'Puisto - Kiveys',
+            u'Puisto - Iso miittiteltta',
+            u'Puisto - Pieni miittiteltta',
+            u'Puisto - Bofferiteltta',
         ]:
             room_order += 100
             Room.objects.get_or_create(
@@ -216,8 +219,13 @@ class Command(BaseCommand):
                 u'Opus 2',
                 u'Opus 3',
                 u'Opus 4',
-                u'Ulkona (teltta)',
             ]),
+            (u'Ulkona', [
+                u'Puisto - Kiveys',
+                u'Puisto - Iso miittiteltta',
+                u'Puisto - Pieni miittiteltta',
+                u'Puisto - Bofferiteltta',
+            ])
         ]:
             rooms = [Room.objects.get(name__iexact=room_name, venue=venue)
                 for room_name in room_names]
