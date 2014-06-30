@@ -421,7 +421,10 @@ def core_password_reset_request_view(request):
     if request.method == 'POST':
         if form.is_valid():
             try:
-                person = Person.objects.get(email=form.cleaned_data['email'])
+                person = Person.objects.get(
+                    email=form.cleaned_data['email'],
+                    user__isnull=False,
+                )
             except Person.DoesNotExist:
                 # Fail silently - do not give information about users
 
