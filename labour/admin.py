@@ -3,6 +3,7 @@
 from django.contrib import admin
 
 from .models import (
+    AlternativeSignupForm,
     JobCategory,
     LabourEventMeta,
     PersonQualification,
@@ -34,7 +35,14 @@ class JobCategoryAdmin(admin.ModelAdmin):
     ordering = ('event', 'name')
 
 
+class AlternativeSignupFormAdmin(admin.ModelAdmin):
+    list_display = ('event', 'slug', 'name')
+    list_filter = ('event',)
+    ordering = ('event', 'slug')
+
+
 admin.site.register(Signup)
 admin.site.register(WorkPeriod)
 admin.site.register(JobCategory, JobCategoryAdmin)
 admin.site.register(Qualification, QualificationAdmin)
+admin.site.register(AlternativeSignupForm, AlternativeSignupFormAdmin)

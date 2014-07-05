@@ -275,3 +275,23 @@ def ensure_user_is_not_member_of_group(user, group):
     if 'external_auth' in settings.INSTALLED_APPS:
         from external_auth.utils import remove_user_from_group
         remove_user_from_group(user, group)
+
+
+def get_code(path):
+    """
+    Given "core.utils:get_code", imports the module "core.utils" and returns
+    "get_code" from it.
+    """
+    from importlib import import_module
+    module_name, member_name = path.split(':')
+    module = import_module(module_name)
+    return getattr(module, member_name)
+
+
+def is_within_period(period_start, period_end, t=None):
+    if t is None:
+        from django.utils.timezone import now
+        t = now()
+
+    return period_start and period_start <= t and \
+        not (period_end and period_end <= t)

@@ -162,9 +162,8 @@ class LabourEventMeta(EventMetaBase):
 
     @property
     def is_registration_open(self):
-        t = now()
-        return self.registration_opens and self.registration_opens <= t and \
-            not (self.registration_closes and self.registration_closes <= t)
+        from core.utils import is_within_period
+        return is_within_period(self.registration_opens, self.registration_closes)
 
     def is_person_signed_up(self, person):
         return Signup.objects.filter(person=person, event=self.event).exists()
@@ -714,6 +713,79 @@ class EmptySignupExtra(SignupExtraBase):
     def get_form_class(cls):
         from .forms import EmptySignupExtraForm
         return EmptySignupExtraForm
+
+
+NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
+
+
+class AlternativeSignupForm(models.Model):
+    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
+
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+
+    title = models.CharField(
+        max_length=63,
+        verbose_name=u'Otsikko',
+        help_text=u'Tämä otsikko näkyy käyttäjälle.'
+    )
+
+    signup_form_class_path = models.CharField(
+        max_length=63,
+        help_text=u'Viittaus ilmoittautumislomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupForm',
+    )
+
+    signup_extra_form_class_path = models.CharField(
+        max_length=63,
+        default='labour.forms:EmptySignupExtraForm',
+        help_text=u'Viittaus lisätietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm',
+    )
+
+    active_from = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=u'Käyttöaika alkaa',
+    )
+
+    active_until = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=u'Käyttöaika päättyy',
+    )    
+
+    @property
+    def signup_form_class(self):
+        if not getattr(self, '_signup_form_class'):
+            from core.utils import get_code
+            self._signup_form_class = get_code(self.signup_form_class_path)
+
+        return self._signup_form_class
+
+    @property
+    def signup_defaults(self):
+        return self.signup_form_class.get_excluded_field_defaults()
+
+    @property
+    def signup_extra_form_class(self):
+        if not getattr(self, '_signup_extra_form_class'):
+            from core.utils import get_code
+            self._signup_extra_form_class = get_code(self.signup_extra_form_class_path)
+
+        return self._signup_extra_form_class
+
+    @property
+    def signup_extra_defaults(self):
+        return self.signup_extra_form_class.get_excluded_field_defaults()
+
+    @property
+    def is_active(self):
+        return is_within_period(self.active_from, self.active_until)
+
+    class Meta:
+        verbose_name = u'Vaihtoehtoinen ilmoittautumislomake'
+        verbose_name_plural = u'Vaihtoehtoiset ilmoittautumislomakkeet'
+        unique_together = [
+            ('event', 'slug')
+        ]
 
 
 __all__ = [
