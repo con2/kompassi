@@ -738,7 +738,7 @@ class Order(models.Model):
         if 'lippukala' not in settings.INSTALLED_APPS:
             raise NotImplementedError('lippukala is not installed')
 
-        if not self.contains_electronic_tickets:
+        if not self.contains_electronic_tickets or not self.lippukala_order:
             return
 
         from lippukala.models import UNUSED, MANUAL_INTERVENTION_REQUIRED
@@ -749,9 +749,9 @@ class Order(models.Model):
         if 'lippukala' not in settings.INSTALLED_APPS:
             raise NotImplementedError('lippukala is not installed')
 
-        if not self.contains_electronic_tickets:
+        if not self.contains_electronic_tickets or not self.lippukala_order:
             return
-            
+
         from lippukala.models import UNUSED, MANUAL_INTERVENTION_REQUIRED
 
         self.lippukala_order.code_set.filter(state=MANUAL_INTERVENTION_REQUIRED).update(state=UNUSED)
@@ -796,7 +796,7 @@ class Order(models.Model):
             else:
                 msgsubject = u"{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
                 msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
-        
+
         elif msgtype == "delivery_confirmation":
             msgsubject = u"{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
             msgbody = render_to_string("tickets_confirm_delivery.eml", self.email_vars)
