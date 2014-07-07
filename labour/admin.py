@@ -36,7 +36,7 @@ class JobCategoryAdmin(admin.ModelAdmin):
 
 
 class AlternativeSignupFormAdmin(admin.ModelAdmin):
-    list_display = ('event', 'slug', 'name')
+    list_display = ('event', 'slug', 'title')
     list_filter = ('event',)
     ordering = ('event', 'slug')
 

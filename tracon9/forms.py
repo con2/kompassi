@@ -5,6 +5,7 @@ from django import forms
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
+from labour.models import Signup
 
 from .models import SignupExtra
 
@@ -90,7 +91,7 @@ class OrganizerSignupForm(forms.ModelForm):
 
         widgets = dict(
             job_categories=forms.CheckboxSelectMultiple,
-        )        
+        )
 
 
 class OrganizerSignupExtraForm(forms.ModelForm):
