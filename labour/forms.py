@@ -49,9 +49,21 @@ class AdminPersonForm(PersonForm):
 
 class SignupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        job_categories = kwargs.pop('job_categories')
+        event = kwargs.pop('event')
+        admin = kwargs.pop('admin')
+
         super(SignupForm, self).__init__(*args, **kwargs)
-        self.fields['job_categories'].queryset = job_categories
+
+        from django.db.models import Q
+        q = Q(event=event)
+        if not admin:
+            q = q & Q(public=True)
+
+            if self.instance.pk is not None:
+                # Also include those the user is signed up to whether or not they are public.
+                q = q | Q(signup_set=self.instance)
+
+        self.fields['job_categories'].queryset = JobCategory.objects.filter(q)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -95,9 +107,11 @@ class EmptySignupExtraForm(forms.ModelForm):
 
 class SignupAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        job_categories = kwargs.pop('job_categories')
+        event = kwargs.pop('event')
+
         super(SignupAdminForm, self).__init__(*args, **kwargs)
-        self.fields['job_categories_accepted'].queryset = job_categories
+
+        self.fields['job_categories_accepted'].queryset = JobCategory.objects.filter(event=event)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False

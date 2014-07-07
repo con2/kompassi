@@ -19,10 +19,12 @@ from core.utils import (
     page_wizard_init,
     page_wizard_vars,
     url,
+    set_attrs,
 )
 
 from ..forms import SignupForm
 from ..models import (
+    AlternativeSignupForm,
     JobCategory,
     LabourEventMeta,
     PersonQualification,
@@ -48,7 +50,7 @@ def qualifications_related():
 
 @labour_event_required
 @require_http_methods(['GET', 'POST'])
-def labour_signup_view(request, event):
+def labour_signup_view(request, event, alternative_form_slug=None):
     """
     This is the "gate" function. The implementation is in
     `actual_labour_signup_view`.
@@ -80,17 +82,50 @@ def labour_signup_view(request, event):
         page_wizard_init(request, pages)
         return redirect('core_personify_view')
     else:
-        return actual_labour_signup_view(request, event)
+        return actual_labour_signup_view(request, event, alternative_form_slug=alternative_form_slug)
 
 
-def actual_labour_signup_view(request, event):
+def actual_labour_signup_view(request, event, alternative_form_slug):
     vars = page_wizard_vars(request)
 
-    if not event.labour_event_meta.is_registration_open:
-        messages.error(request, u'Ilmoittautuminen tähän tapahtumaan ei ole avoinna.')
-        return redirect('core_event_view', event.slug)
-
     signup = event.labour_event_meta.get_signup_for_person(request.user.person)
+
+    if alternative_form_slug is not None:
+        # Alternative signup form specified via URL
+
+        alternative_signup_form = get_object_or_404(AlternativeSignupForm, event=event, slug=alternative_form_slug)
+
+        if (
+            signup.alternative_signup_form_used is not None and \
+            signup.alternative_signup_form_used.pk != alternative_signup_form.pk
+        ):
+            messages.error(request, u'Hakemusta ei ole tehty käyttäen tätä lomaketta.')
+            return redirect('core_event_view', event.slug)
+    if signup.pk is not None and signup.alternative_signup_form_used is not None:
+        # Alternative signup form used to sign up
+        alternative_signup_form = signup.alternative_signup_form_used
+    else:
+        # Use default signup form
+        alternative_signup_form = None
+
+    if alternative_signup_form is not None:
+        # Using an alternative signup form
+
+        if not alternative_signup_form.is_active:
+            messages.error(request, u'Pyytämäsi ilmoittautumislomake ei ole käytössä.')
+            return redirect('core_event_view', event.slug)
+
+        SignupFormClass = alternative_signup_form.signup_form_class
+        SignupExtraFormClass = alternative_signup_form.signup_extra_form_class
+    else:
+        # Using default signup form
+
+        if not event.labour_event_meta.is_registration_open:
+            messages.error(request, u'Ilmoittautuminen tähän tapahtumaan ei ole avoinna.')
+            return redirect('core_event_view', event.slug)
+
+        SignupFormClass = None
+        SignupExtraFormClass = None
 
     if signup.state in PROCESSED_STATES:
         messages.error(request,
@@ -107,7 +142,10 @@ def actual_labour_signup_view(request, event):
         submit_text = 'Lähetä ilmoittautuminen'
 
     signup_extra = signup.signup_extra
-    signup_form, signup_extra_form = initialize_signup_forms(request, event, signup)
+    signup_form, signup_extra_form = initialize_signup_forms(request, event, signup,
+        SignupFormClass=SignupFormClass,
+        SignupExtraFormClass=SignupExtraFormClass,
+    )
 
     if request.method == 'POST':
         if signup_form.is_valid() and signup_extra_form.is_valid():
@@ -116,9 +154,17 @@ def actual_labour_signup_view(request, event):
             else:
                 message = u'Ilmoittautumisesi on päivitetty.'
 
+            if alternative_signup_form:
+                signup.alternative_signup_form_used = alternative_signup_form
+
+                set_attrs(signup, **alternative_signup_form.signup_defaults)
+                set_attrs(signup_extra, **alternative_signup_form.signup_extra_defaults)
+
             signup = signup_form.save()
+
             signup_extra.signup = signup
             signup_extra_form.save()
+
             signup.state_change_from(old_state)
 
             messages.success(request, message)
@@ -126,8 +172,10 @@ def actual_labour_signup_view(request, event):
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 
+    all_job_cats = JobCategory.objects.filter(event=event)
     job_cats = JobCategory.objects.filter(event=event, public=True)
 
+    # FIXME use id and data attr instead of category name
     non_qualified_category_names = [
         jc.name for jc in job_cats
         if not jc.is_person_qualified(request.user.person)
@@ -138,9 +186,10 @@ def actual_labour_signup_view(request, event):
         signup_form=signup_form,
         signup_extra_form=signup_extra_form,
         submit_text=submit_text,
+        alternative_signup_form=alternative_signup_form,
 
         # XXX HACK descriptions injected using javascript
-        job_descriptions_json=json.dumps(dict((cat.pk, cat.description) for cat in job_cats)),
+        job_descriptions_json=json.dumps(dict((cat.pk, cat.description) for cat in all_job_cats)),
         non_qualified_category_names_json=json.dumps(non_qualified_category_names),
     )
 

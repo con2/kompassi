@@ -1,9 +1,12 @@
 extends base.jade
 - load crispy_forms_tags
 block content
-  h2 Ilmoittaudu vapaaehtoistyöhön {{ event.name_illative }}
+  if alternative_signup_form
+    h2 {{ alternative_signup_form.title }}
+  else
+    h2 Ilmoittaudu vapaaehtoistyöhön {{ event.name_illative }}
 
-  form(action='{% url "labour_signup_view" event.slug %}', method='POST', role='form').form-horizontal
+  form(method='POST', role='form').form-horizontal
     .labour-signup-form
       - crispy signup_form
     - crispy signup_extra_form
@@ -31,4 +34,4 @@ block extra_scripts
           $label = $(selector);
       $label.addClass('text-muted');
       $label.find('input').attr('disabled', true);
-    });     
+    });

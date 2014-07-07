@@ -295,3 +295,10 @@ def is_within_period(period_start, period_end, t=None):
 
     return period_start and period_start <= t and \
         not (period_end and period_end <= t)
+
+
+def set_attrs(obj, **attrs):
+    for key, value in attrs.iteritems():
+        setattr(obj, key, value)
+
+    return obj

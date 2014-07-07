@@ -58,8 +58,6 @@ class SignupExtraForm(forms.ModelForm):
             lodging_needs=forms.CheckboxSelectMultiple,
         )
 
-
-
     def clean_certificate_delivery_address(self):
         want_certificate = self.cleaned_data['want_certificate']
         certificate_delivery_address = self.cleaned_data['certificate_delivery_address']
@@ -73,9 +71,19 @@ class SignupExtraForm(forms.ModelForm):
 
 class OrganizerSignupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        job_categories = kwargs.pop('job_categories')
-        super(SignupForm, self).__init__(*args, **kwargs)
-        self.fields['job_categories'].queryset = job_categories
+        from labour.models import JobCategory
+
+        event = kwargs.pop('event')
+        admin = kwargs.pop('admin')
+
+        assert not admin
+
+        super(OrganizerSignupForm, self).__init__(*args, **kwargs)
+
+        self.fields['job_categories'].queryset = JobCategory.objects.filter(
+            event=event,
+            name='Conitea',
+        )
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -87,11 +95,21 @@ class OrganizerSignupForm(forms.ModelForm):
 
     class Meta:
         model = Signup
-        fields = ()
+        fields = ('job_categories',)
 
         widgets = dict(
             job_categories=forms.CheckboxSelectMultiple,
         )
+
+    @classmethod
+    def get_excluded_field_defaults(cls):
+        from labour.models import WorkPeriod
+
+        return dict(
+            # Organizers work around the clock.
+            work_periods=WorkPeriod.objects.filter(event__slug='tracon9')
+        )
+
 
 
 class OrganizerSignupExtraForm(forms.ModelForm):

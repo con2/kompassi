@@ -12,7 +12,14 @@ from dateutil.tz import tzlocal
 
 from core.utils import give_all_app_perms_to_group
 from core.models import Event, Person, Venue
-from labour.models import LabourEventMeta, JobCategory, Job, Qualification, WorkPeriod
+from labour.models import (
+    AlternativeSignupForm,
+    Job,
+    JobCategory,
+    LabourEventMeta,
+    Qualification,
+    WorkPeriod,
+)
 from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role, TimeBlock, SpecialStartTime, View, Tag
 from tickets.models import TicketsEventMeta, LimitGroup, Product
 
@@ -330,6 +337,22 @@ class Command(BaseCommand):
             u'Lauantain ja sunnuntain välinen yö',
         ]:
             Night.objects.get_or_create(name=night)
+
+        AlternativeSignupForm.objects.get_or_create(
+            event=event,
+            slug=u'conitea',
+            defaults=dict(
+                title=u'Conitean ilmoittautumislomake',
+                signup_form_class_path='tracon9.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='tracon9.forms:OrganizerSignupExtraForm',
+                active_from=datetime(2014, 7, 7, 12, 0, 0, tzinfo=tz),
+                active_until=datetime(2014, 8, 31, 23, 59, 59, tzinfo=tz),
+            ),
+        )
+
+        #
+        # Tickets
+        #
 
         tickets_admin_group, unused = TicketsEventMeta.get_or_create_group(event, 'admins')
         give_all_app_perms_to_group('tickets', tickets_admin_group)

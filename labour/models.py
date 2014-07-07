@@ -12,6 +12,7 @@ from core.utils import (
     SLUG_FIELD_PARAMS,
     ensure_user_is_member_of_group,
     ensure_user_is_not_member_of_group,
+    is_within_period,
 )
 
 
@@ -162,7 +163,6 @@ class LabourEventMeta(EventMetaBase):
 
     @property
     def is_registration_open(self):
-        from core.utils import is_within_period
         return is_within_period(self.registration_opens, self.registration_closes)
 
     def is_person_signed_up(self, person):
@@ -394,6 +394,96 @@ class JobRequirement(models.Model):
         verbose_name_plural = u'henkilöstövaatimukset'
 
 
+NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
+
+
+class AlternativeSignupForm(models.Model):
+    """
+    Most workers are registered using the default form. However, some workers are "special",
+    such as the organizers (ConCom). We would still like to get their Signups, but they do not
+    need to answer all the stupid questions - just some of them.
+
+    This model represents an alternative form that some of these "special" workers can use to sign
+    up. Access to this alternative form is controlled using the link. If you know the URL, you can
+    use the form.
+
+    Instances of AlternativeSignupForm are supposed to be installed in the database by a setup
+    script. For examples, see `tracon9/management/commands/setup_tracon.py` and look for
+    AlternativeSignupForm.
+    """
+
+    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
+
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+
+    title = models.CharField(
+        max_length=63,
+        verbose_name=u'Otsikko',
+        help_text=u'Tämä otsikko näkyy käyttäjälle.'
+    )
+
+    signup_form_class_path = models.CharField(
+        max_length=63,
+        help_text=u'Viittaus ilmoittautumislomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupForm',
+    )
+
+    signup_extra_form_class_path = models.CharField(
+        max_length=63,
+        default='labour.forms:EmptySignupExtraForm',
+        help_text=u'Viittaus lisätietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm',
+    )
+
+    active_from = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=u'Käyttöaika alkaa',
+    )
+
+    active_until = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=u'Käyttöaika päättyy',
+    )
+
+    def __unicode__(self):
+        return self.title
+
+    @property
+    def signup_form_class(self):
+        if not getattr(self, '_signup_form_class', None):
+            from core.utils import get_code
+            self._signup_form_class = get_code(self.signup_form_class_path)
+
+        return self._signup_form_class
+
+    @property
+    def signup_defaults(self):
+        return self.signup_form_class.get_excluded_field_defaults()
+
+    @property
+    def signup_extra_form_class(self):
+        if not getattr(self, '_signup_extra_form_class', None):
+            from core.utils import get_code
+            self._signup_extra_form_class = get_code(self.signup_extra_form_class_path)
+
+        return self._signup_extra_form_class
+
+    @property
+    def signup_extra_defaults(self):
+        return self.signup_extra_form_class.get_excluded_field_defaults()
+
+    @property
+    def is_active(self):
+        return is_within_period(self.active_from, self.active_until)
+
+    class Meta:
+        verbose_name = u'Vaihtoehtoinen ilmoittautumislomake'
+        verbose_name_plural = u'Vaihtoehtoiset ilmoittautumislomakkeet'
+        unique_together = [
+            ('event', 'slug'),
+        ]
+
+
 NUM_FIRST_CATEGORIES = 5
 SIGNUP_STATE_CHOICES = [
     (u'new', u'Uusi'),
@@ -497,6 +587,14 @@ class Signup(models.Model):
         help_text=u"Tämä tekstikenttä on väliaikaisratkaisu, jolla vänkärin työvuorot voidaan "
             u"merkitä Kompassiin ja lähettää vänkärille työvoimaviestissä jo ennen kuin "
             u"lopullinen työvuorotyökalu on käyttökunnossa."
+    )
+
+    alternative_signup_form_used = models.ForeignKey(AlternativeSignupForm,
+        blank=True,
+        null=True,
+        verbose_name=u"Ilmoittautumislomake",
+        help_text=u"Tämä kenttä ilmaisee, mitä ilmoittautumislomaketta hakemuksen täyttämiseen käytettiin. "
+            u"Jos kenttä on tyhjä, käytettiin oletuslomaketta.",
     )
 
     class Meta:
@@ -715,80 +813,8 @@ class EmptySignupExtra(SignupExtraBase):
         return EmptySignupExtraForm
 
 
-NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
-
-
-class AlternativeSignupForm(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
-
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-
-    title = models.CharField(
-        max_length=63,
-        verbose_name=u'Otsikko',
-        help_text=u'Tämä otsikko näkyy käyttäjälle.'
-    )
-
-    signup_form_class_path = models.CharField(
-        max_length=63,
-        help_text=u'Viittaus ilmoittautumislomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupForm',
-    )
-
-    signup_extra_form_class_path = models.CharField(
-        max_length=63,
-        default='labour.forms:EmptySignupExtraForm',
-        help_text=u'Viittaus lisätietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm',
-    )
-
-    active_from = models.DateTimeField(
-        null=True,
-        blank=True,
-        default=u'Käyttöaika alkaa',
-    )
-
-    active_until = models.DateTimeField(
-        null=True,
-        blank=True,
-        default=u'Käyttöaika päättyy',
-    )    
-
-    @property
-    def signup_form_class(self):
-        if not getattr(self, '_signup_form_class'):
-            from core.utils import get_code
-            self._signup_form_class = get_code(self.signup_form_class_path)
-
-        return self._signup_form_class
-
-    @property
-    def signup_defaults(self):
-        return self.signup_form_class.get_excluded_field_defaults()
-
-    @property
-    def signup_extra_form_class(self):
-        if not getattr(self, '_signup_extra_form_class'):
-            from core.utils import get_code
-            self._signup_extra_form_class = get_code(self.signup_extra_form_class_path)
-
-        return self._signup_extra_form_class
-
-    @property
-    def signup_extra_defaults(self):
-        return self.signup_extra_form_class.get_excluded_field_defaults()
-
-    @property
-    def is_active(self):
-        return is_within_period(self.active_from, self.active_until)
-
-    class Meta:
-        verbose_name = u'Vaihtoehtoinen ilmoittautumislomake'
-        verbose_name_plural = u'Vaihtoehtoiset ilmoittautumislomakkeet'
-        unique_together = [
-            ('event', 'slug')
-        ]
-
-
 __all__ = [
+    'AlternativeSignupForm',
     'LabourEventMeta',
     'Job',
     'JobCategory',
