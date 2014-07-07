@@ -101,7 +101,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
         ):
             messages.error(request, u'Hakemusta ei ole tehty käyttäen tätä lomaketta.')
             return redirect('core_event_view', event.slug)
-    if signup.pk is not None and signup.alternative_signup_form_used is not None:
+    elif signup.pk is not None and signup.alternative_signup_form_used is not None:
         # Alternative signup form used to sign up
         alternative_signup_form = signup.alternative_signup_form_used
     else:
@@ -157,8 +157,8 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
             if alternative_signup_form:
                 signup.alternative_signup_form_used = alternative_signup_form
 
-                set_attrs(signup, **alternative_signup_form.signup_defaults)
-                set_attrs(signup_extra, **alternative_signup_form.signup_extra_defaults)
+                set_attrs(signup, **signup_form.get_excluded_field_defaults())
+                set_attrs(signup_extra, **signup_form.get_excluded_field_defaults())
 
             signup = signup_form.save()
 

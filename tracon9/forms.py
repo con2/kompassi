@@ -5,7 +5,7 @@ from django import forms
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
-from labour.models import Signup
+from labour.models import Signup, JobCategory, WorkPeriod
 
 from .models import SignupExtra
 
@@ -71,8 +71,6 @@ class SignupExtraForm(forms.ModelForm):
 
 class OrganizerSignupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        from labour.models import JobCategory
-
         event = kwargs.pop('event')
         admin = kwargs.pop('admin')
 
@@ -80,34 +78,29 @@ class OrganizerSignupForm(forms.ModelForm):
 
         super(OrganizerSignupForm, self).__init__(*args, **kwargs)
 
-        self.fields['job_categories'].queryset = JobCategory.objects.filter(
-            event=event,
-            name='Conitea',
-        )
-
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Tehtävät',
-                'job_categories'
+            Fieldset(u'Tehtävän tiedot',
+                'job_title',
             ),
         )
 
+        self.fields['job_title'].help_text = u"Mikä on tehtäväsi coniteassa? Printataan badgeen."
+        self.fields['job_title'].required = True
+
     class Meta:
         model = Signup
-        fields = ('job_categories',)
+        fields = ('job_title',)
 
         widgets = dict(
             job_categories=forms.CheckboxSelectMultiple,
         )
 
-    @classmethod
-    def get_excluded_field_defaults(cls):
-        from labour.models import WorkPeriod
-
+    def get_excluded_field_defaults(self):
         return dict(
-            # Organizers work around the clock.
-            work_periods=WorkPeriod.objects.filter(event__slug='tracon9')
+            work_periods=WorkPeriod.objects.filter(event__slug='tracon9'),
+            job_categories=JobCategory.objects.filter(event__slug='tracon9', name='Conitea')
         )
 
 
@@ -122,7 +115,7 @@ class OrganizerSignupExtraForm(forms.ModelForm):
                 'shirt_size',
                 'special_diet',
                 'special_diet_other',
-            )
+            ),
         )
 
 
@@ -138,8 +131,7 @@ class OrganizerSignupExtraForm(forms.ModelForm):
             special_diet=forms.CheckboxSelectMultiple,
         )
 
-    @classmethod
-    def get_excluded_field_defaults(cls):
+    def get_excluded_field_defaults(self):
         return dict(
             shift_type='kaikkikay',
             total_work='yli12h',

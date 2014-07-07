@@ -457,20 +457,12 @@ class AlternativeSignupForm(models.Model):
         return self._signup_form_class
 
     @property
-    def signup_defaults(self):
-        return self.signup_form_class.get_excluded_field_defaults()
-
-    @property
     def signup_extra_form_class(self):
         if not getattr(self, '_signup_extra_form_class', None):
             from core.utils import get_code
             self._signup_extra_form_class = get_code(self.signup_extra_form_class_path)
 
         return self._signup_extra_form_class
-
-    @property
-    def signup_extra_defaults(self):
-        return self.signup_extra_form_class.get_excluded_field_defaults()
 
     @property
     def is_active(self):
@@ -595,6 +587,14 @@ class Signup(models.Model):
         verbose_name=u"Ilmoittautumislomake",
         help_text=u"Tämä kenttä ilmaisee, mitä ilmoittautumislomaketta hakemuksen täyttämiseen käytettiin. "
             u"Jos kenttä on tyhjä, käytettiin oletuslomaketta.",
+    )
+
+    job_title = models.CharField(
+        max_length=63,
+        blank=True,
+        default=u'',
+        verbose_name=u"Tehtävänimike",
+        help_text=u"Printataan badgeen ym. Asetetaan automaattisesti hyväksyttyjen tehtäväalueiden perusteella, mikäli kenttä jätetään tyhjäksi.",
     )
 
     class Meta:
