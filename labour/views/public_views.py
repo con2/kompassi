@@ -154,7 +154,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
             else:
                 message = u'Ilmoittautumisesi on päivitetty.'
 
-            if alternative_signup_form:
+            if alternative_signup_form is not None:
                 signup.alternative_signup_form_used = alternative_signup_form
 
                 set_attrs(signup, **signup_form.get_excluded_field_defaults())
@@ -164,6 +164,17 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
 
             signup_extra.signup = signup
             signup_extra_form.save()
+
+            if alternative_signup_form is not None:
+                # Save m2m field defaults
+                for obj, form in [
+                    (signup, signup_form),
+                    (signup_extra, signup_extra_form),
+                ]:
+                    defaults = form.get_excluded_m2m_field_defaults()
+                    if defaults:
+                        set_attrs(obj, **defaults)
+                        obj.save()
 
             signup.state_change_from(old_state)
 

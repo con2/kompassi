@@ -410,6 +410,10 @@ class AlternativeSignupForm(models.Model):
     Instances of AlternativeSignupForm are supposed to be installed in the database by a setup
     script. For examples, see `tracon9/management/commands/setup_tracon.py` and look for
     AlternativeSignupForm.
+
+    The actual form classes should inherit from django.forms.ModelForm and
+    labour.forms.AlternativeFormMixin. For examples, see `tracon9/forms.py` and look for
+    OrganizerSignupForm and OrganizerSignupExtraForm.
     """
 
     event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')

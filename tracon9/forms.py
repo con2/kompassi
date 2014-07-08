@@ -5,6 +5,7 @@ from django import forms
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
+from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory, WorkPeriod
 
 from .models import SignupExtra
@@ -69,7 +70,7 @@ class SignupExtraForm(forms.ModelForm):
         return certificate_delivery_address
 
 
-class OrganizerSignupForm(forms.ModelForm):
+class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
         admin = kwargs.pop('admin')
@@ -97,15 +98,14 @@ class OrganizerSignupForm(forms.ModelForm):
             job_categories=forms.CheckboxSelectMultiple,
         )
 
-    def get_excluded_field_defaults(self):
+    def get_excluded_m2m_field_defaults(self):
         return dict(
             work_periods=WorkPeriod.objects.filter(event__slug='tracon9'),
             job_categories=JobCategory.objects.filter(event__slug='tracon9', name='Conitea')
         )
 
 
-
-class OrganizerSignupExtraForm(forms.ModelForm):
+class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
         super(OrganizerSignupExtraForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -139,7 +139,11 @@ class OrganizerSignupExtraForm(forms.ModelForm):
             overseer=False,
             want_certificate=False,
             certificate_delivery_address=u'',
-            lodging_needs=[],
             prior_experience=u'',
             free_text=u'Syötetty käyttäen coniitin ilmoittautumislomaketta',
+        )
+
+    def get_excluded_m2m_field_defaults(self):
+        return dict(
+            lodging_needs=[],
         )

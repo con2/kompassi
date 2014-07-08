@@ -133,3 +133,20 @@ class SignupAdminForm(forms.ModelForm):
             raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään tehtäväalue ei saa olla valittuna.')
 
         return job_categories_accepted
+
+
+class AlternativeFormMixin(object):
+    """
+    Stub implementations of required methods for alternative signup form implementations.
+    Alternative signup form implementations should inherit from `django.forms.ModelForm` and this
+    mixin.
+
+    Part of the alternative signup form facility. For detailed explanation, see the documentation
+    of AlternativeSignupForm in `labour.models`.
+    """
+
+    def get_excluded_field_defaults(self):
+        return dict()
+
+    def get_excluded_m2m_field_defaults(self):
+        return dict()
