@@ -738,23 +738,23 @@ class Order(models.Model):
         if 'lippukala' not in settings.INSTALLED_APPS:
             raise NotImplementedError('lippukala is not installed')
 
-        if not self.contains_electronic_tickets or not self.lippukala_order:
+        if not self.lippukala_order:
             return
 
         from lippukala.models import UNUSED, MANUAL_INTERVENTION_REQUIRED
 
-        self.lippukala_order.code_set.filter(state=UNUSED).update(state=MANUAL_INTERVENTION_REQUIRED)
+        self.lippukala_order.code_set.filter(status=UNUSED).update(status=MANUAL_INTERVENTION_REQUIRED)
 
     def lippukala_reinstate_codes(self):
         if 'lippukala' not in settings.INSTALLED_APPS:
             raise NotImplementedError('lippukala is not installed')
 
-        if not self.contains_electronic_tickets or not self.lippukala_order:
+        if not self.lippukala_order:
             return
 
         from lippukala.models import UNUSED, MANUAL_INTERVENTION_REQUIRED
 
-        self.lippukala_order.code_set.filter(state=MANUAL_INTERVENTION_REQUIRED).update(state=UNUSED)
+        self.lippukala_order.code_set.filter(status=MANUAL_INTERVENTION_REQUIRED).update(status=UNUSED)
 
     @classmethod
     def lippukala_get_order(cls, lippukala_order):
