@@ -59,12 +59,18 @@ def labour_signup_view(request, event, alternative_form_slug=None):
     of registering an account, entering qualifications and only then signing up.
     Existing users are welcomed to sign up right away.
     """
+    
+    if alternative_form_slug:
+        actual_signup_url = url('labour_special_signup_view', event.slug, alternative_form_slug)
+    else:
+        actual_signup_url = url('labour_signup_view', event.slug)
+
     if not request.user.is_authenticated():
         pages = [
             ('core_login_view', u'Sisäänkirjautuminen'),
             ('core_registration_view', u'Rekisteröityminen'),
             ('labour_qualifications_view', u'Pätevyydet', qualifications_related()),
-            (url('labour_signup_view', event.slug), u'Ilmoittautuminen'),
+            (actual_signup_url, u'Ilmoittautuminen'),
         ]
 
         page_wizard_init(request, pages)
@@ -76,7 +82,7 @@ def labour_signup_view(request, event, alternative_form_slug=None):
         pages = [
             ('core_personify_view', u'Perustiedot'),
             ('labour_qualifications_view', u'Pätevyydet', qualifications_related()),
-            (url('labour_signup_view', event.slug), u'Ilmoittautuminen'),
+            (actual_signup_url, u'Ilmoittautuminen'),
         ]
 
         page_wizard_init(request, pages)
