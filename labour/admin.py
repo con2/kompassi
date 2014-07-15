@@ -30,8 +30,8 @@ class QualificationAdmin(admin.ModelAdmin):
 
 
 class JobCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'event')
-    list_filter = ('event',)
+    list_display = ('event', 'name', 'public')
+    list_filter = ('event', 'public')
     ordering = ('event', 'name')
 
 
