@@ -33,7 +33,7 @@ from ..forms import (
 )
 from ..helpers import tickets_admin_required, perform_search
 from ..utils import format_price
-from ..models import Order, Batch
+from ..models import Order, Batch, UNPAID_CANCEL_DAYS
 
 
 __all__ = [
@@ -322,6 +322,27 @@ def tickets_admin_order_view(request, vars, event, order_id):
     return render(request, 'tickets_admin_order_view.jade', vars)
 
 
+@tickets_admin_required
+def tickets_admin_tools_view(request, vars, event):
+    if request.method == 'POST':
+        if 'cancel-unpaid' in request.POST:
+            num_cancelled_orders = event.tickets_event_meta.cancel_unpaid_orders()
+            messages.success(request,
+                u'{num_cancelled_orders} tilausta peruttiin.'.format(**locals())
+            )
+        else:
+            messages.error(request, u'Tuntematon toiminto.')
+
+        return redirect('tickets_admin_tools_view', event.slug)
+
+    vars.update(
+        UNPAID_CANCEL_DAYS=UNPAID_CANCEL_DAYS,
+        num_unpaid_orders_to_cancel=event.tickets_event_meta.get_unpaid_orders_to_cancel().count(),
+    )
+
+    return render(request, 'tickets_admin_tools_view.jade', vars)
+
+
 def tickets_admin_menu_items(request, event):
     stats_url = url('tickets_admin_stats_view', event.slug)
     stats_active = request.path == stats_url
@@ -335,10 +356,15 @@ def tickets_admin_menu_items(request, event):
     batches_active = request.path.startswith(batches_url)
     batches_text = u"Toimituserät"
 
+    tools_url = url('tickets_admin_tools_view', event.slug)
+    tools_active = request.path.startswith(tools_url)
+    tools_text = u"Työkalut"
+
     items = [
         (stats_active, stats_url, stats_text),
         (orders_active, orders_url, orders_text),
         (batches_active, batches_url, batches_text),
+        (tools_active, tools_url, tools_text),
     ]
 
     return items

@@ -11,6 +11,7 @@ from .views import (
     tickets_admin_orders_view,
     tickets_admin_stats_by_date_view,
     tickets_admin_stats_view,
+    tickets_admin_tools_view,
     tickets_closed_view,
     tickets_confirm_view,
     tickets_thanks_view,
@@ -34,4 +35,6 @@ urlpatterns = patterns('',
 
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches$', tickets_admin_batches_view, name="tickets_admin_batches_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)$', tickets_admin_batch_view, name="tickets_admin_batch_view"),
+
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/tools$', tickets_admin_tools_view, name="tickets_admin_tools_view"),
 )

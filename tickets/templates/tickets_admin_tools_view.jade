@@ -1,0 +1,12 @@
+extends core_admin_base.jade
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Peru maksamattomia tilauksia
+    .panel-body
+        p Peruu tilauksia, jotka ovat olleet maksamattomina {{ UNPAID_CANCEL_DAYS }} {{ UNPAID_CANCEL_DAYS|pluralize:"vuorokauden,vuorokautta" }}.
+        p Tällä hetkellä tilauksia peruttaisiin {{ num_unpaid_orders_to_cancel }} kappale{{ num_unpaid_orders_to_cancel|pluralize:"tta" }}.
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        form(method='post')
+          {% csrf_token %}
+          input.btn.btn-danger(type='submit', name='cancel-unpaid', value='Peru maksamattomia tilauksia')            }
