@@ -87,6 +87,16 @@ class LabourEventMeta(EventMetaBase):
         related_name='+',
     )
 
+    signup_message = models.TextField(
+        null=True, 
+        blank=True,
+        default=u'',
+        verbose_name=u'Ilmoittautumisen huomautusviesti',
+        help_text=u'Tämä viesti näytetään kaikille työvoimailmoittautumisen alussa. Käytettiin '
+            u'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
+            u'erikoistehtäville.',
+    )
+
     class Meta:
         verbose_name = u'tapahtuman työvoimatiedot'
         verbose_name_plural = u'tapahtuman työvoimatiedot'

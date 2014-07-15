@@ -81,8 +81,11 @@ def labour_signup_view(request, event, alternative_form_slug=None):
 
         page_wizard_init(request, pages)
         return redirect('core_personify_view')
-    else:
-        return actual_labour_signup_view(request, event, alternative_form_slug=alternative_form_slug)
+
+    if event.labour_event_meta.signup_message:
+        messages.warning(request, event.labour_event_meta.signup_message)
+
+    return actual_labour_signup_view(request, event, alternative_form_slug=alternative_form_slug)
 
 
 def actual_labour_signup_view(request, event, alternative_form_slug):
