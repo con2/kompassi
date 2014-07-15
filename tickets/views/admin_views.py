@@ -118,7 +118,7 @@ def tickets_admin_stats_view(request, vars, event):
 
     req_delivery = confirmed_orders.filter(order_product_set__product__requires_shipping=True).distinct()
     num_req_delivery = req_delivery.count()
-    num_req_delivery_paid = req_delivery.filter(payment_date__isnull=False).count()
+    num_req_delivery_paid = paid_orders.filter(order_product_set__product__requires_shipping=True).distinct().count()
     shipping_and_handling_paid_cents = num_req_delivery_paid * meta.shipping_and_handling_cents
     shipping_and_handling_paid = format_price(shipping_and_handling_paid_cents)
 
