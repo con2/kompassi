@@ -51,16 +51,13 @@ class OrderProductForm(forms.ModelForm):
     def get_for_order_and_product(cls, request, order, product, admin=False):
         order_product, unused = OrderProduct.objects.get_or_create(order=order, product=product)
             
-        form = initialize_form(OrderProductForm, request,
+        return initialize_form(OrderProductForm, request,
             instance=order_product,
             prefix="o%d" % order_product.pk,
 
             # XXX disallow changing amounts of electronic tickets for now
             readonly=admin and ((order.batch is not None and product.requires_shipping) or (order.is_paid and product.electronic_ticket)),
         )
-
-        if not admin and not product.in_stock:
-            form.fields['field_name'].widget = forms.HiddenInput()
 
     class Meta:
         exclude = ("order", "product")
