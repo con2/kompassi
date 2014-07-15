@@ -123,24 +123,6 @@ class TicketsEventMeta(EventMetaBase):
         event, unused = Event.get_or_create_dummy()
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
-    def get_unpaid_orders_to_cancel(self, days=UNPAID_CANCEL_DAYS):
-        deadline = timezone.now() - timedelta(days=days)
-        return Order.objects.filter(
-            event=self.event,
-            confirm_time__lte=deadline,
-            payment_date__isnull=True,
-            cancellation_time__isnull=True,
-        )
-
-    def cancel_unpaid_orders(self, days=UNPAID_CANCEL_DAYS, send_email=False):
-        orders = self.get_unpaid_orders_to_cancel(days=days)
-        count = orders.count()
-        
-        for order in orders:
-            order.cancel(send_email=send_email)
-
-        return count
-
     class Meta:
         verbose_name = u'tapahtuman lipunmyyntiasetukset'
         verbose_name_plural = u'tapahtuman lipunmyyntiasetukset'
@@ -876,6 +858,26 @@ class Order(models.Model):
             event=event,
             customer=customer,
         )
+
+    @classmethod
+    def get_unpaid_orders_to_cancel(cls, event, days=UNPAID_CANCEL_DAYS):
+        deadline = timezone.now() - timedelta(days=days)
+        return cls.objects.filter(
+            event=event,
+            confirm_time__lte=deadline,
+            payment_date__isnull=True,
+            cancellation_time__isnull=True,
+        )
+
+    @classmethod
+    def cancel_unpaid_orders(cls, event, days=UNPAID_CANCEL_DAYS, send_email=False):
+        orders = cls.get_unpaid_orders_to_cancel(event=event, days=days)
+        count = orders.count()
+        
+        for order in orders:
+            order.cancel(send_email=send_email)
+
+        return count        
 
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, related_name="order_product_set")

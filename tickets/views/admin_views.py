@@ -326,7 +326,7 @@ def tickets_admin_order_view(request, vars, event, order_id):
 def tickets_admin_tools_view(request, vars, event):
     if request.method == 'POST':
         if 'cancel-unpaid' in request.POST:
-            num_cancelled_orders = event.tickets_event_meta.cancel_unpaid_orders()
+            num_cancelled_orders = Order.cancel_unpaid_orders(event=event)
             messages.success(request,
                 u'{num_cancelled_orders} tilausta peruttiin.'.format(**locals())
             )
@@ -337,7 +337,7 @@ def tickets_admin_tools_view(request, vars, event):
 
     vars.update(
         UNPAID_CANCEL_DAYS=UNPAID_CANCEL_DAYS,
-        num_unpaid_orders_to_cancel=event.tickets_event_meta.get_unpaid_orders_to_cancel().count(),
+        num_unpaid_orders_to_cancel=Order.get_unpaid_orders_to_cancel(event).count(),
     )
 
     return render(request, 'tickets_admin_tools_view.jade', vars)
