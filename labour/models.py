@@ -808,6 +808,11 @@ class Signup(models.Model):
     def formatted_shifts(self):
         return self.xxx_interim_shifts if self.xxx_interim_shifts is not None else u""
 
+    # for admin
+    @property
+    def full_name(self):
+        return self.person.full_name
+
 
 class SignupExtraBase(models.Model):
     signup = models.OneToOneField(Signup, related_name="+", primary_key=True)

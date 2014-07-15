@@ -12,6 +12,14 @@ from .models import (
     WorkPeriod,
 )
 
+
+class SignupAdmin(admin.ModelAdmin):
+    model = Signup
+    list_display = ('event', 'full_name', 'formatted_state')
+    list_filter = ('event',)
+    ordering = ('event', 'person__surname', 'person__surname')
+    search_fields = ('person__surname', 'person__first_name', 'person__nick', 'person__email')
+
 class InlineLabourEventMetaAdmin(admin.StackedInline):
     model = LabourEventMeta
 
@@ -41,7 +49,7 @@ class AlternativeSignupFormAdmin(admin.ModelAdmin):
     ordering = ('event', 'slug')
 
 
-admin.site.register(Signup)
+admin.site.register(Signup, SignupAdmin)
 admin.site.register(WorkPeriod)
 admin.site.register(JobCategory, JobCategoryAdmin)
 admin.site.register(Qualification, QualificationAdmin)

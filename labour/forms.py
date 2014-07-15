@@ -63,7 +63,7 @@ class SignupForm(forms.ModelForm):
                 # Also include those the user is signed up to whether or not they are public.
                 q = q | Q(signup_set=self.instance)
 
-        self.fields['job_categories'].queryset = JobCategory.objects.filter(q)
+        self.fields['job_categories'].queryset = JobCategory.objects.filter(q).distinct()
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
