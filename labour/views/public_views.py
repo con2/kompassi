@@ -82,9 +82,6 @@ def labour_signup_view(request, event, alternative_form_slug=None):
         page_wizard_init(request, pages)
         return redirect('core_personify_view')
 
-    if event.labour_event_meta.signup_message:
-        messages.warning(request, event.labour_event_meta.signup_message)
-
     return actual_labour_signup_view(request, event, alternative_form_slug=alternative_form_slug)
 
 
@@ -118,6 +115,9 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
             messages.error(request, u'Pyytämäsi ilmoittautumislomake ei ole käytössä.')
             return redirect('core_event_view', event.slug)
 
+        if alternative_signup_form.signup_message:
+            messages.warning(request, alternative_signup_form.signup_message)            
+
         SignupFormClass = alternative_signup_form.signup_form_class
         SignupExtraFormClass = alternative_signup_form.signup_extra_form_class
     else:
@@ -126,6 +126,9 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
         if not event.labour_event_meta.is_registration_open:
             messages.error(request, u'Ilmoittautuminen tähän tapahtumaan ei ole avoinna.')
             return redirect('core_event_view', event.slug)
+
+        if event.labour_event_meta.signup_message:
+            messages.warning(request, event.labour_event_meta.signup_message)
 
         SignupFormClass = None
         SignupExtraFormClass = None

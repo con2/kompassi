@@ -459,6 +459,16 @@ class AlternativeSignupForm(models.Model):
         default=u'Käyttöaika päättyy',
     )
 
+    signup_message = models.TextField(
+        null=True, 
+        blank=True,
+        default=u'',
+        verbose_name=u'Ilmoittautumisen huomautusviesti',
+        help_text=u'Tämä viesti näytetään kaikille tätä lomaketta käyttäville työvoimailmoittautumisen alussa. Käytettiin '
+            u'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
+            u'erikoistehtäville.',
+    )    
+
     def __unicode__(self):
         return self.title
 
