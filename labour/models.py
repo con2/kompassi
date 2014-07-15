@@ -773,7 +773,14 @@ class Signup(models.Model):
 
     @property
     def applicant_can_edit(self):
-        return self.state == 'new'
+        return self.state == 'new' and self.is_registration_open
+
+    @property
+    def is_registration_open(self):
+        if self.alternative_signup_form_used is not None:
+            return self.alternative_signup_form_used.is_active
+        else:
+            return self.event.labour_event_meta.is_registration_open
 
     @property
     def applicant_can_cancel(self):

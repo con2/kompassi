@@ -158,12 +158,12 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
                 signup.alternative_signup_form_used = alternative_signup_form
 
                 set_attrs(signup, **signup_form.get_excluded_field_defaults())
-                set_attrs(signup_extra, **signup_form.get_excluded_field_defaults())
+                set_attrs(signup_extra, **signup_extra_form.get_excluded_field_defaults())
 
             signup = signup_form.save()
 
             signup_extra.signup = signup
-            signup_extra_form.save()
+            signup_extra = signup_extra_form.save()
 
             if alternative_signup_form is not None:
                 # Save m2m field defaults
