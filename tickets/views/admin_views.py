@@ -116,7 +116,7 @@ def tickets_admin_stats_view(request, vars, event):
     paid_orders = confirmed_orders.filter(cancellation_time__isnull=True, payment_date__isnull=False)
     delivered_orders = paid_orders.filter(batch__delivery_time__isnull=False)
 
-    req_delivery = confirmed_orders.filter(order_product_set__product__requires_shipping=True).distinct()
+    req_delivery = confirmed_orders.filter(cancellation_time__isnull=True, order_product_set__product__requires_shipping=True).distinct()
     num_req_delivery = req_delivery.count()
     num_req_delivery_paid = paid_orders.filter(order_product_set__product__requires_shipping=True).distinct().count()
     shipping_and_handling_paid_cents = num_req_delivery_paid * meta.shipping_and_handling_cents
