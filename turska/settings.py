@@ -131,6 +131,9 @@ INSTALLED_APPS = (
     # Uncomment if you have Celery
     # 'background_tasks',
 
+    # Uncomment if you have Crowd and Confluence
+    'atlassian_integration',
+
     'tracon_branding',
     'tracon8',
     'tracon9',
@@ -334,3 +337,17 @@ if 'background_tasks' in INSTALLED_APPS:
 
     CELERY_TASK_SERIALIZER = 'json'
     CELERY_RESULT_SERIALIZER = 'json'
+
+
+if 'atlassian_integration' in INSTALLED_APPS:
+    KOMPASSI_CROWD_URL = 'https://crowd.tracon.fi/crowd'
+    KOMPASSI_CROWD_APPLICATION_NAME = 'your application name here'
+    KOMPASSI_CROWD_APPLICATION_PASSWORD = 'your application password here'
+    KOMPASSI_CROWD_SESSION_URL = '{KOMPASSI_CROWD_URL}/rest/usermanagement/1/session'.format(**locals())
+    KOMPASSI_CROWD_COOKIE_ATTRS = dict(
+        key='crowd.token_key',
+        httponly=True,
+        secure=True,
+        domain='.tracon.fi',
+    )
+    KOMPASSI_CONFLUENCE_URL = 'https://confluence.tracon.fi'

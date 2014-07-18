@@ -92,10 +92,40 @@ def core_login_view(request):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
+
+                crowd_cookie = None
+                if 'atlassian_integration' in settings.INSTALLED_APPS:
+                    from atlassian_integration.utils import crowd_login, CrowdError
+                    try:
+                        crowd_cookie = crowd_login(
+                            username=username,
+                            password=password,
+                            request=request,
+                        )
+                    except CrowdError, e:
+                        messages.warning(request,
+                            u'Sisäänkirjautuminen {{ kompassiin }} onnistui, mutta sisäänkirjautuminen '
+                            u'Atlassian-tuotteiden kertakirjautumispalveluun ei onnistunut. '
+                            u'Voit käyttää useimpia {{ kompassin }} toimintoja normaalisti, mutta '
+                            u'esimerkiksi työvoimawikin käyttö ei välttämättä onnistu. '
+                            u'Jos ongelma toistuu, ole hyvä ja ota yhteyttä: {{ adminiin }}'
+                            .format(
+                                kompassin=settings.KOMPASSI_INSTALLATION_NAME_GENITIVE,
+                                kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE,
+                                adminiin=settings.DEFAULT_FROM_EMAIL
+                            )
+                        )
+
                 page_wizard_clear(request)
                 messages.success(request, u'Olet nyt kirjautunut sisään.')
                 remind_email_verification_if_needed(request, next)
-                return redirect(next)
+
+                response = redirect(next)
+
+                if crowd_cookie is not None:
+                    response.set_cookie(**crowd_cookie)
+
+                return response
             else:
                 messages.error(request, u'Sisäänkirjautuminen epäonnistui.')
         else:
