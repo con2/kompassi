@@ -104,11 +104,11 @@ def core_login_view(request):
                         )
                     except CrowdError, e:
                         messages.warning(request,
-                            u'Sisäänkirjautuminen {{ kompassiin }} onnistui, mutta sisäänkirjautuminen '
+                            u'Sisäänkirjautuminen {kompassiin} onnistui, mutta sisäänkirjautuminen '
                             u'Atlassian-tuotteiden kertakirjautumispalveluun ei onnistunut. '
-                            u'Voit käyttää useimpia {{ kompassin }} toimintoja normaalisti, mutta '
+                            u'Voit käyttää useimpia {kompassin} toimintoja normaalisti, mutta '
                             u'esimerkiksi työvoimawikin käyttö ei välttämättä onnistu. '
-                            u'Jos ongelma toistuu, ole hyvä ja ota yhteyttä: {{ adminiin }}'
+                            u'Jos ongelma toistuu, ole hyvä ja ota yhteyttä: {adminiin}'
                             .format(
                                 kompassin=settings.KOMPASSI_INSTALLATION_NAME_GENITIVE,
                                 kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE,
