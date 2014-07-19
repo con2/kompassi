@@ -75,7 +75,7 @@ def crowd_login(username, password=None, remote_addr=None, request=None):
         'validation-factors': {
             'validationFactors': [
                 {
-                    'name': 'remote_addr',
+                    'name': 'X-Forwarded-For',
                     'value': remote_addr
                 }
             ]
