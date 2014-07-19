@@ -621,6 +621,38 @@ class Signup(models.Model):
         help_text=u"Printataan badgeen ym. Asetetaan automaattisesti hyväksyttyjen tehtäväalueiden perusteella, mikäli kenttä jätetään tyhjäksi.",
     )
 
+    is_active = models.BooleanField(default=True)
+    time_accepted = models.DateTimeField(null=True, blank=True)
+    time_shifts_ready = models.DateTimeField(null=True, blank=True)
+    time_cancelled = models.DateTimeField(null=True, blank=True)
+    time_rejected = models.DateTimeField(null=True, blank=True)
+    time_arrived = models.DateTimeField(null=True, blank=True)
+    time_work_accepted = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def is_accepted(self):
+        return self.time_accepted is not None
+    
+    @property
+    def is_shifts_ready(self):
+        return self.time_shifts_ready is not None
+    
+    @property
+    def is_cancelled(self):
+        return self.time_cancelled is not None
+    
+    @property
+    def is_rejected(self):
+        return self.time_rejected is not None
+    
+    @property
+    def is_arrived(self):
+        return self.time_arrived is not None
+    
+    @property
+    def is_work_accepted(self):
+        return self.time_work_accepted is not None
+
     class Meta:
         verbose_name = u'ilmoittautuminen'
         verbose_name_plural=u'ilmoittautumiset'
@@ -689,14 +721,6 @@ class Signup(models.Model):
             labels = []
 
         return labels
-
-    @property
-    def is_accepted(self):
-        return self.state in ACCEPTED_STATES
-
-    @property
-    def is_active(self):
-        return self.state in ACTIVE_STATES
 
     @classmethod
     def get_or_create_dummy(cls):
