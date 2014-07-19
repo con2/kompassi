@@ -49,7 +49,7 @@ def crowd_login(username, password=None, request=None):
 
     validation_factors = []
 
-    for vf_name, vf_func in settings.KOMPASSI_CROWD_VALIDATION_FACTORS:
+    for vf_name, vf_func in settings.KOMPASSI_CROWD_VALIDATION_FACTORS.iteritems():
         validation_factors.append(dict(
             name=vf_name,
             value=vf_func(request),
