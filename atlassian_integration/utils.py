@@ -47,9 +47,6 @@ def crowd_login(username, password=None, request=None):
     NB. We are using Crowd, Confluence and Kompassi behind an nginx proxy. If you are not, YMMV.
     """
 
-    if remote_addr is not None and request is not None:
-        raise TypeError("Only one of remote_addr and request may be passed")
-
     remote_addr = request.META['REMOTE_ADDR']
     x_forwarded_for = request.META.get('X_FORWARDED_FOR', None)
 
