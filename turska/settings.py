@@ -132,7 +132,7 @@ INSTALLED_APPS = (
     # 'background_tasks',
 
     # Uncomment if you have Crowd and Confluence
-    # 'atlassian_integration',
+    'atlassian_integration',
 
     'tracon_branding',
     'tracon8',
@@ -179,6 +179,11 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'propagate': True
+        },
+        'atlassian_integration.utils': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'propagate': True        
         }
     }
 }
@@ -349,5 +354,6 @@ if 'atlassian_integration' in INSTALLED_APPS:
         httponly=True,
         secure=True,
         domain='.tracon.fi',
+        path='/',
     )
     KOMPASSI_CONFLUENCE_URL = 'https://confluence.tracon.fi'

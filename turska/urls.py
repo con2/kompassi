@@ -4,17 +4,19 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-def if_installed(appname, *args, **kwargs):
-    ret = url(*args, **kwargs)
-    if appname not in settings.INSTALLED_APPS:
-        ret.resolve = lambda *args: None
-    return ret
-
-urlpatterns = patterns('',
+actual_patterns = [
     url(r'', include('core.urls')),
-    if_installed('labour', r'', include('labour.urls')),
-    if_installed('programme', r'', include('programme.urls')),
-    if_installed('tickets', r'', include('tickets.urls')),
-    if_installed('payments', r'', include('payments.urls')),
     url(r'^admin/', include(admin.site.urls)),
-)
+]
+
+for app_name in [
+    'labour',
+    'programme',
+    'tickets',
+    'payments',
+    'atlassian_integration',
+]:
+    if app_name in settings.INSTALLED_APPS:
+        actual_patterns.append(url(r'', include('{app_name}.urls'.format(app_name=app_name))))
+
+urlpatterns = patterns('', *actual_patterns)

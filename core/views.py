@@ -2,7 +2,7 @@
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -14,6 +14,7 @@ from .models import Event, Person, PasswordResetError, PasswordResetToken, Email
 from .forms import PersonForm, RegistrationForm, PasswordForm, LoginForm, PasswordResetForm, PasswordResetRequestForm
 from .utils import initialize_form, get_next, next_redirect, page_wizard_clear, page_wizard_vars, url
 from .helpers import person_required
+
 
 def core_frontpage_view(request):
     t = now()
@@ -91,40 +92,9 @@ def core_login_view(request):
 
             user = authenticate(username=username, password=password)
             if user:
-                login(request, user)
-
-                crowd_cookie = None
-                if 'atlassian_integration' in settings.INSTALLED_APPS:
-                    from atlassian_integration.utils import crowd_login, CrowdError
-                    try:
-                        crowd_cookie = crowd_login(
-                            username=username,
-                            password=password,
-                            request=request,
-                        )
-                    except CrowdError, e:
-                        messages.warning(request,
-                            u'Sisäänkirjautuminen {kompassiin} onnistui, mutta sisäänkirjautuminen '
-                            u'Atlassian-tuotteiden kertakirjautumispalveluun ei onnistunut. '
-                            u'Voit käyttää useimpia {kompassin} toimintoja normaalisti, mutta '
-                            u'esimerkiksi työvoimawikin käyttö ei välttämättä onnistu. '
-                            u'Jos ongelma toistuu, ole hyvä ja ota yhteyttä: {adminiin}'
-                            .format(
-                                kompassin=settings.KOMPASSI_INSTALLATION_NAME_GENITIVE,
-                                kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE,
-                                adminiin=settings.DEFAULT_FROM_EMAIL
-                            )
-                        )
-
+                response = do_login(request, user=user, password=password, next=next)
                 page_wizard_clear(request)
                 messages.success(request, u'Olet nyt kirjautunut sisään.')
-                remind_email_verification_if_needed(request, next)
-
-                response = redirect(next)
-
-                if crowd_cookie is not None:
-                    response.set_cookie(**crowd_cookie)
-
                 return response
             else:
                 messages.error(request, u'Sisäänkirjautuminen epäonnistui.')
@@ -139,6 +109,76 @@ def core_login_view(request):
     )
 
     return render(request, 'core_login_view.jade', vars)
+
+
+def do_login(request, user, password, next='core_frontpage_view'):
+    """
+    Performs Django login, possible Crowd login and required post-login steps.
+
+    `django.contrib.auth.authenticate` must be called first.
+    """
+
+    login(request, user)
+
+    username = request.user.username
+
+    crowd_cookie = None
+    if 'atlassian_integration' in settings.INSTALLED_APPS:
+        from atlassian_integration.utils import crowd_login, CrowdError
+        try:
+            crowd_cookie = crowd_login(
+                username=username,
+                password=password,
+                request=request,
+            )
+        except CrowdError, e:
+            messages.warning(request,
+                u'Sisäänkirjautuminen {kompassiin} onnistui, mutta sisäänkirjautuminen '
+                u'Atlassian-tuotteiden kertakirjautumispalveluun ei onnistunut. '
+                u'Voit käyttää useimpia {kompassin} toimintoja normaalisti, mutta '
+                u'esimerkiksi työvoimawikin käyttö ei välttämättä onnistu. '
+                u'Jos ongelma toistuu, ole hyvä ja ota yhteyttä: {adminiin}'
+                .format(
+                    kompassin=settings.KOMPASSI_INSTALLATION_NAME_GENITIVE,
+                    kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE,
+                    adminiin=settings.DEFAULT_FROM_EMAIL
+                )
+            )
+
+    remind_email_verification_if_needed(request, next)
+
+    response = redirect(next)
+
+    if crowd_cookie is not None:
+        response.set_cookie(**crowd_cookie)
+
+    return response
+
+
+@login_required
+@require_http_methods(['GET', 'POST'])
+def core_logout_view(request):
+    next = get_next(request)
+
+    crowd_cookie = None
+    if 'atlassian_integration' in settings.INSTALLED_APPS:
+        from atlassian_integration.utils import crowd_logout, CrowdError
+
+        try:
+            crowd_cookie = crowd_logout(request)
+        except CrowdError as e:
+            pass
+
+    logout(request)
+
+    messages.success(request, u'Olet nyt kirjautunut ulos.')
+
+    response = redirect(next)
+
+    if crowd_cookie is not None:
+        response.delete_cookie(**crowd_cookie)
+
+    return response
 
 
 @require_http_methods(['GET','POST'])
@@ -180,13 +220,13 @@ def core_registration_view(request):
                 create_user(user, password)
 
             user = authenticate(username=username, password=password)
-            login(request, user)
 
+            response = do_login(request, user=user, password=password, next=next)
             messages.success(request,
-                u'Käyttäjätunnuksesi on luotu. Tervetuloa {site_name_illative}!'
-                .format(site_name_illative=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE)
+                u'Käyttäjätunnuksesi on luotu. Tervetuloa {kompassiin}!'
+                .format(kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE)
             )
-            return redirect(next)
+            return response
         else:
             messages.error(request, u'Ole hyvä ja tarkista lomake.')
 
