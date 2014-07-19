@@ -357,3 +357,7 @@ if 'atlassian_integration' in INSTALLED_APPS:
         path='/',
     )
     KOMPASSI_CONFLUENCE_URL = 'https://confluence.tracon.fi'
+    KOMPASSI_CROWD_VALIDATION_FACTORS = {
+        'remote_address': lambda request: '127.0.0.1',
+        'X-Forwarded-For': lambda request: request.META['HTTP_X_FORWARDED_FOR'],
+    }

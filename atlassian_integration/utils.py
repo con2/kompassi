@@ -47,11 +47,13 @@ def crowd_login(username, password=None, request=None):
     NB. We are using Crowd, Confluence and Kompassi behind an nginx proxy. If you are not, YMMV.
     """
 
-    remote_addr = request.META['REMOTE_ADDR']
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', None)
+    validation_factors = []
 
-    if x_forwarded_for is None:
-        log.warning(u'No X-Forwarded-For in request. Crowd SSO will probably fail.')
+    for vf_name, vf_func in settings.KOMPASSI_CROWD_VALIDATION_FACTORS:
+        validation_factors.append(dict(
+            name=vf_name,
+            value=vf_func(request),
+        ))
 
     auth = crowd_application_auth()
 
@@ -66,16 +68,7 @@ def crowd_login(username, password=None, request=None):
         'username': username,
         'password': password,
         'validation-factors': {
-            'validationFactors': [
-                {
-                    'name': 'remote_address',
-                    'value': remote_addr,
-                },
-                {
-                    'name': 'X-Forwarded-For',
-                    'value': x_forwarded_for,
-                },
-            ],
+            'validationFactors': validation_factors
         },
     }
 
@@ -85,12 +78,10 @@ def crowd_login(username, password=None, request=None):
     }
 
     log.debug(
-        u'Processing Crowd login attempt {with_password} for {username} with '
-        u'remote_addr={remote_addr} and X-Forwarded-For={x_forwarded_for}'
+        u'Processing Crowd login attempt {with_password} for {username} validation factors: {validation_factors}'
         .format(
             username=username,
-            remote_addr=remote_addr,
-            x_forwarded_for=x_forwarded_for,
+            validation_factors=validation_factors,
             with_password='with password' if password is not None else u'without password',
         )
     )
