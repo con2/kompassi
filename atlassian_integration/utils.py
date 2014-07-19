@@ -8,7 +8,6 @@ from django.conf import settings
 import requests
 from requests import HTTPError
 from requests.auth import HTTPBasicAuth
-from ipware.ip import get_real_ip
 
 
 log = logging.getLogger(__name__)
@@ -34,7 +33,7 @@ def crowd_session_url(token=None):
         return base_url
 
 
-def crowd_login(username, password=None, remote_addr=None, request=None):
+def crowd_login(username, password=None, request=None):
     """
     Establishes a Crowd SSO session for the specified user. If a password is specified, it is fed
     to Crowd and Crowd will perform authentication as well. If no password is specified, Crowd is
@@ -44,21 +43,18 @@ def crowd_login(username, password=None, remote_addr=None, request=None):
     factor for Crowd.
 
     Returns a dict that can be fed as kwargs to HttpResponse.set_cookie.
+
+    NB. We are using Crowd, Confluence and Kompassi behind an nginx proxy. If you are not, YMMV.
     """
 
     if remote_addr is not None and request is not None:
         raise TypeError("Only one of remote_addr and request may be passed")
 
-    if request is not None:
-        remote_addr = get_real_ip(request)
-        log.debug('Crowd login IP resolved via get_real_ip: {remote_addr}'.format(remote_addr=remote_addr))
+    remote_addr = request.META['REMOTE_ADDR']
+    x_forwarded_for = request.META.get('X_FORWARDED_FOR', None)
 
-    if remote_addr is None:
-        remote_addr = '127.0.0.1'
-        log.warning(
-            'Unable to resolve login IP for {username}. Falling back to {remote_addr}.'
-            .format(username=username, remote_addr=remote_addr)
-        )
+    if x_forwarded_for is None:
+        log.warning(u'No X-Forwarded-For in request. Crowd SSO will probably fail.')
 
     auth = crowd_application_auth()
 
@@ -76,11 +72,11 @@ def crowd_login(username, password=None, remote_addr=None, request=None):
             'validationFactors': [
                 {
                     'name': 'remote_address',
-                    'value': '127.0.0.1',
+                    'value': remote_addr,
                 },
                 {
                     'name': 'X-Forwarded-For',
-                    'value': remote_addr,
+                    'value': x_forwarded_for,
                 },
             ],
         },
