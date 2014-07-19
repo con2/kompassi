@@ -26,7 +26,7 @@ def crowd_application_auth():
 
 
 def crowd_session_url(token=None):
-    base_url = settings.KOMPASS_CROWD_SESSION_URL
+    base_url = settings.KOMPASSI_CROWD_SESSION_URL
 
     if token is not None:
         return "{base_url}/{token}".format(base_url=base_url, token=token) # TODO validate token?
@@ -57,7 +57,7 @@ def crowd_login(username, password=None, remote_addr=None, request=None):
         remote_addr = '127.0.0.1'
         log.warning(
             'Unable to resolve login IP for {username}. Falling back to {remote_addr}.'
-            .format(remote_addr=remote_addr)
+            .format(username=username, remote_addr=remote_addr)
         )
 
     auth = crowd_application_auth()
@@ -112,7 +112,7 @@ def crowd_login(username, password=None, remote_addr=None, request=None):
         token = unicode(response_json['token'])
         expires = datetime.utcfromtimestamp(int(response_json['expiry-date']) / 1000.0)
     except Exception as e:
-        log.error(u'Crowd authentication failed for {username}'.format(username=username))
+        log.error(u'Crowd authentication failed for {username}: {e}'.format(username=username, e=e))
         unused, unused, traceback = sys.exc_info()
         raise CrowdError, e, traceback
 
