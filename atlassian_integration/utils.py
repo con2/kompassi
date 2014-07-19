@@ -85,10 +85,12 @@ def crowd_login(username, password=None, request=None):
     }
 
     log.debug(
-        u'Processing Crowd login attempt for {username} from {remote_addr} {with_password}'
+        u'Processing Crowd login attempt {with_password} for {username} with '
+        u'remote_addr={remote_addr} and X-Forwarded-For={x_forwarded_for}'
         .format(
             username=username,
             remote_addr=remote_addr,
+            x_forwarded_for=x_forwarded_for,
             with_password='with password' if password is not None else u'without password',
         )
     )
