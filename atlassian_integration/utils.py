@@ -48,7 +48,7 @@ def crowd_login(username, password=None, request=None):
     """
 
     remote_addr = request.META['REMOTE_ADDR']
-    x_forwarded_for = request.META.get('X_FORWARDED_FOR', None)
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', None)
 
     if x_forwarded_for is None:
         log.warning(u'No X-Forwarded-For in request. Crowd SSO will probably fail.')
