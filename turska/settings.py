@@ -132,7 +132,7 @@ INSTALLED_APPS = (
     # 'background_tasks',
 
     # Uncomment if you have Crowd and Confluence
-    'atlassian_integration',
+    # 'atlassian_integration',
 
     'tracon_branding',
     'tracon8',
