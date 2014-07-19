@@ -75,10 +75,14 @@ def crowd_login(username, password=None, remote_addr=None, request=None):
         'validation-factors': {
             'validationFactors': [
                 {
+                    'name': 'remote_address',
+                    'value': '127.0.0.1',
+                },
+                {
                     'name': 'X-Forwarded-For',
-                    'value': remote_addr
-                }
-            ]
+                    'value': remote_addr,
+                },
+            ],
         },
     }
 
