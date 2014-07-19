@@ -155,7 +155,6 @@ def do_login(request, user, password, next='core_frontpage_view'):
     return response
 
 
-@login_required
 @require_http_methods(['GET', 'POST'])
 def core_logout_view(request):
     next = get_next(request)

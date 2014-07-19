@@ -4,5 +4,5 @@ from .views import crowd_session_view
 
 
 urlpatterns = patterns('',
-    url(r'^profile/crowd/?$', crowd_session_view, name='crowd_session_view'),
+    url(r'^crowd$', crowd_session_view, name='crowd_session_view'),
 )
