@@ -6,7 +6,7 @@ Due to Crowd being a somewhat heavy closed-source application, we do not use Cro
 
 Please refer to the sequence diagram below for further information. TL;NOTE "keksi" is Finnish for "cookie".
 
-!(A non-logged-in user wishes to access a document in Confluence)[https://raw.githubusercontent.com/japsu/kompassi/master/docs/crowd_sso_sequence.png]
+![A non-logged-in user wishes to access a document in Confluence](https://raw.githubusercontent.com/japsu/kompassi/master/docs/crowd_sso_sequence.png)
 
 ## Atlassian documentation references
 
