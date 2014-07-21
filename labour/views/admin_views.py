@@ -16,13 +16,11 @@ from core.utils import initialize_form, url, json_response, render_string
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
 from ..helpers import labour_admin_required
 from ..models import (
-    ACCEPTED_STATES,
     JobCategory,
     LabourEventMeta,
     PersonQualification,
     Qualification,
     Signup,
-    TERMINAL_STATES,
 )
 
 from .view_helpers import initialize_signup_forms
@@ -32,9 +30,9 @@ from .view_helpers import initialize_signup_forms
 def labour_admin_dashboard_view(request, vars, event):
     vars.update(
         # XXX state overhaul
-        num_pending=event.signup_set.filter(state='new').count(),
-        num_accepted=event.signup_set.filter(state__in=ACCEPTED_STATES).count(),
-        num_rejected=event.signup_set.filter(state__in=TERMINAL_STATES).count(),
+        num_pending=event.signup_set.filter(is_active=True, time_accepted__isnull=False).count(),
+        num_accepted=event.signup_set.filter(time_accepted__isnull=False).count(),
+        num_rejected=event.signup_set.filter(is_active=False).count(),
         signups=event.signup_set.order_by('-created_at')[:5]
     )
 

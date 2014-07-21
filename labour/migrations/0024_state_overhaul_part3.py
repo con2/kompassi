@@ -1,37 +1,23 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
-from django.utils.timezone import now
 
-class Migration(DataMigration):
+
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
+        # Deleting field 'Signup.state'
+        db.delete_column(u'labour_signup', 'state')
 
-        for signup in orm.Signup.objects.all():
-            if signup.state == 'new':
-                signup.is_active = True
-            elif signup.state == 'accepted':
-                signup.is_active = True
-                signup.is_accepted = True
-            elif signup.state == 'rejected':
-                signup.is_active = False
-                signup.is_rejected = True
-            elif signup.state == 'cancelled':
-                signup.is_active = False
-                signup.is_cancelled = True
-            elif signup.state == 'beyond_logic':
-                signup.is_active = False
-            else:
-                raise NotImplemented()
-
-            signup.save()
 
     def backwards(self, orm):
-        "Write your backwards methods here."
-        raise NotImplemented()
+        # Adding field 'Signup.state'
+        db.add_column(u'labour_signup', 'state',
+                      self.gf('django.db.models.fields.CharField')(default='new', max_length=15),
+                      keep_default=False)
+
 
     models = {
         u'auth.group': {
@@ -191,7 +177,6 @@ class Migration(DataMigration):
             'job_title': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '63', 'blank': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'person': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['core.Person']"}),
-            'state': ('django.db.models.fields.CharField', [], {'default': "'new'", 'max_length': '15'}),
             'time_accepted': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'time_arrived': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'time_cancelled': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
@@ -213,4 +198,3 @@ class Migration(DataMigration):
     }
 
     complete_apps = ['labour']
-    symmetrical = True

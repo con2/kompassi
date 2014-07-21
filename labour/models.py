@@ -9,10 +9,11 @@ from django.utils.timezone import now
 
 from core.models import EventMetaBase
 from core.utils import (
-    SLUG_FIELD_PARAMS,
     ensure_user_is_member_of_group,
     ensure_user_is_not_member_of_group,
     is_within_period,
+    SLUG_FIELD_PARAMS,
+    time_bool_property,
 )
 
 
@@ -505,7 +506,7 @@ SIGNUP_STATE_CHOICES = [
     (u'new', u'Uusi'),
     (u'accepted', u'Hyväksytty, odottaa vuoroja'),
     (u'finished', u'Hyväksytty, vuorot lähetetty'),
-    (u'complained', u'Hyväksytty, vuorot lähetetty, vuoroista reklamoitu'),
+    # (u'complained', u'Hyväksytty, vuorot lähetetty, vuoroista reklamoitu'),
 
     (u'rejected', u'Hylätty (työvoimavastaava ei hyväksynyt töihin)'),
     (u'cancelled', u'Peruutettu (hakijan itsensä peruma)'),
@@ -513,50 +514,68 @@ SIGNUP_STATE_CHOICES = [
     (u'arrived', u'Saapunut tapahtumaan'),
 
     (u'honr_discharged', u'Työpanos suoritettu hyväksytysti'),
-    (u'dish_discharged', u'Erotettu tehtävästään'),
-    (u'no_show', u'Jätti saapumatta paikalle'),
-    (u'relieved', u'Vapautettu tehtävästään'),
+    # (u'dish_discharged', u'Erotettu tehtävästään'),
+    # (u'no_show', u'Jätti saapumatta paikalle'),
+    # (u'relieved', u'Vapautettu tehtävästään'),
 
     (u'beyond_logic', u'Perätilassa (irrotettu kaikesta automaattisesta käsittelystä)'),
 ]
 
-ACCEPTED_STATES = ['accepted', 'finished', 'complained', 'arrived']
 FINISHED_STATES = ['finished', 'complained', 'arrived']
-ACTIVE_STATES = ACCEPTED_STATES + ['new']
 TERMINAL_STATES = ['rejected', 'cancelled', 'dish_discharged', 'no_show', 'relieved']
-PROCESSED_STATES = ACCEPTED_STATES + TERMINAL_STATES
-PREEVENT_STATES = ['new', 'accepted', 'finished', 'complained']
+SIGNUP_STATE_CLASSES = dict(
+    new=u'default',
+    accepted=u'info',
+    finished=u'success',
+    # complained=u'warning',
+    rejected=u'danger',
+    cancelled=u'danger',
+    arrived=u'success',
+    honr_discharged=u'success',
+    # dish_discharged=u'danger',
+    # no_show=u'danger',
+    # relieved=u'danger',
+    beyond_logic=u'danger',
+)
 SIGNUP_STATE_LABEL_CLASSES = dict(
-    new=u'label-default',
-    accepted=u'label-info',
-    finished=u'label-success',
-    complained=u'label-warning',
-    rejected=u'label-danger',
-    cancelled=u'label-danger',
-    arrived=u'label-success',
-    honr_discharged=u'label-success',
-    dish_discharged=u'label-danger',
-    no_show=u'label-danger',
-    relieved=u'label-danger',
-    beyond_logic=u'label-danger',
+    (state_name, "label-{generic_class}".format(generic_class=generic_class))
+    for (state_name, generic_class) in SIGNUP_STATE_CLASSES.iteritems()
+)
+SIGNUP_STATE_BUTTON_CLASSES = dict(
+    (state_name, "btn-{generic_class}".format(generic_class=generic_class))
+    for (state_name, generic_class) in SIGNUP_STATE_CLASSES.iteritems()
 )
 SIGNUP_STATE_DESCRIPTIONS = dict(
     new=u'Hakemuksesi on vastaanotettu, ja työvoimavastaavat käsittelevät sen lähiaikoina. Saat tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sähköpostitse.',
     accepted=u'Työvoimavastaavat ovat alustavasti hyväksyneet sinut vapaaehtoistyöhön tähän tapahtumaan, mutta sinulle ei ole vielä määritelty työvuoroja. Saat tiedon työvuoroistasi myöhemmin sähköpostitse.',
 )
+SIGNUP_STATE_IMPERATIVES = dict(
+    new=u'Palauta tilaan Uusi',
+    accepted=u'Hyväksy hakemus',
+    arrived=u'Merkitse saapuneeksi',
+    work_accepted=u'Merkitse työpanos hyväksytyksi',
+    rejected=u'Hylkää',
+    cancelled=u'Merkitse peruutetuksi',
+    beyond_logic=u'Aseta perätilaan',
+)
+
+STATE_FLAGS_BY_NAME = dict(
+    #              active accept arrive workac reject cancel
+    new=          (True,  False, False, False, False, False),
+    accepted=     (True,  True , False, False, False, False),
+    arrived=      (True,  True,  True,  False, False, False),
+    work_accepted=(True,  True,  True,  True,  False, False),
+    rejected=     (False, False, False, False, True,  False),
+    cancelled=    (False, False, False, False, False, True ),
+    beyond_logic= (False, False, False, False, False, False),
+)
+
+STATE_NAME_BY_FLAGS = dict((flags, name) for (name, flags) in STATE_FLAGS_BY_NAME.iteritems())
+
 
 class Signup(models.Model):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
-
-    state = models.CharField(
-        max_length=15,
-        verbose_name=u'Hakemuksen tila',
-        choices=SIGNUP_STATE_CHOICES,
-        help_text=u'Hakemuksen tilan muuttaminen lähettää automaattisesti henkilölle kyseiseen '
-            u'tilasiirtymään liittyvät sähköpostiviestit.',
-        default='new',
-    )
 
     job_categories = models.ManyToManyField(JobCategory,
         verbose_name=u'Haettavat tehtävät',
@@ -629,29 +648,16 @@ class Signup(models.Model):
     time_arrived = models.DateTimeField(null=True, blank=True)
     time_work_accepted = models.DateTimeField(null=True, blank=True)
 
+    is_accepted = time_bool_property('time_accepted')
+    is_shifts_ready = time_bool_property('time_shifts_ready')
+    is_cancelled = time_bool_property('time_cancelled')
+    is_rejected = time_bool_property('time_rejected')
+    is_arrived = time_bool_property('time_arrived')
+    is_work_accepted = time_bool_property('time_work_accepted')
+
     @property
-    def is_accepted(self):
-        return self.time_accepted is not None
-    
-    @property
-    def is_shifts_ready(self):
-        return self.time_shifts_ready is not None
-    
-    @property
-    def is_cancelled(self):
-        return self.time_cancelled is not None
-    
-    @property
-    def is_rejected(self):
-        return self.time_rejected is not None
-    
-    @property
-    def is_arrived(self):
-        return self.time_arrived is not None
-    
-    @property
-    def is_work_accepted(self):
-        return self.time_work_accepted is not None
+    def is_processed(self):
+        return self.state != 'new'
 
     class Meta:
         verbose_name = u'ilmoittautuminen'
@@ -693,31 +699,33 @@ class Signup(models.Model):
 
     @property
     def job_category_accepted_labels(self):
-        label_class = SIGNUP_STATE_LABEL_CLASSES[self.state]
+        state = self.state
+        label_class = SIGNUP_STATE_LABEL_CLASSES[state]
 
-        if self.state == 'new':
+
+        if state == 'new':
             label_texts = [cat.name for cat in self.get_first_categories()]
             labels = [(label_class, label_text, None) for label_text in label_texts]
 
             if self.is_more_categories:
                 labels.append((label_class, u'...', self.get_redacted_category_names()))
 
-        elif self.state in ACCEPTED_STATES:
+        elif state == 'cancelled':
+            labels = [(label_class, u'Peruutettu', None)]
+
+        elif state == 'rejected':
+            labels = [(label_class, u'Hylätty', None)]
+
+        elif state == 'beyond_logic':
+            labels = [(label_class, u'Perätilassa', None)]
+
+        elif self.is_accepted:
             label_texts = [cat.name for cat in self.job_categories_accepted.all()]
             labels = [(label_class, label_text, None) for label_text in label_texts]
 
-        elif self.state == 'cancelled':
-            labels = [(label_class, u'Peruutettu', None)]
-
-        elif self.state == 'rejected':
-            labels = [(label_class, u'Hylätty', None)]
-
-        elif self.state == 'beyond_logic':
-            labels = [(label_class, u'Perätilassa', None)]
-
         else:
             from warnings import warn
-            warn(u'Unknown state: {self.state}'.format(self=self))
+            warn(u'Unknown state: {state}'.format(self=self))
             labels = []
 
         return labels
@@ -735,19 +743,9 @@ class Signup(models.Model):
 
         return signup, created
 
-    def state_change_from(self, old_state):
-        new_state = self.state
-
-        if new_state == old_state:
-            return
-
-        meta = self.event.labour_event_meta
-
-        ensure_user_is_member_of_group(self.person, meta.applicants_group, new_state in ACTIVE_STATES)
-        ensure_user_is_member_of_group(self.person, meta.accepted_group,   new_state in ACCEPTED_STATES)
-        ensure_user_is_member_of_group(self.person, meta.finished_group,   new_state in FINISHED_STATES)
-        ensure_user_is_member_of_group(self.person, meta.rejected_group,   new_state == 'rejected')
-
+    def state_change_from(self, *args, **kwargs):
+        from warnings import warn
+        warn(DeprecationWarning('Signup.state_change_from is deprecated'))
         self.send_messages()
 
     def send_messages(self, resend=False):
@@ -775,6 +773,59 @@ class Signup(models.Model):
             current_signup = next_signup
 
         return None, None
+
+    @property
+    def _state_flags(self):
+        return self.is_active, \
+            self.is_accepted, \
+            self.is_arrived, \
+            self.is_work_accepted, \
+            self.is_rejected, \
+            self.is_cancelled
+
+    @_state_flags.setter
+    def _set_state_flags(self, flags):
+        self.is_active, \
+            self.is_accepted, \
+            self.is_arrived, \
+            self.is_work_accepted, \
+            self.is_rejected, \
+            self.is_cancelled = flags
+
+    @property
+    def state(self):
+        return STATE_NAME_BY_FLAGS[self._state_flags]
+
+    @state.setter
+    def set_state(self, new_state):
+        self._state_flags = STATE_FLAGS_BY_NAME[new_state] 
+
+    @property
+    def next_states(self):
+        cur_state = self.state
+
+        states = []
+
+        if cur_state == 'new':
+            states.extend(('accepted', 'rejected', 'cancelled'))
+        elif cur_state == 'accepted':
+            states.extend(('rejected', 'cancelled', 'arrived'))
+        elif cur_state == 'arrived':
+            states.extend(('honr_discharged'))
+        elif cur_state == 'beyond_logic':
+            states.extend(('new', 'accepted', 'rejected', 'cancelled', 'arrived', 'honr_discharged'))
+
+        states.append('beyond_logic')
+
+        return states
+
+    @property
+    def next_states_buttons(self):
+        return [(
+            state_name,
+            SIGNUP_STATE_BUTTON_CLASSES[state_name],
+            SIGNUP_STATE_IMPERATIVES[state_name],
+        ) for state_name in self.next_states]
 
     @property
     def formatted_state(self):
@@ -828,7 +879,8 @@ class Signup(models.Model):
 
     @property
     def applicant_can_cancel(self):
-        return self.state in PREEVENT_STATES
+        return self.is_active and not self.is_cancelled and not self.is_rejected and \
+            not self.is_arrived
 
     @property
     def formatted_job_categories_accepted(self):

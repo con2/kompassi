@@ -28,7 +28,6 @@ from ..models import (
     JobCategory,
     LabourEventMeta,
     PersonQualification,
-    PROCESSED_STATES,
     Qualification,
     Signup,
 )
@@ -139,7 +138,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
         SignupFormClass = None
         SignupExtraFormClass = None
 
-    if signup.state in PROCESSED_STATES:
+    if signup.is_processed:
         messages.error(request,
             u'Hakemuksesi on jo käsitelty, joten et voi enää muokata sitä. '
             u'Tarvittaessa ota yhteyttä työvoimatiimiin.'

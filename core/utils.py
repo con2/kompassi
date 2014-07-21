@@ -15,7 +15,7 @@ from django.db import models
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.utils.timezone import get_default_timezone
+from django.utils.timezone import get_default_timezone, now
 from django.template import RequestContext, defaultfilters
 from django.template.loader import render_to_string
 
@@ -302,3 +302,13 @@ def set_attrs(obj, **attrs):
         setattr(obj, key, value)
 
     return obj
+
+
+def time_bool_property(name):
+    def _get(self):
+        return getattr(self, name) is not None
+
+    def _set(self, value):
+        setattr(self, name, now() if value else None)
+
+    return property(_get, _set)

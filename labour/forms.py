@@ -9,7 +9,7 @@ from core.forms import PersonForm
 from core.models import Person
 from core.utils import horizontal_form_helper, indented_without_label
 
-from .models import Signup, JobCategory, EmptySignupExtra, ACCEPTED_STATES, TERMINAL_STATES
+from .models import Signup, JobCategory, EmptySignupExtra
 
 from datetime import date, datetime
 
@@ -118,21 +118,10 @@ class SignupAdminForm(forms.ModelForm):
 
     class Meta:
         model = Signup
-        fields = ('state', 'job_categories_accepted', 'xxx_interim_shifts', 'notes')
+        fields = ('job_title', 'job_categories_accepted', 'xxx_interim_shifts', 'notes')
         widgets = dict(
             job_categories_accepted=forms.CheckboxSelectMultiple,
         )
-
-    def clean_job_categories_accepted(self):
-        state = self.cleaned_data['state']
-        job_categories_accepted = self.cleaned_data['job_categories_accepted']
-
-        if state in ACCEPTED_STATES and not job_categories_accepted:
-            raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi tehtäväalue.')
-        elif state in TERMINAL_STATES and job_categories_accepted:
-            raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään tehtäväalue ei saa olla valittuna.')
-
-        return job_categories_accepted
 
 
 class AlternativeFormMixin(object):
