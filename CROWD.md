@@ -4,7 +4,7 @@ Kompassi integrates with Atlassian Crowd to provide single sign-on (SSO) using K
 
 Due to Crowd being a somewhat heavy closed-source application, we do not use Crowd as an authentication or authorization backend for Kompassi at Tracon. There are Django authentication backend implementations for the Crowd REST API but we do not use one. Instead, we first authenticate the user against the authentication backend configured in Django, which in our case is `django-auth-ldap` to our [FreeIPA](FREEIPA.md). Only after this authentication succeeds will we then fetch an SSO token from the Crowd REST API. This allows us to stay somewhat independent of Crowd as Crowd is only used to provide SSO to Atlassian applications.
 
-Please refer to the sequence diagram below for further information. TL;NOTE "keksi" is Finnish for "cookie".
+Please refer to the sequence diagram below for further information. TL;NOTE "keksi" is Finnish for "cookie". Errata to the diagram: Instead of /login?next=..., we set the Confluence `login.url` to `https://kompassi.tracon.fi/crowd?next=...` which reuses an existing Kompassi session if present or redirects to the login page otherwise. The view is implemented in `atlassian_integration/views.py`.
 
 ![A non-logged-in user wishes to access a document in Confluence](https://raw.githubusercontent.com/japsu/kompassi/master/docs/crowd_sso_sequence.png)
 
