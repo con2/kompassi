@@ -1,10 +1,10 @@
 .panel.panel-default
   .panel-heading
+    .pull-right
+      .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}    
     strong {{ signup.event.name }}
     |&thinsp;
-    small.text-muted {{ signup.event.headline }}
-    .pull-right
-      .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}
+    small.text-muted {{ signup.event.headline }} 
   if signup.is_active
     .panel-body
       p.help-block {{ signup.state_description }}

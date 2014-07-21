@@ -502,39 +502,36 @@ class AlternativeSignupForm(models.Model):
 
 
 NUM_FIRST_CATEGORIES = 5
-SIGNUP_STATE_CHOICES = [
-    (u'new', u'Uusi'),
-    (u'accepted', u'Hyväksytty, odottaa vuoroja'),
-    (u'finished', u'Hyväksytty, vuorot lähetetty'),
-    # (u'complained', u'Hyväksytty, vuorot lähetetty, vuoroista reklamoitu'),
+SIGNUP_STATE_NAMES = dict(
+    new=u'Uusi',
+    accepted=u'Hyväksytty, odottaa vuoroja',
+    finished=u'Hyväksytty, vuorot lähetetty',
+    complained=u'Hyväksytty, vuorot lähetetty, vuoroista reklamoitu',
 
-    (u'rejected', u'Hylätty (työvoimavastaava ei hyväksynyt töihin)'),
-    (u'cancelled', u'Peruutettu (hakijan itsensä peruma)'),
+    rejected=u'Hylätty (työvoimavastaava ei hyväksynyt töihin)',
+    cancelled=u'Peruutettu (hakijan itsensä peruma)',
 
-    (u'arrived', u'Saapunut tapahtumaan'),
+    arrived=u'Saapunut tapahtumaan',
 
-    (u'honr_discharged', u'Työpanos suoritettu hyväksytysti'),
-    # (u'dish_discharged', u'Erotettu tehtävästään'),
-    # (u'no_show', u'Jätti saapumatta paikalle'),
-    # (u'relieved', u'Vapautettu tehtävästään'),
+    honr_discharged=u'Työpanos suoritettu hyväksytysti',
+    dish_discharged=u'Työpanoksessa moitittavaa',
+    no_show=u'Jätti saapumatta paikalle',
+    relieved=u'Vapautettu tehtävästään',
 
-    (u'beyond_logic', u'Perätilassa (irrotettu kaikesta automaattisesta käsittelystä)'),
-]
+    beyond_logic=u'Perätilassa (irrotettu kaikesta automaattisesta käsittelystä)',
+)
 
-FINISHED_STATES = ['finished', 'complained', 'arrived']
-TERMINAL_STATES = ['rejected', 'cancelled', 'dish_discharged', 'no_show', 'relieved']
 SIGNUP_STATE_CLASSES = dict(
     new=u'default',
     accepted=u'info',
     finished=u'success',
-    # complained=u'warning',
+    complained=u'warning',
     rejected=u'danger',
     cancelled=u'danger',
     arrived=u'success',
     honr_discharged=u'success',
-    # dish_discharged=u'danger',
-    # no_show=u'danger',
-    # relieved=u'danger',
+    dish_discharged=u'danger',
+    no_show=u'danger',
     beyond_logic=u'danger',
 )
 SIGNUP_STATE_LABEL_CLASSES = dict(
@@ -552,25 +549,47 @@ SIGNUP_STATE_DESCRIPTIONS = dict(
 SIGNUP_STATE_IMPERATIVES = dict(
     new=u'Palauta tilaan Uusi',
     accepted=u'Hyväksy hakemus',
+    finished=u'Lähetä vuorot',
     arrived=u'Merkitse saapuneeksi',
-    work_accepted=u'Merkitse työpanos hyväksytyksi',
+    complained=u'Kirjaa reklamaatio vuoroista',
+    honr_discharged=u'Teki työnsä hyväksytysti',
+    dish_discharged=u'Teki työnsä moitittavasti',
+    no_show=u'Ei saapunut paikalle',
+    relieved=u'Vapautettu tehtävästään',
     rejected=u'Hylkää',
     cancelled=u'Merkitse peruutetuksi',
     beyond_logic=u'Aseta perätilaan',
 )
 
 STATE_FLAGS_BY_NAME = dict(
-    #              active accept arrive workac reject cancel
-    new=          (True,  False, False, False, False, False),
-    accepted=     (True,  True , False, False, False, False),
-    arrived=      (True,  True,  True,  False, False, False),
-    work_accepted=(True,  True,  True,  True,  False, False),
-    rejected=     (False, False, False, False, True,  False),
-    cancelled=    (False, False, False, False, False, True ),
-    beyond_logic= (False, False, False, False, False, False),
+    #                active accept ready  compla arrive workac reprim reject cancel
+    new=            (True,  False, False, False, False, False, False, False, False),
+    accepted=       (True,  True,  False, False, False, False, False, False, False),
+    finished=       (True,  True,  True,  False, False, False, False, False, False),
+    complained=     (True,  True,  True,  True,  False, False, False, False, False),
+    arrived=        (True,  True,  True,  False, True,  False, False, False, False),
+    honr_discharged=(True,  True,  True,  False, True,  True,  False, False, False),
+    dish_discharged=(True,  True,  True,  False, True,  False, True,  False, False),
+    no_show=        (True,  True,  True,  False, False, False, True,  False, False),
+    rejected=       (False, False, False, False, False, False, False, True,  False),
+    relieved=       (False, True,  False, False, False, False, False, False, True ),
+    cancelled=      (False, False, False, False, False, False, False, False, True ),
+    beyond_logic=   (False, False, False, False, False, False, False, False, False),
 )
 
 STATE_NAME_BY_FLAGS = dict((flags, name) for (name, flags) in STATE_FLAGS_BY_NAME.iteritems())
+
+STATE_TIME_FIELDS = [
+    'created_at',
+    'time_accepted',
+    'time_shifts_ready',
+    'time_complained',
+    'time_cancelled',
+    'time_rejected',
+    'time_arrived',
+    'time_work_accepted',
+    'time_reprimanded',
+]
 
 
 class Signup(models.Model):
@@ -640,20 +659,65 @@ class Signup(models.Model):
         help_text=u"Printataan badgeen ym. Asetetaan automaattisesti hyväksyttyjen tehtäväalueiden perusteella, mikäli kenttä jätetään tyhjäksi.",
     )
 
-    is_active = models.BooleanField(default=True)
-    time_accepted = models.DateTimeField(null=True, blank=True)
-    time_shifts_ready = models.DateTimeField(null=True, blank=True)
-    time_cancelled = models.DateTimeField(null=True, blank=True)
-    time_rejected = models.DateTimeField(null=True, blank=True)
-    time_arrived = models.DateTimeField(null=True, blank=True)
-    time_work_accepted = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(verbose_name=u'Aktiivinen', default=True)
+
+    time_accepted = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Hyväksytty',
+    )
+
+    time_shifts_ready = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Vuorot valmiit',
+    )
+
+    time_complained = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Vuoroista reklamoitu',
+    )
+
+    time_cancelled = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Peruutettu',
+    )
+
+    time_rejected = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Hylätty',
+    )
+
+    time_arrived = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Saapunut tapahtumaan',
+    )
+
+    time_work_accepted = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Työpanos hyväksytty',
+    )
+
+    time_reprimanded = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Työpanoksesta esitetty moite',
+    )
+
 
     is_accepted = time_bool_property('time_accepted')
     is_shifts_ready = time_bool_property('time_shifts_ready')
+    is_complained = time_bool_property('time_complained')
     is_cancelled = time_bool_property('time_cancelled')
     is_rejected = time_bool_property('time_rejected')
     is_arrived = time_bool_property('time_arrived')
     is_work_accepted = time_bool_property('time_work_accepted')
+    is_reprimanded = time_bool_property('time_reprimanded')
 
     @property
     def is_processed(self):
@@ -776,21 +840,31 @@ class Signup(models.Model):
 
     @property
     def _state_flags(self):
-        return self.is_active, \
-            self.is_accepted, \
-            self.is_arrived, \
-            self.is_work_accepted, \
-            self.is_rejected, \
-            self.is_cancelled
+        return (
+            self.is_active,
+            self.is_accepted,
+            self.is_shifts_ready,
+            self.is_complained,
+            self.is_arrived,
+            self.is_work_accepted,
+            self.is_reprimanded,
+            self.is_rejected,
+            self.is_cancelled,
+        )
 
     @_state_flags.setter
     def _set_state_flags(self, flags):
-        self.is_active, \
-            self.is_accepted, \
-            self.is_arrived, \
-            self.is_work_accepted, \
-            self.is_rejected, \
-            self.is_cancelled = flags
+        (
+            self.is_active,
+            self.is_accepted,
+            self.is_shifts_ready,
+            self.is_complained,
+            self.is_arrived,
+            self.is_work_accepted,
+            self.is_reprimanded,
+            self.is_rejected,
+            self.is_cancelled,
+        ) = flags
 
     @property
     def state(self):
@@ -809,13 +883,18 @@ class Signup(models.Model):
         if cur_state == 'new':
             states.extend(('accepted', 'rejected', 'cancelled'))
         elif cur_state == 'accepted':
-            states.extend(('rejected', 'cancelled', 'arrived'))
+            states.extend(('finished', 'cancelled'))
+        elif cur_state == 'finished':
+            states.extend(('arrived', 'complained', 'no_show', 'relieved'))
+        elif cur_state == 'complained':
+            states.extend(('finished', 'relieved'))
         elif cur_state == 'arrived':
-            states.extend(('honr_discharged'))
+            states.extend(('honr_discharged', 'dish_discharged', 'relieved'))
         elif cur_state == 'beyond_logic':
-            states.extend(('new', 'accepted', 'rejected', 'cancelled', 'arrived', 'honr_discharged'))
+            states.extend(('new', 'accepted', 'finished', 'complained', 'rejected', 'cancelled', 'arrived', 'honr_discharged', 'no_show'))
 
-        states.append('beyond_logic')
+        if cur_state != 'beyond_logic':
+            states.append('beyond_logic')
 
         return states
 
@@ -829,7 +908,7 @@ class Signup(models.Model):
 
     @property
     def formatted_state(self):
-        return dict(SIGNUP_STATE_CHOICES).get(self.state, '')
+        return dict(SIGNUP_STATE_NAMES).get(self.state, '')
 
     @property
     def state_label_class(self):
@@ -838,6 +917,17 @@ class Signup(models.Model):
     @property
     def state_description(self):
         return SIGNUP_STATE_DESCRIPTIONS.get(self.state, '')
+
+    @property
+    def state_times(self):
+        return [
+            (
+                self._meta.get_field_by_name(field_name)[0].verbose_name,
+                getattr(self, field_name, None),
+            )
+            for field_name in STATE_TIME_FIELDS
+            if getattr(self, field_name, None)
+        ]
 
     @property
     def person_messages(self):

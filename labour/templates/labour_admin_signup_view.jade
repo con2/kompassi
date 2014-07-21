@@ -33,14 +33,37 @@ block admin_content
         - crispy signup_extra_form
 
     .panel.panel-default
+      .panel-heading
+        .pull-right
+          .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}
+        strong Hakemuksen tila
+      table.table.table-striped
+        thead
+          th Päivämäärä ja kellonaika
+          th Tapahtuma
+        tbody
+          for state_text, state_timestamp in signup.state_times
+            tr
+              td {{ state_timestamp }}
+              td {{ state_text }}
+      .panel-footer.clearfix
+        p.text-muted Myös nämä toiminnot tallentavat lomakkeen tiedot.
+        .btn-group.pull-right
+          for state_name, button_class, button_text in signup.next_states_buttons
+            input.btn(class='{{ button_class }}'
+                      type='submit'
+                      name='set-state-{{ state_name }}'
+                      value='{{ button_text }}')
+
+    .panel.panel-default
       .panel-heading: strong Työvoimavastaavan merkinnät
       .panel-body.labour-admin-form
         - crispy signup_admin_form
       .panel-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-default(href='{% url "labour_admin_signups_view" event.slug %}') Hylkää muutokset ja palaa listaan
-          button.btn.btn-success(type='submit', name='save-return', value='save-return') Tallenna ja palaa listaan
-          button.btn.btn-success(type='submit', name='save-edit', value='save-edit') Tallenna ja jatka muokkaamista
+          input.btn.btn-success(type='submit', name='save-return', value='Tallenna ja palaa listaan')
+          input.btn.btn-success(type='submit', name='save-edit', value='Tallenna ja jatka muokkaamista')
 
   .panel.panel-default
     .panel-heading: strong Työvoimaviestit

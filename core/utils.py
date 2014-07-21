@@ -305,10 +305,23 @@ def set_attrs(obj, **attrs):
 
 
 def time_bool_property(name):
+    """
+    Uses a DateTimeField to implement a boolean property that records when the value was first set
+    to True. This is best illustrated by the following table of transitions:
+
+    False -> False: Nothing happens
+    False -> True:  Underlying attribute is set to the current time
+    True  -> False: Underlying attribute is set to None
+    True ->  True:  Nothing happens
+    """
+
     def _get(self):
         return getattr(self, name) is not None
 
     def _set(self, value):
-        setattr(self, name, now() if value else None)
+        if bool(getattr(self, name)) == bool(value):
+            pass
+        else:
+            setattr(self, name, now() if value else None)
 
     return property(_get, _set)
