@@ -29,8 +29,10 @@ To stop this form from being shown to anonymous users, redirect all anonymous us
         }
     }
 
-## Notes
+## Validation factors
 
-* When authenticating to Crowd, one needs to provide so-called validation factors that are then used to determine if the session is still valid from Crowd's point of view. These need to match exactly or the session is torn down. It was somewhat labourious to find out which validation factors are being used. In our setup (Confluence with bundled Tomcat behind an nginx proxy) they are as follows:
-  * `remote_address`: always `127.0.0.1` (note that it is spelled `remote_address`, not `remote_addr` as in `request.META['REMOTE_ADDR']`)
-  * `X-Forwarded-For`: as set by nginx in the request headers when configured by `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` (basically the real IP address of the client).
+When authenticating to Crowd, one needs to provide so-called validation factors that are then used to determine if the session is still valid from Crowd's point of view. These need to match exactly or the session is torn down. It was somewhat labourious to find out which validation factors are being used.
+
+In our setup (Confluence with bundled Tomcat behind an nginx proxy) they are as follows:
+* `remote_address`: always `127.0.0.1` (note that it is spelled `remote_address`, not `remote_addr` as in `request.META['REMOTE_ADDR']`)
+* `X-Forwarded-For`: as set by nginx in the request headers when configured by `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` (basically the real IP address of the client).
