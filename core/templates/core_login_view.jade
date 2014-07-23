@@ -3,7 +3,12 @@ extends base.jade
 block content
   .row.core-login-view
     .col-md-6
-      - crispy form
+      form(method='POST', role='form').form.form-horizontal
+        - crispy form
+        .form-group
+          .controls.col-md-offset-4.col-md-8
+            input.btn.btn-primary(type='submit', name='submit', value='Kirjaudu sisään')
+            a.btn.btn-link(href='{% url "core_password_reset_request_view" %}') Salasana unohtunut
     .col-md-6
       fieldset
         legend Luo itsellesi {{ settings.KOMPASSI_ACCOUNT_BRANDING }}
