@@ -13,6 +13,22 @@ Please refer to the sequence diagram below for further information. TL;NOTE "kek
 * https://developer.atlassian.com/display/CROWDDEV/JSON+Requests+and+Responses
 * https://developer.atlassian.com/display/CROWDDEV/Crowd+REST+Resources#CrowdRESTResources-CrowdSSOTokenResource
 
+## Enforce SSO for Jira dashboard
+
+Jira has an ugly default dashboard that is shown to anonymous users. It includes an evil login form that can be disabled by configuration, but the dashboard remains available to anonymous users.
+
+To stop this form from being shown to anonymous users, redirect all anonymous users to Kompassi SSO by `nginx` configuration:
+
+    location / {
+        proxy_pass http://127.0.0.1:9012;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        if ($http_cookie !~ 'crowd.token_key') {
+            rewrite ^(.*)$ https://kompassi.tracon.fi/crowd?next=https://jira.tracon.fi$1 last;
+        }
+    }
+
 ## Notes
 
 * When authenticating to Crowd, one needs to provide so-called validation factors that are then used to determine if the session is still valid from Crowd's point of view. These need to match exactly or the session is torn down. It was somewhat labourious to find out which validation factors are being used. In our setup (Confluence with bundled Tomcat behind an nginx proxy) they are as follows:
