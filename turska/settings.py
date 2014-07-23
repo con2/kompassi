@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     'tickets',
     'payments',
     'mailings',
+    'api',
 
     # Uncomment if you have IPA
     #'external_auth',
@@ -183,7 +184,7 @@ LOGGING = {
         'atlassian_integration.utils': {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'WARNING',
-            'propagate': True        
+            'propagate': True
         }
     }
 }
@@ -361,3 +362,7 @@ if 'atlassian_integration' in INSTALLED_APPS:
         'remote_address': lambda request: '127.0.0.1',
         'X-Forwarded-For': lambda request: request.META['HTTP_X_FORWARDED_FOR'],
     }
+
+
+if 'api' in INSTALLED_APPS:
+    KOMPASSI_APPLICATION_USER_GROUP = '{KOMPASSI_INSTALLATION_SLUG}-apps'.format(**locals())
