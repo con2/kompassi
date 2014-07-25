@@ -26,6 +26,7 @@
         query_builder.attachDebug("#query_debug");
         {% endif %}
         query_builder.attachResults("#query_results");
+        query_builder.attachNumResults("#num_query_results");
         window.ValueFormatter.timeZone = "{{ TIME_ZONE }}";
         window.ValueFormatter.locales = "{{ LANGUAGE_CODE }}";
 

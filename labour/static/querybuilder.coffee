@@ -368,6 +368,9 @@ class QueryBuilder
   attachResults: (@uiResultsId) ->
     @uiResults = $(uiResultsId)
 
+  attachNumResults: (@uiNumResultsId) ->
+    @uiNumResults = $(uiNumResultsId)
+
   setBackend: (url) ->
     @backendUrl = url
 
@@ -487,6 +490,8 @@ class QueryBuilder
     view = new ResultView(@uiResults, @_data, @queriedViews, data)
     view.showID = @_showID
     view.render()
+
+    @uiNumResults.text(data.length)
 
   onToggleIDVisibility: (selfID) ->
     @_showID = not @_showID

@@ -455,6 +455,11 @@
       return this.uiResults = $(uiResultsId);
     };
 
+    QueryBuilder.prototype.attachNumResults = function(uiNumResultsId) {
+      this.uiNumResultsId = uiNumResultsId;
+      return this.uiNumResults = $(uiNumResultsId);
+    };
+
     QueryBuilder.prototype.setBackend = function(url) {
       return this.backendUrl = url;
     };
@@ -590,7 +595,8 @@
       var view;
       view = new ResultView(this.uiResults, this._data, this.queriedViews, data);
       view.showID = this._showID;
-      return view.render();
+      view.render();
+      return this.uiNumResults.text(data.length);
     };
 
     QueryBuilder.prototype.onToggleIDVisibility = function(selfID) {
