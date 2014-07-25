@@ -32,7 +32,7 @@ def export_csv(event, signups, output_file=None):
     header_row = [
         u"{model._meta.model_name}.{field_name}"
         .format(model=model, field_name=field_name)
-        .encode(ENCODING)
+        .encode(ENCODING, 'ignore')
         for (model, field_name) in fields
     ]
 
@@ -54,7 +54,7 @@ def export_csv(event, signups, output_file=None):
         for model, field_name in fields:
             model_instance = model.get_for_signup(signup)
             field_value = getattr(model_instance, field_name)
-            field_value = unicode(field_value).encode(ENCODING)
+            field_value = unicode(field_value).encode(ENCODING, 'ignore')
 
             result_row.append(field_value)
 
