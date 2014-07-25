@@ -7,6 +7,9 @@ from core.models import Person
 from .models import Signup
 
 
+ENCODING = 'ISO-8859-15'
+
+
 def get_signup_fields(event):
     signup_fields = []
 
@@ -27,7 +30,9 @@ def export_csv(event, signups, output_file=None):
     fields = get_signup_fields(event)
 
     header_row = [
-        "{model._meta.model_name}.{field_name}".format(model=model, field_name=field_name)
+        u"{model._meta.model_name}.{field_name}"
+        .format(model=model, field_name=field_name)
+        .encode(ENCODING)
         for (model, field_name) in fields
     ]
 
@@ -48,8 +53,10 @@ def export_csv(event, signups, output_file=None):
 
         for model, field_name in fields:
             model_instance = model.get_for_signup(signup)
+            field_value = getattr(model_instance, field_name)
+            field_value = unicode(field_value).encode(ENCODING)
 
-            result_row.append(getattr(model_instance, field_name))
+            result_row.append(field_value)
 
         writer.writerow(result_row)
 
