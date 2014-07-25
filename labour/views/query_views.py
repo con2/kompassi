@@ -8,7 +8,11 @@ from django.http.response import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 from django.views.decorators.http import require_POST, require_GET
 import itertools
-from labour.helpers import labour_admin_required
+
+from core.utils import url
+from labour.models import Signup
+
+from ..helpers import labour_admin_required
 
 __author__ = 'jyrkila'
 
@@ -119,7 +123,10 @@ def query_exec(request, vars, event):
     q_results = query_builder.exec_query()
     m_results = merge_values(list(q_results))
     for result in m_results:
-        result["__url"] = reverse("labour_admin_signup_view", args=[event.slug, result["pk"]])
+        # NB signup link uses person.pk, not signup.pk
+        signup = Signup.objects.get(pk=result["pk"])
+
+        result["__url"] = url("labour_admin_signup_view", event.slug, signup.person.pk)
 
     convert_datetimes(m_results)
     j_results = json.dumps(m_results)
