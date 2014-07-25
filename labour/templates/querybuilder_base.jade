@@ -19,4 +19,7 @@ if debug
 
 table.table.table-striped.table-hover.table-condensed.table-bordered.table-grouped#query_results
 
-p <span id='num_query_results'>0</span> tulosta.
+p
+  span#num_query_results 0
+  |  tulosta. 
+  a#export_results_link(href='{% url "labour_admin_export_view" event.slug %}?signup_ids=') Vie Exceliin...

@@ -4,3 +4,6 @@ block admin_content
     .panel-heading: strong Tapahtumaan ilmoittautuneet henkilöt
     table.table.table-striped
       include labour_admin_signup_table_contents.jade
+    .panel-footer.clearfix
+      .pull-right
+        a(href='{% url "labour_admin_export_view" event.slug %}') Vie Exceliin...

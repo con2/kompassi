@@ -460,6 +460,11 @@
       return this.uiNumResults = $(uiNumResultsId);
     };
 
+    QueryBuilder.prototype.attachExportResultsLink = function(uiExportResultsLinkId) {
+      this.uiExportResultsLinkId = uiExportResultsLinkId;
+      return this.uiExportResultsLink = $(uiExportResultsLinkId);
+    };
+
     QueryBuilder.prototype.setBackend = function(url) {
       return this.backendUrl = url;
     };
@@ -596,7 +601,24 @@
       view = new ResultView(this.uiResults, this._data, this.queriedViews, data);
       view.showID = this._showID;
       view.render();
-      return this.uiNumResults.text(data.length);
+      this.uiNumResults.text(data.length);
+      return this.uiExportResultsLink.attr('href', (function(_this) {
+        return function() {
+          var oldHref, paramStart, replaceIdsAt, row;
+          paramStart = 'signup_ids=';
+          oldHref = _this.uiExportResultsLink.attr('href');
+          replaceIdsAt = oldHref.indexOf(paramStart) + paramStart.length;
+          return oldHref.slice(0, replaceIdsAt) + ((function() {
+            var _i, _len, _results;
+            _results = [];
+            for (_i = 0, _len = data.length; _i < _len; _i++) {
+              row = data[_i];
+              _results.push(row.pk);
+            }
+            return _results;
+          })()).join(',');
+        };
+      })(this)());
     };
 
     QueryBuilder.prototype.onToggleIDVisibility = function(selfID) {

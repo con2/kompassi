@@ -6,13 +6,15 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods, require_GET
+from django.utils import timezone
 
 from core.models import Event, Person
 from core.utils import initialize_form, url, json_response, render_string
 
+from ..csv_export import export_csv
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
 from ..helpers import labour_admin_required
 from ..models import (
@@ -231,6 +233,31 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
     )
 
     return render(request, 'labour_admin_mail_editor_view.jade', vars)
+
+
+@labour_admin_required
+@require_GET
+def labour_admin_export_view(request, vars, event):
+    signup_ids = request.GET.get('signup_ids', None)
+
+    if signup_ids == "":
+        # fmh
+        signups = []
+    elif signup_ids is not None:
+        signup_ids = [int(id) for id in signup_ids.split(',')]
+        signups = Signup.objects.filter(event=event, pk__in=signup_ids)
+    else:
+        signups = Signup.objects.filter(event=event)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="{event.slug}_signups_{timestamp}.tsv"'.format(
+        event=event,
+        timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
+    )
+
+    export_csv(event, signups, response)
+
+    return response
 
 
 def labour_admin_menu_items(request, event):

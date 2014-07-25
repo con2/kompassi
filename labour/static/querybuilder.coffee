@@ -371,6 +371,9 @@ class QueryBuilder
   attachNumResults: (@uiNumResultsId) ->
     @uiNumResults = $(uiNumResultsId)
 
+  attachExportResultsLink: (@uiExportResultsLinkId) ->
+    @uiExportResultsLink = $(uiExportResultsLinkId)
+
   setBackend: (url) ->
     @backendUrl = url
 
@@ -492,6 +495,12 @@ class QueryBuilder
     view.render()
 
     @uiNumResults.text(data.length)
+    @uiExportResultsLink.attr 'href', do =>
+      paramStart = 'signup_ids='
+      oldHref = @uiExportResultsLink.attr('href')
+      replaceIdsAt = oldHref.indexOf(paramStart) + paramStart.length
+
+      oldHref.slice(0, replaceIdsAt) + (row.pk for row in data).join(',')
 
   onToggleIDVisibility: (selfID) ->
     @_showID = not @_showID

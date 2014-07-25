@@ -334,6 +334,10 @@ class Person(models.Model):
             )
         )
 
+    @classmethod
+    def get_for_signup(cls, signup):
+        return signup.person
+
     def save(self, *args, **kwargs):
         ret_val = super(Person, self).save(*args, **kwargs)
 

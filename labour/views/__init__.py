@@ -11,8 +11,9 @@ from .public_views import (
 
 from .admin_views import (
     labour_admin_dashboard_view,
-    labour_admin_mail_view,
+    labour_admin_export_view,
     labour_admin_mail_editor_view,
+    labour_admin_mail_view,
     labour_admin_menu_items,
     labour_admin_roster_job_category_fragment,
     labour_admin_roster_view,

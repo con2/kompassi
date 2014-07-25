@@ -989,6 +989,10 @@ class Signup(models.Model):
     def full_name(self):
         return self.person.full_name
 
+    @classmethod
+    def get_for_signup(cls, signup):
+        return signup
+
 
 class SignupExtraBase(models.Model):
     signup = models.OneToOneField(Signup, related_name="+", primary_key=True)
@@ -1003,6 +1007,10 @@ class SignupExtraBase(models.Model):
     @staticmethod
     def get_query_class():
         return None
+
+    @classmethod
+    def get_for_signup(cls, signup):
+        return signup.signup_extra
 
     class Meta:
         abstract = True
