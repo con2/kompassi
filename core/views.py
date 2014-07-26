@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -478,6 +478,22 @@ def core_password_reset_view(request, code):
     )
 
     return render(request, 'core_password_reset_view.jade', vars)
+
+
+@user_passes_test(lambda user: user.is_superuser)
+@require_GET
+def core_admin_impersonate_view(request, username):
+    next = get_next(request)
+    user = authenticate(username=username) # look, no password
+
+    messages.warning(request,
+        u'Käytät nyt Kompassia toisen käyttäjän oikeuksilla. Tämän toiminnon käyttö on sallitua '
+        u'ainoastaan sellaisiin ylläpitotoimenpiteisiin, joiden hoitaminen ylläpitotunnuksilla on '
+        u'muuten tarpeettoman työlästä tai hankalaa. Muista kirjautua ulos, kun olet saanut '
+        u'ylläpitotoimenpiteet hoidettua.'
+    )
+
+    return do_login(request, user, password=None, next=next)
 
 
 @require_http_methods(['GET', 'POST'])

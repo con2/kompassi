@@ -219,6 +219,7 @@ KOMPASSI_ACCOUNT_INFO = u'Tracon-tunnus on uusi, keväällä 2014 käynnistetty 
 KOMPASSI_PRIVACY_POLICY_URL = 'http://media.tracon.fi/2014/tracon9_turska_rekisteriseloste.pdf'
 
 AUTHENTICATION_BACKENDS = (
+    'core.backends.KompassiImpersonationBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 

@@ -4,6 +4,7 @@ from django.contrib.auth.views import logout
 
 from .forms import LoginForm
 from .views import (
+    core_admin_impersonate_view,
     core_email_verification_request_view,
     core_email_verification_view,
     core_event_view,
@@ -34,4 +35,5 @@ urlpatterns = patterns(
     url(r'^profile/password/reset/(?P<code>[a-f0-9]+)$', core_password_reset_view, name='core_password_reset_view'),
     url(r'^profile/email/verify$', core_email_verification_request_view, name='core_email_verification_request_view'),
     url(r'^profile/email/verify/(?P<code>[a-f0-9]+)$', core_email_verification_view, name='core_email_verification_view'),
+    url(r'^impersonate/(?P<username>[a-zA-Z0-9_-]+)$', core_admin_impersonate_view, name='core_admin_impersonate_view'),
 )
