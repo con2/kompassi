@@ -2,6 +2,8 @@
 
 import csv
 
+from django.db import models
+
 from core.models import Person
 
 from .models import Signup
@@ -21,20 +23,73 @@ def get_signup_fields(event):
 
     for model in models:
         for field in model._meta.fields:
-            signup_fields.append((model, field.name))
+            signup_fields.append((model, field))
+
+        for field, unused in model._meta.get_m2m_with_model():
+            signup_fields.append((model, field))
 
     return signup_fields
 
 
+def get_m2m_choices(event, field):
+    target_model = field.rel.to
+
+    if any(f.name == 'event' for f in target_model._meta.fields):
+        choices = target_model.objects.filter(event=event)
+    else:
+        choices = target_model.objects.all()
+
+    return choices.order_by('pk')
+
+
+def convert_value(value):
+    return unicode(value).encode(ENCODING, 'ignore')
+
+
+def write_header_row(event, writer, fields):
+    header_row = []
+
+    for (model, field) in fields:
+        if type(field) == models.ManyToManyField:
+            choices = get_m2m_choices(event, field)
+            header_row.extend(
+                u"{field.name}: {choice}"
+                .format(field=field, choice=choice.__unicode__())
+                .encode(ENCODING, 'ignore')
+                for choice in choices
+            )
+        else:
+            header_row.append(field.name.encode(ENCODING, 'ignore'))
+
+    writer.writerow(header_row)    
+
+
+def write_signups(event, writer, fields, signups):
+    for signup in signups:
+        if type(signup) is not Signup:
+            signup = Signup.objects.get(pk=signup)
+
+        result_row = []
+
+        for model, field in fields:
+            model_instance = model.get_for_signup(signup)
+            field_value = getattr(model_instance, field.name)
+
+            if type(field) == models.ManyToManyField:
+                choices = get_m2m_choices(event, field)
+
+                result_row.extend(
+                    convert_value(field_value.filter(pk=choice.pk).exists())
+                    for choice in choices
+                )
+            else:
+                result_row.append(convert_value(field_value))
+
+        writer.writerow(result_row)
+
+
 def export_csv(event, signups, output_file=None):
     fields = get_signup_fields(event)
-
-    header_row = [
-        u"{model._meta.model_name}.{field_name}"
-        .format(model=model, field_name=field_name)
-        .encode(ENCODING, 'ignore')
-        for (model, field_name) in fields
-    ]
 
     if output_file is None:
         from cStringIO import StringIO
@@ -43,22 +98,8 @@ def export_csv(event, signups, output_file=None):
     else:
         writer = csv.writer(output_file, dialect='excel-tab')
 
-    writer.writerow(header_row)
-
-    for signup in signups:
-        if type(signup) is not Signup:
-            signup = Signup.objects.get(pk=signup)
-
-        result_row = []
-
-        for model, field_name in fields:
-            model_instance = model.get_for_signup(signup)
-            field_value = getattr(model_instance, field_name)
-            field_value = unicode(field_value).encode(ENCODING, 'ignore')
-
-            result_row.append(field_value)
-
-        writer.writerow(result_row)
+    write_header_row(event, writer, fields)
+    write_signups(event, writer, fields, signups)
 
     if output_file is None:
         result = string_output.getvalue()
