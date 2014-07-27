@@ -118,6 +118,13 @@ def do_login(request, user, password, next='core_frontpage_view'):
     `django.contrib.auth.authenticate` must be called first.
     """
 
+    if 'api' in settings.INSTALLED_APPS:
+        if user.groups.filter(name=settings.KOMPASSI_APPLICATION_USER_GROUP).exists():
+            messages.error(request,
+                u'API-käyttäjätunnuksilla sisäänkirjautuminen on estetty.'
+            )
+            return redirect('core_frontpage_view')
+
     login(request, user)
 
     username = request.user.username
