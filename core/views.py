@@ -487,7 +487,7 @@ def core_admin_impersonate_view(request, username):
     user = authenticate(username=username) # look, no password
 
     messages.warning(request,
-        u'Käytät nyt Kompassia toisen käyttäjän oikeuksilla. Tämän toiminnon käyttö on sallitua '
+        u'Käytät nyt Kompassia toisen käyttäjän oikeuksilla. Tämän toiminnon käyttö on sallittua '
         u'ainoastaan sellaisiin ylläpitotoimenpiteisiin, joiden hoitaminen ylläpitotunnuksilla on '
         u'muuten tarpeettoman työlästä tai hankalaa. Muista kirjautua ulos, kun olet saanut '
         u'ylläpitotoimenpiteet hoidettua.'
