@@ -24,7 +24,7 @@ def accept_the_application(context):
     context.signup.state = 'accepted'
     context.signup.save()
 
-    context.signup.state_change_from(old_state)
+    context.signup.apply_state()
 
 
 @when(u'the workforce manager assigns me to shifts')
@@ -35,7 +35,7 @@ def step_impl(context):
     context.signup.state = 'finished'
     context.signup.save()
     
-    context.signup.state_change_from(old_state)
+    context.signup.apply_state()
 
 
 @given(u'my application has been rejected')
@@ -45,4 +45,4 @@ def step_impl(context):
     context.signup.state = 'rejected'
     context.signup.save()
     
-    context.signup.state_change_from(old_state)
+    context.signup.apply_state()

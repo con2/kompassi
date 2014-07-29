@@ -65,3 +65,10 @@ def reset_user_password(user, new_password):
         old_password=temporary_password,
         new_password=new_password
     )
+
+
+def ensure_group_exists(group):
+    if type(group) not in [str, unicode]:
+        group = group.name
+
+    ipa.create_group(group)

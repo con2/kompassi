@@ -15,7 +15,7 @@ digraph "states" {
     complained -> finished;
     complained -> relieved;
     
-    arrived -> honr_discharged;
+    arrived -> workaccepted;
     arrived -> dish_discharged;
     arrived -> relieved;
 }

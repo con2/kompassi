@@ -277,6 +277,14 @@ def ensure_user_is_not_member_of_group(user, group):
         remove_user_from_group(user, group)
 
 
+def ensure_group_exists(group_name):
+    if 'external_auth' in settings.INSTALLED_APPS:
+        from external_auth.utils import ensure_group_exists as ea_ensure_group_exists
+        ea_ensure_group_exists(group_name)
+
+    return Group.objects.get_or_create(name=group_name)        
+
+
 def get_code(path):
     """
     Given "core.utils:get_code", imports the module "core.utils" and returns
@@ -304,6 +312,19 @@ def set_attrs(obj, **attrs):
     return obj
 
 
+def alias_property(name):
+    def _get(self):
+        return getattr(self, name)
+
+    def _set(self, value):
+        setattr(self, name, value)
+
+    def _del(self):
+        delattr(self, name)
+
+    return property(_get, _set, _del)
+
+
 def time_bool_property(name):
     """
     Uses a DateTimeField to implement a boolean property that records when the value was first set
@@ -325,3 +346,24 @@ def time_bool_property(name):
             setattr(self, name, now() if value else None)
 
     return property(_get, _set)
+
+
+SLUGIFY_CHAR_MAP = {
+  u'ä': u'a',
+  u'å': u'a',
+  u'ö': u'o',
+  u'ü': u'u',
+  u' ': u'-',
+  u'_': u'-',
+  u'.': u'-',
+}
+SLUGIFY_FORBANNAD_RE = re.compile(ur'[^a-z0-9-]', re.UNICODE)
+SLUGIFY_MULTIDASH_RE = re.compile(ur'-+', re.UNICODE)
+
+
+def slugify(ustr):
+    ustr = ustr.lower()
+    ustr = u''.join(SLUGIFY_CHAR_MAP.get(c, c) for c in ustr)
+    ustr = SLUGIFY_FORBANNAD_RE.sub(u'', ustr)
+    ustr = SLUGIFY_MULTIDASH_RE.sub(u'-', ustr)
+    return ustr

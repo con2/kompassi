@@ -46,6 +46,11 @@ class Command(BaseCommand):
 
         tz = tzlocal()
 
+
+        #
+        # Core
+        #
+
         venue, unused = Venue.objects.get_or_create(name='Tampere-talo')
         content_type = ContentType.objects.get_for_model(SignupExtra)
         event, unused = Event.objects.get_or_create(slug='tracon9', defaults=dict(
@@ -66,26 +71,22 @@ class Command(BaseCommand):
             event.headline = u'Tampere-talossa 13.-14.9.2014'
             event.save()
 
-        labour_accepted_group, unused = LabourEventMeta.get_or_create_group(event, 'accepted')
-        labour_applicants_group, unused = LabourEventMeta.get_or_create_group(event, 'applicants')
-        labour_finished_group, unused = LabourEventMeta.get_or_create_group(event, 'finished')
-        labour_admin_group, unused = LabourEventMeta.get_or_create_group(event, 'admins')
-        labour_rejected_group, unused = LabourEventMeta.get_or_create_group(event, 'rejected')
-        give_all_app_perms_to_group('labour', labour_admin_group)
 
-        if options['test']:
+        #
+        # Labour
+        #
+
+        labour_admin_group, created = LabourEventMeta.get_or_create_group(event, 'admins')
+
+        if options['test'] and created:
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
         labour_event_meta_defaults = dict(
-            admin_group=labour_admin_group,
-            accepted_group=labour_accepted_group,
-            applicants_group=labour_applicants_group,
-            finished_group=labour_finished_group,
-            rejected_group=labour_rejected_group,
             signup_extra_content_type=content_type,
             work_begins=datetime(2014, 9, 12, 8, 0, tzinfo=tz),
             work_ends=datetime(2014, 9, 14, 22, 0, tzinfo=tz),
+            admin_group=labour_admin_group,
         )
 
         if options['test']:
@@ -101,20 +102,116 @@ class Command(BaseCommand):
                 registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=tz),
             )
 
-        programme_admin_group, unused = ProgrammeEventMeta.get_or_create_group(event, 'admins')
-        give_all_app_perms_to_group('programme', programme_admin_group)
-
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(event=event, defaults=labour_event_meta_defaults)
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
-            public=False,
-            admin_group=programme_admin_group,
-            contact_email='Tracon 9 -ohjelmatiimi <ohjelma@tracon.fi>',
-        ))
 
         # labour v7
         if not labour_event_meta.contact_email:
             labour_event_meta.contact_email = 'Tracon 9 -työvoimatiimi <tyovoima@tracon.fi>'
             labour_event_meta.save()
+
+        for name, description in [
+            (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen'),
+            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.'),
+            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta.'),
+            (u'Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.'),
+            (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.'),
+            (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.'),
+            (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.'),
+            (u'Myynti', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.'),
+            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.'),
+            (u'Ohjelma-avustaja', u'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.'),
+            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Hygieniapassi suositeltava.'),
+            (u'Taltiointi', u'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.'),
+            (u'Tekniikka', u'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä ongelmanratkaisua.'),
+            (u'Valokuvaus', u'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.'),
+            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.'),
+        ]:
+            JobCategory.objects.get_or_create(
+                event=event,
+                name=name,
+                defaults=dict(
+                    description=description
+                )
+            )
+
+        labour_event_meta.create_groups()
+
+        for name in [u'Conitea']:
+            JobCategory.objects.filter(event=event, name=name).update(public=False)
+
+        jvkortti = Qualification.objects.get(name='JV-kortti')
+        jv = JobCategory.objects.get(
+            event=event,
+            name=u'Järjestyksenvalvoja'
+        )
+        if not jv.required_qualifications.exists():
+            jv.required_qualifications = [jvkortti]
+            jv.save()
+
+        b_ajokortti = Qualification.objects.get(slug='b-ajokortti')
+        logistiikka = JobCategory.objects.get(
+            event=event,
+            name=u'Logistiikka',
+        )
+        if not logistiikka.required_qualifications.exists():
+            logistiikka.required_qualifications = [b_ajokortti]
+            logistiikka.save()
+
+        period_length = timedelta(hours=8)
+        for period_description, period_start in [
+            ("Lauantain aamuvuoro (la klo 08-16)", event.start_time.replace(hour=8)),
+            ("Lauantain iltavuoro (la klo 16-24)", event.start_time.replace(hour=16)),
+            ("Lauantai-sunnuntai-yövuoro (su klo 00-08)", event.end_time.replace(hour=0)),
+            ("Sunnuntain aamuvuoro (su klo 08-16)", event.end_time.replace(hour=8)),
+            ("Sunnuntain iltavuoro (su klo 16-20)", event.end_time.replace(hour=16)),
+        ]:
+            WorkPeriod.objects.get_or_create(
+                event=event,
+                description=period_description,
+                defaults=dict(
+                    start_time=period_start,
+                    end_time=period_start + period_length
+                )
+            )
+
+        for diet_name in [
+            u'Gluteeniton',
+            u'Laktoositon',
+            u'Maidoton',
+            u'Vegaaninen',
+            u'Lakto-ovo-vegaaninen',
+        ]:
+            SpecialDiet.objects.get_or_create(name=diet_name)
+
+        for night in [
+            u'Perjantain ja lauantain välinen yö',
+            u'Lauantain ja sunnuntain välinen yö',
+        ]:
+            Night.objects.get_or_create(name=night)
+
+        AlternativeSignupForm.objects.get_or_create(
+            event=event,
+            slug=u'conitea',
+            defaults=dict(
+                title=u'Conitean ilmoittautumislomake',
+                signup_form_class_path='tracon9.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='tracon9.forms:OrganizerSignupExtraForm',
+                active_from=datetime(2014, 7, 7, 12, 0, 0, tzinfo=tz),
+                active_until=datetime(2014, 8, 31, 23, 59, 59, tzinfo=tz),
+            ),
+        )
+
+
+        #
+        # Programme
+        # 
+
+        programme_admin_group, unused = ProgrammeEventMeta.get_or_create_group(event, 'admins')
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Tracon 9 -ohjelmatiimi <ohjelma@tracon.fi>',
+        ))
 
         room_order = 0
         for room_name in [
@@ -237,118 +334,12 @@ class Command(BaseCommand):
             rooms = [Room.objects.get(name__iexact=room_name, venue=venue)
                 for room_name in room_names]
 
-            view, unused = View.objects.get_or_create(event=event, name=view_name)
+            view, created = View.objects.get_or_create(event=event, name=view_name)
 
-            view.rooms = rooms
-            view.save()
+            if created:
+                view.rooms = rooms
+                view.save()
 
-
-        for name, description in [
-            (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen'),
-            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.'),
-            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta.'),
-            (u'Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.'),
-            (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.'),
-            (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.'),
-            (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.'),
-            (u'Myynti', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.'),
-            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.'),
-            (u'Ohjelma-avustaja', u'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.'),
-            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Hygieniapassi suositeltava.'),
-            (u'Taltiointi', u'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.'),
-            (u'Tekniikka', u'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä ongelmanratkaisua.'),
-            (u'Valokuvaus', u'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.'),
-            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.'),
-        ]:
-            JobCategory.objects.get_or_create(
-                event=event,
-                name=name,
-                defaults=dict(
-                    description=description
-                )
-            )
-
-        for name in [u'Conitea']:
-            JobCategory.objects.filter(event=event, name=name).update(public=False)
-
-        jvkortti = Qualification.objects.get(name='JV-kortti')
-        jv = JobCategory.objects.get(
-            event=event,
-            name=u'Järjestyksenvalvoja'
-        )
-        if not jv.required_qualifications.exists():
-            jv.required_qualifications = [jvkortti]
-            jv.save()
-
-        b_ajokortti = Qualification.objects.get(slug='b-ajokortti')
-        logistiikka = JobCategory.objects.get(
-            event=event,
-            name=u'Logistiikka',
-        )
-        if not logistiikka.required_qualifications.exists():
-            logistiikka.required_qualifications = [b_ajokortti]
-            logistiikka.save()
-
-        for job_category_name, job_names in [
-            (u'Järjestyksenvalvoja', (
-                u'Järjestyksenvalvojain vuoroesimies',
-                u'Järjestyksenvalvoja',
-            )),
-            (u'Yleisvänkäri', (
-                u'TS-1 -ryhmän ylivänkäri',
-                u'TS-1 -ryhmän yleisvänkäri',
-                u'TS-2 -ryhmän ylivänkäri',
-                u'TS-2 -ryhmän yleisvänkäri',
-            )),
-        ]:
-            job_category = JobCategory.objects.get(event=event, name=job_category_name)
-            if not job_category.job_set.exists():
-                for job_name in job_names:
-                    Job.objects.get_or_create(job_category=job_category, title=job_name)
-
-        period_length = timedelta(hours=8)
-        for period_description, period_start in [
-            ("Lauantain aamuvuoro (la klo 08-16)", event.start_time.replace(hour=8)),
-            ("Lauantain iltavuoro (la klo 16-24)", event.start_time.replace(hour=16)),
-            ("Lauantai-sunnuntai-yövuoro (su klo 00-08)", event.end_time.replace(hour=0)),
-            ("Sunnuntain aamuvuoro (su klo 08-16)", event.end_time.replace(hour=8)),
-            ("Sunnuntain iltavuoro (su klo 16-20)", event.end_time.replace(hour=16)),
-        ]:
-            WorkPeriod.objects.get_or_create(
-                event=event,
-                description=period_description,
-                defaults=dict(
-                    start_time=period_start,
-                    end_time=period_start + period_length
-                )
-            )
-
-        for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegaaninen',
-        ]:
-            SpecialDiet.objects.get_or_create(name=diet_name)
-
-        for night in [
-            u'Perjantain ja lauantain välinen yö',
-            u'Lauantain ja sunnuntain välinen yö',
-        ]:
-            Night.objects.get_or_create(name=night)
-
-        AlternativeSignupForm.objects.get_or_create(
-            event=event,
-            slug=u'conitea',
-            defaults=dict(
-                title=u'Conitean ilmoittautumislomake',
-                signup_form_class_path='tracon9.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='tracon9.forms:OrganizerSignupExtraForm',
-                active_from=datetime(2014, 7, 7, 12, 0, 0, tzinfo=tz),
-                active_until=datetime(2014, 8, 31, 23, 59, 59, tzinfo=tz),
-            ),
-        )
 
         #
         # Tickets

@@ -187,7 +187,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
                         set_attrs(obj, **defaults)
                         obj.save()
 
-            signup.state_change_from(old_state)
+            signup.apply_state()
 
             messages.success(request, message)
             return redirect('core_event_view', event.slug)

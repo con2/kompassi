@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.dateformat import format as format_date
 from django.utils import timezone
 
-from .utils import validate_slug, SLUG_FIELD_PARAMS, url
+from .utils import validate_slug, SLUG_FIELD_PARAMS, url, ensure_group_exists
 
 
 class Venue(models.Model):
@@ -442,7 +442,8 @@ class EventMetaBase(models.Model):
             app_label=ctype.app_label,
             suffix=suffix,
         )
-        return Group.objects.get_or_create(name=group_name)
+
+        return ensure_group_exists(group_name)
 
 
 ONE_TIME_CODE_LENGTH = 40

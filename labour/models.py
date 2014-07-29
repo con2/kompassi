@@ -9,21 +9,48 @@ from django.utils.timezone import now
 
 from core.models import EventMetaBase
 from core.utils import (
+    alias_property,
     ensure_user_is_member_of_group,
     ensure_user_is_not_member_of_group,
     is_within_period,
     SLUG_FIELD_PARAMS,
+    slugify,
     time_bool_property,
 )
 
 
 GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
     admins=u'Työvoimavastaavat',
-    applicants=u'Hakijat',
+    new=u'Uudet hakijat',
+    processed=u'Käsitellyt',
+    active=u'Aktiiviset',
     accepted=u'Hyväksytyt',
     finished=u'Työvuorotetut',
+    complained=u'Reklamoidut',
+    cancelled=u'Peruutetut',
     rejected=u'Hylätyt',
+    arrived=u'Saapuneet',
+    workaccepted=u'Työnsä hyväksytysti suorittaneet',
+    reprimanded=u'Työnsä moitittavasti suorittaneet',
 )
+
+
+SIGNUP_STATE_GROUPS = [
+    'new',
+    'active',
+    'processed',
+    'accepted',
+    'finished',
+    'complained',
+    'cancelled',
+    'rejected',
+    'arrived',
+    'workaccepted',
+    'reprimanded',
+]
+
+
+NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
 
 
 class LabourEventMeta(EventMetaBase):
@@ -58,34 +85,6 @@ class LabourEventMeta(EventMetaBase):
         verbose_name=u'yhteysosoite',
         help_text=u'Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
             u'osoitteesta, ja tämä osoite näytetään työvoimalle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
-    )
-
-    applicants_group = models.ForeignKey('auth.Group',
-        verbose_name=u'Hakijoiden ryhmä',
-        help_text=u'Järjestelmä lisää kaikki työvoimaan hakeneet automaattisesti tähän '
-            u'käyttäjäryhmään pääsynvalvontaa varten.',
-        related_name='+',
-    )
-
-    accepted_group = models.ForeignKey('auth.Group',
-        verbose_name=u'Työvoimaan hyväksyttyjen ryhmä',
-        help_text=u'Järjestelmä lisää kaikki työvoimaan hyväksytyt automaattisesti tähän '
-            u'käyttäjäryhmään pääsynvalvontaa varten.',
-        related_name='+',
-    )
-
-    finished_group = models.ForeignKey('auth.Group',
-        verbose_name=u'Vuorotettujen vänkärien ryhmä',
-        help_text=u'Järjestelmä lisää tähän ryhmään automaattisesti kaikki ne hyväksytyt '
-            u'vänkärit, joille on tehty työvuorot valmiiksi.',
-        related_name='+',
-    )
-
-    rejected_group = models.ForeignKey('auth.Group',
-        verbose_name=u'Hylättyjen vänkäriehdokkaiden ryhmä',
-        help_text=u'Järjestelmä lisää tähän ryhmään automaattisesti kaikki ne vänkärihakijat, '
-            u'joiden hakemukset työvoimavastaava on hylännyt.',
-        related_name='+',
     )
 
     signup_message = models.TextField(
@@ -128,22 +127,14 @@ class LabourEventMeta(EventMetaBase):
 
         event, unused = Event.get_or_create_dummy()
         content_type = ContentType.objects.get_for_model(EmptySignupExtra)
-        admin_group, unused = cls.get_or_create_group(event, 'admins')
-        accepted_group, unused = cls.get_or_create_group(event, 'accepted')
-        applicants_group, unused = cls.get_or_create_group(event, 'applicants')
-        finished_group, unused = cls.get_or_create_group(event, 'finished')
-        rejected_group, unused = cls.get_or_create_group(event, 'rejected')
+        admin_group, unused = LabourEventMeta.get_or_create_group(event, 'admins')
 
         t = now()
 
-        return cls.objects.get_or_create(
+        labour_event_meta, created = cls.objects.get_or_create(
             event=event,
             defaults=dict(
                 admin_group=admin_group,
-                accepted_group=accepted_group,
-                applicants_group=applicants_group,
-                finished_group=finished_group,
-                rejected_group=rejected_group,
                 signup_extra_content_type=content_type,
                 registration_opens=t - timedelta(days=60),
                 registration_closes=t + timedelta(days=60),
@@ -154,8 +145,18 @@ class LabourEventMeta(EventMetaBase):
             )
         )
 
+        labour_event_meta.create_groups()
+
+        return labour_event_meta, created
+
     @classmethod
     def get_or_create_group(cls, event, suffix):
+        if isinstance(suffix, (str, unicode)):
+            verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[suffix]
+        else:
+            verbose_name = suffix.name
+            suffix = suffix.slug
+
         group, created = super(LabourEventMeta, cls).get_or_create_group(event, suffix)
 
         if 'mailings' in settings.INSTALLED_APPS:
@@ -166,11 +167,18 @@ class LabourEventMeta(EventMetaBase):
                 app_label='labour',
                 group=group,
                 defaults=dict(
-                    verbose_name=GROUP_VERBOSE_NAMES_BY_SUFFIX.get(suffix, suffix),
+                    verbose_name=verbose_name,
                 ),
             )
 
         return group, created
+
+    def create_groups(self):
+        for group_suffix in SIGNUP_STATE_GROUPS:
+            group, created = LabourEventMeta.get_or_create_group(self.event, group_suffix)
+
+        for job_category in JobCategory.objects.filter(event=self.event):
+            group, created = LabourEventMeta.get_or_create_group(self.event, job_category)
 
     @property
     def is_registration_open(self):
@@ -198,6 +206,22 @@ class LabourEventMeta(EventMetaBase):
     def work_hours(self):
         from programme.utils import full_hours_between
         return full_hours_between(self.work_begins, self.work_ends)
+
+    @property
+    def applicants_group(self):
+        return self.get_group('applicants')
+
+    @property
+    def accepted_group(self):
+        return self.get_group('accepted')
+
+    @property
+    def finished_group(self):
+        return self.get_group('finished')
+
+    @property
+    def rejected_group(self):
+        return self.get_group('rejected')
 
 
 class Qualification(models.Model):
@@ -288,6 +312,7 @@ class JobCategory(models.Model):
     event = models.ForeignKey('core.Event', verbose_name=u'tapahtuma')
 
     name = models.CharField(max_length=63, verbose_name=u'tehtäväalueen nimi')
+    slug = models.CharField(**dict(NONUNIQUE_SLUG_FIELD_PARAMS, null=True, blank=True))
 
     description = models.TextField(
         verbose_name=u'tehtäväalueen kuvaus',
@@ -318,6 +343,10 @@ class JobCategory(models.Model):
         verbose_name = u'tehtäväalue'
         verbose_name_plural=u'tehtäväalueet'
 
+        unique_together = [
+            ('event', 'slug'),
+        ]
+
     def __unicode__(self):
         return self.name
 
@@ -329,6 +358,12 @@ class JobCategory(models.Model):
         jc2, unused = cls.objects.get_or_create(event=event, name='Dummy 2')
 
         return [jc1, jc2]
+
+    def save(self, *args, **kwargs):
+        if self.slug is None and self.name is not None:
+            self.slug = slugify(self.name)
+
+        return super(JobCategory, self).save(*args, **kwargs)
 
 
 class WorkPeriod(models.Model):
@@ -403,9 +438,6 @@ class JobRequirement(models.Model):
     class Meta:
         verbose_name = u'henkilöstövaatimus'
         verbose_name_plural = u'henkilöstövaatimukset'
-
-
-NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
 
 
 class AlternativeSignupForm(models.Model):
@@ -582,7 +614,7 @@ STATE_NAME_BY_FLAGS = dict((flags, name) for (name, flags) in STATE_FLAGS_BY_NAM
 STATE_TIME_FIELDS = [
     'created_at',
     'time_accepted',
-    'time_shifts_ready',
+    'time_finished',
     'time_complained',
     'time_cancelled',
     'time_rejected',
@@ -667,7 +699,7 @@ class Signup(models.Model):
         verbose_name=u'Hyväksytty',
     )
 
-    time_shifts_ready = models.DateTimeField(
+    time_finished = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name=u'Vuorot valmiit',
@@ -711,17 +743,17 @@ class Signup(models.Model):
 
 
     is_accepted = time_bool_property('time_accepted')
-    is_shifts_ready = time_bool_property('time_shifts_ready')
+    is_finished = time_bool_property('time_finished')
     is_complained = time_bool_property('time_complained')
     is_cancelled = time_bool_property('time_cancelled')
     is_rejected = time_bool_property('time_rejected')
     is_arrived = time_bool_property('time_arrived')
     is_work_accepted = time_bool_property('time_work_accepted')
+    is_workaccepted = alias_property('is_work_accepted') # for automagic groupiness
     is_reprimanded = time_bool_property('time_reprimanded')
 
-    @property
-    def is_processed(self):
-        return self.state != 'new'
+    is_new = property(lambda self: self.state == 'new')
+    is_processed = property(lambda self: self.state != 'new')
 
     class Meta:
         verbose_name = u'ilmoittautuminen'
@@ -807,10 +839,22 @@ class Signup(models.Model):
 
         return signup, created
 
-    def state_change_from(self, *args, **kwargs):
-        from warnings import warn
-        warn(DeprecationWarning('Signup.state_change_from is deprecated'))
+    def apply_state(self):
+        self.apply_group_membership()
         self.send_messages()
+
+    def apply_group_membership(self):
+        for group_suffix in SIGNUP_STATE_GROUPS:
+            should_belong_to_group = getattr(self, 'is_{group_suffix}'.format(group_suffix=group_suffix))
+            group = self.event.labour_event_meta.get_group(group_suffix)
+
+            ensure_user_is_member_of_group(self.person.user, group, should_belong_to_group)
+
+        for job_category in self.event.job_categories:
+            should_belong_to_group = job_category in self.job_categories_accepted
+            group = self.event.labour_event_meta.get_group(job_category.slug)
+
+            ensure_user_is_member_of_group(self.person.user, group, should_belong_to_group)
 
     def send_messages(self, resend=False):
         if 'mailings' not in settings.INSTALLED_APPS:
@@ -843,7 +887,7 @@ class Signup(models.Model):
         return (
             self.is_active,
             self.is_accepted,
-            self.is_shifts_ready,
+            self.is_finished,
             self.is_complained,
             self.is_arrived,
             self.is_work_accepted,
@@ -857,7 +901,7 @@ class Signup(models.Model):
         (
             self.is_active,
             self.is_accepted,
-            self.is_shifts_ready,
+            self.is_finished,
             self.is_complained,
             self.is_arrived,
             self.is_work_accepted,

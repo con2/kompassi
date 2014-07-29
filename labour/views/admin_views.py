@@ -66,7 +66,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
             signup_form.save()
             signup_extra_form.save()
             signup_admin_form.save()
-            signup.state_change_from(old_state)
+            signup.apply_state()
             messages.success(request, u'Tiedot tallennettiin.')
 
             if 'save-return' in request.POST:
