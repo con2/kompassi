@@ -3,7 +3,7 @@
 from datetime import date, datetime, timedelta
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -430,20 +430,28 @@ class EventMetaBase(models.Model):
         return user.groups.filter(pk=self.admin_group.pk).exists()
 
     @classmethod
-    def get_or_create_group(cls, event, suffix):
-        from django.contrib.auth.models import Group
+    def make_group_name(cls, event, suffix):
         from django.contrib.contenttypes.models import ContentType
 
         ctype = ContentType.objects.get_for_model(cls)
 
-        group_name = '{installation_slug}-{event_slug}-{app_label}-{suffix}'.format(
+        return '{installation_slug}-{event_slug}-{app_label}-{suffix}'.format(
             installation_slug=settings.KOMPASSI_INSTALLATION_SLUG,
             event_slug=event.slug,
             app_label=ctype.app_label,
             suffix=suffix,
-        )
+        )        
+
+    @classmethod
+    def get_or_create_group(cls, event, suffix):
+        group_name = cls.make_group_name(event, suffix)
 
         return ensure_group_exists(group_name)
+
+    def get_group(self, suffix):
+        group_name = self.make_group_name(self.event, suffix)
+
+        return Group.objects.get(name=group_name)
 
 
 ONE_TIME_CODE_LENGTH = 40

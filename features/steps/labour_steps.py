@@ -13,7 +13,7 @@ def given_event_accepting_applications(context):
 @given(u'I am signed up to the event')
 def event_sign_up(context):
     context.signup, unused = Signup.get_or_create_dummy()
-    context.signup.state_change_from(None)
+    context.signup.apply_state()
 
 
 @when(u'the workforce manager approves my application')

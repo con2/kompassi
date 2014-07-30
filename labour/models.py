@@ -21,9 +21,9 @@ from core.utils import (
 
 GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
     admins=u'Työvoimavastaavat',
+    applicants=u'Aktiiviset',
     new=u'Uudet hakijat',
     processed=u'Käsitellyt',
-    active=u'Aktiiviset',
     accepted=u'Hyväksytyt',
     finished=u'Työvuorotetut',
     complained=u'Reklamoidut',
@@ -36,8 +36,8 @@ GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
 
 
 SIGNUP_STATE_GROUPS = [
+    'applicants',
     'new',
-    'active',
     'processed',
     'accepted',
     'finished',
@@ -741,7 +741,6 @@ class Signup(models.Model):
         verbose_name=u'Työpanoksesta esitetty moite',
     )
 
-
     is_accepted = time_bool_property('time_accepted')
     is_finished = time_bool_property('time_finished')
     is_complained = time_bool_property('time_complained')
@@ -753,6 +752,7 @@ class Signup(models.Model):
     is_reprimanded = time_bool_property('time_reprimanded')
 
     is_new = property(lambda self: self.state == 'new')
+    is_applicants = alias_property('is_active') # group is called applicants for historical purposes
     is_processed = property(lambda self: self.state != 'new')
 
     class Meta:
@@ -850,7 +850,7 @@ class Signup(models.Model):
 
             ensure_user_is_member_of_group(self.person.user, group, should_belong_to_group)
 
-        for job_category in self.event.job_categories:
+        for job_category in JobCategory.objects.filter(event=self.event):
             should_belong_to_group = job_category in self.job_categories_accepted
             group = self.event.labour_event_meta.get_group(job_category.slug)
 
@@ -897,7 +897,7 @@ class Signup(models.Model):
         )
 
     @_state_flags.setter
-    def _set_state_flags(self, flags):
+    def _state_flags(self, flags):
         (
             self.is_active,
             self.is_accepted,
@@ -915,7 +915,7 @@ class Signup(models.Model):
         return STATE_NAME_BY_FLAGS[self._state_flags]
 
     @state.setter
-    def set_state(self, new_state):
+    def state(self, new_state):
         self._state_flags = STATE_FLAGS_BY_NAME[new_state] 
 
     @property
