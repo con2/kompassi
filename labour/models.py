@@ -851,7 +851,7 @@ class Signup(models.Model):
             ensure_user_is_member_of_group(self.person.user, group, should_belong_to_group)
 
         for job_category in JobCategory.objects.filter(event=self.event):
-            should_belong_to_group = job_category in self.job_categories_accepted
+            should_belong_to_group = self.job_categories_accepted.filter(pk=job_category.pk).exists()
             group = self.event.labour_event_meta.get_group(job_category.slug)
 
             ensure_user_is_member_of_group(self.person.user, group, should_belong_to_group)
