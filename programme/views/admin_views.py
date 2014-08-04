@@ -216,6 +216,6 @@ def programme_admin_export_view(request, vars, event):
 
 @programme_admin_required
 def programme_admin_email_list_view(request, vars, event):
-    addresses = Person.objects.filter(programme__category__event=event).sort_by('email').values_list('email', flat=True).distinct()
+    addresses = Person.objects.filter(programme__category__event=event).order_by('email').values_list('email', flat=True).distinct()
 
     return HttpResponse("\n".join(addr for addr in addresses if addr), content_type='text/plain')
