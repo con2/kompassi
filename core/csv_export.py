@@ -86,7 +86,7 @@ def write_row(event, writer, fields, model_instance, m2m_mode):
                     for choice in choices
                 )
             elif m2m_mode == 'comma_separated':
-                result_row.append(u', '.join(item.__unicode__() for item in field_value.all()))
+                result_row.append(u', '.join(item.__unicode__() for item in field_value.all()).encode(ENCODING))
             else:
                 raise NotImplemented(m2m_mode)
         else:
