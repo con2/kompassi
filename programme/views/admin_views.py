@@ -209,7 +209,7 @@ def programme_admin_tools_view(request, vars, event):
 
 @programme_admin_required
 def programme_admin_export_view(request, vars, event):
-    from ..csv_export import export_csv
+    from core.csv_export import export_csv
 
     programmes = Programme.objects.filter(category__event=event)
 
@@ -219,7 +219,7 @@ def programme_admin_export_view(request, vars, event):
         timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
     )
 
-    export_csv(event, programmes, response)
+    export_csv(event, Programme, programmes, response, m2m_mode='comma_separated')
 
     return response
 

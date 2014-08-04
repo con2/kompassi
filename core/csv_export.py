@@ -8,6 +8,23 @@ from django.db import models
 ENCODING = 'ISO-8859-15'
 
 
+class CsvExportMixin(object):
+    @classmethod
+    def get_csv_fields(cls, event):
+        fields = []
+
+        for field in cls._meta.fields:
+            fields.append((cls, field))
+
+        for field, unused in cls._meta.get_m2m_with_model():
+            fields.append((cls, field))
+
+        return fields
+
+    def get_csv_related(self):
+        return dict()
+
+
 def write_header_row(event, writer, fields, m2m_mode='separate_columns'):
     header_row = []
 
@@ -48,12 +65,19 @@ def get_m2m_choices(event, field):
 
 def write_row(event, writer, fields, model_instance, m2m_mode):
     result_row = []
+    related = model_instance.get_csv_related()
+
+    print related
 
     for model, field in fields:
-        source_instance = model.csv_get_for_obj(model_instance) if hasattr(model, 'csv_get_for_obj') else model_instance
-        field_value = getattr(source_instance, field.name)
+        if model in related:
+            source_instance = related.get(model, None)
+        else:
+            source_instance = model_instance
 
-        if type(field) == models.ManyToManyField:
+        field_value = getattr(source_instance, field.name) if source_instance is not None else None
+
+        if type(field) == models.ManyToManyField and field_value is not None:
             if m2m_mode == 'separate_columns':
                 choices = get_m2m_choices(event, field)
 
@@ -71,7 +95,9 @@ def write_row(event, writer, fields, model_instance, m2m_mode):
     writer.writerow(result_row)
 
 
-def export_csv(event, fields, model, model_instances, output_file, m2m_mode='separate_columns'):
+def export_csv(event, model, model_instances, output_file=None, m2m_mode='separate_columns'):
+    fields = model.get_csv_fields(event)
+
     if output_file is None:
         from cStringIO import StringIO
         string_output = StringIO()

@@ -11,10 +11,10 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 from django.utils import timezone
 
+from core.csv_export import export_csv
 from core.models import Event, Person
 from core.utils import initialize_form, url, json_response, render_string
 
-from ..csv_export import export_csv
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
 from ..helpers import labour_admin_required
 from ..models import (
@@ -255,7 +255,7 @@ def labour_admin_export_view(request, vars, event):
         timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
     )
 
-    export_csv(event, signups, response)
+    export_csv(event, Signup, signups, response, m2m_mode='separate_columns')
 
     return response
 

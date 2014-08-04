@@ -334,10 +334,6 @@ class Person(models.Model):
             )
         )
 
-    @classmethod
-    def csv_get_for_model_instance(cls, signup):
-        return signup.person
-
     def save(self, *args, **kwargs):
         ret_val = super(Person, self).save(*args, **kwargs)
 

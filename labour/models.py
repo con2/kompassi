@@ -7,6 +7,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.timezone import now
 
+from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
 from core.utils import (
     alias_property,
@@ -624,7 +625,7 @@ STATE_TIME_FIELDS = [
 ]
 
 
-class Signup(models.Model):
+class Signup(models.Model, CsvExportMixin):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
 
@@ -766,9 +767,13 @@ class Signup(models.Model):
         return u'{p} / {e}'.format(**locals())
 
     @property
+    def signup_extra_model(self):
+        return self.event.labour_event_meta.signup_extra_model
+
+    @property
     def signup_extra(self):
         if not hasattr(self, '_signup_extra'):
-            SignupExtra = self.event.labour_event_meta.signup_extra_model
+            SignupExtra = self.signup_extra_model
             try:
                 self._signup_extra = SignupExtra.objects.get(signup=self)
             except SignupExtra.DoesNotExist:
@@ -1034,8 +1039,36 @@ class Signup(models.Model):
         return self.person.full_name
 
     @classmethod
-    def csv_get_for_model_instance(cls, signup):
-        return signup
+    def get_csv_fields(cls, event):
+        if getattr(event, '_signup_csv_fields', None) is None:
+            from core.models import Person
+            
+            event._signup_csv_fields = []
+
+            models = [Person, Signup]
+
+            SignupExtra = event.labour_event_meta.signup_extra_model
+            if SignupExtra is not None:
+                models.append(SignupExtra)
+
+            for model in models:
+                for field in model._meta.fields:
+                    event._signup_csv_fields.append((model, field))
+
+                for field, unused in model._meta.get_m2m_with_model():
+                    event._signup_csv_fields.append((model, field))
+
+        return event._signup_csv_fields    
+
+    def get_csv_related(self):
+        from core.models import Person
+        related = {Person: self.person}
+
+        signup_extra_model = self.signup_extra_model
+        if signup_extra_model:
+            related[signup_extra_model] = self.signup_extra 
+
+        return related
 
 
 class SignupExtraBase(models.Model):
@@ -1051,10 +1084,6 @@ class SignupExtraBase(models.Model):
     @staticmethod
     def get_query_class():
         return None
-
-    @classmethod
-    def csv_get_for_model_instance(cls, signup):
-        return signup.signup_extra
 
     class Meta:
         abstract = True

@@ -5,6 +5,7 @@ import datetime
 from django.db import models
 from django.conf import settings
 
+from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, OneTimeCode
 from core.utils import url
 
@@ -155,7 +156,7 @@ RECORDING_PERMISSION_CHOICES = [
 START_TIME_LABEL = u'Alkuaika'
 
 
-class Programme(models.Model):
+class Programme(models.Model, CsvExportMixin):
     category = models.ForeignKey(Category, verbose_name=u'Ohjelmaluokka')
 
     title = models.CharField(
