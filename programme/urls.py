@@ -3,8 +3,11 @@ from django.views.generic import RedirectView
 
 from .views import (
     programme_admin_detail_view,
-    programme_admin_view,
+    programme_admin_email_list_view,
+    programme_admin_export_view,
     programme_admin_timetable_view,
+    programme_admin_tools_view,
+    programme_admin_view,
     programme_internal_adobe_taggedtext_view,
     programme_internal_konopas_javascript_view,
     programme_internal_timetable_view,
@@ -34,4 +37,8 @@ urlpatterns = patterns('',
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d{1,4})$', programme_admin_detail_view, name='programme_admin_detail_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/token/(?P<programme_edit_code>[0-9a-f]+)$', programme_self_service_view, name='programme_self_service_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/timetable$', programme_admin_timetable_view, name='programme_admin_timetable_view'),
+
+    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/tools$', programme_admin_tools_view, name='programme_admin_tools_view'),
+    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/programme\.tsv$', programme_admin_export_view, name='programme_admin_export_view'),
+    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/emails\.txt$', programme_admin_email_list_view, name='programme_admin_email_list_view'),
 )

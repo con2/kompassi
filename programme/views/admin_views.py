@@ -1,7 +1,9 @@
 # encoding: utf-8
 
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_GET
 
 from core.models import Person
@@ -184,11 +186,46 @@ def programme_admin_menu_items(request, event):
     timetable_active = request.path == timetable_url
     timetable_text = u'Ohjelmakartan esikatselu'
 
+    tools_url = url('programme_admin_tools_view', event.slug)
+    tools_active = request.path == tools_url
+    tools_text = u'Työkalut'
+
     index_url = url('programme_admin_view', event.slug)
-    index_active = request.path.startswith(index_url) and not timetable_active # XXX
+    index_active = request.path.startswith(index_url) and not any((timetable_active, tools_active)) # XXX
     index_text = u'Ohjelmaluettelo'
+
 
     return [
         (index_active, index_url, index_text),
         (timetable_active, timetable_url, timetable_text),
+        (tools_active, tools_url, tools_text),
     ]
+
+
+@programme_admin_required
+def programme_admin_tools_view(request, vars, event):
+    return render(request, 'programme_admin_tools_view.jade', vars)
+
+
+@programme_admin_required
+def programme_admin_export_view(request, vars, event):
+    from ..csv_export import export_csv
+
+    programmes = Programme.objects.filter(category__event=event)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="{event.slug}_programmes_{timestamp}.tsv"'.format(
+        event=event,
+        timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
+    )
+
+    export_csv(event, programmes, response)
+
+    return response
+
+
+@programme_admin_required
+def programme_admin_email_list_view(request, vars, event):
+    addresses = Person.objects.filter(programme__category__event=event).values_list('email', flat=True).distinct()
+
+    return HttpResponse("\n".join(addresses), content_type='text/plain')

@@ -1034,7 +1034,7 @@ class Signup(models.Model):
         return self.person.full_name
 
     @classmethod
-    def get_for_signup(cls, signup):
+    def csv_get_for_model_instance(cls, signup):
         return signup
 
 
@@ -1053,7 +1053,7 @@ class SignupExtraBase(models.Model):
         return None
 
     @classmethod
-    def get_for_signup(cls, signup):
+    def csv_get_for_model_instance(cls, signup):
         return signup.signup_extra
 
     class Meta:

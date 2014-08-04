@@ -335,7 +335,7 @@ class Person(models.Model):
         )
 
     @classmethod
-    def get_for_signup(cls, signup):
+    def csv_get_for_model_instance(cls, signup):
         return signup.person
 
     def save(self, *args, **kwargs):
