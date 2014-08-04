@@ -16,9 +16,7 @@ from .admin_views import (
     programme_admin_export_view,
     programme_admin_menu_items,
     programme_admin_timetable_view,
-    programme_admin_tools_view,
     programme_admin_view,
-    programme_admin_tools_view,
     programme_admin_export_view,
     programme_admin_email_list_view,
 )

@@ -186,25 +186,15 @@ def programme_admin_menu_items(request, event):
     timetable_active = request.path == timetable_url
     timetable_text = u'Ohjelmakartan esikatselu'
 
-    tools_url = url('programme_admin_tools_view', event.slug)
-    tools_active = request.path == tools_url
-    tools_text = u'Työkalut'
-
     index_url = url('programme_admin_view', event.slug)
-    index_active = request.path.startswith(index_url) and not any((timetable_active, tools_active)) # XXX
+    index_active = request.path.startswith(index_url) and not timetable_active # XXX
     index_text = u'Ohjelmaluettelo'
 
 
     return [
         (index_active, index_url, index_text),
         (timetable_active, timetable_url, timetable_text),
-        (tools_active, tools_url, tools_text),
     ]
-
-
-@programme_admin_required
-def programme_admin_tools_view(request, vars, event):
-    return render(request, 'programme_admin_tools_view.jade', vars)
 
 
 @programme_admin_required
