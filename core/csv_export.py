@@ -67,8 +67,6 @@ def write_row(event, writer, fields, model_instance, m2m_mode):
     result_row = []
     related = model_instance.get_csv_related()
 
-    print related
-
     for model, field in fields:
         if model in related:
             source_instance = related.get(model, None)
