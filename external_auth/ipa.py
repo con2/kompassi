@@ -64,7 +64,7 @@ def create_user(username, first_name, surname, password):
 
 
 def create_group(group_name):
-    return json_rpc('group_add', group_name)
+    return json_rpc('group_add', group_name, description=group_name)
 
 
 def json_rpc(method_name, *args, **kwargs):
