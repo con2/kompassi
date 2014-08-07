@@ -64,7 +64,23 @@ def create_user(username, first_name, surname, password):
 
 
 def create_group(group_name):
-    return json_rpc('group_add', group_name, description=group_name)
+    try:
+        return json_rpc('group_add', group_name, description=group_name)
+    except IPAError as e:
+        try:
+            error, = e.args
+            code = error['code']
+        except (KeyError, IndexError):
+            # ipa connectivity error or something else, bad
+            raise e
+        else:
+            if code == 4002:
+                # group already exists
+                # we are under "ensure exists" semantics so this is kosher
+                return None
+            else:
+                # some other error
+                raise e
 
 
 def json_rpc(method_name, *args, **kwargs):
