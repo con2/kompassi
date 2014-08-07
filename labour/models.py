@@ -557,6 +557,7 @@ SIGNUP_STATE_CLASSES = dict(
     dish_discharged=u'danger',
     no_show=u'danger',
     beyond_logic=u'danger',
+    relieved=u'danger',
 )
 SIGNUP_STATE_LABEL_CLASSES = dict(
     (state_name, "label-{generic_class}".format(generic_class=generic_class))
@@ -579,7 +580,7 @@ SIGNUP_STATE_IMPERATIVES = dict(
     honr_discharged=u'Teki työnsä hyväksytysti',
     dish_discharged=u'Teki työnsä moitittavasti',
     no_show=u'Ei saapunut paikalle',
-    relieved=u'Vapautettu tehtävästään',
+    relieved=u'Vapauta tehtävästään',
     rejected=u'Hylkää',
     cancelled=u'Merkitse peruutetuksi',
     beyond_logic=u'Aseta perätilaan',

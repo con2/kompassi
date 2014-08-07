@@ -67,6 +67,14 @@ def labour_admin_signup_view(request, vars, event, person_id):
             signup_form.save()
             signup_extra_form.save()
             signup_admin_form.save()
+
+            for state_name in signup.next_states:
+                command_name = 'set-state-{state_name}'.format(state_name=state_name)
+                if command_name in request.POST:
+                    signup.state = state_name
+                    signup.save()
+                    break
+
             signup.apply_state()
             messages.success(request, u'Tiedot tallennettiin.')
 
