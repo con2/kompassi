@@ -366,17 +366,13 @@ def labour_event_box_context(request, event):
     is_labour_admin = False
 
     if request.user.is_authenticated():
+        is_labour_admin = event.labour_event_meta.is_user_admin(request.user)
+
         try:
             person = request.user.person
-        except Person.DoesNotExist:
+            signup = Signup.objects.get(event=event, person=person)
+        except (Person.DoesNotExist, Signup.DoesNotExist):
             pass
-        else:
-            is_labour_admin = event.labour_event_meta.is_user_admin(request.user)
-
-            try:
-                signup = Signup.objects.get(event=event, person=person)
-            except Signup.DoesNotExist:
-                pass
 
     return dict(
         signup=signup,

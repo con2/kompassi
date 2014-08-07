@@ -194,15 +194,6 @@ class LabourEventMeta(EventMetaBase):
         except Signup.DoesNotExist:
             return Signup(person=person, event=self.event)
 
-    def is_user_admin(self, user):
-        if not user.is_authenticated():
-            return False
-
-        if user.is_superuser:
-            return True
-
-        return user.groups.filter(pk=self.admin_group.pk).exists()
-
     @property
     def work_hours(self):
         from programme.utils import full_hours_between
