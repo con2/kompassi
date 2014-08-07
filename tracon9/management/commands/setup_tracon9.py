@@ -10,7 +10,7 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from core.utils import give_all_app_perms_to_group
+from core.utils import give_all_app_perms_to_group, slugify
 from core.models import Event, Person, Venue
 from labour.models import (
     AlternativeSignupForm,
@@ -130,7 +130,8 @@ class Command(BaseCommand):
                 event=event,
                 name=name,
                 defaults=dict(
-                    description=description
+                    description=description,
+                    slug=slugify(name),
                 )
             )
 

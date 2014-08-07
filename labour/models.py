@@ -313,7 +313,7 @@ class JobCategory(models.Model):
     event = models.ForeignKey('core.Event', verbose_name=u'tapahtuma')
 
     name = models.CharField(max_length=63, verbose_name=u'tehtäväalueen nimi')
-    slug = models.CharField(**dict(NONUNIQUE_SLUG_FIELD_PARAMS, null=True, blank=True))
+    slug = models.CharField(**dict(NONUNIQUE_SLUG_FIELD_PARAMS))
 
     description = models.TextField(
         verbose_name=u'tehtäväalueen kuvaus',
@@ -355,8 +355,8 @@ class JobCategory(models.Model):
     def get_or_create_dummies(cls):
         from core.models import Event
         event, unused = Event.get_or_create_dummy()
-        jc1, unused = cls.objects.get_or_create(event=event, name='Dummy 1')
-        jc2, unused = cls.objects.get_or_create(event=event, name='Dummy 2')
+        jc1, unused = cls.objects.get_or_create(event=event, name='Dummy 1', slug='dummy-1')
+        jc2, unused = cls.objects.get_or_create(event=event, name='Dummy 2', slug='dummy-2')
 
         return [jc1, jc2]
 

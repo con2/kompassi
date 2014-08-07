@@ -1,31 +1,68 @@
 # -*- coding: utf-8 -*-
 import datetime
+import re
+
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
+from django.utils import timezone
 
 
-class Migration(SchemaMigration):
+SLUGIFY_CHAR_MAP = {
+  u'ä': u'a',
+  u'å': u'a',
+  u'ö': u'o',
+  u'ü': u'u',
+  u' ': u'-',
+  u'_': u'-',
+  u'.': u'-',
+}
+SLUGIFY_FORBANNAD_RE = re.compile(ur'[^a-z0-9-]', re.UNICODE)
+SLUGIFY_MULTIDASH_RE = re.compile(ur'-+', re.UNICODE)
+
+
+def slugify(ustr):
+    ustr = ustr.lower()
+    ustr = u''.join(SLUGIFY_CHAR_MAP.get(c, c) for c in ustr)
+    ustr = SLUGIFY_FORBANNAD_RE.sub(u'', ustr)
+    ustr = SLUGIFY_MULTIDASH_RE.sub(u'-', ustr)
+    return ustr
+
+
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        # Adding field 'Signup.time_complained'
-        db.add_column(u'labour_signup', 'time_complained',
-                      self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True),
-                      keep_default=False)
+        "Write your forwards methods here."
 
-        # Adding field 'Signup.time_reprimanded'
-        db.add_column(u'labour_signup', 'time_reprimanded',
-                      self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True),
-                      keep_default=False)
+        t = timezone.now()
 
+        # Set state flags
+        for signup in orm.Signup.objects.all():
+            if signup.state == 'new':
+                signup.is_active = True
+            elif signup.state == 'accepted':
+                signup.is_active = True
+                signup.time_accepted = t
+            elif signup.state == 'rejected':
+                signup.is_active = False
+                signup.time_rejected = t
+            elif signup.state == 'cancelled':
+                signup.is_active = False
+                signup.time_cancelled = t
+            elif signup.state == 'beyond_logic':
+                signup.is_active = False
+            else:
+                raise NotImplemented()
+
+            signup.save()
+
+        # Give slugs to job categories
+        for jc in orm.JobCategory.objects.filter(slug__isnull=True):
+            jc.slug = slugify(jc.name)
+            jc.save()
 
     def backwards(self, orm):
-        # Deleting field 'Signup.time_complained'
-        db.delete_column(u'labour_signup', 'time_complained')
-
-        # Deleting field 'Signup.time_reprimanded'
-        db.delete_column(u'labour_signup', 'time_reprimanded')
-
+        raise RuntimeError("Cannot reverse this migration.")
 
     models = {
         u'auth.group': {
@@ -132,7 +169,8 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '63'}),
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'required_qualifications': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['labour.Qualification']", 'symmetrical': 'False', 'blank': 'True'})
+            'required_qualifications': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['labour.Qualification']", 'symmetrical': 'False', 'blank': 'True'}),
+            'slug': ('django.db.models.fields.CharField', [], {'max_length': '63', 'null': 'True', 'blank': 'True'})
         },
         u'labour.jobrequirement': {
             'Meta': {'object_name': 'JobRequirement'},
@@ -144,16 +182,12 @@ class Migration(SchemaMigration):
         },
         u'labour.laboureventmeta': {
             'Meta': {'object_name': 'LabourEventMeta'},
-            'accepted_group': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'to': u"orm['auth.Group']"}),
             'admin_group': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.Group']"}),
-            'applicants_group': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'to': u"orm['auth.Group']"}),
             'contact_email': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'event': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'laboureventmeta'", 'unique': 'True', 'primary_key': 'True', 'to': u"orm['core.Event']"}),
-            'finished_group': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'to': u"orm['auth.Group']"}),
             'monitor_email': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'registration_closes': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'registration_opens': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'rejected_group': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'to': u"orm['auth.Group']"}),
             'signup_extra_content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
             'signup_message': ('django.db.models.fields.TextField', [], {'default': "u''", 'null': 'True', 'blank': 'True'}),
             'work_begins': ('django.db.models.fields.DateTimeField', [], {}),
@@ -185,13 +219,14 @@ class Migration(SchemaMigration):
             'job_title': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '63', 'blank': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'person': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['core.Person']"}),
+            'state': ('django.db.models.fields.CharField', [], {'default': "'new'", 'max_length': '15'}),
             'time_accepted': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'time_arrived': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'time_cancelled': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'time_complained': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'time_finished': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'time_rejected': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'time_reprimanded': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'time_shifts_ready': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'time_work_accepted': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'work_periods': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'signup_set'", 'symmetrical': 'False', 'to': u"orm['labour.WorkPeriod']"}),
@@ -208,3 +243,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['labour']
+    symmetrical = True

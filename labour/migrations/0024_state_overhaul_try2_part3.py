@@ -8,62 +8,28 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'JobCategory.slug'
-        db.add_column(u'labour_jobcategory', 'slug',
-                      self.gf('django.db.models.fields.CharField')(max_length=63, null=True, blank=True),
-                      keep_default=False)
 
+        # Changing field 'JobCategory.slug'
+        db.alter_column(u'labour_jobcategory', 'slug', self.gf('django.db.models.fields.CharField')(default=u'', max_length=63))
         # Adding unique constraint on 'JobCategory', fields ['event', 'slug']
         db.create_unique(u'labour_jobcategory', ['event_id', 'slug'])
 
-        # Deleting field 'Signup.time_shifts_ready'
-        db.delete_column(u'labour_signup', 'time_shifts_ready')
-
-        # Adding field 'Signup.time_finished'
-        db.add_column(u'labour_signup', 'time_finished',
-                      self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True),
-                      keep_default=False)
-
-        # Deleting field 'LabourEventMeta.finished_group'
-        db.delete_column(u'labour_laboureventmeta', 'finished_group_id')
-
-        # Deleting field 'LabourEventMeta.applicants_group'
-        db.delete_column(u'labour_laboureventmeta', 'applicants_group_id')
-
-        # Deleting field 'LabourEventMeta.rejected_group'
-        db.delete_column(u'labour_laboureventmeta', 'rejected_group_id')
-
-        # Deleting field 'LabourEventMeta.accepted_group'
-        db.delete_column(u'labour_laboureventmeta', 'accepted_group_id')
+        # Deleting field 'Signup.state'
+        db.delete_column(u'labour_signup', 'state')
 
 
     def backwards(self, orm):
         # Removing unique constraint on 'JobCategory', fields ['event', 'slug']
         db.delete_unique(u'labour_jobcategory', ['event_id', 'slug'])
 
-        # Deleting field 'JobCategory.slug'
-        db.delete_column(u'labour_jobcategory', 'slug')
 
-        # Adding field 'Signup.time_shifts_ready'
-        db.add_column(u'labour_signup', 'time_shifts_ready',
-                      self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True),
+        # Changing field 'JobCategory.slug'
+        db.alter_column(u'labour_jobcategory', 'slug', self.gf('django.db.models.fields.CharField')(max_length=63, null=True))
+        # Adding field 'Signup.state'
+        db.add_column(u'labour_signup', 'state',
+                      self.gf('django.db.models.fields.CharField')(default='new', max_length=15),
                       keep_default=False)
 
-        # Deleting field 'Signup.time_finished'
-        db.delete_column(u'labour_signup', 'time_finished')
-
-
-        # User chose to not deal with backwards NULL issues for 'LabourEventMeta.finished_group'
-        raise RuntimeError("Cannot reverse this migration. 'LabourEventMeta.finished_group' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'LabourEventMeta.applicants_group'
-        raise RuntimeError("Cannot reverse this migration. 'LabourEventMeta.applicants_group' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'LabourEventMeta.rejected_group'
-        raise RuntimeError("Cannot reverse this migration. 'LabourEventMeta.rejected_group' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'LabourEventMeta.accepted_group'
-        raise RuntimeError("Cannot reverse this migration. 'LabourEventMeta.accepted_group' and its values cannot be restored.")
 
     models = {
         u'auth.group': {
@@ -171,7 +137,7 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '63'}),
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'required_qualifications': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['labour.Qualification']", 'symmetrical': 'False', 'blank': 'True'}),
-            'slug': ('django.db.models.fields.CharField', [], {'max_length': '63', 'null': 'True', 'blank': 'True'})
+            'slug': ('django.db.models.fields.CharField', [], {'max_length': '63'})
         },
         u'labour.jobrequirement': {
             'Meta': {'object_name': 'JobRequirement'},
