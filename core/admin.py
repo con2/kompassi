@@ -14,8 +14,8 @@ class PersonAdmin(admin.ModelAdmin):
         ('Notes', {'fields': ['notes']}),
     ]
 
-    list_display = ('surname', 'first_name', 'nick', 'email', 'phone', 'is_user')
-    search_fields = ('surname', 'first_name', 'nick', 'email')
+    list_display = ('surname', 'first_name', 'nick', 'email', 'phone', 'username')
+    search_fields = ('surname', 'first_name', 'nick', 'email', 'username')
     ordering = ('surname', 'first_name', 'nick')
 
 

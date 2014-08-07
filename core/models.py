@@ -307,8 +307,8 @@ class Person(models.Model):
         return NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
 
     @property
-    def is_user(self):
-        return self.user is not None
+    def username(self):
+        return self.user.username if self.user is not None else None
 
     @classmethod
     def get_or_create_dummy(cls, superuser=True):
