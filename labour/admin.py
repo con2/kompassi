@@ -4,6 +4,7 @@ from django.contrib import admin
 
 from .models import (
     AlternativeSignupForm,
+    InfoLink,
     JobCategory,
     LabourEventMeta,
     PersonQualification,
@@ -49,8 +50,14 @@ class AlternativeSignupFormAdmin(admin.ModelAdmin):
     ordering = ('event', 'slug')
 
 
+class InfoLinkAdmin(admin.ModelAdmin):
+    list_display = ('event', 'title', 'url')
+    list_filter = ('event',)
+
+
 admin.site.register(Signup, SignupAdmin)
 admin.site.register(WorkPeriod)
 admin.site.register(JobCategory, JobCategoryAdmin)
 admin.site.register(Qualification, QualificationAdmin)
 admin.site.register(AlternativeSignupForm, AlternativeSignupFormAdmin)
+admin.site.register(InfoLink, InfoLinkAdmin)

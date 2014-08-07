@@ -14,6 +14,7 @@ from core.utils import give_all_app_perms_to_group, slugify
 from core.models import Event, Person, Venue
 from labour.models import (
     AlternativeSignupForm,
+    InfoLink,
     Job,
     JobCategory,
     LabourEventMeta,
@@ -201,6 +202,19 @@ class Command(BaseCommand):
                 active_until=datetime(2014, 8, 31, 23, 59, 59, tzinfo=tz),
             ),
         )
+
+        for wiki_space, link_title, link_group in [
+            ('TERA', 'Työvoimawiki', 'accepted'),
+            ('INFO', 'Infowiki', 'info'),
+        ]:
+            InfoLink.objects.get_or_create(
+                event=event,
+                title=link_title,
+                defaults=dict(
+                    url='https://confluence.tracon.fi/display/{wiki_space}'.format(wiki_space=wiki_space),
+                    group=labour_event_meta.get_group(link_group),
+                )
+            )
 
 
         #

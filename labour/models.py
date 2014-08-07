@@ -1030,6 +1030,13 @@ class Signup(models.Model, CsvExportMixin):
     def full_name(self):
         return self.person.full_name
 
+    @property
+    def info_links(self):
+        return InfoLink.objects.filter(
+            event=self.event,
+            group__user=self.person.user,
+        )
+
     @classmethod
     def get_csv_fields(cls, event):
         if getattr(event, '_signup_csv_fields', None) is None:
@@ -1088,11 +1095,35 @@ class EmptySignupExtra(SignupExtraBase):
         return EmptySignupExtraForm
 
 
+class InfoLink(models.Model):
+    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
+    group = models.ForeignKey('auth.Group',
+        verbose_name=u'Ryhmä',
+        help_text=u'Linkki näytetään vain tämän ryhmän jäsenille.',
+    )
+
+    url = models.CharField(
+        max_length=255,
+        verbose_name=u'Osoite',
+        help_text=u'Muista aloittaa ulkoiset linkit <i>http://</i> tai <i>https://</i>.'
+    )
+    
+    title = models.CharField(max_length=255, verbose_name=u'Teksti')
+
+    class Meta:
+        verbose_name = u'työvoimaohje'
+        verbose_name_plural = u'työvoimaohjeet'
+
+    def __unicode__(self):
+        return self.title
+
+
 __all__ = [
     'AlternativeSignupForm',
-    'LabourEventMeta',
+    'InfoLink',
     'Job',
     'JobCategory',
+    'LabourEventMeta',
     'PersonQualification',
     'Qualification',
     'QualificationExtraBase',
