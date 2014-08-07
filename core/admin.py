@@ -15,7 +15,7 @@ class PersonAdmin(admin.ModelAdmin):
     ]
 
     list_display = ('surname', 'first_name', 'nick', 'email', 'phone', 'username')
-    search_fields = ('surname', 'first_name', 'nick', 'email', 'username')
+    search_fields = ('surname', 'first_name', 'nick', 'email', 'user__username')
     ordering = ('surname', 'first_name', 'nick')
 
 
