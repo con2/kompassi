@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db.models.query import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods, require_GET
@@ -32,9 +33,9 @@ from .view_helpers import initialize_signup_forms
 def labour_admin_dashboard_view(request, vars, event):
     vars.update(
         # XXX state overhaul
-        num_pending=event.signup_set.filter(is_active=True, time_accepted__isnull=False).count(),
+        num_pending=event.signup_set.filter(is_active=True, time_accepted__isnull=True).count(),
         num_accepted=event.signup_set.filter(time_accepted__isnull=False).count(),
-        num_rejected=event.signup_set.filter(is_active=False).count(),
+        num_rejected=event.signup_set.filter(Q(time_rejected__isnull=False) | Q(time_cancelled__isnull=False)).count(),
         signups=event.signup_set.order_by('-created_at')[:5]
     )
 
