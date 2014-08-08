@@ -837,6 +837,13 @@ class Signup(models.Model, CsvExportMixin):
         return signup, created
 
     def apply_state(self):
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from .tasks import signup_apply_state
+            signup_apply_state.delay(self.pk)
+        else:
+            self._apply_state()
+
+    def _apply_state(self):
         self.apply_group_membership()
         self.send_messages()
 
