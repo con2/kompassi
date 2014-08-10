@@ -1057,6 +1057,11 @@ class Signup(models.Model, CsvExportMixin):
             if SignupExtra is not None:
                 models.append(SignupExtra)
 
+            # XXX HACK jv-kortin numero
+            if 'labour_common_qualifications' in settings.INSTALLED_APPS:
+                from labour_common_qualifications.models import JVKortti
+                models.append(JVKortti)
+
             for model in models:
                 for field in model._meta.fields:
                     event._signup_csv_fields.append((model, field))
@@ -1073,6 +1078,15 @@ class Signup(models.Model, CsvExportMixin):
         signup_extra_model = self.signup_extra_model
         if signup_extra_model:
             related[signup_extra_model] = self.signup_extra 
+
+        # XXX HACK jv-kortin numero
+        if 'labour_common_qualifications' in settings.INSTALLED_APPS:
+            from labour_common_qualifications.models import JVKortti
+            try:
+                jv_kortti = JVKortti.objects.get(personqualification__person__signup=self)
+                related[JVKortti] = jv_kortti
+            except JVKortti.DoesNotExist:
+                related[JVKortti] = None
 
         return related
 
