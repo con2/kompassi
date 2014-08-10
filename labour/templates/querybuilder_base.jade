@@ -1,25 +1,35 @@
 - load query_extras
 
-form(method='post', role='form', id='query_builder_form')
-    if debug
+.panel.panel-default
+  .panel-heading: strong Suodata {{ event.name_genitive }} hakemuksia
+  .panel-body
+    .form.form-horizontal#query_builder_form
+      if debug
         - csrf_token
-label(for='add_query_filter') Lisää suodatin
-select(id='add_query_filter')
-    option(disabled='disabled', selected='selected') ---
-    for key, filter in query_builder_filters
-        option(value=key) {{ query_builder_titles|get_item:key }}
-if debug
-    pre(id='query_debug')
-    button.btn.btn-default(type="button", onclick="query_builder.onUpdateDebug();") Update filter debug
-button.btn.btn-primary(type="button", onclick="query_builder.onExec();") Päivitä tulokset
-if debug
-    button.btn.btn-default(type="button", onclick="query_builder.onExecPlain();") DEBUG-Submit
-    button.btn.btn-default#qb_toggle_id_vis(type="button", onclick="query_builder.onToggleIDVisibility('qb_toggle_id_vis');") ID
-#query_builder_views
+      .form-group
+        label(for='add_query_filter').control-label.col-md-3 Lisää suodatin
+        .controls.col-md-9
+          select(id='add_query_filter').select.form-control
+            option(disabled='disabled', selected='selected') ---
+            for key, filter in query_builder_filters
+              option(value=key) {{ query_builder_titles|get_item:key }}
+      if debug
+        pre(id='query_debug')
+      #query_builder_views
+      .form-group
+        .btn-group.controls.col-md-9.col-md-offset-3
+          if debug
+            button.btn.btn-default(type="button", onclick="query_builder.onUpdateDebug();") Update filter debug
+          button.btn.btn-primary(type="button", onclick="query_builder.onExec();") Päivitä tulokset
+          if debug
+            button.btn.btn-default(type="button", onclick="query_builder.onExecPlain();") DEBUG-Submit
+            button.btn.btn-default#qb_toggle_id_vis(type="button", onclick="query_builder.onToggleIDVisibility('qb_toggle_id_vis');") ID
 
-table.table.table-striped.table-hover.table-condensed.table-bordered.table-grouped#query_results
+  table.table.table-striped#query_results
 
-p
-  span#num_query_results 0
-  |  tulosta. 
-  a#export_results_link(href='{% url "labour_admin_export_view" event.slug %}?signup_ids=') Vie Exceliin...
+  .panel-footer.clearfix
+    .pull-right
+      a#export_results_link(href='{% url "labour_admin_export_view" event.slug %}?signup_ids=') Vie Exceliin...
+    p.text-muted
+      span#num_query_results 0
+      |  tulosta.

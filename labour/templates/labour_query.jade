@@ -1,30 +1,25 @@
-extends base
+extends core_admin_base
 block extra_scripts
-    script(src='{{ STATIC_URL }}csrf.js')
-    script(src='{{ STATIC_URL }}querybuilder.js')
-    script(src='{{ STATIC_URL }}queryfilters.js')
-    include querybuilder_init.html
-    style(type="text/css")
-        .btn-remove {
-            background-color: #ffeee1;
-        }
-        tr td a {
-            display: inline-block;
-            height: 100%;
-            width: 100%;
-        }
-        tr td a:hover {
-            text-decoration: none;
-        }
-        table.table-grouped colgroup {
-            border-left: 2px solid #dddddd;
-            border-right: 2px solid #dddddd;
-        }
+  script(src='{{ STATIC_URL }}csrf.js')
+  script(src='{{ STATIC_URL }}querybuilder.js')
+  script(src='{{ STATIC_URL }}queryfilters.js')
+  include querybuilder_init.html
+  style(type="text/css")
+    .btn-remove {
+        background-color: #ffeee1;
+    }
+    tr td a {
+        display: inline-block;
+        height: 100%;
+        width: 100%;
+    }
+    tr td a:hover {
+        text-decoration: none;
+    }
+    table.table-grouped colgroup {
+        border-left: 2px solid #dddddd;
+        border-right: 2px solid #dddddd;
+    }
 
-
-block content
-    .nav.nav-tabs
-        include core_admin_menu_items.jade
-
-    h2 Suodata {{ event.name_genitive }} hakemuksia
-    include querybuilder_base
+block admin_content
+  include querybuilder_base
