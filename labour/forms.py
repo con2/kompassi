@@ -123,6 +123,16 @@ class SignupAdminForm(forms.ModelForm):
             job_categories_accepted=forms.CheckboxSelectMultiple,
         )
 
+    def clean_job_categories_accepted(self):
+        job_categories_accepted = self.cleaned_data['job_categories_accepted']
+
+        if self.instance.is_accepted and not job_categories_accepted:
+            raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi tehtäväalue.')
+        elif (self.instance.is_rejected or self.instance.is_cancelled) and job_categories_accepted:
+            raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään tehtäväalue ei saa olla valittuna.')
+
+        return job_categories_accepted
+
 
 class AlternativeFormMixin(object):
     """

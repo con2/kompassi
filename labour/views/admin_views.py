@@ -63,17 +63,18 @@ def labour_admin_signup_view(request, vars, event, person_id):
     )
 
     if request.method == 'POST':
+        # XXX Need to update state before validation to catch accepting people without accepted job categories
+        for state_name in signup.next_states:
+            command_name = 'set-state-{state_name}'.format(state_name=state_name)
+            if command_name in request.POST:
+                old_state_flags = signup._state_flags
+                signup.state = state_name
+                break
+
         if signup_form.is_valid() and signup_extra_form.is_valid() and signup_admin_form.is_valid():
             signup_form.save()
             signup_extra_form.save()
             signup_admin_form.save()
-
-            for state_name in signup.next_states:
-                command_name = 'set-state-{state_name}'.format(state_name=state_name)
-                if command_name in request.POST:
-                    signup.state = state_name
-                    signup.save()
-                    break
 
             signup.apply_state()
             messages.success(request, u'Tiedot tallennettiin.')
@@ -81,6 +82,9 @@ def labour_admin_signup_view(request, vars, event, person_id):
             if 'save-return' in request.POST:
                 return redirect('labour_admin_signups_view', event.slug)
         else:
+            # XXX Restore state just for shows, suboptimal but 
+            signup._state_flags = old_state_flags
+
             messages.error(request, u'Ole hyvä ja tarkista lomake.')
 
     non_qualified_category_names = [
