@@ -652,7 +652,7 @@ class Signup(models.Model, CsvExportMixin):
         blank=True,
         null=True,
         related_name='accepted_signup_set',
-        verbose_name=u'Tehtäväalueet',
+        verbose_name=u'Hyväksytyt tehtäväalueet',
         help_text=u'Tehtäväalueet, joilla hyväksytty vapaaehtoistyöntekijä tulee työskentelemään. '
             u'Tämän perusteella henkilölle mm. lähetetään oman tehtäväalueensa työvoimaohjeet. '
             u'Harmaalla merkityt tehtäväalueet ovat niitä, joihin hakija ei ole itse hakenut.'
