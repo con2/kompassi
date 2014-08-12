@@ -38,7 +38,12 @@ def programme_timetable_view(
     internal_programmes=False,
     template='programme_timetable_view.jade',
 ):
-    return actual_timetable_view(request, event, internal_programmes, template)
+    vars = dict(
+        # hide the user menu to prevent it getting cached
+        login_page=True,
+    )
+
+    return actual_timetable_view(request, event, internal_programmes, template, vars)
 
 # look, no cache
 @programme_event_required

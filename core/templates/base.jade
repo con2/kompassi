@@ -25,7 +25,8 @@ html
             if event.homepage_url
               li: a(href='{{ event.homepage_url }}') Takaisin {{ event.name_genitive }} sivustolle
           ul.nav.navbar-nav.navbar-right
-            include core_navbar_user.jade
+            if not login_page
+              include core_navbar_user.jade
 
     #wrap
       if messages

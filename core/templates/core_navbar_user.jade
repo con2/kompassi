@@ -9,7 +9,7 @@ if user.is_authenticated
       include core_profile_menu_items.jade
       li.divider
       li: a(href='/logout') Kirjaudu ulos
-elif not login_page
+else
   li: a(href='{% url "core_registration_view" %}') Rekisteröidy
   li: a(href='{% url "core_password_reset_request_view" %}') Salasana unohtunut
   li
