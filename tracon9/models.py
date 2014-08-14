@@ -139,6 +139,13 @@ class SignupExtra(SignupExtraBase):
     def get_query_class():
         return Signup9
 
+    @property
+    def formatted_lodging_needs(self):
+        return u"\n".join(u"{night}: {need}".format(
+            night=night.name,
+            need=u'Tarvitsee lattiamajoitusta' if self.lodging_needs.filter(pk=night.pk).exists() else u'Ei tarvetta lattiamajoitukselle',
+        ) for night in Night.objects.all())
+
 
 class Signup9(QueryBuilder):
     model = SignupExtra
