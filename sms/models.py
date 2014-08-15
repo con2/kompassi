@@ -4,29 +4,112 @@ from datetime import datetime
 
 from django.conf import settings
 from django.db import models
+from django.dispatch import receiver
 from django.template import Template, Context
 from django.utils import timezone
-
+from nexmo.models import InboundMessage, message_received
+import regex
 
 APP_LABEL_CHOICES = [
     ('labour', 'Työvoima')
 ]
 
-class SMSRecipientGroup(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
-    app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name=u'Sovellus')
-    group = models.ForeignKey('auth.Group', verbose_name=u'Käyttäjäryhmä')
-    verbose_name = models.CharField(max_length=63, verbose_name=u'Nimi')
 
-    def __unicode__(self):
-        return u"{self.event.name}: {self.verbose_name}".format(self=self)
+@receiver(message_received)
+def sms_received_handler(sender, **kwargs):
+    messages = InboundMessage.objects.filter(nexmo_message_id=kwargs['nexmo_message_id'])
+    message = messages[0] # If nexmo has delivered same message multiple times.
+    now = timezone.now()
+    hotwords = Hotword.objects.filter(valid_from__lte=now, valid_to__gte=now)
+    match = regex.match(r'(?P<hotword>[a-z]+) ((?P<category>[a-z]*)(?:\s?)(?P<vote>\d+))(?2)*', message.message.lower()) # doesn't work with pythons re. Recursive patterns are not allowed.
+    if match is not None:
+        # Message with hotword
+        for hotword in hotwords:
+            found = False
+            if hotword == match.group('hotword'):
+                found = hotword
+                break
+        if found is not False:
+            # Valid hotword found, check category.
+            if match.group('category') == '':
+                # no category, checking if there should be
+                try:
+                    category = VoteCategories.objects.get(value_min__lte=match.group('vote'), value_max__gte=match.group('vote'))
+                except VoteCategories.DoesNotExist:
+                    # Ok, there was none, or vote value out of scope, proceed.
+                    empty_category = VoteCategories.get_or_create(category="Ei voittoa",category_slug="empty",value_min=0,value_max=0)
+                    vote = Vote(hotword=found,category=empty_category,vote=match.group('vote'), voter=message.sender)
+                    vote.save()
+                except VoteCategories.MultipleObjectsReturned:
+                    # Value error or multiple categories with overlapping values. Saving to first one.
+                    category = VoteCategories.objects.filter(value_min__lte=match.group('vote'), value_max__gte=match.group('vote'))
+                    vote = Vote(hotword=found,category=category[0],vote=match.group('vote'), voter=message.sender)
+                    vote.save()
+                else:
+                    # There WAS category. Saving into it.
+                    vote = Vote(hotword=found,category=category,vote=match.group('vote'), voter=message.sender)
+                    vote.save()
+            else:
+                categories = VoteCategories.objects.filter(value_min__lte=match.group('vote'), value_max__gte=match.group('vote'))
+                saved = False
+                for category in categories:
+                    if category.slug == match.group('category'):
+                        vote = Vote(hotword=found,category=category,vote=match.group('vote'), voter=message.sender)
+                        vote.save()
+                        saved = True
+                if saved is False:
+                    if len(categories) == 1:
+                        # Wrong category, but only one found. Saving there.
+                        vote = Vote(hotword=found,category=categories,vote=match.group('vote'), voter=message.sender)
+                        vote.save()
+                    else:
+                        # Value error, wrong category entered and multiple categories with overlapping values. Saving to empty category.
+                        empty_category = VoteCategories.get_or_create(category="Ei voittoa",category_slug="empty",value_min=0,value_max=0)
+                        vote = Vote(hotword=found,category=empty_category,vote=match.group('vote'), voter=message.sender)
+                        vote.save()
+        # else:
+            # Voting message with non-valid hotword.
+    else:
+        #regular message with no hotword.
+        TODO = "call_some_other_method"
+
+class Hotword(models.Model):
+    hotword = models.CharField(
+        max_length=255
+    )
+    valid_from = models.DateTimeField()
+    valid_to = models.DateTimeField()
+    assigned_event = models.ForeignKey('core.Event')
 
     class Meta:
-        verbose_name = u'Vastaanottajaryhmä'
-        verbose_name_plural = u'Vastaanottajaryhmät'
+        verbose_name = u'Hotwordi'
+        verbose_name_plural = u'Hotwordit'
+
+class VoteCategories(models.Model):
+    category = models.CharField(
+        max_length=255
+    )
+    slug = models.CharField(
+        max_length=10
+    )
+    value_min = models.IntegerField()
+    value_max = models.IntegerField()
+    
+class Vote(models.Model):
+    hotword = models.ForeignKey(Hotword)
+    category = models.ForeignKey(VoteCategories)
+    vote = models.IntegerField()
+    voter = models.CharField(
+        max_length=30
+    )
+
+    class Meta:
+        verbose_name = u'Äänestys'
+        verbose_name_plural = u'Äänestykset'
+
 
 class SMSMessage(models.Model):
-    recipient = models.ForeignKey(SMSRecipientGroup, verbose_name=u'Vastaanottajaryhmä')
+    recipient = models.ForeignKey('mailings.RecipientGroup', verbose_name=u'Vastaanottajaryhmä')
 
     body_template = models.TextField(
         verbose_name=u'Viestin teksti',
