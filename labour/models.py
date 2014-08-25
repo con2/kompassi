@@ -15,6 +15,7 @@ from core.utils import (
     ensure_user_is_not_member_of_group,
     is_within_period,
     SLUG_FIELD_PARAMS,
+    NONUNIQUE_SLUG_FIELD_PARAMS,
     slugify,
     time_bool_property,
 )
@@ -49,9 +50,6 @@ SIGNUP_STATE_GROUPS = [
     'workaccepted',
     'reprimanded',
 ]
-
-
-NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
 
 
 class LabourEventMeta(EventMetaBase):
@@ -846,6 +844,7 @@ class Signup(models.Model, CsvExportMixin):
     def _apply_state(self):
         self.apply_group_membership()
         self.send_messages()
+        self.ensure_badge_exists_if_necessary()
 
     def apply_group_membership(self):
         for group_suffix in SIGNUP_STATE_GROUPS:
@@ -866,6 +865,21 @@ class Signup(models.Model, CsvExportMixin):
 
         from mailings.models import Message
         Message.send_messages(self.event, 'labour', self.person)
+
+    def ensure_badge_exists_if_necessary(self):
+        if 'badges' not in settings.INSTALLED_APPS:
+            return
+
+        if self.event.badges_event_meta is None:
+            return
+
+        if not self.is_accepted:
+            return
+
+        # TODO revoke badge if one exists but shouldn't
+
+        from badges.models import Badge
+        Badge.get_or_create(event=self.event, person=self.person)
 
     def get_previous_and_next_signup(self):
         if not self.pk:
