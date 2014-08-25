@@ -51,6 +51,9 @@ class Template(models.Model):
 
         return super(Template, self).save(*args, **kwargs)
 
+    def __unicode__(self):
+        return self.name
+
     class Meta:
         verbose_name = u'Badgepohja'
         verbose_name_plural = u'Badgepohjat'
@@ -80,6 +83,9 @@ class Batch(models.Model, CsvExportMixin):
         batch = cls(template=template)
         batch.badges = badges
         batch.save()
+
+    def __unicode__(self):
+        return u"Tulostuserä {}".format(self.pk)
 
 
 class Badge(models.Model):
@@ -125,6 +131,8 @@ class Badge(models.Model):
 
     @classmethod
     def get_csv_fields(cls, *args, **kwargs):
+        from core.models import Person
+        
         return [
             (Template, 'slug'),
             (Person, 'surname'),
@@ -137,3 +145,11 @@ class Badge(models.Model):
             Template: self.template,
             Person: self.person,        
         }
+
+    @property
+    def name_fields(self):
+        return [
+            (self.person.first_name, self.person.is_first_name_visible),
+            (self.person.surname, self.person.is_surname_visible),
+            (self.person.nick, self.person.is_nick_visible),
+        ]

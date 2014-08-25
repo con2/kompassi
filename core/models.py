@@ -453,6 +453,28 @@ class EventMetaBase(models.Model):
 
         return Group.objects.get(name=group_name)
 
+    @property
+    def is_first_name_visible(self):
+        return self.preferred_name_display_style in [
+            'firstname_nick_surname',
+            'firstname_surname',
+            'firstname',
+        ]
+
+    @property
+    def is_surname_visible(self):
+        return self.preferred_name_display_style in [
+            'firstname_nick_surname',
+            'firstname_surname',
+        ]
+
+    @property
+    def is_nick_visible(self):
+        return self.preferred_name_display_style in [
+            'firstname_nick_surname',
+            'nick',
+        ]
+
 
 ONE_TIME_CODE_LENGTH = 40
 ONE_TIME_CODE_ALPHABET = '0123456789abcdef'

@@ -1,0 +1,34 @@
+extends core_admin_base.jade
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Badget
+    .panel-body
+      p.text-muted Suodata tyypin mukaan:
+      for filter_active, template in filters
+        if filter_active
+          a.label.label-primary(href='{% url "badges_admin_index_view" event.slug %}') {{ template.name }}
+          |  
+        else
+          a.label.label-default(href='{% url "badges_admin_filtered_view" event.slug template.slug %}') {{ template.name }}
+          |  
+    table.table.table-striped
+      thead
+        th Tyyppi
+        th Sukunimi
+        th Etunimi
+        th Nick
+        th Tulostettu
+      tbody
+        for badge in badges
+          td {{ badge.template.name }}
+
+          for name_field in badge.name_fields
+            if name_field.is_visible
+              td {{ name_field.value }}
+            else
+              td.text-muted {{ name_field.value }}
+
+          td {{ badge.time_printed }}
+    .panel-footer.clearfix
+      a.pull-right(href='?format=tsv') Vie Exceliin...
+      p.text-muted: {{ badges.count }} badgea.

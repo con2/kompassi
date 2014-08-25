@@ -1,3 +1,10 @@
+# encoding: utf-8
+
+from functools import wraps
+
+from django.shortcuts import get_object_or_404
+
+
 def badges_admin_required(view_func):
     @wraps(view_func)
     def wrapper(request, event_slug, *args, **kwargs):

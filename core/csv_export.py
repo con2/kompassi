@@ -2,6 +2,7 @@
 
 import csv
 
+from django.http import HttpResponse
 from django.db import models
 
 
@@ -29,21 +30,28 @@ def write_header_row(event, writer, fields, m2m_mode='separate_columns'):
     header_row = []
 
     for (model, field) in fields:
-        if type(field) == models.ManyToManyField:
+        if isinstance(field, (unicode, str)):
+            field_name = field
+            field_type = None
+        else:
+            field_name = field.name
+            field_type = type(field)
+
+        if field_type == models.ManyToManyField:
             if m2m_mode == 'separate_columns':
                 choices = get_m2m_choices(event, field)
                 header_row.extend(
-                    u"{field.name}: {choice}"
-                    .format(field=field, choice=choice.__unicode__())
+                    u"{field_name}: {choice}"
+                    .format(field_name=field_name, choice=choice.__unicode__())
                     .encode(ENCODING, 'ignore')
                     for choice in choices
                 )
             elif m2m_mode == 'comma_separated':
-                header_row.append(field.name)
+                header_row.append(field_name)
             else:
                 raise NotImplemented(m2m_mode)
         else:
-            header_row.append(field.name.encode(ENCODING, 'ignore'))
+            header_row.append(field_name.encode(ENCODING, 'ignore'))
 
     writer.writerow(header_row)    
 
@@ -122,3 +130,17 @@ def export_csv(event, model, model_instances, output_file=None, m2m_mode='separa
         result = string_output.getvalue()
         string_output.close()
         return result
+
+def csv_response(*args, **kwargs):
+    filename = kwargs.pop('filename')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="{filename}"'.format(
+        filename=filename
+    )
+
+    kwargs['output_file'] = response
+
+    export_csv(*args, **kwargs)
+
+    return response
