@@ -23,6 +23,7 @@ from labour.models import (
 )
 from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role, TimeBlock, SpecialStartTime, View, Tag
 from tickets.models import TicketsEventMeta, LimitGroup, Product
+from badges.models import BadgesEventMeta, Template
 
 from ...models import SignupExtra, SpecialDiet, Night
 
@@ -533,5 +534,38 @@ class Command(BaseCommand):
                 title=tag_title,
                 defaults=dict(
                     style=tag_class,
+                ),
+            )
+
+
+
+        #
+        # Badges
+        #
+        badge_admin_group, unused = BadgesEventMeta.get_or_create_group(event, 'admins')
+
+        BadgesEventMeta.objects.get_or_create(
+            event=event,
+            defaults=dict(
+                badge_factory_code='tracon9.badges:badge_factory',
+                admin_group=badge_admin_group,
+            )
+        )
+
+        for template_name in [
+            u'Conitea',
+            u'Ylivänkäri',
+            u'Työvoima',
+            u'Ohjelmanjärjestäjä',
+            u'Media',
+            u'Myyjä',
+            u'Vieras',
+            u'Guest of Honour',
+        ]:
+            Template.objects.get_or_create(
+                event=event,
+                slug=slugify(template_name),
+                defaults=dict(
+                    name=template_name
                 ),
             )

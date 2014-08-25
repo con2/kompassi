@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from django.shortcuts import render
 
 from .models import Badge, Batch
@@ -32,9 +34,20 @@ def badges_admin_batch_view(request, vars, event, batch_id):
 
 
 def badges_admin_menu_items(request, event):
-    menu_items = []
-
     index_url = reverse('badges_admin_index_view', event.slug)
-    raise NotImplemented()
+    index_active = request.path == index_url
+    index_text = u'Badget'
 
-    return menu_items
+    batches_url = reverse('badges_admin_batches_view', event.slug)
+    batches_active = request.path.startswith(batches_url)
+    batches_text = u'Tulostuserät'
+
+    lists_url = reverse('badges_admin_lists_view', event.slug)
+    lists_active = request.path.startswith(lists_url)
+    lists_text = u'Nimilistat'
+
+    return [
+        (index_active, index_url, index_text),
+        (batches_active, batches_url, batches_text),
+        (lists_url, lists_active, lists_text),
+    ]
