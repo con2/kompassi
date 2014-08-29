@@ -1,0 +1,76 @@
+# encoding: utf-8
+
+from django import forms
+from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
+
+from crispy_forms.helper import FormHelper, Layout
+from crispy_forms.layout import Fieldset, Submit
+
+from core.utils import initialize_form
+
+
+class CreateBatchForm(forms.Form):
+    max_orders = forms.IntegerField(label=u"Kuinka monta tilausta (enintään)?")
+
+    def __init__(self, *args, **kwargs):
+        super(CreateBatchForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+
+def batches_view(Batch, HiddenBatchCrouchingForm, template):
+    """
+    Creates a view the like of which you see in two places - tickets admin and badges admin.
+    It is used to manage batches of things that in turn are handled together.
+
+    In tickets, this is used for printing and mailing orders.
+
+    In badges, this is used for printing badges.
+
+    You need to wrap it in a standard app_admin_required decorator of your own (hence the vars).
+    """
+
+    def _badges_view(request, vars, event):
+        new_batch_form = initialize_form(CreateBatchForm, request, initial=dict(
+            max_orders=100
+        ))
+
+        if request.method == 'POST':
+            if 'new-batch' in request.POST:
+                if new_batch_form.is_valid():
+                    batch = Batch.create(event=event, max_orders=new_batch_form.cleaned_data["max_orders"])
+                    messages.success(request, u"Erä {batch.pk} on luotu onnistuneesti".format(batch=batch))
+                    return redirect(request.path)
+                else:
+                    messages.error(request, u"Ole hyvä ja korjaa lomakkeen virheet.")
+
+            elif 'cancel-batch' in request.POST or 'deliver-batch' in request.POST:
+                hidden_batch_crouching_form = HiddenBatchCrouchingForm(request.POST)
+
+                if hidden_batch_crouching_form.is_valid():
+                    batch = get_object_or_404(Batch,
+                        event=event,
+                        pk=hidden_batch_crouching_form.cleaned_data['batch_id']
+                    )
+
+                    if 'cancel-batch' in request.POST and batch.can_cancel:
+                        batch.cancel()
+                        messages.success(request, u"Erä peruttiin.")
+                        return redirect(request.path)
+
+                    elif 'deliver-batch' in request.POST and batch.can_deliver:
+                        batch.confirm_delivery()
+                        messages.success(request, u"Erä on merkitty toimitetuksi.")
+                        return redirect(request.path)
+
+                # error
+                messages.error(request, u"Et ole tulitikku kung-fulleni.")
+
+        vars.update(
+            new_batch_form=new_batch_form,
+            batches=event.batch_set.all(),
+        )
+
+        return render(request, template, vars)
+    return _badges_view

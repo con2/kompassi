@@ -21,11 +21,11 @@ except ImportError:
     from warnings import warn
     warn('Failed to import ReportLab. Generating receipts will fail.')
 
+from core.batches_view import batches_view
 from core.utils import url, initialize_form
 
 from ..forms import (
     AdminOrderForm,
-    CreateBatchForm,
     CustomerForm,
     HiddenBatchCrouchingForm,
     OrderProductForm,
@@ -48,49 +48,12 @@ __all__ = [
 
 
 
-@tickets_admin_required
-def tickets_admin_batches_view(request, vars, event):
-    new_batch_form = initialize_form(CreateBatchForm, request, initial=dict(
-        max_orders=100
-    ))
 
-    if request.method == 'POST':
-        if 'new-batch' in request.POST:
-            if new_batch_form.is_valid():
-                batch = Batch.create(event=event, max_orders=new_batch_form.cleaned_data["max_orders"])
-                messages.success(request, u"Toimituserä {batch.pk} on luotu onnistuneesti".format(batch=batch))
-                return redirect('tickets_admin_batches_view', event.slug)
-            else:
-                messages.error(request, u"Ole hyvä ja korjaa lomakkeen virheet.")
-
-        elif 'cancel-batch' in request.POST or 'deliver-batch' in request.POST:
-            hidden_batch_crouching_form = HiddenBatchCrouchingForm(request.POST)
-
-            if hidden_batch_crouching_form.is_valid():
-                batch = get_object_or_404(Batch,
-                    event=event,
-                    pk=hidden_batch_crouching_form.cleaned_data['batch_id']
-                )
-
-                if 'cancel-batch' in request.POST and batch.can_cancel:
-                    batch.cancel()
-                    messages.success(request, u"Toimituserä peruttiin.")
-                    return redirect('tickets_admin_batches_view', event.slug)
-
-                elif 'deliver-batch' in request.POST and batch.can_deliver:
-                    batch.confirm_delivery()
-                    messages.success(request, u"Toimituserä on merkitty toimitetuksi.")
-                    return redirect('tickets_admin_batches_view', event.slug)
-
-            # error
-            messages.error(request, u"Et ole tulitikku kung-fulleni.")
-
-    vars.update(
-        new_batch_form=new_batch_form,
-        batches=event.batch_set.all(),
-    )
-
-    return render(request, "tickets_admin_batches_view.jade", vars)
+tickets_admin_batches_view = tickets_admin_required(batches_view(
+    Batch=Batch,
+    HiddenBatchCrouchingForm=HiddenBatchCrouchingForm,
+    template="tickets_admin_batches_view.jade",
+))
 
 
 @tickets_admin_required

@@ -6,6 +6,7 @@ from django.utils import timezone
 from core.utils import url
 from core.csv_export import csv_response
 
+from .forms import HiddenBatchCrouchingForm
 from .models import Badge, Batch, Template
 from .helpers import badges_admin_required
 
@@ -44,9 +45,11 @@ def badges_admin_index_view(request, vars, event, badge_filter=None):
         return render(request, 'badges_admin_index_view.jade', vars)
 
 
-@badges_admin_required
-def badges_admin_batches_view(request, vars, event):
-    raise NotImplemented()
+badges_admin_batches_view = badges_admin_required(batches_view(
+    Batch=Batch,
+    HiddenBatchCrouchingForm=HiddenBatchCrouchingForm,
+    template='badges_admin_batches_view.jade',
+))
 
 
 @badges_admin_required
