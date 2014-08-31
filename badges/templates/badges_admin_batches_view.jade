@@ -8,19 +8,21 @@ block admin_content
         for batch in batches
           li.list-group-item
             | Tulostuserä {{ batch.pk }}&emsp;
-            if badge.template
-              | ({{ badge.template.name }})&emsp;
+            if batch.template
+              | ({{ batch.template.name }})&emsp;
             .pull-right
               if batch.is_printed
                 span.badge.badge-success Tulostettu
+                .btn-group.btn-group-xs
+                  a.btn.btn-primary(href='{% url "badges_admin_export_view" event.slug batch.pk "csv" %}', target='_blank') Lataa CSV
               else
                 form(method='POST', role='form')
                   {% csrf_token %}
                   input(type='hidden', name='batch_id', value='{{ batch.pk }}')
                   .btn-group.btn-group-xs
-                    a.btn.btn-primary(href='{% url "badges_admin_export_view" event.slug batch.pk "csv" %}', target='_blank') Lataa CSV
                     button.btn.btn-danger(type='submit', name='cancel-batch', value='cancel-batch') Peruuta
-                    button.btn.btn-success(type='submit', name='deliver-batch', value='deliver-batch') Merkitse tulostetuksi
+                    button.btn.btn-success(type='submit', name='confirm-batch', value='confirm-batch') Merkitse tulostetuksi
+                    a.btn.btn-primary(href='{% url "badges_admin_export_view" event.slug batch.pk "csv" %}', target='_blank') Lataa CSV
             .pull-right
               .text-muted {{ batch.badge_set.count }} badge{{ batch.badge_set.count|pluralize:"a"}}&emsp;
 

@@ -44,6 +44,7 @@ block admin_content
                 td.text-muted Odottaa
     .panel-footer.clearfix
       .btn-group.pull-right
+        a.btn.btn-success(href='{{ request.path }}/new') Lisää henkilö
         a.btn.btn-default(href='?format=print', target='_blank') Tulostettava versio
         button.btn.btn-default(type='button', data-toggle='dropdown') Vie <span class='caret'></span>
         ul.dropdown-menu(role='menu')

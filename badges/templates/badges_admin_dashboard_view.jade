@@ -3,16 +3,16 @@ block admin_content
   .row
     .col-md-3
       .panel.panel-default
-        .panel-heading: strong Tulostettu
-        .panel-body: h1 {{ num_badges_printed }}
+        .panel-heading: strong Odottaa erää
+        .panel-body: h1 {{ num_badges_awaiting_batch }}
     .col-md-3
       .panel.panel-default
         .panel-heading: strong Odottaa erässä
         .panel-body: h1 {{ num_badges_waiting_in_batch }}
     .col-md-3
       .panel.panel-default
-        .panel-heading: strong Odottaa erää
-        .panel-body: h1 {{ num_badges_awaiting_batch }}
+        .panel-heading: strong Tulostettu
+        .panel-body: h1 {{ num_badges_printed }}
     .col-md-3
       .panel.panel-default
         .panel-heading: strong Yhteensä
@@ -25,15 +25,18 @@ block admin_content
         table.table.table-striped
           thead
             th Badgetyyppi
-            th Tulostettu
-            th Odottaa erässä
             th Odottaa erää
+            th Odottaa erässä
+            th Tulostettu
             th Yhteensä
+            th
           tbody
             for template in templates
               tr
                 td: a(href='{% url "badges_admin_filtered_view" event.slug template.slug %}') {{ template.name }}
-                td {{ template.count_printed_badges }}
-                td {{ template.count_badges_waiting_in_batch }}
                 td {{ template.count_badges_awaiting_batch }}
+                td {{ template.count_badges_waiting_in_batch }}
+                td {{ template.count_printed_badges }}
                 td {{ template.count_badges }}
+                td: a.btn.btn-xs.btn-success(href='', title='Lisää uusi käsin')
+                  span.glyphicon.glyphicon-plus

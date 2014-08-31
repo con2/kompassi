@@ -221,7 +221,7 @@ class Command(BaseCommand):
 
         #
         # Programme
-        # 
+        #
 
         programme_admin_group, unused = ProgrammeEventMeta.get_or_create_group(event, 'admins')
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
@@ -561,6 +561,9 @@ class Command(BaseCommand):
             u'Myyjä',
             u'Vieras',
             u'Guest of Honour',
+            u'Viikonloppulippu',
+            u'Lauantailippu',
+            u'Sunnuntailippu',
         ]:
             Template.objects.get_or_create(
                 event=event,

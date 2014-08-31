@@ -97,6 +97,8 @@ class Batch(models.Model, CsvExportMixin):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
     printed_at = models.DateTimeField(null=True, blank=True)
 
+    is_printed = time_bool_property('printed_at')
+
     @classmethod
     def create(cls, event, template=None, max_badges=100):
         if template is not None:

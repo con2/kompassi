@@ -40,12 +40,12 @@ def badges_admin_dashboard_view(request, vars, event):
     return render(request, 'badges_admin_dashboard_view.jade', vars)
 
 @badges_admin_required
-def badges_admin_badges_view(request, vars, event, badge_filter=None):
+def badges_admin_badges_view(request, vars, event, template_slug=None):
     badge_criteria = dict(template__event=event)
     active_filter = None
 
-    if badge_filter is not None:
-        active_filter = Template.objects.get(event=event, slug=badge_filter)
+    if template_slug is not None:
+        active_filter = get_object_or_404(Template, event=event, slug=template_slug)
         badge_criteria.update(template=active_filter)
 
     badges = Badge.objects.filter(**badge_criteria).order_by(*BADGE_ORDER)
@@ -55,7 +55,7 @@ def badges_admin_badges_view(request, vars, event, badge_filter=None):
     if format in CSV_EXPORT_FORMATS:
         filename = "{event.slug}-badges-{badge_filter}{timestamp}.{format}".format(
             event=event,
-            badge_filter="{badge_filter}-".format(badge_filter=badge_filter) if badge_filter is not None else '',
+            badge_filter="{template_slug}-".format(template_slug=template_slug) if template_slug is not None else '',
             timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
             format=format,
         )
@@ -70,7 +70,7 @@ def badges_admin_badges_view(request, vars, event, badge_filter=None):
         )
 
         badge_filters = [
-            (badge_filter == badge_template.slug, badge_template)
+            (template_slug == badge_template.slug, badge_template)
             for badge_template in Template.objects.filter(event=event)
         ]
 
@@ -111,6 +111,12 @@ def badges_admin_export_view(request, vars, event, batch_id, format='csv'):
     )
 
     return csv_response(event, Badge, badges, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
+
+
+@badges_admin_required
+def badges_admin_create_view(request, vars, event, template_slug=None):
+    return render(request, 'badges_admin_create_view.jade', vars)
+
 
 def badges_admin_menu_items(request, event):
     dashboard_url = url('badges_admin_dashboard_view', event.slug)

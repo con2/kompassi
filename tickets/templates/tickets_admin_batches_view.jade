@@ -17,7 +17,7 @@ block admin_content
                   input(type='hidden', name='batch_id', value='{{ batch.pk }}')
                   .btn-group.btn-group-xs
                     button.btn.btn-danger(type='submit', name='cancel-batch', value='cancel-batch') Peruuta
-                    button.btn.btn-success(type='submit', name='deliver-batch', value='deliver-batch') Merkitse toimitetuksi
+                    button.btn.btn-success(type='submit', name='confirm-batch', value='confirm-batch') Merkitse toimitetuksi
             .pull-right
               .text-muted {{ batch.order_set.count }} tilaus{{ batch.order_set.count|pluralize:"ta"}}&emsp;
 
