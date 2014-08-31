@@ -74,3 +74,14 @@ def badges_admin_menu_items(request, event):
         (index_active, index_url, index_text),
         (batches_active, batches_url, batches_text),
     ]
+
+
+def badges_event_box_context(request, event):
+    is_badges_admin = False
+
+    if request.user.is_authenticated():
+        is_badges_admin = event.badges_event_meta.is_user_admin(request.user)
+
+    return dict(
+        is_badges_admin=is_badges_admin,
+    )
