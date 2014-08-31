@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     'payments',
     'mailings',
     'api',
+    'badges',
 
     # Uncomment if you have IPA
     #'external_auth',

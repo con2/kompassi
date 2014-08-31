@@ -23,6 +23,7 @@ from labour.models import (
 )
 from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role, TimeBlock, SpecialStartTime, View, Tag
 from tickets.models import TicketsEventMeta, LimitGroup, Product
+from badges.models import BadgesEventMeta, Template
 
 from ...models import SignupExtra, SpecialDiet, Night
 
@@ -220,7 +221,7 @@ class Command(BaseCommand):
 
         #
         # Programme
-        # 
+        #
 
         programme_admin_group, unused = ProgrammeEventMeta.get_or_create_group(event, 'admins')
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
@@ -243,7 +244,7 @@ class Command(BaseCommand):
             u'Opus 2',
             u'Opus 3',
             u'Opus 4',
-            u'Puisto - Kiveys',
+            u'Puistolava',
             u'Puisto - Iso miittiteltta',
             u'Puisto - Pieni miittiteltta',
             u'Puisto - Bofferiteltta',
@@ -327,25 +328,17 @@ class Command(BaseCommand):
             (u'Pääohjelmatilat', [
                 u'Iso sali',
                 u'Pieni sali',
-                u'Sopraano',
                 u'Studio',
                 u'Sonaatti 1',
                 u'Sonaatti 2',
             ]),
             (u'Toissijaiset ohjelmatilat', [
-                u'Rondo',
-                u'Basso',
+                u'Sopraano',
                 u'Opus 1',
-                u'Opus 2',
-                u'Opus 3',
-                u'Opus 4',
-            ]),
-            (u'Ulkona', [
-                u'Puisto - Kiveys',
+                u'Puistolava',
                 u'Puisto - Iso miittiteltta',
                 u'Puisto - Pieni miittiteltta',
-                u'Puisto - Bofferiteltta',
-            ])
+            ]),
         ]:
             rooms = [Room.objects.get(name__iexact=room_name, venue=venue)
                 for room_name in room_names]
@@ -533,5 +526,41 @@ class Command(BaseCommand):
                 title=tag_title,
                 defaults=dict(
                     style=tag_class,
+                ),
+            )
+
+
+
+        #
+        # Badges
+        #
+        badge_admin_group, unused = BadgesEventMeta.get_or_create_group(event, 'admins')
+
+        BadgesEventMeta.objects.get_or_create(
+            event=event,
+            defaults=dict(
+                badge_factory_code='tracon9.badges:badge_factory',
+                admin_group=badge_admin_group,
+            )
+        )
+
+        for template_name in [
+            u'Conitea',
+            u'Ylivänkäri',
+            u'Työvoima',
+            u'Ohjelmanjärjestäjä',
+            u'Media',
+            u'Myyjä',
+            u'Vieras',
+            u'Guest of Honour',
+            u'Viikonloppulippu',
+            u'Lauantailippu',
+            u'Sunnuntailippu',
+        ]:
+            Template.objects.get_or_create(
+                event=event,
+                slug=slugify(template_name),
+                defaults=dict(
+                    name=template_name
                 ),
             )

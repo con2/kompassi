@@ -15,6 +15,7 @@ from core.utils import (
     ensure_user_is_not_member_of_group,
     is_within_period,
     SLUG_FIELD_PARAMS,
+    NONUNIQUE_SLUG_FIELD_PARAMS,
     slugify,
     time_bool_property,
 )
@@ -49,9 +50,6 @@ SIGNUP_STATE_GROUPS = [
     'workaccepted',
     'reprimanded',
 ]
-
-
-NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
 
 
 class LabourEventMeta(EventMetaBase):
@@ -89,7 +87,7 @@ class LabourEventMeta(EventMetaBase):
     )
 
     signup_message = models.TextField(
-        null=True, 
+        null=True,
         blank=True,
         default=u'',
         verbose_name=u'Ilmoittautumisen huomautusviesti',
@@ -485,14 +483,14 @@ class AlternativeSignupForm(models.Model):
     )
 
     signup_message = models.TextField(
-        null=True, 
+        null=True,
         blank=True,
         default=u'',
         verbose_name=u'Ilmoittautumisen huomautusviesti',
         help_text=u'Tämä viesti näytetään kaikille tätä lomaketta käyttäville työvoimailmoittautumisen alussa. Käytettiin '
             u'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
             u'erikoistehtäville.',
-    )    
+    )
 
     def __unicode__(self):
         return self.title
@@ -823,6 +821,23 @@ class Signup(models.Model, CsvExportMixin):
 
         return labels
 
+    @property
+    def some_job_title(self):
+        """
+        Tries to figure a job title for this worker using the following methods in this order
+
+        1. A manually set job title
+        2. The title of the job category the worker is accepted into
+        3. A generic job title
+        """
+
+        if self.job_title:
+            return self.job_title
+        elif self.job_categories_accepted.exists():
+            return self.job_categories_accepted.first().name
+        else:
+            return u'Vänkäri'
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Person, Event
@@ -846,6 +861,7 @@ class Signup(models.Model, CsvExportMixin):
     def _apply_state(self):
         self.apply_group_membership()
         self.send_messages()
+        self.ensure_badge_exists_if_necessary()
 
     def apply_group_membership(self):
         for group_suffix in SIGNUP_STATE_GROUPS:
@@ -866,6 +882,21 @@ class Signup(models.Model, CsvExportMixin):
 
         from mailings.models import Message
         Message.send_messages(self.event, 'labour', self.person)
+
+    def ensure_badge_exists_if_necessary(self):
+        if 'badges' not in settings.INSTALLED_APPS:
+            return
+
+        if self.event.badges_event_meta is None:
+            return
+
+        if not self.is_accepted:
+            return
+
+        # TODO revoke badge if one exists but shouldn't
+
+        from badges.models import Badge
+        Badge.get_or_create(event=self.event, person=self.person)
 
     def get_previous_and_next_signup(self):
         if not self.pk:
@@ -920,7 +951,7 @@ class Signup(models.Model, CsvExportMixin):
 
     @state.setter
     def state(self, new_state):
-        self._state_flags = STATE_FLAGS_BY_NAME[new_state] 
+        self._state_flags = STATE_FLAGS_BY_NAME[new_state]
 
     @property
     def next_states(self):
@@ -1048,7 +1079,7 @@ class Signup(models.Model, CsvExportMixin):
     def get_csv_fields(cls, event):
         if getattr(event, '_signup_csv_fields', None) is None:
             from core.models import Person
-            
+
             event._signup_csv_fields = []
 
             models = [Person, Signup]
@@ -1069,7 +1100,7 @@ class Signup(models.Model, CsvExportMixin):
                 for field, unused in model._meta.get_m2m_with_model():
                     event._signup_csv_fields.append((model, field))
 
-        return event._signup_csv_fields    
+        return event._signup_csv_fields
 
     def get_csv_related(self):
         from core.models import Person
@@ -1077,7 +1108,7 @@ class Signup(models.Model, CsvExportMixin):
 
         signup_extra_model = self.signup_extra_model
         if signup_extra_model:
-            related[signup_extra_model] = self.signup_extra 
+            related[signup_extra_model] = self.signup_extra
 
         # XXX HACK jv-kortin numero
         if 'labour_common_qualifications' in settings.INSTALLED_APPS:
@@ -1128,7 +1159,7 @@ class InfoLink(models.Model):
         verbose_name=u'Osoite',
         help_text=u'Muista aloittaa ulkoiset linkit <i>http://</i> tai <i>https://</i>.'
     )
-    
+
     title = models.CharField(max_length=255, verbose_name=u'Teksti')
 
     class Meta:

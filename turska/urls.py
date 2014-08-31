@@ -16,6 +16,7 @@ for app_name in [
     'payments',
     'atlassian_integration',
     'api',
+    'badges',
 ]:
     if app_name in settings.INSTALLED_APPS:
         actual_patterns.append(url(r'', include('{app_name}.urls'.format(app_name=app_name))))

@@ -45,7 +45,7 @@ class Event(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
 
     name = models.CharField(max_length=63, verbose_name=u'Tapahtuman nimi')
-    
+
     headline = models.CharField(
         max_length=63,
         blank=True,
@@ -295,16 +295,18 @@ class Person(models.Model):
         return u"{self.first_name} {self.surname} <{self.email}>".format(self=self)
 
     @property
-    def display_name(self):
+    def name_display_style(self):
         if self.preferred_name_display_style:
-            style = self.preferred_name_display_style
+            return self.preferred_name_display_style
         else:
             if self.nick:
-                style = 'firstname_nick_surname'
+                return 'firstname_nick_surname'
             else:
-                style = 'firstname_surname'
+                return 'firstname_surname'
 
-        return NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
+    @property
+    def display_name(self):
+        return NAME_DISPLAY_STYLE_FORMATS[self.name_display_style].format(self=self)
 
     @property
     def username(self):
@@ -412,6 +414,28 @@ class Person(models.Model):
             self.email_verified_at = timezone.now()
             self.save()
 
+    @property
+    def is_first_name_visible(self):
+        return self.name_display_style in [
+            'firstname_nick_surname',
+            'firstname_surname',
+            'firstname',
+        ]
+
+    @property
+    def is_surname_visible(self):
+        return self.name_display_style in [
+            'firstname_nick_surname',
+            'firstname_surname',
+        ]
+
+    @property
+    def is_nick_visible(self):
+        return self.name_display_style in [
+            'firstname_nick_surname',
+            'nick',
+        ]
+
 
 class EventMetaBase(models.Model):
     event = models.OneToOneField('core.Event', primary_key=True, related_name='%(class)s')
@@ -440,7 +464,7 @@ class EventMetaBase(models.Model):
             event_slug=event.slug,
             app_label=ctype.app_label,
             suffix=suffix,
-        )        
+        )
 
     @classmethod
     def get_or_create_group(cls, event, suffix):

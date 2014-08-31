@@ -2,6 +2,7 @@
 
 import csv
 
+from django.http import HttpResponse
 from django.db import models
 
 
@@ -29,23 +30,30 @@ def write_header_row(event, writer, fields, m2m_mode='separate_columns'):
     header_row = []
 
     for (model, field) in fields:
-        if type(field) == models.ManyToManyField:
+        if isinstance(field, (unicode, str)):
+            field_name = field
+            field_type = None
+        else:
+            field_name = field.name
+            field_type = type(field)
+
+        if field_type == models.ManyToManyField:
             if m2m_mode == 'separate_columns':
                 choices = get_m2m_choices(event, field)
                 header_row.extend(
-                    u"{field.name}: {choice}"
-                    .format(field=field, choice=choice.__unicode__())
+                    u"{field_name}: {choice}"
+                    .format(field_name=field_name, choice=choice.__unicode__())
                     .encode(ENCODING, 'ignore')
                     for choice in choices
                 )
             elif m2m_mode == 'comma_separated':
-                header_row.append(field.name)
+                header_row.append(field_name)
             else:
                 raise NotImplemented(m2m_mode)
         else:
-            header_row.append(field.name.encode(ENCODING, 'ignore'))
+            header_row.append(field_name.encode(ENCODING, 'ignore'))
 
-    writer.writerow(header_row)    
+    writer.writerow(header_row)
 
 
 def convert_value(value):
@@ -68,14 +76,21 @@ def write_row(event, writer, fields, model_instance, m2m_mode):
     related = model_instance.get_csv_related()
 
     for model, field in fields:
+        if isinstance(field, (unicode, str)):
+            field_name = field
+            field_type = None
+        else:
+            field_name = field.name
+            field_type = type(field)
+
         if model in related:
             source_instance = related.get(model, None)
         else:
             source_instance = model_instance
 
-        field_value = getattr(source_instance, field.name) if source_instance is not None else None
+        field_value = getattr(source_instance, field_name) if source_instance is not None else None
 
-        if type(field) == models.ManyToManyField and field_value is not None:
+        if field_type == models.ManyToManyField and field_value is not None:
             if m2m_mode == 'separate_columns':
                 choices = get_m2m_choices(event, field)
 
@@ -93,15 +108,15 @@ def write_row(event, writer, fields, model_instance, m2m_mode):
     writer.writerow(result_row)
 
 
-def export_csv(event, model, model_instances, output_file=None, m2m_mode='separate_columns'):
+def export_csv(event, model, model_instances, output_file=None, m2m_mode='separate_columns', dialect='excel-tab'):
     fields = model.get_csv_fields(event)
 
     if output_file is None:
         from cStringIO import StringIO
         string_output = StringIO()
-        writer = csv.writer(string_output, dialect='excel-tab')
+        writer = csv.writer(string_output, dialect=dialect)
     else:
-        writer = csv.writer(output_file, dialect='excel-tab')
+        writer = csv.writer(output_file, dialect=dialect)
 
     write_header_row(event, writer, fields, m2m_mode)
 
@@ -115,3 +130,17 @@ def export_csv(event, model, model_instances, output_file=None, m2m_mode='separa
         result = string_output.getvalue()
         string_output.close()
         return result
+
+def csv_response(*args, **kwargs):
+    filename = kwargs.pop('filename')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="{filename}"'.format(
+        filename=filename
+    )
+
+    kwargs['output_file'] = response
+
+    export_csv(*args, **kwargs)
+
+    return response

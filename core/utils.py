@@ -114,6 +114,7 @@ SLUG_FIELD_PARAMS = dict(
         u'merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi '
         u'muuttaa luomisen jälkeen.',
 )
+NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
 
 
 def url(view_name, *args):

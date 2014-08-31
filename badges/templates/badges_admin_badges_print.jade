@@ -1,0 +1,17 @@
+doctype html
+html
+  head
+    title {{ title|safe }} | {{ KOMPASSI_INSTALLATION_NAME }}
+  body
+    header
+      h1 {{ title|safe }}
+      p Tulostettu {{ now }}
+    article(style='font-size: 10pt')
+      for badge in badges
+        div(style='display: inline-block; width: 20em') {{ badge.person.surname }}, {{ badge.person.first_name }}
+          if badge.person.nick
+            | , {{ badge.person.nick }}
+          if not active_filter
+            |  ({{ badge.template.name }})
+    footer
+      p {{ badges.count }} hlö

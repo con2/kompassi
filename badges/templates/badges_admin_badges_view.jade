@@ -1,0 +1,53 @@
+extends core_admin_base.jade
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Nimilista
+    .panel-body
+      p.text-muted Suodata tyypin mukaan:
+      for filter_active, template in filters
+        if filter_active
+          a.label.label-primary(href='{% url "badges_admin_badges_view" event.slug %}') {{ template.name }}
+          | &thinsp;
+        else
+          a.label.label-default(href='{% url "badges_admin_filtered_view" event.slug template.slug %}') {{ template.name }}
+          | &thinsp;
+    table.table.table-striped
+      thead
+        th Sukunimi
+        th Etunimi
+        th Nick
+        th Badgetyyppi
+        th Tehtävänimike
+        th Tulostettu
+      tbody
+        for badge in badges
+          tr
+
+            for value, is_visible in badge.get_name_fields
+              if is_visible
+                td {{ value }}
+              else
+                td.text-muted {{ value }}
+
+            td {{ badge.template.name }}
+            td {{ badge.job_title }}
+
+            if badge.is_printed
+              if badge.batch
+                td {{ badge.formatted_printed_at }} (Erä {{ badge.batch.pk }})
+              else
+                td {{ badge.formatted_printed_at }}
+            else
+              if badge.batch
+                td.text-muted Odottaa (Erä {{ badge.batch.pk }})
+              else
+                td.text-muted Odottaa
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        a.btn.btn-success(href='{{ request.path }}/new') Lisää henkilö
+        a.btn.btn-default(href='?format=print', target='_blank') Tulostettava versio
+        button.btn.btn-default(type='button', data-toggle='dropdown') Vie <span class='caret'></span>
+        ul.dropdown-menu(role='menu')
+          li: a.btn.btn-link(href='?format=csv') CSV
+          li: a.btn.btn-link(href='?format=tsv') TSV
+      p.text-muted: {{ badges.count }} badgea.

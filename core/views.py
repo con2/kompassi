@@ -49,6 +49,10 @@ def core_event_view(request, event_slug):
         from tickets.views import tickets_event_box_context
         vars.update(tickets_event_box_context(request, event))
 
+    if event.badges_event_meta:
+        from badges.views import badges_event_box_context
+        vars.update(badges_event_box_context(request, event))
+
     return render(request, 'core_event_view.jade', vars)
 
 

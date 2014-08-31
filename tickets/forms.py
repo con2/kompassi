@@ -16,7 +16,6 @@ __all__ = [
     "SinglePaymentForm",
     "ConfirmSinglePaymentForm",
     "MultiplePaymentsForm",
-    "CreateBatchForm",
     "SearchForm",
 ]
 
@@ -50,7 +49,7 @@ class OrderProductForm(forms.ModelForm):
     @classmethod
     def get_for_order_and_product(cls, request, order, product, admin=False):
         order_product, unused = OrderProduct.objects.get_or_create(order=order, product=product)
-            
+
         return initialize_form(OrderProductForm, request,
             instance=order_product,
             prefix="o%d" % order_product.pk,
@@ -95,14 +94,6 @@ class ConfirmSinglePaymentForm(forms.Form):
 class MultiplePaymentsForm(forms.Form):
     dump = forms.CharField(widget=forms.Textarea(attrs={'rows':15,'cols':'90'}), label=u"Pastee tähän")
 
-
-class CreateBatchForm(forms.Form):
-    max_orders = forms.IntegerField(label=u"Kuinka monta tilausta (enintään)?")
-
-    def __init__(self, *args, **kwargs):
-        super(CreateBatchForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_tag = False
 
 class SearchForm(forms.Form):
     id = forms.IntegerField(label=u"Tilausnumero", required=False)
@@ -149,7 +140,3 @@ class AdminOrderForm(forms.ModelForm):
             'reference_number',
             # 'start_time',
         )
-
-
-class HiddenBatchCrouchingForm(forms.Form):
-    batch_id = forms.IntegerField(required=True)

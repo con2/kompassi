@@ -2,38 +2,43 @@ extends core_admin_base.jade
 - load crispy_forms_tags
 block admin_content
   .panel.panel-default
-    .panel-heading: strong Toimituserät
+    .panel-heading: strong Tulostuserät
     if batches.exists
       ul.list-group
         for batch in batches
           li.list-group-item
-            a(href='{% url "tickets_admin_batch_view" event.slug batch.pk %}', target='_blank') Toimituserä {{ batch.pk }}
+            | Tulostuserä {{ batch.pk }}&emsp;
+            if batch.template
+              | ({{ batch.template.name }})&emsp;
             .pull-right
-              if batch.is_delivered
-                span.badge.badge-success Toimitettu
+              if batch.is_printed
+                span.badge.badge-success Tulostettu
+                .btn-group.btn-group-xs
+                  a.btn.btn-primary(href='{% url "badges_admin_export_view" event.slug batch.pk "csv" %}', target='_blank') Lataa CSV
               else
                 form(method='POST', role='form')
                   {% csrf_token %}
                   input(type='hidden', name='batch_id', value='{{ batch.pk }}')
                   .btn-group.btn-group-xs
                     button.btn.btn-danger(type='submit', name='cancel-batch', value='cancel-batch') Peruuta
-                    button.btn.btn-success(type='submit', name='confirm-batch', value='confirm-batch') Merkitse toimitetuksi
+                    button.btn.btn-success(type='submit', name='confirm-batch', value='confirm-batch') Merkitse tulostetuksi
+                    a.btn.btn-primary(href='{% url "badges_admin_export_view" event.slug batch.pk "csv" %}', target='_blank') Lataa CSV
             .pull-right
-              .text-muted {{ batch.order_set.count }} tilaus{{ batch.order_set.count|pluralize:"ta"}}&emsp;
+              .text-muted {{ batch.badge_set.count }} badge{{ batch.badge_set.count|pluralize:"a"}}&emsp;
 
     else
       .panel-body
-        p Ei toimituseriä.
+        p Ei tulostuseriä.
     .panel-footer.clearfix
       .btn-group.pull-right
-        button.btn.btn-primary(type='button', data-toggle='modal', data-target='#new-batch-dialog') Uusi toimituserä...
+        button.btn.btn-primary(type='button', data-toggle='modal', data-target='#new-batch-dialog') Uusi tulostuserä...
 
   #new-batch-dialog.modal.fade
     .modal-dialog
       .modal-content
         .modal-header
           button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
-          h4 Uusi toimituserä
+          h4 Uusi tulostuserä
         form(method='POST', role='form')
           div
             .modal-body
@@ -41,4 +46,4 @@ block admin_content
             .modal-footer
               .btn-group
                 button.btn.btn-default(type='button', data-dismiss='modal') Peruuta
-                button.btn.btn-success(type='submit', name='new-batch', value='new-batch') Luo toimituserä
+                button.btn.btn-success(type='submit', name='new-batch', value='new-batch') Luo tulostuserä
