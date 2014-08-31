@@ -27,7 +27,6 @@ from core.utils import url, initialize_form
 from ..forms import (
     AdminOrderForm,
     CustomerForm,
-    HiddenBatchCrouchingForm,
     OrderProductForm,
     SearchForm,
 )
@@ -51,7 +50,6 @@ __all__ = [
 
 tickets_admin_batches_view = tickets_admin_required(batches_view(
     Batch=Batch,
-    HiddenBatchCrouchingForm=HiddenBatchCrouchingForm,
     template="tickets_admin_batches_view.jade",
 ))
 

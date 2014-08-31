@@ -19,7 +19,11 @@ class CreateBatchForm(forms.Form):
         self.helper.form_tag = False
 
 
-def batches_view(Batch, HiddenBatchCrouchingForm, template):
+class HiddenBatchCrouchingForm(forms.Form):
+    batch_id = forms.IntegerField(required=True)
+
+
+def batches_view(Batch, template):
     """
     Creates a view the like of which you see in two places - tickets admin and badges admin.
     It is used to manage batches of things that in turn are handled together.

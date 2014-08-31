@@ -3,10 +3,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
+from core.batches_view import batches_view
 from core.utils import url
 from core.csv_export import csv_response
 
-from .forms import HiddenBatchCrouchingForm
 from .models import Badge, Batch, Template
 from .helpers import badges_admin_required
 
@@ -47,7 +47,6 @@ def badges_admin_index_view(request, vars, event, badge_filter=None):
 
 badges_admin_batches_view = badges_admin_required(batches_view(
     Batch=Batch,
-    HiddenBatchCrouchingForm=HiddenBatchCrouchingForm,
     template='badges_admin_batches_view.jade',
 ))
 
@@ -69,7 +68,7 @@ def badges_admin_menu_items(request, event):
 
     index_url = url('badges_admin_index_view', event.slug)
     index_active = request.path.startswith(index_url) and not batches_active
-    index_text = u'Badget'    
+    index_text = u'Badget'
 
     return [
         (index_active, index_url, index_text),
