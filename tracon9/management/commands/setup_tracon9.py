@@ -244,7 +244,7 @@ class Command(BaseCommand):
             u'Opus 2',
             u'Opus 3',
             u'Opus 4',
-            u'Puisto - Kiveys',
+            u'Puistolava',
             u'Puisto - Iso miittiteltta',
             u'Puisto - Pieni miittiteltta',
             u'Puisto - Bofferiteltta',
@@ -328,25 +328,17 @@ class Command(BaseCommand):
             (u'Pääohjelmatilat', [
                 u'Iso sali',
                 u'Pieni sali',
-                u'Sopraano',
                 u'Studio',
                 u'Sonaatti 1',
                 u'Sonaatti 2',
             ]),
             (u'Toissijaiset ohjelmatilat', [
-                u'Rondo',
-                u'Basso',
+                u'Sopraano',
                 u'Opus 1',
-                u'Opus 2',
-                u'Opus 3',
-                u'Opus 4',
-            ]),
-            (u'Ulkona', [
-                u'Puisto - Kiveys',
+                u'Puistolava',
                 u'Puisto - Iso miittiteltta',
                 u'Puisto - Pieni miittiteltta',
-                u'Puisto - Bofferiteltta',
-            ])
+            ]),
         ]:
             rooms = [Room.objects.get(name__iexact=room_name, venue=venue)
                 for room_name in room_names]
