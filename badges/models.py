@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django.db import models
+from django.db.models import Q
 from django.utils.timezone import now
 
 from core.csv_export import CsvExportMixin
@@ -8,7 +9,25 @@ from core.models import EventMetaBase
 from core.utils import slugify, NONUNIQUE_SLUG_FIELD_PARAMS, time_bool_property
 
 
-class BadgesEventMeta(EventMetaBase):
+
+class CountBadgesMixin(object):
+    def count_printed_badges(self):
+        return self.badge_set.filter(
+            Q(batch__isnull=False, batch__printed_at__isnull=False) | Q(printed_separately_at__isnull=False)
+        ).distinct().count()
+
+    def count_badges_waiting_in_batch(self):
+        return self.badge_set.filter(batch__isnull=False, batch__printed_at__isnull=True).count()
+
+    def count_badges_awaiting_batch(self):
+        return self.badge_set.filter(batch__isnull=True, printed_separately_at__isnull=True).count()
+
+    def count_badges(self):
+        return self.badge_set.count()
+
+
+
+class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     badge_factory_code = models.CharField(
         max_length='255',
         default='badges.utils:default_badge_factory',
@@ -30,8 +49,15 @@ class BadgesEventMeta(EventMetaBase):
         group, unused = cls.get_or_create_group(event, 'admins')
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
+    # for CountBadgesMixin
+    @property
+    def badge_set(self):
+        return Badge.objects.filter(template__event=self.event)
 
-class Template(models.Model):
+
+class Template(models.Model, CountBadgesMixin):
+    # REVERSE: badge_set = OneToMany(Badge)
+
     event = models.ForeignKey('core.Event')
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     name = models.CharField(max_length=63)
@@ -174,6 +200,7 @@ class Badge(models.Model):
             (Template, 'slug'),
             (Person, 'surname'),
             (Person, 'first_name'),
+            (Person, 'nick'),
             (cls, 'job_title'),
         ]
 

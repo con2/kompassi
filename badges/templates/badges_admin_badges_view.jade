@@ -6,11 +6,11 @@ block admin_content
       p.text-muted Suodata tyypin mukaan:
       for filter_active, template in filters
         if filter_active
-          a.label.label-primary(href='{% url "badges_admin_index_view" event.slug %}') {{ template.name }}
-          |  
+          a.label.label-primary(href='{% url "badges_admin_badges_view" event.slug %}') {{ template.name }}
+          | &thinsp;
         else
           a.label.label-default(href='{% url "badges_admin_filtered_view" event.slug template.slug %}') {{ template.name }}
-          |  
+          | &thinsp;
     table.table.table-striped
       thead
         th Tyyppi
