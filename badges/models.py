@@ -65,6 +65,7 @@ class Template(models.Model):
 
 
 class Batch(models.Model, CsvExportMixin):
+    event = models.ForeignKey('core.Event', related_name='badge_batch_set')
     template = models.ForeignKey(Template, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
@@ -86,14 +87,30 @@ class Batch(models.Model, CsvExportMixin):
         if max_badges is not None:
             badges = badges[:max_badges]
 
-        batch = cls(template=template)
+        batch = cls(template=template, event=event)
         batch.save()
 
-        badges.update(batch=batch)
+        # Cannot update a query once a slice has been taken.
+        # badges.update(batch=batch)
+        for badge in badges:
+            badge.batch = batch
+            badge.save()
+
+        return batch
 
     def confirm(self):
         self.printed_at = now()
         self.save()
+
+    def cancel(self):
+        self.badge_set.update(batch=None)
+        self.delete()
+
+    def can_cancel(self):
+        return self.printed_at is not None
+
+    def can_confirm(self):
+        return self.printed_at is not None
 
     def __unicode__(self):
         return u"Tulostuserä {}".format(self.pk)

@@ -204,7 +204,7 @@ class Batch(models.Model):
         self.delete()
 
     @property
-    def can_deliver(self):
+    def can_confirm(self):
         return not self.is_delivered
 
     def confirm(self, delivery_time=None):

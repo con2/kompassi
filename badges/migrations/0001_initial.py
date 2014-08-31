@@ -31,10 +31,11 @@ class Migration(SchemaMigration):
         # Adding model 'Batch'
         db.create_table(u'badges_batch', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('template', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['badges.Template'])),
-            ('time_printed', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('event', self.gf('django.db.models.fields.related.ForeignKey')(related_name='badge_batch_set', to=orm['core.Event'])),
+            ('template', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['badges.Template'], null=True, blank=True)),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('printed_at', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
         ))
         db.send_create_signal(u'badges', ['Batch'])
 
@@ -43,8 +44,8 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('person', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['core.Person'], null=True, blank=True)),
             ('template', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['badges.Template'])),
-            ('time_separately_printed', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('time_revoked', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('printed_separately_at', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('revoked_at', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('job_title', self.gf('django.db.models.fields.CharField')(default=u'', max_length=63, blank=True)),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
@@ -107,9 +108,9 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'job_title': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '63', 'blank': 'True'}),
             'person': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['core.Person']", 'null': 'True', 'blank': 'True'}),
+            'printed_separately_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'revoked_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'template': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['badges.Template']"}),
-            'time_revoked': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'time_separately_printed': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
         u'badges.badgeseventmeta': {
@@ -121,9 +122,10 @@ class Migration(SchemaMigration):
         u'badges.batch': {
             'Meta': {'object_name': 'Batch'},
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'event': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'badge_batch_set'", 'to': u"orm['core.Event']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'template': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['badges.Template']"}),
-            'time_printed': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'printed_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'template': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['badges.Template']", 'null': 'True', 'blank': 'True'}),
             'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
         u'badges.template': {

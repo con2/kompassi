@@ -52,7 +52,7 @@ def batches_view(Batch, template, CreateBatchForm=CreateBatchForm):
                 else:
                     messages.error(request, u"Ole hyvä ja korjaa lomakkeen virheet.")
 
-            elif 'cancel-batch' in request.POST or 'deliver-batch' in request.POST:
+            elif 'cancel-batch' in request.POST or 'confirm-batch' in request.POST:
                 hidden_batch_crouching_form = HiddenBatchCrouchingForm(request.POST)
 
                 if hidden_batch_crouching_form.is_valid():
@@ -66,7 +66,7 @@ def batches_view(Batch, template, CreateBatchForm=CreateBatchForm):
                         messages.success(request, u"Erä peruttiin.")
                         return redirect(request.path)
 
-                    elif 'deliver-batch' in request.POST and batch.can_deliver:
+                    elif 'confirm-batch' in request.POST and batch.can_confirm:
                         batch.confirm()
                         messages.success(request, u"Erä on merkitty valmiiksi.")
                         return redirect(request.path)
@@ -76,7 +76,7 @@ def batches_view(Batch, template, CreateBatchForm=CreateBatchForm):
 
         vars.update(
             new_batch_form=new_batch_form,
-            batches=event.batch_set.all(),
+            batches=Batch.objects.filter(event=event).order_by('created_at')
         )
 
         return render(request, template, vars)
