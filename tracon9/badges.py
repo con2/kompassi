@@ -1,3 +1,7 @@
+# encoding: utf-8
+
+from __future__ import absolute_import
+
 from labour.models import Signup
 from badges.models import Template
 
@@ -22,7 +26,7 @@ def badge_factory(event, person):
         # Normal worker badge
         return dict(
             template=Template.objects.get(event=event, name=u'Työvoima'),
-            job_title=signup.job_title or u'Työvoima',
+            job_title=signup.some_job_title,
         )
 
     # Programme badges

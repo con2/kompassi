@@ -7,9 +7,9 @@ block admin_content
       ul.list-group
         for batch in batches
           li.list-group-item
-            a(href='{% url "badges_admin_export_view" event.slug batch.pk "csv" %}', target='_blank') Tulostuserä {{ batch.pk }}&emsp;
-              if badge.template
-                | ({{ badge.template.name }})&emsp;
+            | Tulostuserä {{ batch.pk }}&emsp;
+            if badge.template
+              | ({{ badge.template.name }})&emsp;
             .pull-right
               if batch.is_printed
                 span.badge.badge-success Tulostettu
@@ -18,6 +18,7 @@ block admin_content
                   {% csrf_token %}
                   input(type='hidden', name='batch_id', value='{{ batch.pk }}')
                   .btn-group.btn-group-xs
+                    a.btn.btn-primary(href='{% url "badges_admin_export_view" event.slug batch.pk "csv" %}', target='_blank') Lataa CSV
                     button.btn.btn-danger(type='submit', name='cancel-batch', value='cancel-batch') Peruuta
                     button.btn.btn-success(type='submit', name='deliver-batch', value='deliver-batch') Merkitse tulostetuksi
             .pull-right

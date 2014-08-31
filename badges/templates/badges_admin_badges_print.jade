@@ -1,0 +1,14 @@
+doctype html
+html
+  head
+    title {{ title|safe }} | {{ KOMPASSI_INSTALLATION_NAME }}
+  body(style='column-count: 3; column-gap: 2em')
+    header(style='column-span: all; break-before: column; break-inside: avoid-column; break-after: avoid-column')
+      h1 {{ title|safe }}
+      p Tulostettu {{ now }}
+    for badge in badges
+      div {{ badge.person.surname }}, {{ badge.person.first_name }}
+        if badge.person.nick
+          , {{ badge.person.nick }}
+    footer(style='column-span: all; break-before: column; break-inside: avoid-column; break-after: avoid-column')
+      p {{ badges.count }} hlö

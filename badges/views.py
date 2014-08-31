@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import print_function
+
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
@@ -17,6 +19,10 @@ BADGE_ORDER = ('template', 'person__surname', 'person__first_name')
 CSV_EXPORT_FORMATS = dict(
     csv='excel',
     tsv='excel-tab',
+)
+BADGE_LIST_TEMPLATES = dict(
+    screen='badges_admin_badges_view.jade',
+    print='badges_admin_badges_print.jade',
 )
 
 @badges_admin_required
@@ -36,18 +42,15 @@ def badges_admin_dashboard_view(request, vars, event):
 @badges_admin_required
 def badges_admin_badges_view(request, vars, event, badge_filter=None):
     badge_criteria = dict(template__event=event)
+    active_filter = None
 
     if badge_filter is not None:
-        badge_criteria.update(template__slug=badge_filter)
-
-    badge_filters = [
-        (badge_filter == template.slug, template)
-        for template in Template.objects.filter(event=event)
-    ]
+        active_filter = Template.objects.get(event=event, slug=badge_filter)
+        badge_criteria.update(template=active_filter)
 
     badges = Badge.objects.filter(**badge_criteria).order_by(*BADGE_ORDER)
 
-    format = request.GET.get('format', None)
+    format = request.GET.get('format', 'screen')
 
     if format in CSV_EXPORT_FORMATS:
         filename = "{event.slug}-badges-{badge_filter}{timestamp}.{format}".format(
@@ -58,13 +61,32 @@ def badges_admin_badges_view(request, vars, event, badge_filter=None):
         )
 
         return csv_response(event, Badge, badges, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
-    else:
-        vars.update(
-            badges=badges,
-            filters=badge_filters,
+    elif format in BADGE_LIST_TEMPLATES:
+        page_template = BADGE_LIST_TEMPLATES[format]
+
+        title = u"{event.name} &ndash; {qualifier}".format(
+            event=event,
+            qualifier=active_filter.name if active_filter else u'Nimilista',
         )
 
-        return render(request, 'badges_admin_badges_view.jade', vars)
+        badge_filters = [
+            (badge_filter == badge_template.slug, badge_template)
+            for badge_template in Template.objects.filter(event=event)
+        ]
+
+        vars.update(
+            active_filter=active_filter,
+            badges=badges,
+            filters=badge_filters,
+            now=timezone.now(),
+            title=title,
+        )
+
+        print(vars)
+
+        return render(request, page_template, vars)
+    else:
+        raise NotImplemented(format)
 
 
 badges_admin_batches_view = badges_admin_required(batches_view(
@@ -101,7 +123,7 @@ def badges_admin_menu_items(request, event):
 
     badges_url = url('badges_admin_badges_view', event.slug)
     badges_active = request.path.startswith(badges_url)
-    badges_text = u'Badget'
+    badges_text = u'Nimilistat'
 
     return [
         (dashboard_active, dashboard_url, dashboard_text),

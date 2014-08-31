@@ -164,6 +164,11 @@ class Badge(models.Model):
         else:
             return self.printed_separately_at
 
+    @property
+    def formatted_printed_at(self):
+        # XXX not really "formatted"
+        return self.printed_at if self.printed_at is not None else u''
+
     @classmethod
     def get_or_create_dummy(cls):
         person, unused = Person.get_or_create_dummy()
@@ -205,15 +210,18 @@ class Badge(models.Model):
         ]
 
     def get_csv_related(self):
+        from core.models import Person
+
         return {
             Template: self.template,
             Person: self.person,
         }
 
-    @property
-    def name_fields(self):
-        return [
+    def get_name_fields(self):
+        result = [
             (self.person.first_name, self.person.is_first_name_visible),
             (self.person.surname, self.person.is_surname_visible),
             (self.person.nick, self.person.is_nick_visible),
         ]
+        print 'get_name_fields', result
+        return result

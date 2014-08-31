@@ -1,7 +1,7 @@
 extends core_admin_base.jade
 block admin_content
   .panel.panel-default
-    .panel-heading: strong Badget
+    .panel-heading: strong Nimilista
     .panel-body
       p.text-muted Suodata tyypin mukaan:
       for filter_active, template in filters
@@ -13,22 +13,40 @@ block admin_content
           | &thinsp;
     table.table.table-striped
       thead
-        th Tyyppi
         th Sukunimi
         th Etunimi
         th Nick
+        th Badgetyyppi
+        th Tehtävänimike
         th Tulostettu
       tbody
         for badge in badges
-          td {{ badge.template.name }}
+          tr
 
-          for name_field in badge.name_fields
-            if name_field.is_visible
-              td {{ name_field.value }}
+            for value, is_visible in badge.get_name_fields
+              if is_visible
+                td {{ value }}
+              else
+                td.text-muted {{ value }}
+
+            td {{ badge.template.name }}
+            td {{ badge.job_title }}
+
+            if badge.is_printed
+              if badge.batch
+                td {{ badge.formatted_printed_at }} (Erä {{ badge.batch.pk }})
+              else
+                td {{ badge.formatted_printed_at }}
             else
-              td.text-muted {{ name_field.value }}
-
-          td {{ badge.time_printed }}
+              if badge.batch
+                td.text-muted Odottaa (Erä {{ badge.batch.pk }})
+              else
+                td.text-muted Odottaa
     .panel-footer.clearfix
-      a.pull-right(href='?format=tsv') Vie Exceliin...
+      .btn-group.pull-right
+        a.btn.btn-default(href='?format=print', target='_blank') Tulostettava versio
+        button.btn.btn-default(type='button', data-toggle='dropdown') Vie <span class='caret'></span>
+        ul.dropdown-menu(role='menu')
+          li: a.btn.btn-link(href='?format=csv') CSV
+          li: a.btn.btn-link(href='?format=tsv') TSV
       p.text-muted: {{ badges.count }} badgea.
