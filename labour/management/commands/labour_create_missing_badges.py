@@ -9,7 +9,7 @@ class Command(BaseCommand):
 
     def handle(*args, **opts):
         from core.models import Event
-        for event_slug in args:
+        for event_slug in args[1:]:
             event = Event.objects.get(slug=event_slug)
 
             for signup in event.signup_set.all():
