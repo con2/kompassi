@@ -2,15 +2,16 @@
 
 from __future__ import print_function
 
+from django.contrib import messages
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from core.batches_view import batches_view
-from core.utils import url
+from core.utils import url, initialize_form
 from core.csv_export import csv_response
 
-from .forms import CreateBadgeBatchForm
+from .forms import CreateBatchForm, BadgeForm
 from .models import Badge, Batch, Template
 from .helpers import badges_admin_required
 
@@ -82,8 +83,6 @@ def badges_admin_badges_view(request, vars, event, template_slug=None):
             title=title,
         )
 
-        print(vars)
-
         return render(request, page_template, vars)
     else:
         raise NotImplemented(format)
@@ -91,7 +90,7 @@ def badges_admin_badges_view(request, vars, event, template_slug=None):
 
 badges_admin_batches_view = badges_admin_required(batches_view(
     Batch=Batch,
-    CreateBatchForm=CreateBadgeBatchForm,
+    CreateBatchForm=CreateBatchForm,
     template='badges_admin_batches_view.jade',
 ))
 
@@ -115,6 +114,30 @@ def badges_admin_export_view(request, vars, event, batch_id, format='csv'):
 
 @badges_admin_required
 def badges_admin_create_view(request, vars, event, template_slug=None):
+    # XXX move this to core
+    from programme.forms import ProgrammePersonForm
+
+    badge_form = initialize_form(BadgeForm, request, prefix='badge_type', event=event)
+    person_form = initialize_form(ProgrammePersonForm, request, prefix='person')
+
+    if request.method == 'POST':
+        if badge_form.is_valid() and person_form.is_valid():
+            person = person_form.save()
+            badge = badge_form.save(commit=False)
+
+            badge.person = person
+            badge.save()
+
+            messages.success(request, u'Henkilö on lisätty onnistuneesti.')
+            return redirect('badges_admin_dashboard_view', event.slug)
+        else:
+            messages.error(request, u'Ole hyvä ja tarkista lomake.')
+
+    vars.update(
+        badge_form=badge_form,
+        person_form=person_form,
+    )
+
     return render(request, 'badges_admin_create_view.jade', vars)
 
 

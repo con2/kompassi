@@ -7,12 +7,12 @@ block admin_content
       | Tämä lomake on tarkoitettu henkilön lisäämiseen nimi- ja badgelistoihin käsin automaattisen menettelyn ohi.
       | Traconissa työvoiman ja ohjelman badget on tarkoitus hoitaa ensisijaisesti automaattisella menettelyllä
       | ja vain erikoistapauksissa tällä lomakkeella. Muut badget, kuten media- ja vierasbadget, syötetään tällä lomakkeella.
-  form(method='POST')
+  form(method='POST').form.form-horizontal
     .panel.panel-default
       .panel-heading: strong Lisää henkilö
       .panel-body
-        //- - crispy badge_type_form
-        //- - crispy person_form
+        - crispy badge_form
+        - crispy person_form
       .panel-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-danger(href='{% url "badges_admin_badges_view" event.slug %}') Hylkää muutokset ja palaa nimilistaan

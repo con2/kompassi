@@ -146,10 +146,10 @@ class Batch(models.Model, CsvExportMixin):
 
 class Badge(models.Model):
     person = models.ForeignKey('core.Person', null=True, blank=True)
-    template = models.ForeignKey(Template)
+    template = models.ForeignKey(Template, verbose_name=u'Badgetyyppi')
     printed_separately_at = models.DateTimeField(null=True, blank=True)
     revoked_at = models.DateTimeField(null=True, blank=True)
-    job_title = models.CharField(max_length=63, blank=True, default=u'')
+    job_title = models.CharField(max_length=63, blank=True, default=u'', verbose_name=u'Tehtävänimike')
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
@@ -220,10 +220,8 @@ class Badge(models.Model):
         }
 
     def get_name_fields(self):
-        result = [
+        return [
             (self.person.first_name, self.person.is_first_name_visible),
             (self.person.surname, self.person.is_surname_visible),
             (self.person.nick, self.person.is_nick_visible),
         ]
-        print 'get_name_fields', result
-        return result

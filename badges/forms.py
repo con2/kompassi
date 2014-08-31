@@ -2,9 +2,11 @@
 
 from django import forms
 
-from .models import Template
+from core.utils import horizontal_form_helper
 
-class CreateBadgeBatchForm(forms.Form):
+from .models import Badge, Template
+
+class CreateBatchForm(forms.Form):
     max_badges = forms.IntegerField(label=u"Kuinka monta badgea (enintään)?", initial=100)
     template = forms.ModelChoiceField(
         queryset=Template.objects.all(),
@@ -16,7 +18,23 @@ class CreateBadgeBatchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
-        super(CreateBadgeBatchForm, self).__init__(*args, **kwargs)
+        super(CreateBatchForm, self).__init__(*args, **kwargs)
 
         self.fields['template'].queryset = Template.objects.filter(event=event)
 
+
+class BadgeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(BadgeForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.fields['template'].queryset = Template.objects.filter(event=event)
+
+    class Meta:
+        model = Badge
+        fields = [
+            'template',
+            'job_title',
+        ]
