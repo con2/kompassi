@@ -7,6 +7,7 @@ from core.batches_view import batches_view
 from core.utils import url
 from core.csv_export import csv_response
 
+from .forms import CreateBadgeBatchForm
 from .models import Badge, Batch, Template
 from .helpers import badges_admin_required
 
@@ -47,13 +48,16 @@ def badges_admin_index_view(request, vars, event, badge_filter=None):
 
 badges_admin_batches_view = badges_admin_required(batches_view(
     Batch=Batch,
+    CreateBatchForm=CreateBadgeBatchForm,
     template='badges_admin_batches_view.jade',
 ))
 
 
 @badges_admin_required
-def badges_admin_batch_view(request, vars, event, batch_id):
-    raise NotImplemented()
+def badges_admin_export_view(request, vars, event, batch_id):
+    batch = get_object_or_404(Batch, pk=int(batch_id), event=event)
+
+
 
 
 @badges_admin_required

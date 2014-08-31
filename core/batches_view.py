@@ -11,9 +11,11 @@ from core.utils import initialize_form
 
 
 class CreateBatchForm(forms.Form):
-    max_orders = forms.IntegerField(label=u"Kuinka monta tilausta (enintään)?")
+    max_items = forms.IntegerField(label=u"Kuinka monta tilausta (enintään)?")
 
     def __init__(self, *args, **kwargs):
+        kwargs.pop('event')
+
         super(CreateBatchForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -23,7 +25,7 @@ class HiddenBatchCrouchingForm(forms.Form):
     batch_id = forms.IntegerField(required=True)
 
 
-def batches_view(Batch, template):
+def batches_view(Batch, template, CreateBatchForm=CreateBatchForm):
     """
     Creates a view the like of which you see in two places - tickets admin and badges admin.
     It is used to manage batches of things that in turn are handled together.
@@ -36,14 +38,15 @@ def batches_view(Batch, template):
     """
 
     def _badges_view(request, vars, event):
-        new_batch_form = initialize_form(CreateBatchForm, request, initial=dict(
-            max_orders=100
-        ))
+        new_batch_form = initialize_form(CreateBatchForm, request,
+            event=event,
+            initial=dict(max_items=100),
+        )
 
         if request.method == 'POST':
             if 'new-batch' in request.POST:
                 if new_batch_form.is_valid():
-                    batch = Batch.create(event=event, max_orders=new_batch_form.cleaned_data["max_orders"])
+                    batch = Batch.create(event=event, **new_batch_form.cleaned_data)
                     messages.success(request, u"Erä {batch.pk} on luotu onnistuneesti".format(batch=batch))
                     return redirect(request.path)
                 else:
@@ -64,8 +67,8 @@ def batches_view(Batch, template):
                         return redirect(request.path)
 
                     elif 'deliver-batch' in request.POST and batch.can_deliver:
-                        batch.confirm_delivery()
-                        messages.success(request, u"Erä on merkitty toimitetuksi.")
+                        batch.confirm()
+                        messages.success(request, u"Erä on merkitty valmiiksi.")
                         return redirect(request.path)
 
                 # error

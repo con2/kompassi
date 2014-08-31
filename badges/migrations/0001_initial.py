@@ -32,7 +32,7 @@ class Migration(SchemaMigration):
         db.create_table(u'badges_batch', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('template', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['badges.Template'])),
-            ('printed_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('time_printed', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
         ))
@@ -43,11 +43,12 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('person', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['core.Person'], null=True, blank=True)),
             ('template', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['badges.Template'])),
-            ('time_printed', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('time_separately_printed', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('time_revoked', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('job_title', self.gf('django.db.models.fields.CharField')(default=u'', max_length=63, blank=True)),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('batch', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['badges.Batch'], null=True, blank=True)),
         ))
         db.send_create_signal(u'badges', ['Badge'])
 
@@ -101,13 +102,14 @@ class Migration(SchemaMigration):
         },
         u'badges.badge': {
             'Meta': {'object_name': 'Badge'},
+            'batch': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['badges.Batch']", 'null': 'True', 'blank': 'True'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'job_title': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '63', 'blank': 'True'}),
             'person': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['core.Person']", 'null': 'True', 'blank': 'True'}),
             'template': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['badges.Template']"}),
-            'time_printed': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'time_revoked': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'time_separately_printed': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
         u'badges.badgeseventmeta': {
@@ -120,8 +122,8 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Batch'},
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'printed_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'template': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['badges.Template']"}),
+            'time_printed': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
         u'badges.template': {

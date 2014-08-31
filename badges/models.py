@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django.db import models
+from django.utils.timezone import now
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
@@ -64,25 +65,35 @@ class Template(models.Model):
 
 
 class Batch(models.Model, CsvExportMixin):
-    template = models.ForeignKey(Template)
-    printed_date = models.DateField(null=True, blank=True)
-
+    template = models.ForeignKey(Template, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')  
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
+    printed_at = models.DateTimeField(null=True, blank=True)
 
     @classmethod
-    def create(cls, template, max_badges=100):
-        badges = template.badge_set.filter(
-            printed_date__isnull=True,
+    def create(cls, event, template=None, max_badges=100):
+        if template is not None:
+            assert template.event == event
+            badges = Badge.objects.filter(template=template)
+        else:
+            badges = Badge.objects.filter(template__event=event)
+
+        badges = badges.filter(
             batch__isnull=True,
+            printed_separately_at__isnull=True
         ).order_by('created_at')
 
         if max_badges is not None:
-            badges = badges.limit(max_badges)
+            badges = badges[:max_badges]
 
         batch = cls(template=template)
-        batch.badges = badges
         batch.save()
+
+        badges.update(batch=batch)
+
+    def confirm(self):
+        self.printed_at = now()
+        self.save()
 
     def __unicode__(self):
         return u"Tulostuserä {}".format(self.pk)
@@ -91,15 +102,24 @@ class Batch(models.Model, CsvExportMixin):
 class Badge(models.Model):
     person = models.ForeignKey('core.Person', null=True, blank=True)
     template = models.ForeignKey(Template)
-    time_printed = models.DateTimeField(null=True, blank=True)
-    time_revoked = models.DateTimeField(null=True, blank=True)
+    printed_separately_at = models.DateTimeField(null=True, blank=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
     job_title = models.CharField(max_length=63, blank=True, default=u'')
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')    
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
 
-    is_printed = time_bool_property('time_printed')
-    is_revoked = time_bool_property('time_revoked')
+    is_revoked = time_bool_property('revoked_at')
+    is_printed = time_bool_property('printed_at')
+
+    batch = models.ForeignKey(Batch, null=True, blank=True, db_index=True)
+
+    @property
+    def printed_at(self):
+        if self.batch:
+            return self.batch.printed_at
+        else:
+            return self.printed_separately_at
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -120,7 +140,7 @@ class Badge(models.Model):
             return False, cls.objects.get(template__event=event, person=person)
         except cls.DoesNotExist:
             factory = event.badges_event_meta.badge_factory
-            
+
             badge_opts = factory(event=event, person=person)
             badge_opts = dict(badge_opts, person=person)
 
@@ -132,7 +152,7 @@ class Badge(models.Model):
     @classmethod
     def get_csv_fields(cls, *args, **kwargs):
         from core.models import Person
-        
+
         return [
             (Template, 'slug'),
             (Person, 'surname'),
@@ -143,7 +163,7 @@ class Badge(models.Model):
     def get_csv_related(self):
         return {
             Template: self.template,
-            Person: self.person,        
+            Person: self.person,
         }
 
     @property

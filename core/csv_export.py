@@ -53,7 +53,7 @@ def write_header_row(event, writer, fields, m2m_mode='separate_columns'):
         else:
             header_row.append(field_name.encode(ENCODING, 'ignore'))
 
-    writer.writerow(header_row)    
+    writer.writerow(header_row)
 
 
 def convert_value(value):
@@ -108,15 +108,15 @@ def write_row(event, writer, fields, model_instance, m2m_mode):
     writer.writerow(result_row)
 
 
-def export_csv(event, model, model_instances, output_file=None, m2m_mode='separate_columns'):
+def export_csv(event, model, model_instances, output_file=None, m2m_mode='separate_columns', dialect='excel-tab'):
     fields = model.get_csv_fields(event)
 
     if output_file is None:
         from cStringIO import StringIO
         string_output = StringIO()
-        writer = csv.writer(string_output, dialect='excel-tab')
+        writer = csv.writer(string_output, dialect=dialect)
     else:
-        writer = csv.writer(output_file, dialect='excel-tab')
+        writer = csv.writer(output_file, dialect=dialect)
 
     write_header_row(event, writer, fields, m2m_mode)
 

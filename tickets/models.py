@@ -207,7 +207,7 @@ class Batch(models.Model):
     def can_deliver(self):
         return not self.is_delivered
 
-    def confirm_delivery(self, delivery_time=None):
+    def confirm(self, delivery_time=None):
         if delivery_time is None:
             delivery_time = timezone.now()
 
@@ -873,11 +873,11 @@ class Order(models.Model):
     def cancel_unpaid_orders(cls, event, days=UNPAID_CANCEL_DAYS, send_email=False):
         orders = cls.get_unpaid_orders_to_cancel(event=event, days=days)
         count = orders.count()
-        
+
         for order in orders:
             order.cancel(send_email=send_email)
 
-        return count        
+        return count
 
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, related_name="order_product_set")
