@@ -5,12 +5,23 @@ html
   body
     header
       h1 {{ title|safe }}
-      p Tulostettu {{ now }}
+      p Tulostettu {{ now }}. <strong>Boldatut</strong> tiedot näkyvät badgessa.
     article(style='font-size: 10pt')
       for badge in badges
-        div(style='display: inline-block; width: 20em') {{ badge.person.surname }}, {{ badge.person.first_name }}
-          if badge.person.nick
-            | , {{ badge.person.nick }}
+        div(style='display: inline-block; width: 24em')
+          for value, is_visible in badge.get_name_fields
+            if not forloop.last
+              if is_visible
+                strong
+                  | {{ value }},
+              else
+                | {{ value }},
+            else
+              if is_visible
+                strong
+                  | {{ value }}
+              else
+                | {{ value }}
           if not active_filter
             |  ({{ badge.template.name }})
     footer

@@ -219,9 +219,9 @@ class Badge(models.Model):
 
     def get_name_fields(self):
         return [
-            (self.person.first_name, self.person.is_first_name_visible),
-            (self.person.surname, self.person.is_surname_visible),
-            (self.person.nick, self.person.is_nick_visible),
+            (self.person.surname.strip(), self.person.is_surname_visible),
+            (self.person.first_name.strip(), self.person.is_first_name_visible),
+            (self.person.nick.strip(), self.person.is_nick_visible),
         ]
 
     @property
