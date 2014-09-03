@@ -201,13 +201,11 @@ class Badge(models.Model):
 
     @classmethod
     def get_csv_fields(cls, *args, **kwargs):
-        from core.models import Person
-
         return [
             (Template, 'slug'),
-            (Person, 'surname'),
-            (Person, 'first_name'),
-            (Person, 'nick'),
+            (cls, 'surname'),
+            (cls, 'first_name'),
+            (cls, 'nick'),
             (cls, 'job_title'),
         ]
 
@@ -225,3 +223,15 @@ class Badge(models.Model):
             (self.person.surname, self.person.is_surname_visible),
             (self.person.nick, self.person.is_nick_visible),
         ]
+
+    @property
+    def first_name(self):
+        return self.person.first_name.strip() if self.person.is_first_name_visible else u''
+
+    @property
+    def surname(self):
+        return self.person.surname.strip() if self.person.is_surname_visible else u''
+
+    @property
+    def nick(self):
+        return self.person.nick.strip() if self.person.is_nick_visible else u''
