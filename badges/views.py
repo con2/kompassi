@@ -77,6 +77,7 @@ def badges_admin_badges_view(request, vars, event, template_slug=None):
             return redirect(request.path)
 
     else:
+        format = request.GET.get('format', 'screen')
         badge_criteria = dict(template__event=event)
         active_filter = None
 
@@ -84,9 +85,11 @@ def badges_admin_badges_view(request, vars, event, template_slug=None):
             active_filter = get_object_or_404(Template, event=event, slug=template_slug)
             badge_criteria.update(template=active_filter)
 
+        if format != 'screen':
+            badge_criteria.update(revoked_at__isnull=True)
+
         badges = Badge.objects.filter(**badge_criteria).order_by(*BADGE_ORDER)
 
-        format = request.GET.get('format', 'screen')
 
         if format in CSV_EXPORT_FORMATS:
             filename = "{event.slug}-badges-{badge_filter}{timestamp}.{format}".format(
