@@ -117,7 +117,13 @@ def badges_admin_create_view(request, vars, event, template_slug=None):
     # XXX move this to core
     from programme.forms import ProgrammePersonForm
 
-    badge_form = initialize_form(BadgeForm, request, prefix='badge_type', event=event)
+    initial = dict()
+
+    if template_slug is not None:
+        template = get_object_or_404(Template, event=event, slug=template_slug)
+        initial.update(template=template)
+
+    badge_form = initialize_form(BadgeForm, request, prefix='badge_type', event=event, initial=initial)
     person_form = initialize_form(ProgrammePersonForm, request, prefix='person')
 
     if request.method == 'POST':

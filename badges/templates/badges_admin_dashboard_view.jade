@@ -38,5 +38,5 @@ block admin_content
                 td {{ template.count_badges_waiting_in_batch }}
                 td {{ template.count_printed_badges }}
                 td {{ template.count_badges }}
-                td: a.btn.btn-xs.btn-success(href='', title='Lisää uusi käsin')
+                td: a.btn.btn-xs.btn-success(href='{% url "badges_admin_create_with_template_view" event.slug template.slug %}', title='Lisää uusi käsin')
                   span.glyphicon.glyphicon-plus

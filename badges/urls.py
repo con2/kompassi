@@ -40,7 +40,7 @@ urlpatterns = patterns(
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/badges/(?P<template_slug>[a-z0-9-]+)/new/?$',
         badges_admin_create_view,
-        # name='badges_admin_filtered_create_view', # TODO
+        name='badges_admin_create_with_template_view',
     ),
 
     url(
