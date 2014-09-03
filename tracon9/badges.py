@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 from labour.models import Signup
 from badges.models import Template
+from programme.models import Programme
 
 
 def badge_factory(event, person):
@@ -32,7 +33,7 @@ def badge_factory(event, person):
     # Programme badges
     if Programme.objects.filter(category__event=event, organizers=person).exists():
         return dict(
-            template=Template.objects.get(event=event, name=u'Ohjelma'),
+            template=Template.objects.get(event=event, name=u'Ohjelmanjärjestäjä'),
             job_title=u'Ohjelmanjärjestäjä'
         )
 
