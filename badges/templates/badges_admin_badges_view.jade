@@ -13,15 +13,18 @@ block admin_content
           | &thinsp;
     table.table.table-striped
       thead
+        if not active_filter
+          th Badgetyyppi
         th Sukunimi
         th Etunimi
         th Nick
-        th Badgetyyppi
         th Tehtävänimike
         th Tulostettu
       tbody
         for badge in badges
           tr
+            if not active_filter
+              td {{ badge.template.name }}
 
             for value, is_visible in badge.get_name_fields
               if is_visible
@@ -29,7 +32,6 @@ block admin_content
               else
                 td.text-muted {{ value }}
 
-            td {{ badge.template.name }}
             td {{ badge.job_title }}
 
             if badge.is_printed
