@@ -8,20 +8,7 @@ html
       p Tulostettu {{ now }}. <strong>Boldatut</strong> tiedot näkyvät badgessa.
     article(style='font-size: 10pt')
       for badge in badges
-        div(style='display: inline-block; width: 24em')
-          for value, is_visible in badge.get_name_fields
-            if not forloop.last
-              if is_visible
-                strong
-                  | {{ value }},
-              else
-                | {{ value }},
-            else
-              if is_visible
-                strong
-                  | {{ value }}
-              else
-                | {{ value }}
+        div(style='display: inline-block; width: 24em') {{ badge.to_html_print|safe }}
           if not active_filter
             |  ({{ badge.template.name }})
     footer

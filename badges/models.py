@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.db.models import Q
+from django.utils.html import escape
 from django.utils.timezone import now
 
 from core.csv_export import CsvExportMixin
@@ -235,3 +236,21 @@ class Badge(models.Model):
     @property
     def nick(self):
         return self.person.nick.strip() if self.person.is_nick_visible else u''
+
+    def to_html_print(self):
+        def format_name_field(value, is_visible):
+            if is_visible:
+                return u"<strong>{value}</strong>".format(value=escape(value))
+            else:
+                return escape(value)
+
+        vars = dict(
+            surname=format_name_field(self.person.surname.strip(), self.person.is_surname_visible),
+            first_name=format_name_field(self.person.first_name.strip(), self.person.is_first_name_visible),
+            nick=format_name_field(self.person.nick.strip(), self.person.is_nick_visible),
+        )
+
+        if self.person.nick:
+            return u"{surname}, {first_name}, {nick}".format(**vars)
+        else:
+            return u"{surname}, {first_name}".format(**vars)
