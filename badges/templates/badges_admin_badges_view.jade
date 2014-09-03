@@ -18,8 +18,10 @@ block admin_content
         th Sukunimi
         th Etunimi
         th Nick
-        th Tehtävänimike
-        th Tulostettu
+        if active_filter
+          th Tehtävänimike
+        th Tila
+        th
       tbody
         for badge in badges
           tr
@@ -32,18 +34,38 @@ block admin_content
               else
                 td.text-muted {{ value }}
 
-            td {{ badge.job_title }}
+            if active_filter
+              td {{ badge.job_title }}
 
-            if badge.is_printed
-              if badge.batch
-                td {{ badge.formatted_printed_at }} (Erä {{ badge.batch.pk }})
+            td
+              if badge.is_revoked
+                span.label.label-danger Mitätöity
               else
-                td {{ badge.formatted_printed_at }}
-            else
-              if badge.batch
-                td.text-muted Odottaa (Erä {{ badge.batch.pk }})
-              else
-                td.text-muted Odottaa
+                if badge.is_printed
+                  if badge.batch
+                    span.label.label-success(title='Tulostettu {{ badge.batch.printed_at }}') Erä {{ badge.batch.pk }}
+                  else
+                    span.label.label-success(title='Tulostettu {{ badge.printed_separately_at }}') Erikseen
+                else
+                  if badge.batch
+                    span.label.label-primary Erä {{ badge.batch.pk }}
+                  else
+                    span.label.label-default Odottaa
+
+            td
+              form(method='POST', role='form')
+                {% csrf_token %}
+                input(type='hidden', name='badge_id', value='{{ badge.pk }}')
+                .btn-group.btn-group-xs
+                  if not badge.is_revoked
+                    button.btn.btn-danger(type='submit', name='revoke-badge', value='revoke-badge', title='Mitätöi badge') &times;
+                    if not badge.is_printed_separately
+                      button.btn.btn-success(type='submit', name='mark-printed', value='mark-printed', title='Merkitse erikseen tulostetuksi') P
+                    else
+                      button.btn.btn-danger(type='submit', name='clear-printed', value='clear-printed', title='Nollaa erikseen tulostettu -merkintä') !P
+                  else
+                    button.btn.btn-primary(type='submit', name='clear-revoked', value='clear-revoked', title='Peru mitätöinti') !
+
     .panel-footer.clearfix
       .btn-group.pull-right
         a.btn.btn-success(href='{{ request.path }}/new') Lisää henkilö

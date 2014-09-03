@@ -38,3 +38,7 @@ class BadgeForm(forms.ModelForm):
             'template',
             'job_title',
         ]
+
+
+class HiddenBadgeCrouchingForm(forms.Form):
+    badge_id = forms.IntegerField(required=True)

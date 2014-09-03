@@ -10,6 +10,12 @@ from core.models import EventMetaBase
 from core.utils import slugify, NONUNIQUE_SLUG_FIELD_PARAMS, time_bool_property
 
 
+BADGE_ELIGIBLE_FOR_BATCHING = dict(
+    batch__isnull=True,
+    printed_separately_at__isnull=True,
+    revoked_at__isnull=True,
+)
+
 
 class CountBadgesMixin(object):
     def count_printed_badges(self):
@@ -21,7 +27,7 @@ class CountBadgesMixin(object):
         return self.badge_set.filter(batch__isnull=False, batch__printed_at__isnull=True).count()
 
     def count_badges_awaiting_batch(self):
-        return self.badge_set.filter(batch__isnull=True, printed_separately_at__isnull=True).count()
+        return self.badge_set.filter(**BADGE_ELIGIBLE_FOR_BATCHING).count()
 
     def count_badges(self):
         return self.badge_set.count()
@@ -108,10 +114,7 @@ class Batch(models.Model, CsvExportMixin):
         else:
             badges = Badge.objects.filter(template__event=event)
 
-        badges = badges.filter(
-            batch__isnull=True,
-            printed_separately_at__isnull=True
-        ).order_by('created_at')
+        badges = badges.filter(**BADGE_ELIGIBLE_FOR_BATCHING).order_by('created_at')
 
         if max_badges is not None:
             badges = badges[:max_badges]
@@ -155,10 +158,11 @@ class Badge(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
 
+    batch = models.ForeignKey(Batch, null=True, blank=True, db_index=True)
+
     is_revoked = time_bool_property('revoked_at')
     is_printed = time_bool_property('printed_at')
-
-    batch = models.ForeignKey(Batch, null=True, blank=True, db_index=True)
+    is_printed_separately = time_bool_property('printed_separately_at')
 
     @property
     def printed_at(self):
