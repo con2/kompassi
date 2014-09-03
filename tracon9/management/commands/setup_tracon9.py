@@ -331,9 +331,9 @@ class Command(BaseCommand):
                 u'Studio',
                 u'Sonaatti 1',
                 u'Sonaatti 2',
+                u'Sopraano',
             ]),
             (u'Toissijaiset ohjelmatilat', [
-                u'Sopraano',
                 u'Opus 1',
                 u'Puistolava',
                 u'Puisto - Iso miittiteltta',
