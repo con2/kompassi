@@ -6,6 +6,17 @@ from django.conf import settings
 from .models import Event, Person, Venue
 
 
+def merge_selected_people(modeladmin, request, queryset):
+    if queryset.count() < 2:
+        return
+
+    from core.merge_people import find_best_candidate, merge_people
+
+    person_to_spare, people_to_merge = find_best_candidate(queryset)
+    merge_people(people_to_merge, into=person_to_spare)
+
+merge_selected_people.short_description = u'Yhdistä valitut henkilöt'
+
 class PersonAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Basic information', {'fields': [('first_name', 'surname'), 'nick']}),
@@ -17,6 +28,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ('surname', 'first_name', 'nick', 'email', 'phone', 'username')
     search_fields = ('surname', 'first_name', 'nick', 'email', 'user__username')
     ordering = ('surname', 'first_name', 'nick')
+    actions = [merge_selected_people]
 
 
 extra_inlines = []

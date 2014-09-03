@@ -26,11 +26,16 @@ def possible_merges(people):
 
     for unused, people_to_merge in key_map.iteritems():
         if len(people_to_merge) > 1:
-            people_to_merge.sort(cmp=compare_persons)
-            person_to_spare = people_to_merge.pop(0)
-            result.append((person_to_spare, people_to_merge))
+            person_to_spare, people_to_merge = find_best_candidate(people_to_merge)
 
     return result
+
+
+def find_best_candidate(people_to_merge):
+    people_to_merge = list(people_to_merge)
+    people_to_merge.sort(cmp=compare_persons)
+    person_to_spare = people_to_merge.pop(0)
+    return person_to_spare, people_to_merge
 
 
 def compare_persons(left, right):
