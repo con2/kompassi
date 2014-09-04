@@ -48,7 +48,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
     person = get_object_or_404(Person, pk=int(person_id))
     signup = get_object_or_404(Signup, person=person, event=event)
 
-    old_state = signup.state
+    old_state_flags = signup._state_flags
 
     signup_form, signup_extra_form, signup_admin_form = initialize_signup_forms(
         request, event, signup,
