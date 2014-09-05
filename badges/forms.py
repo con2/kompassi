@@ -30,6 +30,7 @@ class BadgeForm(forms.ModelForm):
         super(BadgeForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
+	self.helper.form_tag = False
         self.fields['template'].queryset = Template.objects.filter(event=event)
 
     class Meta:
