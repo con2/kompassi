@@ -28,10 +28,10 @@ class Command(BaseCommand):
             order__confirm_time__isnull=False,
             order__payment_date__isnull=False,
         ).order_by('order__customer__last_name', 'order__customer__first_name'):
-            order = op.order
+            customer = op.order.customer
             writer.writerow([
                 u(customer.last_name),
-                u(customer.fist_name),
+                u(customer.first_name),
                 u(customer.email),
                 op.count,
             ])
