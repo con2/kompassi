@@ -14,6 +14,7 @@ from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpRespon
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 
 try:
     from reportlab.pdfgen import canvas
@@ -304,6 +305,11 @@ def tickets_admin_tools_view(request, vars, event):
     return render(request, 'tickets_admin_tools_view.jade', vars)
 
 
+if 'lippukala' in settings.INSTALLED_APPS:
+    from lippukala.views import POSView
+    tickets_admin_pos_view = csrf_exempt(tickets_admin_required(POSView.as_view()))
+
+
 def tickets_admin_menu_items(request, event):
     stats_url = url('tickets_admin_stats_view', event.slug)
     stats_active = request.path == stats_url
@@ -327,5 +333,14 @@ def tickets_admin_menu_items(request, event):
         (batches_active, batches_url, batches_text),
         (tools_active, tools_url, tools_text),
     ]
+
+    if 'lippukala' in settings.INSTALLED_APPS:
+        pos_url = url('tickets_admin_pos_view', event.slug)
+        pos_active = False
+        pos_text = u"Lipuntarkastus"
+
+        items.extend([
+            (pos_active, pos_url, pos_text),
+        ])
 
     return items

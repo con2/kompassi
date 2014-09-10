@@ -128,7 +128,7 @@ INSTALLED_APPS = (
     #'external_auth',
 
     # Uncomment if you do PDF tickets
-    #'lippukala',
+    'lippukala',
 
     # Uncomment if you have Celery
     # 'background_tasks',

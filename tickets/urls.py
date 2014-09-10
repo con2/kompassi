@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.shortcuts import redirect
 
@@ -19,8 +20,7 @@ from .views import (
     tickets_welcome_view,
 )
 
-
-urlpatterns = patterns('',
+actual_patterns = [
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/?$', tickets_welcome_view, name="tickets_welcome_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/products/?$', tickets_tickets_view, name="tickets_tickets_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/address/?$', tickets_address_view, name="tickets_address_view"),
@@ -37,4 +37,13 @@ urlpatterns = patterns('',
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/batches/(?P<batch_id>\d+)$', tickets_admin_batch_view, name="tickets_admin_batch_view"),
 
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/tools$', tickets_admin_tools_view, name="tickets_admin_tools_view"),
-)
+]
+
+if 'lippukala' in settings.INSTALLED_APPS:
+    from .views.admin_views import tickets_admin_pos_view
+
+    actual_patterns.extend([
+        url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/pos$', tickets_admin_pos_view, name="tickets_admin_pos_view"),
+    ])
+
+urlpatterns = patterns('', *actual_patterns)
