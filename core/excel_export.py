@@ -19,8 +19,14 @@ class XlsxWriter(object):
 
     def writerow(self, row):
         for col, value in enumerate(row):
-            print col, value
-            self.worksheet.write(self.row, col, value)
+            if isinstance(value, (str, unicode)):
+                # Workaround to avoid corner case bug that triggers (when all of the following)
+                # - value starts with http:// (write interprets it as URL)
+                # - value is longer than 255 chars
+                # - value contains characters with ordinal not in range(0, 128)
+                self.worksheet.write_string(self.row, col, value)
+            else:
+                self.worksheet.write(self.row, col, value)
 
         self.row += 1
 
