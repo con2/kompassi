@@ -250,7 +250,7 @@ def programme_json_view(request, event):
 
     for start_time, incontinuity, row in AllRoomsPseudoView(event).programmes_by_start_time:
         for programme, rowspan in row:
-            if programme is not None:
+            if programme is not None and programme.category.public:
                 result.append(programme.as_json())
 
     return result
