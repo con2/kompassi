@@ -50,7 +50,7 @@ urlpatterns = patterns(
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/batches/(?P<batch_id>\d+)\.(?P<format>csv|tsv)?$',
+        r'^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/batches/(?P<batch_id>\d+)\.(?P<format>csv|tsv|xlsx)?$',
         badges_admin_export_view,
         name='badges_admin_export_view',
     ),

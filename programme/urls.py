@@ -40,7 +40,7 @@ actual_patterns = [
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/token/(?P<programme_edit_code>[0-9a-f]+)$', programme_self_service_view, name='programme_self_service_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/timetable$', programme_admin_timetable_view, name='programme_admin_timetable_view'),
 
-    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/programme\.tsv$', programme_admin_export_view, name='programme_admin_export_view'),
+    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/programme\.xlsx$', programme_admin_export_view, name='programme_admin_export_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/emails\.txt$', programme_admin_email_list_view, name='programme_admin_email_list_view'),
 ]
 
