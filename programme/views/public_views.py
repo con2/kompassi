@@ -15,6 +15,7 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.http import require_http_methods, require_GET
 
+from api.utils import api_view
 from core.utils import render_string, initialize_form
 
 from ..models import (
@@ -239,6 +240,20 @@ def programme_self_service_view(request, event, programme_edit_code):
         self_service=True,
         redirect_success=lambda ev, unused: redirect('programme_self_service_view', ev.slug, token.code),
     )
+
+
+@programme_event_required
+@require_GET
+@api_view
+def programme_json_view(request, event):
+    result = []
+
+    for start_time, incontinuity, row in AllRoomsPseudoView(event).programmes_by_start_time:
+        for programme, rowspan in row:
+            if programme is not None:
+                result.append(programme.as_json())
+
+    return result
 
 
 def programme_profile_menu_items(request):

@@ -281,6 +281,27 @@ class Programme(models.Model, CsvExportMixin):
         from core.utils import format_datetime
         return format_datetime(self.start_time) if self.start_time else ''
 
+    # for json
+    @property
+    def category_title(self):
+        return self.category.title
+
+    @property
+    def room_name(self):
+        return self.room.name if self.room is not None else None
+
+    def as_json(self):
+        from api.utils import pick_attrs
+        return pick_attrs(self,
+            'title',
+            'description',
+            'category_title',
+            'formatted_hosts',
+            'room_name',
+            'length',
+            'start_time',
+        )
+
 
 class ProgrammeRole(models.Model):
     person = models.ForeignKey('core.Person')
