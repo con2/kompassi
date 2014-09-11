@@ -21,6 +21,7 @@ BADGE_ORDER = ('template', 'person__surname', 'person__first_name')
 CSV_EXPORT_FORMATS = dict(
     csv='excel',
     tsv='excel-tab',
+    xlsx='xlsx',
 )
 BADGE_LIST_TEMPLATES = dict(
     screen='badges_admin_badges_view.jade',

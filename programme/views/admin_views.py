@@ -199,19 +199,19 @@ def programme_admin_menu_items(request, event):
 
 @programme_admin_required
 def programme_admin_export_view(request, vars, event):
-    from core.csv_export import export_csv
+    from core.csv_export import csv_response
 
     programmes = Programme.objects.filter(category__event=event)
-
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="{event.slug}_programmes_{timestamp}.tsv"'.format(
+    filename = "{event.slug}_programmes_{timestamp}.xlsx".format(
         event=event,
         timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
     )
 
-    export_csv(event, Programme, programmes, response, m2m_mode='comma_separated')
-
-    return response
+    return csv_response(event, Programme, programmes,
+        m2m_mode='comma_separated',
+        dialect='xlsx',
+        filename=filename,
+    )
 
 
 @programme_admin_required

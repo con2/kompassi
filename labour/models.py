@@ -1082,20 +1082,21 @@ class Signup(models.Model, CsvExportMixin):
 
             event._signup_csv_fields = []
 
-            models = [Person, Signup]
+            related_models = [Person, Signup]
 
             SignupExtra = event.labour_event_meta.signup_extra_model
             if SignupExtra is not None:
-                models.append(SignupExtra)
+                related_models.append(SignupExtra)
 
             # XXX HACK jv-kortin numero
             if 'labour_common_qualifications' in settings.INSTALLED_APPS:
                 from labour_common_qualifications.models import JVKortti
-                models.append(JVKortti)
+                related_models.append(JVKortti)
 
-            for model in models:
+            for model in related_models:
                 for field in model._meta.fields:
-                    event._signup_csv_fields.append((model, field))
+                    if not isinstance(field, models.ForeignKey):
+                        event._signup_csv_fields.append((model, field))
 
                 for field, unused in model._meta.get_m2m_with_model():
                     event._signup_csv_fields.append((model, field))

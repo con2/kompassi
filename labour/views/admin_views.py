@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 from django.utils import timezone
 
-from core.csv_export import export_csv
+from core.csv_export import csv_response
 from core.models import Event, Person
 from core.utils import initialize_form, url, json_response, render_string
 
@@ -262,15 +262,16 @@ def labour_admin_export_view(request, vars, event):
     else:
         signups = Signup.objects.filter(event=event)
 
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="{event.slug}_signups_{timestamp}.tsv"'.format(
+    filename="{event.slug}_signups_{timestamp}.xlsx".format(
         event=event,
         timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
     )
 
-    export_csv(event, Signup, signups, response, m2m_mode='separate_columns')
-
-    return response
+    return csv_response(event, Signup, signups,
+        dialect='xlsx',
+        filename=filename,
+        m2m_mode='separate_columns',
+    )
 
 
 def labour_admin_menu_items(request, event):

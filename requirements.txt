@@ -7,3 +7,5 @@ django-crispy-forms==1.4.0
 requests==2.2.1
 django-pipeline==1.3.11
 django-ipware==0.0.6
+XlsxWriter==0.5.7
+unicodecsv==0.9.4
