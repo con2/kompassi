@@ -302,6 +302,12 @@ class Programme(models.Model, CsvExportMixin):
             'start_time',
         )
 
+    # for konopas
+    @property
+    def local_start_time(self):
+        from django.utils.timezone import localtime
+        return localtime(self.start_time)
+
 
 class ProgrammeRole(models.Model):
     person = models.ForeignKey('core.Person')
