@@ -290,6 +290,10 @@ class Programme(models.Model, CsvExportMixin):
     def room_name(self):
         return self.room.name if self.room is not None else None
 
+    @property
+    def public(self):
+        return self.category.public if self.category is not None else False
+
     def as_json(self):
         from api.utils import pick_attrs
         return pick_attrs(self,
@@ -300,6 +304,7 @@ class Programme(models.Model, CsvExportMixin):
             'room_name',
             'length',
             'start_time',
+            'public',
         )
 
     # for konopas
