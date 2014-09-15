@@ -101,7 +101,7 @@ class CountBadgesMixin(object):
                     percentace_consumed_for_inflation -= 1
 
         assert sum(p.width for p in progress) in [100, 0], "Missing percentage"
-        assert sum(p.value for p in progress) == pb_max, "Not all badges accounted for in progress"
+        # assert sum(p.value for p in progress) == pb_max, "Not all badges accounted for in progress"
 
         return progress
 
