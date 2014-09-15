@@ -34,8 +34,8 @@ block admin_content
                 td: a(href='{% url "badges_admin_filtered_view" event.slug template.slug %}') {{ template.name }}
                 td {{ template.count_badges_awaiting_batch }}
                 td {{ template.count_badges_waiting_in_batch }}
-                td {{ template.count_printed_badges }}
                 td {{ template.count_revoked_badges }}
+                td {{ template.count_printed_badges }}
                 td {{ template.count_badges }}
                 td: a.btn.btn-xs.btn-success(href='{% url "badges_admin_create_with_template_view" event.slug template.slug %}', title='Lisää uusi käsin')
                   span.glyphicon.glyphicon-plus
@@ -43,8 +43,8 @@ block admin_content
               th Yhteensä
               th {{ meta.count_badges_awaiting_batch }}
               th {{ meta.count_badges_waiting_in_batch }}
-              th {{ meta.count_printed_badges }}
               th {{ meta.count_revoked_badges }}
+              th {{ meta.count_printed_badges }}
               th {{ meta.count_badges }}
               th
 
