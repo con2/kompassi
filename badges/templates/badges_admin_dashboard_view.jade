@@ -25,6 +25,7 @@ block admin_content
             th Odottaa erää
             th Odottaa erässä
             th Tulostettu
+            th Mitätöity
             th Yhteensä
             th
           tbody
@@ -34,6 +35,7 @@ block admin_content
                 td {{ template.count_badges_awaiting_batch }}
                 td {{ template.count_badges_waiting_in_batch }}
                 td {{ template.count_printed_badges }}
+                td {{ template.count_revoked_badges }}
                 td {{ template.count_badges }}
                 td: a.btn.btn-xs.btn-success(href='{% url "badges_admin_create_with_template_view" event.slug template.slug %}', title='Lisää uusi käsin')
                   span.glyphicon.glyphicon-plus
@@ -42,6 +44,7 @@ block admin_content
               th {{ meta.count_badges_awaiting_batch }}
               th {{ meta.count_badges_waiting_in_batch }}
               th {{ meta.count_printed_badges }}
+              td {{ meta.count_revoked_badges }}
               th {{ meta.count_badges }}
               th
 
