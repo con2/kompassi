@@ -36,25 +36,20 @@ PROGRESS_ELEMENT_MIN_WIDTH = 4 # %
 
 class CountBadgesMixin(object):
     def count_printed_badges(self):
-        return 590
         return self.badge_set.filter(
             Q(batch__isnull=False, batch__printed_at__isnull=False) | Q(printed_separately_at__isnull=False)
         ).distinct().count()
 
     def count_badges_waiting_in_batch(self):
-        return 200
         return self.badge_set.filter(batch__isnull=False, batch__printed_at__isnull=True).count()
 
     def count_badges_awaiting_batch(self):
-        return 125
         return self.badge_set.filter(**BADGE_ELIGIBLE_FOR_BATCHING).count()
 
     def count_badges(self):
-        return 590 + 200 + 125 + 2
         return self.badge_set.count()
 
     def count_revoked_badges(self):
-        return 2
         return self.badge_set.filter(revoked_at__isnull=False).count()
 
     def get_progress(self):
