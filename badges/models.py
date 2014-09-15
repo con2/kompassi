@@ -41,7 +41,7 @@ class CountBadgesMixin(object):
         ).distinct().count()
 
     def count_badges_waiting_in_batch(self):
-        return self.badge_set.filter(batch__isnull=False, batch__printed_at__isnull=True).count()
+        return self.badge_set.filter(batch__isnull=False, batch__printed_at__isnull=True, revoked_at__isnull=True).count()
 
     def count_badges_awaiting_batch(self):
         return self.badge_set.filter(**BADGE_ELIGIBLE_FOR_BATCHING).count()
