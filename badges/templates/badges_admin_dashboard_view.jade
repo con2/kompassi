@@ -7,7 +7,7 @@ block admin_content
         .panel-body
           .progress
             for pb_item in event.badges_event_meta.get_progress
-              .progress-bar.progress-bar-striped(style='{{ pb_item.css_class }}'
+              .progress-bar.progress-bar-striped(class='{{ pb_item.css_class }}'
                                                  aria-valuenow='{{ pb_item.value }}'
                                                  aria-valuemin='0'
                                                  aria-valuemax='{{ pb_item.max }}'
