@@ -1,22 +1,19 @@
 extends core_admin_base
 block admin_content
   .row
-    .col-md-3
+    .col-md-12
       .panel.panel-default
-        .panel-heading: strong Odottaa erää
-        .panel-body: h1 {{ num_badges_awaiting_batch }}
-    .col-md-3
-      .panel.panel-default
-        .panel-heading: strong Odottaa erässä
-        .panel-body: h1 {{ num_badges_waiting_in_batch }}
-    .col-md-3
-      .panel.panel-default
-        .panel-heading: strong Tulostettu
-        .panel-body: h1 {{ num_badges_printed }}
-    .col-md-3
-      .panel.panel-default
-        .panel-heading: strong Yhteensä
-        .panel-body: h1 {{ num_badges_total }}
+        .panel-heading: strong Badgetulostuksen tilanne
+        .panel-body
+          .progress
+            for pb_item in event.badges_event_meta.get_progress
+              .progress-bar.progress-bar-striped(style='{{ pb_item.css_class }}'
+                                                 aria-valuenow='{{ pb_item.value }}'
+                                                 aria-valuemin='0'
+                                                 aria-valuemax='{{ pb_item.max }}'
+                                                 role='progressbar'
+                                                 style='width: {{ pb_item.width }}; min-width: 25px'
+                                                 title='{{ pb_item.text }}') {{ pb_item.value }}
 
   .row
     .col-md-12
@@ -40,3 +37,10 @@ block admin_content
                 td {{ template.count_badges }}
                 td: a.btn.btn-xs.btn-success(href='{% url "badges_admin_create_with_template_view" event.slug template.slug %}', title='Lisää uusi käsin')
                   span.glyphicon.glyphicon-plus
+            tr
+              th Yhteensä
+              th {{ meta.count_badges_awaiting_batch }}
+              th {{ meta.count_badges_waiting_in_batch }}
+              th {{ meta.count_printed_badges }}
+              th {{ meta.count_badges }}
+              th

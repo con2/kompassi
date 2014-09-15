@@ -19,11 +19,12 @@ def badges_admin_required(view_func):
             messages.error(request, u"Tämä tapahtuma ei käytä Kompassia kulkulupien hallintaan.")
             return redirect('core_event_view', event.slug)
 
-        if not event.badges_event_meta.is_user_admin(request.user):
+        if not meta.is_user_admin(request.user):
             return login_redirect(request)
 
         vars = dict(
             event=event,
+            meta=meta,
             admin_menu_items=badges_admin_menu_items(request, event),
             admin_title=u'Badgejen ja nimilistojen hallinta'
         )

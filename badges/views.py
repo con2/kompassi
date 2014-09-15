@@ -39,6 +39,7 @@ def badges_admin_dashboard_view(request, vars, event):
         num_badges_printed=meta.count_printed_badges(),
         num_badges_waiting_in_batch=meta.count_badges_waiting_in_batch(),
         num_badges_awaiting_batch=meta.count_badges_awaiting_batch(),
+        num_badges_revoked=meta.count_revoked_badges(),
     )
 
     return render(request, 'badges_admin_dashboard_view.jade', vars)

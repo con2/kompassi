@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from collections import namedtuple
+
 from django.db import models
 from django.db.models import Q
 from django.utils.html import escape
@@ -17,6 +19,15 @@ BADGE_ELIGIBLE_FOR_BATCHING = dict(
 )
 
 
+Progress = namedtuple('Progress', (
+    'css_class',
+    'max',
+    'text',
+    'value',
+    'width',
+))
+
+
 class CountBadgesMixin(object):
     def count_printed_badges(self):
         return self.badge_set.filter(
@@ -31,6 +42,33 @@ class CountBadgesMixin(object):
 
     def count_badges(self):
         return self.badge_set.count()
+
+    def count_revoked_badges(self):
+        return self.badge_set.filter(revoked_at__isnull=False).count()
+
+    def get_progress(self):
+        progress = []
+
+        pb_max = self.count_badges()
+
+        for pb_class, pb_text, count_method in [
+            ('', u'Odottaa erää', self.count_badges_awaiting_batch),
+            ('progress-bar-info', u'Odottaa erässä', self.count_badges_waiting_in_batch),
+            ('progress-bar-danger', u'Mitätöity', self.count_revoked_badges),
+            ('progress-bar-success', u'Tulostettu', self.count_printed_badges),
+        ]:
+            pb_value = count_method()    
+
+            if pb_value > 0:
+                progress.append(Progress(
+                    css_class=pb_class,
+                    max=pb_max,
+                    text=pb_text,
+                    value=pb_value,
+                    width='{}%'.format(100 * pb_value // max(pb_max, 1)),
+                ))
+
+        return progress
 
 
 
