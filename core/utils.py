@@ -368,3 +368,19 @@ def slugify(ustr):
     ustr = SLUGIFY_FORBANNAD_RE.sub(u'', ustr)
     ustr = SLUGIFY_MULTIDASH_RE.sub(u'-', ustr)
     return ustr
+
+
+def simple_object_init(self, **kwargs):
+    """
+    Want a simple class that has a number of attributes writable via assignment or
+    keywords in initialization?
+
+    class MySimpleClass(object):
+        __slots__ = ['foo', 'bar']
+        from core.utils import simple_object_init as __init__
+
+    my_simple_objects = MySimpleClass(foo=5)
+    """
+
+    for key, value in kwargs.iteritems():
+        setattr(self, key, value)

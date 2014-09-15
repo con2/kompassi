@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from collections import namedtuple
+from itertools import cycle
 
 from django.db import models
 from django.db.models import Q
@@ -19,54 +20,95 @@ BADGE_ELIGIBLE_FOR_BATCHING = dict(
 )
 
 
-Progress = namedtuple('Progress', (
-    'css_class',
-    'max',
-    'text',
-    'value',
-    'width',
-))
+class Progress(object):
+    __slots__ = [
+        'css_class',
+        'max',
+        'text',
+        'value',
+        'width',
+        'inflated',
+    ]
+    from core.utils import simple_object_init as __init__
+
+PROGRESS_ELEMENT_MIN_WIDTH = 4 # %
 
 
 class CountBadgesMixin(object):
     def count_printed_badges(self):
+        return 590
         return self.badge_set.filter(
             Q(batch__isnull=False, batch__printed_at__isnull=False) | Q(printed_separately_at__isnull=False)
         ).distinct().count()
 
     def count_badges_waiting_in_batch(self):
+        return 200
         return self.badge_set.filter(batch__isnull=False, batch__printed_at__isnull=True).count()
 
     def count_badges_awaiting_batch(self):
+        return 125
         return self.badge_set.filter(**BADGE_ELIGIBLE_FOR_BATCHING).count()
 
     def count_badges(self):
+        return 590 + 200 + 125 + 2
         return self.badge_set.count()
 
     def count_revoked_badges(self):
+        return 2
         return self.badge_set.filter(revoked_at__isnull=False).count()
 
     def get_progress(self):
         progress = []
 
         pb_max = self.count_badges()
+        percentace_consumed_for_inflation = 0
 
         for pb_class, pb_text, count_method in [
-            ('', u'Odottaa erää', self.count_badges_awaiting_batch),
-            ('progress-bar-info', u'Odottaa erässä', self.count_badges_waiting_in_batch),
-            ('progress-bar-danger', u'Mitätöity', self.count_revoked_badges),
             ('progress-bar-success', u'Tulostettu', self.count_printed_badges),
+            ('progress-bar-danger', u'Mitätöity', self.count_revoked_badges),
+            ('progress-bar-info', u'Odottaa erässä', self.count_badges_waiting_in_batch),
+            ('progress-bar-grey', u'Odottaa erää', self.count_badges_awaiting_batch),
         ]:
             pb_value = count_method()    
 
             if pb_value > 0:
+                width = 100 * pb_value // max(pb_max, 1)
+
+                if width < PROGRESS_ELEMENT_MIN_WIDTH:
+                    percentace_consumed_for_inflation += PROGRESS_ELEMENT_MIN_WIDTH - width
+                    width = PROGRESS_ELEMENT_MIN_WIDTH
+                    inflated = True
+                else:
+                    inflated = False
+
                 progress.append(Progress(
                     css_class=pb_class,
                     max=pb_max,
                     text=pb_text,
                     value=pb_value,
-                    width='{}%'.format(100 * pb_value // max(pb_max, 1)),
+                    width=width,
+                    inflated=inflated,
                 ))
+
+        if sum(p.width for p in progress) > 100:
+            candidates_for_deflation = [p for p in progress if p.width > PROGRESS_ELEMENT_MIN_WIDTH]
+            candidates_for_deflation.sort(key=lambda p: -p.width)
+
+            for p in cycle(candidates_for_deflation):
+                if (
+                    sum(p.width for p in progress) <= 100 or
+                    all(p.width <= PROGRESS_ELEMENT_MIN_WIDTH for p in candidates_for_deflation)
+                ):
+                    break
+
+                if p.width > PROGRESS_ELEMENT_MIN_WIDTH:
+                    p.width -= 1
+                    percentace_consumed_for_inflation -= 1
+
+        print sum(p.width for p in progress)
+
+        assert sum(p.width for p in progress) == 100, "Missing percentage"
+        assert sum(p.value for p in progress) == pb_max, "Not all badges accounted for in progress"
 
         return progress
 

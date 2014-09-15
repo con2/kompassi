@@ -7,13 +7,13 @@ block admin_content
         .panel-body
           .progress
             for pb_item in event.badges_event_meta.get_progress
-              .progress-bar.progress-bar-striped(class='{{ pb_item.css_class }}'
-                                                 aria-valuenow='{{ pb_item.value }}'
-                                                 aria-valuemin='0'
-                                                 aria-valuemax='{{ pb_item.max }}'
-                                                 role='progressbar'
-                                                 style='width: {{ pb_item.width }}; min-width: 25px'
-                                                 title='{{ pb_item.text }}') {{ pb_item.value }}
+              .progress-bar(class='{{ pb_item.css_class }}'
+                            aria-valuenow='{{ pb_item.value }}'
+                            aria-valuemin='0'
+                            aria-valuemax='{{ pb_item.max }}'
+                            role='progressbar'
+                            style='width: {{ pb_item.width }}%'
+                            data-content='{{ pb_item.text }}') {{ pb_item.value }}
 
   .row
     .col-md-12
@@ -44,3 +44,9 @@ block admin_content
               th {{ meta.count_printed_badges }}
               th {{ meta.count_badges }}
               th
+
+block extra_scripts
+  style
+    .progress-bar-grey { background-color: #999 }
+  script
+    $('.progress-bar').popover({trigger: 'hover', placement: 'bottom'});
