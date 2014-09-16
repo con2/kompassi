@@ -23,6 +23,10 @@ Edit `settings.py`, uncomment the line with `background_tasks` in `INSTALLED_APP
 
     if 'background_tasks' in INSTALLED_APPS:
 
+By convention we use `KOMPASSI_INSTALLATION_SLUG` as the vhost name and user name in RabbitMQ. In development, we also use it as the password. In production, you should set up a secure password.
+
 Now you should be able to
 
-    python manage.py celery worker
+    celery -A turska worker
+
+Note that the Celery app name `turska` is hardcoded into `turska/celery_app.py` and is not the `KOMPASSI_INSTALLATION_SLUG` from `settings.py`. Please dedicate a RabbitMQ vhost for each Kompassi instance.
