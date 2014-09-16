@@ -334,7 +334,7 @@ if 'background_tasks' in INSTALLED_APPS:
 
     INSTALLED_APPS += (
         'djcelery',
-        'djcelery_email',
+        #'djcelery_email', # attachments broken
     )
 
     #EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
