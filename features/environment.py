@@ -34,7 +34,6 @@ def after_scenario(context, scenario):
     context.runner.teardown_test_environment()
 
 
-
 def after_step(context, step):
     if BEHAVE_DEBUG_ON_ERROR and step.status == "failed":
         import ipdb
