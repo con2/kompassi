@@ -101,6 +101,8 @@ TEMPLATE_CONTEXT_PROCESSORS = defaults.TEMPLATE_CONTEXT_PROCESSORS + (
     'core.context_processors.core_context',
 )
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
