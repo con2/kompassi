@@ -81,6 +81,16 @@ class CustomerForm(forms.ModelForm):
 
     class Meta:
         model = Customer
+        fields = [
+            'first_name',
+            'last_name',
+            'address',
+            'zip_code',
+            'city',
+            'phone_number',
+            'email',
+            'allow_marketing_email',
+        ]
 
 
 class SinglePaymentForm(forms.Form):
