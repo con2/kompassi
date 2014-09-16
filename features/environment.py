@@ -7,15 +7,11 @@ BEHAVE_DEBUG_ON_ERROR = _bool(os.environ.get("BEHAVE_DEBUG_ON_ERROR", "no"))
 
 
 def before_all(context):
-    # from django.core.management import setup_environ
-    # from turska import settings
-    # setup_environ(settings)
-
     import django
     django.setup()
 
-    from django.test.simple import DjangoTestSuiteRunner
-    context.runner = DjangoTestSuiteRunner()
+    from django.test.runner import DiscoverRunner
+    context.runner = DiscoverRunner()
 
     from django.test import RequestFactory
     context.request_factory = RequestFactory()
