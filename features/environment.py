@@ -11,6 +11,9 @@ def before_all(context):
     # from turska import settings
     # setup_environ(settings)
 
+    import django
+    django.setup()
+
     from django.test.simple import DjangoTestSuiteRunner
     context.runner = DjangoTestSuiteRunner()
 
