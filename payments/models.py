@@ -5,7 +5,9 @@ from django.db import models
 
 
 class Payment(models.Model):
+    # XXX What the fuck is this and why the fuck is it here
     test = models.IntegerField(blank=True, null=True)
+
     VERSION = models.CharField(max_length=4)
     STAMP = models.CharField(max_length=20)
     REFERENCE = models.CharField(max_length=20)
