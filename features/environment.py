@@ -14,9 +14,6 @@ def before_all(context):
     from django.test.simple import DjangoTestSuiteRunner
     context.runner = DjangoTestSuiteRunner()
 
-    from south.management.commands import patch_for_test_db_setup
-    patch_for_test_db_setup()
-
     from django.test import RequestFactory
     context.request_factory = RequestFactory()
 
