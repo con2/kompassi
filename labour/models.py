@@ -473,13 +473,13 @@ class AlternativeSignupForm(models.Model):
     active_from = models.DateTimeField(
         null=True,
         blank=True,
-        default=u'Käyttöaika alkaa',
+        verbose_name=u'Käyttöaika alkaa',
     )
 
     active_until = models.DateTimeField(
         null=True,
         blank=True,
-        default=u'Käyttöaika päättyy',
+        verbose_name=u'Käyttöaika päättyy',
     )
 
     signup_message = models.TextField(
