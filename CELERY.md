@@ -15,7 +15,7 @@ To install and configure RabbitMQ and the associated Python modules, do
     sudo apt-get install rabbitmq-server
     sudo -Hu rabbitmq rabbitmqctl add_vhost turskadev
     sudo -Hu rabbitmq rabbitmqctl add_user turskadev turskadev
-    sudo -Hu rabbitmq rabbitmqctl set_permissions -p turskadev '.*' '.*' '.*'
+    sudo -Hu rabbitmq rabbitmqctl set_permissions -p turskadev turskadev '.*' '.*' '.*'
 
     pip install -r requirements-background_tasks.txt
 
