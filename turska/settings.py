@@ -334,11 +334,6 @@ if 'background_tasks' in INSTALLED_APPS:
     BROKER_URL = 'amqp://{KOMPASSI_INSTALLATION_SLUG}:{KOMPASSI_INSTALLATION_SLUG}@localhost/{KOMPASSI_INSTALLATION_SLUG}'.format(**locals())
     CELERY_ACCEPT_CONTENT = ['json']
 
-    INSTALLED_APPS += (
-        'djcelery',
-        #'djcelery_email', # attachments broken
-    )
-
     #EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 
     CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
