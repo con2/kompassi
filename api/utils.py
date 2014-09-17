@@ -43,10 +43,10 @@ def api_view(view_func):
             return HttpResponse(
                 json.dumps(dict(error='Unauthorized')),
                 status=401,
-                mimetype='application/json'
+                content_type='application/json'
             )
 
-        return HttpResponse(json.dumps(result, default=json_default_handler), mimetype='application/json')
+        return HttpResponse(json.dumps(result, default=json_default_handler), content_type='application/json')
 
     return _decorator
 

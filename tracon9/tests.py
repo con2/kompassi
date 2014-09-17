@@ -85,9 +85,9 @@ class Tracon9LippukalaTestCase(TestCase):
 
         assert len(msg.attachments) == 1
 
-        filename, content, mimetype = msg.attachments[0]
+        filename, content, content_type = msg.attachments[0]
 
-        assert mimetype == 'application/pdf'
+        assert content_type == 'application/pdf'
 
         with open(settings.MKPATH('tmp', 'test_automatic_code_creation.pdf'), 'wq') as output_file:
             output_file.write(content)

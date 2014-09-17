@@ -60,7 +60,7 @@ tickets_admin_batches_view = tickets_admin_required(batches_view(
 def tickets_admin_batch_view(request, vars, event, batch_id):
     batch = get_object_or_404(Batch, id=int(batch_id), event=event)
 
-    response = HttpResponse(mimetype="application/pdf")
+    response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = 'filename=batch%03d.pdf' % batch.id
     c = canvas.Canvas(response)
     batch.render(c)
