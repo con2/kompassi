@@ -523,6 +523,34 @@ class AlternativeSignupForm(models.Model):
         ]
 
 
+
+
+class PersonnelClass(models.Model):
+    event = models.ForeignKey(Event)
+    app_label = models.CharField(max_length=63, blank=True, default="")
+    name = models.CharField(max_length=63)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    perks = models.ManyToManyField(Perk, blank=True)
+    priority = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = u'henkilöstöluokka'
+        verbose_name_plural = u'henkilöstöluokat'
+
+        unique_together = [
+            ('event', 'slug'),
+        ]
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        return super(PersonnelClass, self).save(*args, **kwargs)
+
+
 NUM_FIRST_CATEGORIES = 5
 SIGNUP_STATE_NAMES = dict(
     new=u'Uusi',
