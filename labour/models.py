@@ -294,12 +294,68 @@ class QualificationExtraBase(models.Model):
         abstract = True
 
 
+class Perk(models.Model):
+    event = models.ForeignKey('core.Event')
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    name = models.CharField(max_length=63)
+
+    class Meta:
+        verbose_name = u'etu'
+        verbose_name_plural = u'edut'
+
+        unique_together = [
+            ('event', 'slug'),
+        ]
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        return super(Perk, self).save(*args, **kwargs)
+
+
+class PersonnelClass(models.Model):
+    event = models.ForeignKey('core.Event')
+    app_label = models.CharField(max_length=63, blank=True, default="")
+    name = models.CharField(max_length=63)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    perks = models.ManyToManyField(Perk, blank=True)
+    priority = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = u'henkilöstöluokka'
+        verbose_name_plural = u'henkilöstöluokat'
+
+        unique_together = [
+            ('event', 'slug'),
+        ]
+
+        index_together = [
+            ('event', 'app_label'),
+        ]
+
+        ordering = ('event', 'priority')
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        return super(PersonnelClass, self).save(*args, **kwargs)
+
+
 def format_job_categories(job_categories):
     return u"\n".join(u'* {jc.name}'.format(jc=jc) for jc in job_categories)
 
 
 class JobCategory(models.Model):
     event = models.ForeignKey('core.Event', verbose_name=u'tapahtuma')
+    app_label = models.CharField(max_length=63, blank=True, default='labour')
 
     name = models.CharField(max_length=63, verbose_name=u'tehtäväalueen nimi')
     slug = models.CharField(**dict(NONUNIQUE_SLUG_FIELD_PARAMS))
@@ -319,6 +375,11 @@ class JobCategory(models.Model):
     required_qualifications = models.ManyToManyField(Qualification,
         blank=True,
         verbose_name=u'vaaditut pätevyydet'
+    )
+
+    personnel_classes = models.ManyToManyField(PersonnelClass,
+        blank=True,
+        verbose_name=u'yhteiskuntaluokat'
     )
 
     def is_person_qualified(self, person):
@@ -364,8 +425,8 @@ class WorkPeriod(models.Model):
         verbose_name=u'Kuvaus'
     )
 
-    start_time = models.DateTimeField(verbose_name=u'Alkuaika')
-    end_time = models.DateTimeField(verbose_name=u'Loppuaika')
+    start_time = models.DateTimeField(verbose_name=u'Alkuaika', blank=True, null=True)
+    end_time = models.DateTimeField(verbose_name=u'Loppuaika', blank=True, null=True)
 
     class Meta:
         verbose_name = u'työvuorotoive'
@@ -523,61 +584,6 @@ class AlternativeSignupForm(models.Model):
         ]
 
 
-class Perk(models.Model):
-    event = models.ForeignKey('core.Event')
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    name = models.CharField(max_length=63)
-
-    class Meta:
-        verbose_name = u'etu'
-        verbose_name_plural = u'edut'
-
-        unique_together = [
-            ('event', 'slug'),
-        ]
-
-    def __unicode__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if self.name and not self.slug:
-            self.slug = slugify(self.name)
-
-        return super(Perk, self).save(*args, **kwargs)
-
-
-class PersonnelClass(models.Model):
-    event = models.ForeignKey('core.Event')
-    app_label = models.CharField(max_length=63, blank=True, default="")
-    name = models.CharField(max_length=63)
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    perks = models.ManyToManyField(Perk, blank=True)
-    priority = models.IntegerField(default=0)
-
-    class Meta:
-        verbose_name = u'henkilöstöluokka'
-        verbose_name_plural = u'henkilöstöluokat'
-
-        unique_together = [
-            ('event', 'slug'),
-        ]
-
-        index_together = [
-            ('event', 'app_label'),
-        ]
-
-        ordering = ('event', 'priority')
-
-    def __unicode__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if self.name and not self.slug:
-            self.slug = slugify(self.name)
-
-        return super(PersonnelClass, self).save(*args, **kwargs)
-
-
 NUM_FIRST_CATEGORIES = 5
 SIGNUP_STATE_NAMES = dict(
     new=u'Uusi',
@@ -673,7 +679,13 @@ STATE_TIME_FIELDS = [
 class Signup(models.Model, CsvExportMixin):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
-    personnel_classes = models.ManyToManyField(PersonnelClass, blank=True)
+
+    personnel_classes = models.ManyToManyField(PersonnelClass,
+        blank=True,
+        verbose_name=u'Yhteiskuntaluokat',
+        help_text=u'Mihin henkilöstöryhmiin tämä henkilö kuuluu? Henkilö saa valituista ryhmistä '
+            u'ylimmän mukaisen badgen. Lähtökohtaisesti tätä tietoa ei tulisi muokata käsin.',
+    )
 
     job_categories = models.ManyToManyField(JobCategory,
         verbose_name=u'Haettavat tehtävät',
@@ -849,7 +861,6 @@ class Signup(models.Model, CsvExportMixin):
         state = self.state
         label_class = SIGNUP_STATE_LABEL_CLASSES[state]
 
-
         if state == 'new':
             label_texts = [cat.name for cat in self.get_first_categories()]
             labels = [(label_class, label_text, None) for label_text in label_texts]
@@ -908,18 +919,24 @@ class Signup(models.Model, CsvExportMixin):
         return signup, created
 
     def apply_state(self):
+        self.apply_state_sync()
+
         if 'background_tasks' in settings.INSTALLED_APPS:
             from .tasks import signup_apply_state
             signup_apply_state.delay(self.pk)
         else:
             self._apply_state()
 
-    def _apply_state(self):
-        self.apply_group_membership()
-        self.send_messages()
-        self.ensure_badge_exists_if_necessary()
+    def apply_state_sync(self):
+        self.apply_state_ensure_job_categories_accepted_is_set()
+        self.apply_state_ensure_personnel_class_is_set()
 
-    def apply_group_membership(self):
+    def _apply_state(self):
+        self.apply_state_group_membership()
+        self.apply_state_send_messages()
+        self.apply_state_create_badges()
+
+    def apply_state_group_membership(self):
         for group_suffix in SIGNUP_STATE_GROUPS:
             should_belong_to_group = getattr(self, 'is_{group_suffix}'.format(group_suffix=group_suffix))
             group = self.event.labour_event_meta.get_group(group_suffix)
@@ -932,14 +949,31 @@ class Signup(models.Model, CsvExportMixin):
 
             ensure_user_is_member_of_group(self.person.user, group, should_belong_to_group)
 
-    def send_messages(self, resend=False):
+    def apply_state_send_messages(self, resend=False):
         if 'mailings' not in settings.INSTALLED_APPS:
             return
 
         from mailings.models import Message
         Message.send_messages(self.event, 'labour', self.person)
 
-    def ensure_badge_exists_if_necessary(self):
+    def apply_state_ensure_job_categories_accepted_is_set(self):
+        if self.is_accepted and not self.job_categories_accepted.exists() and self.job_categories.count() == 1:
+            self.job_categories_accepted.add(self.job_categories.get())
+
+    def apply_state_ensure_personnel_class_is_set(self):
+        print
+        print 'apply_state_ensure_personnel_class_is_set'
+
+        for app_label in self.job_categories_accepted.values_list('app_label', flat=True).distinct():
+            print '- app_label', app_label
+            if self.personnel_classes.filter(app_label=app_label).exists():
+                continue
+
+            any_jca = self.job_categories_accepted.filter(app_label=app_label).first()
+            personnel_class = any_jca.personnel_classes.first()
+            self.personnel_classes.add(personnel_class)
+
+    def apply_state_create_badges(self):
         if 'badges' not in settings.INSTALLED_APPS:
             return
 

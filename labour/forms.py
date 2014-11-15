@@ -9,7 +9,7 @@ from core.forms import PersonForm
 from core.models import Person
 from core.utils import horizontal_form_helper, indented_without_label
 
-from .models import Signup, JobCategory, EmptySignupExtra
+from .models import Signup, JobCategory, EmptySignupExtra, PersonnelClass, WorkPeriod
 
 from datetime import date, datetime
 
@@ -29,7 +29,8 @@ class AdminPersonForm(PersonForm):
 
         self.fields['age_now'].initial = calculate_age(self.instance.birth_date, date.today())
         self.fields['age_now'].widget.attrs['readonly'] = True
-        self.fields['age_event_start'].initial = calculate_age(self.instance.birth_date, event.start_time.date())
+        if event.start_time:
+            self.fields['age_event_start'].initial = calculate_age(self.instance.birth_date, event.start_time.date())
         self.fields['age_event_start'].widget.attrs['readonly'] = True
 
         # XXX copypasta
@@ -64,6 +65,7 @@ class SignupForm(forms.ModelForm):
                 q = q | Q(signup_set=self.instance)
 
         self.fields['job_categories'].queryset = JobCategory.objects.filter(q).distinct()
+        self.fields['work_periods'].queryset = WorkPeriod.objects.filter(event=event)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -112,26 +114,44 @@ class SignupAdminForm(forms.ModelForm):
         super(SignupAdminForm, self).__init__(*args, **kwargs)
 
         self.fields['job_categories_accepted'].queryset = JobCategory.objects.filter(event=event)
+        self.fields['personnel_classes'].queryset = PersonnelClass.objects.filter(event=event).order_by('priority')
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
     class Meta:
         model = Signup
-        fields = ('job_title', 'job_categories_accepted', 'xxx_interim_shifts', 'notes')
+        fields = (
+            'job_title',
+            'personnel_classes',
+            'job_categories_accepted',
+            'xxx_interim_shifts',
+            'notes',
+        )
         widgets = dict(
+            personnel_classes=forms.CheckboxSelectMultiple,
             job_categories_accepted=forms.CheckboxSelectMultiple,
         )
 
     def clean_job_categories_accepted(self):
         job_categories_accepted = self.cleaned_data['job_categories_accepted']
 
-        if self.instance.is_accepted and not job_categories_accepted:
-            raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi tehtäväalue.')
+        if self.instance.is_accepted and not job_categories_accepted and self.instance.job_categories.count() != 1:
+            raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi tehtäväalue. Henkilön hakema tehtävä ei ole yksikäsitteinen, joten tehtäväaluetta ei voitu valita automaattisesti.')
         elif (self.instance.is_rejected or self.instance.is_cancelled) and job_categories_accepted:
             raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään tehtäväalue ei saa olla valittuna.')
 
         return job_categories_accepted
+
+    def clean_personnel_classes(self):
+        personnel_classes = self.cleaned_data['personnel_classes']
+
+        if self.instance.is_accepted and not personnel_classes:
+            raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi yhteiskuntaluokka.')
+        elif (self.instance.is_rejected or self.instance.is_cancelled) and personnel_classes:
+            raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään yhteiskuntaluokka ei saa olla valittuna.')
+
+        return personnel_classes
 
 
 class AlternativeFormMixin(object):

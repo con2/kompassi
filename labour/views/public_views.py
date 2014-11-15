@@ -58,7 +58,7 @@ def labour_signup_view(request, event, alternative_form_slug=None):
     of registering an account, entering qualifications and only then signing up.
     Existing users are welcomed to sign up right away.
     """
-    
+
     if alternative_form_slug:
         actual_signup_url = url('labour_special_signup_view', event.slug, alternative_form_slug)
     else:
@@ -121,7 +121,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
             return redirect('core_event_view', event.slug)
 
         if alternative_signup_form.signup_message:
-            messages.warning(request, alternative_signup_form.signup_message)            
+            messages.warning(request, alternative_signup_form.signup_message)
 
         SignupFormClass = alternative_signup_form.signup_form_class
         SignupExtraFormClass = alternative_signup_form.signup_extra_form_class

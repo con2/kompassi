@@ -81,8 +81,10 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
             if 'save-return' in request.POST:
                 return redirect('labour_admin_signups_view', event.slug)
+            else:
+                return redirect('labour_admin_signup_view', event.slug, person.pk)
         else:
-            # XXX Restore state just for shows, suboptimal but 
+            # XXX Restore state just for shows, suboptimal but
             signup._state_flags = old_state_flags
 
             messages.error(request, u'Ole hyvä ja tarkista lomake.')
@@ -233,7 +235,7 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
 
                 else:
                     messages.error(request, u'Tuntematon toiminto.')
-                
+
                 return redirect('labour_admin_mail_editor_view', event.slug, message.pk)
 
             else:
