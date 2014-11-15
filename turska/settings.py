@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'kawacon2014',
     'concon9',
     'traconx',
+    'hitpoint2015',
 )
 
 LOGGING = {

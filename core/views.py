@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods, require_GET
@@ -23,7 +24,7 @@ def core_frontpage_view(request):
         settings=settings,
         past_events=Event.objects.filter(public=True, end_time__lte=t).order_by('-start_time'),
         current_events=Event.objects.filter(public=True, start_time__lte=t, end_time__gt=t).order_by('-start_time'),
-        future_events=Event.objects.filter(public=True, start_time__gt=t).order_by('-start_time'),
+        future_events=Event.objects.filter((Q(start_time__gt=t) | Q(start_time__isnull=True)) & Q(public=True)).order_by('-start_time'),
     )
 
     return render(request, 'core_frontpage_view.jade', vars)

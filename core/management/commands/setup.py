@@ -30,6 +30,7 @@ class Command(BaseCommand):
         #     (('setup_kawacon2014',), dict(test=test)),
         #     (('setup_concon9',), dict(test=test)),
             (('setup_traconx',), dict(test=test)),
+            (('setup_hitpoint2015',), dict(test=test)),
         ]
 
         if test:
