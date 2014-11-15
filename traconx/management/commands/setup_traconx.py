@@ -15,7 +15,7 @@ class Setup(object):
         self.setup_core()
 
     def setup_core(self):
-        from core.models import Venue, Event, PersonnelClass, Perk
+        from core.models import Venue, Event
 
         self.venue, unused = Venue.objects.get_or_create(name='Tampere-talo')
         self.event, unused = Event.objects.get_or_create(slug='traconx', defaults=dict(
@@ -31,14 +31,6 @@ class Setup(object):
             venue=self.venue,
         ))
 
-        self.afterparty_perk, unused = Perk.objects.get_or_create(
-            event=self.event,
-            slug='kaatajaiset',
-            defaults=dict(
-                name=u'Kaatajaiset',
-            ),
-        )
-
     def setup_labour(self):
         from labour.models import (
             AlternativeSignupForm,
@@ -46,6 +38,8 @@ class Setup(object):
             Job,
             JobCategory,
             LabourEventMeta,
+            Perk,
+            PersonnelClass,
             Qualification,
             WorkPeriod,
         )
@@ -82,6 +76,14 @@ class Setup(object):
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
+        )
+
+        self.afterparty_perk, unused = Perk.objects.get_or_create(
+            event=self.event,
+            slug='kaatajaiset',
+            defaults=dict(
+                name=u'Kaatajaiset',
+            ),
         )
 
         for pc_name, pc_slug, pc_app_label, pc_afterparty in [

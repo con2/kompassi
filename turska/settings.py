@@ -138,10 +138,11 @@ INSTALLED_APPS = (
     # 'atlassian_integration',
 
     'tracon_branding',
-    'tracon8',
-    'tracon9',
-    'kawacon2014',
-    'concon9',
+    # 'tracon8',
+    # 'tracon9',
+    # 'kawacon2014',
+    # 'concon9',
+    'traconx',
 )
 
 LOGGING = {
