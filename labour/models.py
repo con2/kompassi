@@ -523,10 +523,31 @@ class AlternativeSignupForm(models.Model):
         ]
 
 
+class Perk(models.Model):
+    event = models.ForeignKey('core.Event')
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    name = models.CharField(max_length=63)
+
+    class Meta:
+        verbose_name = u'etu'
+        verbose_name_plural = u'edut'
+
+        unique_together = [
+            ('event', 'slug'),
+        ]
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        return super(Perk, self).save(*args, **kwargs)
 
 
 class PersonnelClass(models.Model):
-    event = models.ForeignKey(Event)
+    event = models.ForeignKey('core.Event')
     app_label = models.CharField(max_length=63, blank=True, default="")
     name = models.CharField(max_length=63)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
@@ -540,6 +561,12 @@ class PersonnelClass(models.Model):
         unique_together = [
             ('event', 'slug'),
         ]
+
+        index_together = [
+            ('event', 'app_label'),
+        ]
+
+        ordering = ('event', 'priority')
 
     def __unicode__(self):
         return self.name
@@ -646,6 +673,7 @@ STATE_TIME_FIELDS = [
 class Signup(models.Model, CsvExportMixin):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
+    personnel_classes = models.ManyToManyField(PersonnelClass, blank=True)
 
     job_categories = models.ManyToManyField(JobCategory,
         verbose_name=u'Haettavat tehtävät',
