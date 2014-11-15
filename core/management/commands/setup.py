@@ -25,10 +25,11 @@ class Command(BaseCommand):
             (('migrate',), dict()),
             (('setup_core',), dict(test=test)),
             (('setup_labour_common_qualifications',), dict(test=test)),
-            (('setup_tracon8',), dict(test=test)),
-            (('setup_tracon9',), dict(test=test)),
-            (('setup_kawacon2014',), dict(test=test)),
-            (('setup_concon9',), dict(test=test)),
+        #     (('setup_tracon8',), dict(test=test)),
+        #     (('setup_tracon9',), dict(test=test)),
+        #     (('setup_kawacon2014',), dict(test=test)),
+        #     (('setup_concon9',), dict(test=test)),
+            (('setup_traconx',), dict(test=test)),
         ]
 
         if test:
