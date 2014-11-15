@@ -9,3 +9,4 @@ virtualenv/
 tmp/
 .sublime-*
 node_modules/
+*.sql.xz
