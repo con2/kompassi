@@ -43,6 +43,7 @@ class Setup(object):
         ))
 
     def setup_labour(self):
+        from core.models import Person
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
