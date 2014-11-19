@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, make_option
-from django.utils.timezone import get_default_timezone
+from django.utils.timezone import get_default_timezone, now
 
 from core.utils import slugify
 

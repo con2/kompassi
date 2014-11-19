@@ -1,10 +1,5 @@
 extends tickets_phase_base.jade
 block body_text
   .hero-unit
-    h2 Tervetuloa ostamaan {{ event.name }} -lippuja!
-    p
-      | Tervetuloa {{ event.name_genitive }} ennakkolippukauppaan. Tästä verkkokaupasta voit ostaa itsellesi ja vaikka myös kavereillesi etukäteen liput ja majoitukset ensi kesän tapahtumaan. Lisätietoja
-      a(href='{{ event.homepage_url }}', target='_blank') {{ event.name_genitive }} web-sivuilta
-      | !
-    p Aloita valitsemalla Seuraava.
+    {{ event.tickets_event_meta.front_page_text|safe }}
 block form_content

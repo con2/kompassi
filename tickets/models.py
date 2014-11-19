@@ -95,6 +95,13 @@ class TicketsEventMeta(EventMetaBase):
         help_text=u'Tämä teksti tulostetaan E-lippuun.',
     )
 
+    front_page_text = models.TextField(
+        blank=True,
+        default=u'',
+        verbose_name=u'Etusivun teksti',
+        help_text=u'Tämä teksti näytetään lippukaupan ensimmäisellä vaiheella.',
+    )
+
     @property
     def is_ticket_sales_open(self):
         t = timezone.now()
@@ -401,7 +408,7 @@ class Customer(models.Model):
     allow_marketing_email = models.BooleanField(
         default=True,
         blank=True,
-        verbose_name=u"Minulle saa lähettää Traconiin liittyviä tiedotteita sähköpostitse",
+        verbose_name=u"Minulle saa lähettää tapahtumaan liittyviä tiedotteita sähköpostitse",
     )
 
     phone_number = models.CharField(max_length=30, null=True, blank=True, verbose_name="Puhelinnumero")
