@@ -42,7 +42,7 @@ class Queue:
     ONE_QUEUE = '1'
 
 PREFIXES = {
-    Queue.ONE_QUEUE: "1",
+    Queue.ONE_QUEUE: "kissa",
 }
 
 KEYSPACES = {
