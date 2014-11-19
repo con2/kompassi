@@ -338,7 +338,7 @@ if 'lippukala' in INSTALLED_APPS:
     LIPPUKALA_CODE_MIN_N_DIGITS = 7
     LIPPUKALA_CODE_MAX_N_DIGITS = 7
 
-    LIPPUKALA_PRINT_LOGO_PATH = mkpath('static', 'images', 'yukicon_436_test.jpg')
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath('yukicon2015', 'static', 'images', 'yukicon_436_test.jpg')
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.19, 1.00)
 
 
