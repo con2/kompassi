@@ -90,7 +90,7 @@ class Setup(object):
                 name=u'Yukicon 2015 -pääsylippu',
                 description=u'Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
                 limit_groups=[
-                    limit_group('Lauantain liput', 1450),
+                    limit_group('Pääsyliput', 1450),
                 ],
                 price_cents=1700,
                 requires_shipping=False,
