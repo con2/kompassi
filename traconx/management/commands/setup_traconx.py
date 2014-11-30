@@ -251,7 +251,7 @@ class Setup(object):
         else:
             defaults.update(
                 ticket_sales_starts=datetime(2014, 12, 1, 0, 0, tzinfo=self.tz),
-                ticket_sales_ends=datetime(2015, 12, 20, 0, 0, tzinfo=self.tz),
+                ticket_sales_ends=datetime(2015, 12, 12, 23, 59, 59, tzinfo=self.tz),
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
