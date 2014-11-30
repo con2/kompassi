@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, make_option
-from django.utils.timezone import get_default_timezone
+from django.utils.timezone import get_default_timezone, now
 
 from core.utils import slugify
 
@@ -13,6 +13,7 @@ class Setup(object):
         self.test = test
         self.tz = get_default_timezone()
         self.setup_core()
+        self.setup_tickets()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -217,6 +218,101 @@ class Setup(object):
                     group=labour_event_meta.get_group(link_group),
                 )
             )
+
+    def setup_tickets(self):
+        from tickets.models import TicketsEventMeta, LimitGroup, Product
+
+        tickets_admin_group, unused = TicketsEventMeta.get_or_create_group(self.event, 'admins')
+
+        defaults = dict(
+            admin_group=tickets_admin_group,
+            due_days=14,
+            shipping_and_handling_cents=0,
+            reference_number_template="2015{:05d}",
+            contact_email='Traconin lipunmyynti <liput@tracon.fi>',
+            plain_contact_email='liput@tracon.fi',
+            ticket_free_text=u"Tämä on sähköinen lippusi Tracon X -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
+                u"lipunvaihtopisteessä.\n\n"
+                u"Tervetuloa Traconiin!",
+            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Tracon X -tapahtumaan!</h2>"
+                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                u"<p>Lue lisää tapahtumasta <a href='http://2015.tracon.fi'>Traconin kotisivuilta</a>.</p>",
+        )
+
+        if self.test:
+            t = now()
+            defaults.update(
+                ticket_sales_starts=t - timedelta(days=60),
+                ticket_sales_ends=t + timedelta(days=60),
+            )
+        else:
+            defaults.update(
+                ticket_sales_starts=datetime(2014, 12, 1, 0, 0, tzinfo=self.tz),
+                ticket_sales_ends=datetime(2015, 12, 20, 0, 0, tzinfo=self.tz),
+            )
+
+        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+
+        def limit_group(description, limit):
+            limit_group, unused = LimitGroup.objects.get_or_create(
+                event=self.event,
+                description=description,
+                defaults=dict(limit=limit),
+            )
+
+            return limit_group
+
+        def ordering():
+            ordering.counter += 10
+            return ordering.counter
+        ordering.counter = 0
+
+        for product_info in [
+            dict(
+                name=u'Joulupaketti - 2 kpl viikonloppulippu ja 1 kpl kalenteri',
+                description=u'Paketti sisältää kaksi viikonloppulippua ja yhden Tracon 2015 -seinäkalenterin. Tuotteet toimitetaan antamaasi osoitteeseen postitse, ja postikulut sisältyvät hintaan.',
+                internal_description=u'HUOM! Järjestelmä ei tue lippukiintiöiden kuluttamista kahdella per myyty paketti, joten lippukiintiöt täytyy korjata käsin kun joulupaketit on myyty.',
+                limit_groups=[
+                    # limit_group('Lauantain liput', 5000, 2),
+                    # limit_group('Sunnuntain liput', 5000, 2),
+                    limit_group('Joulupaketti A', 80),
+                ],
+                price_cents=6000,
+                requires_shipping=True,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+            ),
+            dict(
+                name=u'Joulupaketti - 1 kpl viikonloppulippu ja 1 kpl kalenteri',
+                description=u'Paketti sisältää yhden viikonloppulipun ja yhden Tracon 2015 -seinäkalenterin. Tuotteet toimitetaan antamaasi osoitteeseen postitse, ja postikulut sisältyvät hintaan.',
+                limit_groups=[
+                    limit_group('Lauantain liput', 5000),
+                    limit_group('Sunnuntain liput', 5000),
+                    limit_group('Joulupaketti B', 80),
+                ],
+                price_cents=3500,
+                requires_shipping=True,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+            ),
+        ]:
+            name = product_info.pop('name')
+            limit_groups = product_info.pop('limit_groups')
+
+            product, unused = Product.objects.get_or_create(
+                event=self.event,
+                name=name,
+                defaults=product_info
+            )
+
+            if not product.limit_groups.exists():
+                product.limit_groups = limit_groups
+                product.save()
 
 
 class Command(BaseCommand):
