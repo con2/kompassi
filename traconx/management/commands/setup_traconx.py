@@ -9,10 +9,18 @@ from core.utils import slugify
 
 
 class Setup(object):
+    def __init__(self):
+        self._ordering = 0
+
+    def get_ordering_number(self):
+        self._ordering += 10
+        return self._ordering
+
     def setup(self, test=False):
         self.test = test
         self.tz = get_default_timezone()
         self.setup_core()
+        self.setup_labour()
         self.setup_tickets()
 
     def setup_core(self):
@@ -33,6 +41,7 @@ class Setup(object):
         ))
 
     def setup_labour(self):
+        from core.models import Person
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
@@ -45,22 +54,26 @@ class Setup(object):
             WorkPeriod,
         )
         from ...models import SignupExtra, SpecialDiet, Night
+        from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, created = LabourEventMeta.get_or_create_group(self.event, 'admins')
 
         if self.test and created:
+            from core.models import Person
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
+
+        content_type = ContentType.objects.get_for_model(SignupExtra)
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
             work_begins=datetime(2015, 9, 4, 8, 0, tzinfo=self.tz),
             work_ends=datetime(2015, 9, 6, 22, 0, tzinfo=self.tz),
             admin_group=labour_admin_group,
-            contact_email='Tracon X -työvoimatiimi <tyovoima@tracon.fi>',
+            contact_email='Traconin työvoimatiimi <tyovoima@tracon.fi>',
         )
 
-        if options['test']:
+        if self.test:
             t = now()
             labour_event_meta_defaults.update(
                 registration_opens=t - timedelta(days=60),
@@ -103,6 +116,7 @@ class Setup(object):
                 defaults=dict(
                     name=pc_name,
                     app_label=pc_app_label,
+                    priority=self.get_ordering_number(),
                 ),
             )
 
@@ -113,26 +127,26 @@ class Setup(object):
         tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
         conitea = PersonnelClass.objects.get(event=self.event, slug='conitea')
         ylivankari = PersonnelClass.objects.get(event=self.event, slug='ylivankari')
-        ohjelma = PersonnelClass.objects.get(event=selv.event, slug='ohjelma')
+        ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
         for name, description, pcs in [
             (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen', [conitea]),
 
-            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [ylivankari, tyovoima]),
-            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [ylivankari, tyovoima]),
-            (u'Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.', [ylivankari, tyovoima]),
-            (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [ylivankari, tyovoima]),
-            (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.', [ylivankari, tyovoima]),
-            (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [ylivankari, tyovoima]),
-            (u'Myynti', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [ylivankari, tyovoima]),
-            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [ylivankari, tyovoima]),
-            (u'Ohjelma-avustaja', u'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.', [ylivankari, tyovoima]),
-            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Hygieniapassi suositeltava.', [ylivankari, tyovoima]),
-            (u'Taltiointi', u'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.', [ylivankari, tyovoima]),
-            (u'Tekniikka', u'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä ongelmanratkaisua.', [ylivankari, tyovoima]),
-            (u'Valokuvaus', u'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.', [ylivankari, tyovoima]),
-            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [ylivankari, tyovoima]),
-            (u'Info', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [ylivankari, tyovoima]),
+            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, ylivankari]),
+            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [tyovoima, ylivankari]),
+            (u'Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.', [tyovoima, ylivankari]),
+            (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima, ylivankari]),
+            (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.', [tyovoima, ylivankari]),
+            (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima, ylivankari]),
+            (u'Myynti', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, ylivankari]),
+            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [tyovoima, ylivankari]),
+            (u'Ohjelma-avustaja', u'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.', [tyovoima, ylivankari]),
+            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Hygieniapassi suositeltava.', [tyovoima, ylivankari]),
+            (u'Taltiointi', u'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.', [tyovoima, ylivankari]),
+            (u'Tekniikka', u'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä ongelmanratkaisua.', [tyovoima, ylivankari]),
+            (u'Valokuvaus', u'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.', [tyovoima, ylivankari]),
+            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima, ylivankari]),
+            (u'Info', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, ylivankari]),
 
             (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
@@ -156,7 +170,7 @@ class Setup(object):
 
         for jc_name, qualification_name in [
             (u'Järjestyksenvalvoja', u'JV-kortti'),
-            (u'Logistiikka', u'B-ajokortti'),
+            (u'Logistiikka', u'Henkilöauton ajokortti (B)'),
             (u'Green room', u'Hygieniapassi'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
@@ -164,18 +178,18 @@ class Setup(object):
 
         period_length = timedelta(hours=8)
         for period_description, period_start in [
-            ("Lauantain aamuvuoro (la klo 08-16)", event.start_time.replace(hour=8)),
-            ("Lauantain iltavuoro (la klo 16-24)", event.start_time.replace(hour=16)),
-            ("Lauantai-sunnuntai-yövuoro (su klo 00-08)", event.end_time.replace(hour=0)),
-            ("Sunnuntain aamuvuoro (su klo 08-16)", event.end_time.replace(hour=8)),
-            ("Sunnuntain iltavuoro (su klo 16-20)", event.end_time.replace(hour=16)),
+            ("Lauantain aamuvuoro (la klo 08-16)", None),
+            ("Lauantain iltavuoro (la klo 16-24)", None),
+            ("Lauantai-sunnuntai-yövuoro (su klo 00-08)", None),
+            ("Sunnuntain aamuvuoro (su klo 08-16)", None),
+            ("Sunnuntain iltavuoro (su klo 16-20)", None),
         ]:
             WorkPeriod.objects.get_or_create(
                 event=self.event,
                 description=period_description,
                 defaults=dict(
                     start_time=period_start,
-                    end_time=period_start + period_length
+                    end_time=(period_start + period_length) if period_start else None,
                 )
             )
 
@@ -201,8 +215,8 @@ class Setup(object):
                 title=u'Conitean ilmoittautumislomake',
                 signup_form_class_path='traconx.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='traconx.forms:OrganizerSignupExtraForm',
-                active_from=datetime(2014, 9, 27, 12, 0, 0, tzinfo=self.tz),
-                active_until=datetime(2015, 9, 31, 23, 59, 59, tzinfo=self.tz),
+                active_from=datetime(2014, 11, 15, 12, 0, 0, tzinfo=self.tz),
+                active_until=datetime(2015, 11, 22, 23, 59, 59, tzinfo=self.tz),
             ),
         )
 

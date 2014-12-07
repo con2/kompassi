@@ -319,27 +319,29 @@ if 'payments' in INSTALLED_APPS:
 
 if 'lippukala' in INSTALLED_APPS:
     # XXX event specific, move to the database
-    import yukicon2015.lippukala_integration
+    import traconx.lippukala_integration
 
-    # LIPPUKALA_PREFIXES = tracon9.lippukala_integration.PREFIXES
-    # LIPPUKALA_LITERATE_KEYSPACES = tracon9.lippukala_integration.KEYSPACES
-    # LIPPUTURSKA_QUEUE_SELECTOR = tracon9.lippukala_integration.select_queue
-
-    # LIPPUKALA_CODE_MIN_N_DIGITS = 7
-    # LIPPUKALA_CODE_MAX_N_DIGITS = 7
-
-    # LIPPUKALA_PRINT_LOGO_PATH = mkpath('static', 'images', 'tracon_logo_kuitille.jpg')
-    # LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.84, 3.13)
-
-    LIPPUKALA_PREFIXES = yukicon2015.lippukala_integration.PREFIXES
-    LIPPUKALA_LITERATE_KEYSPACES = yukicon2015.lippukala_integration.KEYSPACES
-    LIPPUTURSKA_QUEUE_SELECTOR = yukicon2015.lippukala_integration.select_queue
+    # Tracon
+    LIPPUKALA_PREFIXES = traconx.lippukala_integration.PREFIXES
+    LIPPUKALA_LITERATE_KEYSPACES = traconx.lippukala_integration.KEYSPACES
+    LIPPUTURSKA_QUEUE_SELECTOR = traconx.lippukala_integration.select_queue
 
     LIPPUKALA_CODE_MIN_N_DIGITS = 7
     LIPPUKALA_CODE_MAX_N_DIGITS = 7
 
-    LIPPUKALA_PRINT_LOGO_PATH = mkpath('yukicon2015', 'static', 'images', 'yukicon_436_test.jpg')
-    LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.19, 1.00)
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath('static', 'images', 'tracon_logo_kuitille.jpg')
+    LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.84, 3.13)
+
+    # Yukicon
+    # LIPPUKALA_PREFIXES = yukicon2015.lippukala_integration.PREFIXES
+    # LIPPUKALA_LITERATE_KEYSPACES = yukicon2015.lippukala_integration.KEYSPACES
+    # LIPPUTURSKA_QUEUE_SELECTOR = yukicon2015.lippukala_integration.select_queue
+
+    # LIPPUKALA_CODE_MIN_N_DIGITS = 7
+    # LIPPUKALA_CODE_MAX_N_DIGITS = 7
+
+    # LIPPUKALA_PRINT_LOGO_PATH = mkpath('yukicon2015', 'static', 'images', 'yukicon_436_test.jpg')
+    # LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.19, 1.00)
 
 
 
