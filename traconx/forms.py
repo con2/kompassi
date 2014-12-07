@@ -88,7 +88,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         )
 
         self.fields['job_title'].help_text = u"Mikä on tehtäväsi coniteassa? Printataan badgeen."
-        self.fields['job_title'].required = True
+        # self.fields['job_title'].required = True
 
     class Meta:
         model = Signup
@@ -115,6 +115,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
                 'shirt_size',
                 'special_diet',
                 'special_diet_other',
+                'email_alias',
             ),
         )
 
@@ -125,6 +126,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             'shirt_size',
             'special_diet',
             'special_diet_other',
+            'email_alias',
         )
 
         widgets = dict(

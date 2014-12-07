@@ -5,6 +5,8 @@ from django.db import models
 from labour.models import SignupExtraBase
 from labour.querybuilder import QueryBuilder, add_prefix
 
+from core.utils import validate_slug
+
 
 SHIRT_SIZES = [
     (u'NO_SHIRT', u'Ei paitaa'),
@@ -130,6 +132,17 @@ class SignupExtra(SignupExtraBase):
         verbose_name=u'Vapaa alue',
         help_text=u'Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
             u'omaa kenttää yllä, käytä tätä kenttää.'
+    )
+
+    email_alias = models.CharField(
+        blank=True,
+        default=u'',
+        max_length=32,
+        verbose_name=u'Sähköpostialias',
+        help_text=u'Coniitit saavat käyttöönsä nick@tracon.fi-tyyppisen sähköpostialiaksen, joka '
+            u'ohjataan coniitin omaan sähköpostilaatikkoon. Tässä voit toivoa haluamaasi sähköpostialiaksen alkuosaa eli sitä, joka tulee ennen @tracon.fi:tä. '
+            u'Sallittuja merkkejä ovat pienet kirjaimet a-z, numerot 0-9 sekä väliviiva.',
+        validators=[validate_slug]
     )
 
     @classmethod
