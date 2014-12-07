@@ -65,7 +65,7 @@ def select_queue(order):
     from core.models import Event
     from tickets.models import Product
 
-    event = Event.objects.get(name='Tracon 9')
+    event = Event.objects.get(name='Tracon X')
     product = Product.objects.get(event=event, name__icontains='viikonlop', electronic_ticket=True)
     ops = order.order_product_set.filter(product__electronic_ticket=True)
     if ops.count() != 1:
