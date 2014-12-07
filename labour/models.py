@@ -961,9 +961,6 @@ class Signup(models.Model, CsvExportMixin):
             self.job_categories_accepted.add(self.job_categories.get())
 
     def apply_state_ensure_personnel_class_is_set(self):
-        print
-        print 'apply_state_ensure_personnel_class_is_set'
-
         for app_label in self.job_categories_accepted.values_list('app_label', flat=True).distinct():
             print '- app_label', app_label
             if self.personnel_classes.filter(app_label=app_label).exists():
