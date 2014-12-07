@@ -7,6 +7,7 @@ from .models import (
     InfoLink,
     JobCategory,
     LabourEventMeta,
+    PersonnelClass,
     PersonQualification,
     Qualification,
     Signup,
@@ -44,6 +45,12 @@ class JobCategoryAdmin(admin.ModelAdmin):
     ordering = ('event', 'name')
 
 
+class PersonnelClassAdmin(admin.ModelAdmin):
+    list_display = ('event', 'name')
+    list_filter = ('event',)
+    ordering = ('event', 'name')
+
+
 class AlternativeSignupFormAdmin(admin.ModelAdmin):
     list_display = ('event', 'slug', 'title')
     list_filter = ('event',)
@@ -58,6 +65,7 @@ class InfoLinkAdmin(admin.ModelAdmin):
 admin.site.register(Signup, SignupAdmin)
 admin.site.register(WorkPeriod)
 admin.site.register(JobCategory, JobCategoryAdmin)
+admin.site.register(PersonnelClass, PersonnelClassAdmin)
 admin.site.register(Qualification, QualificationAdmin)
 admin.site.register(AlternativeSignupForm, AlternativeSignupFormAdmin)
 admin.site.register(InfoLink, InfoLinkAdmin)
