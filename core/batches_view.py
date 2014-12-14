@@ -25,7 +25,7 @@ class HiddenBatchCrouchingForm(forms.Form):
     batch_id = forms.IntegerField(required=True)
 
 
-def batches_view(Batch, template, CreateBatchForm=CreateBatchForm):
+def batches_view(Batch, template, CreateBatchForm=CreateBatchForm, created_at_field='created_at'):
     """
     Creates a view the like of which you see in two places - tickets admin and badges admin.
     It is used to manage batches of things that in turn are handled together.
@@ -76,7 +76,7 @@ def batches_view(Batch, template, CreateBatchForm=CreateBatchForm):
 
         vars.update(
             new_batch_form=new_batch_form,
-            batches=Batch.objects.filter(event=event).order_by('created_at')
+            batches=Batch.objects.filter(event=event).order_by(created_at_field)
         )
 
         return render(request, template, vars)

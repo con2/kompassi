@@ -52,6 +52,7 @@ __all__ = [
 tickets_admin_batches_view = tickets_admin_required(batches_view(
     Batch=Batch,
     template="tickets_admin_batches_view.jade",
+    created_at_field='create_time',
 ))
 
 
