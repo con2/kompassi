@@ -157,7 +157,7 @@ class Batch(models.Model):
             return u"Awaiting delivery"
 
     @classmethod
-    def create(cls, event, max_orders=100):
+    def create(cls, event, max_items=100):
         # XXX concurrency disaster waiting to happen
         # solution: only I do the botching^Wbatching
 
@@ -190,7 +190,7 @@ class Batch(models.Model):
             order.save()
 
             accepted += 1
-            if accepted >= max_orders:
+            if accepted >= max_items:
                 break
 
         return batch
