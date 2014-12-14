@@ -41,7 +41,7 @@ def render_logo(x, y, c):
 
 
 def render_receipt(order, c):
-    render_logo(135*mm, 255*mm, c)
+    # render_logo(135*mm, 255*mm, c)
 
     c.setFont("Times-Roman", 12)
     c.drawString(135*mm, 250*mm, order.event.headline)
