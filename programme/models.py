@@ -4,10 +4,11 @@ import datetime
 
 from django.db import models
 from django.conf import settings
+from django.utils.timezone import now
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, OneTimeCode
-from core.utils import url
+from core.utils import url, alias_property
 
 from .utils import window, next_full_hour, full_hours_between
 
@@ -16,7 +17,12 @@ ONE_HOUR = datetime.timedelta(hours=1)
 
 
 class ProgrammeEventMeta(EventMetaBase):
-    public = models.BooleanField(default=True)
+    public_from = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Ohjelmakartan julkaisuaika',
+        help_text=u'Ohjelmakartta näkyy kansalle tästä eteenpäin.',
+    )
 
     contact_email = models.CharField(
         max_length=255,
@@ -41,6 +47,11 @@ class ProgrammeEventMeta(EventMetaBase):
             )
         )
 
+    @property
+    def is_public(self):
+        return self.public_from and now() > self.public_from
+
+    public = alias_property('is_public')
 
 class Category(models.Model):
     event = models.ForeignKey('core.Event')
