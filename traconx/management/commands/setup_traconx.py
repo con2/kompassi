@@ -22,6 +22,7 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_tickets()
+        self.setup_programme()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -327,6 +328,133 @@ class Setup(object):
             if not product.limit_groups.exists():
                 product.limit_groups = limit_groups
                 product.save()
+
+
+    def setup_programme(self):
+        from programme.models import (
+            Category,
+            Programme,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            TimeBlock,
+            View,
+        )
+
+        programme_admin_group, unused = ProgrammeEventMeta.get_or_create_group(self.event, 'admins')
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Tracon X -ohjelmatiimi <ohjelma@tracon.fi>',
+        ))
+
+        for room_name in [
+            u'Iso sali',
+            u'Pieni sali',
+            u'Sopraano',
+            u'Rondo',
+            u'Studio',
+            u'Sonaatti 1',
+            u'Sonaatti 2',
+            u'Basso',
+            u'Opus 1',
+            u'Opus 2',
+            u'Opus 3',
+            u'Opus 4',
+            u'Puistolava',
+            u'Puisto - Iso miittiteltta',
+            u'Puisto - Pieni miittiteltta',
+            u'Puisto - Bofferiteltta',
+        ]:
+            Room.objects.get_or_create(
+                venue=self.venue,
+                name=room_name,
+                defaults=dict(
+                    order=self.get_ordering_number()
+                )
+            )
+
+        role, unused = Role.objects.get_or_create(
+            title=u'Ohjelmanjärjestäjä',
+            defaults=dict(
+                is_default=True,
+                require_contact_info=True,
+            )
+        )
+
+        for title, style in [
+            (u'Animeohjelma', u'anime'),
+            (u'Cosplayohjelma', u'cosplay'),
+            (u'Miitti', u'miitti'),
+            (u'Muu ohjelma', u'muu'),
+            (u'Roolipeliohjelma', u'rope'),
+        ]:
+            Category.objects.get_or_create(
+                event=self.event,
+                style=style,
+                defaults=dict(
+                    title=title,
+                )
+            )
+
+        if self.test:
+            # create some test programme
+            Programme.objects.get_or_create(
+                category=Category.objects.get(title='Animeohjelma', event=self.event),
+                title='Yaoi-paneeli',
+                defaults=dict(
+                    description='Kika-kika tirsk',
+                )
+            )
+
+        for start_time, end_time in [
+            (
+                datetime(2015, 9, 5, 11, 0, 0, tzinfo=self.tz),
+                datetime(2015, 9, 6, 1 , 0, 0, tzinfo=self.tz),
+            ),
+            (
+                datetime(2015, 9, 6, 9 , 0, 0, tzinfo=self.tz),
+                datetime(2015, 9, 6, 17, 0, 0, tzinfo=self.tz),
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+        SpecialStartTime.objects.get_or_create(
+            event=self.event,
+            start_time=datetime(2015, 9, 5, 10, 30, 0, tzinfo=self.tz),
+        )
+
+        for view_name, room_names in [
+            (u'Pääohjelmatilat', [
+                u'Iso sali',
+                u'Pieni sali',
+                u'Sopraano',
+                u'Studio',
+                u'Sonaatti 1',
+                u'Sonaatti 2',
+            ]),
+            (u'Toissijaiset ohjelmatilat', [
+                u'Opus 1',
+                u'Puistolava',
+                u'Puisto - Iso miittiteltta',
+                u'Puisto - Pieni miittiteltta',
+            ]),
+        ]:
+            rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
+                for room_name in room_names]
+
+            view, created = View.objects.get_or_create(event=self.event, name=view_name)
+
+            if created:
+                view.rooms = rooms
+                view.save()
 
 
 class Command(BaseCommand):
