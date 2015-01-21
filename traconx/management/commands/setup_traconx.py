@@ -22,6 +22,7 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_tickets()
+        self.setup_payments()
         self.setup_programme()
 
     def setup_core(self):
@@ -328,6 +329,11 @@ class Setup(object):
             if not product.limit_groups.exists():
                 product.limit_groups = limit_groups
                 product.save()
+
+
+    def setup_payments(self):
+        from payments.models import PaymentsEventMeta
+        PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
 
     def setup_programme(self):

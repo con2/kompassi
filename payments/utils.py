@@ -5,6 +5,8 @@ from django.conf import settings
 ENCODING = 'UTF-8'
 
 def compute_payment_request_mac(request, order):
+    meta = order.event.payments_event_meta
+
     mac = hashlib.md5()
     mac.update(settings.CHECKOUT_PARAMS['VERSION'])
     mac.update("+")
@@ -18,7 +20,7 @@ def compute_payment_request_mac(request, order):
     mac.update("+")
     mac.update(settings.CHECKOUT_PARAMS['LANGUAGE'])
     mac.update("+")
-    mac.update(settings.CHECKOUT_PARAMS['MERCHANT'])
+    mac.update(meta.checkout_merchant)
     mac.update("+")
     mac.update(order.checkout_return_url(request))
     mac.update("+")
@@ -40,7 +42,7 @@ def compute_payment_request_mac(request, order):
     mac.update("+")
     mac.update(settings.CHECKOUT_PARAMS['ALGORITHM'])
     mac.update("+")
-    mac.update(settings.CHECKOUT_PARAMS['DELIVERY_DATE'])
+    mac.update(meta.checkout_delivery_date)
     mac.update("+")
     mac.update(order.customer.first_name.encode(ENCODING))
     mac.update("+")
@@ -52,6 +54,6 @@ def compute_payment_request_mac(request, order):
     mac.update("+")
     mac.update(order.customer.city.encode(ENCODING))
     mac.update("+")
-    mac.update(settings.CHECKOUT_PARAMS['PASSWORD'])
+    mac.update(meta.checkout_password)
 
     return mac.hexdigest().upper()

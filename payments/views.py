@@ -36,6 +36,7 @@ def please_contact(order, reason=u"Tapahtui virhe."):
 @require_GET
 def payments_redirect_view(request, event):
     order = get_order(request, event)
+    meta = event.payments_event_meta
 
     if not order.is_confirmed:
       messages.error(request, u'Ole hyvä ja tee tilauksesi ensin valmiiksi.')
@@ -49,6 +50,8 @@ def payments_redirect_view(request, event):
       order=order,
       checkout_mac=order.checkout_mac(request),
       checkout_return_url=order.checkout_return_url(request),
+      checkout_merchant=meta.checkout_merchant,
+      checkout_delivery_date=meta.checkout_delivery_date,
       CHECKOUT_PARAMS=settings.CHECKOUT_PARAMS,
     )
 

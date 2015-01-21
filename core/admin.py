@@ -45,6 +45,10 @@ if 'tickets' in settings.INSTALLED_APPS:
     from tickets.admin import InlineTicketsEventMetaAdmin
     extra_inlines.append(InlineTicketsEventMetaAdmin)
 
+if 'payments' in settings.INSTALLED_APPS:
+    from payments.admin import InlinePaymentsEventMetaAdmin
+    extra_inlines.append(InlinePaymentsEventMetaAdmin)
+
 
 class EventAdmin(admin.ModelAdmin):
     inlines = tuple(extra_inlines)

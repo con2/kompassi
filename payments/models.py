@@ -1,10 +1,43 @@
+# encoding: utf-8
+
 import hashlib
 
 from django.conf import settings
 from django.db import models
 
+from core.models import EventMetaBase
+
+
+class PaymentsEventMeta(EventMetaBase):
+    checkout_password = models.CharField(max_length=255)
+    checkout_merchant = models.CharField(max_length=255)
+    checkout_delivery_date = models.CharField(max_length=9)
+
+    @classmethod
+    def get_or_create_dummy(cls, event=None):
+        from django.contrib.auth.models import Group
+        from core.models import Event
+
+        if event is None:
+            event, unused = Event.get_or_create_dummy()
+
+        group, unused = PaymentsEventMeta.get_or_create_group(event, 'admins')
+
+        return cls.objects.get_or_create(event=event, defaults=dict(
+            checkout_password='SAIPPUAKAUPPIAS',
+            checkout_merchant='375917',
+            checkout_delivery_date='20130914',
+            admin_group=group,
+        ))
+
+    class Meta:
+        verbose_name = u'tapahtuman maksunvälitystiedot'
+        verbose_name_plural = u'tapahtuman maksunvälitystiedot'
+
 
 class Payment(models.Model):
+    event = models.ForeignKey('core.Event')
+
     # XXX What the fuck is this and why the fuck is it here
     test = models.IntegerField(blank=True, null=True)
 
@@ -17,8 +50,11 @@ class Payment(models.Model):
     MAC = models.CharField(max_length=32)
 
     def _check_mac(self):
+        meta = self.event.payments_event_meta
+        assert meta is not None
+
     	computed_mac = hashlib.md5()
-    	computed_mac.update(settings.CHECKOUT_PARAMS['PASSWORD'])
+    	computed_mac.update(meta.checkout_password)
         computed_mac.update("&")
     	computed_mac.update(self.VERSION)
         computed_mac.update("&")
