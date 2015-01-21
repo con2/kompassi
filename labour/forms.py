@@ -56,7 +56,7 @@ class SignupForm(forms.ModelForm):
         super(SignupForm, self).__init__(*args, **kwargs)
 
         from django.db.models import Q
-        q = Q(event=event)
+        q = Q(event=event, personnel_classes__app_label='labour')
         if not admin:
             q = q & Q(public=True)
 
