@@ -81,11 +81,10 @@ class Setup(object):
                 registration_closes=t + timedelta(days=60),
             )
         else:
-            # TODO once we know when the registration opens
-            # labour_event_meta_defaults.update(
-            #     registration_opens=datetime(2014, 3, 1, 0, 0, tzinfo=self.tz),
-            #     registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=self.tz),
-            # )
+            labour_event_meta_defaults.update(
+                registration_opens=datetime(2015, 1, 22, 0, 0, tzinfo=self.tz),
+                registration_closes=datetime(2015, 3, 14, 0, 0, tzinfo=self.tz),
+            )
             pass
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
