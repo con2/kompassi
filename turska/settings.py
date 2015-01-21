@@ -145,6 +145,7 @@ INSTALLED_APPS = (
     'traconx',
     'hitpoint2015',
     'yukicon2015',
+    'kuplii2015',
 )
 
 LOGGING = {
