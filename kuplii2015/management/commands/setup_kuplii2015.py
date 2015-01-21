@@ -165,6 +165,9 @@ class Setup(object):
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
 
+            jc.required_qualifications = [qual]
+            jc.save()
+
         period_length = timedelta(hours=8)
         for period_description, period_start in [
             (u"Perjantain kasaus (pe klo 14-18)", None),
