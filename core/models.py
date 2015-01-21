@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.dateformat import format as format_date
 from django.utils import timezone
 
-from .utils import validate_slug, SLUG_FIELD_PARAMS, url, ensure_group_exists
+from .utils import validate_slug, SLUG_FIELD_PARAMS, url, ensure_group_exists, event_meta_property
 
 
 class Venue(models.Model):
@@ -154,58 +154,14 @@ class Event(models.Model):
             ),
         )
 
-    # XXX BEGIN UGLY COPYPASTA
-    @property
-    def labour_event_meta(self):
-        if 'labour' not in settings.INSTALLED_APPS:
-            return None
-
-        from labour.models import LabourEventMeta
-
-        try:
-            return self.laboureventmeta
-        except LabourEventMeta.DoesNotExist:
-            return None
-
-    @property
-    def programme_event_meta(self):
-        if 'programme' not in settings.INSTALLED_APPS:
-            return None
-
-        from programme.models import ProgrammeEventMeta
-
-        try:
-            return self.programmeeventmeta
-        except ProgrammeEventMeta.DoesNotExist:
-            return None
+    labour_event_meta = event_meta_property('labour', 'labour.models:LabourEventMeta')
+    programme_event_meta = event_meta_property('programme', 'programme.models:ProgrammeEventMeta')
+    badges_event_meta = event_meta_property('badges', 'badges.models:BadgesEventMeta')
+    tickets_event_meta = event_meta_property('tickets', 'tickets.models:TicketsEventMeta')
+    payments_event_meta = event_meta_property('payments', 'payments.models:PaymentsEventMeta')
 
     def app_event_meta(self, app_label):
         return getattr(self, '{}_event_meta'.format(app_label))
-
-    @property
-    def badges_event_meta(self):
-        if 'badges' not in settings.INSTALLED_APPS:
-            return None
-
-        from badges.models import BadgesEventMeta
-
-        try:
-            return self.badgeseventmeta
-        except BadgesEventMeta.DoesNotExist:
-            return None
-
-    @property
-    def tickets_event_meta(self):
-        if 'tickets' not in settings.INSTALLED_APPS:
-            return None
-
-        from tickets.models import TicketsEventMeta
-
-        try:
-            return self.ticketseventmeta
-        except TicketsEventMeta.DoesNotExist:
-            return None
-    # XXX END UGLY COPYPASTA
 
 
 EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255

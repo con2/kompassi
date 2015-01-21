@@ -283,7 +283,7 @@ def ensure_group_exists(group_name):
         from external_auth.utils import ensure_group_exists as ea_ensure_group_exists
         ea_ensure_group_exists(group_name)
 
-    return Group.objects.get_or_create(name=group_name)        
+    return Group.objects.get_or_create(name=group_name)
 
 
 def get_code(path):
@@ -384,3 +384,20 @@ def simple_object_init(self, **kwargs):
 
     for key, value in kwargs.iteritems():
         setattr(self, key, value)
+
+
+def event_meta_property(app_label, code_path):
+    if app_label not in settings.INSTALLED_APPS:
+        return property(lambda self: None)
+
+    def _get(self):
+        # NOTE moving get_code invocation outside _get would create a circular import
+        EventMetaClass = get_code(code_path)
+
+        try:
+            return EventMetaClass.objects.get(event=self)
+        except EventMetaClass.DoesNotExist:
+            return None
+
+    return property(_get)
+
