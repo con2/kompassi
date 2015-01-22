@@ -41,12 +41,6 @@ class SignupExtra(SignupExtraBase):
         choices=TOTAL_WORK_CHOICES,
     )
 
-    construction = models.BooleanField(
-        default=False,
-        verbose_name=u'Voin osallistua perjantain kasaustalkoisiin',
-        help_text=u'Kasaustalkoisiin osallistumista ei lasketa tapahtuman aikaiseen kokonaistyömäärään.',
-    )
-
     special_diet = models.ManyToManyField(
         SpecialDiet,
         blank=True,
@@ -109,7 +103,7 @@ class SignupKuplii2015(QueryBuilder):
         (u"Sisäiset", add_prefix("signup__", (
             "state", "job_categories_accepted__pk", "notes", "created_at", "updated_at"))),
         (u"Työvuorotoiveet", "signup__job_categories__pk", "signup__work_periods__pk",
-            "shift_type", "total_work", "construction"),
+            "shift_type", "total_work"),
         (u"Lisätiedot", "special_diet__pk", "special_diet_other",
             "prior_experience", "free_text"),
     )

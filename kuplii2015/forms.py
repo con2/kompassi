@@ -19,7 +19,6 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.layout = Layout(
             'shift_type',
             'total_work',
-            indented_without_label('construction'),
 
             Fieldset(u'Lisätiedot',
                 'special_diet',
@@ -35,7 +34,6 @@ class SignupExtraForm(forms.ModelForm):
         fields = (
             'shift_type',
             'total_work',
-            'construction',
             'special_diet',
             'special_diet_other',
             'prior_experience',
@@ -111,7 +109,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict(
             shift_type='yli4h',
             total_work='yli8h',
-            construction=False,
             prior_experience=u'',
             free_text=u'Syötetty käyttäen kupliitin ilmoittautumislomaketta',
         )
