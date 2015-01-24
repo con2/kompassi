@@ -15,9 +15,11 @@ from django.db import models
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.utils.timezone import get_default_timezone, now
+from django.utils.timezone import now
 from django.template import RequestContext, defaultfilters
 from django.template.loader import render_to_string
+
+from dateutil.tz import tzlocal
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
@@ -134,7 +136,7 @@ def format_date(date):
 
 
 def format_datetime(datetime):
-    tz = get_default_timezone()
+    tz = tzlocal()
     return defaultfilters.date(datetime.astimezone(tz), "SHORT_DATETIME_FORMAT")
 
 
@@ -295,6 +297,20 @@ def get_code(path):
     module_name, member_name = path.split(':')
     module = import_module(module_name)
     return getattr(module, member_name)
+
+
+def code_property(code_field_name):
+    """
+    class MyModel(models.Model):
+        do_something_code = models.CharField(max_length=255)
+        do_something = code_property("do_something_code")
+    """
+
+    def _get(self):
+        from core.utils import get_code
+        return get_code(getattr(self, code_field_name))
+
+    return property(_get)
 
 
 def is_within_period(period_start, period_end, t=None):

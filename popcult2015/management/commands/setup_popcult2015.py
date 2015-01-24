@@ -16,23 +16,24 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_tickets()
+        self.setup_payments()
 
     def setup_core(self):
         from core.models import Venue, Event
 
-        self.venue, unused = Venue.objects.get_or_create(name='Espoon kulttuurikeskus', defaults=dict(
-            name_inessive='Espoon kulttuurikeskuksessa',
+        self.venue, unused = Venue.objects.get_or_create(name='Helsingin kulttuuritalo', defaults=dict(
+            name_inessive='Helsingin kulttuuritalossa',
         ))
-        self.event, unused = Event.objects.get_or_create(slug='yukicon2015', defaults=dict(
-            name='Yukicon 2.0',
-            name_genitive='Yukicon 2.0 -tapahtuman',
-            name_illative='Yukicon 2.0 -tapahtumaan',
-            name_inessive='Yukicon 2.0 -tapahtumassa',
-            homepage_url='http://www.yukicon.fi',
-            organization_name='Yukitea ry',
-            organization_url='http://www.yukicon.fi',
-            start_time=datetime(2015, 1, 10, 10, 0, tzinfo=self.tz),
-            end_time=datetime(2015, 1, 11, 18, 0, tzinfo=self.tz),
+        self.event, unused = Event.objects.get_or_create(slug='popcult2015', defaults=dict(
+            name='Popcult Helsinki',
+            name_genitive='Popcult Helsinki -tapahtuman',
+            name_illative='Popcult Helsinki -tapahtumaan',
+            name_inessive='Popcult Helsinki -tapahtumassa',
+            homepage_url='http://popcult.fi/helsinki',
+            organization_name='Finnish Fandom Conventions ry',
+            organization_url='http://popcult.fi',
+            start_time=datetime(2015, 4, 25, 10, 0, tzinfo=self.tz),
+            end_time=datetime(2015, 4, 26, 18, 0, tzinfo=self.tz),
             venue=self.venue,
         ))
 
@@ -46,17 +47,17 @@ class Setup(object):
             due_days=14,
             shipping_and_handling_cents=0,
             reference_number_template="2015{:05d}",
-            contact_email='Yukicon <yukicon@yukicon.fi>',
-            plain_contact_email='yukicon@yukicon.fi',
-            ticket_free_text=u"Tämä on sähköinen lippusi Yukicon 2.0 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+            contact_email='Popcult Helsinki <liput@popcult.fi>',
+            plain_contact_email='liput@popcult.fi',
+            ticket_free_text=u"Tämä on sähköinen lippusi Popcult Helsinki -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
+                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
                 u"lipunvaihtopisteessä.\n\n"
                 u"Tervetuloa Yukiconiin!",
-            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Yukicon 2.0 -tapahtumaan!</h2>"
+            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Popcult Helsinki -tapahtumaan!</h2>"
                 u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                u"<p>Lue lisää tapahtumasta <a href='http://www.yukicon.fi'>Yukiconin kotisivuilta</a>.</p>",
+                u"<p>Lue lisää tapahtumasta <a href='http://popcult.fi/helsinki'>Popcult Helsinki -tapahtuman kotisivuilta</a>.</p>",
         )
 
         if self.test:
@@ -67,8 +68,8 @@ class Setup(object):
             )
         else:
             defaults.update(
-                ticket_sales_starts=datetime(2014, 11, 20, 18, 0, tzinfo=self.tz),
-                ticket_sales_ends=datetime(2015, 1, 11, 18, 0, tzinfo=self.tz),
+                ticket_sales_starts=datetime(2015, 1, 25, 18, 0, tzinfo=self.tz),
+                # ticket_sales_ends=datetime(2015, 1, 11, 18, 0, tzinfo=self.tz),
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -89,12 +90,12 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name=u'Yukicon 2015 -pääsylippu',
+                name=u'Popcult Helsinki -pääsylippu',
                 description=u'Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
                 limit_groups=[
-                    limit_group('Pääsyliput', 1450),
+                    limit_group('Pääsyliput', 900),
                 ],
-                price_cents=1700,
+                price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -114,10 +115,14 @@ class Setup(object):
                 product.limit_groups = limit_groups
                 product.save()
 
+    def setup_payments(self):
+        from payments.models import PaymentsEventMeta
+        PaymentsEventMeta.get_or_create_dummy(event=self.event)
+
 
 class Command(BaseCommand):
     args = ''
-    help = 'Setup yukicon2015 specific stuff'
+    help = 'Setup popcult2015 specific stuff'
 
     option_list = BaseCommand.option_list + (
         make_option('--test',

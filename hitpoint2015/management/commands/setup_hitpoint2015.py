@@ -3,7 +3,9 @@
 from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, make_option
-from django.utils.timezone import get_default_timezone, now
+from django.utils.timezone import now
+
+from dateutil.tz import tzlocal
 
 from core.utils import slugify
 
@@ -18,7 +20,7 @@ class Setup(object):
 
     def setup(self, test=False):
         self.test = test
-        self.tz = get_default_timezone()
+        self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
 

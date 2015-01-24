@@ -27,13 +27,13 @@ class Command(BaseCommand):
             (('setup_labour_common_qualifications',), dict(test=test)),
             (('setup_traconx',), dict(test=test)),
             (('setup_hitpoint2015',), dict(test=test)),
-            (('setup_yukicon2015',), dict(test=test)),
             (('setup_kuplii2015',), dict(test=test)),
+            (('setup_popcult2015',), dict(test=test)),
         ]
 
         if test:
             management_commands.extend((
-                (('test', 'core', 'labour', 'labour_common_qualifications', 'programme', 'tickets', 'tracon9'), dict()),
+                (('test', 'core', 'labour', 'labour_common_qualifications', 'programme', 'tickets'), dict()),
                 (('behave',), dict()),
             ))
 

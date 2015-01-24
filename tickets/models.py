@@ -11,7 +11,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from core.models import EventMetaBase
-from core.utils import url
+from core.utils import url, code_property
 from payments.utils import compute_payment_request_mac
 
 from .utils import format_date, format_price
@@ -664,7 +664,7 @@ class Order(models.Model):
         meta = self.event.tickets_event_meta
 
         if self.confirm_time:
-            return datetime.combine((self.confirm_time + timedelta(days=meta.due_days)).date(), dtime(23, 59, 59)).replace(tzinfo=timezone.get_default_timezone())
+            return datetime.combine((self.confirm_time + timedelta(days=meta.due_days)).date(), dtime(23, 59, 59)).replace(tzinfo=timezone.tzlocal())
         else:
             return None
 
@@ -706,7 +706,8 @@ class Order(models.Model):
         if 'lippukala' not in settings.INSTALLED_APPS:
             raise NotImplementedError('lippukala is not installed')
 
-        select_queue = settings.LIPPUTURSKA_QUEUE_SELECTOR
+        from tickets.lippukala_integration import select_queue
+
         return select_queue(self)
 
     @property

@@ -146,6 +146,7 @@ INSTALLED_APPS = (
     'hitpoint2015',
     'yukicon2015',
     'kuplii2015',
+    'popcult2015',
 )
 
 LOGGING = {
@@ -311,39 +312,20 @@ if 'external_auth' in INSTALLED_APPS:
 
 if 'payments' in INSTALLED_APPS:
     from payments.defaults import CHECKOUT_PARAMS
-    CHECKOUT_PARAMS = dict(CHECKOUT_PARAMS,
-        PASSWORD='SAIPPUAKAUPPIAS', # test account
-        MERCHANT='375917', # test account
-        DELIVERY_DATE='20130914' # Tracon 8 start
-    )
 
 
 if 'lippukala' in INSTALLED_APPS:
-    # XXX event specific, move to the database
-    import traconx.lippukala_integration
+    import tickets.lippukala_integration
 
-    # Tracon
-    LIPPUKALA_PREFIXES = traconx.lippukala_integration.PREFIXES
-    LIPPUKALA_LITERATE_KEYSPACES = traconx.lippukala_integration.KEYSPACES
-    LIPPUTURSKA_QUEUE_SELECTOR = traconx.lippukala_integration.select_queue
+    LIPPUKALA_PREFIXES = tickets.lippukala_integration.PREFIXES
+    LIPPUKALA_LITERATE_KEYSPACES = tickets.lippukala_integration.KEYSPACES
 
     LIPPUKALA_CODE_MIN_N_DIGITS = 7
     LIPPUKALA_CODE_MAX_N_DIGITS = 7
 
+    # TODO eroon näistä
     LIPPUKALA_PRINT_LOGO_PATH = mkpath('static', 'images', 'tracon_logo_kuitille.jpg')
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.84, 3.13)
-
-    # Yukicon
-    # LIPPUKALA_PREFIXES = yukicon2015.lippukala_integration.PREFIXES
-    # LIPPUKALA_LITERATE_KEYSPACES = yukicon2015.lippukala_integration.KEYSPACES
-    # LIPPUTURSKA_QUEUE_SELECTOR = yukicon2015.lippukala_integration.select_queue
-
-    # LIPPUKALA_CODE_MIN_N_DIGITS = 7
-    # LIPPUKALA_CODE_MAX_N_DIGITS = 7
-
-    # LIPPUKALA_PRINT_LOGO_PATH = mkpath('yukicon2015', 'static', 'images', 'yukicon_436_test.jpg')
-    # LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.19, 1.00)
-
 
 
 if 'background_tasks' in INSTALLED_APPS:

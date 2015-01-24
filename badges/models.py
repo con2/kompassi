@@ -10,7 +10,7 @@ from django.utils.timezone import now
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
-from core.utils import slugify, NONUNIQUE_SLUG_FIELD_PARAMS, time_bool_property
+from core.utils import slugify, NONUNIQUE_SLUG_FIELD_PARAMS, time_bool_property, code_property
 
 
 BADGE_ELIGIBLE_FOR_BATCHING = dict(
@@ -64,7 +64,7 @@ class CountBadgesMixin(object):
             ('progress-bar-info', u'Odottaa erässä', self.count_badges_waiting_in_batch),
             ('progress-bar-grey', u'Odottaa erää', self.count_badges_awaiting_batch),
         ]:
-            pb_value = count_method()    
+            pb_value = count_method()
 
             if pb_value > 0:
                 width = 100 * pb_value // max(pb_max, 1)
@@ -117,10 +117,7 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
             u'tracon9/badges.py:badge_factory.',
     )
 
-    @property
-    def badge_factory(self):
-        from core.utils import get_code
-        return get_code(self.badge_factory_code)
+    badge_factory = code_property('badge_factory_code')
 
     @classmethod
     def get_or_create_dummy(cls):
