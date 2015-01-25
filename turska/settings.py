@@ -324,8 +324,8 @@ if 'lippukala' in INSTALLED_APPS:
     LIPPUKALA_CODE_MAX_N_DIGITS = 7
 
     # TODO eroon näistä
-    LIPPUKALA_PRINT_LOGO_PATH = mkpath('static', 'images', 'tracon_logo_kuitille.jpg')
-    LIPPUKALA_PRINT_LOGO_SIZE_CM = (5.84, 3.13)
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath('popcult2015', 'static', 'images', 'popcult.png')
+    LIPPUKALA_PRINT_LOGO_SIZE_CM = (4.0, 4.0)
 
 
 if 'background_tasks' in INSTALLED_APPS:
