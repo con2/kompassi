@@ -325,7 +325,7 @@ if 'lippukala' in INSTALLED_APPS:
 
     # TODO eroon näistä
     LIPPUKALA_PRINT_LOGO_PATH = mkpath('popcult2015', 'static', 'images', 'popcult.png')
-    LIPPUKALA_PRINT_LOGO_SIZE_CM = (4.0, 4.0)
+    LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 
 if 'background_tasks' in INSTALLED_APPS:
