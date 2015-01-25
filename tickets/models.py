@@ -403,8 +403,11 @@ class Customer(models.Model):
 
     email = models.EmailField(
         verbose_name=u"Sähköpostiosoite",
-        help_text=u'Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus sekä mahdolliset sähköiset liput lähetetään tähän sähköpostiosoitteeseen.',
+        help_text=u'Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus sekä mahdolliset sähköiset liput '
+            u'lähetetään tähän sähköpostiosoitteeseen. HUOM! Hotmail-osoitteiden kanssa on välillä ollut '
+            u'viestien perillemeno-ongelmia. Suosittelemme käyttämään jotain muuta sähköpostiosoitetta kuin Hotmailia.',
     )
+
     allow_marketing_email = models.BooleanField(
         default=True,
         blank=True,
