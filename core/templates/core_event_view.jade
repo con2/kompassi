@@ -10,7 +10,7 @@ block content
               {{ event.formatted_start_and_end_date }}
 
         {{ event.description|linebreaks }}
-      .col-md-4
+      .col-md-4.hidden-sm.hidden-xs
         if event.logo_url
           a(href='{{ event.homepage_url }}', target='_blank')
             img(src='{{ event.logo_url }}', alt='{{ event.name }}', width='100%')
