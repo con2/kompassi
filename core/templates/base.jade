@@ -16,14 +16,15 @@ html
             span(class="icon-bar")
             span(class="icon-bar")
 
-          if event
-            a.navbar-brand(href='{% url "core_event_view" event.slug %}') {{ event.name }}
-          else
-            a.navbar-brand(href='{% url "core_frontpage_view" %}') {{ settings.KOMPASSI_INSTALLATION_NAME }}
+          a.navbar-brand(href='{% url "core_frontpage_view" %}') {{ settings.KOMPASSI_INSTALLATION_NAME }}
+
         .collapse.navbar-collapse#base-navbar-collapse
           ul.nav.navbar-nav
-            if event.homepage_url
-              li: a(href='{{ event.homepage_url }}') Takaisin {{ event.name_genitive }} sivustolle
+            if login_page
+              if event.homepage_url
+                li: a(href='{{ event.homepage_url }}') {{ event.name_genitive }} kotisivuille
+            else
+              include core_navbar_event.jade
           ul.nav.navbar-nav.navbar-right
             if not login_page
               include core_navbar_user.jade

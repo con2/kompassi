@@ -1,8 +1,6 @@
 if user.is_authenticated
   li.dropdown
     a(href="#", class="dropdown-toggle", data-toggle="dropdown")
-      //
-        i.glyphicon.glyphicon-user
       | {{ user.get_full_name }}
       b.caret
     ul.dropdown-menu
@@ -10,16 +8,4 @@ if user.is_authenticated
       li.divider
       li: a(href='/logout') Kirjaudu ulos
 else
-  li: a(href='{% url "core_registration_view" %}') Rekisteröidy
-  li: a(href='{% url "core_password_reset_request_view" %}') Salasana unohtunut
-  li
-    form.navbar-form.navbar-input-group(role='form', action='/login', method='POST')
-      {% csrf_token %}
-      input(type='hidden', name='next', value='{{ request.path }}')
-      .form-group
-        input.form-control(type='text', placeholder='Käyttäjätunnus', name='username', style='width: 9em')
-      | &thinsp;
-      .form-group
-        input.form-control(type='password', placeholder='Salasana', name='password', style='width: 9em')
-      | &thinsp;
-      button.btn.btn-success(type='submit') Kirjaudu
+  li: a(href="/login") Rekisteröidy tai kirjaudu sisään...
