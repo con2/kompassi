@@ -1,7 +1,19 @@
 extends base.jade
 block content
   .core-event-view
-    h2 {{ event.name }}
+    .row
+      .col-md-8
+        h2 {{ event.name }}
+          small.text-muted
+            | {{ event.venue.name_inessive }}
+            if event.start_time
+              {{ event.formatted_start_and_end_date }}
+
+        {{ event.description|linebreaks }}
+      .col-md-4
+        if event.logo_url
+          a(href='{{ event.homepage_url }}', target='_blank')
+            img(src='{{ event.logo_url }}', alt='{{ event.name }}', width='100%')
 
     if event.labour_event_meta
       include labour_event_box.jade

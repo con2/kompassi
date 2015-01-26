@@ -10,7 +10,14 @@ from django.template.loader import render_to_string
 from django.utils.dateformat import format as format_date
 from django.utils import timezone
 
-from .utils import validate_slug, SLUG_FIELD_PARAMS, url, ensure_group_exists, event_meta_property
+from .utils import (
+    ensure_group_exists,
+    event_meta_property,
+    format_date_range,
+    SLUG_FIELD_PARAMS,
+    url,
+    validate_slug,
+)
 
 
 class Venue(models.Model):
@@ -113,6 +120,21 @@ class Event(models.Model):
         help_text=u'Julkiset tapahtumat näytetään etusivulla.'
     )
 
+    logo_url = models.CharField(
+        blank=True,
+        max_length=255,
+        default='',
+        verbose_name=u'Tapahtuman logon URL',
+        help_text=u'Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)',
+    )
+
+    description = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=u'Tapahtuman kuvaus',
+        help_text=u'Muutaman kappaleen mittainen kuvaus tapahtumasta. Näkyy tapahtumasivulla.',
+    )
+
     class Meta:
         verbose_name = u'Tapahtuma'
         verbose_name_plural = u'Tapahtumat'
@@ -138,6 +160,10 @@ class Event(models.Model):
             name=self.name,
             year=self.start_time.year,
         )
+
+    @property
+    def formatted_start_and_end_date(self):
+        return format_date_range(self.start_time, self.end_time)
 
     @classmethod
     def get_or_create_dummy(cls):

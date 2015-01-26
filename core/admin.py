@@ -66,6 +66,8 @@ class EventAdmin(admin.ModelAdmin):
             'venue',
             'start_time',
             'end_time',
+            'description',
+            'logo_url',
         ))),
 
         ('Järjestäjän tiedot', dict(fields=(

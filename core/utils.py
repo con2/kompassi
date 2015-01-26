@@ -140,6 +140,34 @@ def format_datetime(datetime):
     return defaultfilters.date(datetime.astimezone(tz), "SHORT_DATETIME_FORMAT")
 
 
+def format_date_range(start_date, end_date):
+    # XXX Finnish-specific
+
+    if start_date.year == end_date.year:
+        if start_date.month == end_date.month:
+            if start_date.day == end_date.day:
+                # Y, M, D match
+                return start_date.strftime('%-d.%-m.%Y')
+            else:
+                # Y, M match, D differ
+                return u"{start_date}–{end_date}".format(
+                    start_date=start_date.strftime('%-d.'),
+                    end_date=end_date.strftime('%-d.%-m.%Y'),
+                )
+        else:
+            # Y match, M, D differ
+            return u"{start_date}–{end_date}".format(
+                start_date=start_date.strftime('%-d.%-m.'),
+                end_date=end_date.strftime('%-d.%-m.%Y')
+            )
+    else:
+        # Y, M, D differ
+        return u"{start_date}–{end_date}".format(
+            start_date=start_date.strftime('%-d.%-m.%Y'),
+            end_date=end_date.strftime('%-d.%-m.%Y'),
+        )
+
+
 def login_redirect(request, view='core_login_view'):
     path = reverse(view)
     query = urlencode(dict(next=request.path))

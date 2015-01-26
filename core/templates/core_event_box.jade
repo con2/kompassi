@@ -3,7 +3,7 @@
   .panel-body
     p {{ event.venue.name_inessive }}
     if event.start_time
-      p {{ event.start_time|date }} &ndash; {{ event.end_time|date }}
+      p {{ event.formatted_start_and_end_date }}
     p
       if event.labour_event_meta
         if event.labour_event_meta.is_registration_open
