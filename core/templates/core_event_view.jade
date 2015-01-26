@@ -1,4 +1,6 @@
 extends base.jade
+block full_title
+  | {{ event.name }} &ndash; {{ settings.KOMPASSI_INSTALLATION_NAME }}
 block content
   .core-event-view
     .row

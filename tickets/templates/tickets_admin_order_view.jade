@@ -1,5 +1,7 @@
 extends core_admin_base.jade
 - load crispy_forms_tags
+block title
+  | Tilaus {{ order.formatted_order_number }}
 block admin_content
   form.form.form-horizontal(method='POST', role='form')
     .panel.panel-default
@@ -33,9 +35,9 @@ block admin_content
           if can_cancel
             button.btn.btn-danger(type='submit', name='cancel', value='cancel') Peru tilaus
           if can_uncancel
-            button.btn.btn-primary(type='submit', name='uncancel', value='uncancel') Palauta tilaus voimaan            
+            button.btn.btn-primary(type='submit', name='uncancel', value='uncancel') Palauta tilaus voimaan
           if can_resend
-            button.btn.btn-primary(type='submit', name='resend-confirmation', value='resend-confirmation') Lähetä vahvistusviesti uudelleen        
+            button.btn.btn-primary(type='submit', name='resend-confirmation', value='resend-confirmation') Lähetä vahvistusviesti uudelleen
 
   .panel.panel-default
     .panel-heading: strong Tilauksen tekniset tiedot

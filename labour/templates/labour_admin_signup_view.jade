@@ -1,5 +1,7 @@
 extends core_admin_base
 - load crispy_forms_tags
+block title
+  | {{ signup.person.full_name }}
 block admin_content
   include labour_admin_signup_pager.jade
 
@@ -89,10 +91,10 @@ block extra_scripts
         var selector = '.labour-admin-form label.checkbox:contains("' + categoryName + '")';
         $(selector).addClass('text-muted');
       });
-      
+
       var nonQualifiedCategoryNames = {{ non_qualified_category_names_json|safe }};
       $.each(nonQualifiedCategoryNames, function(index, categoryName) {
         var selector = '.labour-signup-form label.checkbox:contains("' + categoryName + '")';
         $(selector).addClass('text-muted');
-      });      
+      });
     })(jQuery);

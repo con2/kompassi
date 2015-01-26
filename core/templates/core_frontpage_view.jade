@@ -1,4 +1,6 @@
 extends base
+block full_title
+  | {{ settings.KOMPASSI_INSTALLATION_NAME }}
 block content
   if "tracon_branding" in settings.INSTALLED_APPS
     include tracon_branding_frontpage.jade

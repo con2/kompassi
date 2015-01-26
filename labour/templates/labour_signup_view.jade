@@ -1,5 +1,10 @@
 extends base.jade
 - load crispy_forms_tags
+block title
+  if alternative_signup_form
+    | {{ alternative_signup_form.title }}
+  else
+    | Ilmoittaudu vapaaehtoistyöhön
 block content
   if alternative_signup_form
     h2 {{ alternative_signup_form.title }}

@@ -1,7 +1,9 @@
 doctype 5
 html
   head
-    title {{ settings.KOMPASSI_INSTALLATION_NAME }}
+    title
+      block full_title
+        | {% if event %}{{ event.name }}: {% endif %}{% block title %}Nimetön näkymä{% endblock title %} &ndash; {{ settings.KOMPASSI_INSTALLATION_NAME }}
     link(rel='stylesheet', href='{{ STATIC_URL }}bootstrap/bootstrap.min.css')
     link(rel='stylesheet', href='{{ STATIC_URL }}frontend.css')
     link(rel='stylesheet', href='{{ STATIC_URL }}tracon_categories.css')

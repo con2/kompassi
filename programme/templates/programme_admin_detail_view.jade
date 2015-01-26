@@ -1,9 +1,22 @@
 extends core_admin_base
+block title
+  if programme.title
+    | {{ programme.title }}
+  else
+    if programme.pk
+      | Ohjelmanumeron tiedot
+    else
+      | Uusi ohjelmanumero
 block admin_content
   form(method='POST', role='form').form-horizontal
     div
       .panel.panel-default
-        .panel-heading: strong Ohjelmanumeron tiedot
+        .panel-heading
+          strong
+            if programme.pk
+              | Ohjelmanumeron tiedot
+            else
+              | Uusi ohjelmanumero
         .panel-body
           .form-horizontal
             include programme_admin_form.jade
