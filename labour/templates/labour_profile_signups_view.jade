@@ -2,16 +2,18 @@ extends core_profile_base
 block title
   | Työvoimahakemukset
 block profile_content
-  if signups_current_events.exists
-    .panel.panel-default
-      .panel-heading: strong Työskentely käynnissä olevissa tapahtumissa
+  if signup_current_events.exists
+    p: strong Työskentely parhaillaan käynnissä olevissa tapahtumissa
+    for signup in signup_current_events
+      include labour_profile_signup_box.jade
   if signups_future_events.exists
     p: strong Hakemukset tuleviin tapahtumiin
     for signup in signups_future_events
       include labour_profile_signup_box.jade
   if signups_past_events.exists
-    .panel.panel-default
-      .panel-heading: strong Työskentely aikaisemmissa tapahtumissa
+    p: strong Työskentely menneissä tapahtumissa
+    for signup in signups_past_events
+      include labour_profile_signup_box.jade
   if no_signups
     h2 Ei työvoimahakemuksia
     p Et ole hakenut töihin yhteenkään {{ KOMPASSI_INSTALLATION_NAME_PARTITIVE }} työvoimanhallintaan käyttävään tapahtumaan.
