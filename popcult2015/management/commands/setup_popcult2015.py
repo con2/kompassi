@@ -54,7 +54,7 @@ class Setup(object):
                 u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
                 u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
                 u"lipunvaihtopisteessä.\n\n"
-                u"Tervetuloa Yukiconiin!",
+                u"Tervetuloa Popcult Helsinkiin!",
             front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Popcult Helsinki -tapahtumaan!</h2>"
                 u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 u"<p>Lue lisää tapahtumasta <a href='http://popcult.fi/helsinki'>Popcult Helsinki -tapahtuman kotisivuilta</a>.</p>",
