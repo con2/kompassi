@@ -36,7 +36,7 @@ class Setup(object):
             name_illative='Tampere Kuplii 2015 -tapahtumaan',
             name_inessive='Tampere Kuplii 2015 -tapahtumassa',
             homepage_url='http://2015.tamperekuplii.fi',
-            organization_name='Tampere Kuplii ry ry',
+            organization_name='Tampere Kuplii ry',
             organization_url='http://ry.tamperekuplii.fi',
             start_time=datetime(2015, 3, 28, 10, 0, tzinfo=self.tz),
             end_time=datetime(2015, 3, 29, 17, 0, tzinfo=self.tz),
