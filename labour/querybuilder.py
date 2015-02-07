@@ -413,7 +413,13 @@ class QueryBuilder(object):
 
             field_object, mdl, direct, m2m = model_meta.get_field_by_name(field)
 
-            if not field in fields:
+            if field_object.attname != field_object.name and field == field_object.attname:
+                # As of Django 1.7, related fields results in two names returned from get_all_field_names():
+                # 'rel' and 'rel_id', of which the 'rel_id' must be discarded to avoid dumping "the whole" database
+                # into frontend. Such field objects have name == 'rel' and attname == 'rel_id'.
+                continue
+
+            if field not in fields:
                 # Field is not defined in fields, it must be in views then.
                 # Only the view title is added to title container.
                 self._object_title(full_name, field_object)
