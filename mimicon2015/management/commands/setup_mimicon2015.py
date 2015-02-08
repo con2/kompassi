@@ -1,0 +1,161 @@
+# encoding: utf-8
+
+from datetime import datetime, timedelta
+
+from django.core.management.base import BaseCommand, make_option
+from django.utils.timezone import now
+
+from dateutil.tz import tzlocal
+
+from core.utils import slugify
+
+
+class Setup(object):
+    def setup(self, test=False):
+        self.test = test
+        self.tz = tzlocal()
+        self.setup_core()
+        self.setup_tickets()
+        self.setup_payments()
+
+    def setup_core(self):
+        from core.models import Venue, Event
+
+        self.venue, unused = Venue.objects.get_or_create(name='Kongressitalo Mikaeli', defaults=dict(
+            name_inessive='Kongressitalo Mikaelissa',
+        ))
+        self.event, unused = Event.objects.get_or_create(slug='mimicon2015', defaults=dict(
+            name='Mimicon 2015',
+            name_genitive='Mimicon 2015 -tapahtuman',
+            name_illative='Mimicon 2015 -tapahtumaan',
+            name_inessive='Mimicon 2015 -tapahtumassa',
+            homepage_url='http://www.mimicon.fi',
+            organization_name='MAMY Mikkelin Anime ja Manga Yhdistys r',
+            organization_url='http://mamy.animeunioni.org/',
+            start_time=datetime(2015, 6, 13, 10, 0, tzinfo=self.tz),
+            end_time=datetime(2015, 6, 14, 18, 0, tzinfo=self.tz),
+            venue=self.venue,
+        ))
+
+    def setup_tickets(self):
+        from tickets.models import TicketsEventMeta, LimitGroup, Product
+
+        tickets_admin_group, unused = TicketsEventMeta.get_or_create_group(self.event, 'admins')
+
+        defaults = dict(
+            admin_group=tickets_admin_group,
+            due_days=14,
+            shipping_and_handling_cents=0,
+            reference_number_template="2015{:05d}",
+            contact_email='Mimicon <lipunmyynti@mimicon.fi>',
+            plain_contact_email='lipunmyynti@mimicon.fi',
+            ticket_free_text=u"Tämä on sähköinen lippusi Mimicon 2015 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
+                u"lipunvaihtopisteessä.\n\n"
+                u"Tervetuloa Mimiconiin!",
+            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Mimicon 2015 -tapahtumaan!</h2>"
+                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                u"<p>Lue lisää tapahtumasta <a href='http://www.mimicon.fi'>Mimiconin kotisivuilta</a>.</p>",
+        )
+
+        if self.test:
+            t = now()
+            defaults.update(
+                ticket_sales_starts=t - timedelta(days=60),
+                ticket_sales_ends=t + timedelta(days=60),
+            )
+        else:
+            defaults.update(
+                ticket_sales_starts=datetime(2015, 2, 11, 18, 0, tzinfo=self.tz),
+                #ticket_sales_ends=datetime(2015, 1, 11, 18, 0, tzinfo=self.tz),
+            )
+
+        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+
+        def limit_group(description, limit):
+            limit_group, unused = LimitGroup.objects.get_or_create(
+                event=self.event,
+                description=description,
+                defaults=dict(limit=limit),
+            )
+
+            return limit_group
+
+        def ordering():
+            ordering.counter += 10
+            return ordering.counter
+        ordering.counter = 0
+
+        for product_info in [
+            dict(
+                name=u'Mimicon 2015 -pääsylippu',
+                description=u'Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
+                limit_groups=[
+                    limit_group('Pääsyliput', 500),
+                ],
+                price_cents=1500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
+            dict(
+                name=u'Lattiamajoituspaikka',
+                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Tarvitset oman makuupussin ja -alustan. Lattiamajoituksesta ei lähetetä erillistä lippua, vaan lattiamajoitus toimii nimi listaan -periaatteella.',
+                limit_groups=[
+                    limit_group('Lattiamajoitus', 80),
+                ],
+                price_cents=500,
+                requires_shipping=False,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+            ),
+            dict(
+                name=u'Lounaslippu',
+                description=u'Tällä lipukkeella saat herkullisen lounaan ravintola Napostellasta kumpana tahansa tapahtumapäivänä. Lounasliput toimitetaan samalla PDF-lipulla pääsylippujesi kanssa.',
+                limit_groups=[
+                    limit_group('Lounas', 100),
+                ],
+                price_cents=780,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
+        ]:
+            name = product_info.pop('name')
+            limit_groups = product_info.pop('limit_groups')
+
+            product, unused = Product.objects.get_or_create(
+                event=self.event,
+                name=name,
+                defaults=product_info
+            )
+
+            if not product.limit_groups.exists():
+                product.limit_groups = limit_groups
+                product.save()
+
+    def setup_payments(self):
+        from payments.models import PaymentsEventMeta
+        PaymentsEventMeta.get_or_create_dummy(event=self.event)
+
+
+class Command(BaseCommand):
+    args = ''
+    help = 'Setup mimicon2015 specific stuff'
+
+    option_list = BaseCommand.option_list + (
+        make_option('--test',
+            action='store_true',
+            dest='test',
+            default=False,
+            help='Set the event up for testing',
+        ),
+    )
+
+    def handle(self, *args, **opts):
+        Setup().setup(test=opts['test'])

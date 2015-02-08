@@ -147,6 +147,7 @@ INSTALLED_APPS = (
     'yukicon2015',
     'kuplii2015',
     'popcult2015',
+    'mimicon2015',
 )
 
 LOGGING = {
