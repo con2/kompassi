@@ -102,6 +102,31 @@ class TicketsEventMeta(EventMetaBase):
         help_text=u'Tämä teksti näytetään lippukaupan ensimmäisellä vaiheella.',
     )
 
+    print_logo_path = models.CharField(
+        max_length=255,
+        blank=True,
+        default=u'',
+        verbose_name=u'Logon polku',
+        help_text=u'Tämä logo printataan e-lippuun.',
+    )
+
+    print_logo_width_mm = models.IntegerField(
+        default=0,
+        verbose_name=u'Logon leveys (mm)',
+        help_text=u'E-lippuun printattavan logon leveys millimetreinä. Suositellaan noin 40 millimetriä leveää logoa.',
+    )
+
+    print_logo_height_mm = models.IntegerField(
+        default=0,
+        verbose_name=u'Logon korkeus (mm)',
+        help_text=u'E-lippuun printattavan logon korkeus millimetreinä. Suositellaan noin 20 millimetriä korkeaa logoa.',
+    )
+
+
+    @property
+    def print_logo_size_cm(self):
+        return (self.print_logo_width_mm / 10.0, self.print_logo_height_mm / 10.0)
+
     @property
     def is_ticket_sales_open(self):
         t = timezone.now()
@@ -799,7 +824,10 @@ class Order(models.Model):
             if 'lippukala' in settings.INSTALLED_APPS and self.contains_electronic_tickets:
                 from lippukala.printing import OrderPrinter
 
-                printer = OrderPrinter()
+                printer = OrderPrinter(
+                    print_logo_path=meta.print_logo_path,
+                    print_logo_size_cm=meta.print_logo_size_cm,
+                )
                 printer.process_order(self.lippukala_order)
                 attachments.append(('e-lippu.pdf', printer.finish(), 'application/pdf'))
 

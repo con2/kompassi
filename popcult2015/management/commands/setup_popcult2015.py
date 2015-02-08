@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+import os
 from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, make_option
@@ -8,6 +9,10 @@ from django.utils.timezone import now
 from dateutil.tz import tzlocal
 
 from core.utils import slugify
+
+
+def mkpath(*parts):
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *parts))
 
 
 class Setup(object):
@@ -114,6 +119,13 @@ class Setup(object):
             if not product.limit_groups.exists():
                 product.limit_groups = limit_groups
                 product.save()
+
+        # v5
+        if not meta.print_logo_path:
+            meta.print_logo_path = mkpath('static', 'images', 'popcult.png')
+            meta.print_logo_width_mm = 30
+            meta.print_logo_height_mm = 30
+            meta.save()
 
     def setup_payments(self):
         from payments.models import PaymentsEventMeta

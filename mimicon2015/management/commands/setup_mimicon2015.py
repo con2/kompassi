@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+import os
 from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, make_option
@@ -8,6 +9,10 @@ from django.utils.timezone import now
 from dateutil.tz import tzlocal
 
 from core.utils import slugify
+
+
+def mkpath(*parts):
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *parts))
 
 
 class Setup(object):
@@ -58,6 +63,9 @@ class Setup(object):
             front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Mimicon 2015 -tapahtumaan!</h2>"
                 u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 u"<p>Lue lisää tapahtumasta <a href='http://www.mimicon.fi'>Mimiconin kotisivuilta</a>.</p>",
+            print_logo_path = mkpath('static', 'images', 'popcult.png'),
+            print_logo_width_mm = 30,
+            print_logo_height_mm = 30,
         )
 
         if self.test:
