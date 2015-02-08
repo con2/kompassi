@@ -324,7 +324,8 @@ if 'lippukala' in INSTALLED_APPS:
     LIPPUKALA_CODE_MIN_N_DIGITS = 7
     LIPPUKALA_CODE_MAX_N_DIGITS = 7
 
-    # TODO eroon näistä
+    # NOTE these will be overridden by the respective fields in TicketsEventMeta
+    # however, they need to be defined in settings or lippukala will barf.
     LIPPUKALA_PRINT_LOGO_PATH = mkpath('popcult2015', 'static', 'images', 'popcult.png')
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
