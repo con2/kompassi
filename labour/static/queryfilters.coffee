@@ -286,3 +286,91 @@ class M2MFilter extends QueryFilter
 QFilterManager.registerFilter("object_and", EnumFilter, (filterDef) ->
   return "multiple" of filterDef and filterDef.multiple is "and"
 )
+
+
+class DateTimeFilter extends QueryFilter
+  _join: (left, join, right, hasLeft, hasRight) ->
+    ret = ""
+    ret += left if hasLeft
+    ret += join if hasLeft and hasRight
+    ret += right if hasRight
+    return ret
+
+  _createFormat: (filterDef) ->
+    hasTime = filterDef is "datetime" or filterDef is "time"
+    hasDate = filterDef is "datetime" or filterDef is "date"
+
+    # Placeholder text in the input field.
+    placeholder = @_join("pp.kk.vvvv", " ", "hh:mm(:ss)", hasDate, hasTime)
+
+    # Apparently, moment allows to replace ":" with any separator when parsing. So no need to add those.
+    parse = @_join("D.M.YYYY", " ", "H:m", hasDate, hasTime)
+    if hasTime
+      parse = [
+        parse,
+        @_join("D.M.YYYY", " ", "H:m:s", hasDate, hasTime)
+      ]
+
+    # Transport format, RFC8601, or similar. Only datetime has tz info added.
+    time = "HH:mm:ss"
+    time += "ZZ" if hasDate
+    transport = @_join("YYYY-MM-DD", "[T]", time, hasDate, hasTime)
+
+    return placeholder: placeholder, parse: parse, transport: transport
+
+  _createMode: (id) ->
+    # For non-datetime fields, equal comparisons are allowed.
+    if @filterDef isnt "datetime"
+      parts = """
+        <option value="eq" selected="selected">On</option>
+        <option value="!eq">Ei ole</option>
+        <option value="lt">Ennen</option>
+        <option value="lte">Ennen (tai tasan)</option>
+        <option value="gt">Jälkeen</option>
+        <option value="gte">Jälkeen (tai tasan)</option>
+        """
+    else
+      parts = """
+        <option value="lt" selected="selected">Ennen</option>
+        <option value="gt">Jälkeen</option>
+        """
+    """
+    <select id="#{ id }" #{ @createDebugAttr() }>#{ parts }
+    </select>
+    """
+
+  createUi: (filterDef=@filterDef) ->
+    format = @_createFormat(filterDef)
+
+    match = @_createMode(@id("m"))
+    value = @setDebugAttr(Widget.text(@id("v")))
+    value.attr("placeholder", format.placeholder)
+
+    output = $("<span>")
+    output.append(match, value)
+    return output
+
+  createFilter: ->
+    format = @_createFormat(@filterDef)
+
+    # The mode selector.
+    mode = $("#" + @id("m")).val()
+    negate = false
+    if mode[0] == "!"
+      mode = mode.substr(1)
+      negate = true
+
+    # The written value.
+    value = $("#" + @id("v")).val()
+
+    #noinspection JSCheckFunctionSignatures
+    value_obj = moment(value, format.parse)
+    if not value_obj.isValid()
+      return null
+    value_obj.utc() if @filterDef is "datetime"
+
+    flt = [mode, @idName, value_obj.format(format.transport)]
+    return @applyNOT(negate, flt)
+QFilterManager.registerFilter("date", DateTimeFilter)
+QFilterManager.registerFilter("time", DateTimeFilter)
+QFilterManager.registerFilter("datetime", DateTimeFilter)
