@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import json
 from django.contrib import messages
 from django.conf import settings
@@ -16,7 +17,9 @@ from ..helpers import labour_admin_required
 
 __author__ = 'jyrkila'
 
-RFC2822TIME = "%a, %d %b %Y %H:%M:%S %z"
+RFC8601DATETIME = "%Y-%m-%dT%H:%M:%S%z"
+RFC8601DATE = "%Y-%m-%d"
+TIME = "%H:%M:%S"
 
 
 def get_query(event):
@@ -102,8 +105,12 @@ def convert_datetimes(values):
     """
     for entry in values:
         for key, value in entry.items():
-            if "strftime" in dir(value):
-                entry[key] = value.strftime(RFC2822TIME)
+            if isinstance(value, datetime.date):
+                entry[key] = value.strftime(RFC8601DATE)
+            if isinstance(value, datetime.datetime):
+                entry[key] = value.strftime(RFC8601DATETIME)
+            if isinstance(value, datetime.time):
+                entry[key] = value.strftime(TIME)
 
 
 @require_POST

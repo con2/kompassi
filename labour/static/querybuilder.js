@@ -749,32 +749,10 @@
 
     ValueFormatter.locales = null;
 
-    ValueFormatter.createDateOptions = function() {
-      return {
-        timeZone: ValueFormatter.timeZone
-      };
-    };
-
-    ValueFormatter.dateSupportsLocales = function(fn) {
-      var e;
-      try {
-        new Date()[fn]("i");
-      } catch (_error) {
-        e = _error;
-        return e.name === "RangeError";
-      }
-      return false;
-    };
-
-    ValueFormatter.dateSupport = {
-      toLocaleDateString: ValueFormatter.dateSupportsLocales("toLocaleDateString"),
-      toLocaleTimeString: ValueFormatter.dateSupportsLocales("toLocaleTimeString"),
-      toLocaleString: ValueFormatter.dateSupportsLocales("toLocaleString")
-    };
-
     function ValueFormatter(backendData) {
       this.backendData = backendData;
       this.dateOptions = null;
+      moment.locale(this.locales);
     }
 
     ValueFormatter.prototype.format = function(field, value) {
@@ -790,33 +768,16 @@
       }
     };
 
-    ValueFormatter.prototype._callDateLocale = function(dateObj, fn) {
-      if (ValueFormatter.dateSupport[fn]) {
-        if (this.dateOptions === null) {
-          this.dateOptions = ValueFormatter.createDateOptions();
-        }
-        return dateObj[fn](ValueFormatter.locales, this.dateOptions);
-      } else {
-        return dateObj[fn]();
-      }
-    };
-
     ValueFormatter.prototype._fmt_date = function(value) {
-      var date;
-      date = new Date(value);
-      return this._callDateLocale(date, "toLocaleDateString");
+      return moment(value).format("L");
     };
 
     ValueFormatter.prototype._fmt_time = function(value) {
-      var time;
-      time = new Date(value);
-      return this._callDateLocale(time, "toLocaleTimeString");
+      return moment(value).format("LTS");
     };
 
     ValueFormatter.prototype._fmt_datetime = function(value) {
-      var dt;
-      dt = new Date(value);
-      return this._callDateLocale(dt, "toLocaleString");
+      return moment(value).format("L LTS");
     };
 
     ValueFormatter.prototype._fmt_bool = function(value) {

@@ -638,35 +638,18 @@ class ResultView
 class ValueFormatter
 
   # Name of the time zone used in formatting of times / timestamps.
+  # (Not currently used.)
   @timeZone = null
 
   # Locale name used to format dates, times and timestamps.
   @locales = null
-
-  # Yield options passed to Date format functions.
-  @createDateOptions: () ->
-    return timeZone: ValueFormatter.timeZone
-
-  # Test if given Date function supports locales.
-  # @param fn [String] Function name, such as "toLocaleString".
-  # @return [Boolean] True if the function supports locales, false if not.
-  @dateSupportsLocales: (fn) ->
-    try
-      new Date()[fn]("i")
-    catch e
-      return e.name is "RangeError"
-    return false
-
-  @dateSupport:
-    toLocaleDateString: @dateSupportsLocales("toLocaleDateString")
-    toLocaleTimeString: @dateSupportsLocales("toLocaleTimeString")
-    toLocaleString: @dateSupportsLocales("toLocaleString")
 
   # ValueFormatter constructor.
   # @param backendData [BackendData] Backend data object.
   constructor: (backendData) ->
     @backendData = backendData
     @dateOptions = null
+    moment.locale(@locales)
 
   # Format a value to human readable format.
   # @param field [String] Name of the field on which the value is.
@@ -677,42 +660,25 @@ class ValueFormatter
     name = QFilterManager.instance().findFilterName(type)
     return value unless name?
 
+    # Call _fmt_TYPE function, if such exists in this class.
     fn_name = "_fmt_" + name
     if fn_name of this
       return this[fn_name](value, type)
 
-  # Helper function for calling locale-aware toLocale*String functions of date objects.
-  # If the function does not support locales, their un-aware versions are called instead.
-  #
-  # @param dateObj [Date] Object to call the function on.
-  # @param fn [String] Function name to call.
-  # @return [String] Locale-formatted string.
-  # @private
-  _callDateLocale: (dateObj, fn) ->
-    if ValueFormatter.dateSupport[fn]
-      if @dateOptions is null
-        @dateOptions = ValueFormatter.createDateOptions()
-      return dateObj[fn](ValueFormatter.locales, @dateOptions)
-    else
-      return dateObj[fn]()
-
   # Format a date to string.
   # @private
   _fmt_date: (value) ->
-    date = new Date(value)
-    @_callDateLocale(date, "toLocaleDateString")
+    moment(value).format("L")
 
   # Format a time to string.
   # @private
   _fmt_time: (value) ->
-    time = new Date(value)
-    @_callDateLocale(time, "toLocaleTimeString")
+    moment(value).format("LTS")
 
   # Format a time stamp to string.
   # @private
   _fmt_datetime: (value) ->
-    dt = new Date(value)
-    @_callDateLocale(dt, "toLocaleString")
+    moment(value).format("L LTS")
 
   # Format a boolean value to string.
   # @private

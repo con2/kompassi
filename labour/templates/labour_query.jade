@@ -5,6 +5,8 @@ block extra_scripts
   script(src='{{ STATIC_URL }}csrf.js')
   script(src='{{ STATIC_URL }}querybuilder.js')
   script(src='{{ STATIC_URL }}queryfilters.js')
+  script(src='{{ STATIC_URL }}moment.js')
+  script(src='{{ STATIC_URL }}{{ LANGUAGE_CODE|slice:"0:2" }}.js')
   include querybuilder_init.html
   style(type="text/css")
     .btn-remove {
