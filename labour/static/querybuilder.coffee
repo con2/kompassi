@@ -356,6 +356,9 @@ class QueryBuilder
   attachForm: (@uiFormId) ->
     @uiForm = $(uiFormId)
 
+    # Disable submission with enter, like if the form was a regular div.
+    @uiForm.on("submit", () -> false)
+
   attachDebug: (@uiDebugId) ->
     @uiDebug = $(uiDebugId)
 
@@ -487,6 +490,10 @@ class QueryBuilder
     @uiForm.append(views)
 
     @uiForm.attr("action", @backendUrl)
+    @uiForm.attr("method", "post")
+
+    # Allow submitting now.
+    @uiForm.off("submit")
     @uiForm.submit()
 
   onDataResult: (data, status, xhdr) ->

@@ -434,7 +434,10 @@
 
     QueryBuilder.prototype.attachForm = function(uiFormId) {
       this.uiFormId = uiFormId;
-      return this.uiForm = $(uiFormId);
+      this.uiForm = $(uiFormId);
+      return this.uiForm.on("submit", function() {
+        return false;
+      });
     };
 
     QueryBuilder.prototype.attachDebug = function(uiDebugId) {
@@ -593,6 +596,8 @@
       views.val(postData.view);
       this.uiForm.append(views);
       this.uiForm.attr("action", this.backendUrl);
+      this.uiForm.attr("method", "post");
+      this.uiForm.off("submit");
       return this.uiForm.submit();
     };
 
