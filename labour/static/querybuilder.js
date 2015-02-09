@@ -780,6 +780,13 @@
       return moment(value).format("L LTS");
     };
 
+    ValueFormatter.prototype._fmt_datetimenull = function(value) {
+      if (value != null) {
+        return this._fmt_datetime(value);
+      }
+      return "-";
+    };
+
     ValueFormatter.prototype._fmt_bool = function(value) {
       if (value) {
         return "Kyllä";

@@ -374,3 +374,60 @@ class DateTimeFilter extends QueryFilter
 QFilterManager.registerFilter("date", DateTimeFilter)
 QFilterManager.registerFilter("time", DateTimeFilter)
 QFilterManager.registerFilter("datetime", DateTimeFilter)
+
+
+class DateTimeNullFilter extends DateTimeFilter
+  _createMode: (id) ->
+    options = """
+    <select id="#{ id }">
+      <option value="!isnull" selected="selected">Kyllä</option>
+      <option value="isnull">Ei</option>
+      <option value="lt">Ennen</option>
+      <option value="gt">Jälkeen</option>
+    </select>
+    """
+    options = $(options).on("change", () => @changeMode())
+    return options
+
+  changeMode: () =>
+    mode = $("#" + @id("m"))
+    options = $("#" + @id("v"))
+    val = mode.val()
+    if val is "!isnull" or val is "isnull"
+      options.css("display", "none")
+    else
+      options.css("display", "inline-block")
+    if @debugHandler?
+      eval(@debugHandler)
+
+  createUi: ->
+    output = super("datetime")
+    $("#" + @id("v"), output).css("display", "none")
+    return output
+
+  createFilter: ->
+    format = @_createFormat("datetime")
+
+    # The mode selector.
+    mode = $("#" + @id("m")).val()
+    negate = false
+    if mode[0] == "!"
+      mode = mode.substr(1)
+      negate = true
+
+    if mode is "isnull"
+      value_flt = if negate then false else true
+    else
+      # The written value.
+      value = $("#" + @id("v")).val()
+
+      #noinspection JSCheckFunctionSignatures
+      value_obj = moment(value, format.parse)
+      if not value_obj.isValid()
+        return null
+      value_obj.utc() if @filterDef is "datetime"
+      value_flt = value_obj.format(format.transport)
+
+    flt = [mode, @idName, value_flt]
+    return flt
+QFilterManager.registerFilter("datetimenull", DateTimeNullFilter)

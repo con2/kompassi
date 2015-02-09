@@ -680,6 +680,13 @@ class ValueFormatter
   _fmt_datetime: (value) ->
     moment(value).format("L LTS")
 
+  # Format a nullable time stamp to string.
+  # @private
+  _fmt_datetimenull: (value) ->
+    if value?
+      return @_fmt_datetime(value)
+    "-"
+
   # Format a boolean value to string.
   # @private
   _fmt_bool: (value) ->

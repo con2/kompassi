@@ -73,7 +73,7 @@ Field2Transport = {
     "IntegerField": "int",
     "BooleanField": "bool",
     "DateField": "date",
-    "DateTimeField": "datetime",
+    "DateTimeField": lambda field: "datetimenull" if field.null else "datetime",
 }
 
 
@@ -496,7 +496,11 @@ class QueryBuilder(object):
         if class_name not in Field2Transport:
             return
 
-        self._fields[full_name] = Field2Transport[class_name]
+        transport = Field2Transport[class_name]
+        if callable(transport):
+            transport = transport(field_object)
+
+        self._fields[full_name] = transport
         self._object_title(full_name, field_object)
 
     def _add_title(self, field_object, prefix, full_name):
