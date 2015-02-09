@@ -23,7 +23,8 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
     Copyright (c) 2011 Petri Haikonen
     Copyright (c) 2012-2014 Meeri Panula
     Copyright (c) 2013 Esa Ollitervo
-    Copyright (c) 2014 Jyrki Launonen, Pekka Wallendahl
+    Copyright (c) 2014 Pekka Wallendahl
+    Copyright (c) 2014-2015 Jyrki Launonen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
