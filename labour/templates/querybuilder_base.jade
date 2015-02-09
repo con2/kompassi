@@ -3,7 +3,7 @@
 .panel.panel-default
   .panel-heading: strong Suodata {{ event.name_genitive }} hakemuksia
   .panel-body
-    .form.form-horizontal#query_builder_form
+    form.form.form-horizontal#query_builder_form
       if debug
         - csrf_token
       .form-group

@@ -64,6 +64,7 @@ from labour.models import Signup
 from django.db import models
 from django.db.models.fields import related
 from django.db.models.query import Q, LOOKUP_SEP
+from django.utils.dateparse import parse_datetime, parse_date, parse_time
 
 
 Field2Transport = {
@@ -72,7 +73,7 @@ Field2Transport = {
     "IntegerField": "int",
     "BooleanField": "bool",
     "DateField": "date",
-    "DateTimeField": "datetime",
+    "DateTimeField": lambda field: "datetimenull" if field.null else "datetime",
 }
 
 
@@ -243,6 +244,7 @@ class QueryBuilder(object):
                 raise ValueError('primitive filters must have two arguments (fieldname and query arg)')
 
             field_name = spec[1]
+            value = spec[2]
             if self.field_mapping is not None:
                 # see if the mapping contains an entry for the field_name
                 # (for example, if you're mapping an external database name
@@ -253,9 +255,17 @@ class QueryBuilder(object):
                 # The field is excluded.
                 raise ValueError("querybuilder: Trying to include an excluded field in query: {0!r}".format(field_name))
 
+            field_def = self._fields[field_name]
+            if field_def == "datetime":
+                value = parse_datetime(value)
+            elif field_def == "date":
+                value = parse_date(value)
+            elif field_def == "time":
+                value = parse_time(value)
+
             # Q(lhs=kwarg) --> Q(field_name__cmd=kwarg)
             lhs = LOOKUP_SEP.join((field_name, cmd))  # str("%s%s%s" % (field_name, LOOKUP_SEP, cmd))
-            kwarg = {lhs: spec[2]}
+            kwarg = {lhs: value}
             result_q = Q(**kwarg)
 
         return result_q
@@ -486,7 +496,11 @@ class QueryBuilder(object):
         if class_name not in Field2Transport:
             return
 
-        self._fields[full_name] = Field2Transport[class_name]
+        transport = Field2Transport[class_name]
+        if callable(transport):
+            transport = transport(field_object)
+
+        self._fields[full_name] = transport
         self._object_title(full_name, field_object)
 
     def _add_title(self, field_object, prefix, full_name):

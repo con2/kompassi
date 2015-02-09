@@ -176,4 +176,6 @@ class SignupX(QueryBuilder):
         (u"Työtodistus", "want_certificate", "certificate_delivery_address"),
         (u"Lisätiedot", "shirt_size", "special_diet__pk", "special_diet_other",
             "lodging_needs__pk", "prior_experience", "free_text"),
+        (u"Tila", add_prefix("signup__time_", ("accepted", "finished", "complained", "cancelled",
+                                              "rejected", "arrived", "work_accepted", "reprimanded",))),
     )

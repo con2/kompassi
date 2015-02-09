@@ -106,4 +106,6 @@ class SignupKuplii2015(QueryBuilder):
             "shift_type", "total_work"),
         (u"Lisätiedot", "special_diet__pk", "special_diet_other",
             "prior_experience", "free_text"),
+        (u"Tila", add_prefix("signup__time_", ("accepted", "finished", "complained", "cancelled",
+                                              "rejected", "arrived", "work_accepted", "reprimanded",))),
     )
