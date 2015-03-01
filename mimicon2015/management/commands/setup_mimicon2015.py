@@ -35,7 +35,7 @@ class Setup(object):
             name_illative='Mimicon 2015 -tapahtumaan',
             name_inessive='Mimicon 2015 -tapahtumassa',
             homepage_url='http://www.mimicon.fi',
-            organization_name='MAMY Mikkelin Anime ja Manga Yhdistys r',
+            organization_name='MAMY Mikkelin Anime ja Manga Yhdistys ry',
             organization_url='http://mamy.animeunioni.org/',
             start_time=datetime(2015, 6, 13, 10, 0, tzinfo=self.tz),
             end_time=datetime(2015, 6, 14, 18, 0, tzinfo=self.tz),
@@ -63,7 +63,7 @@ class Setup(object):
             front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Mimicon 2015 -tapahtumaan!</h2>"
                 u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 u"<p>Lue lisää tapahtumasta <a href='http://www.mimicon.fi'>Mimiconin kotisivuilta</a>.</p>",
-            print_logo_path = mkpath('static', 'images', 'popcult.png'),
+            print_logo_path = mkpath('static', 'images', 'Mimicon2015_logo.png'),
             print_logo_width_mm = 30,
             print_logo_height_mm = 30,
         )
@@ -76,7 +76,7 @@ class Setup(object):
             )
         else:
             defaults.update(
-                ticket_sales_starts=datetime(2015, 2, 11, 18, 0, tzinfo=self.tz),
+                ticket_sales_starts=datetime(2015, 3, 2, 18, 0, tzinfo=self.tz),
                 #ticket_sales_ends=datetime(2015, 1, 11, 18, 0, tzinfo=self.tz),
             )
 
