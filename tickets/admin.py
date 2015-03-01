@@ -21,6 +21,7 @@ class InlineTicketsEventMetaAdmin(admin.StackedInline):
 class ProductAdmin(admin.ModelAdmin):
     model = Product
     list_display = (
+      'event',
       'name',
       'internal_description',
       'formatted_price',
@@ -29,6 +30,8 @@ class ProductAdmin(admin.ModelAdmin):
       'available',
       'requires_shipping',
     )
+
+  list_filter = ('event',)
 
 
 class LimitGroupAdmin(admin.ModelAdmin):
