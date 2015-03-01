@@ -35,15 +35,15 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class LimitGroupAdmin(admin.ModelAdmin):
-  model = Product
-  list_display = (
-    'event',
-    'description',
-    'amount_available',
-    'limit',
-  )
+    model = Product
+    list_display = (
+      'event',
+      'description',
+      'amount_available',
+      'limit',
+    )
 
-  list_filter = ('event',)
+    list_filter = ('event',)
 
 
 class CustomerInline(admin.StackedInline):
