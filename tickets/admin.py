@@ -31,7 +31,7 @@ class ProductAdmin(admin.ModelAdmin):
       'requires_shipping',
     )
 
-  list_filter = ('event',)
+    list_filter = ('event',)
 
 
 class LimitGroupAdmin(admin.ModelAdmin):
