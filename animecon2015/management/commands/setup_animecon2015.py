@@ -64,7 +64,7 @@ class Setup(object):
                 u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 u"<p>Lue lisää tapahtumasta <a href='http://2015.animecon.fi'>Animecon 2015 -tapahtuman kotisivuilta</a>.</p>"
                 u"<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
-                u"toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <address>liput@animecon.fi</address>"
+                u"toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>liput@animecon.fi</em>"
         )
 
         if self.test:
