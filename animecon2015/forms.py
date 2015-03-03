@@ -19,8 +19,6 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.layout = Layout(
             'shift_type',
             'total_work',
-            indented_without_label('construction'),
-            indented_without_label('overseer'),
 
             Fieldset(u'Työtodistus',
                 indented_without_label('want_certificate'),
@@ -133,8 +131,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict(
             shift_type='kaikkikay',
             total_work='yli12h',
-            construction=False,
-            overseer=False,
             want_certificate=False,
             certificate_delivery_address=u'',
             prior_experience=u'',
