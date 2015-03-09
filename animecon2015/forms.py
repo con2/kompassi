@@ -17,7 +17,6 @@ class SignupExtraForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            'shift_type',
             'total_work',
             Fieldset(u'Kortittomien järjestyksenvalvojien lisätiedot',
                 'personal_identification_number',
@@ -39,7 +38,6 @@ class SignupExtraForm(forms.ModelForm):
     class Meta:
         model = SignupExtra
         fields = (
-            'shift_type',
             'total_work',
             'personal_identification_number',
             'want_certificate',
@@ -146,8 +144,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            shift_type='kaikkikay',
-            total_work='yli12h',
+            total_work='ekstra',
             want_certificate=False,
             certificate_delivery_address=u'',
             prior_experience=u'',

@@ -8,16 +8,9 @@ from labour.querybuilder import QueryBuilder, add_prefix
 from core.utils import validate_slug
 
 
-SHIFT_TYPE_CHOICES = [
-    (u'yksipitka', 'Yksi pitkä vuoro'),
-    (u'montalyhytta', 'Monta lyhyempää vuoroa'),
-    (u'kaikkikay', 'Kumpi tahansa käy'),
-]
-
 TOTAL_WORK_CHOICES = [
-    (u'10h', '10 tuntia'),
-    (u'12h', '12 tuntia'),
-    (u'yli12h', 'Yli 12 tuntia'),
+    (u'minimi', 'Haluan tehdä vain minimityöpanoksen (JV: 10h, muut: 8h)'),
+    (u'ekstra', 'Olen valmis tekemään lisätunteja'),
 ]
 
 
@@ -40,15 +33,9 @@ class Night(SimpleChoice):
 
 
 class SignupExtra(SignupExtraBase):
-    shift_type = models.CharField(max_length=15,
-        verbose_name=u'Toivottu työvuoron pituus',
-        help_text=u'Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
-        choices=SHIFT_TYPE_CHOICES,
-    )
-
     total_work = models.CharField(max_length=15,
         verbose_name=u'Toivottu kokonaistyömäärä',
-        help_text=u'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
+        help_text=u'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana?',
         choices=TOTAL_WORK_CHOICES,
     )
 
