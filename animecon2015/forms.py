@@ -57,8 +57,6 @@ class SignupExtraForm(forms.ModelForm):
         )
 
     def clean_personal_identification_number(self):
-        print self.data
-
         personal_identification_number = self.cleaned_data['personal_identification_number']
         kortiton_jv = JobCategory.objects.get(
             event__slug='animecon2015',
