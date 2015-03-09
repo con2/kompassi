@@ -8,26 +8,6 @@ from labour.querybuilder import QueryBuilder, add_prefix
 from core.utils import validate_slug
 
 
-SHIRT_SIZES = [
-    (u'NO_SHIRT', u'Ei paitaa'),
-
-    (u'XS', u'XS Unisex'),
-    (u'S', u'S Unisex'),
-    (u'M', u'M Unisex'),
-    (u'L', u'L Unisex'),
-    (u'XL', u'XL Unisex'),
-    (u'XXL', u'XXL Unisex'),
-    (u'3XL', u'3XL Unisex'),
-    (u'4XL', u'4XL Unisex'),
-    (u'5XL', u'5XL Unisex'),
-
-    (u'LF_XS', u'XS Ladyfit'),
-    (u'LF_S', u'S Ladyfit'),
-    (u'LF_M', u'M Ladyfit'),
-    (u'LF_L', u'L Ladyfit'),
-    (u'LF_XL', u'XL Ladyfit'),
-]
-
 SHIFT_TYPE_CHOICES = [
     (u'yksipitka', 'Yksi pitkä vuoro'),
     (u'montalyhytta', 'Monta lyhyempää vuoroa'),
@@ -72,6 +52,14 @@ class SignupExtra(SignupExtraBase):
         choices=TOTAL_WORK_CHOICES,
     )
 
+    personal_identification_number = models.CharField(
+        max_length=12,
+        verbose_name=u'Henkilötunnus',
+        help_text=u'HUOM! Täytä tämä kenttä vain, jos haet <strong>kortittomaksi järjestyksenvalvojaksi</strong>.',
+        default=u'',
+        blank=True,
+    )
+
     want_certificate = models.BooleanField(
         default=False,
         verbose_name=u'Haluan todistuksen työskentelystäni Animeconissa',
@@ -83,8 +71,6 @@ class SignupExtra(SignupExtraBase):
         help_text=u'Jos haluat työtodistuksen, täytä tähän kenttään postiosoite (katuosoite, '
             u'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
     )
-
-    shirt_size = models.CharField(max_length=8, choices=SHIRT_SIZES, verbose_name=u'Paidan koko')
 
     special_diet = models.ManyToManyField(
         SpecialDiet,
@@ -164,7 +150,7 @@ class SignupAnimecon2015(QueryBuilder):
         (u"Työvuorotoiveet", "signup__job_categories__pk", "signup__work_periods__pk",
             "shift_type", "total_work", "construction", "overseer"),
         (u"Työtodistus", "want_certificate", "certificate_delivery_address"),
-        (u"Lisätiedot", "shirt_size", "special_diet__pk", "special_diet_other",
+        (u"Lisätiedot", "special_diet__pk", "special_diet_other",
             "lodging_needs__pk", "prior_experience", "free_text"),
         (u"Tila", add_prefix("signup__time_", ("accepted", "finished", "complained", "cancelled",
                                               "rejected", "arrived", "work_accepted", "reprimanded",))),

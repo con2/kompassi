@@ -19,13 +19,14 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.layout = Layout(
             'shift_type',
             'total_work',
-
+            Fieldset(u'Kortittomien järjestyksenvalvojien lisätiedot',
+                'personal_identification_number',
+            ),
             Fieldset(u'Työtodistus',
                 indented_without_label('want_certificate'),
                 'certificate_delivery_address',
             ),
             Fieldset(u'Lisätiedot',
-                'shirt_size',
                 'special_diet',
                 'special_diet_other',
                 'lodging_needs',
@@ -40,9 +41,9 @@ class SignupExtraForm(forms.ModelForm):
         fields = (
             'shift_type',
             'total_work',
+            'personal_identification_number',
             'want_certificate',
             'certificate_delivery_address',
-            'shirt_size',
             'special_diet',
             'special_diet_other',
             'lodging_needs',
@@ -54,6 +55,25 @@ class SignupExtraForm(forms.ModelForm):
             special_diet=forms.CheckboxSelectMultiple,
             lodging_needs=forms.CheckboxSelectMultiple,
         )
+
+    def clean_personal_identification_number(self):
+        print self.data
+
+        personal_identification_number = self.cleaned_data['personal_identification_number']
+        kortiton_jv = JobCategory.objects.get(
+            event__slug='animecon2015',
+            name=u'Kortiton järjestyksenvalvoja',
+        )
+        job_categories = self.cleaned_data.get('job_categories', [])
+
+        # XXX HORRIBLE HACK job_categories is in signupform, this is signupextraform
+        if unicode(kortiton_jv.pk) in self.data.get('signup-job_categories', []):
+            if not personal_identification_number:
+                raise forms.ValidationError(u'Koska haet kortittomaksi järjestyksenvalvojaksi, on henkilötunnus annettava.')
+        elif personal_identification_number:
+            raise forms.ValidationError(u'Koska et hae kortittomaksi järjestyksenvalvojaksi, tulee henkilötunnuskenttä jättää tyhjäksi.')
+
+        return personal_identification_number
 
     def clean_certificate_delivery_address(self):
         want_certificate = self.cleaned_data['want_certificate']
@@ -108,7 +128,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Lisätiedot',
-                'shirt_size',
                 'special_diet',
                 'special_diet_other',
             ),
@@ -118,7 +137,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
-            'shirt_size',
             'special_diet',
             'special_diet_other',
         )
