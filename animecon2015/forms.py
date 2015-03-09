@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django import forms
+from localflavor.fi.forms import FISocialSecurityNumber
 
 from crispy_forms.layout import Layout, Fieldset
 
@@ -8,10 +9,16 @@ from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory, WorkPeriod
 
-from .models import SignupExtra
+from .models import SignupExtra, KORTITON_JV_HETU_LABEL, KORTITON_JV_HETU_HELP_TEXT
 
 
 class SignupExtraForm(forms.ModelForm):
+    personal_identification_number = FISocialSecurityNumber(
+        required=False,
+        label=KORTITON_JV_HETU_LABEL,
+        help_text=KORTITON_JV_HETU_HELP_TEXT,
+    )
+
     def __init__(self, *args, **kwargs):
         super(SignupExtraForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()

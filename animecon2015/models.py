@@ -9,9 +9,12 @@ from core.utils import validate_slug
 
 
 TOTAL_WORK_CHOICES = [
-    (u'minimi', 'Haluan tehdä vain minimityöpanoksen (JV: 10h, muut: 8h)'),
-    (u'ekstra', 'Olen valmis tekemään lisätunteja'),
+    (u'minimi', u'Haluan tehdä vain minimityöpanoksen (JV: 10h, muut: 8h)'),
+    (u'ekstra', u'Olen valmis tekemään lisätunteja'),
 ]
+
+KORTITON_JV_HETU_LABEL = u'Henkilötunnus'
+KORTITON_JV_HETU_HELP_TEXT = u'HUOM! Täytä tämä kenttä vain, jos haet <strong>kortittomaksi järjestyksenvalvojaksi</strong>.'
 
 
 class SimpleChoice(models.Model):
@@ -41,8 +44,8 @@ class SignupExtra(SignupExtraBase):
 
     personal_identification_number = models.CharField(
         max_length=12,
-        verbose_name=u'Henkilötunnus',
-        help_text=u'HUOM! Täytä tämä kenttä vain, jos haet <strong>kortittomaksi järjestyksenvalvojaksi</strong>.',
+        verbose_name=KORTITON_JV_HETU_LABEL,
+        help_text=KORTITON_JV_HETU_HELP_TEXT,
         default=u'',
         blank=True,
     )
