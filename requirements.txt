@@ -8,6 +8,7 @@ reportlab==3.1.8
 pillow==2.5.3
 -e git+https://github.com/kcsry/lippukala#egg=lippukala
 Django==1.7
+django-localflavor==1.0
 pyjade==3.0.0
 python-dateutil==2.2
 python-memcached==1.53
