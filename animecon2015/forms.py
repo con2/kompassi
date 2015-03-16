@@ -67,11 +67,10 @@ class SignupExtraForm(forms.ModelForm):
             event__slug='animecon2015',
             name=u'Kortiton järjestyksenvalvoja',
         )
-        job_categories = self.cleaned_data.get('job_categories', [])
 
         # XXX HORRIBLE HACK job_categories is in signupform, this is signupextraform
         # Cannot use self.instance.signup.job_categories because it is not necessarily saved yet.
-        if unicode(kortiton_jv.pk) in self.data.get('signup-job_categories', []):
+        if unicode(kortiton_jv.pk) in self.data.getlist('signup-job_categories', []):
             if not personal_identification_number:
                 raise forms.ValidationError(u'Koska haet kortittomaksi järjestyksenvalvojaksi, on henkilötunnus annettava.')
         elif personal_identification_number:
