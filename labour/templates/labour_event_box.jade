@@ -6,6 +6,8 @@ else
   if event.laboureventmeta.is_registration_open
     h4 Voit hakea töihin tähän tapahtumaan
     a(href='{% url "labour_signup_view" event.slug %}') Hae töihin tapahtumaan
+  else
+    h4 Työvoimahaku ei ole tällä hetkellä avoinna.
 
 if is_labour_admin
   h4 Sinulla on työvoimavastaavan oikeudet tähän tapahtumaan
