@@ -16,6 +16,13 @@ MKPATH = mkpath
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+CORS_ORIGIN_ALLOW_ALL = DEBUG
+CORS_URLS_REGEX = r'^/(api|oauth2)/.*$'
+CORS_ORIGIN_WHITELIST = (
+    # Add any applications that need CORS for the API here
+    # 'kirppu.tracon.fi',
+)
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -79,17 +86,20 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-
     'core.middleware.PageWizardMiddleware',
 )
 
 ROOT_URLCONF = 'turska.urls'
 WSGI_APPLICATION = 'turska.wsgi.application'
+APPEND_SLASH = False
 
 TEMPLATE_DIRS = (
     mkpath('turska','templates'),
@@ -114,6 +124,7 @@ INSTALLED_APPS = (
 
     'pyjade',
     'crispy_forms',
+    'oauth2_provider',
 
     'core',
     'programme',
@@ -123,6 +134,7 @@ INSTALLED_APPS = (
     'payments',
     'mailings',
     'api',
+    'api_v2',
     'badges',
 
     # Uncomment if you have IPA

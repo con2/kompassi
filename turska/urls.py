@@ -14,6 +14,7 @@ for app_name in [
     'payments',
     'atlassian_integration',
     'api',
+    'api_v2',
     'badges',
 ]:
     if app_name in settings.INSTALLED_APPS:

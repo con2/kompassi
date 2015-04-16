@@ -14,6 +14,7 @@ from .utils import (
     ensure_group_exists,
     event_meta_property,
     format_date_range,
+    pick_attrs,
     SLUG_FIELD_PARAMS,
     url,
     validate_slug,
@@ -417,6 +418,24 @@ class Person(models.Model):
             'firstname_nick_surname',
             'nick',
         ]
+
+    def as_dict(self):
+        return dict(
+            pick_attrs(self,
+                'first_name',
+                'surname',
+                'nick',
+                'full_name',
+                'display_name',
+
+                'phone',
+                'email',
+                'birth_date',
+            ),
+
+            username=self.user.username if self.user else None,
+            groups=[group.name for group in self.user.groups.all()] if self.user else [],
+        )
 
 
 class EventMetaBase(models.Model):

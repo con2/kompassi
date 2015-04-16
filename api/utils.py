@@ -64,7 +64,3 @@ def api_login_required(view_func):
             raise NotAuthorized()
 
     return _decorator
-
-
-def pick_attrs(obj, *attr_names):
-    return dict((attr_name, getattr(obj, attr_name)) for attr_name in attr_names)
