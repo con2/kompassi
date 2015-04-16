@@ -377,3 +377,16 @@ if 'atlassian_integration' in INSTALLED_APPS:
 
 if 'api' in INSTALLED_APPS:
     KOMPASSI_APPLICATION_USER_GROUP = '{KOMPASSI_INSTALLATION_SLUG}-apps'.format(**locals())
+
+
+if 'api_v2' in INSTALLED_APPS:
+    AUTHENTICATION_BACKENDS = (
+        'oauth2_provider.backends.OAuth2Backend',
+    ) + AUTHENTICATION_BACKENDS
+
+    OAUTH2_PROVIDER = dict(
+        SCOPES=dict(
+            read=u'Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi',
+            write=u'Muokata käyttäjä- ja henkilötietojasi',
+        )
+    )
