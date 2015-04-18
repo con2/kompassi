@@ -6,7 +6,7 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
 
     virtualenv venv-kompassi
     source venv-kompassi/bin/activate
-    git clone https://github.com/japsu/kompassi.git
+    git clone https://github.com/tracon/kompassi.git
     cd kompassi
     pip install -r requirements.txt
     ./manage.py setup --test
