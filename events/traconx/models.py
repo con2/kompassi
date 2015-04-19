@@ -72,16 +72,10 @@ class SignupExtra(SignupExtraBase):
         choices=TOTAL_WORK_CHOICES,
     )
 
-    construction = models.BooleanField(
-        default=False,
-        verbose_name=u'Voin osallistua perjantain kasaustalkoisiin',
-        help_text=u'Kasaustalkoisiin osallistumista ei lasketa tapahtuman aikaiseen kokonaistyömäärään.',
-    )
-
     overseer = models.BooleanField(
         default=False,
-        verbose_name=u'Olen kiinnostunut vänkärikersantin tehtävistä',
-        help_text=u'Ylivänkärit eli kersantit ovat kokeneempia conityöläisiä, jotka toimivat oman tehtäväalueensa tiiminvetäjänä.',
+        verbose_name=u'Olen kiinnostunut vuorovastaavan tehtävistä',
+        help_text=u'Vuorovastaavat ovat kokeneempia conityöläisiä, jotka toimivat oman tehtäväalueensa tiiminvetäjänä.',
     )
 
     want_certificate = models.BooleanField(

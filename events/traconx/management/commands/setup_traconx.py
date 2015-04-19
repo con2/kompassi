@@ -187,6 +187,7 @@ class Setup(object):
 
         period_length = timedelta(hours=8)
         for period_description, period_start in [
+            ("Perjantain kasaustalkoot (pe klo 12-20)", None),
             ("Lauantain aamuvuoro (la klo 08-16)", None),
             ("Lauantain iltavuoro (la klo 16-24)", None),
             ("Lauantai-sunnuntai-yövuoro (su klo 00-08)", None),
