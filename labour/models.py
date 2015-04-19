@@ -684,7 +684,7 @@ class Signup(models.Model, CsvExportMixin):
         blank=True,
         verbose_name=u'Yhteiskuntaluokat',
         help_text=u'Mihin henkilöstöryhmiin tämä henkilö kuuluu? Henkilö saa valituista ryhmistä '
-            u'ylimmän mukaisen badgen. Lähtökohtaisesti tätä tietoa ei tulisi muokata käsin.',
+            u'ylimmän mukaisen badgen.',
     )
 
     job_categories = models.ManyToManyField(JobCategory,
