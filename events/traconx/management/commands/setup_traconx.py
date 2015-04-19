@@ -185,16 +185,19 @@ class Setup(object):
                 jc.required_qualifications = [qual]
                 jc.save()
 
+        event_starts = datetime(2015, 9, 5, 10, 0, tzinfo=self.tz)
+        event_ends = datetime(2015, 9, 6, 18, 0, tzinfo=self.tz)
+        work_begins = labour_event_meta_defaults['work_begins']
         period_length = timedelta(hours=8)
         for period_description, period_start in [
-            ("Perjantain kasaustalkoot (pe klo 12-20)", None),
-            ("Lauantain aamuvuoro (la klo 08-16)", None),
-            ("Lauantain iltavuoro (la klo 16-24)", None),
-            ("Lauantai-sunnuntai-yövuoro (su klo 00-08)", None),
-            ("Sunnuntain aamuvuoro (su klo 08-16)", None),
-            ("Sunnuntain iltavuoro (su klo 16-20)", None),
+            ("Perjantain kasaustalkoot (pe klo 12-20)", work_begins.replace(hour=12)),
+            ("Lauantain aamuvuoro (la klo 08-16)", event_starts.replace(hour=8)),
+            ("Lauantain iltavuoro (la klo 16-24)", event_starts.replace(hour=16)),
+            ("Lauantai-sunnuntai-yövuoro (su klo 00-08)", event_ends.replace(hour=0)),
+            ("Sunnuntain aamuvuoro (su klo 08-16)", event_ends.replace(hour=8)),
+            ("Sunnuntain iltavuoro (su klo 16-20)", event_ends.replace(hour=16)),
         ]:
-            WorkPeriod.objects.get_or_create(
+            work_period, created = WorkPeriod.objects.get_or_create(
                 event=self.event,
                 description=period_description,
                 defaults=dict(
@@ -202,6 +205,11 @@ class Setup(object):
                     end_time=(period_start + period_length) if period_start else None,
                 )
             )
+
+            if work_period.start_time is None:
+                work_period.start_time = period_start
+                work_period.end_time = (period_start + period_length) if period_start else None
+                work_period.save()
 
         for diet_name in [
             u'Gluteeniton',
