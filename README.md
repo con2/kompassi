@@ -13,7 +13,7 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
     ./manage.py runserver
     iexplore http://localhost:8000
 
-`./manage.py setup_core --test` created a test user account `mahti` with password `mahti`.
+`./manage.py setup --test` created a test user account `mahti` with password `mahti`.
 
 ## License
 

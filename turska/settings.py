@@ -150,17 +150,18 @@ INSTALLED_APPS = (
     # 'atlassian_integration',
 
     'tracon_branding',
-    'tracon8',
-    'tracon9',
-    'kawacon2014',
-    'concon9',
-    'traconx',
-    'hitpoint2015',
-    'yukicon2015',
-    'kuplii2015',
-    'popcult2015',
-    'mimicon2015',
-    'animecon2015',
+
+    'events.tracon8',
+    'events.tracon9',
+    'events.kawacon2014',
+    'events.concon9',
+    'events.traconx',
+    'events.hitpoint2015',
+    'events.yukicon2015',
+    'events.kuplii2015',
+    'events.popcult2015',
+    'events.mimicon2015',
+    'events.animecon2015',
 )
 
 LOGGING = {
@@ -339,7 +340,7 @@ if 'lippukala' in INSTALLED_APPS:
 
     # NOTE these will be overridden by the respective fields in TicketsEventMeta
     # however, they need to be defined in settings or lippukala will barf.
-    LIPPUKALA_PRINT_LOGO_PATH = mkpath('popcult2015', 'static', 'images', 'popcult.png')
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath('events', 'popcult2015', 'static', 'images', 'popcult.png')
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 

@@ -9,7 +9,7 @@ from core.models import Event
 from tickets.models import Product, Order, OrderProduct, LimitGroup
 from lippukala.models import Code, Order as LippukalaOrder
 from lippukala.printing import OrderPrinter
-from tracon9.lippukala_integration import Queue
+from events.tracon9.lippukala_integration import Queue
 
 
 def _create_order(num_tickets=2):
