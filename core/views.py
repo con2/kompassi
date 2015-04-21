@@ -401,6 +401,12 @@ def core_profile_menu_items(request):
         from programme.views import programme_profile_menu_items
         items.extend(programme_profile_menu_items(request))
 
+    if 'django.contrib.admin' in settings.INSTALLED_APPS and request.user.is_staff:
+        admin_url = '/admin/' # XXX hardcoded
+        admin_active = False
+        admin_text = 'Sivuston ylläpito'
+        items.append((admin_active, admin_url, admin_text))
+
     return items
 
 
