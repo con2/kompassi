@@ -49,7 +49,7 @@ class ProgrammeEventMeta(EventMetaBase):
 
     @property
     def is_public(self):
-        return self.public_from and now() > self.public_from
+        return self.public_from is not None and now() > self.public_from
 
     public = alias_property('is_public')
 

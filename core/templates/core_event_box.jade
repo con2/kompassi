@@ -12,7 +12,7 @@
           span.label.label-default Työvoima
         | &thinsp;
       if event.programme_event_meta
-        if event.programme_event_meta.public
+        if event.programme_event_meta.is_public
           span.label.label-primary: a(href='{% url "programme_timetable_view" event.slug %}') Ohjelmakartta
         else
           span.label.label-default Ohjelma
