@@ -28,10 +28,9 @@ from ..models import (
 )
 from ..helpers import programme_event_required, public_programme_required
 
-
+@public_programme_required
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60) # XXX remove once nginx cache is in place
-@public_programme_required
 @require_GET
 def programme_timetable_view(
     request,
