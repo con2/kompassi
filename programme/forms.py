@@ -147,6 +147,7 @@ class ProgrammeAdminForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Ohjelmavastaavan merkinnät (eivät näy ohjelmanjärjestäjälle)',
+                'state',
                 'category',
                 'room',
                 'start_time',
@@ -169,13 +170,54 @@ class ProgrammeAdminForm(forms.ModelForm):
             ) for start_time in AllRoomsPseudoView(event).start_times()
         ]
 
-    # XXX
+    def clean_room(self):
+        room = self.cleaned_data['room']
+
+        if state == 'published' and room is None:
+            raise ValidationError(u'Julkaistulle ohjelmalle täytyy määrittää tila.')
+        elif state in ['rejected', 'cancelled'] and room is not None:
+            raise ValidationError(u'Siivoa itte huonees hylätyistä ja piilotetuista ohjelmista!')
+
+        return room
+
     def clean_start_time(self):
         start_time = self.cleaned_data['start_time']
+
+        room = self.cleaned_data['room']
+        state = self.cleaned_data['state']
+
         if start_time == '':
             start_time = None
 
+        if state == 'published' and start_time is None:
+            raise ValidationError(u'Julkaistulla ohjelmalla täytyy olla alkuaika.')
+        elif state in ['rejected', 'cancelled'] and start_time is not None:
+            raise ValidationError(u'Hylätyllä tai peruutetulla ohjelmalla ei saa olla alkuaikaa.')
+
+        if room is not None and start_time is None:
+            raise ValidationError(u'Jos tila on asetettu, myös alkuaika tulee asettaa.')
+
         return start_time
+
+    def clean_length(self):
+        length = self.cleaned_data['length']
+
+        room = self.cleaned_data['room']
+        start_time = self.cleaned_data['start_time']
+        state = self.cleaned_data['state']
+
+        if length is None:
+            if state == 'published':
+                raise ValidationError(u'Julkaistulla ohjelmalla täytyy olla pituus.')
+            elif room is not None:
+                raise ValidationError(u'Jos tila on asetettu, myös pituus tulee asettaa.')
+            elif start_time is not None:
+                raise ValidationError(u'Jos alkuaika on asetettu, myös pituus tulee asettaa.')
+        else:
+            if state in ['rejected', 'cancelled']:
+                raise ValidationError(u'Hylätyllä tai peruutetulla ohjelmalla ei saa olla pituutta.')
+
+        return length
 
     class Meta:
         model = Programme
@@ -185,6 +227,7 @@ class ProgrammeAdminForm(forms.ModelForm):
             'notes',
             'room',
             'start_time',
+            'state',
             'tags',
         )
 

@@ -105,6 +105,7 @@ def programme_internal_dumpdata_view(request):
 @require_GET
 def programme_mobile_timetable_view(request, event):
     vars = dict(event=event)
+
     return render(request, 'programme_mobile_timetable.jade', vars)
 
 
