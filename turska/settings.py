@@ -248,7 +248,7 @@ AUTHENTICATION_BACKENDS = (
 
 # These MUST match those in IPA
 KOMPASSI_PASSWORD_MIN_LENGTH = 8
-KOMPASSI_PASSWORD_MIN_CLASSES = 2
+KOMPASSI_PASSWORD_MIN_CLASSES = 3
 
 # Don't actually send email
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
