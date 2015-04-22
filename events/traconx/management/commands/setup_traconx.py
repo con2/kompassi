@@ -372,30 +372,39 @@ class Setup(object):
         ))
 
         for room_name in [
+            u'Aaria',
             u'Iso sali',
             u'Pieni sali',
-            u'Sopraano',
+            # u'Sopraano', # Ei luento-ohjelmakäytössä
             u'Rondo',
             u'Studio',
             u'Sonaatti 1',
             u'Sonaatti 2',
             u'Basso',
-            u'Opus 1',
+            #u'Opus 1', # No longer in use
             u'Opus 2',
             u'Opus 3',
             u'Opus 4',
+            u'Talvipuutarha',
             u'Puistolava',
+            u'Pieni ulkolava',
             u'Puisto - Iso miittiteltta',
             u'Puisto - Pieni miittiteltta',
             u'Puisto - Bofferiteltta',
+            u'Muualla ulkona',
         ]:
-            Room.objects.get_or_create(
+            order = self.get_ordering_number() + 80000 # XXX
+
+            room, created = Room.objects.get_or_create(
                 venue=self.venue,
                 name=room_name,
                 defaults=dict(
-                    order=self.get_ordering_number()
+                    order=order
                 )
             )
+
+            room.order = order
+            room.save()
 
         role, unused = Role.objects.get_or_create(
             title=u'Ohjelmanjärjestäjä',
@@ -457,26 +466,31 @@ class Setup(object):
             (u'Pääohjelmatilat', [
                 u'Iso sali',
                 u'Pieni sali',
-                u'Sopraano',
                 u'Studio',
                 u'Sonaatti 1',
                 u'Sonaatti 2',
             ]),
             (u'Toissijaiset ohjelmatilat', [
-                u'Opus 1',
+                u'Aaria',
+                u'Rondo',
+                u'Opus 2',
+                u'Opus 3',
+                u'Opus 4',
+                u'Talvipuutarha',
+            ]),
+            (u'Ulko-ohjelma', [
                 u'Puistolava',
                 u'Puisto - Iso miittiteltta',
                 u'Puisto - Pieni miittiteltta',
+                u'Muualla ulkona',
             ]),
         ]:
             rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
                 for room_name in room_names]
 
             view, created = View.objects.get_or_create(event=self.event, name=view_name)
-
-            if created:
-                view.rooms = rooms
-                view.save()
+            view.rooms = rooms
+            view.save()
 
 
 class Command(BaseCommand):
