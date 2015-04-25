@@ -90,7 +90,15 @@ class SignupExtra(SignupExtraBase):
             u'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
     )
 
-    shirt_size = models.CharField(max_length=8, choices=SHIRT_SIZES, verbose_name=u'Paidan koko')
+    shirt_size = models.CharField(
+        max_length=8,
+        choices=SHIRT_SIZES,
+        verbose_name=u'Paidan koko',
+        help_text=u'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. '
+            u'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
+            u'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
+            u'target="_blank">ladyfit-paita</a>',
+    )
 
     special_diet = models.ManyToManyField(
         SpecialDiet,
