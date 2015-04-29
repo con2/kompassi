@@ -308,7 +308,16 @@ def tickets_admin_tools_view(request, vars, event):
 
 if 'lippukala' in settings.INSTALLED_APPS:
     from lippukala.views import POSView
-    tickets_admin_pos_view = csrf_exempt(tickets_admin_required(POSView.as_view()))
+    lippukala_pos_view = POSView.as_view()
+
+    @csrf_exempt
+    @tickets_admin_required
+    def tickets_admin_pos_view(request, vars, event):
+        # XXX kala expects event filter via &event=foo; we specify it via /events/foo
+        request.GET = request.GET.copy()
+        request.GET['event'] = event.slug
+
+        return lippukala_pos_view(request)
 
 
 def tickets_admin_menu_items(request, event):
