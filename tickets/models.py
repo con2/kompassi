@@ -760,6 +760,7 @@ class Order(models.Model):
             address_text=self.formatted_address,
             free_text=self.event.tickets_event_meta.ticket_free_text,
             reference_number=self.reference_number,
+            order=self.event.slug,
         )
 
         for op in self.order_product_set.filter(count__gt=0, product__electronic_ticket=True):
