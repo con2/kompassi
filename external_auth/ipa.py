@@ -60,6 +60,7 @@ def create_user(username, first_name, surname, password):
         givenname=first_name,
         sn=surname,
         userpassword=password,
+        noprivate=True,
     )
 
 
