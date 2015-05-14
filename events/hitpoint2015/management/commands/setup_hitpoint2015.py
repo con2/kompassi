@@ -294,18 +294,18 @@ class Setup(object):
             return limit_group
 
         for product_info in [
-            # dict(
-            #     name=u'Tracon Hitpoint -pääsylippu',
-            #     description=u'TODO',
-            #     limit_groups=[
-            #         limit_group('Pääsyliput', 3000),
-            #     ],
-            #     price_cents=1600,
-            #     requires_shipping=True,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name=u'Tracon Hitpoint -pääsylippu',
+                description=u'Viikonloppulippu Tracon Hitpoint -tapahtumaan. Voimassa koko viikonlopun ajan la klo 12 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                limit_groups=[
+                    limit_group('Pääsyliput', 400),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
@@ -321,11 +321,11 @@ class Setup(object):
                 product.save()
 
         # v5
-        if not meta.print_logo_path:
-            meta.print_logo_path = mkpath('static', 'images', 'hitpoint.png')
-            meta.print_logo_width_mm = 30
-            meta.print_logo_height_mm = 30
-            meta.save()
+        # if not meta.print_logo_path:
+        #     meta.print_logo_path = mkpath('static', 'images', 'hitpoint.png')
+        #     meta.print_logo_width_mm = 30
+        #     meta.print_logo_height_mm = 30
+        #     meta.save()
 
     def setup_payments(self):
         from payments.models import PaymentsEventMeta
