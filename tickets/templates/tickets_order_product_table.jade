@@ -9,7 +9,7 @@ tbody
     tr
       td
         p: strong {{ iform.instance.product.name }}
-        p.hidden-xs {{ iform.instance.product.description }}
+        p.hidden-xs {{ iform.instance.product.description|safe }}
       td: p.lead {{ iform.instance.product.formatted_price }}
       td
         div
