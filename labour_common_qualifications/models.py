@@ -8,7 +8,7 @@ from django.utils.dateformat import format as format_date
 from labour.models import QualificationExtraBase
 
 validate_jv_card_number = RegexValidator(
-    regex=r'\d\d\d\d/J\d\d\d\d/\d\d',
+    regex=r'.+/.+/.+',
     message=u"Tarkista JV-kortin numero"
 )
 
@@ -17,7 +17,7 @@ class JVKortti(QualificationExtraBase):
         max_length='13',
         validators=[validate_jv_card_number,],
         verbose_name=u"JV-kortin numero",
-        help_text=u"Muoto: 0000/J0000/00"
+        help_text=u"Muoto: 0000/J0000/00 tai XX/0000/00"
     )
 
     expiration_date = models.DateField(verbose_name=u"Viimeinen voimassaolopäivä")
