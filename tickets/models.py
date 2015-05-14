@@ -10,6 +10,8 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.utils import timezone
 
+from dateutil.tz import tzlocal
+
 from core.models import EventMetaBase
 from core.utils import url, code_property
 from payments.utils import compute_payment_request_mac
@@ -692,7 +694,7 @@ class Order(models.Model):
         meta = self.event.tickets_event_meta
 
         if self.confirm_time:
-            return datetime.combine((self.confirm_time + timedelta(days=meta.due_days)).date(), dtime(23, 59, 59)).replace(tzinfo=timezone.tzlocal())
+            return datetime.combine((self.confirm_time + timedelta(days=meta.due_days)).date(), dtime(23, 59, 59)).replace(tzinfo=tzlocal())
         else:
             return None
 
