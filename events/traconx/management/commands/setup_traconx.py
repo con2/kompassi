@@ -370,7 +370,7 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Konserttipaketti Traconin kävijälle: The Super Sound of Videogames 2 ja Traconin iltabileet',
+                name=u'Konserttipaketti Traconin kävijälle',
                 description=u'Sisältää liput The Super Sound of Videogames 2 -konserttiin sekä Traconin iltabileisiin.</p><p>'
                     u'The Super Sound of Videogames 2 -konsertti perjantaina 4. syyskuuta klo 19 Tampere-talossa. Esiintymässä QUINSONITUS ja TAKOMO PERCUSSION. Lisätietoja <a href="http://www.tampere-talo.fi/supersound" target="_blank">Tampere-talon sivuilta</a> (avautuu uuteen ikkunaan).</p><p>'
                     u'Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2015 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
