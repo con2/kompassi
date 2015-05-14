@@ -27,7 +27,6 @@ def public_programme_required(view_func):
     @programme_event_required
     def wrapper(request, event, *args, **kwargs):
         meta = event.programme_event_meta
-        print 'public_programme_required.wrapper', meta.is_public
 
         if not meta.is_public:
             messages.error(request, u"Tämän tapahtuman ohjelma ei ole vielä julkinen.")
