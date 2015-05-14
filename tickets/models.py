@@ -277,7 +277,7 @@ class LimitGroup(models.Model):
     limit = models.IntegerField(verbose_name=u'Enimmäismäärä')
 
     def __unicode__(self):
-        return u"{self.description} ({self.amount_available}/{self.limit}".format(self=self)
+        return u"{self.description} ({self.amount_available}/{self.limit})".format(self=self)
 
     class Meta:
         verbose_name = u'loppuunmyyntiryhmä'
