@@ -4,6 +4,33 @@ block title
 block admin_content
   .panel.panel-default
     .panel-heading: strong Tapahtumaan ilmoittautuneet henkilöt
+    .panel-body.signup-filters
+      p Suodata hakemuksia:
+      .row
+        .col-md-3: strong Haettu tehtävä
+        .col-md-9
+          for jc, active in job_category_filters
+            if active
+              span.label.label-info
+                a(href='?') {{ jc.name }}
+            else
+              span.label.label-default
+                a(href='?job_category={{ jc.slug }}') {{ jc.name }}
+            | &#x20;
+      .row
+        .col-md-3: strong Hyväksytty tehtävä
+        .col-md-9
+          for jc, active in job_category_accepted_filters
+            if active
+              span.label.label-info
+                a(href='?') {{ jc.name }}
+            else
+              span.label.label-default
+                a(href='?job_category_accepted={{ jc.slug }}') {{ jc.name }}
+            | &#x20;
+      //- .row
+      //-   .col-md-3: strong Hakemuksen tila
+      //-   .col-md-9
     table.table.table-striped
       include labour_admin_signup_table_contents.jade
     .panel-footer.clearfix

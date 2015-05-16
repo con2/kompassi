@@ -87,3 +87,11 @@ body {
 footer {
   background-color: #eee;
 }
+
+
+.signup-filters .row + .row {
+  margin-top: 0.5em;
+}
+.label a {
+  color: white;
+}

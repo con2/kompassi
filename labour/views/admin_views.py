@@ -124,10 +124,13 @@ def labour_admin_signups_view(request, vars, event):
     signups = event.signup_set.all()
 
     job_category_filter = request.GET.get('job_category', None)
+    job_category_filters = [(jc, jc.slug == job_category_filter) for jc in event.jobcategory_set.all()]
     if job_category_filter:
         signups = signups.filter(job_categories__slug=job_category_filter)
 
+
     job_category_accepted_filter = request.GET.get('job_category_accepted', None)
+    job_category_accepted_filters = [(jc, jc.slug == job_category_accepted_filter) for jc in event.jobcategory_set.all()]
     if job_category_accepted_filter:
         signups = signups.filter(job_categories_accepted__slug=job_category_accepted_filter)
 
@@ -139,6 +142,8 @@ def labour_admin_signups_view(request, vars, event):
 
     vars.update(
         signups=signups,
+        job_category_filters=job_category_filters,
+        job_category_accepted_filters=job_category_accepted_filters
     )
 
     return render(request, 'labour_admin_signups_view.jade', vars)
