@@ -121,7 +121,21 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
 @labour_admin_required
 def labour_admin_signups_view(request, vars, event):
-    signups = event.signup_set.all().order_by('person__surname', 'person__first_name')
+    signups = event.signup_set.all()
+
+    job_category_filter = request.GET.get('job_category', None)
+    if job_category_filter:
+        signups = signups.filter(job_categories__slug=job_category_filter)
+
+    job_category_accepted_filter = request.GET.get('job_category_accepted', None)
+    if job_category_accepted_filter:
+        signups = signups.filter(job_categories_accepted__slug=job_category_accepted_filter)
+
+    # state_filter = request.GET.get('state', None)
+    # if state_filter:
+    #     signups = signups.filter
+
+    signups = signups.order_by('person__surname', 'person__first_name')
 
     vars.update(
         signups=signups,
