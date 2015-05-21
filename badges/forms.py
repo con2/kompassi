@@ -7,7 +7,7 @@ from core.utils import horizontal_form_helper
 from .models import Badge, Template
 
 class CreateBatchForm(forms.Form):
-    max_badges = forms.IntegerField(label=u"Kuinka monta badgea (enintään)?", initial=100)
+    max_items = forms.IntegerField(label=u"Kuinka monta badgea (enintään)?", initial=100)
     template = forms.ModelChoiceField(
         queryset=Template.objects.all(),
         required=False,

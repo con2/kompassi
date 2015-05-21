@@ -177,7 +177,7 @@ class Batch(models.Model, CsvExportMixin):
     is_printed = time_bool_property('printed_at')
 
     @classmethod
-    def create(cls, event, template=None, max_badges=100):
+    def create(cls, event, template=None, max_items=100):
         if template is not None:
             assert template.event == event
             badges = Badge.objects.filter(template=template)
@@ -186,8 +186,8 @@ class Batch(models.Model, CsvExportMixin):
 
         badges = badges.filter(**BADGE_ELIGIBLE_FOR_BATCHING).order_by('created_at')
 
-        if max_badges is not None:
-            badges = badges[:max_badges]
+        if max_items is not None:
+            badges = badges[:max_items]
 
         batch = cls(template=template, event=event)
         batch.save()

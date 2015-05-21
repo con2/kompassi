@@ -124,6 +124,14 @@ class TicketsEventMeta(EventMetaBase):
         help_text=u'E-lippuun printattavan logon korkeus millimetreinä. Suositellaan noin 20 millimetriä korkeaa logoa.',
     )
 
+    receipt_footer = models.CharField(
+        blank=True,
+        default=u'',
+        max_length=1023,
+        verbose_name=u'Pakkauslistan alatunniste',
+        help_text=u'Tämä teksti tulostetaan postitettavien tilausten pakkauslistan alatunnisteeseen. Tässä on hyvä mainita mm. järjestävän tahon yhteystiedot.',
+    )
+
 
     @property
     def print_logo_size_cm(self):
@@ -184,7 +192,7 @@ class Batch(models.Model):
             return u"Awaiting delivery"
 
     @classmethod
-    def create(cls, event, max_items=100):
+    def create(cls, event, max_items=100, product=None):
         # XXX concurrency disaster waiting to happen
         # solution: only I do the botching^Wbatching
 
@@ -203,7 +211,12 @@ class Batch(models.Model):
 
             # Order has not been cancelled
             cancellation_time__isnull=True
-        ).order_by("confirm_time")
+        )
+
+        if product is not None:
+            orders = orders.filter(order_product_set__product=product)
+
+        orders = orders.order_by("confirm_time")
 
         accepted = 0
 
@@ -211,6 +224,10 @@ class Batch(models.Model):
             # TODO do this in the database
             # Some orders need not be shipped.
             if not order.requires_shipping:
+                continue
+
+            # Some orders have zero for the product we want.
+            if product is not None and not order.order_product_set.filter(product=product, count__gte=1).exists():
                 continue
 
             order.batch = batch

@@ -90,7 +90,7 @@ def render_receipt(order, c):
 
     c.line(BASE_INDENT, 20*mm, 210*mm - BASE_INDENT, 20*mm)
     c.setFont("Helvetica", 8)
-    c.drawString(BASE_INDENT, 16*mm, u"Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi")
+    c.drawString(BASE_INDENT, 16*mm, order.event.tickets_event_meta.receipt_footer)
 
     c.showPage()
 

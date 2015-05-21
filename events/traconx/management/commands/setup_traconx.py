@@ -425,6 +425,10 @@ class Setup(object):
                 product.limit_groups = limit_groups
                 product.save()
 
+        if not meta.receipt_footer:
+            meta.receipt_footer = u"Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi"
+            meta.save()
+
 
     def setup_payments(self):
         from payments.models import PaymentsEventMeta

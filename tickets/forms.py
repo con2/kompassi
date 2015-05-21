@@ -10,13 +10,14 @@ from core.utils import horizontal_form_helper, indented_without_label, initializ
 from tickets.models import Order, OrderProduct, Customer, Product
 
 __all__ = [
+    "ConfirmSinglePaymentForm",
+    "CreateBatchForm",
+    "CustomerForm",
+    "MultiplePaymentsForm",
     "NullForm",
     "OrderProductForm",
-    "CustomerForm",
-    "SinglePaymentForm",
-    "ConfirmSinglePaymentForm",
-    "MultiplePaymentsForm",
     "SearchForm",
+    "SinglePaymentForm",
 ]
 
 
@@ -150,3 +151,21 @@ class AdminOrderForm(forms.ModelForm):
             'reference_number',
             # 'start_time',
         )
+
+
+class CreateBatchForm(forms.Form):
+    max_items = forms.IntegerField(label=u"Kuinka monta tilausta (enintään)?", initial=100)
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.all(),
+        required=False,
+        label=u"Tuote",
+        help_text=u"Jos valitset tästä kentästä tuotteen, saat erän jossa on ainoastaan sellaisia "
+            u"tilauksia jotka sisältävät vähintään yhden kappaleen valittua tuotetta.",
+    )
+
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(CreateBatchForm, self).__init__(*args, **kwargs)
+
+        self.fields['product'].queryset = Product.objects.filter(event=event)
