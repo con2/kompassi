@@ -7,7 +7,7 @@ django-crispy-forms==1.4.0
 django-ipware==0.0.8
 django-localflavor==1.1
 django-oauth-toolkit==0.8.0
-Django==1.7
+Django==1.7.8
 gunicorn==19.1.1
 ipdb==0.8
 ipython==2.2.0
