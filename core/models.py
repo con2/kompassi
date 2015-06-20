@@ -190,6 +190,12 @@ class Event(models.Model):
     def app_event_meta(self, app_label):
         return getattr(self, '{}_event_meta'.format(app_label))
 
+    def as_dict(self):
+        return pick_attrs(self,
+            'slug',
+            'name',
+        )
+
 
 EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255
 BIRTH_DATE_HELP_TEXT = u'Syntymäaika muodossa {0}'.format(
