@@ -203,8 +203,8 @@ class Setup(object):
             slug=u'kuplitea',
             defaults=dict(
                 title=u'Kuplitean ilmoittautumislomake',
-                signup_form_class_path='kuplii2015.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='kuplii2015.forms:OrganizerSignupExtraForm',
+                signup_form_class_path='events.kuplii2015.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='events.kuplii2015.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2015, 1, 21, 22, 0, 0, tzinfo=self.tz),
                 active_until=self.event.end_time,
             ),

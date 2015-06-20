@@ -24,7 +24,7 @@ class Command(BaseCommand):
             Application.objects.get_or_create(
                 client_id='kompassi_insecure_test_client_id',
                 user=person.user,
-                redirect_uris='http://ssoexample.dev:8001/oauth2/callback',
+                redirect_uris="http://ssoexample.dev:8001/oauth2/callback\nhttp://infokala.dev:8001/oauth2/callback",
                 client_type='confidential', # hah
                 authorization_grant_type='authorization-code',
                 client_secret='kompassi_insecure_test_client_secret',

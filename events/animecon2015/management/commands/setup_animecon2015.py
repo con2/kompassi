@@ -213,8 +213,8 @@ class Setup(object):
             slug=u'conitea',
             defaults=dict(
                 title=u'Conitean ilmoittautumislomake',
-                signup_form_class_path='animecon2015.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='animecon2015.forms:OrganizerSignupExtraForm',
+                signup_form_class_path='events.animecon2015.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='events.animecon2015.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2015, 3, 3, 18, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2015, 11, 22, 23, 59, 59, tzinfo=self.tz),
             ),

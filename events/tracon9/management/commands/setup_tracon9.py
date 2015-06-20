@@ -198,8 +198,8 @@ class Command(BaseCommand):
             slug=u'conitea',
             defaults=dict(
                 title=u'Conitean ilmoittautumislomake',
-                signup_form_class_path='tracon9.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='tracon9.forms:OrganizerSignupExtraForm',
+                signup_form_class_path='events.tracon9.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='events.tracon9.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2014, 7, 7, 12, 0, 0, tzinfo=tz),
                 active_until=datetime(2014, 8, 31, 23, 59, 59, tzinfo=tz),
             ),

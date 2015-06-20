@@ -191,8 +191,8 @@ class Setup(object):
             slug=u'conitea',
             defaults=dict(
                 title=u'Conitean ilmoittautumislomake',
-                signup_form_class_path='finncon2016.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='finncon2016.forms:OrganizerSignupExtraForm',
+                signup_form_class_path='events.finncon2016.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='events.finncon2016.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2015, 4, 29, 22, 0, 0, tzinfo=self.tz),
                 active_until=None,
             ),

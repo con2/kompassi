@@ -231,8 +231,8 @@ class Setup(object):
             slug=u'conitea',
             defaults=dict(
                 title=u'Conitean ilmoittautumislomake',
-                signup_form_class_path='traconx.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='traconx.forms:OrganizerSignupExtraForm',
+                signup_form_class_path='events.traconx.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='events.traconx.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2014, 11, 15, 12, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2015, 11, 22, 23, 59, 59, tzinfo=self.tz),
             ),
