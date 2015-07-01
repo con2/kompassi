@@ -7,13 +7,13 @@ from crispy_forms.layout import Fieldset, Submit
 
 from core.utils import horizontal_form_helper, indented_without_label, initialize_form
 
-from tickets.models import Order, OrderProduct, Customer, Product
+from .models import Order, OrderProduct, Customer, Product, AccommodationInformation
 
 __all__ = [
+    "AccommodationInformationForm",
     "ConfirmSinglePaymentForm",
     "CreateBatchForm",
     "CustomerForm",
-    "MultiplePaymentsForm",
     "NullForm",
     "OrderProductForm",
     "SearchForm",
@@ -23,6 +23,16 @@ __all__ = [
 
 class NullForm(forms.Form):
     pass
+
+
+class AccommodationInformationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(OrderProductForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = AccommodationInformation
 
 
 class OrderProductForm(forms.ModelForm):
@@ -100,10 +110,6 @@ class SinglePaymentForm(forms.Form):
 
 class ConfirmSinglePaymentForm(forms.Form):
     order_id = forms.IntegerField()
-
-
-class MultiplePaymentsForm(forms.Form):
-    dump = forms.CharField(widget=forms.Textarea(attrs={'rows':15,'cols':'90'}), label=u"Pastee tähän")
 
 
 class SearchForm(forms.Form):

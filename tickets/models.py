@@ -354,6 +354,7 @@ class Product(models.Model):
     limit_groups = models.ManyToManyField(LimitGroup, blank=True)
     price_cents = models.IntegerField()
     requires_shipping = models.BooleanField(default=True)
+    requires_accommodation_information = models.BooleanField(default=False)
     electronic_ticket = models.BooleanField(default=False)
     available = models.BooleanField(default=True)
     notify_email = models.CharField(max_length=100, null=True, blank=True)
@@ -937,6 +938,14 @@ class Order(models.Model):
             order.cancel(send_email=send_email)
 
         return count
+
+
+class AccommodationInformation(models.Model):
+    order = models.ForeignKey(Order, related_name="accommodation_information_set")
+    first_name = models.CharField(max_length=100, verbose_name="Etunimi")
+    last_name = models.CharField(max_length=100, verbose_name="Sukunimi")
+    phone_number = models.CharField(max_length=30, null=True, blank=True, verbose_name="Puhelinnumero")
+
 
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, related_name="order_product_set")
