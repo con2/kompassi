@@ -289,6 +289,18 @@ tickets_address_phase = AddressPhase()
 tickets_address_view = decorate(tickets_address_phase)
 
 
+class AccommodationPhase(Phase):
+    name = "tickets_accommodation_view"
+    friendly_name = u"Majoittujien tiedot"
+    template = "tickets_accommodation_phase.jade"
+    prev_phase = "tickets_address_view"
+    next_phase = "tickets_confirm_view"
+
+    def available(self, request, event):
+        order = get_order(request, event)
+        return order.requires_accommodation_info
+
+
 class ConfirmPhase(Phase):
     name = "tickets_confirm_view"
     friendly_name = "Vahvistaminen"
