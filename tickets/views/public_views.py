@@ -23,7 +23,7 @@ except ImportError:
 from core.utils import initialize_form, url
 
 # XXX * imports
-from ..models import *
+from ..models import Order, Product, OrderProduct, Customer, AccommodationInformation
 from ..forms import *
 from ..helpers import *
 from ..utils import *
@@ -31,8 +31,8 @@ from ..utils import *
 
 __all__ = [
     "ALL_PHASES",
+    "tickets_accommodation_view",
     "tickets_address_view",
-    "tickets_closed_view",
     "tickets_confirm_view",
     "tickets_thanks_view",
     "tickets_tickets_view",
@@ -260,9 +260,38 @@ class TicketsPhase(Phase):
     def save(self, request, event, form):
         multiform_save(form)
 
+    def next(self, request, event):
+        order = get_order(request, event)
+
+        if order.requires_accommodation_info:
+            return redirect('tickets_accommodation_view', event.slug)
+        else:
+            return redirect(self.next_phase, event.slug)
+
+
 
 tickets_tickets_phase = TicketsPhase()
 tickets_tickets_view = decorate(tickets_tickets_phase)
+
+
+class AccommodationPhase(Phase):
+    name = "tickets_accommodation_view"
+    friendly_name = u"Lisätiedot"
+    template = "tickets_accommodation_phase.jade"
+    prev_phase = "tickets_address_view"
+    next_phase = "tickets_confirm_view"
+
+    def available(self, request, event):
+        super_available = super(AccommodationPhase, self).available(request, event)
+        if not super_available:
+            return False
+
+        order = get_order(request, event)
+        return order.requires_accommodation_info
+
+
+tickets_accommodation_phase = AccommodationPhase()
+tickets_accommodation_view = decorate(tickets_accommodation_phase)
 
 
 class AddressPhase(Phase):
@@ -284,21 +313,17 @@ class AddressPhase(Phase):
         order.customer = cust
         order.save()
 
+    def prev(self, request, event):
+        order = get_order(request, event)
+
+        if order.requires_accommodation_info:
+            return redirect('tickets_accommodation_view', event.slug)
+        else:
+            return redirect(self.prev_phase, event.slug)
+
 
 tickets_address_phase = AddressPhase()
 tickets_address_view = decorate(tickets_address_phase)
-
-
-class AccommodationPhase(Phase):
-    name = "tickets_accommodation_view"
-    friendly_name = u"Majoittujien tiedot"
-    template = "tickets_accommodation_phase.jade"
-    prev_phase = "tickets_address_view"
-    next_phase = "tickets_confirm_view"
-
-    def available(self, request, event):
-        order = get_order(request, event)
-        return order.requires_accommodation_info
 
 
 class ConfirmPhase(Phase):
@@ -378,34 +403,14 @@ class ThanksPhase(Phase):
         clear_order(request, event)
 
 
-class ClosedPhase(Phase):
-    name = "tickets_welcome_view"
-    friendly_name = "Tervetuloa!"
-    template = "tickets_closed_phase.html"
-    prev_phase = None
-    next_phase = None
-    can_cancel = True
-    index = 0
-
-    def available(self, request, event):
-        return True
-
-    def save(self, request, event, form):
-        pass
-
-    def next(self, request, event):
-        return HttpResponseRedirect(event.homepage_url)
-
-
 tickets_thanks_phase = ThanksPhase()
 tickets_thanks_view = decorate(tickets_thanks_phase)
-tickets_closed_phase = ClosedPhase()
-tickets_closed_view = decorate(tickets_closed_phase)
 
 
 ALL_PHASES = [
     tickets_welcome_phase,
     tickets_tickets_phase,
+    tickets_accommodation_phase,
     tickets_address_phase,
     tickets_confirm_phase,
     tickets_thanks_phase,

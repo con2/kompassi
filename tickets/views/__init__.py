@@ -3,7 +3,6 @@
 from .public_views import (
     ALL_PHASES,
     tickets_address_view,
-    tickets_closed_view,
     tickets_confirm_view,
     tickets_thanks_view,
     tickets_tickets_view,

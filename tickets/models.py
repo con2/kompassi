@@ -591,6 +591,11 @@ class Order(models.Model):
         return any(op.product.requires_shipping for op in self.order_product_set.filter(count__gt=0))
 
     @property
+    def requires_accommodation_info(self):
+        # TODO stub
+        return False
+
+    @property
     def formatted_price(self):
         return format_price(self.price_cents)
 
