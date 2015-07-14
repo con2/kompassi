@@ -5,6 +5,7 @@ from django.conf.urls import patterns, include, url
 from django.shortcuts import redirect
 
 from .views import (
+    tickets_accommodation_view,
     tickets_address_view,
     tickets_admin_batch_view,
     tickets_admin_batches_view,
@@ -22,7 +23,7 @@ from .views import (
 actual_patterns = [
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/?$', tickets_welcome_view, name="tickets_welcome_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/products/?$', tickets_tickets_view, name="tickets_tickets_view"),
-    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/accommodation/?$', tickets_address_view, name="tickets_accommodation_view"),
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/accommodation/?$', tickets_accommodation_view, name="tickets_accommodation_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/address/?$', tickets_address_view, name="tickets_address_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/confirm/?$', tickets_confirm_view, name="tickets_confirm_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/thanks/?$', tickets_thanks_view, name="tickets_thanks_view"),

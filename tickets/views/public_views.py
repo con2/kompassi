@@ -156,7 +156,6 @@ class Phase(object):
             phases.append(dict(
                 url=url(phase.name, event.slug),
                 friendly_name=phase.friendly_name,
-                available=phase.index < self.index and not order.is_confirmed,
                 current=phase is self
             ))
 
@@ -282,12 +281,10 @@ class AccommodationPhase(Phase):
     next_phase = "tickets_confirm_view"
 
     def available(self, request, event):
-        super_available = super(AccommodationPhase, self).available(request, event)
-        if not super_available:
-            return False
-
         order = get_order(request, event)
-        return order.requires_accommodation_info
+
+        print 'AccommodationPhase', 'available', 'requires_accommodation_info', order.requires_accommodation_info
+        return order.requires_accommodation_info and not order.is_confirmed
 
 
 tickets_accommodation_phase = AccommodationPhase()
