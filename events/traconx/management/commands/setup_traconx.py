@@ -442,6 +442,7 @@ class Setup(object):
                 description=u'Lattiamajoituspaikka kahdeksi yöksi (perjantaista sunnuntaihin) Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
                 limit_groups=[
                     limit_group('Majoitus Pyynikki pe-la', 120),
+                    limit_group('Majoitus Pyynikki la-su', 120),
                 ],
                 price_cents=2000,
                 requires_shipping=False,
