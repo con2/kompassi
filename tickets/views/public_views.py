@@ -262,7 +262,7 @@ class TicketsPhase(Phase):
     def next(self, request, event):
         order = get_order(request, event)
 
-        if order.requires_accommodation_info:
+        if order.requires_accommodation_information:
             return redirect('tickets_accommodation_view', event.slug)
         else:
             return redirect(self.next_phase, event.slug)
@@ -277,14 +277,29 @@ class AccommodationPhase(Phase):
     name = "tickets_accommodation_view"
     friendly_name = u"Lisätiedot"
     template = "tickets_accommodation_phase.jade"
-    prev_phase = "tickets_address_view"
-    next_phase = "tickets_confirm_view"
+    prev_phase = "tickets_tickets_view"
+    next_phase = "tickets_address_view"
 
     def available(self, request, event):
         order = get_order(request, event)
 
-        print 'AccommodationPhase', 'available', 'requires_accommodation_info', order.requires_accommodation_info
-        return order.requires_accommodation_info and not order.is_confirmed
+        print 'AccommodationPhase', 'available', 'requires_accommodation_information', order.requires_accommodation_information
+        return order.requires_accommodation_information and not order.is_confirmed
+
+    def validate(self, request, event, form):
+        errors = ['syntax'] if not all(i.is_valid() for i in form) else []
+
+        # If the above step failed, not all forms have cleaned_data.
+        if errors:
+            messages.error(request, u'Tarkista lomakkeen sisältö.')
+            return errors
+
+    def make_form(self, request, event):
+        order = get_order(request, event)
+        return AccommodationInformationForm.get_for_order(request, order)
+
+    def save(self, request, event, form):
+        multiform_save(form)
 
 
 tickets_accommodation_phase = AccommodationPhase()
@@ -313,7 +328,7 @@ class AddressPhase(Phase):
     def prev(self, request, event):
         order = get_order(request, event)
 
-        if order.requires_accommodation_info:
+        if order.requires_accommodation_information:
             return redirect('tickets_accommodation_view', event.slug)
         else:
             return redirect(self.prev_phase, event.slug)

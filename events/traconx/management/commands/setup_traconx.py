@@ -411,6 +411,45 @@ class Setup(object):
                 available=True,
                 ordering=ordering(),
             ),
+            dict(
+                name=u'Lattiamajoitus 1 yö pe-la - Aleksanterin koulu (sis. makuualusta)',
+                description=u'Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
+                limit_groups=[
+                    limit_group('Majoitus Aleksanteri pe-la', 80),
+                ],
+                price_cents=1300,
+                requires_shipping=False,
+                requires_accommodation_information=True,
+                electronic_ticket=False,
+                available=self.test,
+                ordering=ordering(),
+            ),
+            dict(
+                name=u'Lattiamajoitus 1 yö la-su - Aleksanterin koulu (sis. makuualusta)',
+                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
+                limit_groups=[
+                    limit_group('Majoitus Aleksanteri la-su', 130),
+                ],
+                price_cents=1300,
+                requires_shipping=False,
+                requires_accommodation_information=True,
+                electronic_ticket=False,
+                available=self.test,
+                ordering=ordering(),
+            ),
+            dict(
+                name=u'Lattiamajoitus 2 yötä pe-su - Pyynikin koulu (ei sis. makuualustaa)',
+                description=u'Lattiamajoituspaikka kahdeksi yöksi (perjantaista sunnuntaihin) Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                limit_groups=[
+                    limit_group('Majoitus Pyynikki pe-la', 120),
+                ],
+                price_cents=2000,
+                requires_shipping=False,
+                requires_accommodation_information=True,
+                electronic_ticket=False,
+                available=self.test,
+                ordering=ordering(),
+            ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
@@ -545,35 +584,37 @@ class Setup(object):
             start_time=datetime(2015, 9, 5, 10, 30, 0, tzinfo=self.tz),
         )
 
-        for view_name, room_names in [
-            (u'Pääohjelmatilat', [
-                u'Iso sali',
-                u'Pieni sali',
-                u'Studio',
-                u'Sonaatti 1',
-                u'Sonaatti 2',
-            ]),
-            (u'Toissijaiset ohjelmatilat', [
-                u'Aaria',
-                u'Rondo',
-                u'Opus 2',
-                u'Opus 3',
-                u'Opus 4',
-                u'Talvipuutarha',
-            ]),
-            (u'Ulko-ohjelma', [
-                u'Puistolava',
-                u'Puisto - Iso miittiteltta',
-                u'Puisto - Pieni miittiteltta',
-                u'Muualla ulkona',
-            ]),
-        ]:
-            rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
-                for room_name in room_names]
+        have_views = View.objects.filter(event=self.event).exists()
+        if not have_views:
+            for view_name, room_names in [
+                (u'Pääohjelmatilat', [
+                    u'Iso sali',
+                    u'Pieni sali',
+                    u'Studio',
+                    u'Sonaatti 1',
+                    u'Sonaatti 2',
+                ]),
+                (u'Toissijaiset ohjelmatilat', [
+                    u'Aaria',
+                    u'Rondo',
+                    u'Opus 2',
+                    u'Opus 3',
+                    u'Opus 4',
+                    u'Talvipuutarha',
+                ]),
+                (u'Ulko-ohjelma', [
+                    u'Puistolava',
+                    u'Puisto - Iso miittiteltta',
+                    u'Puisto - Pieni miittiteltta',
+                    u'Muualla ulkona',
+                ]),
+            ]:
+                rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
+                    for room_name in room_names]
 
-            view, created = View.objects.get_or_create(event=self.event, name=view_name)
-            view.rooms = rooms
-            view.save()
+                view, created = View.objects.get_or_create(event=self.event, name=view_name)
+                view.rooms = rooms
+                view.save()
 
 
 class Command(BaseCommand):
