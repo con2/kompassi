@@ -438,13 +438,25 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Lattiamajoitus 2 yötä pe-su - Pyynikin koulu (ei sis. makuualustaa)',
-                description=u'Lattiamajoituspaikka kahdeksi yöksi (perjantaista sunnuntaihin) Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                name=u'Lattiamajoitus 1 yö pe-la - Pyynikin koulu (ei sis. makuualustaa)',
+                description=u'Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
                 limit_groups=[
                     limit_group('Majoitus Pyynikki pe-la', 120),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                requires_accommodation_information=True,
+                electronic_ticket=False,
+                available=self.test,
+                ordering=ordering(),
+            ),
+            dict(
+                name=u'Lattiamajoitus 1 yö la-su - Pyynikin koulu (ei sis. makuualustaa)',
+                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                limit_groups=[
                     limit_group('Majoitus Pyynikki la-su', 120),
                 ],
-                price_cents=2000,
+                price_cents=1000,
                 requires_shipping=False,
                 requires_accommodation_information=True,
                 electronic_ticket=False,
