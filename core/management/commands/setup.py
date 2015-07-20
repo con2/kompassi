@@ -32,6 +32,7 @@ class Command(BaseCommand):
             (('setup_popcult2015',), dict(test=test)),
             (('setup_mimicon2015',), dict(test=test)),
             (('setup_animecon2015',), dict(test=test)),
+            (('setup_popcultday2015',), dict(test=test)),
         ]
 
         if test:

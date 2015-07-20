@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'events.popcult2015',
     'events.mimicon2015',
     'events.animecon2015',
+    'events.popcultday2015',
 )
 
 LOGGING = {
