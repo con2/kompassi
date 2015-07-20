@@ -30,10 +30,10 @@ class Setup(object):
             name_inessive='Malmitalolla',
         ))
         self.event, unused = Event.objects.get_or_create(slug='popcultday2015', defaults=dict(
-            name='Popcult Day',
-            name_genitive='Popcult Day -tapahtuman',
-            name_illative='Popcult Day -tapahtumaan',
-            name_inessive='Popcult Day -tapahtumassa',
+            name='Popcult Day 2015',
+            name_genitive='Popcult Day 2015 -tapahtuman',
+            name_illative='Popcult Day 2015 -tapahtumaan',
+            name_inessive='Popcult Day 2015 -tapahtumassa',
             homepage_url='http://popcult.fi/day',
             organization_name='Finnish Fandom Conventions ry',
             organization_url='http://popcult.fi',
@@ -59,7 +59,7 @@ class Setup(object):
                 u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
                 u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
                 u"lipunvaihtopisteessä.\n\n"
-                u"Tervetuloa Popcult Dayin!",
+                u"Tervetuloa Popcult Dayhin lauantaina 23. elokuuta 2015 Malmitalolle!",
             front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Popcult Day -tapahtumaan!</h2>"
                 u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 u"<p>Lue lisää tapahtumasta <a href='http://popcult.fi/day'>Popcult Day -tapahtuman kotisivuilta</a>.</p>",
