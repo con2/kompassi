@@ -354,10 +354,10 @@ def core_password_view(request):
                     messages.error(request, u'Salasanan vaihto epäonnistui.')
                 else:
                     messages.success(request, u'Salasanasi on vaihdettu.')
-            else:
-                request.user.set_password(new_password)
-                request.user.save()
-                messages.success(request, u'Salasanasi on vaihdettu.')
+
+            request.user.set_password(new_password)
+            request.user.save()
+            messages.success(request, u'Salasanasi on vaihdettu.')
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 

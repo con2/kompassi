@@ -593,9 +593,9 @@ class PasswordResetToken(OneTimeCode):
                 reset_user_password(user, new_password)
             except IPAError, e:
                 raise PasswordResetError(e)
-        else:
-            user.set_password(new_password)
-            user.save()
+
+        user.set_password(new_password)
+        user.save()
 
 
 class EmailVerificationToken(OneTimeCode):
