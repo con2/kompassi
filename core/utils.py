@@ -448,3 +448,15 @@ def event_meta_property(app_label, code_path):
 
 def pick_attrs(obj, *attr_names):
     return dict((attr_name, getattr(obj, attr_name)) for attr_name in attr_names)
+
+
+def groups_of_n(iterable, n):
+    cur_group = []
+    for item in iterable:
+        cur_group.append(item)
+        if len(cur_group) == n:
+            yield cur_group
+            cur_group = []
+
+    if cur_group:
+        yield cur_group
