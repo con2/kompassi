@@ -62,7 +62,7 @@ class Setup(object):
                 u"Tervetuloa Yukiconiin!",
             front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Yukicon 3.0 -tapahtumaan!</h2>"
                 u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                u"<p>Lue lisää tapahtumasta <a href='http://www.yukicon.fi'>Yukiconin kotisivuilta</a>.</p>",
+                u"<p>Lue lisää tapahtumasta <a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>",
             print_logo_path=mkpath('static', 'images', 'yukicon_436_test.jpg'),
             print_logo_width_mm=50,
             print_logo_height_mm=10
