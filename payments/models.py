@@ -7,6 +7,8 @@ from django.db import models
 
 from core.models import EventMetaBase
 
+from .defaults import EVENT_META_DEFAULTS
+
 
 class PaymentsEventMeta(EventMetaBase):
     checkout_password = models.CharField(max_length=255)
@@ -24,9 +26,7 @@ class PaymentsEventMeta(EventMetaBase):
         group, unused = PaymentsEventMeta.get_or_create_group(event, 'admins')
 
         return cls.objects.get_or_create(event=event, defaults=dict(
-            checkout_password='SAIPPUAKAUPPIAS',
-            checkout_merchant='375917',
-            checkout_delivery_date='20130914',
+            EVENT_META_DEFAULTS,
             admin_group=group,
         ))
 

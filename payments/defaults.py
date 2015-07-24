@@ -8,3 +8,9 @@ CHECKOUT_PARAMS = dict(
     TYPE='0',
     ALGORITHM='2',
 )
+
+EVENT_META_DEFAULTS = dict(
+    checkout_password='SAIPPUAKAUPPIAS',
+    checkout_merchant='375917',
+    checkout_delivery_date='20130914',
+)
