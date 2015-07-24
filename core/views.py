@@ -223,9 +223,7 @@ def core_registration_view(request):
                 is_superuser=False,
             )
 
-            if 'external_auth' not in settings.INSTALLED_APPS:
-                user.set_password(password)
-
+            user.set_password(password)
             user.save()
 
             person.user = user
