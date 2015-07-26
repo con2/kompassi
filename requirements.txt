@@ -1,4 +1,5 @@
 -e git+https://github.com/kcsry/lippukala#egg=lippukala
+-e git+https://github.com/tracon/django-nexmo#egg=nexmo
 behave==1.2.4
 Celery==3.1.15
 django-auth-ldap==1.2.1
@@ -21,3 +22,4 @@ requests-kerberos==0.5
 requests==2.4.1
 unicodecsv==0.9.4
 XlsxWriter==0.5.7
+regex==2015.07.19
