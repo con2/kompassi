@@ -4,6 +4,8 @@ from __future__ import absolute_import
 import os
 from datetime import datetime, timedelta
 
+from django.utils.translation import ugettext_lazy as _
+
 import django.conf.global_settings as defaults
 
 
@@ -76,7 +78,7 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-SECRET_KEY = 'jhdjl*kxcet2aaz)%ixmois*j_p+d*q79%legoz+9el(c%zc$%'
+SECRET_KEY = 'jhdjl*kxcet2aaz)%ixmois*j_p+d*q79%legoz+9el(c%zc$%1'
 
 TEMPLATE_LOADERS = (
     ('pyjade.ext.django.Loader',(
@@ -95,6 +97,7 @@ MIDDLEWARE_CLASSES = (
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'core.middleware.PageWizardMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 )
 
 ROOT_URLCONF = 'turska.urls'
@@ -136,6 +139,8 @@ INSTALLED_APPS = (
     'api',
     'api_v2',
     'badges',
+    'nexmo',
+    'sms',
 
     # Uncomment if you have IPA
     #'external_auth',
@@ -188,7 +193,7 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
-        'console':{
+        'console': {
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
@@ -228,7 +233,16 @@ DATE_FORMAT_STRFTIME = '%d.%m.%Y'
 DATETIME_FORMAT = 'j.n.Y G:i:s'
 DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 
+LANGUAGES = (
+    ('fi', _('Finnish')),
+    ('en', _('English')),
+    # and all the other languages you have translated.
+)
+
+LANGUAGE_CODE = 'fi'  # or which language you want to use.
+
 USE_L10N = True
+USE_L18N = True
 
 KOMPASSI_APPLICATION_NAME = u'Kompassi'
 KOMPASSI_INSTALLATION_NAME = u'Kompassi (DEV)'
@@ -314,7 +328,7 @@ if 'external_auth' in INSTALLED_APPS:
     AUTH_LDAP_GLOBAL_OPTIONS = {
         ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_ALLOW,
         ldap.OPT_X_TLS_CACERTFILE: KOMPASSI_IPA_CACERT_PATH,
-	    ldap.OPT_REFERRALS: 0,
+        ldap.OPT_REFERRALS: 0,
     }
 
     from sets import Set
@@ -393,3 +407,9 @@ if 'api_v2' in INSTALLED_APPS:
             write=u'Muokata käyttäjä- ja henkilötietojasi',
         )
     )
+
+if 'nexmo' in INSTALLED_APPS:
+    NEXMO_USERNAME = 'username'
+    NEXMO_PASSWORD = 'password'
+    NEXMO_FROM = 'Name or number'
+    NEXMO_INBOUND_KEY = '0123456789abcdef'
