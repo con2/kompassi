@@ -11,6 +11,7 @@ from .models import (
   OrderProduct,
   Product,
   TicketsEventMeta,
+  AccommodationInformation,
 )
 
 
@@ -61,10 +62,24 @@ class OrderAdmin(admin.ModelAdmin):
 #        CustomerInline
     ]
 
+class AccommodationInformationAdmin(admin.ModelAdmin):
+    model = AccommodationInformation
+    list_display = (
+      'event',
+      'product_name',
+      'formatted_order_number',
+      'last_name',
+      'first_name',
+      'phone_number',
+      'email',
+    )
+
+    list_filter = ('order_product__product__event',)
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(LimitGroup, LimitGroupAdmin)
+admin.site.register(AccommodationInformation, AccommodationInformationAdmin)
 
 for cls in (Batch, Customer):
     admin.site.register(cls)

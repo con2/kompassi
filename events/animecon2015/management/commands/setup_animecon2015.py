@@ -409,20 +409,22 @@ class Setup(object):
             )
         )
 
-        for title, style in [
-            (u'Anime ja manga', u'anime'),
-            (u'Cosplay', u'cosplay'),
-            (u'Paja', u'miitti'),
-            (u'Muu ohjelma', u'muu'),
-            (u'Kunniavieras', u'rope'),
-        ]:
-            Category.objects.get_or_create(
-                event=self.event,
-                style=style,
-                defaults=dict(
-                    title=title,
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                (u'Anime ja manga', u'anime'),
+                (u'Cosplay', u'cosplay'),
+                (u'Paja', u'miitti'),
+                (u'Muu ohjelma', u'muu'),
+                (u'Kunniavieras', u'rope'),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    style=style,
+                    defaults=dict(
+                        title=title,
+                    )
                 )
-            )
 
         if self.test:
             # create some test programme

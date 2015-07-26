@@ -13,18 +13,22 @@ from django.views.decorators.http import require_http_methods, require_GET
 
 from .models import Event, Person, PasswordResetError, PasswordResetToken, EmailVerificationError, EmailVerificationToken
 from .forms import PersonForm, RegistrationForm, PasswordForm, LoginForm, PasswordResetForm, PasswordResetRequestForm
-from .utils import initialize_form, get_next, next_redirect, page_wizard_clear, page_wizard_vars, url
+from .utils import initialize_form, get_next, next_redirect, page_wizard_clear, page_wizard_vars, url, groups_of_n
 from .helpers import person_required
 
 
 def core_frontpage_view(request):
     t = now()
 
+    past_events = Event.objects.filter(public=True, end_time__lte=t).order_by('-start_time')
+    current_events = Event.objects.filter(public=True, start_time__lte=t, end_time__gt=t).order_by('-start_time')
+    future_events = Event.objects.filter((Q(start_time__gt=t) | Q(start_time__isnull=True)) & Q(public=True)).order_by('start_time')
+
     vars = dict(
         settings=settings,
-        past_events=Event.objects.filter(public=True, end_time__lte=t).order_by('-start_time'),
-        current_events=Event.objects.filter(public=True, start_time__lte=t, end_time__gt=t).order_by('-start_time'),
-        future_events=Event.objects.filter((Q(start_time__gt=t) | Q(start_time__isnull=True)) & Q(public=True)).order_by('start_time'),
+        past_events_rows=list(groups_of_n(past_events, 4)),
+        current_events_rows=list(groups_of_n(current_events, 4)),
+        future_events_rows=list(groups_of_n(future_events, 4)),
     )
 
     return render(request, 'core_frontpage_view.jade', vars)
@@ -130,6 +134,12 @@ def do_login(request, user, password, next='core_frontpage_view'):
             )
             return redirect('core_frontpage_view')
 
+    if 'external_auth' in settings.INSTALLED_APPS:
+        # Also set password locally to facilitate future architecture change
+        if not user.password:
+            user.set_password(password)
+            user.save()
+
     login(request, user)
 
     username = request.user.username
@@ -217,9 +227,7 @@ def core_registration_view(request):
                 is_superuser=False,
             )
 
-            if 'external_auth' not in settings.INSTALLED_APPS:
-                user.set_password(password)
-
+            user.set_password(password)
             user.save()
 
             person.user = user
@@ -350,10 +358,10 @@ def core_password_view(request):
                     messages.error(request, u'Salasanan vaihto epäonnistui.')
                 else:
                     messages.success(request, u'Salasanasi on vaihdettu.')
-            else:
-                request.user.set_password(new_password)
-                request.user.save()
-                messages.success(request, u'Salasanasi on vaihdettu.')
+
+            request.user.set_password(new_password)
+            request.user.save()
+            messages.success(request, u'Salasanasi on vaihdettu.')
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 

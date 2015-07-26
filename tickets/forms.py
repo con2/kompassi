@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django import forms
+from django.forms.formsets import formset_factory
 
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Fieldset, Submit
@@ -27,12 +28,29 @@ class NullForm(forms.Form):
 
 class AccommodationInformationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(OrderProductForm, self).__init__(*args, **kwargs)
+        super(AccommodationInformationForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
+        for field_name, field in self.fields.iteritems():
+            if field_name != 'email':
+                field.required = True
+
+    @classmethod
+    def get_for_order(cls, request, order, admin=False):
+        ais = AccommodationInformation.get_for_order(order)
+        return [cls.get_for_accommodation_information(request, ai) for ai in ais]
+
+    @classmethod
+    def get_for_accommodation_information(cls, request, ai):
+        return initialize_form(cls, request,
+            instance=ai,
+            prefix="a%d" % ai.pk,
+        )
+
     class Meta:
         model = AccommodationInformation
+        fields = ('first_name', 'last_name', 'phone_number', 'email')
 
 
 class OrderProductForm(forms.ModelForm):

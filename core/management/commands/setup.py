@@ -28,10 +28,8 @@ class Command(BaseCommand):
             (('setup_api_v2',), dict(test=test)),
             (('setup_traconx',), dict(test=test)),
             (('setup_hitpoint2015',), dict(test=test)),
-            (('setup_kuplii2015',), dict(test=test)),
-            (('setup_popcult2015',), dict(test=test)),
-            (('setup_mimicon2015',), dict(test=test)),
-            (('setup_animecon2015',), dict(test=test)),
+            (('setup_popcultday2015',), dict(test=test)),
+            (('setup_yukicon2016',), dict(test=test)),
         ]
 
         if test:

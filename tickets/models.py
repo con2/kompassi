@@ -591,6 +591,10 @@ class Order(models.Model):
         return any(op.product.requires_shipping for op in self.order_product_set.filter(count__gt=0))
 
     @property
+    def requires_accommodation_information(self):
+        return self.order_product_set.filter(count__gt=0, product__requires_accommodation_information=True).exists()
+
+    @property
     def formatted_price(self):
         return format_price(self.price_cents)
 
@@ -940,13 +944,6 @@ class Order(models.Model):
         return count
 
 
-class AccommodationInformation(models.Model):
-    order = models.ForeignKey(Order, related_name="accommodation_information_set")
-    first_name = models.CharField(max_length=100, verbose_name="Etunimi")
-    last_name = models.CharField(max_length=100, verbose_name="Sukunimi")
-    phone_number = models.CharField(max_length=30, null=True, blank=True, verbose_name="Puhelinnumero")
-
-
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, related_name="order_product_set")
     product = models.ForeignKey(Product, related_name="order_product_set")
@@ -977,3 +974,47 @@ class OrderProduct(models.Model):
     class Meta:
         verbose_name = u'tilausrivi'
         verbose_name_plural = u'tilausrivit'
+
+
+class AccommodationInformation(models.Model):
+    order_product = models.ForeignKey(OrderProduct, related_name="accommodation_information_set")
+
+    # allow blank because these are pre-created
+    first_name = models.CharField(max_length=100, blank=True, default=u'', verbose_name="Etunimi")
+    last_name = models.CharField(max_length=100, blank=True, default=u'', verbose_name="Sukunimi")
+    phone_number = models.CharField(max_length=30,blank=True, default=u'', verbose_name="Puhelinnumero")
+    email = models.EmailField(blank=True, default=u'', verbose_name='Sähköpostiosoite')
+
+    @classmethod
+    def get_for_order(cls, order):
+        ais = []
+
+        for order_product in order.order_product_set.filter(count__gt=0, product__requires_accommodation_information=True):
+            op_ais = list(order_product.accommodation_information_set.all())
+
+            while len(op_ais) > order_product.count:
+                op_ais[-1].delete()
+                op_ais.pop()
+
+            while len(op_ais) < order_product.count:
+                op_ais.append(cls.objects.create(order_product=order_product))
+
+            ais.extend(op_ais)
+
+        return ais
+
+    @property
+    def event(self):
+        return self.order_product.product.event
+
+    @property
+    def product_name(self):
+        return self.order_product.product.name
+
+    @property
+    def formatted_order_number(self):
+        return self.order_product.order.formatted_order_number
+
+    class Meta:
+        verbose_name = u'majoittujan tiedot'
+        verbose_name_plural = u'majoittujan tiedot'
