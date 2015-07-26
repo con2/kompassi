@@ -86,13 +86,20 @@ def sms_received_handler(sender, **kwargs):
                             existing_vote[0].vote = match.group('vote')
                             existing_vote[0].save()
                     #else:
-                        # Value error,  value out of scope or wrong category entered and multiple categories with overlapping values. Not saving
+                        # Value error, vote value out of scope or wrong category entered and multiple categories with overlapping values. Not saving
         # else:
             # Voting message with non-valid hotword.
-            # It is very unlikely to someone start their message with "I am 13" or something like it (word word digit)
+            # It is very unlikely to someone start their message with "I am 13" or something like it (word [word] digit)
     else:
         #regular message with no hotword.
-        print "no hotword found"
+        try:
+            event = SMSEvent.objects.get(current=True, sms_enabled=True)
+        except SMSEvent.DoesNotExist:
+            # Don't know to which event point the new message, ignored.
+            pass
+        else:
+            new_message = SMSMessageIn(message=message, smsevent=event)
+            new_message.save()
 
 
 class Hotword(models.Model):
@@ -149,7 +156,44 @@ class Vote(models.Model):
         verbose_name_plural = u'Äänet'
 
 
-class SMSMessage(models.Model):
+class SMSEvent(models.Model):
+    event = models.ForeignKey('core.Event')
+    sms_enabled = models.BooleanField(
+        default=False
+    )
+    current = models.BooleanField(
+        default=False
+    )
+    used_credit = models.IntegerField(
+        default=0
+    )
+
+    def save(self, *args, **kwargs):
+        if self.current:
+            try:
+                temp = SMSEvent.objects.get(current=True)
+                if self != temp:
+                    temp.current = False
+                    temp.save()
+            except SMSEvent.DoesNotExist:
+                pass
+        super(SMSEvent, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = u'Tekstiviestejä käyttävä tapahtuma'
+        verbose_name_plural = u'Tekstiviestejä käyttävät tapahtumat'
+
+
+class SMSMessageIn(models.Model):
+    message = models.ForeignKey('nexmo.InboundMessage')
+    smsevent = models.ForeignKey(SMSEvent)
+
+    class Meta:
+        verbose_name = u'Vastaanotettu viesti'
+        verbose_name_plural = u'Vastaanotetut viestit'
+
+
+class SMSMessageOut(models.Model):
     recipient = models.ForeignKey('mailings.RecipientGroup', verbose_name=u'Vastaanottajaryhmä')
 
     body_template = models.TextField(
@@ -194,7 +238,7 @@ class SMSMessage(models.Model):
             recipients = [user.person for user in self.recipient.group.user_set.all()]
 
         for person in recipients:
-            person_message, created = PersonSMSMessage.objects.get_or_create(
+            person_message, created = PersonSMSMessageOut.objects.get_or_create(
                 person=person,
                 message=self,
             )
@@ -220,7 +264,7 @@ class SMSMessage(models.Model):
 
     @classmethod
     def send_messages(cls, event, app_label, person):
-        for message in SMSMessage.objects.filter(
+        for message in SMSMessageOut.objects.filter(
             recipient__app_label=app_label,
             recipient__event=event,
             recipient__group__in=person.user.groups.all(),
@@ -261,24 +305,24 @@ class DedupMixin(object):
         )
 
 
-class PersonSMSMessageBody(models.Model, DedupMixin):
+class PersonSMSMessageOutBody(models.Model, DedupMixin):
     digest = models.CharField(max_length=63, db_index=True)
     text = models.TextField()
 
 
-class PersonSMSMessage(models.Model):
-    message = models.ForeignKey(SMSMessage)
+class PersonSMSMessageOut(models.Model):
+    message = models.ForeignKey(SMSMessageOut)
     person = models.ForeignKey('core.Person')
 
     # dedup
-    body = models.ForeignKey(PersonSMSMessageBody)
+    body = models.ForeignKey(PersonSMSMessageOutBody)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        self.body, unused = PersonSMSMessageBody.get_or_create(self.render_message(self.message.body_template))
+        self.body, unused = PersonSMSMessageOutBody.get_or_create(self.render_message(self.message.body_template))
 
-        return super(PersonSMSMessage, self).save(*args, **kwargs)
+        return super(PersonSMSMessageOut, self).save(*args, **kwargs)
 
     @property
     def message_vars(self):
