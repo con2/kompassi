@@ -10,8 +10,8 @@ class SMSRecipientGroupAdmin(admin.ModelAdmin):
 
 class HotwordAdmin(admin.ModelAdmin):
     model = Hotword
-    fields = ('hotword', 'valid_from', 'valid_to', 'assigned_event')
-    list_display = ('hotword', 'valid_from', 'valid_to', 'assigned_event')
+    fields = ('hotword', 'slug', 'valid_from', 'valid_to', 'assigned_event')
+    list_display = ('hotword', 'slug', 'valid_from', 'valid_to', 'assigned_event')
     list_filter = ('valid_from', 'valid_to', 'assigned_event')
 
 

@@ -26,7 +26,7 @@ def sms_received_handler(sender, **kwargs):
         # Message with hotword
         for hotword in hotwords:
             found = False
-            if hotword.hotword == match.group('hotword'):
+            if hotword.slug == match.group('hotword'):
                 found = hotword
                 break
         if found is not False:
@@ -36,15 +36,19 @@ def sms_received_handler(sender, **kwargs):
                 try:
                     category = VoteCategories.objects.get(value_min__lte=match.group('vote'),  value_max__gte=match.group('vote'), mapped=found)
                 except VoteCategories.DoesNotExist:
-                    # Ok,  there was none,  or vote value out of scope,  proceed.
-                    empty_category = VoteCategories.get_or_create(category="Ei voittoa", category_slug="empty", value_min=0, value_max=0)
-                    vote = Vote(hotword=found, category=empty_category, vote=match.group('vote'),  voter=message.sender)
-                    vote.save()
+                    # Ok,  there was none,  or vote value out of scope, vote rejected.
+                    vote = "rejected"
                 except VoteCategories.MultipleObjectsReturned:
                     # Value error or multiple categories with overlapping values. Saving to first one.
                     category = VoteCategories.objects.filter(value_min__lte=match.group('vote'),  value_max__gte=match.group('vote'), mapped=found)
-                    vote = Vote(hotword=found, category=category[0], vote=match.group('vote'),  voter=message.sender)
-                    vote.save()
+                    existing_vote = Vote.objects.filter(hotword=found, category=category[0], voter=message.sender)
+                    if(len(existing_vote) == 0):
+                        # no old vote, adding new
+                        vote = Vote(hotword=found, category=category[0], vote=match.group('vote'),  voter=message.sender)
+                        vote.save()
+                    else:
+                        existing_vote[0].vote = match.group('vote')
+                        existing_vote[0].save()
                 else:
                     # There WAS category. Saving into it.
                     existing_vote = Vote.objects.filter(hotword=found, category=category, voter=message.sender)
@@ -82,9 +86,10 @@ def sms_received_handler(sender, **kwargs):
                             existing_vote[0].vote = match.group('vote')
                             existing_vote[0].save()
                     #else:
-                        # Value error,  wrong category entered and multiple categories with overlapping values. Not saving
+                        # Value error,  value out of scope or wrong category entered and multiple categories with overlapping values. Not saving
         # else:
             # Voting message with non-valid hotword.
+            # It is very unlikely to someone start their message with "I am 13" or something like it (word word digit)
     else:
         #regular message with no hotword.
         print "no hotword found"
@@ -92,7 +97,13 @@ def sms_received_handler(sender, **kwargs):
 
 class Hotword(models.Model):
     hotword = models.CharField(
-        max_length=255
+        max_length=255,
+        verbose_name=u"Hotwordin kuvaus",
+        help_text=u"Tällä nimellä erotat hotwordin muista, esim. toisen tapahtuman AMV-äänestyksestä"
+    )
+    slug = models.SlugField(
+        verbose_name=u"Avainsana",
+        help_text=u"Tämä tekstinpätkä on varsinainen avainsana, joka tulee löytyä tekstiviestistä. Kirjoita pienillä!"
     )
     valid_from = models.DateTimeField()
     valid_to = models.DateTimeField()
@@ -110,8 +121,8 @@ class VoteCategories(models.Model):
     category = models.CharField(
         max_length=255
     )
-    slug = models.CharField(
-        max_length=10
+    slug = models.SlugField(
+        max_length=20
     )
     mapped = models.ForeignKey(Hotword)
     value_min = models.IntegerField()
