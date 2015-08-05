@@ -131,48 +131,13 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     # for CountBadgesMixin
     @property
     def badge_set(self):
-        return Badge.objects.filter(template__event=self.event)
-
-
-class Template(models.Model, CountBadgesMixin):
-    # REVERSE: badge_set = OneToMany(Badge)
-
-    event = models.ForeignKey('core.Event')
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    name = models.CharField(max_length=63)
-
-    @classmethod
-    def get_or_create_dummy(cls):
-        meta, unused = BadgesEventMeta.get_or_create_dummy()
-
-        return cls.objects.get_or_create(
-            event=meta.event,
-            name=u'Dummy badge',
-            slug=u'dummy-badge',
-        )
-
-    def save(self, *args, **kwargs):
-        if self.name and not self.slug:
-            self.slug = slugify(self.name)
-
-        return super(Template, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = u'Badgepohja'
-        verbose_name_plural = u'Badgepohjat'
-
-        unique_together = [
-            ('event', 'slug'),
-        ]
+        return Badge.objects.filter(personnel_class__event=self.event)
 
 
 class Batch(models.Model, CsvExportMixin):
     event = models.ForeignKey('core.Event', related_name='badge_batch_set')
 
-    template = models.ForeignKey(Template, null=True, blank=True)
+    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
@@ -181,19 +146,19 @@ class Batch(models.Model, CsvExportMixin):
     is_printed = time_bool_property('printed_at')
 
     @classmethod
-    def create(cls, event, template=None, max_items=100):
-        if template is not None:
-            assert template.event == event
-            badges = Badge.objects.filter(template=template)
+    def create(cls, event, personnel_class=None, max_items=100):
+        if personnel_class is not None:
+            assert personnel_class.event == event
+            badges = Badge.objects.filter(personnel_class=personnel_class)
         else:
-            badges = Badge.objects.filter(template__event=event)
+            badges = Badge.objects.filter(personnel_class__event=event)
 
         badges = badges.filter(**BADGE_ELIGIBLE_FOR_BATCHING).order_by('created_at')
 
         if max_items is not None:
             badges = badges[:max_items]
 
-        batch = cls(template=template, event=event)
+        batch = cls(personnel_class=personnel_class, event=event)
         batch.save()
 
         # Cannot update a query once a slice has been taken.
@@ -225,7 +190,6 @@ class Batch(models.Model, CsvExportMixin):
 class Badge(models.Model):
     person = models.ForeignKey('core.Person', null=True, blank=True)
 
-    template = models.ForeignKey(Template, verbose_name=u'Badgetyyppi')
     personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
 
     printed_separately_at = models.DateTimeField(null=True, blank=True)
@@ -256,11 +220,11 @@ class Badge(models.Model):
     @classmethod
     def get_or_create_dummy(cls):
         person, unused = Person.get_or_create_dummy()
-        template, unused = Template.get_or_create_dummy()
+        personnel_class, unused = PersonnelClass.get_or_create_dummy()
 
         return cls.objects.get_or_create(
             person=person,
-            template=template,
+            personnel_class=personnel_class,
         )
 
     @classmethod
@@ -269,7 +233,7 @@ class Badge(models.Model):
         # Factory should be invoked anyway, and badge "upgraded" (revoke old, create new).
 
         try:
-            return False, cls.objects.get(template__event=event, person=person)
+            return False, cls.objects.get(personnel_class__event=event, person=person)
         except cls.DoesNotExist:
             factory = event.badges_event_meta.badge_factory
 
@@ -284,7 +248,7 @@ class Badge(models.Model):
     @classmethod
     def get_csv_fields(cls, *args, **kwargs):
         return [
-            (Template, 'slug'),
+            (PersonnelClass, 'slug'),
             (cls, 'surname'),
             (cls, 'first_name'),
             (cls, 'nick'),
@@ -295,7 +259,7 @@ class Badge(models.Model):
         from core.models import Person
 
         return {
-            Template: self.template,
+            PersonnelClass: self.personnel_class,
             Person: self.person,
         }
 

@@ -6,12 +6,12 @@ block admin_content
     .panel-heading: strong Nimilista
     .panel-body
       p.text-muted Suodata tyypin mukaan:
-      for filter_active, template in filters
+      for filter_active, personnel_class in filters
         if filter_active
-          a.label.label-primary(href='{% url "badges_admin_badges_view" event.slug %}') {{ template.name }}
+          a.label.label-primary(href='{% url "badges_admin_badges_view" event.slug %}') {{ personnel_class.name }}
           | &thinsp;
         else
-          a.label.label-default(href='{% url "badges_admin_filtered_view" event.slug template.slug %}') {{ template.name }}
+          a.label.label-default(href='{% url "badges_admin_filtered_view" event.slug personnel_class.slug %}') {{ personnel_class.name }}
           | &thinsp;
     table.table.table-striped
       thead
@@ -28,7 +28,7 @@ block admin_content
         for badge in badges
           tr
             if not active_filter
-              td {{ badge.template.name }}
+              td {{ badge.personnel_class.name }}
 
             for value, is_visible in badge.get_name_fields
               if is_visible

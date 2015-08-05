@@ -10,8 +10,8 @@ block admin_content
         for batch in batches
           li.list-group-item
             | Tulostuserä {{ batch.pk }}&emsp;
-            if batch.template
-              | ({{ batch.template.name }})&emsp;
+            if batch.personnel_class
+              | ({{ batch.personnel_class.name }})&emsp;
             .pull-right
               if batch.is_printed
                 span.badge.badge-success Tulostettu

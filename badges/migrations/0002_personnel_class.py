@@ -18,4 +18,10 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True, to='labour.PersonnelClass', null=True),
             preserve_default=True,
         ),
+        migrations.AddField(
+            model_name='batch',
+            name='personnel_class',
+            field=models.ForeignKey(blank=True, to='labour.PersonnelClass', null=True),
+            preserve_default=True,
+        ),
     ]

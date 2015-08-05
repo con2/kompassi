@@ -31,15 +31,15 @@ block admin_content
             th Yhteensä
             th
           tbody
-            for template in templates
+            for personnel_class in personnel_classes
               tr
-                td: a(href='{% url "badges_admin_filtered_view" event.slug template.slug %}') {{ template.name }}
-                td {{ template.count_badges_awaiting_batch }}
-                td {{ template.count_badges_waiting_in_batch }}
-                td {{ template.count_revoked_badges }}
-                td {{ template.count_printed_badges }}
-                td {{ template.count_badges }}
-                td: a.btn.btn-xs.btn-success(href='{% url "badges_admin_create_with_template_view" event.slug template.slug %}', title='Lisää uusi käsin')
+                td: a(href='{% url "badges_admin_filtered_view" event.slug personnel_class.slug %}') {{ personnel_class.name }}
+                td {{ personnel_class.count_badges_awaiting_batch }}
+                td {{ personnel_class.count_badges_waiting_in_batch }}
+                td {{ personnel_class.count_revoked_badges }}
+                td {{ personnel_class.count_printed_badges }}
+                td {{ personnel_class.count_badges }}
+                td: a.btn.btn-xs.btn-success(href='{% url "badges_admin_create_with_template_view" event.slug personnel_class.slug %}', title='Lisää uusi käsin')
                   span.glyphicon.glyphicon-plus
             tr
               th Yhteensä

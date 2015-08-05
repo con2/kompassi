@@ -10,6 +10,6 @@ html
       for badge in badges
         div(style='display: inline-block; width: 24em') {{ badge.to_html_print|safe }}
           if not active_filter
-            |  ({{ badge.template.name }})
+            |  ({{ badge.personnel_class.name }})
     footer
       p {{ badges.count }} hlö

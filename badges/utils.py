@@ -1,4 +1,5 @@
-from .models import Template
+from labour.models import PersonnelClass
+
 
 def default_badge_factory(event, person):
     """
@@ -20,6 +21,6 @@ def default_badge_factory(event, person):
         job_title = u''
 
     return dict(
-        template=Template.objects.get(event=event),
+        personnel_class=PersonnelClass.objects.get(event=event),
         job_title=u'',
     )
