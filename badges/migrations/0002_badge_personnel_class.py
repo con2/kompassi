@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='batch',
+            model_name='badge',
             name='personnel_class',
             field=models.ForeignKey(blank=True, to='labour.PersonnelClass', null=True),
             preserve_default=True,

@@ -173,7 +173,6 @@ class Batch(models.Model, CsvExportMixin):
     event = models.ForeignKey('core.Event', related_name='badge_batch_set')
 
     template = models.ForeignKey(Template, null=True, blank=True)
-    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
@@ -225,7 +224,10 @@ class Batch(models.Model, CsvExportMixin):
 
 class Badge(models.Model):
     person = models.ForeignKey('core.Person', null=True, blank=True)
+
     template = models.ForeignKey(Template, verbose_name=u'Badgetyyppi')
+    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
+
     printed_separately_at = models.DateTimeField(null=True, blank=True)
     revoked_at = models.DateTimeField(null=True, blank=True)
     job_title = models.CharField(max_length=63, blank=True, default=u'', verbose_name=u'Tehtävänimike')

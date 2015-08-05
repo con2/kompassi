@@ -24,7 +24,7 @@ def populate_personnel_class(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('badges', '0002_batch_personnel_class'),
+        ('badges', '0002_badge_personnel_class'),
     ]
 
     operations = [
