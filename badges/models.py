@@ -11,6 +11,7 @@ from django.utils.timezone import now
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
 from core.utils import slugify, NONUNIQUE_SLUG_FIELD_PARAMS, time_bool_property, code_property
+from labour.models import PersonnelClass
 
 
 BADGE_ELIGIBLE_FOR_BATCHING = dict(
@@ -30,6 +31,7 @@ class Progress(object):
         'inflated',
     ]
     from core.utils import simple_object_init as __init__
+
 
 PROGRESS_ELEMENT_MIN_WIDTH = 4 # %
 
@@ -169,7 +171,10 @@ class Template(models.Model, CountBadgesMixin):
 
 class Batch(models.Model, CsvExportMixin):
     event = models.ForeignKey('core.Event', related_name='badge_batch_set')
+
     template = models.ForeignKey(Template, null=True, blank=True)
+    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
     printed_at = models.DateTimeField(null=True, blank=True)
