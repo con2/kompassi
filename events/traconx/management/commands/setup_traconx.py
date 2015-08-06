@@ -256,10 +256,11 @@ class Setup(object):
         from badges.models import BadgesEventMeta
 
         badge_admin_group, unused = BadgesEventMeta.get_or_create_group(self.event, 'admins')
-        BadgesEventMeta.objects.get_or_create(
+        meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
+                badge_layout='nick',
             )
         )
 

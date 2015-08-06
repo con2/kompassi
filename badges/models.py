@@ -111,7 +111,7 @@ class CountBadgesMixin(object):
 
 class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     badge_factory_code = models.CharField(
-        max_length='255',
+        max_length=255,
         default='badges.utils:default_badge_factory',
         verbose_name=u'Badgetehdas',
         help_text=u'Funktio, joka selvittää, minkä tyyppinen badge henkilölle pitäisi luoda. '
@@ -119,6 +119,13 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     )
 
     badge_factory = code_property('badge_factory_code')
+    badge_layout = models.CharField(
+        max_length=4,
+        default='trad',
+        choices=(('trad', u'Perinteinen'), ('nick', u'Nickiä korostava')),
+        verbose_name=u'Badgen asettelu',
+        help_text=u'Perinteinen: tehtävänimike, etunimi sukunimi, nick. Nickiä korostava: nick tai etunimi, sukunimi tai koko nimi, tehtävänimike.',
+    )
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -245,14 +252,35 @@ class Badge(models.Model):
             return True, badge
 
     @classmethod
-    def get_csv_fields(cls, *args, **kwargs):
-        return [
-            (PersonnelClass, 'slug'),
-            (cls, 'surname'),
-            (cls, 'first_name'),
-            (cls, 'nick'),
-            (cls, 'job_title'),
-        ]
+    def get_csv_fields(cls, event):
+        meta = event.badges_event_meta
+        if meta.badge_layout == 'trad':
+            # Chief Technology Officer
+            # Santtu Pajukanta
+            # Japsu
+            return [
+                (PersonnelClass, 'slug'),
+                (cls, 'surname'),
+                (cls, 'first_name'),
+                (cls, 'nick'),
+                (cls, 'job_title'),
+            ]
+        elif meta.badge_layout == 'nick':
+            # JAPSU
+            # Santtu Pajukanta
+            # Chief Technology Officer
+            # -OR-
+            # SANTTU
+            # Pajukanta
+            # Chief Technology Officer
+            return [
+                (PersonnelClass, 'slug'),
+                (cls, 'nick_or_first_name'),
+                (cls, 'surname_or_full_name'),
+                (cls, 'job_title'),
+            ]
+        else:
+            raise NotImplementedError(meta.badge_layout)
 
     def get_csv_related(self):
         from core.models import Person
@@ -274,8 +302,36 @@ class Badge(models.Model):
         return self.person.first_name.strip() if self.person.is_first_name_visible else u''
 
     @property
+    def nick_or_first_name(self):
+        if self.person.is_nick_visible:
+            return self.person.nick
+        elif self.person.is_first_name_visible:
+            return self.person.first_name
+        else:
+            return u''
+
+    @property
     def surname(self):
         return self.person.surname.strip() if self.person.is_surname_visible else u''
+
+    @property
+    def surname_or_full_name(self):
+        if self.person.is_nick_visible:
+            # JAPSU
+            # Santtu Pajukanta <- this
+            # Chief Technology Officer
+            if self.person.is_surname_visible:
+                return self.surname
+            else:
+                return u''
+        else:
+            # SANTTU
+            # Pajukanta <- this
+            # Chief Technology Officer
+            if self.person.is_surname_visible:
+                return self.person.full_name
+            else:
+                return u''
 
     @property
     def nick(self):
