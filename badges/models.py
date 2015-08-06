@@ -308,7 +308,8 @@ class Badge(models.Model):
         elif self.person.is_first_name_visible:
             return self.person.first_name
         else:
-            return u''
+            # NOTE we do not offer a choice of showing the surname but not the first name
+            raise NotImplementedError(self.person.name_display_style)
 
     @property
     def surname(self):
@@ -321,7 +322,14 @@ class Badge(models.Model):
             # Santtu Pajukanta <- this
             # Chief Technology Officer
             if self.person.is_surname_visible:
-                return self.surname
+                if self.person.is_first_name_visible:
+                    return u"{first_name} {surname}".format(
+                        first_name=self.person.first_name,
+                        surname=self.person.surname,
+                    )
+                else:
+                    # NOTE we do not offer a choice of showing the surname but not the first name
+                    raise NotImplementedError(self.person.name_display_style)
             else:
                 return u''
         else:
@@ -329,7 +337,7 @@ class Badge(models.Model):
             # Pajukanta <- this
             # Chief Technology Officer
             if self.person.is_surname_visible:
-                return self.person.full_name
+                return self.person.surname
             else:
                 return u''
 
