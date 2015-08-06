@@ -7,6 +7,7 @@ from labour.models import PersonnelClass
 
 from .models import Badge
 
+
 class CreateBatchForm(forms.Form):
     max_items = forms.IntegerField(label=u"Kuinka monta badgea (enintään)?", initial=100)
     personnel_class = forms.ModelChoiceField(
