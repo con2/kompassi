@@ -190,7 +190,7 @@ class Batch(models.Model, CsvExportMixin):
 class Badge(models.Model):
     person = models.ForeignKey('core.Person', null=True, blank=True)
 
-    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
+    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True, verbose_name=u'Henkilöstöluokka')
 
     printed_separately_at = models.DateTimeField(null=True, blank=True)
     revoked_at = models.DateTimeField(null=True, blank=True)

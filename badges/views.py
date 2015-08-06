@@ -11,10 +11,11 @@ from django.views.decorators.http import require_http_methods, require_GET
 from core.batches_view import batches_view
 from core.utils import url, initialize_form
 from core.csv_export import csv_response
+from core.proxy import Proxy
 from labour.models import PersonnelClass
 
 from .forms import CreateBatchForm, BadgeForm, HiddenBadgeCrouchingForm
-from .models import Badge, Batch
+from .models import Badge, Batch, CountBadgesMixin
 from .helpers import badges_admin_required
 
 
@@ -29,13 +30,35 @@ BADGE_LIST_TEMPLATES = dict(
     print='badges_admin_badges_print.jade',
 )
 
+
+# TODO use a generic proxy or have PersonnelClass inherit CountBadgesMixin directly
+class PersonnelClassProxy(CountBadgesMixin):
+    def __init__(self, target):
+        self.target = target
+
+    @property
+    def badge_set(self):
+        return self.target.badge_set
+
+    @property
+    def name(self):
+        return self.target.name
+
+    @property
+    def slug(self):
+        return self.target.slug
+
+
 @badges_admin_required
 @require_GET
 def badges_admin_dashboard_view(request, vars, event):
     meta = event.badges_event_meta
 
     vars.update(
-        personnel_classes=PersonnelClass.objects.filter(event=event),
+        personnel_classes=[
+            PersonnelClassProxy(personnel_class)
+            for personnel_class in PersonnelClass.objects.filter(event=event)
+        ],
         num_badges_total=meta.count_badges(),
         num_badges_printed=meta.count_printed_badges(),
         num_badges_waiting_in_batch=meta.count_badges_waiting_in_batch(),
@@ -44,6 +67,7 @@ def badges_admin_dashboard_view(request, vars, event):
     )
 
     return render(request, 'badges_admin_dashboard_view.jade', vars)
+
 
 @badges_admin_required
 @require_http_methods(['GET', 'POST'])
