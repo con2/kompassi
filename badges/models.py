@@ -115,8 +115,7 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         default='badges.utils:default_badge_factory',
         verbose_name=u'Badgetehdas',
         help_text=u'Funktio, joka selvittää, minkä tyyppinen badge henkilölle pitäisi luoda. '
-            u'Oletusarvo toimii, jos tapahtumalla on tasan yksi badgepohja. Ks. esimerkkitoteutus '
-            u'tracon9/badges.py:badge_factory.',
+            u'Oletusarvo toimii lähes kaikille tapahtumille.'
     )
 
     badge_factory = code_property('badge_factory_code')
