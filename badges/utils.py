@@ -21,6 +21,6 @@ def default_badge_factory(event, person):
         job_title = u''
 
     return dict(
-        personnel_class=PersonnelClass.objects.get(event=event),
+        personnel_class=signup.personnel_classes.order_by('priority').first(),
         job_title=u'',
     )
