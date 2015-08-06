@@ -304,8 +304,14 @@ class Badge(models.Model):
     @property
     def nick_or_first_name(self):
         if self.person.is_nick_visible:
+            # JAPSU <- this
+            # Santtu Pajukanta
+            # Chief Technology Officer
             return self.person.nick
         elif self.person.is_first_name_visible:
+            # SANTTU <- this
+            # Pajukanta
+            # Chief Technology Officer
             return self.person.first_name
         else:
             # NOTE we do not offer a choice of showing the surname but not the first name
