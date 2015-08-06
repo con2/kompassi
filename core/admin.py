@@ -49,6 +49,10 @@ if 'payments' in settings.INSTALLED_APPS:
     from payments.admin import InlinePaymentsEventMetaAdmin
     extra_inlines.append(InlinePaymentsEventMetaAdmin)
 
+if 'badges' in settings.INSTALLED_APPS:
+    from badges.admin import InlineBadgesEventMetaAdmin
+    extra_inlines.append(InlineBadgesEventMetaAdmin)
+
 
 class EventAdmin(admin.ModelAdmin):
     inlines = tuple(extra_inlines)
