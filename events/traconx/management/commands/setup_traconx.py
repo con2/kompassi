@@ -23,6 +23,7 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
+        self.setup_badges()
         self.setup_tickets()
         self.setup_payments()
         self.setup_programme()
@@ -250,6 +251,17 @@ class Setup(object):
                     group=labour_event_meta.get_group(link_group),
                 )
             )
+
+    def setup_badges(self):
+        from badges.models import BadgesEventMeta
+
+        badge_admin_group, unused = BadgesEventMeta.get_or_create_group(self.event, 'admins')
+        BadgesEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=badge_admin_group,
+            )
+        )
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
