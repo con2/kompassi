@@ -11,7 +11,6 @@ from django.views.decorators.http import require_http_methods, require_GET
 from core.batches_view import batches_view
 from core.utils import url, initialize_form
 from core.csv_export import csv_response
-from core.proxy import Proxy
 from labour.models import PersonnelClass
 
 from .forms import CreateBatchForm, BadgeForm, HiddenBadgeCrouchingForm
