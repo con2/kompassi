@@ -282,8 +282,6 @@ class AccommodationPhase(Phase):
 
     def available(self, request, event):
         order = get_order(request, event)
-
-        print 'AccommodationPhase', 'available', 'requires_accommodation_information', order.requires_accommodation_information
         return order.requires_accommodation_information and not order.is_confirmed
 
     def validate(self, request, event, form):
