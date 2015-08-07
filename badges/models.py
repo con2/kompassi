@@ -101,7 +101,7 @@ class CountBadgesMixin(object):
         if sum(p.width for p in progress) > 100:
             candidates_for_deflation = [p for p in progress if p.width > PROGRESS_ELEMENT_MIN_WIDTH]
             candidates_for_deflation.sort(key=lambda p: -p.width)
-            print 'candidates_for_deflation', candidates_for_deflation
+
             for p in cycle(candidates_for_deflation):
                 if (
                     sum(p.width for p in progress) <= 100 or
