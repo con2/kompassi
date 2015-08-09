@@ -21,6 +21,10 @@ def get_send_time(obj):
     return obj.message.receive_timestamp
 get_send_time.short_description = u"Vastaanotettu"
 
+def format_price(obj):
+    return u"%d,%02d €" % divmod(obj.used_credit, 100)
+format_price.short_description = u"Käytetty krediitti"
+
 class SMSRecipientGroupAdmin(admin.ModelAdmin):
     list_display = ('app_label', 'event', 'verbose_name')
     list_filter = ('app_label', 'event')
@@ -42,9 +46,9 @@ class VoteCategoriesAdmin(admin.ModelAdmin):
 
 class VoteAdmin(admin.ModelAdmin):
     model = Vote
-    fields = ('hotword', 'category', 'vote', 'voter')
-    list_display = ('hotword', 'category', 'vote', 'voter')
-    readonly_fields = ('hotword', 'category', 'vote', 'voter')
+    fields = ('hotword', 'category', 'vote', 'voter', get_send_time)
+    list_display = ('hotword', 'category', 'vote', 'voter', get_send_time)
+    readonly_fields = ('hotword', 'category', 'vote', 'voter', get_send_time)
 
     def has_add_permission(self, request):
         return False
@@ -52,8 +56,8 @@ class VoteAdmin(admin.ModelAdmin):
 
 class SMSEventAdmin(admin.ModelAdmin):
     model = SMSEvent
-    fields = ('event', 'sms_enabled', 'current', 'used_credit')
-    list_display = ('event', 'sms_enabled', 'current', 'used_credit')
+    fields = ('event', 'sms_enabled', 'current', format_price)
+    list_display = ('event', 'sms_enabled', 'current', format_price)
     readonly_fields = ('used_credit', )
 
 

@@ -44,20 +44,22 @@ def sms_received_handler(sender, **kwargs):
                     existing_vote = Vote.objects.filter(hotword=found, category=category[0], voter=message.sender)
                     if(len(existing_vote) == 0):
                         # no old vote, adding new
-                        vote = Vote(hotword=found, category=category[0], vote=match.group('vote'),  voter=message.sender)
+                        vote = Vote(hotword=found, category=category[0], vote=match.group('vote'),  voter=message.sender, message=message)
                         vote.save()
                     else:
                         existing_vote[0].vote = match.group('vote')
+                        existing_vote[0].message = message
                         existing_vote[0].save()
                 else:
                     # There WAS category. Saving into it.
                     existing_vote = Vote.objects.filter(hotword=found, category=category, voter=message.sender)
                     if(len(existing_vote) == 0):
                         # no old vote, adding new
-                        vote = Vote(hotword=found, category=category, vote=match.group('vote'),  voter=message.sender)
+                        vote = Vote(hotword=found, category=category, vote=match.group('vote'),  voter=message.sender, message=message)
                         vote.save()
                     else:
                         existing_vote[0].vote = match.group('vote')
+                        existing_vote[0].message = message
                         existing_vote[0].save()
 
             else:
@@ -68,10 +70,11 @@ def sms_received_handler(sender, **kwargs):
                         existing_vote = Vote.objects.filter(hotword=found, category=category, voter=message.sender)
                         if(len(existing_vote) == 0):
                             # no old vote, adding new
-                            vote = Vote(hotword=found, category=category, vote=match.group('vote'),  voter=message.sender)
+                            vote = Vote(hotword=found, category=category, vote=match.group('vote'),  voter=message.sender, message=message)
                             vote.save()
                         else:
                             existing_vote[0].vote = match.group('vote')
+                            existing_vote[0].message = message
                             existing_vote[0].save()
                         saved = True
                 if saved is False:
@@ -80,10 +83,11 @@ def sms_received_handler(sender, **kwargs):
                         existing_vote = Vote.objects.filter(hotword=found, category=categories, voter=message.sender)
                         if(len(existing_vote) == 0):
                             # no old vote, adding new
-                            vote = Vote(hotword=found, category=categories, vote=match.group('vote'),  voter=message.sender)
+                            vote = Vote(hotword=found, category=categories, vote=match.group('vote'),  voter=message.sender, message=message)
                             vote.save()
                         else:
                             existing_vote[0].vote = match.group('vote')
+                            existing_vote[0].message = message
                             existing_vote[0].save()
                     #else:
                         # Value error, vote value out of scope or wrong category entered and multiple categories with overlapping values. Not saving
@@ -150,6 +154,7 @@ class Vote(models.Model):
     voter = models.CharField(
         max_length=30
     )
+    message = models.ForeignKey('nexmo.InboundMessage')
 
     class Meta:
         verbose_name = u'Ääni'
@@ -177,7 +182,7 @@ class SMSEvent(models.Model):
                     temp.save()
             except SMSEvent.DoesNotExist:
                 pass
-        super(SMSEvent, self).save(*args, **kwargs)
+        return super(SMSEvent, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = u'Tekstiviestejä käyttävä tapahtuma'
