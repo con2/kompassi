@@ -99,6 +99,15 @@ def core_login_view(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
+            # Allow login via email address instead of username
+            if username and password and '@' in username:
+                try:
+                    person = Person.objects.get(email=username, user__isnull=False)
+                    username = person.user.username
+                except (Person.DoesNotExist, Person.MultipleObjectsReturned) as e:
+                    # TODO warn
+                    pass
+
             user = authenticate(username=username, password=password)
             if user:
                 response = do_login(request, user=user, password=password, next=next)

@@ -11,6 +11,7 @@ from django.utils.timezone import now
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
 from core.utils import slugify, NONUNIQUE_SLUG_FIELD_PARAMS, time_bool_property, code_property
+from labour.models import PersonnelClass
 
 
 BADGE_ELIGIBLE_FOR_BATCHING = dict(
@@ -30,6 +31,8 @@ class Progress(object):
         'inflated',
     ]
     from core.utils import simple_object_init as __init__
+    from core.utils import simple_object_repr as __repr__
+
 
 PROGRESS_ELEMENT_MIN_WIDTH = 4 # %
 
@@ -53,21 +56,31 @@ class CountBadgesMixin(object):
         return self.badge_set.filter(revoked_at__isnull=False).count()
 
     def get_progress(self):
+        """
+        We build a progress bar widget that shows percentages of badges in different states.
+        However, if the percentage is really small, the progress segment in the progress bar
+        would get too small. We account for that by "inflating" segments that are too small,
+        and "deflating" segments that are big enough so that taking away some of their width
+        does not cause a signicifant error in their relative sizes.
+
+        TODO: This method should be generalized to work with all kinds of multi-segment
+        progress bars, not just this particular occasion.
+        """
         progress = []
 
         pb_max = self.count_badges()
         percentace_consumed_for_inflation = 0
 
-        for pb_class, pb_text, count_method in [
-            ('progress-bar-success', u'Tulostettu', self.count_printed_badges),
-            ('progress-bar-danger', u'Mitätöity', self.count_revoked_badges),
-            ('progress-bar-info', u'Odottaa erässä', self.count_badges_waiting_in_batch),
-            ('progress-bar-grey', u'Odottaa erää', self.count_badges_awaiting_batch),
+        for pb_class, pb_text, pb_value in [
+            ('progress-bar-success', u'Tulostettu', self.count_printed_badges()),
+            ('progress-bar-danger', u'Mitätöity', self.count_revoked_badges()),
+            ('progress-bar-info', u'Odottaa erässä', self.count_badges_waiting_in_batch()),
+            ('progress-bar-grey', u'Odottaa erää', self.count_badges_awaiting_batch()),
         ]:
-            pb_value = count_method()
 
             if pb_value > 0:
-                width = 100 * pb_value // max(pb_max, 1)
+                width = 100.0 * pb_value / max(pb_max, 1)
+                width = int(width + 0.5)
 
                 if width < PROGRESS_ELEMENT_MIN_WIDTH:
                     percentace_consumed_for_inflation += PROGRESS_ELEMENT_MIN_WIDTH - width
@@ -101,7 +114,6 @@ class CountBadgesMixin(object):
                     percentace_consumed_for_inflation -= 1
 
         assert sum(p.width for p in progress) in [100, 0], "Missing percentage"
-        # assert sum(p.value for p in progress) == pb_max, "Not all badges accounted for in progress"
 
         return progress
 
@@ -109,15 +121,21 @@ class CountBadgesMixin(object):
 
 class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     badge_factory_code = models.CharField(
-        max_length='255',
+        max_length=255,
         default='badges.utils:default_badge_factory',
         verbose_name=u'Badgetehdas',
         help_text=u'Funktio, joka selvittää, minkä tyyppinen badge henkilölle pitäisi luoda. '
-            u'Oletusarvo toimii, jos tapahtumalla on tasan yksi badgepohja. Ks. esimerkkitoteutus '
-            u'tracon9/badges.py:badge_factory.',
+            u'Oletusarvo toimii lähes kaikille tapahtumille.'
     )
 
     badge_factory = code_property('badge_factory_code')
+    badge_layout = models.CharField(
+        max_length=4,
+        default='trad',
+        choices=(('trad', u'Perinteinen'), ('nick', u'Nickiä korostava')),
+        verbose_name=u'Badgen asettelu',
+        help_text=u'Perinteinen: tehtävänimike, etunimi sukunimi, nick. Nickiä korostava: nick tai etunimi, sukunimi tai koko nimi, tehtävänimike.',
+    )
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -129,47 +147,14 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     # for CountBadgesMixin
     @property
     def badge_set(self):
-        return Badge.objects.filter(template__event=self.event)
-
-
-class Template(models.Model, CountBadgesMixin):
-    # REVERSE: badge_set = OneToMany(Badge)
-
-    event = models.ForeignKey('core.Event')
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    name = models.CharField(max_length=63)
-
-    @classmethod
-    def get_or_create_dummy(cls):
-        meta, unused = BadgesEventMeta.get_or_create_dummy()
-
-        return cls.objects.get_or_create(
-            event=meta.event,
-            name=u'Dummy badge',
-            slug=u'dummy-badge',
-        )
-
-    def save(self, *args, **kwargs):
-        if self.name and not self.slug:
-            self.slug = slugify(self.name)
-
-        return super(Template, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = u'Badgepohja'
-        verbose_name_plural = u'Badgepohjat'
-
-        unique_together = [
-            ('event', 'slug'),
-        ]
+        return Badge.objects.filter(personnel_class__event=self.event)
 
 
 class Batch(models.Model, CsvExportMixin):
     event = models.ForeignKey('core.Event', related_name='badge_batch_set')
-    template = models.ForeignKey(Template, null=True, blank=True)
+
+    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
     updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
     printed_at = models.DateTimeField(null=True, blank=True)
@@ -177,19 +162,19 @@ class Batch(models.Model, CsvExportMixin):
     is_printed = time_bool_property('printed_at')
 
     @classmethod
-    def create(cls, event, template=None, max_items=100):
-        if template is not None:
-            assert template.event == event
-            badges = Badge.objects.filter(template=template)
+    def create(cls, event, personnel_class=None, max_items=100):
+        if personnel_class is not None:
+            assert personnel_class.event == event
+            badges = Badge.objects.filter(personnel_class=personnel_class)
         else:
-            badges = Badge.objects.filter(template__event=event)
+            badges = Badge.objects.filter(personnel_class__event=event)
 
         badges = badges.filter(**BADGE_ELIGIBLE_FOR_BATCHING).order_by('created_at')
 
         if max_items is not None:
             badges = badges[:max_items]
 
-        batch = cls(template=template, event=event)
+        batch = cls(personnel_class=personnel_class, event=event)
         batch.save()
 
         # Cannot update a query once a slice has been taken.
@@ -220,7 +205,9 @@ class Batch(models.Model, CsvExportMixin):
 
 class Badge(models.Model):
     person = models.ForeignKey('core.Person', null=True, blank=True)
-    template = models.ForeignKey(Template, verbose_name=u'Badgetyyppi')
+
+    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True, verbose_name=u'Henkilöstöluokka')
+
     printed_separately_at = models.DateTimeField(null=True, blank=True)
     revoked_at = models.DateTimeField(null=True, blank=True)
     job_title = models.CharField(max_length=63, blank=True, default=u'', verbose_name=u'Tehtävänimike')
@@ -249,11 +236,11 @@ class Badge(models.Model):
     @classmethod
     def get_or_create_dummy(cls):
         person, unused = Person.get_or_create_dummy()
-        template, unused = Template.get_or_create_dummy()
+        personnel_class, unused = PersonnelClass.get_or_create_dummy()
 
         return cls.objects.get_or_create(
             person=person,
-            template=template,
+            personnel_class=personnel_class,
         )
 
     @classmethod
@@ -262,7 +249,7 @@ class Badge(models.Model):
         # Factory should be invoked anyway, and badge "upgraded" (revoke old, create new).
 
         try:
-            return False, cls.objects.get(template__event=event, person=person)
+            return False, cls.objects.get(personnel_class__event=event, person=person)
         except cls.DoesNotExist:
             factory = event.badges_event_meta.badge_factory
 
@@ -275,20 +262,41 @@ class Badge(models.Model):
             return True, badge
 
     @classmethod
-    def get_csv_fields(cls, *args, **kwargs):
-        return [
-            (Template, 'slug'),
-            (cls, 'surname'),
-            (cls, 'first_name'),
-            (cls, 'nick'),
-            (cls, 'job_title'),
-        ]
+    def get_csv_fields(cls, event):
+        meta = event.badges_event_meta
+        if meta.badge_layout == 'trad':
+            # Chief Technology Officer
+            # Santtu Pajukanta
+            # Japsu
+            return [
+                (PersonnelClass, 'slug'),
+                (cls, 'surname'),
+                (cls, 'first_name'),
+                (cls, 'nick'),
+                (cls, 'job_title'),
+            ]
+        elif meta.badge_layout == 'nick':
+            # JAPSU
+            # Santtu Pajukanta
+            # Chief Technology Officer
+            # -OR-
+            # SANTTU
+            # Pajukanta
+            # Chief Technology Officer
+            return [
+                (PersonnelClass, 'slug'),
+                (cls, 'nick_or_first_name'),
+                (cls, 'surname_or_full_name'),
+                (cls, 'job_title'),
+            ]
+        else:
+            raise NotImplementedError(meta.badge_layout)
 
     def get_csv_related(self):
         from core.models import Person
 
         return {
-            Template: self.template,
+            PersonnelClass: self.personnel_class,
             Person: self.person,
         }
 
@@ -304,8 +312,50 @@ class Badge(models.Model):
         return self.person.first_name.strip() if self.person.is_first_name_visible else u''
 
     @property
+    def nick_or_first_name(self):
+        if self.person.is_nick_visible:
+            # JAPSU <- this
+            # Santtu Pajukanta
+            # Chief Technology Officer
+            return self.person.nick
+        elif self.person.is_first_name_visible:
+            # SANTTU <- this
+            # Pajukanta
+            # Chief Technology Officer
+            return self.person.first_name
+        else:
+            # NOTE we do not offer a choice of showing the surname but not the first name
+            raise NotImplementedError(self.person.name_display_style)
+
+    @property
     def surname(self):
         return self.person.surname.strip() if self.person.is_surname_visible else u''
+
+    @property
+    def surname_or_full_name(self):
+        if self.person.is_nick_visible:
+            # JAPSU
+            # Santtu Pajukanta <- this
+            # Chief Technology Officer
+            if self.person.is_surname_visible:
+                if self.person.is_first_name_visible:
+                    return u"{first_name} {surname}".format(
+                        first_name=self.person.first_name,
+                        surname=self.person.surname,
+                    )
+                else:
+                    # NOTE we do not offer a choice of showing the surname but not the first name
+                    raise NotImplementedError(self.person.name_display_style)
+            else:
+                return u''
+        else:
+            # SANTTU
+            # Pajukanta <- this
+            # Chief Technology Officer
+            if self.person.is_surname_visible:
+                return self.person.surname
+            else:
+                return u''
 
     @property
     def nick(self):

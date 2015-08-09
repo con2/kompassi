@@ -13,6 +13,6 @@ class Command(BaseCommand):
             event = Event.objects.get(slug=event_slug)
 
             for signup in event.signup_set.all():
-                signup.ensure_badge_exists_if_necessary()
+                signup.apply_state_create_badges()
                 stderr.write('.')
                 stderr.flush()

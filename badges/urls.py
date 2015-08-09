@@ -32,13 +32,13 @@ urlpatterns = patterns(
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/badges/(?P<template_slug>[a-z0-9-]+)/?$',
+        r'^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/badges/(?P<personnel_class_slug>[a-z0-9-]+)/?$',
         badges_admin_badges_view,
         name='badges_admin_filtered_view',
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/badges/(?P<template_slug>[a-z0-9-]+)/new/?$',
+        r'^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/badges/(?P<personnel_class_slug>[a-z0-9-]+)/new/?$',
         badges_admin_create_view,
         name='badges_admin_create_with_template_view',
     ),

@@ -11,13 +11,14 @@ from django.views.decorators.http import require_http_methods, require_GET
 from core.batches_view import batches_view
 from core.utils import url, initialize_form
 from core.csv_export import csv_response
+from labour.models import PersonnelClass
 
 from .forms import CreateBatchForm, BadgeForm, HiddenBadgeCrouchingForm
-from .models import Badge, Batch, Template
+from .models import Badge, Batch, CountBadgesMixin
 from .helpers import badges_admin_required
 
 
-BADGE_ORDER = ('template', 'person__surname', 'person__first_name')
+BADGE_ORDER = ('personnel_class', 'person__surname', 'person__first_name')
 CSV_EXPORT_FORMATS = dict(
     csv='excel',
     tsv='excel-tab',
@@ -28,13 +29,35 @@ BADGE_LIST_TEMPLATES = dict(
     print='badges_admin_badges_print.jade',
 )
 
+
+# TODO use a generic proxy or have PersonnelClass inherit CountBadgesMixin directly
+class PersonnelClassProxy(CountBadgesMixin):
+    def __init__(self, target):
+        self.target = target
+
+    @property
+    def badge_set(self):
+        return self.target.badge_set
+
+    @property
+    def name(self):
+        return self.target.name
+
+    @property
+    def slug(self):
+        return self.target.slug
+
+
 @badges_admin_required
 @require_GET
 def badges_admin_dashboard_view(request, vars, event):
     meta = event.badges_event_meta
 
     vars.update(
-        templates=Template.objects.filter(event=event),
+        personnel_classes=[
+            PersonnelClassProxy(personnel_class)
+            for personnel_class in PersonnelClass.objects.filter(event=event)
+        ],
         num_badges_total=meta.count_badges(),
         num_badges_printed=meta.count_printed_badges(),
         num_badges_waiting_in_batch=meta.count_badges_waiting_in_batch(),
@@ -44,9 +67,10 @@ def badges_admin_dashboard_view(request, vars, event):
 
     return render(request, 'badges_admin_dashboard_view.jade', vars)
 
+
 @badges_admin_required
 @require_http_methods(['GET', 'POST'])
-def badges_admin_badges_view(request, vars, event, template_slug=None):
+def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
     if request.method == 'POST':
         form = initialize_form(HiddenBadgeCrouchingForm, request)
 
@@ -80,12 +104,12 @@ def badges_admin_badges_view(request, vars, event, template_slug=None):
 
     else:
         format = request.GET.get('format', 'screen')
-        badge_criteria = dict(template__event=event)
+        badge_criteria = dict(personnel_class__event=event)
         active_filter = None
 
-        if template_slug is not None:
-            active_filter = get_object_or_404(Template, event=event, slug=template_slug)
-            badge_criteria.update(template=active_filter)
+        if personnel_class_slug is not None:
+            active_filter = get_object_or_404(PersonnelClass, event=event, slug=personnel_class_slug)
+            badge_criteria.update(personnel_class=active_filter)
 
         if format != 'screen':
             badge_criteria.update(revoked_at__isnull=True)
@@ -96,7 +120,7 @@ def badges_admin_badges_view(request, vars, event, template_slug=None):
         if format in CSV_EXPORT_FORMATS:
             filename = "{event.slug}-badges-{badge_filter}{timestamp}.{format}".format(
                 event=event,
-                badge_filter="{template_slug}-".format(template_slug=template_slug) if template_slug is not None else '',
+                badge_filter="{personnel_class_slug}-".format(personnel_class_slug=personnel_class_slug) if personnel_class_slug is not None else '',
                 timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
                 format=format,
             )
@@ -110,15 +134,15 @@ def badges_admin_badges_view(request, vars, event, template_slug=None):
                 qualifier=active_filter.name if active_filter else u'Nimilista',
             )
 
-            badge_filters = [
-                (template_slug == badge_template.slug, badge_template)
-                for badge_template in Template.objects.filter(event=event)
+            filters = [
+                (personnel_class_slug == personnel_class.slug, personnel_class)
+                for personnel_class in PersonnelClass.objects.filter(event=event)
             ]
 
             vars.update(
                 active_filter=active_filter,
                 badges=badges,
-                filters=badge_filters,
+                filters=filters,
                 now=timezone.now(),
                 title=title,
             )
@@ -155,15 +179,15 @@ def badges_admin_export_view(request, vars, event, batch_id, format='csv'):
 
 @badges_admin_required
 @require_http_methods(['GET', 'POST'])
-def badges_admin_create_view(request, vars, event, template_slug=None):
+def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
     # XXX move this to core
     from programme.forms import ProgrammePersonForm
 
     initial = dict()
 
-    if template_slug is not None:
-        template = get_object_or_404(Template, event=event, slug=template_slug)
-        initial.update(template=template)
+    if personnel_class_slug is not None:
+        personnel_class = get_object_or_404(PersonnelClass, event=event, slug=personnel_class_slug)
+        initial.update(personnel_class=personnel_class)
 
     badge_form = initialize_form(BadgeForm, request, prefix='badge_type', event=event, initial=initial)
     person_form = initialize_form(ProgrammePersonForm, request, prefix='person')

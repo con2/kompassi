@@ -3,13 +3,15 @@
 from django import forms
 
 from core.utils import horizontal_form_helper
+from labour.models import PersonnelClass
 
-from .models import Badge, Template
+from .models import Badge
+
 
 class CreateBatchForm(forms.Form):
     max_items = forms.IntegerField(label=u"Kuinka monta badgea (enintään)?", initial=100)
-    template = forms.ModelChoiceField(
-        queryset=Template.objects.all(),
+    personnel_class = forms.ModelChoiceField(
+        queryset=PersonnelClass.objects.all(),
         required=False,
         label=u"Badgetyyppi",
         help_text=u"Jos jätät tämän kentän tyhjäksi, saat erän joka sisältää sekaisin eri badgetyyppejä.",
@@ -20,7 +22,7 @@ class CreateBatchForm(forms.Form):
 
         super(CreateBatchForm, self).__init__(*args, **kwargs)
 
-        self.fields['template'].queryset = Template.objects.filter(event=event)
+        self.fields['personnel_class'].queryset = PersonnelClass.objects.filter(event=event)
 
 
 class BadgeForm(forms.ModelForm):
@@ -30,13 +32,13 @@ class BadgeForm(forms.ModelForm):
         super(BadgeForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
-	self.helper.form_tag = False
-        self.fields['template'].queryset = Template.objects.filter(event=event)
+        self.helper.form_tag = False
+        self.fields['personnel_class'].queryset = PersonnelClass.objects.filter(event=event)
 
     class Meta:
         model = Badge
         fields = [
-            'template',
+            'personnel_class',
             'job_title',
         ]
 

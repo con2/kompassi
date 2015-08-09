@@ -430,6 +430,16 @@ def simple_object_init(self, **kwargs):
         setattr(self, key, value)
 
 
+def simple_object_repr(self):
+    return "{class_name}({property_list})".format(
+        class_name=self.__class__.__name__,
+        property_list=', '.join(
+            "{key}={value}".format(key=slot, value=repr(getattr(self, slot)))
+            for slot in self.__slots__
+        )
+    )
+
+
 def event_meta_property(app_label, code_path):
     if app_label not in settings.INSTALLED_APPS:
         return property(lambda self: None)

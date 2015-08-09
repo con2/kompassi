@@ -1,4 +1,5 @@
-from .models import Template
+from labour.models import PersonnelClass
+
 
 def default_badge_factory(event, person):
     """
@@ -7,19 +8,22 @@ def default_badge_factory(event, person):
     Returns a dictionary that can be fed into the constructor of badges.models:Badge.
     """
 
+    job_title = u''
+
     if event.labour_event_meta is not None:
         from labour.models import Signup
 
         try:
             signup = Signup.objects.get(event=event, person=person)
         except Signup.DoesNotExist:
-            job_title = u''
+            pass
         else:
-            job_title = signup.job_title or u''
-    else:
-        job_title = u''
+            if signup.job_title:
+                job_title = signup.job_title
+            elif signup.job_categories_accepted.exists():
+                job_title = signup.job_categories_accepted.first().name
 
     return dict(
-        template=Template.objects.get(event=event),
-        job_title=u'',
+        personnel_class=signup.personnel_classes.order_by('priority').first(),
+        job_title=job_title,
     )

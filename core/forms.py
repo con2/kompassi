@@ -22,7 +22,7 @@ valid_username = RegexValidator(
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(required=True, max_length=30, label=u'Käyttäjänimi')
+    username = forms.CharField(required=True, max_length=30, label=u'Käyttäjänimi tai sähköpostiosoite')
 
     password = forms.CharField(
         required=True,

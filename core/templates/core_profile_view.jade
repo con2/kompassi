@@ -3,4 +3,12 @@ extends core_profile_base
 block title
   | Omat tiedot
 block profile_content
+  .form-horizontal
+    fieldset
+      legend Käyttäjänimi
+      .form-group
+        label.control-label.col-md-3 Käyttäjänimi
+        .controls.col-md-9
+          label.control-label(style='font-weight: normal; font-style: italic') {{ request.user.username }}
+          p.help-block Voit kirjautua sisään myös sähköpostiosoitteella käyttäjänimen asemesta. Käyttäjänimeä ei voi vaihtaa itse. Jos kuitenkin haluat vaihtaa käyttäjänimeäsi, älä rekisteröi uutta tunnusta, vaan ota yhteyttä: <a href='mailto:{{ settings.DEFAULT_FROM_EMAIL }}'>{{ settings.DEFAULT_FROM_EMAIL }}</a>
   - crispy form
