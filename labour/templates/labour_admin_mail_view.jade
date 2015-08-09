@@ -8,6 +8,7 @@ block admin_content
     table.table.table-striped
       thead
         tr
+          th Kanava
           th Otsikko
           th Vastaanottaja
           th Lähetetty
@@ -15,6 +16,7 @@ block admin_content
       tbody
         for message in labour_messages
           tr
+            td {{ message.get_channel_display }}
             td: a(href='{% url "labour_admin_mail_editor_view" event.slug message.pk %}') {{ message.subject_template }}
             td {{ message.recipient }}
             td {{ message.sent_at|date }}

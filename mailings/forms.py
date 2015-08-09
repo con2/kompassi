@@ -10,6 +10,9 @@ class MessageForm(forms.ModelForm):
 
         super(MessageForm, self).__init__(*args, **kwargs)
 
+        # TODO Disable sending SMS for events that are not using
+        #self.fields['channel'].choices = []
+
         self.fields['recipient'].queryset = RecipientGroup.objects.filter(
             app_label='labour',
             event=event,
@@ -20,4 +23,4 @@ class MessageForm(forms.ModelForm):
 
     class Meta:
         model = Message
-        fields = ('recipient', 'subject_template', 'body_template')
+        fields = ('channel', 'recipient', 'subject_template', 'body_template')

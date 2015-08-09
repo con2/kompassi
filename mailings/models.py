@@ -26,13 +26,27 @@ class RecipientGroup(models.Model):
         verbose_name = u'vastaanottajaryhmä'
         verbose_name_plural = u'vastaanottajaryhmät'
 
+CHANNEL_CHOICES = [
+    ('email', 'Sähköposti'),
+    ('sms', 'Tekstiviesti'),
+]
+
 
 class Message(models.Model):
+    channel = models.CharField(
+        max_length=5,
+        verbose_name=u'Kanava',
+        default=u'email',
+        choices=CHANNEL_CHOICES,
+    )
     recipient = models.ForeignKey(RecipientGroup, verbose_name=u'Vastaanottajaryhmä')
 
     subject_template = models.CharField(
         max_length=255,
-        verbose_name=u'Otsikko'
+        verbose_name=u'Otsikko',
+        help_text=u'HUOM! Otsikko näkyy vastaanottajalle ainoastaan, jos viesti lähetetään '
+            u'sähköpostitse. Tekstiviestillä lähetettäville viesteille otsikkoa käytetään '
+            u'ainoastaan viestin tunnistamiseen sisäisesti.',
     )
     body_template = models.TextField(
         verbose_name=u'Viestin teksti',
@@ -82,7 +96,7 @@ class Message(models.Model):
             )
 
             if created or resend:
-                person_message.actually_send_email()
+                person_message.actually_send()
 
     def expire(self):
         assert self.expired_at is None, 're-expiring an expired message does not make sense'
@@ -193,7 +207,15 @@ class PersonMessage(models.Model):
     def render_message(self, template):
         return Template(template).render(Context(self.message_vars))
 
-    def actually_send_email(self):
+    def actually_send(self):
+        if self.message.channel == 'email':
+            self._actually_send_email()
+        elif self.message.channel == 'sms':
+            self._actually_send_sms()
+        else:
+            raise NotImplementedError(self.message.channel)
+
+    def _actually_send_email():
         from django.core.mail import EmailMessage
 
         msgbcc = []
@@ -212,3 +234,6 @@ class PersonMessage(models.Model):
             to=(self.person.name_and_email,),
             bcc=msgbcc
         ).send(fail_silently=True)
+
+    def _actually_send_sms():
+        raise NotImplementedError('Unimplemented stub for _actually_send_sms')
