@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from datetime import date, datetime, timedelta
+from django.core.exceptions import ValidationError
 
 from django.conf import settings
 from django.contrib.auth.models import User, Group
@@ -215,6 +216,17 @@ NAME_DISPLAY_STYLE_FORMATS = dict(
 )
 
 
+def birth_date_validator(value):
+    exc = u"Virheellinen syntymäaika."
+    try:
+        if value <= date(1900, 1, 1) or value >= date.today():
+            raise ValidationError(exc)
+        # Following actually also checks that year is >= 1900. Even then, ensure the date can be formatted.
+        value.strftime("%Y-%m-%d")
+    except ValueError:
+        raise ValidationError(exc)
+
+
 class Person(models.Model):
     first_name = models.CharField(max_length=1023, verbose_name=u'Etunimi')
     surname = models.CharField(max_length=1023, verbose_name=u'Sukunimi')
@@ -223,7 +235,9 @@ class Person(models.Model):
         null=True,
         blank=True,
         verbose_name=u'Syntymäaika',
-        help_text=BIRTH_DATE_HELP_TEXT)
+        help_text=BIRTH_DATE_HELP_TEXT,
+        validators=[birth_date_validator],
+    )
 
     email = models.EmailField(
         blank=True,

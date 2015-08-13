@@ -105,12 +105,16 @@ def convert_datetimes(values):
     """
     for entry in values:
         for key, value in entry.items():
-            if isinstance(value, datetime.date):
-                entry[key] = value.strftime(RFC8601DATE)
-            if isinstance(value, datetime.datetime):
-                entry[key] = value.strftime(RFC8601DATETIME)
-            if isinstance(value, datetime.time):
-                entry[key] = value.strftime(TIME)
+            try:
+                if isinstance(value, datetime.date):
+                    entry[key] = value.strftime(RFC8601DATE)
+                elif isinstance(value, datetime.datetime):
+                    entry[key] = value.strftime(RFC8601DATETIME)
+                elif isinstance(value, datetime.time):
+                    entry[key] = value.strftime(TIME)
+            except ValueError:
+                # Apparently, this works before 1900.
+                entry[key] = value.isoformat()
 
 
 @require_POST
