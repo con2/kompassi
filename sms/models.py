@@ -218,6 +218,7 @@ class SMSMessageOut(models.Model):
         return out_message._send()
 
     def _send(self, *args, **kwargs):
+        from time import sleep
         if self.ref is None:
             nexmo_message = OutboundMessage(message=self.message, to=self.to)
             nexmo_message.save()
@@ -234,7 +235,6 @@ class SMSMessageOut(models.Model):
 
         i = 1
         for i <= sent_message['message-count']
-            from time import sleep
             sleep(0.2)
             i += 1
 
