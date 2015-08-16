@@ -211,9 +211,10 @@ class SMSMessageOut(models.Model):
 
     @classmethod
     def send(cls, *args, **kwargs):
+        event = SMSEvent.get(event=cls.event)
         nexmo_message = OutboundMessage(message=cls.message, to=cls.to)
         nexmo_message.save()
-        out_message = SMSMessageOut(message=cls.message, to=cls.to, event=cls.event, ref=nexmo_message)
+        out_message = SMSMessageOut(message=cls.message, to=cls.to, event=event, ref=nexmo_message)
         out_message.save()
         return out_message._send()
 
