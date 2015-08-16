@@ -237,5 +237,9 @@ class PersonMessage(models.Model):
 
     def _actually_send_sms():
         from sms.models import SMSMessageOut, SMSEvent
-        event = SMSEvent.get(event=self.message.event)
-        SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)
+        try:
+            event = SMSEvent.get(event=self.message.event, sms_enabled=True)
+        except SMSEvent.DoesNotExist:
+            pass
+        else:
+            SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)

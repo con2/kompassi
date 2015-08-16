@@ -215,7 +215,7 @@ class SMSMessageOut(models.Model):
         max_length=20
     )
     event = models.ForeignKey(SMSEvent)
-    ref = models.ForeignKey('nexmo.OutboundMessage')
+    ref = models.ForeignKey('nexmo.OutboundMessage', blank=True, null=True)
 
     @classmethod
     def send(cls, *args, **kwargs):
@@ -224,29 +224,44 @@ class SMSMessageOut(models.Model):
         return message._send()
 
     def _send(self, *args, **kwargs):
-        to = regex.match(r'\d{9,15}', self.to.replace(' ','').replace('-','').replace('+',''))
-        if to is not None:
-            if to[0].startswith('0'):
-                actual_to = u'+358'.join(to[0][1:])
+        if self.event.sms_enabled:
+            to = regex.match(r'\d{9,15}', self.to.replace(' ','').replace('-','').replace('+',''))
+            if to is not None:
+                if to[0].startswith('0'):
+                    actual_to = u'+358'.join(to[0][1:])
+                else:
+                    actual_to = u'+'.join(to[0])
+                nexmo_message = OutboundMessage(message=self.message, to=actual_to)
+                nexmo_message.save()
+                self.to = actual_to
+                self.ref = nexmo_message
+                self.save()
+
+                not_throttled = 0
+                while not_throttled == 0
+                    try:
+                        sent_message = self.ref._send()
+                    except nexmo.RetryError:
+                        sleep(0.4)
+                    else:
+                        not_throttled = 1
+
+                for sent in sent_message['messages']
+                    price = sent['message-price'] * 100
+                    self.event.used_credit += price
+
+                self.save()
+
+                i = 1
+                for i <= sent_message['message-count']
+                    sleep(0.2)
+                    i += 1
+
+                return True
             else:
-                actual_to = u'+'.join(to[0])
-            nexmo_message = OutboundMessage(message=self.message, to=actual_to)
-            nexmo_message.save()
-            out_message = SMSMessageOut(message=self.message, to=actual_to, event=event, ref=nexmo_message)
-            out_message.save()
-
-            sent_message = self.ref._send()     
-
-            for sent in sent_message['messages']
-                price = sent['message-price'] * 100
-                self.event.used_credit += price
-
-            self.save()
-
-            i = 1
-            for i <= sent_message['message-count']
-                sleep(0.2)
-                i += 1       
+                return False
+        else:
+            return False
 
     class Meta:
         verbose_name = u'Lähetetty viesti'
