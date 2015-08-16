@@ -236,6 +236,6 @@ class PersonMessage(models.Model):
         ).send(fail_silently=True)
 
     def _actually_send_sms():
-        from sms.models import SMSMessageOut
-
-        SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=self.message.event)
+        from sms.models import SMSMessageOut, SMSEvent
+        event = SMSEvent.get(event=self.message.event)
+        SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)

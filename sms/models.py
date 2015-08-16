@@ -217,43 +217,35 @@ class SMSMessageOut(models.Model):
     event = models.ForeignKey(SMSEvent)
     ref = models.ForeignKey('nexmo.OutboundMessage')
 
-    @classmethod
     def send(cls, *args, **kwargs):
-        event = SMSEvent.get(event=cls.event)
-        to = regex.match(r'\d{9,15}', cls.to.replace(' ','').replace('-','').replace('+',''))
+        message = SMSMessageOut(*args, **kwargs)
+        message.save()
+        return message._send()
+
+    def _send(self, *args, **kwargs):
+        to = regex.match(r'\d{9,15}', self.to.replace(' ','').replace('-','').replace('+',''))
         if to is not None:
             if to[0].startswith('0'):
                 actual_to = u'+358'.join(to[0][1:])
             else:
                 actual_to = u'+'.join(to[0])
-            nexmo_message = OutboundMessage(message=cls.message, to=actual_to)
+            nexmo_message = OutboundMessage(message=self.message, to=actual_to)
             nexmo_message.save()
-            out_message = SMSMessageOut(message=cls.message, to=actual_to, event=event, ref=nexmo_message)
+            out_message = SMSMessageOut(message=self.message, to=actual_to, event=event, ref=nexmo_message)
             out_message.save()
-            return out_message._send()
-        else:
-            return False
 
-    def _send(self, *args, **kwargs):
-        from time import sleep
-        if self.ref is None:
-            nexmo_message = OutboundMessage(message=self.message, to=self.to)
-            nexmo_message.save()
-            self.ref = nexmo_message
+            sent_message = self.ref._send()     
+
+            for sent in sent_message['messages']
+                price = sent['message-price'] * 100
+                self.event.used_credit += price
+
             self.save()
 
-        sent_message = self.ref._send()
-
-        for sent in sent_message['messages']
-            price = sent['message-price'] * 100
-            self.event.used_credit += price
-
-        self.save()
-
-        i = 1
-        for i <= sent_message['message-count']
-            sleep(0.2)
-            i += 1
+            i = 1
+            for i <= sent_message['message-count']
+                sleep(0.2)
+                i += 1       
 
     class Meta:
         verbose_name = u'Lähetetty viesti'
