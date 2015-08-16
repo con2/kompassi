@@ -217,6 +217,7 @@ class SMSMessageOut(models.Model):
     event = models.ForeignKey(SMSEvent)
     ref = models.ForeignKey('nexmo.OutboundMessage')
 
+    @classmethod
     def send(cls, *args, **kwargs):
         message = SMSMessageOut(*args, **kwargs)
         message.save()
