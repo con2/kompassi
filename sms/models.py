@@ -187,7 +187,11 @@ class SMSEvent(models.Model):
     @property
     def is_sms_enabled(self):
         return self.sms_enabled is not None
-
+    
+    @property
+    def is_current(self):
+        return self.current is not None
+    
     def __unicode__(self):
         return self.event
 
