@@ -184,6 +184,10 @@ class SMSEvent(models.Model):
                 pass
         return super(SMSEvent, self).save(*args, **kwargs)
 
+    @property
+    def is_sms_enabled(self):
+        return self.sms_enabled is not None
+
     def __unicode__(self):
         return self.event
 
