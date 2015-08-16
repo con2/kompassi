@@ -236,4 +236,6 @@ class PersonMessage(models.Model):
         ).send(fail_silently=True)
 
     def _actually_send_sms():
-        raise NotImplementedError('Unimplemented stub for _actually_send_sms')
+        from sms.models import SMSMessageOut
+
+        SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=self.message.event)

@@ -46,7 +46,7 @@ class VoteCategoriesAdmin(admin.ModelAdmin):
 
 class VoteAdmin(admin.ModelAdmin):
     model = Vote
-    fields = ('hotword', 'category', 'vote', 'voter', get_send_time)
+    #fields = ('hotword', 'category', 'vote', 'voter', get_send_time)
     list_display = ('hotword', 'category', 'vote', 'voter', get_send_time)
     readonly_fields = ('hotword', 'category', 'vote', 'voter', get_send_time)
 
@@ -56,14 +56,14 @@ class VoteAdmin(admin.ModelAdmin):
 
 class SMSEventAdmin(admin.ModelAdmin):
     model = SMSEvent
-    fields = ('event', 'sms_enabled', 'current', format_price)
+    #fields = ('event', 'sms_enabled', 'current', format_price)
     list_display = ('event', 'sms_enabled', 'current', format_price)
     readonly_fields = ('used_credit', )
 
 
 class SMSMessageInAdmin(admin.ModelAdmin):
     model = SMSMessageIn
-    fields = (get_event, get_sender, get_send_time, get_message)
+    #fields = (get_event, get_sender, get_send_time, get_message)
     list_display = (get_event, get_sender, get_send_time, get_message)
 
 
