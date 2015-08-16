@@ -78,7 +78,7 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-SECRET_KEY = 'jhdjl*kxcet2aaz)%ixmois*j_p+d*q79%legoz+9el(c%zc$%1'
+SECRET_KEY = 'jhdjl*kxcet2aaz)%ixmois*j_p+d*q79%legoz+9el(c%zc$%'
 
 TEMPLATE_LOADERS = (
     ('pyjade.ext.django.Loader',(
@@ -193,7 +193,7 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
-        'console': {
+        'console':{
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
@@ -328,7 +328,7 @@ if 'external_auth' in INSTALLED_APPS:
     AUTH_LDAP_GLOBAL_OPTIONS = {
         ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_ALLOW,
         ldap.OPT_X_TLS_CACERTFILE: KOMPASSI_IPA_CACERT_PATH,
-        ldap.OPT_REFERRALS: 0,
+            ldap.OPT_REFERRALS: 0,
     }
 
     from sets import Set
