@@ -241,23 +241,3 @@ class SMSMessageOut(models.Model):
     class Meta:
         verbose_name = u'Lähetetty viesti'
         verbose_name_plural = u'Lähetetyt viestit'
-
-
-
-
-class PersonSMSMessageOut(models.Model):
-    message = models.ForeignKey(SMSMessageOut)
-    person = models.ForeignKey('core.Person')
-
-
-
-    def actually_send_email(self):
-        from nexmo import OutboundMessage
-
-        if settings.DEBUG:
-            print self.body.text
-
-        OutboundMessage.send(
-            message=self.body.text,
-            to=(self.person.phone,),
-        )
