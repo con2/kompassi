@@ -101,7 +101,7 @@ class Message(models.Model):
             if created or resend:
                 person_message.actually_send(delay)
                 bodylen = len(person_message.body.text)
-                delayfactor = ceil(bodylen / 160)
+                delayfactor = ceil(bodylen / 153)
                 delay += 250 * delayfactor
 
     def expire(self):
