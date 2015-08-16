@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.db import models
@@ -89,6 +89,7 @@ class Message(models.Model):
         if recipients is None:
             recipients = [user.person for user in self.recipient.group.user_set.all()]
 
+        delay = 0
         for person in recipients:
             person_message, created = PersonMessage.objects.get_or_create(
                 person=person,
@@ -96,7 +97,8 @@ class Message(models.Model):
             )
 
             if created or resend:
-                person_message.actually_send()
+                person_message.actually_send(delay)
+                delay += 250
 
     def expire(self):
         assert self.expired_at is None, 're-expiring an expired message does not make sense'
@@ -207,11 +209,11 @@ class PersonMessage(models.Model):
     def render_message(self, template):
         return Template(template).render(Context(self.message_vars))
 
-    def actually_send(self):
+    def actually_send(self, delay=0):
         if self.message.channel == 'email':
             self._actually_send_email()
         elif self.message.channel == 'sms':
-            self._actually_send_sms()
+            self._actually_send_sms(delay)
         else:
             raise NotImplementedError(self.message.channel)
 
@@ -235,11 +237,16 @@ class PersonMessage(models.Model):
             bcc=msgbcc
         ).send(fail_silently=True)
 
-    def _actually_send_sms():
+    def _actually_send_sms(delay=0):
         from sms.models import SMSMessageOut, SMSEvent
         try:
             event = SMSEvent.get(event=self.message.event, sms_enabled=True)
         except SMSEvent.DoesNotExist:
             pass
         else:
-            SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)
+            if 'background_tasks' in settings.INSTALLED_APPS:
+                from sms.tasks import message_send
+                sendtime = datetime.now() + timedelta(milliseconds=delay)
+                message_send.apply_async(kwargs={"message":self.body.text, "to":self.person.phone, "event":event}, eta=sendtime)
+            else:
+                SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)

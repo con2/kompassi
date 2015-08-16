@@ -224,6 +224,7 @@ class SMSMessageOut(models.Model):
         return message._send()
 
     def _send(self, *args, **kwargs):
+        from time import sleep
         if self.event.sms_enabled:
             to = regex.match(r'\d{9,15}', self.to.replace(' ','').replace('-','').replace('+',''))
             if to is not None:
@@ -238,10 +239,11 @@ class SMSMessageOut(models.Model):
                 self.save()
 
                 not_throttled = 0
-                while not_throttled == 0
+                while not_throttled == 0:
                     try:
                         sent_message = self.ref._send()
                     except nexmo.RetryError:
+                        # Back off! Stop everything for a while.
                         sleep(0.4)
                     else:
                         not_throttled = 1
@@ -252,10 +254,15 @@ class SMSMessageOut(models.Model):
 
                 self.save()
 
-                i = 1
-                for i <= sent_message['message-count']
-                    sleep(0.2)
-                    i += 1
+                if 'background_tasks' in settings.INSTALLED_APPS:
+                    # This assumes that if background_tasks is installed, it will be used in sms sending.
+                    # Otherwise you will be hitting RetryError constantly.
+                    pass
+                else:
+                    i = 1
+                    for i <= sent_message['message-count']
+                        sleep(0.25)
+                        i += 1
 
                 return True
             else:
