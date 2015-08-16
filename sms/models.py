@@ -222,9 +222,13 @@ class SMSMessageOut(models.Model):
         event = SMSEvent.get(event=cls.event)
         to = regex.match(r'\d{9,15}', cls.to.replace(' ','').replace('-','').replace('+',''))
         if to is not None:
-            nexmo_message = OutboundMessage(message=cls.message, to=to[0])
+            if to[0].startswith('0'):
+                actual_to = u'+358'.join(to[0][1:])
+            else:
+                actual_to = u'+'.join(to[0])
+            nexmo_message = OutboundMessage(message=cls.message, to=actual_to)
             nexmo_message.save()
-            out_message = SMSMessageOut(message=cls.message, to=to[0], event=event, ref=nexmo_message)
+            out_message = SMSMessageOut(message=cls.message, to=actual_to, event=event, ref=nexmo_message)
             out_message.save()
             return out_message._send()
         else:
