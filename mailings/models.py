@@ -2,6 +2,8 @@
 
 from datetime import datetime, timedelta
 
+from math import ceil
+
 from django.conf import settings
 from django.db import models
 from django.template import Template, Context
@@ -98,7 +100,9 @@ class Message(models.Model):
 
             if created or resend:
                 person_message.actually_send(delay)
-                delay += 250
+                bodylen = len(person_message.body.text)
+                delayfactor = ceil(bodylen / 160)
+                delay += 250 * delayfactor
 
     def expire(self):
         assert self.expired_at is None, 're-expiring an expired message does not make sense'
