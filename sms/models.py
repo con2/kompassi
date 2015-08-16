@@ -220,11 +220,15 @@ class SMSMessageOut(models.Model):
     @classmethod
     def send(cls, *args, **kwargs):
         event = SMSEvent.get(event=cls.event)
-        nexmo_message = OutboundMessage(message=cls.message, to=cls.to)
-        nexmo_message.save()
-        out_message = SMSMessageOut(message=cls.message, to=cls.to, event=event, ref=nexmo_message)
-        out_message.save()
-        return out_message._send()
+        to = regex.match(r'\d{9,15}', cls.to.replace(' ','').replace('-','').replace('+',''))
+        if to is not None:
+            nexmo_message = OutboundMessage(message=cls.message, to=to[0])
+            nexmo_message.save()
+            out_message = SMSMessageOut(message=cls.message, to=to[0], event=event, ref=nexmo_message)
+            out_message.save()
+            return out_message._send()
+        else:
+            return False
 
     def _send(self, *args, **kwargs):
         from time import sleep
