@@ -30,6 +30,7 @@ class Command(BaseCommand):
             (('setup_hitpoint2015',), dict(test=test)),
             (('setup_popcultday2015',), dict(test=test)),
             (('setup_yukicon2016',), dict(test=test)),
+            (('setup_finncon2016',), dict(test=test)),
         ]
 
         if test:
