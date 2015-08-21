@@ -284,7 +284,7 @@ class Badge(models.Model):
             # Pajukanta
             # Chief Technology Officer
             return [
-                (PersonnelClass, 'slug'),
+                (cls, 'personnel_class_name'),
                 (cls, 'nick_or_first_name'),
                 (cls, 'surname_or_full_name'),
                 (cls, 'job_title'),
@@ -306,6 +306,10 @@ class Badge(models.Model):
             (self.person.first_name.strip(), self.person.is_first_name_visible),
             (self.person.nick.strip(), self.person.is_nick_visible),
         ]
+
+    @property
+    def personnel_class_name(self):
+        return self.personnel_class.name if self.personnel_class else None
 
     @property
     def first_name(self):
