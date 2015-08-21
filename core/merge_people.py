@@ -46,6 +46,18 @@ def compare_persons(left, right):
     if right.user is not None and left.user is None:
         return -1
 
+    # If only one has phone number, it's better
+    if left.phone and not right.phone:
+        return 1
+    if right.phone and not left.phone:
+        return -1
+
+    # If only one has email address, it's better
+    if left.email and not right.email:
+        return 1
+    if right.email and not left.email:
+        return -1
+
     # Otherwise the newer the better
     return cmp(left.pk, right.pk)
 
