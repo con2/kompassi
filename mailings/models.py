@@ -215,7 +215,7 @@ class PersonMessage(models.Model):
         else:
             raise NotImplementedError(self.message.channel)
 
-    def _actually_send_email():
+    def _actually_send_email(self):
         from django.core.mail import EmailMessage
 
         msgbcc = []
@@ -235,5 +235,5 @@ class PersonMessage(models.Model):
             bcc=msgbcc
         ).send(fail_silently=True)
 
-    def _actually_send_sms():
+    def _actually_send_sms(self):
         raise NotImplementedError('Unimplemented stub for _actually_send_sms')
