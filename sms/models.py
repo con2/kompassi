@@ -193,7 +193,7 @@ class SMSEvent(models.Model):
         return self.current is not None
     
     def __unicode__(self):
-        return self.event
+        return self.event.name
 
     class Meta:
         verbose_name = u'Tekstiviestejä käyttävä tapahtuma'
@@ -229,7 +229,7 @@ class SMSMessageOut(models.Model):
             to = regex.match(r'\d{9,15}', self.to.replace(' ','').replace('-','').replace('+',''))
             if to is not None:
                 if to[0].startswith('0'):
-                    actual_to = u'+358'.join(to[0][1:])
+                    actual_to = u'+358' + to[0][1:]
                 else:
                     actual_to = u'+'.join(to[0])
                 nexmo_message = OutboundMessage(message=self.message, to=actual_to)
@@ -248,21 +248,19 @@ class SMSMessageOut(models.Model):
                     else:
                         not_throttled = 1
 
-                for sent in sent_message['messages']
-                    price = sent['message-price'] * 100
-                    self.event.used_credit += price
+                event = SMSEvent.objects.get(event=self.event)
+                for sent in sent_message['messages']:
+                    price = float(sent['message-price']) * 100
+                    event.used_credit += int(price)
 
-                self.save()
+                event.save()
 
                 if 'background_tasks' in settings.INSTALLED_APPS:
                     # This assumes that if background_tasks is installed, it will be used in sms sending.
                     # Otherwise you will be hitting RetryError constantly.
                     pass
                 else:
-                    i = 1
-                    for i <= sent_message['message-count']
-                        sleep(0.25)
-                        i += 1
+                    sleep(0.25 * float(sent_message['message-count']))
 
                 return True
             else:

@@ -241,10 +241,10 @@ class PersonMessage(models.Model):
             bcc=msgbcc
         ).send(fail_silently=True)
 
-    def _actually_send_sms(delay=0):
+    def _actually_send_sms(self, delay=0):
         from sms.models import SMSMessageOut, SMSEvent
         try:
-            event = SMSEvent.get(event=self.message.event, sms_enabled=True)
+            event = SMSEvent.objects.get(event=self.message.event, sms_enabled=True)
         except SMSEvent.DoesNotExist:
             pass
         else:
