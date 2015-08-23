@@ -27,8 +27,8 @@ class Setup(object):
     def setup_core(self):
         from core.models import Venue, Event
 
-        self.venue, unused = Venue.objects.get_or_create(name='Ilmoitetaan myöhemmin', defaults=dict(
-            name_inessive='Ilmoitetaan myöhemmin', # not really inessive though
+        self.venue, unused = Venue.objects.get_or_create(name='Tampereen yliopisto', defaults=dict(
+            name_inessive='Tampereen yliopistolla', # not really inessive though
         ))
         self.event, unused = Event.objects.get_or_create(slug='finncon2016', defaults=dict(
             name='Finncon 2016',
@@ -36,8 +36,8 @@ class Setup(object):
             name_illative='Finncon 2016 -tapahtumaan',
             name_inessive='Finncon 2016 -tapahtumassa',
             homepage_url='http://2016.finncon.org',
-            organization_name='Tampereen Science Fiction Seura ry',
-            organization_url='http://www.sci.fi/~portti/index.php',
+            organization_name='Finncon-yhdistys ry',
+            organization_url='http://www.finncon.org',
             start_time=None,
             end_time=None,
             venue=self.venue,
@@ -70,8 +70,8 @@ class Setup(object):
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-            # work_begins=datetime(2015, 3, 27, 14, 0, tzinfo=self.tz),
-            # work_ends=datetime(2015, 3,29, 18, 0, tzinfo=self.tz),
+            work_begins=datetime(2016, 7, 1, 8, 0, tzinfo=self.tz),
+            work_ends=datetime(2016, 7, 3, 20, 0, tzinfo=self.tz),
             admin_group=labour_admin_group,
             contact_email='Finncon 2016 -työvoimatiimi <tyovoima@finncon.org>',
         )
@@ -120,14 +120,18 @@ class Setup(object):
         ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
         for name, description, pcs in [
-            (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli Ccnitean jäsen', [conitea]),
+            (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli Conitean jäsen', [conitea]),
 
-            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, ylivankari]),
-            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, ylivankari]),
-            (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe kello 14-18 sekä su kello 19 asti, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima, ylivankari]),
-            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima, ylivankari]),
             (u'Info', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, ylivankari]),
+            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [tyovoima, ylivankari]),
+            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Edellyttää hygieniapassia.', [tyovoima, ylivankari]),
             (u'Salivänkäri', u'Salivänkäri vastaa ohjelmasalien toiminnasta. He pitävät huolen, että ohjelmat alkavat ja loppuvat ajallaan ja että ohjelmanjärjestäjillä on kaikki mitä he tarvitsevat salissa.', [tyovoima, ylivankari]),
+            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima, ylivankari]),
+            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, ylivankari]),
+            (u'Iltabileiden lipunmyyjä', u'Iltabileiden pääsylippujen myyntiä sekä tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, ylivankari]),
+            (u'Iltabileiden järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen iltabileissä. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, ylivankari]),
+            (u'Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.', [tyovoima, ylivankari]),
+            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, ylivankari]),
 
             (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
@@ -151,6 +155,7 @@ class Setup(object):
 
         for jc_name, qualification_name in [
             (u'Järjestyksenvalvoja', u'JV-kortti'),
+            (u'Iltabileiden järjestyksenvalvoja', u'JV-kortti'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
@@ -160,6 +165,7 @@ class Setup(object):
 
         period_length = timedelta(hours=8)
         for period_description, period_start in [
+            (u'TODO', None),
             # (u"Perjantain kasaus (pe klo 14-18)", None),
             # (u"Lauantain aamuvuoro (la klo 08-11)", None),
             # (u"Lauantain päivävuoro (la klo 11-15)", None),
@@ -193,7 +199,7 @@ class Setup(object):
                 title=u'Conitean ilmoittautumislomake',
                 signup_form_class_path='events.finncon2016.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.finncon2016.forms:OrganizerSignupExtraForm',
-                active_from=datetime(2015, 4, 29, 22, 0, 0, tzinfo=self.tz),
+                active_from=datetime(2015, 8, 18, 0, 0, 0, tzinfo=self.tz),
                 active_until=None,
             ),
         )

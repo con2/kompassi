@@ -63,7 +63,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
             ),
         )
 
-        self.fields['job_title'].help_text = u"Mikä on tehtäväsi kupliteassa? Printataan badgeen."
+        self.fields['job_title'].help_text = u"Mikä on tehtäväsi coniteassa? Printataan badgeen."
         # self.fields['job_title'].required = True
 
     class Meta:
@@ -77,7 +77,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_m2m_field_defaults(self):
         return dict(
             work_periods=WorkPeriod.objects.filter(event__slug='finncon2016'),
-            job_categories=JobCategory.objects.filter(event__slug='finncon2016', name='Kuplitea')
+            job_categories=JobCategory.objects.filter(event__slug='finncon2016', name='Conitea')
         )
 
 
@@ -110,7 +110,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             shift_type='yli4h',
             total_work='yli8h',
             prior_experience=u'',
-            free_text=u'Syötetty käyttäen kupliitin ilmoittautumislomaketta',
+            free_text=u'Syötetty käyttäen coniitin ilmoittautumislomaketta',
         )
 
     def get_excluded_m2m_field_defaults(self):
