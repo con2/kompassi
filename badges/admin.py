@@ -9,7 +9,7 @@ class InlineBadgesEventMetaAdmin(admin.StackedInline):
 
 class BadgeAdmin(admin.ModelAdmin):
     model = Badge
-    list_display = ('event_name', 'person_full_name', 'batch')
+    list_display = ('event_name', 'person_full_name', 'personnel_class_name', 'batch')
     list_filter = ('personnel_class__event',)
     search_fields = ('person__surname', 'person__first_name', 'person__nick', 'person__email')
 

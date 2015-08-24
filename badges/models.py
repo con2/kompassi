@@ -392,7 +392,7 @@ class Badge(models.Model):
             return u"{surname}, {first_name}".format(**vars)
 
     def __unicode__(self):
-        return "{person_name} ({personnel_class_name}, {event_name})".format(
+        return u"{person_name} ({personnel_class_name}, {event_name})".format(
             person_name=self.person_full_name,
             personnel_class_name=self.personnel_class_name,
             event_name=self.event_name,
