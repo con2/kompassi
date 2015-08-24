@@ -65,13 +65,19 @@ def write_header_row(event, writer, fields, m2m_mode='separate_columns'):
 
 def get_m2m_choices(event, field):
     target_model = field.rel.to
+    cache_key = (event.id, target_model._meta.app_label, target_model._meta.model_name)
 
-    if any(f.name == 'event' for f in target_model._meta.fields):
-        choices = target_model.objects.filter(event=event)
-    else:
-        choices = target_model.objects.all()
+    if not cache_key in get_m2m_choices.cache:
 
-    return choices.order_by('pk')
+        if any(f.name == 'event' for f in target_model._meta.fields):
+            choices = target_model.objects.filter(event=event)
+        else:
+            choices = target_model.objects.all()
+
+        get_m2m_choices.cache[cache_key] = choices.order_by('pk')
+
+    return get_m2m_choices.cache[cache_key]
+get_m2m_choices.cache = {}
 
 
 def write_row(event, writer, fields, model_instance, m2m_mode):
