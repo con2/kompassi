@@ -10,7 +10,7 @@ class InlineBadgesEventMetaAdmin(admin.StackedInline):
 class BadgeAdmin(admin.ModelAdmin):
     model = Badge
     list_display = ('event_name', 'person_full_name', 'batch')
-    list_filter = ('personnel_class__event')
+    list_filter = ('personnel_class__event',)
 
 
 admin.site.register(Badge, BadgeAdmin)
