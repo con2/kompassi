@@ -27,6 +27,7 @@ class Setup(object):
         self.setup_tickets()
         self.setup_payments()
         self.setup_programme()
+        self.setup_access()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -643,6 +644,14 @@ class Setup(object):
                 view, created = View.objects.get_or_create(event=self.event, name=view_name)
                 view.rooms = rooms
                 view.save()
+
+    def setup_access(self):
+        from access.models import Privilege, GroupPrivilege
+
+        # Grant accepted workers access to Tracon Slack
+        group = self.event.labour_event_meta.get_group('accepted')
+        privilege = Privilege.objects.get(slug='tracon-slack')
+        GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
 
 class Command(BaseCommand):

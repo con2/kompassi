@@ -26,6 +26,7 @@ class Command(BaseCommand):
             (('setup_core',), dict(test=test)),
             (('setup_labour_common_qualifications',), dict(test=test)),
             (('setup_api_v2',), dict(test=test)),
+            (('setup_access',), dict(test=test)),
             (('setup_traconx',), dict(test=test)),
             (('setup_hitpoint2015',), dict(test=test)),
             (('setup_popcultday2015',), dict(test=test)),

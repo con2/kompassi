@@ -905,6 +905,28 @@ class Signup(models.Model, CsvExportMixin):
         else:
             return u'Vänkäri'
 
+    @property
+    def granted_privileges(self):
+        if 'access' not in settings.INSTALLED_APPS:
+            return []
+
+        from access.models import GrantedPrivilege
+
+        return GrantedPrivilege.objects.filter(
+            person=self.person,
+            privilege__group_privileges__group__in=self.person.user.groups.all(),
+            privilege__group_privileges__event=self.event,
+        )
+
+    @property
+    def potential_privileges(self):
+        if 'access' not in settings.INSTALLED_APPS:
+            return []
+
+        from access.models import Privilege
+
+        return Privilege.get_potential_privileges(person=self.person, group_privileges__event=self.event)
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Person, Event

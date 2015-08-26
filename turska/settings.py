@@ -136,6 +136,7 @@ INSTALLED_APPS = (
     'api',
     'api_v2',
     'badges',
+    'access',
 
     # Uncomment if you have IPA
     #'external_auth',
@@ -394,3 +395,9 @@ if 'api_v2' in INSTALLED_APPS:
             write=u'Muokata käyttäjä- ja henkilötietojasi',
         )
     )
+
+
+if 'access' in INSTALLED_APPS:
+    KOMPASSI_ACCESS_SLACK_TEAM_NAME = 'traconfi'
+    KOMPASSI_ACCESS_SLACK_INVITE_URL = 'https://{team}.slack.com/api/users.admin.invite'.format(team=KOMPASSI_ACCESS_SLACK_TEAM_NAME)
+    KOMPASSI_ACCESS_SLACK_API_TOKEN = ''
