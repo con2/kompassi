@@ -50,7 +50,7 @@ class Privilege(models.Model):
             self._grant(person)
 
     def _grant(self, person):
-        gp = GrantedPrivilege.objects.select_for_update().get(privilege=self, person=person, state='approved')
+        gp = GrantedPrivilege.objects.get(privilege=self, person=person, state='approved')
 
         grant_function = get_code(self.grant_code)
         grant_function(self, person)
