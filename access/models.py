@@ -9,6 +9,20 @@ from core.utils import get_code, SLUG_FIELD_PARAMS
 from core.models import Person, Event
 
 
+STATE_CHOICES = [
+    ('pending', u'Odottaa hyväksyntää'),
+    ('approved', u'Hyväksytty, odottaa toteutusta'),
+    ('granted', u'Myönnetty'),
+    ('rejected', u'Hylätty'),
+]
+STATE_CSS = dict(
+    pending='label-warning',
+    approved='label-primary',
+    granted='label-success',
+    rejected='label-danger',
+)
+
+
 class Privilege(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
     title = models.CharField(max_length=256)
@@ -18,6 +32,17 @@ class Privilege(models.Model):
     grant_code = models.CharField(max_length=256)
 
     def grant(self, person):
+        gp, created = GrantedPrivilege.objects.get_or_create(
+            privilege=self,
+            person=person,
+            defaults=dict(
+                state='approved'
+            )
+        )
+
+        if gp.state != 'approved':
+            return
+
         if 'background_tasks' in settings.INSTALLED_APPS:
             from .tasks import grant_privilege
             grant_privilege.delay(self.pk, person.pk)
@@ -25,16 +50,13 @@ class Privilege(models.Model):
             self._grant(person)
 
     def _grant(self, person):
-        # Won't use get_or_create because we want to make sure privilege granting succeeds before
-        # recording the privilege as granted.
+        gp = GrantedPrivilege.objects.select_for_update().get(privilege=self, person=person, state='approved')
 
-        try:
-            return GrantedPrivilege.objects.get(privilege=self, person=person)
-        except GrantedPrivilege.DoesNotExist:
-            grant_function = get_code(self.grant_code)
-            grant_function(self, person)
+        grant_function = get_code(self.grant_code)
+        grant_function(self, person)
 
-            return GrantedPrivilege.objects.create(privilege=self, person=person)
+        gp.state = 'granted'
+        gp.save()
 
     @classmethod
     def get_potential_privileges(cls, person, **extra_criteria):
@@ -79,8 +101,13 @@ class GroupPrivilege(models.Model):
 class GrantedPrivilege(models.Model):
     privilege = models.ForeignKey(Privilege, related_name='granted_privileges')
     person = models.ForeignKey(Person, related_name='granted_privileges')
+    state = models.CharField(default='granted', max_length=8, choices=STATE_CHOICES)
 
     granted_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def state_css(self):
+        return STATE_CSS[self.state]
 
     def __unicode__(self):
         return u'{person_name} - {privilege_title}'.format(

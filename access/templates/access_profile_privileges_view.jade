@@ -8,7 +8,7 @@ block profile_content
       .panel.panel-default
         .panel-heading
           .pull-right
-            .label.label-success Myönnetty
+            .label(class='{{ granted_privilege.state_css }}') {{ granted_privilege.get_state_display }}
           .kompassi-anchor-wrap
             a.kompassi-anchor(id='privilege-{{ granted_privilege.privilege.id }}')
             strong= granted_privilege.privilege.title
