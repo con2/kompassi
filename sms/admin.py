@@ -55,14 +55,12 @@ class VoteAdmin(admin.ModelAdmin):
 
 class SMSEventMetaAdmin(admin.ModelAdmin):
     model = SMSEventMeta
-    #fields = ('event', 'sms_enabled', 'current', format_price)
     list_display = ('event', 'sms_enabled', 'current', format_price)
     readonly_fields = ('used_credit', )
 
 
 class SMSMessageInAdmin(admin.ModelAdmin):
     model = SMSMessageIn
-    #fields = (get_event, get_sender, get_send_time, get_message)
     list_display = (get_event, get_sender, get_send_time, get_message)
 
 
@@ -76,11 +74,15 @@ class NomineeAdmin(admin.ModelAdmin):
     inlines = [CategoryAdmin, ]
 
 
-admin.site.register(SMSMessageOut)
+class SMSMessageOutAdmin(admin.ModelAdmin):
+    model = SMSMessageOut
+    list_display = ('to', 'message', 'event')
+
+
+admin.site.register(SMSMessageOut, SMSMessageOutAdmin)
 admin.site.register(SMSMessageIn, SMSMessageInAdmin)
 admin.site.register(SMSEventMeta, SMSEventMetaAdmin)
 admin.site.register(Hotword, HotwordAdmin)
 admin.site.register(VoteCategory, VoteCategoryAdmin)
 admin.site.register(Vote, VoteAdmin)
 admin.site.register(Nominee, NomineeAdmin)
-#admin.site.register(SMSRecipientGroup, SMSRecipientGroupAdmin)

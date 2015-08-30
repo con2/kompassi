@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 from math import ceil
 
@@ -250,7 +251,9 @@ class PersonMessage(models.Model):
         else:
             if 'background_tasks' in settings.INSTALLED_APPS:
                 from sms.tasks import message_send
-                sendtime = datetime.now() + timedelta(milliseconds=delay)
-                message_send.apply_async(kwargs={"message":self.body.text, "to":self.person.phone, "event":event}, eta=sendtime)
+                sendtime = timezone.now() + timedelta(milliseconds=delay)
+                sending = SMSMessageOut(message=self.body.text, to=self.person.phone, event=event)
+                sending.save()
+                message_send.apply_async(args=[sending.pk], eta=sendtime)
             else:
                 SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)

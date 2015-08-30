@@ -278,9 +278,9 @@ class SMSMessageOut(models.Model):
                     else:
                         not_throttled = 1
 
-                event = SMSEventMeta.objects.get(event=self.event)
+                event = SMSEventMeta.objects.get(event=self.event.event)
                 for sent in sent_message['messages']:
-                    if sent['status'] == 0:
+                    if int(sent['status']) == 0:
                         price = float(sent['message-price']) * 100
                         event.used_credit += int(price)
 

@@ -4,7 +4,8 @@ from celery import shared_task
 
 
 @shared_task(ignore_result=True)
-def message_send(message, to, event):
+def message_send(message_id):
     from .models import SMSMessageOut
 
-    SMSMessageOut.send(message=message, to=to, event=event)
+    smsmessage = SMSMessageOut.objects.get(pk=message_id)
+    smsmessage._send()
