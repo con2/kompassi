@@ -261,7 +261,7 @@ class SMSMessageOut(models.Model):
                 if to[0].startswith('0'):
                     actual_to = u'+358' + to[0][1:]
                 else:
-                    actual_to = u'+'.join(to[0])
+                    actual_to = u'+' + to[0]
                 nexmo_message = OutboundMessage(message=self.message, to=actual_to)
                 nexmo_message.save()
                 self.to = actual_to
@@ -280,8 +280,9 @@ class SMSMessageOut(models.Model):
 
                 event = SMSEventMeta.objects.get(event=self.event)
                 for sent in sent_message['messages']:
-                    price = float(sent['message-price']) * 100
-                    event.used_credit += int(price)
+                    if sent['status'] == 0:
+                        price = float(sent['message-price']) * 100
+                        event.used_credit += int(price)
 
                 event.save()
 
