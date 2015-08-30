@@ -1,4 +1,4 @@
 if is_sms_admin
-  h3 Äänestykset
+  h3 Tekstiviestit
   h4 Sinulla on ylläpitäjän oikeudet tähän tapahtumaan.
-  p: a(href='{% url "sms_admin_dashboard_view" event.slug %}') Siirry ylläpitäjän näkymään
+  p: a(href='{% url "sms_admin_votes_view" event.slug %}') Siirry ylläpitäjän näkymään

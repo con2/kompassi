@@ -9,13 +9,12 @@ from django.db.models import Count
 from core.utils import url, initialize_form
 from django.conf import settings
 
-from core.batches_view import batches_view
-from .models import VoteCategory, Vote, Hotword, Nominee
+from .models import VoteCategory, Vote, Hotword, Nominee, SMSMessageIn
 from .helpers import sms_admin_required
 
 @sms_admin_required
 @require_GET
-def sms_admin_dashboard_view(request, vars, event):
+def sms_admin_votes_view(request, vars, event):
 
     vars.update(
         hotwords=Hotword.objects.all(),
@@ -25,17 +24,30 @@ def sms_admin_dashboard_view(request, vars, event):
         number=settings.NEXMO_FROM
     )
     
-    return render(request, 'sms_admin_vote_dashboard_view.jade', vars)
+    return render(request, 'sms_admin_votes_view.jade', vars)
 
+@sms_admin_required
+@require_GET
+def sms_admin_received_view(request, vars, event):
+
+    vars.update(
+        messages=SMSMessageIn.objects.all(),
+    )
+    return render(request, 'sms_admin_received_view.jade', vars)
 
 
 def sms_admin_menu_items(request, event):
-    dashboard_url = url('sms_admin_dashboard_view', event.slug)
-    dashboard_active = request.path == dashboard_url
-    dashboard_text = u'Kojelauta'
+    votes_url = url('sms_admin_votes_view', event.slug)
+    votes_active = request.path == votes_url
+    votes_text = u'Äänestykset'
+
+    received_url = url('sms_admin_received_view', event.slug)
+    received_active = request.path == received_url
+    received_text = u'Vastaanotetut viestit'
 
     return [
-        (dashboard_active, dashboard_url, dashboard_text),
+        (votes_active, votes_url, votes_text),
+        (received_active, received_url, received_text),
     ]
 
 def sms_event_box_context(request, event):

@@ -26,7 +26,7 @@ def sms_admin_required(view_func):
             event=event,
             meta=meta,
             admin_menu_items=sms_admin_menu_items(request, event),
-            admin_title=u'Äänestykset'
+            admin_title=u'Tekstiviestit'
         )
 
         return view_func(request, vars, event, *args, **kwargs)

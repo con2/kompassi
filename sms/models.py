@@ -231,6 +231,9 @@ class SMSMessageIn(models.Model):
     message = models.ForeignKey('nexmo.InboundMessage')
     SMSEventMeta = models.ForeignKey(SMSEventMeta)
 
+    def __unicode__(self):
+        return self.message.message
+
     class Meta:
         verbose_name = u'Vastaanotettu viesti'
         verbose_name_plural = u'Vastaanotetut viestit'
