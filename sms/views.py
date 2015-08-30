@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_GET
 from django.db.models import Count
 from core.utils import url, initialize_form
+from django.conf import settings
 
 from core.batches_view import batches_view
 from .models import VoteCategory, Vote, Hotword, Nominee
@@ -19,7 +20,9 @@ def sms_admin_dashboard_view(request, vars, event):
     vars.update(
         hotwords=Hotword.objects.all(),
         categories=VoteCategory.objects.all(),
-        nominees=Nominee.objects.values('category','name').annotate(votes=Count('vote__vote__category'))
+        nominees=Nominee.objects.values('category','name','number').annotate(votes=Count('vote__vote__category')).order_by('-votes'),
+        total_votes=Vote.objects.values('category').annotate(votes=Count('vote')),
+        number=settings.NEXMO_FROM
     )
     
     return render(request, 'sms_admin_vote_dashboard_view.jade', vars)

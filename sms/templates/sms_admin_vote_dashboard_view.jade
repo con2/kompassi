@@ -1,0 +1,30 @@
+extends core_admin_base
+block title
+  | Äänestykset
+block admin_content
+  h5 Alla on laskettuna äänet, jotka on lähetetty numeroon +{{ number }}
+  for hotword in hotwords
+    .row
+      .col-md-12
+        h3 {{ hotword.hotword }}
+        for category in categories
+          if category.hotword == hotword
+            .panel.panel-default
+              .panel-heading: strong '{{ category.category }}'
+              table.table.table-striped
+                thead
+                  th Osallistuja
+                  th Äänimäärä
+                tbody
+                  for nominee in nominees
+                    if nominee.category == category.pk
+                      tr
+                        td(style='width:80%') {{ nominee.number}} - {{ nominee.name }}
+                        td(style='width:20%') {{ nominee.votes }}
+                tfoot
+                  tr
+                    td
+                      for total_vote in total_votes
+                        if total_vote.category == category.pk
+                          Ääniä yhteensä: {{ total_vote.votes}}
+                    td
