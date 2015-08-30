@@ -2,11 +2,11 @@
 
 from django.contrib import admin
 
-from models import SMSMessageOut, SMSMessageIn, SMSEvent, Hotword, VoteCategories, Vote
+from models import SMSMessageOut, SMSMessageIn, SMSEventMeta, Hotword, VoteCategory, Vote, Nominee
 
 
 def get_event(obj):
-    return obj.smsevent.event
+    return obj.SMSEventMeta.event
 get_event.short_description = u"Tapahtuma"
 
 def get_sender(obj):
@@ -37,25 +37,24 @@ class HotwordAdmin(admin.ModelAdmin):
     list_filter = ('valid_from', 'valid_to', 'assigned_event')
 
 
-class VoteCategoriesAdmin(admin.ModelAdmin):
-    model = VoteCategories
-    fields = ('category', 'slug', 'mapped', 'value_min', 'value_max')
-    list_display = ('category', 'slug', 'mapped', 'value_min', 'value_max')
-    list_filter = ('mapped', 'value_min', 'value_max')
+class VoteCategoryAdmin(admin.ModelAdmin):
+    model = VoteCategory
+    fields = ('category', 'slug', 'hotword','primary')
+    list_display = ('category', 'slug', 'hotword', 'primary')
+    list_filter = ('hotword',)
 
 
 class VoteAdmin(admin.ModelAdmin):
     model = Vote
-    #fields = ('hotword', 'category', 'vote', 'voter', get_send_time)
-    list_display = ('hotword', 'category', 'vote', 'voter', get_send_time)
-    readonly_fields = ('hotword', 'category', 'vote', 'voter', get_send_time)
+    list_display = ('category', 'vote', 'message', get_send_time)
+    readonly_fields = ('category', 'vote', 'message', get_send_time)
 
     def has_add_permission(self, request):
         return False
 
 
-class SMSEventAdmin(admin.ModelAdmin):
-    model = SMSEvent
+class SMSEventMetaAdmin(admin.ModelAdmin):
+    model = SMSEventMeta
     #fields = ('event', 'sms_enabled', 'current', format_price)
     list_display = ('event', 'sms_enabled', 'current', format_price)
     readonly_fields = ('used_credit', )
@@ -67,10 +66,21 @@ class SMSMessageInAdmin(admin.ModelAdmin):
     list_display = (get_event, get_sender, get_send_time, get_message)
 
 
+class CategoryAdmin(admin.StackedInline):
+    model = Nominee.category.through
+
+
+class NomineeAdmin(admin.ModelAdmin):
+    model = Nominee
+    list_display = ('name', 'number')
+    inlines = [CategoryAdmin, ]
+
+
 admin.site.register(SMSMessageOut)
 admin.site.register(SMSMessageIn, SMSMessageInAdmin)
-admin.site.register(SMSEvent, SMSEventAdmin)
+admin.site.register(SMSEventMeta, SMSEventMetaAdmin)
 admin.site.register(Hotword, HotwordAdmin)
-admin.site.register(VoteCategories, VoteCategoriesAdmin)
+admin.site.register(VoteCategory, VoteCategoryAdmin)
 admin.site.register(Vote, VoteAdmin)
+admin.site.register(Nominee, NomineeAdmin)
 #admin.site.register(SMSRecipientGroup, SMSRecipientGroupAdmin)

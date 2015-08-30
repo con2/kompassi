@@ -3,11 +3,12 @@
 from datetime import datetime
 
 from django.conf import settings
-from django.db import models
+from django.db import models, connection
 from django.dispatch import receiver
 from django.template import Template, Context
 from django.utils import timezone
 from nexmo.models import InboundMessage, OutboundMessage, message_received
+from core.models import EventMetaBase
 import regex
 
 APP_LABEL_CHOICES = [
@@ -34,75 +35,81 @@ def sms_received_handler(sender, **kwargs):
             if match.group('category') == '':
                 # no category, checking if there should be
                 try:
-                    category = VoteCategories.objects.get(value_min__lte=match.group('vote'),  value_max__gte=match.group('vote'), mapped=found)
-                except VoteCategories.DoesNotExist:
+                    nominee = Nominee.objects.get(number=int(match.group('vote')), category__hotword=found)
+                except Nominee.DoesNotExist:
                     # Ok,  there was none,  or vote value out of scope, vote rejected.
                     vote = "rejected"
-                except VoteCategories.MultipleObjectsReturned:
-                    # Value error or multiple categories with overlapping values. Saving to first one.
-                    category = VoteCategories.objects.filter(value_min__lte=match.group('vote'),  value_max__gte=match.group('vote'), mapped=found)
-                    existing_vote = Vote.objects.filter(hotword=found, category=category[0], voter=message.sender)
-                    if(len(existing_vote) == 0):
-                        # no old vote, adding new
-                        vote = Vote(hotword=found, category=category[0], vote=match.group('vote'),  voter=message.sender, message=message)
-                        vote.save()
+                except Nominee.MultipleObjectsReturned:
+                    try:
+                        nominee = Nominee.objects.get(number=match.group('vote'), category__primary=True, category__hotword=found)
+                    except Nominee.DoesNotExist:
+                        vote = "rejected"
                     else:
-                        existing_vote[0].vote = match.group('vote')
-                        existing_vote[0].message = message
-                        existing_vote[0].save()
+                        try:
+                            category = VoteCategory.objects.get(nominee=nominee,primary=True)
+                            existing_vote = Vote.objects.get(message__sender=message.sender,category=category)
+                        except Vote.DoesNotExist:
+                            # No old vote
+                            vote = Vote(category=category,vote=nominee,message=message)
+                            vote.save()
+                        else:
+                            existing_vote.vote = nominee
+                            existing_vote.message = message
+                            existing_vote.category = category
+                            existing_vote.save()
                 else:
-                    # There WAS category. Saving into it.
-                    existing_vote = Vote.objects.filter(hotword=found, category=category, voter=message.sender)
-                    if(len(existing_vote) == 0):
-                        # no old vote, adding new
-                        vote = Vote(hotword=found, category=category, vote=match.group('vote'),  voter=message.sender, message=message)
+                    try:
+                        category = nominee.category.all()[0]
+                        existing_vote = Vote.objects.get(message__sender=message.sender,category=category)
+                    except Vote.DoesNotExist:
+                        # No old vote
+                        vote = Vote(category=category,vote=nominee,message=message)
                         vote.save()
                     else:
-                        existing_vote[0].vote = match.group('vote')
-                        existing_vote[0].message = message
-                        existing_vote[0].save()
+                        existing_vote.vote = nominee
+                        existing_vote.message = message
+                        existing_vote.category = category
+                        existing_vote.save()
 
             else:
-                categories = VoteCategories.objects.filter(value_min__lte=match.group('vote'),  value_max__gte=match.group('vote'), mapped=found)
-                saved = False
-                for category in categories:
-                    if category.slug == match.group('category'):
-                        existing_vote = Vote.objects.filter(hotword=found, category=category, voter=message.sender)
-                        if(len(existing_vote) == 0):
-                            # no old vote, adding new
-                            vote = Vote(hotword=found, category=category, vote=match.group('vote'),  voter=message.sender, message=message)
-                            vote.save()
-                        else:
-                            existing_vote[0].vote = match.group('vote')
-                            existing_vote[0].message = message
-                            existing_vote[0].save()
-                        saved = True
-                if saved is False:
-                    if len(categories) == 1:
-                        # Wrong category,  but only one found. Saving there.
-                        existing_vote = Vote.objects.filter(hotword=found, category=categories, voter=message.sender)
-                        if(len(existing_vote) == 0):
-                            # no old vote, adding new
-                            vote = Vote(hotword=found, category=categories, vote=match.group('vote'),  voter=message.sender, message=message)
-                            vote.save()
-                        else:
-                            existing_vote[0].vote = match.group('vote')
-                            existing_vote[0].message = message
-                            existing_vote[0].save()
-                    #else:
-                        # Value error, vote value out of scope or wrong category entered and multiple categories with overlapping values. Not saving
-        # else:
+                try:
+                    nominee = Nominee.objects.get(number=match.group('vote'), category__slug=match.group('category'), category__hotword=found)
+                except Nominee.DoesNotExist:
+                    vote = "rejected"
+                else:
+                    try:
+                        category = VoteCategory.objects.get(slug=match.group('category'))
+                        existing_vote = Vote.objects.get(message__sender=message.sender,vote=nominee)
+                    except Vote.DoesNotExist:
+                        # No old vote
+                        vote = Vote(category=category,vote=nominee,message=message)
+                        vote.save()
+                    else:
+                        existing_vote.vote = nominee
+                        existing_vote.message = message
+                        existing_vote.category = category
+                        existing_vote.save()
+        else:
             # Voting message with non-valid hotword.
             # It is very unlikely to someone start their message with "I am 13" or something like it (word [word] digit)
+            # But hadle it anyway as regular message
+            try:
+                event = SMSEventMeta.objects.get(current=True, sms_enabled=True)
+            except SMSEventMeta.DoesNotExist:
+                # Don't know to which event point the new message, ignored.
+                pass
+            else:
+                new_message = SMSMessageIn(message=message, SMSEventMeta=event)
+                new_message.save()
     else:
         #regular message with no hotword.
         try:
-            event = SMSEvent.objects.get(current=True, sms_enabled=True)
-        except SMSEvent.DoesNotExist:
+            event = SMSEventMeta.objects.get(current=True, sms_enabled=True)
+        except SMSEventMeta.DoesNotExist:
             # Don't know to which event point the new message, ignored.
             pass
         else:
-            new_message = SMSMessageIn(message=message, smsevent=event)
+            new_message = SMSMessageIn(message=message, SMSEventMeta=event)
             new_message.save()
 
 
@@ -128,16 +135,17 @@ class Hotword(models.Model):
         verbose_name_plural = u'Hotwordit'
 
 
-class VoteCategories(models.Model):
+class VoteCategory(models.Model):
     category = models.CharField(
-        max_length=255
+        max_length=255,
+        verbose_name=u'Kategorian kuvaus'
     )
     slug = models.SlugField(
-        max_length=20
+        max_length=20,
+        verbose_name=u'Avainsana'
     )
-    mapped = models.ForeignKey(Hotword)
-    value_min = models.IntegerField()
-    value_max = models.IntegerField()
+    hotword = models.ForeignKey(Hotword)
+    primary = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s' % (self.category)
@@ -147,13 +155,26 @@ class VoteCategories(models.Model):
         verbose_name_plural = u'Kategoriat'
 
 
-class Vote(models.Model):
-    hotword = models.ForeignKey(Hotword)
-    category = models.ForeignKey(VoteCategories)
-    vote = models.IntegerField()
-    voter = models.CharField(
-        max_length=30
+class Nominee(models.Model):
+    category = models.ManyToManyField(VoteCategory)
+    number = models.IntegerField()
+    name = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
     )
+
+    def __unicode__(self):
+        return u'%s - %s' % (self.number, self.name)
+    
+    class Meta:
+        verbose_name = u'Osallistuja'
+        verbose_name_plural = u'Osallistujat'
+
+
+class Vote(models.Model):
+    category = models.ForeignKey(VoteCategory)
+    vote = models.ForeignKey(Nominee)
     message = models.ForeignKey('nexmo.InboundMessage')
 
     class Meta:
@@ -161,8 +182,7 @@ class Vote(models.Model):
         verbose_name_plural = u'Äänet'
 
 
-class SMSEvent(models.Model):
-    event = models.ForeignKey('core.Event')
+class SMSEventMeta(EventMetaBase):
     sms_enabled = models.BooleanField(
         default=False
     )
@@ -176,13 +196,13 @@ class SMSEvent(models.Model):
     def save(self, *args, **kwargs):
         if self.current:
             try:
-                temp = SMSEvent.objects.get(current=True)
+                temp = SMSEventMeta.objects.get(current=True)
                 if self != temp:
                     temp.current = False
                     temp.save()
-            except SMSEvent.DoesNotExist:
+            except SMSEventMeta.DoesNotExist:
                 pass
-        return super(SMSEvent, self).save(*args, **kwargs)
+        return super(SMSEventMeta, self).save(*args, **kwargs)
 
     @property
     def is_sms_enabled(self):
@@ -194,6 +214,13 @@ class SMSEvent(models.Model):
     
     def __unicode__(self):
         return self.event.name
+    
+    @classmethod
+    def get_or_create_dummy(cls):
+        from core.models import Event
+        event, unused = Event.get_or_create_dummy()
+        group, unused = cls.get_or_create_group(event, 'admins')
+        return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
     class Meta:
         verbose_name = u'Tekstiviestejä käyttävä tapahtuma'
@@ -202,7 +229,7 @@ class SMSEvent(models.Model):
 
 class SMSMessageIn(models.Model):
     message = models.ForeignKey('nexmo.InboundMessage')
-    smsevent = models.ForeignKey(SMSEvent)
+    SMSEventMeta = models.ForeignKey(SMSEventMeta)
 
     class Meta:
         verbose_name = u'Vastaanotettu viesti'
@@ -214,7 +241,7 @@ class SMSMessageOut(models.Model):
     to = models.CharField(
         max_length=20
     )
-    event = models.ForeignKey(SMSEvent)
+    event = models.ForeignKey(SMSEventMeta)
     ref = models.ForeignKey('nexmo.OutboundMessage', blank=True, null=True)
 
     @classmethod
@@ -248,7 +275,7 @@ class SMSMessageOut(models.Model):
                     else:
                         not_throttled = 1
 
-                event = SMSEvent.objects.get(event=self.event)
+                event = SMSEventMeta.objects.get(event=self.event)
                 for sent in sent_message['messages']:
                     price = float(sent['message-price']) * 100
                     event.used_credit += int(price)

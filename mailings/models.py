@@ -242,10 +242,10 @@ class PersonMessage(models.Model):
         ).send(fail_silently=True)
 
     def _actually_send_sms(self, delay=0):
-        from sms.models import SMSMessageOut, SMSEvent
+        from sms.models import SMSMessageOut, SMSEventMeta
         try:
-            event = SMSEvent.objects.get(event=self.message.event, sms_enabled=True)
-        except SMSEvent.DoesNotExist:
+            event = SMSEventMeta.objects.get(event=self.message.event, sms_enabled=True)
+        except SMSEventMeta.DoesNotExist:
             pass
         else:
             if 'background_tasks' in settings.INSTALLED_APPS:
