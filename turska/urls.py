@@ -19,6 +19,7 @@ for app_name in [
     'api',
     'api_v2',
     'badges',
+    'access',
     'nexmo',
     'sms',
 ]:

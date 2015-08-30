@@ -283,6 +283,8 @@ def labour_admin_export_view(request, vars, event):
     else:
         signups = Signup.objects.filter(event=event)
 
+    signups = signups.select_related('person').select_related('event').select_related('event__laboureventmeta')
+
     filename="{event.slug}_signups_{timestamp}.xlsx".format(
         event=event,
         timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),

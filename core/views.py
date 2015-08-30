@@ -422,6 +422,10 @@ def core_profile_menu_items(request):
         from programme.views import programme_profile_menu_items
         items.extend(programme_profile_menu_items(request))
 
+    if 'access' in settings.INSTALLED_APPS:
+        from access.views import access_profile_menu_items
+        items.extend(access_profile_menu_items(request))
+
     if 'django.contrib.admin' in settings.INSTALLED_APPS and request.user.is_staff:
         admin_url = '/admin/' # XXX hardcoded
         admin_active = False

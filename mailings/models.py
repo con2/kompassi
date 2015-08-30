@@ -221,7 +221,7 @@ class PersonMessage(models.Model):
         else:
             raise NotImplementedError(self.message.channel)
 
-    def _actually_send_email():
+    def _actually_send_email(self):
         from django.core.mail import EmailMessage
 
         msgbcc = []

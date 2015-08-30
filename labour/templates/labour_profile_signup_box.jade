@@ -1,10 +1,10 @@
 .panel.panel-default
   .panel-heading
     .pull-right
-      .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}    
+      .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}
     strong {{ signup.event.name }}
     |&thinsp;
-    small.text-muted {{ signup.event.headline }} 
+    small.text-muted {{ signup.event.headline }}
   if signup.is_active
     .panel-body
       p.help-block {{ signup.state_description }}
@@ -24,6 +24,18 @@
           .col-md-9
             for link in signup.info_links
               div: a(href='{{ link.url }}', target='_blank') {{ link.title }}
+      if signup.potential_privileges.exists
+        .row
+          .col-md-3: label Pyydettävät käyttöoikeudet:
+          .col-md-9
+            for privilege in signup.potential_privileges
+              div: a(href='{{ privilege.get_absolute_url }}') {{ privilege.title }}
+      if signup.granted_privileges.exists
+        .row
+          .col-md-3: label Myönnetyt käyttöoikeudet:
+          .col-md-9
+            for granted_privilege in signup.granted_privileges
+              div: a(href='{{ granted_privilege.privilege.get_absolute_url }}') {{ granted_privilege.privilege.title }}
 
     include labour_profile_message_table.jade
 
