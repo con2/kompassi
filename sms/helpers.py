@@ -16,7 +16,7 @@ def sms_admin_required(view_func):
         meta = event.sms_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia äänestyksiin.")
+            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia tekstiviestien lähetykseen.")
             return redirect('core_event_view', event.slug)
 
         if not meta.is_user_admin(request.user):

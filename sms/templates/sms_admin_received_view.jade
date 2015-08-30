@@ -12,8 +12,8 @@ block admin_content
             th Viesti
             th Vastaanotettu
           tbody
-            for message in messages
+            for message in received_messages
               tr
                 td {{ message.message.sender }}
                 td {{ message.message.message }}
-                td {{ message.message.receive_timestamp }}
+                td {{ message.message.receive_timestamp|date:"d.m.Y G:i:s" }}

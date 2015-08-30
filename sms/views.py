@@ -31,7 +31,7 @@ def sms_admin_votes_view(request, vars, event):
 def sms_admin_received_view(request, vars, event):
 
     vars.update(
-        messages=SMSMessageIn.objects.all(),
+        received_messages=SMSMessageIn.objects.all(),
     )
     return render(request, 'sms_admin_received_view.jade', vars)
 
