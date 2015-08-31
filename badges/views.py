@@ -68,6 +68,12 @@ def badges_admin_dashboard_view(request, vars, event):
     return render(request, 'badges_admin_dashboard_view.jade', vars)
 
 
+class BadgesToYoinkFakePersonnelClass(object):
+    name = u'Yoinkkauslista'
+    slug = u'yoink'
+badges_to_yoink_fake_personnel_class = BadgesToYoinkFakePersonnelClass()
+
+
 @badges_admin_required
 @require_http_methods(['GET', 'POST'])
 def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
@@ -108,8 +114,14 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
         active_filter = None
 
         if personnel_class_slug is not None:
-            active_filter = get_object_or_404(PersonnelClass, event=event, slug=personnel_class_slug)
-            badge_criteria.update(personnel_class=active_filter)
+            if personnel_class_slug == 'yoink':
+                viewing_yoink_list = True
+                active_filter = badges_to_yoink_fake_personnel_class
+                badge_criteria.update(batch__isnull=False, revoked_at__isnull=False)
+            else:
+                viewing_yoink_list = False
+                active_filter = get_object_or_404(PersonnelClass, event=event, slug=personnel_class_slug)
+                badge_criteria.update(personnel_class=active_filter)
 
         if format != 'screen':
             badge_criteria.update(revoked_at__isnull=True)
@@ -138,6 +150,10 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
                 (personnel_class_slug == personnel_class.slug, personnel_class)
                 for personnel_class in PersonnelClass.objects.filter(event=event)
             ]
+
+            filters.append(
+                (viewing_yoink_list, badges_to_yoink_fake_personnel_class)
+            )
 
             vars.update(
                 active_filter=active_filter,
