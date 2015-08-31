@@ -125,7 +125,7 @@ def make_writer(output_stream, dialect):
         from .excel_export import XlsxWriter
         return XlsxWriter(output_stream)
     else:
-        return unicodecsv.writer(output_stream, encoding=ENCODING, dialect=dialect)
+        return unicodecsv.writer(output_stream, encoding=ENCODING, dialect=dialect, errors='ignore')
 
 
 def export_csv(event, model, model_instances, output_file, m2m_mode='separate_columns', dialect='excel-tab'):
