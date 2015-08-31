@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
@@ -30,10 +31,15 @@ def access_profile_request_privilege_view(request, privilege_slug):
         messages.error(request, u'Käyttöoikeuden pyytäminen edellyttää vahvistettua sähköpostiosoitetta.')
         return redirect('access_profile_privileges_view')
 
-    privilege = get_object_or_404(Privilege,
+    # People belonging to both Hitpoint and Tracon concoms were getting MultipleObjectsReturned here.
+    # Cannot use get_object_or_404 due to the same object being returned multiple times via multiple groups.
+    # get_object_or_404 uses .get which has no way to provide .distinct() from outside.
+    privilege = Privilege.objects.filter(
         slug=privilege_slug,
         group_privileges__group__in=request.user.groups.all(),
-    )
+    ).first()
+    if privilege is None:
+        raise Http404('Privilege not found')
 
     privilege.grant(request.user.person)
 
