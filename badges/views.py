@@ -131,11 +131,12 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
                 active_filter = get_object_or_404(PersonnelClass, event=event, slug=personnel_class_slug)
                 badge_criteria.update(personnel_class=active_filter)
 
-        if format != 'screen':
+        # Non-yoink paper lists only show non-revoked badges.
+        # Yoink list only shows revoked badges.
+        if format != 'screen' and personnel_class_slug != 'yoink':
             badge_criteria.update(revoked_at__isnull=True)
 
         badges = Badge.objects.filter(**badge_criteria).order_by(*BADGE_ORDER)
-
 
         if format in CSV_EXPORT_FORMATS:
             filename = "{event.slug}-badges-{badge_filter}{timestamp}.{format}".format(
