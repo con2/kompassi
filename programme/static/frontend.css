@@ -57,6 +57,11 @@ footer .credit {
   color: white;
 }
 
+.kompassi-space-after {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
 
 /* Bootstrap extensions */
 .badge-primary {

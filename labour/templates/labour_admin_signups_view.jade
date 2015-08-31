@@ -11,23 +11,19 @@ block admin_content
         .col-md-9
           for jc, active in job_category_filters
             if active
-              span.label.label-info
-                a(href='?') {{ jc.name }}
+              a.label.label-info.kompassi-space-after(href='?') {{ jc.name }}
             else
-              span.label.label-default
-                a(href='?job_category={{ jc.slug }}') {{ jc.name }}
-            | &#x20;
+              a.label.label-default.kompassi-space-after(href='?job_category={{ jc.slug }}') {{ jc.name }}
       .row
         .col-md-3: strong Hyväksytty tehtävä
         .col-md-9
           for jc, active in job_category_accepted_filters
             if active
-              span.label.label-info
+              span.label.label-info.kompassi-space-after
                 a(href='?') {{ jc.name }}
             else
-              span.label.label-default
+              span.label.label-default.kompassi-space-after
                 a(href='?job_category_accepted={{ jc.slug }}') {{ jc.name }}
-            | &#x20;
       //- .row
       //-   .col-md-3: strong Hakemuksen tila
       //-   .col-md-9
