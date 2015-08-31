@@ -11,8 +11,8 @@ class PrivilegeAdmin(admin.ModelAdmin):
 
 class GrantedPrivilegeAdmin(admin.ModelAdmin):
     model = GrantedPrivilege
-    list_display = ('privilege', 'person')
-    list_filter = ('privilege',)
+    list_display = ('privilege', 'person', 'state')
+    list_filter = ('privilege', 'state')
     search_fields = ('person__surname', 'person__first_name', 'person__nick', 'person__email')
 
 
