@@ -25,8 +25,14 @@ CSV_EXPORT_FORMATS = dict(
     xlsx='xlsx',
 )
 BADGE_LIST_TEMPLATES = dict(
-    screen='badges_admin_badges_view.jade',
-    print='badges_admin_badges_print.jade',
+    screen=dict(
+        normal='badges_admin_badges_view.jade',
+        yoink='badges_admin_badges_view.jade',
+    ),
+    print=dict(
+        normal='badges_admin_badges_print.jade',
+        yoink='badges_admin_badges_print_yoink.jade',
+    ),
 )
 
 
@@ -112,14 +118,16 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
         format = request.GET.get('format', 'screen')
         badge_criteria = dict(personnel_class__event=event)
         active_filter = None
+        viewing_yoink_list = False
+        template_subtype = 'normal'
 
         if personnel_class_slug is not None:
             if personnel_class_slug == 'yoink':
                 viewing_yoink_list = True
                 active_filter = badges_to_yoink_fake_personnel_class
                 badge_criteria.update(batch__isnull=False, revoked_at__isnull=False)
+                template_subtype = 'yoink'
             else:
-                viewing_yoink_list = False
                 active_filter = get_object_or_404(PersonnelClass, event=event, slug=personnel_class_slug)
                 badge_criteria.update(personnel_class=active_filter)
 
@@ -139,7 +147,7 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
 
             return csv_response(event, Badge, badges, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
         elif format in BADGE_LIST_TEMPLATES:
-            page_template = BADGE_LIST_TEMPLATES[format]
+            page_template = BADGE_LIST_TEMPLATES[format][template_subtype]
 
             title = u"{event.name} &ndash; {qualifier}".format(
                 event=event,
@@ -165,7 +173,7 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
 
             return render(request, page_template, vars)
         else:
-            raise NotImplemented(format)
+            raise NotImplementedError(format)
 
 
 badges_admin_batches_view = badges_admin_required(batches_view(

@@ -1,0 +1,49 @@
+doctype html
+html
+  head
+    title {{ title|safe }} | {{ KOMPASSI_INSTALLATION_NAME }}
+  body
+    header
+      h1 {{ title|safe }}
+      p Tulostettu {{ now }}. <strong>Boldatut</strong> tiedot näkyvät badgessa.
+      p <strong>Lue yoinkkauslistan ohjeet huolellisesti ja noudata niitä.</strong>
+      ol
+        li Yoinkkauslista on lista sellaisista badgeista, jotka on mitätöity tulostamisen jälkeen, ja ne tulee poistaa jaosta.
+        li Se, että henkilön nimi on yoinkkauslistalla, ei vielä yksin tarkoita, että hän ei olisi tervetullut tapahtumaan tai että hän ei saisi badgea. Se tarkoittaa ainoastaan sitä, että jokin hänelle nimikoitu badge on ollut tavalla tai toisella virheellinen ja määrätty siksi poistettavaksi. Mikäli hänen nimensä löytyy muista nimilistoista, hänelle tulisi yhä olla voimassaoleva badge.
+        li Yoinkkauslistaa ei tarvitse tarkistaa jokaisen saapujan kohdalla, vaan yoinkkauslistalla olevat badget tulee poistaa jaosta kerralla ennen badgejaon aloittamista.
+        li Jokaista yoinkkauslistan riviä kohden poistetaan yksi badge, jossa on täsmälleen ne tiedot jotka yoinkkauslistan rivillä lukee.
+        li Ota yoinkkauslistalla olevat badget syrjään – <strong>älä hävitä niitä</strong>.
+        li Otettuasi badgen syrjään yliviivaa se yoinkkauslistalta.
+        li Lähtökohtaisesti henkilöt, jotka ovat yoinkkauslistalla eivätkä muilla nimilistoilla, eivät ole saapumassa tapahtumaan tai tietävät itse, että heille ei kuulu badgea. Mikäli paikalle kuitenkin saapuu badgeaan vaatimaan henkilö, joka on yoinkkauslistalla, <strong>ja hänen nimeään ei löydy muualta kuin yoinkkauslistalta</strong>, kutsu paikalle kyseisen osa-alueen vastaava:
+          table
+            thead
+              th Jos henkilö väittää olevansa...
+              th Kutsu silloin...
+            tbody
+              tr
+                th coniitti
+                td pääjärjestäjä
+              tr
+                th työvoimaa, vuorovastaava
+                td työvoimavastaava
+              tr
+                th ohjelmanjärjestäjä, miitinvetäjä, esiintyjä
+                td ohjelmavastaava
+              tr
+                th toimittaja
+                td viestintävastaava
+              tr
+                th myyjä
+                td sponsorivastaava
+              tr
+                th kävijä
+                td lipunmyyntivastaava
+
+
+    article(style='font-size: 10pt')
+      for badge in badges
+        div(style='display: inline-block; width: 24em') {{ badge.to_html_print|safe }}
+          if not active_filter
+            |  ({{ badge.personnel_class.name }})
+    footer
+      p {{ badges.count }} hlö
