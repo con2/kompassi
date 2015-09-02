@@ -2,7 +2,6 @@
 
 from __future__ import print_function
 
-from itertools import groupby
 
 from django.contrib import messages
 from django.db.models import Q
@@ -11,7 +10,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_GET
 
 from core.batches_view import batches_view
-from core.utils import url, initialize_form
+from core.utils import url, initialize_form, groupby_strict
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS
 from labour.models import PersonnelClass
 
@@ -170,7 +169,7 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
             )
 
             if personnel_class_slug == 'yoink' and format == 'print':
-                badges_by_personnel_class = groupby(badges, lambda badge: badge.personnel_class)
+                badges_by_personnel_class = groupby_strict(badges, lambda badge: badge.personnel_class))
 
                 vars.update(badges_by_personnel_class=badges_by_personnel_class)
             else:

@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from functools import wraps
+from itertools import groupby
 from urllib import urlencode
 import json
 import re
@@ -474,3 +475,7 @@ def groups_of_n(iterable, n):
 
     if cur_group:
         yield cur_group
+
+
+def groupby_strict(*args, **kwargs):
+    return [(key, list(values)) for (key, values) in groupby(*args, **kwargs)]
