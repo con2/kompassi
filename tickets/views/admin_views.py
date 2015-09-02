@@ -34,7 +34,13 @@ from ..forms import (
 )
 from ..helpers import tickets_admin_required, perform_search
 from ..utils import format_price
-from ..models import Order, Batch, UNPAID_CANCEL_DAYS
+from ..models import (
+    AccommodationInformation,
+    Batch,
+    LimitGroup,
+    Order,
+    UNPAID_CANCEL_DAYS,
+)
 
 
 __all__ = [
@@ -308,6 +314,54 @@ def tickets_admin_tools_view(request, vars, event):
     return render(request, 'tickets_admin_tools_view.jade', vars)
 
 
+@tickets_admin_required
+def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
+    if limit_group_id is not None:
+        limit_group_id = int(limit_group_id)
+        limit_group = get_object_or_404(LimitGroup, id=limit_group_id)
+        accommodees = AccommodationInformation.objects.filter(
+            # Belongs to current event
+            order_product__order__event=event,
+
+            # Belongs to the selected night
+            order_product__product__limit_groups=limit_group,
+
+            # Product requires accommodation information
+            order_product__product__requires_accommodation_information=True,
+
+            # Order is confirmed
+            order_product__order__confirm_time__isnull=False,
+
+            # Order is paid
+            order_product__order__payment_date__isnull=False,
+
+            # Order is not cancelled
+            order_product__order__cancellation_time__isnull=True,
+        )
+        active_filter = limit_group
+    else:
+        accommodees = []
+        active_filter = None
+
+    format = request.GET.get('format', 'screen')
+
+    filters = [
+        (limit_group_id == limit_group.id, limit_group)
+        for limit_group in LimitGroup.objects.filter(
+            event=event,
+            product__requires_accommodation_information=True,
+        )
+    ]
+
+    vars.update(
+        accommodees=accommodees,
+        active_filter=active_filter,
+        filters=filters,
+    )
+
+    return render(request, 'tickets_admin_accommodation_view.jade', vars)
+
+
 if 'lippukala' in settings.INSTALLED_APPS:
     from lippukala.views import POSView
     lippukala_pos_view = POSView.as_view()
@@ -335,6 +389,10 @@ def tickets_admin_menu_items(request, event):
     batches_active = request.path.startswith(batches_url)
     batches_text = u"Toimituserät"
 
+    accommodation_url = url('tickets_admin_accommodation_view', event.slug)
+    accommodation_active = request.path.startswith(accommodation_url)
+    accommodation_text = u"Majoituslistat"
+
     tools_url = url('tickets_admin_tools_view', event.slug)
     tools_active = request.path.startswith(tools_url)
     tools_text = u"Työkalut"
@@ -343,6 +401,7 @@ def tickets_admin_menu_items(request, event):
         (stats_active, stats_url, stats_text),
         (orders_active, orders_url, orders_text),
         (batches_active, batches_url, batches_text),
+        (accommodation_active, accommodation_url, accommodation_text),
         (tools_active, tools_url, tools_text),
     ]
 

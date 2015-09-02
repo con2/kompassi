@@ -12,6 +12,7 @@ from .public_views import (
 )
 
 from .admin_views import (
+    tickets_admin_accommodation_view,
     tickets_admin_batch_view,
     tickets_admin_batches_view,
     tickets_admin_menu_items,
