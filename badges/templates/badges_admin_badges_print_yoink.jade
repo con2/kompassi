@@ -45,5 +45,5 @@ html
         h3 {{ personnel_class.name }}
         for badge in badges
           div(style='display: inline-block; width: 36em') {{ badge.to_html_print|safe }}
-          if badge.job_title
-            | (<strong>{{ badge.job_title }}</strong>)
+            if badge.job_title
+              | (<strong>{{ badge.job_title }}</strong>)
