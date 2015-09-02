@@ -169,7 +169,7 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
             )
 
             if personnel_class_slug == 'yoink' and format == 'print':
-                badges_by_personnel_class = groupby_strict(badges, lambda badge: badge.personnel_class))
+                badges_by_personnel_class = groupby_strict(badges, lambda badge: badge.personnel_class)
 
                 vars.update(badges_by_personnel_class=badges_by_personnel_class)
             else:
