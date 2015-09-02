@@ -341,6 +341,7 @@ class Programme(models.Model, CsvExportMixin):
                 identifier=u'p{id}'.format(id=self.id),
                 location=self.room.name,
                 location_slug=self.room.slug,
+                presenter=self.formatted_hosts,
             )
         else:
             raise NotImplementedError(format)

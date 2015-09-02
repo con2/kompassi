@@ -43,3 +43,5 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
+
+For third-party component licenses, see `[LICENSE](/tracon/kompassi/blob/master/LICENSE)`.
