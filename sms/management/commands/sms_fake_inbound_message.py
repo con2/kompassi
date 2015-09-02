@@ -1,0 +1,13 @@
+# encoding: utf-8
+
+from django.core.management.base import BaseCommand, make_option
+
+from sms.utils import fake_inbound_message
+
+
+class Command(BaseCommand):
+    def handle(*args, **opts):
+        fake_inbound_message(
+            sender=args[1],
+            message=args[2],
+        )
