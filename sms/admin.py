@@ -64,14 +64,9 @@ class SMSMessageInAdmin(admin.ModelAdmin):
     list_display = (get_event, get_sender, get_send_time, get_message)
 
 
-class CategoryAdmin(admin.StackedInline):
-    model = Nominee.category.through
-
-
 class NomineeAdmin(admin.ModelAdmin):
     model = Nominee
     list_display = ('name', 'number')
-    inlines = [CategoryAdmin, ]
 
 
 class SMSMessageOutAdmin(admin.ModelAdmin):
