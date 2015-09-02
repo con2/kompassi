@@ -38,7 +38,7 @@ class JVKorttiTest(TestCase):
 
         invalid_examples = [
             'lol',
-            '8330/J1234/0',
+            # '8330/J1234/0', # need more lax validation due to new cards having a new format
             None,
             ''
         ]

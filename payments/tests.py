@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from tickets.models import Order
+from payments.models import PaymentsEventMeta
 
 
 class FakeRequest(object):
@@ -10,6 +11,8 @@ class FakeRequest(object):
 class CheckoutTestCase(TestCase):
     def test_checkout(self):
         request = FakeRequest()
+
+        PaymentsEventMeta.get_or_create_dummy()
 
         order, unused = Order.get_or_create_dummy()
 
