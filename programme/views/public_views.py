@@ -104,41 +104,8 @@ def programme_internal_dumpdata_view(request):
 @public_programme_required
 @require_GET
 def programme_mobile_timetable_view(request, event):
-    all_rooms = AllRoomsPseudoView(event)
-
-    programmes_by_room = []
-    for room in all_rooms.public_rooms:
-        t = now()
-        current_programme = room.programme_set.filter(start_time__lte=t, category__public=True).order_by('-start_time')[0:1]
-        current_programme = current_programme[0] if current_programme else None
-        ref_time = current_programme.end_time if current_programme else t
-
-        next_programme = room.programme_set.filter(start_time__gte=ref_time, category__public=True).order_by('start_time')[0:1]
-        next_programme = next_programme[0] if next_programme else None
-
-        programmes_by_room.append((room, [("Nyt", current_programme), ("Seuraavaksi", next_programme)]))
-
-    vars = dict(
-        event=event,
-        programmes_by_room=programmes_by_room
-    )
-
+    vars = dict(event=event)
     return render(request, 'programme_mobile_timetable.jade', vars)
-
-
-@cache_control(public=True, max_age=1 * 60)
-@cache_page(1 * 60) # XXX remove once nginx cache is in place
-@public_programme_required
-@require_GET
-def programme_mobile_detail_view(request, event, programme_id):
-    programme = get_object_or_404(Programme, category__event=event, id=programme_id)
-
-    vars = dict(
-        event=event,
-        programme=programme,
-    )
-
-    return render(request, 'programme_mobile_detail.jade', vars)
 
 
 @programme_event_required
@@ -244,13 +211,13 @@ def programme_self_service_view(request, event, programme_edit_code):
 @programme_event_required
 @require_GET
 @api_view
-def programme_json_view(request, event):
+def programme_json_view(request, event, format='default'):
     result = []
 
     for start_time, incontinuity, row in AllRoomsPseudoView(event).programmes_by_start_time:
         for programme, rowspan in row:
             if programme is not None:
-                result.append(programme.as_json())
+                result.append(programme.as_json(format=format))
 
     return result
 

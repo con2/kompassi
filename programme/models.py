@@ -8,7 +8,7 @@ from django.utils.timezone import now
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, OneTimeCode
-from core.utils import url, alias_property
+from core.utils import url, alias_property, slugify
 
 from .utils import window, next_full_hour, full_hours_between
 
@@ -63,6 +63,10 @@ class Category(models.Model):
     def __unicode__(self):
         return self.title
 
+    @property
+    def slug(self):
+        return slugify(self.title)
+
     class Meta:
         ordering = ['title']
         verbose_name = u'ohjelmaluokka'
@@ -101,6 +105,10 @@ class Room(models.Model):
             return the_time < latest_programme[0].end_time
         else:
             return False
+
+    @property
+    def slug(self):
+        return slugify(self.name)
 
     class Meta:
         ordering = ['venue', 'order']
@@ -305,18 +313,37 @@ class Programme(models.Model, CsvExportMixin):
     def public(self):
         return self.category.public if self.category is not None else False
 
-    def as_json(self):
-        from api.utils import pick_attrs
-        return pick_attrs(self,
-            'title',
-            'description',
-            'category_title',
-            'formatted_hosts',
-            'room_name',
-            'length',
-            'start_time',
-            'public',
-        )
+    def as_json(self, format='default'):
+        from core.utils import pick_attrs
+
+        if format == 'default':
+            return pick_attrs(self,
+                'title',
+                'description',
+                'category_title',
+                'formatted_hosts',
+                'room_name',
+                'length',
+                'start_time',
+                'public',
+            )
+        elif format == 'desucon':
+            return pick_attrs(self,
+                'title',
+                'description',
+                'start_time',
+                'end_time',
+
+                language='fi', # XXX hardcoded
+                status=1 if self.public else 0,
+                kind=self.category.slug,
+                kind_display=self.category.title,
+                identifier=u'p{id}'.format(id=self.id),
+                location=self.room.name,
+                location_slug=self.room.slug,
+            )
+        else:
+            raise NotImplementedError(format)
 
     # for konopas
     @property

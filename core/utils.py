@@ -456,8 +456,12 @@ def event_meta_property(app_label, code_path):
     return property(_get)
 
 
-def pick_attrs(obj, *attr_names):
-    return dict((attr_name, getattr(obj, attr_name)) for attr_name in attr_names)
+def pick_attrs(obj, *attr_names, **extra_attrs):
+    return dict(
+        (attr_name, getattr(obj, attr_name))
+        for attr_name in attr_names,
+        **extra_attrs
+    )
 
 
 def groups_of_n(iterable, n):

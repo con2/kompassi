@@ -1,13 +1,18 @@
-extends base.jade
-block title
-  | Mobiiliohjelmakartta
-block content
-  .mobile-timetable
-    h1 Ohjelma nyt ja seuraavaksi
-    for room, programmes in programmes_by_room
-      h2 {{ room.name }}
-      for label, programme in programmes
-        if programme
-          p
-            label {{ label }}:
-            a(href="/m/timetable/{{ programme.pk }}") {{ programme.start_time|date:'H:i'}}&ndash;{{ programme.end_time|date:'H:i'}} {{ programme.title }}
+doctype html
+- load static from staticfiles
+html
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    title {{ event.name }}: Mobiiliohjelmakartta – {{ KOMPASSI_INSTALLATION_NAME }}
+    link(rel='stylesheet', href='{% static "programme/css/moe_tracon.css" %}')
+  body
+    script
+      var C = {
+        starred_url: null,
+        schedule_url: "{% url 'programme_moe_view' event.slug %}",
+        logged_in: false,
+        star_url: null,
+        unstar_url: null,
+      };
+    script(src='{% static "programme/js/moe.js" %}')
