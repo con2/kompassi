@@ -23,7 +23,7 @@ def sms_admin_votes_view(request, vars, event):
         total_votes=Vote.objects.values('category').annotate(votes=Count('vote')),
         number=settings.NEXMO_FROM
     )
-    
+
     return render(request, 'sms_admin_votes_view.jade', vars)
 
 @sms_admin_required
