@@ -216,8 +216,14 @@ def programme_json_view(request, event, format='default'):
 
     for start_time, incontinuity, row in AllRoomsPseudoView(event).programmes_by_start_time:
         for programme, rowspan in row:
-            if programme is not None:
-                result.append(programme.as_json(format=format))
+            if programme is None:
+                continue
+
+            # TODO revise
+            if format == 'desucon' and not programme.public:
+                continue
+
+            result.append(programme.as_json(format=format))
 
     return result
 
