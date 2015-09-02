@@ -6,16 +6,17 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_GET
 from django.db.models import Count
-from core.utils import url, initialize_form
 from django.conf import settings
+
+from core.utils import url, initialize_form
 
 from .models import VoteCategory, Vote, Hotword, Nominee, SMSMessageIn
 from .helpers import sms_admin_required
 
+
 @sms_admin_required
 @require_GET
 def sms_admin_votes_view(request, vars, event):
-
     vars.update(
         hotwords=Hotword.objects.all(),
         categories=VoteCategory.objects.all(),
@@ -26,10 +27,10 @@ def sms_admin_votes_view(request, vars, event):
 
     return render(request, 'sms_admin_votes_view.jade', vars)
 
+
 @sms_admin_required
 @require_GET
 def sms_admin_received_view(request, vars, event):
-
     vars.update(
         received_messages=SMSMessageIn.objects.all(),
     )
@@ -49,6 +50,7 @@ def sms_admin_menu_items(request, event):
         (votes_active, votes_url, votes_text),
         (received_active, received_url, received_text),
     ]
+
 
 def sms_event_box_context(request, event):
     is_sms_admin = False
