@@ -337,7 +337,7 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
 
             # Order is not cancelled
             order_product__order__cancellation_time__isnull=True,
-        )
+        ).order_by('last_name', 'first_name')
         active_filter = limit_group
     else:
         accommodees = []
