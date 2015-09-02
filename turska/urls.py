@@ -20,6 +20,8 @@ for app_name in [
     'api_v2',
     'badges',
     'access',
+    'nexmo',
+    'sms',
 ]:
     if app_name in settings.INSTALLED_APPS:
         actual_patterns.append(url(r'', include('{app_name}.urls'.format(app_name=app_name))))

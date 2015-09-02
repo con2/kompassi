@@ -58,6 +58,10 @@ def core_event_view(request, event_slug):
         from badges.views import badges_event_box_context
         vars.update(badges_event_box_context(request, event))
 
+    if event.sms_event_meta:
+        from sms.views import sms_event_box_context
+        vars.update(sms_event_box_context(request, event))
+
     return render(request, 'core_event_view.jade', vars)
 
 

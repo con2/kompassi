@@ -28,6 +28,7 @@ class Setup(object):
         self.setup_payments()
         self.setup_programme()
         self.setup_access()
+        self.setup_sms()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -652,6 +653,18 @@ class Setup(object):
         group = self.event.labour_event_meta.get_group('accepted')
         privilege = Privilege.objects.get(slug='tracon-slack')
         GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+
+    def setup_sms(self):
+        from sms.models import SMSEventMeta
+
+        sms_admin_group, unused = SMSEventMeta.get_or_create_group(self.event, 'admins')
+        meta, unused = SMSEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=sms_admin_group,
+                sms_enabled=True,
+            )
+        )
 
 
 class Command(BaseCommand):
