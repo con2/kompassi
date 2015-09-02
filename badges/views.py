@@ -2,6 +2,8 @@
 
 from __future__ import print_function
 
+from itertools import groupby
+
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
@@ -161,11 +163,18 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
 
             vars.update(
                 active_filter=active_filter,
-                badges=badges,
                 filters=filters,
                 now=timezone.now(),
                 title=title,
+                should_display_personnel_class=not active_filter or personnel_class_slug == 'yoink',
             )
+
+            if personnel_class_slug == 'yoink' and format == 'print':
+                badges_by_personnel_class = groupby(badges, lambda badge: badge.personnel_class)
+
+                vars.update(badges_by_personnel_class=badges_by_personnel_class)
+            else:
+                vars.update(badges=badges)
 
             return render(request, page_template, vars)
         else:

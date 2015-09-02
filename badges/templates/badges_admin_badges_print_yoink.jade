@@ -41,9 +41,9 @@ html
 
 
     article(style='font-size: 10pt')
-      for badge in badges
-        div(style='display: inline-block; width: 24em') {{ badge.to_html_print|safe }}
-          if not active_filter
-            |  ({{ badge.personnel_class.name }})
-    footer
-      p {{ badges.count }} hlö
+      for personnel_class, badges in badges_by_personnel_class
+        h3 {{ personnel_class.name }}
+        for badge in badges
+          div(style='display: inline-block; width: 36em') {{ badge.to_html_print|safe }}
+          if badge.job_title
+            | (<strong>{{ badge.job_title }}</strong>)

@@ -13,19 +13,19 @@ block admin_content
           a.label.label-default.kompassi-space-after(href='{% url "badges_admin_filtered_view" event.slug personnel_class.slug %}') {{ personnel_class.name }}
     table.table.table-striped
       thead
-        if not active_filter
+        if should_display_personnel_class
           th Badgetyyppi
         th Sukunimi
         th Etunimi
         th Nick
-        if active_filter
+        if not should_display_personnel_class
           th Tehtävänimike
         th Tila
         th
       tbody
         for badge in badges
           tr
-            if not active_filter
+            if should_display_personnel_class
               td {{ badge.personnel_class.name }}
 
             for value, is_visible in badge.get_name_fields
@@ -34,7 +34,7 @@ block admin_content
               else
                 td.text-muted {{ value }}
 
-            if active_filter
+            if not should_display_personnel_class
               td {{ badge.job_title }}
 
             td
