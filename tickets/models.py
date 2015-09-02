@@ -1015,6 +1015,18 @@ class AccommodationInformation(models.Model):
     def formatted_order_number(self):
         return self.order_product.order.formatted_order_number
 
+    @classmethod
+    def get_csv_fields(cls, event):
+        return (
+            (cls, 'last_name'),
+            (cls, 'first_name'),
+            (cls, 'phone_number'),
+            (cls, 'email'),
+        )
+
+    def get_csv_related(self):
+        return {}
+
     class Meta:
         verbose_name = u'majoittujan tiedot'
         verbose_name_plural = u'majoittujan tiedot'

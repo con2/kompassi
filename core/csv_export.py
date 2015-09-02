@@ -8,12 +8,18 @@ from django.db import models
 
 ENCODING = 'ISO-8859-15'
 
+# TODO better naming
 EXPORT_FORMATS = [
     # (name, dialect, extension)
     ('XLSX', 'xlsx', 'xlsx'),
     ('CSV', 'excel', 'csv'),
     ('TSV', 'excel-tab', 'tsv'),
 ]
+CSV_EXPORT_FORMATS = dict(
+    csv='excel',
+    tsv='excel-tab',
+    xlsx='xlsx',
+)
 
 
 class CsvExportMixin(object):

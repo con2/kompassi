@@ -10,7 +10,7 @@ from django.views.decorators.http import require_http_methods, require_GET
 
 from core.batches_view import batches_view
 from core.utils import url, initialize_form
-from core.csv_export import csv_response
+from core.csv_export import csv_response, CSV_EXPORT_FORMATS
 from labour.models import PersonnelClass
 
 from .forms import CreateBatchForm, BadgeForm, HiddenBadgeCrouchingForm
@@ -19,11 +19,6 @@ from .helpers import badges_admin_required
 
 
 BADGE_ORDER = ('personnel_class', 'person__surname', 'person__first_name')
-CSV_EXPORT_FORMATS = dict(
-    csv='excel',
-    tsv='excel-tab',
-    xlsx='xlsx',
-)
 BADGE_LIST_TEMPLATES = dict(
     screen=dict(
         normal='badges_admin_badges_view.jade',

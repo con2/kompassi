@@ -13,6 +13,7 @@ from django.db.models import Sum
 from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
+from django.utils.timezone import now
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 
@@ -23,7 +24,8 @@ except ImportError:
     warn('Failed to import ReportLab. Generating receipts will fail.')
 
 from core.batches_view import batches_view
-from core.utils import url, initialize_form
+from core.csv_export import csv_response, CSV_EXPORT_FORMATS
+from core.utils import url, initialize_form, slugify
 
 from ..forms import (
     AdminOrderForm,
@@ -52,8 +54,6 @@ __all__ = [
     "tickets_admin_stats_by_date_view",
     "tickets_admin_stats_view",
 ]
-
-
 
 
 tickets_admin_batches_view = tickets_admin_required(batches_view(
@@ -320,14 +320,8 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
         limit_group_id = int(limit_group_id)
         limit_group = get_object_or_404(LimitGroup, id=limit_group_id)
         accommodees = AccommodationInformation.objects.filter(
-            # Belongs to current event
-            order_product__order__event=event,
-
-            # Belongs to the selected night
+            # Belongs to the selected night and school
             order_product__product__limit_groups=limit_group,
-
-            # Product requires accommodation information
-            order_product__product__requires_accommodation_information=True,
 
             # Order is confirmed
             order_product__order__confirm_time__isnull=False,
@@ -345,21 +339,33 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
 
     format = request.GET.get('format', 'screen')
 
-    filters = [
-        (limit_group_id == limit_group.id, limit_group)
-        for limit_group in LimitGroup.objects.filter(
+    if format in CSV_EXPORT_FORMATS:
+        filename = "{event.slug}-{active_filter}-{timestamp}.{format}".format(
             event=event,
-            product__requires_accommodation_information=True,
+            active_filter=slugify(limit_group.description),
+            timestamp=now().strftime('%Y%m%d%H%M%S'),
+            format=format,
         )
-    ]
 
-    vars.update(
-        accommodees=accommodees,
-        active_filter=active_filter,
-        filters=filters,
-    )
+        return csv_response(event, AccommodationInformation, accommodees, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
+    elif format == 'screen':
+        filters = [
+            (limit_group_id == limit_group.id, limit_group)
+            for limit_group in LimitGroup.objects.filter(
+                event=event,
+                product__requires_accommodation_information=True,
+            )
+        ]
 
-    return render(request, 'tickets_admin_accommodation_view.jade', vars)
+        vars.update(
+            accommodees=accommodees,
+            active_filter=active_filter,
+            filters=filters,
+        )
+
+        return render(request, 'tickets_admin_accommodation_view.jade', vars)
+    else:
+        raise NotImplementedError(format)
 
 
 if 'lippukala' in settings.INSTALLED_APPS:
