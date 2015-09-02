@@ -75,6 +75,8 @@ class AccommodationInformationAdmin(admin.ModelAdmin):
     )
 
     list_filter = ('order_product__product__event',)
+    ordering = ('order_product__product__event', 'order_product__product', 'last_name', 'first_name')
+    search_fields = ('last_name', 'first_name', 'phone_number', 'email', 'order_product__order__id')
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)
