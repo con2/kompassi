@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import F
 
 from nexmo.models import InboundMessage, OutboundMessage
+from nexmo import RetryError
 import regex
 
 from core.models import EventMetaBase
@@ -173,7 +174,7 @@ class SMSMessageOut(models.Model):
         for i in xrange(MAX_TRIES):
             try:
                 sent_message = self.ref._send()
-            except nexmo.RetryError:
+            except RetryError:
                 # Back off! Stop everything for a while.
                 sleep(RETRY_DELAY_SECONDS)
             else:
