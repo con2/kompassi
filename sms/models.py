@@ -6,8 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import F
 
-from nexmo.models import InboundMessage, OutboundMessage
-from nexmo import RetryError
+from nexmo.models import InboundMessage, OutboundMessage, RetryError
 import regex
 
 from core.models import EventMetaBase
