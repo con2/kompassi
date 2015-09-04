@@ -15,6 +15,8 @@ APP_LABEL_CHOICES = [
     ('labour', 'Työvoima')
 ]
 
+DELAY_PER_MESSAGE_FRAGMENT_MILLIS = 350
+
 
 class RecipientGroup(models.Model):
     event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
@@ -103,7 +105,7 @@ class Message(models.Model):
                 person_message.actually_send(delay)
                 bodylen = len(person_message.body.text)
                 delayfactor = ceil(bodylen / 153)
-                delay += 250 * delayfactor
+                delay += DELAY_PER_MESSAGE_FRAGMENT_MILLIS * delayfactor
 
     def expire(self):
         assert self.expired_at is None, 're-expiring an expired message does not make sense'
