@@ -2,8 +2,8 @@ extends base
 block full_title
   | {{ settings.KOMPASSI_INSTALLATION_NAME }}
 block content
-  if "tracon_branding" in settings.INSTALLED_APPS
-    include tracon_branding_frontpage.jade
+  if "branding" in settings.INSTALLED_APPS
+    include branding_frontpage.jade
   if current_events_rows
     h2 Parhaillaan käynnissä olevat tapahtumat
     for current_events_row in current_events_rows

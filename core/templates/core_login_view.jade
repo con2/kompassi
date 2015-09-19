@@ -3,18 +3,30 @@ extends base.jade
 block title
   | Kirjaudu sisään
 block content
+  h2 Kirjaudu sisään {{settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE }} tai luo tunnus
+  div(style='margin-top: 2em')
   .row.core-login-view
     .col-md-6
       form(method='POST', role='form').form.form-horizontal
-        - crispy form
-        .form-group
-          .controls.col-md-offset-4.col-md-8
-            input.btn.btn-primary(type='submit', name='submit', value='Kirjaudu sisään')
-            a.btn.btn-link(href='{% url "core_password_reset_request_view" %}') Salasana unohtunut
+        .panel.panel-default
+          .panel-heading: strong Kirjaudu sisään {{ settings.KOMPASSI_ACCOUNT_BRANDING_ADESSIVE }}
+          .panel-body
+              - crispy form
+          .panel-footer.clearfix
+            .pull-right
+              a.btn.btn-link(href='{% url "core_password_reset_request_view" %}') Salasana unohtunut
+              input.btn.btn-primary(type='submit', name='submit', value='Kirjaudu sisään')
+
+    if 'desuprofile_integration' in settings.INSTALLED_APPS
+      include desuprofile_integration_login_box.jade
+
+  .row
     .col-md-6
-      fieldset
-        legend Luo itsellesi {{ settings.KOMPASSI_ACCOUNT_BRANDING }}
-        if settings.KOMPASSI_ACCOUNT_INFO
-          p {{ settings.KOMPASSI_ACCOUNT_INFO }}
-        p Jos sinulla ei ole vielä {{ settings.KOMPASSI_ACCOUNT_BRANDING_PARTITIVE }}, voit rekisteröidä sellaisen helposti ja nopeasti.
-        a.btn.btn-success(href='{% url "core_registration_view" %}?next={{ next }}') Rekisteröidy
+      .panel.panel-default
+        .panel-heading: strong Luo itsellesi {{ settings.KOMPASSI_ACCOUNT_BRANDING }}
+        .panel-body
+          p Tarvitset osaan palveluista {{ settings.KOMPASSI_ACCOUNT_BRANDING_GENITIVE }}, jonka voit rekisteröidä tästä helposti.
+          p Jos sinulla ei ole vielä {{ settings.KOMPASSI_ACCOUNT_BRANDING_PARTITIVE }}, voit rekisteröidä sellaisen helposti ja nopeasti.
+        .panel-footer.clearfix
+          .pull-right
+            a(href='{% url "core_registration_view" %}?next={{ next }}').btn.btn-success Rekisteröidy

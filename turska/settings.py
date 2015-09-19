@@ -155,7 +155,8 @@ INSTALLED_APPS = (
     # Uncomment if you have Crowd and Confluence
     # 'atlassian_integration',
 
-    'tracon_branding',
+    'branding',
+    'desuprofile_integration',
 
     'events.tracon8',
     'events.tracon9',
@@ -251,11 +252,6 @@ KOMPASSI_INSTALLATION_NAME = u'Kompassi (DEV)'
 KOMPASSI_INSTALLATION_NAME_ILLATIVE = u'Kompassin kehitysinstanssiin'
 KOMPASSI_INSTALLATION_NAME_GENITIVE = u'Kompassin kehitysinstanssin'
 KOMPASSI_INSTALLATION_SLUG = 'turskadev'
-KOMPASSI_ACCOUNT_BRANDING = u'Tracon-tunnus'
-KOMPASSI_ACCOUNT_BRANDING_PARTITIVE = u'Tracon-tunnusta'
-KOMPASSI_ACCOUNT_BRANDING_ADESSIVE = u'Tracon-tunnuksella'
-KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = u'Tracon-tunnuksellasi'
-KOMPASSI_ACCOUNT_INFO = u'Tracon-tunnus on uusi, keväällä 2014 käynnistetty projekti, joka yhdistää kaikki Traconin sähköiset palvelut yhden käyttäjätunnuksen ja salasanan taakse. Valitettavasti vanhat Jyrä-, Pora- ja Aniki-tunnukset eivät käy Tracon-tunnuksesta.'
 KOMPASSI_PRIVACY_POLICY_URL = 'http://media.tracon.fi/2014/tracon9_turska_rekisteriseloste.pdf'
 
 AUTHENTICATION_BACKENDS = (
@@ -420,3 +416,10 @@ if 'nexmo' in INSTALLED_APPS:
     NEXMO_PASSWORD = 'password'
     NEXMO_FROM = 'Name or number'
     NEXMO_INBOUND_KEY = '0123456789abcdef'
+
+if 'branding' in INSTALLED_APPS:
+    KOMPASSI_ACCOUNT_BRANDING = u'Kompassi-tunnus'
+    KOMPASSI_ACCOUNT_BRANDING_PARTITIVE = u'Kompassi-tunnusta'
+    KOMPASSI_ACCOUNT_BRANDING_GENITIVE = u'Kompassi-tunnuksen (ent. Tracon-tunnuksen)'
+    KOMPASSI_ACCOUNT_BRANDING_ADESSIVE = u'Kompassi-tunnuksella'
+    KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = u'Kompassi-tunnuksellasi'

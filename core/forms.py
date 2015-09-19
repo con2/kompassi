@@ -44,10 +44,8 @@ class LoginForm(forms.Form):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             'next',
-            Fieldset(u'Kirjaudu sisään {}'.format(settings.KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE),
-                'username',
-                'password',
-            )
+            'username',
+            'password',
         )
 
 
