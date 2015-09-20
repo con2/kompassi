@@ -19,6 +19,7 @@ python-dateutil==2.2
 python-memcached==1.53
 reportlab==3.1.8
 requests-kerberos==0.5
+requests-oauthlib==0.5.0
 requests==2.4.1
 unicodecsv==0.9.4
 XlsxWriter==0.5.7

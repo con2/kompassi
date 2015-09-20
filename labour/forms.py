@@ -65,16 +65,12 @@ class SignupForm(forms.ModelForm):
                 q = q | Q(signup_set=self.instance)
 
         self.fields['job_categories'].queryset = JobCategory.objects.filter(q).distinct().order_by('id')
-        self.fields['work_periods'].queryset = WorkPeriod.objects.filter(event=event).order_by('start_time', 'id')
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Tehtävät',
                 'job_categories'
-            ),
-            Fieldset(u'Työvuorotoiveet',
-                'work_periods'
             ),
         )
 
@@ -88,11 +84,10 @@ class SignupForm(forms.ModelForm):
 
     class Meta:
         model = Signup
-        fields = ('job_categories', 'work_periods')
+        fields = ('job_categories',)
 
         widgets = dict(
             job_categories=forms.CheckboxSelectMultiple,
-            work_periods=forms.CheckboxSelectMultiple,
         )
 
 

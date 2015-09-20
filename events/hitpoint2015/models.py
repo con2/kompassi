@@ -171,8 +171,7 @@ class SignupX(QueryBuilder):
             "surname", "first_name", "nick", "phone", "email", "birth_date"))),
         (u"Sisäiset", add_prefix("signup__", (
             "state", "job_categories_accepted__pk", "notes", "created_at", "updated_at"))),
-        (u"Työvuorotoiveet", "signup__job_categories__pk", "signup__work_periods__pk",
-            "shift_type", "total_work", "construction", "overseer"),
+        (u"Työvuorotoiveet", "signup__job_categories__pk", "shift_type", "total_work", "construction", "overseer"),
         (u"Työtodistus", "want_certificate", "certificate_delivery_address"),
         (u"Lisätiedot", "shirt_size", "special_diet__pk", "special_diet_other",
             "lodging_needs__pk", "prior_experience", "free_text"),

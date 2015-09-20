@@ -696,14 +696,6 @@ class Signup(models.Model, CsvExportMixin):
         related_name='signup_set'
     )
 
-    work_periods = models.ManyToManyField(WorkPeriod,
-        verbose_name=u'Työvuorotoiveet',
-        help_text=u'Valitse kaikki ne ajanjaksot, joina voit työskennellä tapahtumassa. '
-            u'Tämä ei ole lopullinen työvuorosi, vaan työvoimatiimi pyrkii sijoittamaan '
-            u'työvuorosi näille ajoille.',
-        related_name='signup_set'
-    )
-
     notes = models.TextField(
         blank=True,
         verbose_name=u'Käsittelijän merkinnät',
