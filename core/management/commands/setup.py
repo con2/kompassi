@@ -32,6 +32,7 @@ class Command(BaseCommand):
             (('setup_popcultday2015',), dict(test=test)),
             (('setup_yukicon2016',), dict(test=test)),
             (('setup_finncon2016',), dict(test=test)),
+            (('setup_frostbite2016',), dict(test=test)),
         ]
 
         if test:
@@ -39,7 +40,6 @@ class Command(BaseCommand):
                 (('test', 'core', 'labour', 'labour_common_qualifications', 'programme', 'tickets'), dict()),
                 (('behave',), dict()),
             ))
-
 
         for pargs, opts in management_commands:
             call_command(*pargs, **opts)
