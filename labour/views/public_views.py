@@ -2,6 +2,7 @@
 
 import json
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -35,6 +36,19 @@ from ..helpers import labour_event_required
 
 from .view_helpers import initialize_signup_forms
 
+
+def login_related():
+    related = []
+
+    if 'desuprofile_integration' in settings.INSTALLED_APPS:
+        related.extend([
+            'desuprofile_integration_oauth2_login_view',
+            'desuprofile_integration_oauth2_callback_view',
+        ])
+
+    return related
+
+
 # XXX hackish
 def qualifications_related():
     result = []
@@ -66,7 +80,7 @@ def labour_signup_view(request, event, alternative_form_slug=None):
 
     if not request.user.is_authenticated():
         pages = [
-            ('core_login_view', u'Sisäänkirjautuminen'),
+            ('core_login_view', u'Sisäänkirjautuminen', login_related()),
             ('core_registration_view', u'Rekisteröityminen'),
             ('labour_qualifications_view', u'Pätevyydet', qualifications_related()),
             (actual_signup_url, u'Ilmoittautuminen'),
