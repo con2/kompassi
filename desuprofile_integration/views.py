@@ -1,18 +1,21 @@
 # encoding: utf-8
 
 import json
+from datetime import datetime
 
 from django.http import HttpResponse
 from django.views.generic import View
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib import messages
 
 from requests_oauthlib import OAuth2Session
 
-from core.views import login
-from core.utils import create_temporary_password
+from core.models import Person
+from core.views import do_login
+from core.utils import create_temporary_password, get_next
 
 from .models import Connection, ConfirmationCode
 
@@ -60,7 +63,7 @@ class CallbackView(View):
         desuprofile = get_desuprofile(session)
 
         try:
-            connection = DesuprofileConnection.objects.get(id=int(desuprofile['id']))
+            connection = Connection.objects.get(id=int(desuprofile['id']))
         except Connection.DoesNotExist:
             # No Desuprofile connection for this Desuprofile username yet.
             # Create new user or connect to existing one.
@@ -79,7 +82,8 @@ class CallbackView(View):
             return self.respond_with_existing_user(request, desuprofile, user)
 
     def respond_with_new_user(self, request, desuprofile):
-        username = "desuprofile_{id}".format(desuprofile['id'])
+        User = get_user_model()
+        username = "desuprofile_{id}".format(id=desuprofile['id'])
         password = create_temporary_password()
 
         user = User(
@@ -97,7 +101,7 @@ class CallbackView(View):
             surname=desuprofile['last_name'],
             nick=desuprofile['nickname'],
             email=desuprofile['email'],
-            phone_number=desuprofile['phone'],
+            phone=desuprofile['phone'],
             birth_date=datetime.strptime(desuprofile['birth_date'], '%Y-%m-%d').date() if desuprofile.get('birth_date', None) else None,
             notes=u'Luotu Desuprofiilista',
             user=user,
@@ -110,7 +114,7 @@ class CallbackView(View):
             from external_auth.utils import create_user
             create_user(user, password)
 
-        connection = DesuprofileConnection(
+        connection = Connection(
             id=int(desuprofile['id']),
             user=user,
         )
