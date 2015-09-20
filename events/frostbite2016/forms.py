@@ -95,5 +95,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
+            shift_type=u'none',
+            desu_amount=666,
             free_text=u'Syötetty käyttäen vastaavan ilmoittautumislomaketta',
         )
