@@ -2,6 +2,7 @@ Feature: Badges and entry lists
     As a badge helper
     I want to print badges for event workers
 
+    @wip
     Scenario: Badges are created for workers
         Given I am a person
         And there is an event that is accepting applications
@@ -11,6 +12,7 @@ Feature: Badges and entry lists
         And the workforce manager approves my application
         Then I should have a badge of the correct type
 
+    @wip
     Scenario: Badges are created for lecturers
         Given there is an event that has the programme functionality enabled
         And the event has badge types
