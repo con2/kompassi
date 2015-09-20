@@ -1,6 +1,6 @@
 Hei,
 
-Tätä sähköpostiosoitetta käytettiin rekisteröitymään käyttäjäksi {{ settings.TURSKA_INSTALLATION_NAME_ILLATIVE }}.
+Tätä sähköpostiosoitetta käytettiin rekisteröitymään käyttäjäksi {{ settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE }}.
 
 Mikäli rekisteröidyit itse, ole hyvä ja vahvista sähköpostiosoitteesi vierailemalla seuraavassa osoitteessa:
 
@@ -8,4 +8,4 @@ Mikäli rekisteröidyit itse, ole hyvä ja vahvista sähköpostiosoitteesi viera
 
 Ystävällisin terveisin
 --
-{{ settings.TURSKA_INSTALLATION_NAME }} <{{ settings.DEFAULT_FROM_EMAIL }}>
+{{ settings.KOMPASSI_INSTALLATION_NAME }} <{{ settings.DEFAULT_FROM_EMAIL }}>

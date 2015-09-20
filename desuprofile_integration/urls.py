@@ -31,6 +31,6 @@ urlpatterns = patterns('',
     url(
         r'^desuprofile/confirm/(?P<code>[a-f0-9]+)/?$',
         ConfirmationView.as_view(),
-        name='desuprofile_integration_connection_confirmation_view',
+        name='desuprofile_integration_confirmation_view',
     ),
 )

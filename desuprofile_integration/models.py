@@ -3,9 +3,11 @@
 from django.db import models
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.template import RequestContext
 from django.contrib.auth import get_user_model
 
 from core.models import OneTimeCode
+from core.utils import url
 
 
 class Connection(models.Model):
@@ -15,18 +17,15 @@ class Connection(models.Model):
         verbose_name=u'Desuprofiilin numero',
     )
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=u'Käyttäjä')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=u'Käyttäjä', unique=True)
 
-
-class ConfirmationError(RuntimeError):
-    pass
-
+    def __unicode__(self):
+        return self.user.username
 
 class ConfirmationCode(OneTimeCode):
-    desuprofile_json = models.TextField()
+    desuprofile_id = models.IntegerField()
 
-    @property
-    def desuprofile(self):
+    def get_desuprofile(self):
         return json.loads(desuprofile_json)
 
     def render_message_subject(self, request):

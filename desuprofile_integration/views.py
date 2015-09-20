@@ -29,14 +29,17 @@ def get_session(request, **kwargs):
 
 
 def get_desuprofile(oauth2_session):
-    print vars(oauth2_session)
-    print settings.KOMPASSI_DESUPROFILE_API_URL
     response = oauth2_session.get(settings.KOMPASSI_DESUPROFILE_API_URL)
     response.raise_for_status()
     return response.json()
 
 
 class LoginView(View):
+    """
+    This view initiates the OAuth2 login flow when a user clicks the "Log in with Desuprofile" button on the login page.
+    The user is redirected to Desusite to log in there.
+    """
+
     def get(self, request):
         authorization_url, state = get_session(request).authorization_url(settings.KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL)
         request.session['oauth_state'] = state
@@ -45,6 +48,22 @@ class LoginView(View):
 
 
 class CallbackView(View):
+    """
+    The user, having requested login via Desuprofile to Kompassi, has visited the Desusite and logged in there, and
+    now they are redirected back to Kompassi with an authorization token. The token is exchanged into an access token
+    and the access token is used to retrieve the Desuprofile information for the user.
+
+    There are three possible paths we might take here:
+
+    1. A Kompassi account with a linked Desuprofile already exists. This user account is logged in.
+
+    2. No Kompassi account is linked to this Desuprofile, and no Kompassi account matches the Desuprofile by email address.
+       A new Kompassi account is created and logged in.
+
+    3. No Kompassi account is linked to this Desuprofile, but there is a Kompassi account that matches by email address.
+       E-mail confirmation is requested before linking the accounts.
+    """
+
     def get(self, request):
         if 'oauth_state' not in request.session or 'oauth_next' not in request.session:
             return HttpResponse('OAuth2 callback accessed outside OAuth2 authorization flow', status=400)
@@ -65,10 +84,12 @@ class CallbackView(View):
         try:
             connection = Connection.objects.get(id=int(desuprofile['id']))
         except Connection.DoesNotExist:
+            # Cases 2 and 3
             # No Desuprofile connection for this Desuprofile username yet.
             # Create new user or connect to existing one.
             return self.respond_with_new_connection(request, desuprofile)
         else:
+            # Case 1
             return respond_with_connection(request, connection)
 
     def respond_with_new_connection(self, request, desuprofile):
@@ -77,8 +98,10 @@ class CallbackView(View):
         try:
             user = User.objects.get(email=desuprofile['email'])
         except User.DoesNotExist:
+            # Case 3
             return self.respond_with_new_user(request, desuprofile)
         else:
+            # Case 2
             return self.respond_with_existing_user(request, desuprofile, user)
 
     def respond_with_new_user(self, request, desuprofile):
@@ -125,19 +148,11 @@ class CallbackView(View):
         return respond_with_connection(request, connection)
 
     def respond_with_existing_user(self, request, desuprofile, user):
-        desuprofile_json = json.dumps(desuprofile)
-
         code, created = ConfirmationCode.objects.get_or_create(
             person=user.person,
             state='valid',
-            defaults=dict(
-                desuprofile_json=desuprofile_json,
-            ),
+            desuprofile_id=int(desuprofile['id']),
         )
-
-        if not created:
-            code.desuprofile_json = desuprofile_json
-            code.save()
 
         code.send(request)
 
@@ -152,15 +167,34 @@ def respond_with_connection(request, connection):
 
 
 class ConfirmationView(View):
+    """
+    This view is used when a user has requested login via Desuprofiili and there is already a Kompassi user account
+    by the same email address. A confirmation code has been sent to the registered email address and the user visits
+    this view to redeem the confirmation code and link the accounts.
+    """
+
     def get(self, request, code):
-        code = get_object_or_404(ConfirmationCode, code)
-
         try:
-            connection = code.confirm(request)
-        except ConfirmationError as e:
-            messages.error(request, e.args[0])
-            return respond_with_connection(connection)
-        else:
-            messages.success(request, u'Desuprofiilisi on liitetty Kompassi-tunnukseesi. Voit nyt kirjautua sisään Kompassiin käyttäen Desuprofiiliasi.')
+            code = ConfirmationCode.objects.get(code=code, state='valid')
+        except ConfirmationCode.DoesNotExist:
+            messages.error(request, u'Vahvistuskoodi ei kelpaa.')
+            return redirect('core_frontpage_view')
 
-            return respond_with_connection(request, connection)
+        code.mark_used()
+
+        if Connection.objects.filter(user=code.person.user).exists():
+            messages.error(request, u'Kompassi-tunnukseesi on jo liitetty Desuprofiili. Jos haluat vaihtaa '
+                u'Kompassi-tunnukseesi liitettyä Desuprofiilia, ota yhteyttä ylläpitoon: {email}'.format(
+                    email=settings.DEFAULT_FROM_EMAIL,
+                )
+            )
+            return redirect('core_frontpage_view')
+
+        connection = Connection(
+            id=code.desuprofile_id,
+            user=code.person.user,
+        )
+        connection.save()
+
+        messages.success(request, u'Desuprofiilisi on liitetty Kompassi-tunnukseesi. Voit nyt kirjautua sisään Kompassiin käyttäen Desuprofiiliasi.')
+        return respond_with_connection(request, connection)

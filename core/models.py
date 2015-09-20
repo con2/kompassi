@@ -567,6 +567,7 @@ class OneTimeCode(models.Model):
         assert self.state == 'valid'
 
         self.used_at = timezone.now()
+        self.state = 'used'
         self.save()
 
     class Meta:
