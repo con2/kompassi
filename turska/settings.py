@@ -193,6 +193,7 @@ INSTALLED_APPS = (
     'events.popcultday2015',
     'events.yukicon2016',
     'events.finncon2016',
+    'events.frostbite2016',
 )
 
 LOGGING = {
