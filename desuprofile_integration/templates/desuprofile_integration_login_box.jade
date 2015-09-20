@@ -7,4 +7,4 @@
       p.text-muted: small Kirjautumalla sisään Desuprofiililla annat <strong>Kehittyvien conien Suomi ry</strong>:lle luvan luovuttaa <strong>Tracon ry</strong>:lle <abbr title="käyttäjänimi, etunimi, sukunimi, nick, sähköpostiosoite ja puhelinnumero">Desuprofiiliisi liitetyt henkilö- ja yhteystiedot</abbr> ja hyväksyt niiden käytön <a href='{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}' target='_blank'>{{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} rekisteriselosteen</a> mukaisesti.
     .panel-footer.clearfix
       .pull-right
-        a(href).btn.btn-success Kirjaudu sisään Desuprofiililla
+        a(href='{% url "desuprofile_integration_oauth2_login_view" %}').btn.btn-success Kirjaudu sisään Desuprofiililla

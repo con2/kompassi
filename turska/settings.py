@@ -18,6 +18,27 @@ MKPATH = mkpath
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+if DEBUG:
+    # XXX Monkey patch is_secure_transport to allow development over insecure HTTP
+
+    from warnings import warn
+    warn(UserWarning("Monkey_patching oauthlib.oauth2:is_secure_transport to allow OAuth2 over HTTP. Never do this in production!"))
+
+    fake_is_secure_transport = lambda token_url: True
+
+    import oauthlib.oauth2
+    import requests_oauthlib.oauth2_session
+    import oauthlib.oauth2.rfc6749.parameters
+    import oauthlib.oauth2.rfc6749.clients.base
+
+    for module in [
+        oauthlib.oauth2,
+        requests_oauthlib.oauth2_session,
+        oauthlib.oauth2.rfc6749.parameters,
+        oauthlib.oauth2.rfc6749.clients.base,
+    ]:
+        module.is_secure_transport = fake_is_secure_transport
+
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_URLS_REGEX = r'^/(api|oauth2)/.*$'
 CORS_ORIGIN_WHITELIST = (
@@ -266,7 +287,7 @@ KOMPASSI_PASSWORD_MIN_CLASSES = 3
 
 # Don't actually send email
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
-DEFAULT_FROM_EMAIL = 'turska@tracon.fi'
+DEFAULT_FROM_EMAIL = 'suunnistajat@kompassi.eu'
 
 
 if 'external_auth' in INSTALLED_APPS:
@@ -423,3 +444,12 @@ if 'branding' in INSTALLED_APPS:
     KOMPASSI_ACCOUNT_BRANDING_GENITIVE = u'Kompassi-tunnuksen (ent. Tracon-tunnuksen)'
     KOMPASSI_ACCOUNT_BRANDING_ADESSIVE = u'Kompassi-tunnuksella'
     KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = u'Kompassi-tunnuksellasi'
+
+if 'desuprofile_integration' in INSTALLED_APPS:
+    KOMPASSI_DESUPROFILE_HOST = 'https://desucon.fi'
+    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID = 'kompassi_insecure_client_id'
+    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET = 'kompassi_insecure_client_secret'
+    KOMPASSI_DESUPROFILE_OAUTH2_SCOPE = ['read']
+    KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/'.format(**locals())
+    KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/'.format(**locals())
+    KOMPASSI_DESUPROFILE_API_URL = '{KOMPASSI_DESUPROFILE_HOST}/api/user/me/'.format(**locals())

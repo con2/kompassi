@@ -2,6 +2,7 @@
 
 from functools import wraps
 from itertools import groupby
+from random import randint
 from urllib import urlencode
 import json
 import re
@@ -479,3 +480,7 @@ def groups_of_n(iterable, n):
 
 def groupby_strict(*args, **kwargs):
     return [(key, list(values)) for (key, values) in groupby(*args, **kwargs)]
+
+
+def create_temporary_password():
+    return "".join(chr(randint(ord('0'), ord('z'))) for _ in range(64))

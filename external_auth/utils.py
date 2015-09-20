@@ -1,16 +1,12 @@
 # encoding: utf-8
 
-from random import randint
-
 import re
 from django.conf import settings
 from django.forms import ValidationError
 
+from core.utils import create_temporary_password
+
 from . import ipa
-
-
-def create_temporary_password():
-    return "".join(chr(randint(ord('0'), ord('z'))) for _ in range(64))
 
 
 def get_user_dn(uid):

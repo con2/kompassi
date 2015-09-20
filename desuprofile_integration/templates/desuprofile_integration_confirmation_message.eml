@@ -1,0 +1,23 @@
+Hyvä vastaanottaja,
+
+Joku, toivottavasti sinä, on yrittänyt kirjautua Kompassiin sisään tähän
+sähköpostiosoitteeseen liitetyllä Desuprofiilille.
+
+Koska tähän sähköpostiosoitteeseen on jo liitetty Kompassi-tunnus, pyydämme
+vahvistamaan Desuprofiilin liittämisen Kompassi-tunnukseen klikkaamalla alla
+olevaa linkkiä:
+
+{{ link|safe }}
+
+Vahvistamisen jälkeen Kompassi-tunnukselle pystyy kirjautumaan
+Desuprofiililla ilman eri vahvistusta. Muistathan kirjautua ulos myös
+Desuprofiilistasi käyttäessäsi Kompassia julkisilla tietokoneilla!
+
+Mikäli et itse yrittänyt yhdistää Desuprofiiliasi Kompassi-tunnukseesi, on
+mahdollista että joku muu on saanut pääsyn Desuprofiiliisi. Ota tässä
+tapauksessa viipymättä yhteyttä Desuconin ylläpitoon osoitteella
+<kyber@desucon.fi>.
+
+Ystävällisin terveisin
+--
+{{ settings.KOMPASSI_INSTALLATION_NAME }} <{{ settings.DEFAULT_FROM_EMAIL }}>

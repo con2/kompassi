@@ -133,7 +133,7 @@ def core_login_view(request):
     return render(request, 'core_login_view.jade', vars)
 
 
-def do_login(request, user, password, next='core_frontpage_view'):
+def do_login(request, user, password=None, next='core_frontpage_view'):
     """
     Performs Django login, possible Crowd login and required post-login steps.
 
