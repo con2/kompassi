@@ -17,11 +17,6 @@ block content
               a.btn.btn-link(href='{% url "core_password_reset_request_view" %}') Salasana unohtunut
               input.btn.btn-primary(type='submit', name='submit', value='Kirjaudu sisään')
 
-    if 'desuprofile_integration' in settings.INSTALLED_APPS
-      include desuprofile_integration_login_box.jade
-
-  .row
-    .col-md-6
       .panel.panel-default
         .panel-heading: strong Luo itsellesi {{ settings.KOMPASSI_ACCOUNT_BRANDING }}
         .panel-body
@@ -30,3 +25,7 @@ block content
         .panel-footer.clearfix
           .pull-right
             a(href='{% url "core_registration_view" %}?next={{ next }}').btn.btn-success Rekisteröidy
+
+    if 'desuprofile_integration' in settings.INSTALLED_APPS
+      include desuprofile_integration_login_box.jade
+
