@@ -45,4 +45,4 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
-For third-party component licenses, see [LICENSE](/tracon/kompassi/blob/master/LICENSE.md).
+For third-party component licenses, see [LICENSE](https://github.com/tracon/kompassi/blob/master/LICENSE.md).
