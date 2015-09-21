@@ -44,6 +44,7 @@ def login_related():
         related.extend([
             'desuprofile_integration_oauth2_login_view',
             'desuprofile_integration_oauth2_callback_view',
+            'desuprofile_integration_confirmation_required_view',
         ])
 
     return related
@@ -80,10 +81,9 @@ def labour_signup_view(request, event, alternative_form_slug=None):
 
     if not request.user.is_authenticated():
         pages = [
-            ('core_login_view', u'Sisäänkirjautuminen', login_related()),
-            ('core_registration_view', u'Rekisteröityminen'),
-            ('labour_qualifications_view', u'Pätevyydet', qualifications_related()),
-            (actual_signup_url, u'Ilmoittautuminen'),
+            ('core_login_view', u'Kirjaudu tai luo tunnus', login_related()),
+            ('labour_qualifications_view', u'Ilmoita pätevyytesi', qualifications_related()),
+            (actual_signup_url, u'Ilmoittaudu tapahtumaan'),
         ]
 
         page_wizard_init(request, pages)
@@ -93,9 +93,9 @@ def labour_signup_view(request, event, alternative_form_slug=None):
         person = request.user.person
     except Person.DoesNotExist:
         pages = [
-            ('core_personify_view', u'Perustiedot'),
-            ('labour_qualifications_view', u'Pätevyydet', qualifications_related()),
-            (actual_signup_url, u'Ilmoittautuminen'),
+            ('core_personify_view', u'Täydennä yhteystietosi'),
+            ('labour_qualifications_view', u'Ilmoita pätevyytesi', qualifications_related()),
+            (actual_signup_url, u'Ilmoittaudu tapahtumaan'),
         ]
 
         page_wizard_init(request, pages)

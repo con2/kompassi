@@ -1,3 +1,12 @@
+# encoding: utf-8
+
+NEVER_BLOW_PAGE_WIZARD_PREFIXES = [
+    # we have addresses like /desuprofile/confirm/475712413a0ddc3c7a57c6721652b75449bf3c89
+    # that should not blow the page wizard when used within a signup page wizard flow
+    '/desuprofile/confirm/',
+]
+
+
 class PageWizardMiddleware(object):
     """
     MIDDLEWARE_CLASSES = (
@@ -17,6 +26,8 @@ class PageWizardMiddleware(object):
         elif request.method != 'GET':
             pass
         elif request.path in related:
+            pass
+        elif any(request.path.startswith(prefix) for prefix in NEVER_BLOW_PAGE_WIZARD_PREFIXES):
             pass
         else:
             from core.utils import page_wizard_clear

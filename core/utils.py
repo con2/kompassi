@@ -176,7 +176,7 @@ def login_redirect(request, view='core_login_view'):
     return HttpResponseRedirect("{path}?{query}".format(**locals()))
 
 
-def get_next(request, default='core_frontpage_view'):
+def get_next(request, default='/'):
     if request.method == 'GET':
         next = request.GET.get('next', None)
     elif request.method == 'POST':
@@ -187,7 +187,7 @@ def get_next(request, default='core_frontpage_view'):
     return next if next else default
 
 
-def next_redirect(request, default='core_frontpage_view'):
+def next_redirect(request, default='/'):
     next = get_next(request, default)
     return redirect(next)
 

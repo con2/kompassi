@@ -24,6 +24,7 @@ class Connection(models.Model):
 
 class ConfirmationCode(OneTimeCode):
     desuprofile_id = models.IntegerField()
+    next_url = models.CharField(max_length=1023, blank=True, default='')
 
     def get_desuprofile(self):
         return json.loads(desuprofile_json)

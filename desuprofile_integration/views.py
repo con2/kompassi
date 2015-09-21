@@ -87,24 +87,24 @@ class CallbackView(View):
             # Cases 2 and 3
             # No Desuprofile connection for this Desuprofile username yet.
             # Create new user or connect to existing one.
-            return self.respond_with_new_connection(request, desuprofile)
+            return self.respond_with_new_connection(request, next_url, desuprofile)
         else:
             # Case 1
-            return respond_with_connection(request, connection)
+            return respond_with_connection(request, next_url, connection)
 
-    def respond_with_new_connection(self, request, desuprofile):
+    def respond_with_new_connection(self, request, next_url, desuprofile):
         User = get_user_model()
 
         try:
             user = User.objects.get(email=desuprofile['email'])
         except User.DoesNotExist:
             # Case 3
-            return self.respond_with_new_user(request, desuprofile)
+            return self.respond_with_new_user(request, next_url, desuprofile)
         else:
             # Case 2
-            return self.respond_with_existing_user(request, desuprofile, user)
+            return self.respond_with_existing_user(request, next_url, desuprofile, user)
 
-    def respond_with_new_user(self, request, desuprofile):
+    def respond_with_new_user(self, request, next_url, desuprofile):
         User = get_user_model()
         username = "desuprofile_{id}".format(id=desuprofile['id'])
         password = create_temporary_password()
@@ -145,13 +145,14 @@ class CallbackView(View):
 
         messages.success(request, u'Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!')
 
-        return respond_with_connection(request, connection)
+        return respond_with_connection(request, next_url, connection)
 
-    def respond_with_existing_user(self, request, desuprofile, user):
+    def respond_with_existing_user(self, request, next_url, desuprofile, user):
         code, created = ConfirmationCode.objects.get_or_create(
             person=user.person,
             state='valid',
             desuprofile_id=int(desuprofile['id']),
+            next_url=next_url,
         )
 
         code.send(request)
@@ -159,11 +160,10 @@ class CallbackView(View):
         return redirect('desuprofile_integration_confirmation_required_view')
 
 
-def respond_with_connection(request, connection):
+def respond_with_connection(request, next_url, connection):
     user = connection.user
     user.backend = 'django.contrib.auth.backends.ModelBackend'
-    next = get_next(request, 'core_frontpage_view')
-    return do_login(request, user, next=next)
+    return do_login(request, user, next=next_url)
 
 
 class ConfirmationView(View):
@@ -196,5 +196,5 @@ class ConfirmationView(View):
         )
         connection.save()
 
-        messages.success(request, u'Desuprofiilisi on liitetty Kompassi-tunnukseesi. Voit nyt kirjautua sisään Kompassiin käyttäen Desuprofiiliasi.')
-        return respond_with_connection(request, connection)
+        messages.success(request, u'Desuprofiilisi on liitetty Kompassi-tunnukseesi ja sinut on kirjattu sisään. Jatkossa voit kirjautua sisään Kompassiin käyttäen Desuprofiiliasi.')
+        return respond_with_connection(request, code.next_url, connection)
