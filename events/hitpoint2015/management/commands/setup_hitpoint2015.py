@@ -46,8 +46,8 @@ class Setup(object):
             homepage_url='http://2015.hitpoint.tracon.fi',
             organization_name='Tracon ry',
             organization_url='http://ry.tracon.fi',
-            start_time=None, # datetime(2015, 11, 21, 10, 0, tzinfo=self.tz),
-            end_time=None, # datetime(2015, 11, 22, 18, 0, tzinfo=self.tz),
+            start_time=datetime(2015, 11, 28, 12, 0, tzinfo=self.tz),
+            end_time=datetime(2015, 11, 29, 18, 0, tzinfo=self.tz),
             venue=self.venue,
         ))
 
@@ -112,7 +112,7 @@ class Setup(object):
 
         for pc_name, pc_slug, pc_app_label, pc_afterparty in [
             (u'Conitea', 'conitea', 'labour', True),
-            (u'Ylivänkäri', 'ylivankari', 'labour', True),
+            # (u'Ylivänkäri', 'ylivankari', 'labour', True),
             (u'Työvoima', 'tyovoima', 'labour', True),
             (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme', True),
             (u'Guest of Honour', 'goh', 'programme', False), # tervetullut muttei kutsuta automaattiviestillä
