@@ -398,25 +398,33 @@ class Person(models.Model):
 
         self.setup_code(request, PasswordResetToken, ip_address=get_real_ip(request) or '')
 
-    def verify_email(self, code):
-        try:
-            code = EmailVerificationToken.objects.get(code=code)
-        except EmailVerificationToken.DoesNotExist, e:
-            raise EmailVerificationError('invalid_code')
-
-        if code.person != self:
-            raise EmailVerificationError('wrong_person')
-        elif code.state != 'valid':
-            raise EmailVerificationError('code_not_valid')
-        elif code.email != self.email:
-            raise EmailVerificationError('email_changed')
-        elif self.is_email_verified:
+    def verify_email(self, code=None):
+        if self.is_email_verified:
             raise EmailVerificationError('already_verified')
-        else:
-            code.mark_used()
 
-            self.email_verified_at = timezone.now()
-            self.save()
+        if isinstance(code, basestring):
+            try:
+                code = EmailVerificationToken.objects.get(code=code)
+            except EmailVerificationToken.DoesNotExist, e:
+                raise EmailVerificationError('invalid_code')
+
+        if code:
+            # Verify with a single code. The code needs to be checked.
+
+            if code.person != self:
+                raise EmailVerificationError('wrong_person')
+            elif code.state != 'valid':
+                raise EmailVerificationError('code_not_valid')
+            elif code.email != self.email:
+                raise EmailVerificationError('email_changed')
+            else:
+                code.mark_used()
+        else:
+            # Forcibly verify, regardless of codes.
+            EmailVerificationToken.objects.filter(person=self, state='valid').update(state='revoked')
+
+        self.email_verified_at = timezone.now()
+        self.save()
 
     @property
     def is_first_name_visible(self):

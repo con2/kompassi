@@ -10,6 +10,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib import messages
+from django.utils.timezone import now
 
 from requests_oauthlib import OAuth2Session
 
@@ -195,6 +196,10 @@ class ConfirmationView(View):
             user=code.person.user,
         )
         connection.save()
+
+        # We just effectively verified their email, so reflect that in the Person.
+        if not code.person.is_email_verified:
+            code.person.verify_email()
 
         messages.success(request, u'Desuprofiilisi on liitetty Kompassi-tunnukseesi ja sinut on kirjattu sisään. Jatkossa voit kirjautua sisään Kompassiin käyttäen Desuprofiiliasi.')
         return respond_with_connection(request, code.next_url, connection)
