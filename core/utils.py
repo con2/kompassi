@@ -5,6 +5,7 @@ from itertools import groupby
 from random import randint
 from urllib import urlencode
 import json
+import sys
 import re
 
 from django import forms
@@ -145,28 +146,41 @@ def format_datetime(datetime):
 def format_date_range(start_date, end_date):
     # XXX Finnish-specific
 
+    range_format = u"{start_date}–{end_date}"
+    if sys.platform == "win32":
+        # `strftime` on Windows does not support `%-` formats,
+        # for some unfathomable reason.
+        full_format = "%d.%m.%Y"
+        dm_format = "%d.%m."
+        d_format = "%d."
+    else:
+        full_format = "%-d.%-m.%Y"
+        dm_format = "%-d.%-m."
+        d_format = "%-d."
+    
     if start_date.year == end_date.year:
         if start_date.month == end_date.month:
             if start_date.day == end_date.day:
                 # Y, M, D match
-                return start_date.strftime('%-d.%-m.%Y')
+                return start_date.strftime(full_format)
             else:
                 # Y, M match, D differ
-                return u"{start_date}–{end_date}".format(
-                    start_date=start_date.strftime('%-d.'),
-                    end_date=end_date.strftime('%-d.%-m.%Y'),
+
+                return range_format.format(
+                    start_date=start_date.strftime(d_format),
+                    end_date=end_date.strftime(full_format),
                 )
         else:
             # Y match, M, D differ
-            return u"{start_date}–{end_date}".format(
-                start_date=start_date.strftime('%-d.%-m.'),
-                end_date=end_date.strftime('%-d.%-m.%Y')
+            return range_format.format(
+                start_date=start_date.strftime(dm_format),
+                end_date=end_date.strftime(full_format)
             )
     else:
         # Y, M, D differ
-        return u"{start_date}–{end_date}".format(
-            start_date=start_date.strftime('%-d.%-m.%Y'),
-            end_date=end_date.strftime('%-d.%-m.%Y'),
+        return range_format.format(
+            start_date=start_date.strftime(full_format),
+            end_date=end_date.strftime(full_format),
         )
 
 
