@@ -1,10 +1,14 @@
 # encoding: utf-8
 
+from collections import namedtuple
+
 from django.db import models
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.contrib.auth import get_user_model
+
+from jsonschema import validate
 
 from core.models import OneTimeCode
 from core.utils import url
@@ -22,6 +26,7 @@ class Connection(models.Model):
     def __unicode__(self):
         return self.user.username
 
+
 class ConfirmationCode(OneTimeCode):
     desuprofile_id = models.IntegerField()
     next_url = models.CharField(max_length=1023, blank=True, default='')
@@ -38,3 +43,26 @@ class ConfirmationCode(OneTimeCode):
         )
 
         return render_to_string('desuprofile_integration_confirmation_message.eml', vars, context_instance=RequestContext(request, {}))
+
+
+DesuprofileBase = namedtuple('Desuprofile', 'id first_name last_name nickname email phone birth_date')
+class Desuprofile(DesuprofileBase):
+    schema = dict(
+        type='object',
+        properties=dict(
+            id=dict(type='number'),
+            first_name=dict(type='string', minLength=1),
+            last_name=dict(type='string', minLength=1),
+            nickname=dict(type='string', optional=True),
+            email=dict(type='string', pattern=r'.+@.+\..+'),
+            phone=dict(type='string'),
+            birth_date=dict(type='string', pattern=r'\d{4}-\d{1,2}-\d{1,2}'),
+        ),
+        required=['id', 'first_name', 'last_name', 'email'],
+    )
+
+    @classmethod
+    def from_dict(cls, d):
+        validate(d, cls.schema)
+        attrs = [d.get(key, u'') for key in cls._fields]
+        return cls(*attrs)

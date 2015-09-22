@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import json
+import logging
 from datetime import datetime
 
 from django.http import HttpResponse
@@ -12,13 +13,17 @@ from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib import messages
 from django.utils.timezone import now
 
+from jsonschema import ValidationError
 from requests_oauthlib import OAuth2Session
 
 from core.models import Person
 from core.views import do_login
 from core.utils import create_temporary_password, get_next
 
-from .models import Connection, ConfirmationCode
+from .models import Connection, ConfirmationCode, Desuprofile
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_session(request, **kwargs):
@@ -32,7 +37,7 @@ def get_session(request, **kwargs):
 def get_desuprofile(oauth2_session):
     response = oauth2_session.get(settings.KOMPASSI_DESUPROFILE_API_URL)
     response.raise_for_status()
-    return response.json()
+    return Desuprofile.from_dict(response.json())
 
 
 class LoginView(View):
@@ -80,10 +85,17 @@ class CallbackView(View):
         del request.session['oauth_state']
         del request.session['oauth_next']
 
-        desuprofile = get_desuprofile(session)
+        try:
+            desuprofile = get_desuprofile(session)
+        except ValidationError:
+            logging.exception('Desuprofile failed validation')
+            messages.error(request, u'Etunimi, sukunimi ja sähköpostiosoite ovat Kompassin kannalta välttämättömiä '
+                u'kenttiä Desuprofiilissa. Kirjaudu <a href="https://desucon.fi/desuprofiili" target="_blank">Desuprofiiliisi</a> '
+                u'ja korjaa nämä kentät, ja yritä sitten uudelleen.')
+            return redirect('core_login_view')
 
         try:
-            connection = Connection.objects.get(id=int(desuprofile['id']))
+            connection = Connection.objects.get(id=int(desuprofile.id))
         except Connection.DoesNotExist:
             # Cases 2 and 3
             # No Desuprofile connection for this Desuprofile username yet.
@@ -97,7 +109,7 @@ class CallbackView(View):
         User = get_user_model()
 
         try:
-            user = User.objects.get(email=desuprofile['email'])
+            user = User.objects.get(email=desuprofile.email)
         except User.DoesNotExist:
             # Case 3
             return self.respond_with_new_user(request, next_url, desuprofile)
@@ -107,7 +119,7 @@ class CallbackView(View):
 
     def respond_with_new_user(self, request, next_url, desuprofile):
         User = get_user_model()
-        username = "desuprofile_{id}".format(id=desuprofile['id'])
+        username = "desuprofile_{id}".format(id=desuprofile.id)
         password = create_temporary_password()
 
         user = User(
@@ -121,12 +133,12 @@ class CallbackView(View):
         user.save()
 
         person = Person(
-            first_name=desuprofile['first_name'],
-            surname=desuprofile['last_name'],
-            nick=desuprofile['nickname'],
-            email=desuprofile['email'],
-            phone=desuprofile['phone'],
-            birth_date=datetime.strptime(desuprofile['birth_date'], '%Y-%m-%d').date() if desuprofile.get('birth_date', None) else None,
+            first_name=desuprofile.first_name,
+            surname=desuprofile.last_name,
+            nick=desuprofile.nickname,
+            email=desuprofile.email,
+            phone=desuprofile.phone,
+            birth_date=datetime.strptime(desuprofile.birth_date, '%Y-%m-%d').date() if desuprofile.birth_date else None,
             notes=u'Luotu Desuprofiilista',
             user=user,
         )
@@ -139,7 +151,7 @@ class CallbackView(View):
             create_user(user, password)
 
         connection = Connection(
-            id=int(desuprofile['id']),
+            id=int(desuprofile.id),
             user=user,
         )
         connection.save()
@@ -152,7 +164,7 @@ class CallbackView(View):
         code, created = ConfirmationCode.objects.get_or_create(
             person=user.person,
             state='valid',
-            desuprofile_id=int(desuprofile['id']),
+            desuprofile_id=int(desuprofile.id),
             next_url=next_url,
         )
 
