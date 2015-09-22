@@ -8,7 +8,7 @@
     Copyright © 2013 Esa Ollitervo
     Copyright © 2014 Pekka Wallendahl
     Copyright © 2014-2015 Jyrki Launonen
-    Copyright © 2015 Miika Ojamo, Santeri Hiltunen
+    Copyright © 2015 Miika Ojamo, Santeri Hiltunen, Aarni Koskela
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
