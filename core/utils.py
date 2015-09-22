@@ -474,8 +474,7 @@ def event_meta_property(app_label, code_path):
 
 def pick_attrs(obj, *attr_names, **extra_attrs):
     return dict(
-        (attr_name, getattr(obj, attr_name))
-        for attr_name in attr_names,
+        ((attr_name, getattr(obj, attr_name)) for attr_name in attr_names),
         **extra_attrs
     )
 
