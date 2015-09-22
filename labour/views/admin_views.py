@@ -13,6 +13,7 @@ from django.views.decorators.http import require_http_methods, require_GET
 from django.utils import timezone
 
 from core.csv_export import csv_response
+from core.sort_and_filter import Filter, Sorter
 from core.models import Event, Person
 from core.utils import initialize_form, url, json_response, render_string
 
@@ -123,27 +124,19 @@ def labour_admin_signup_view(request, vars, event, person_id):
 def labour_admin_signups_view(request, vars, event):
     signups = event.signup_set.all()
 
-    job_category_filter = request.GET.get('job_category', None)
-    job_category_filters = [(jc, jc.slug == job_category_filter) for jc in event.jobcategory_set.all()]
-    if job_category_filter:
-        signups = signups.filter(job_categories__slug=job_category_filter)
+    job_categories = event.jobcategory_set.all()
 
-
-    job_category_accepted_filter = request.GET.get('job_category_accepted', None)
-    job_category_accepted_filters = [(jc, jc.slug == job_category_accepted_filter) for jc in event.jobcategory_set.all()]
-    if job_category_accepted_filter:
-        signups = signups.filter(job_categories_accepted__slug=job_category_accepted_filter)
-
-    # state_filter = request.GET.get('state', None)
-    # if state_filter:
-    #     signups = signups.filter
+    job_category_filters = Filter(request, "job_category").add_objects("job_categories__slug", job_categories)
+    signups = job_category_filters.filter_queryset(signups)
+    job_category_accepted_filters = Filter(request, "job_category_accepted").add_objects("job_categories_accepted__slug", job_categories)
+    signups = job_category_accepted_filters.filter_queryset(signups)
 
     signups = signups.order_by('person__surname', 'person__first_name')
-
+    
     vars.update(
         signups=signups,
         job_category_filters=job_category_filters,
-        job_category_accepted_filters=job_category_accepted_filters
+        job_category_accepted_filters=job_category_accepted_filters,
     )
 
     return render(request, 'labour_admin_signups_view.jade', vars)
