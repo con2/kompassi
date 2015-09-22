@@ -2,6 +2,13 @@
 from django.conf import settings
 from django.core.management import call_command, get_commands
 from django.core.management.base import BaseCommand, make_option
+from django.db.transaction import atomic
+from contextlib import contextmanager
+
+
+@contextmanager
+def noop_context():
+    yield
 
 
 class Command(BaseCommand):
@@ -40,4 +47,6 @@ class Command(BaseCommand):
             ))
 
         for pargs, opts in management_commands:
-            call_command(*pargs, **opts)
+            print "** Running:", pargs[0]
+            with (atomic() if pargs[0].startswith("setup") else noop_context()):
+                call_command(*pargs, **opts)
