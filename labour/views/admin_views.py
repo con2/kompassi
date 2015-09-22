@@ -19,6 +19,7 @@ from core.utils import initialize_form, url, json_response, render_string
 
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
 from ..helpers import labour_admin_required
+from ..utils import SignupStateFilter
 from ..models import (
     JobCategory,
     LabourEventMeta,
@@ -131,12 +132,27 @@ def labour_admin_signups_view(request, vars, event):
     job_category_accepted_filters = Filter(request, "job_category_accepted").add_objects("job_categories_accepted__slug", job_categories)
     signups = job_category_accepted_filters.filter_queryset(signups)
 
-    signups = signups.order_by('person__surname', 'person__first_name')
-    
+    sorter = Sorter(request, "sort")
+    sorter.add("name", name=u'Sukunimi, Etunimi', definition=('person__surname', 'person__first_name'))
+    sorter.add("newest", name=u'Uusin ensin', definition=('-created_at',))
+    sorter.add("oldest", name=u'Vanhin ensin', definition=('created_at',))
+    signups = sorter.order_queryset(signups)
+
+    # Must be done after sorting, since `SignupStateFilter` doesn't currently operate in the database
+    state_filter = SignupStateFilter(request, "state")
+    state_filter.add_state("new", "Haettu")
+    state_filter.add_state("accepted", "Odottaa vuoroja")
+    state_filter.add_state("finished", "Vuorot lähetetty")
+    state_filter.add_state("complained", "Reklamoitu")
+    state_filter.add_state("rejected", "Hylätty")
+    signups = state_filter.filter_queryset(signups)
+
     vars.update(
         signups=signups,
         job_category_filters=job_category_filters,
         job_category_accepted_filters=job_category_accepted_filters,
+        state_filter=state_filter,
+        sorter=sorter
     )
 
     return render(request, 'labour_admin_signups_view.jade', vars)
