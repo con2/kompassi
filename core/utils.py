@@ -497,3 +497,28 @@ def groupby_strict(*args, **kwargs):
 
 def create_temporary_password():
     return "".join(chr(randint(ord('0'), ord('z'))) for _ in range(64))
+
+
+def mutate_query_params(request, mutations):
+    """
+    Return a mutated version of the query string of the request.
+
+    The values of the `mutations` dict are interpreted thus:
+
+    * `None`, `False`: Remove the key.
+    * Any other value: Replace with this value.
+
+    :param request: A HTTP request.
+    :type request: django.http.HttpRequest
+    :param mutations: A mutation dict.
+    :type mutations: dict[str, object]
+    :return: query string
+    """
+
+    new_qs = request.GET.copy()
+    for key, value in mutations.items():
+        if value in (None, False):
+            new_qs.pop(key, None)
+        else:
+            new_qs[key] = value
+    return new_qs.urlencode()
