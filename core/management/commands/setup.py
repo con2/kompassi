@@ -1,6 +1,6 @@
 # encoding: utf-8
-
-from django.core.management import call_command
+from django.conf import settings
+from django.core.management import call_command, get_commands
 from django.core.management.base import BaseCommand, make_option
 
 
@@ -20,6 +20,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         test = options['test']
 
+        commands = get_commands()
+        events = [app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("events.")]
+        event_commands = [command for command in ("setup_%s" % event for event in events) if command in commands]
+
         management_commands = [
             (('collectstatic',), dict(interactive=False)),
             (('migrate',), dict()),
@@ -27,13 +31,7 @@ class Command(BaseCommand):
             (('setup_labour_common_qualifications',), dict(test=test)),
             (('setup_api_v2',), dict(test=test)),
             (('setup_access',), dict(test=test)),
-            (('setup_traconx',), dict(test=test)),
-            (('setup_hitpoint2015',), dict(test=test)),
-            (('setup_popcultday2015',), dict(test=test)),
-            (('setup_yukicon2016',), dict(test=test)),
-            (('setup_finncon2016',), dict(test=test)),
-            (('setup_frostbite2016',), dict(test=test)),
-        ]
+        ] + [((command,), dict(test=test)) for command in event_commands]
 
         if test:
             management_commands.extend((
