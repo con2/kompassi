@@ -23,7 +23,7 @@ from labour.models import (
 )
 from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role, TimeBlock, SpecialStartTime, View, Tag
 from tickets.models import TicketsEventMeta, LimitGroup, Product
-from badges.models import BadgesEventMeta, Template
+from badges.models import BadgesEventMeta
 
 from ...models import SignupExtra, SpecialDiet, Night
 
@@ -544,23 +544,24 @@ class Command(BaseCommand):
             )
         )
 
-        for template_name in [
-            u'Conitea',
-            u'Ylivänkäri',
-            u'Työvoima',
-            u'Ohjelmanjärjestäjä',
-            u'Media',
-            u'Myyjä',
-            u'Vieras',
-            u'Guest of Honour',
-            u'Viikonloppulippu',
-            u'Lauantailippu',
-            u'Sunnuntailippu',
-        ]:
-            Template.objects.get_or_create(
-                event=event,
-                slug=slugify(template_name),
-                defaults=dict(
-                    name=template_name
-                ),
-            )
+        if False:  # Disabled -- where has "Template" gone?
+            for template_name in [
+                u'Conitea',
+                u'Ylivänkäri',
+                u'Työvoima',
+                u'Ohjelmanjärjestäjä',
+                u'Media',
+                u'Myyjä',
+                u'Vieras',
+                u'Guest of Honour',
+                u'Viikonloppulippu',
+                u'Lauantailippu',
+                u'Sunnuntailippu',
+            ]:
+                Template.objects.get_or_create(
+                    event=event,
+                    slug=slugify(template_name),
+                    defaults=dict(
+                        name=template_name
+                    ),
+                )
