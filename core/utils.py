@@ -5,6 +5,7 @@ from itertools import groupby
 from random import randint
 from urllib import urlencode
 import json
+import sys
 import re
 
 from django import forms
@@ -145,28 +146,41 @@ def format_datetime(datetime):
 def format_date_range(start_date, end_date):
     # XXX Finnish-specific
 
+    range_format = u"{start_date}–{end_date}"
+    if sys.platform == "win32":
+        # `strftime` on Windows does not support `%-` formats,
+        # for some unfathomable reason.
+        full_format = "%d.%m.%Y"
+        dm_format = "%d.%m."
+        d_format = "%d."
+    else:
+        full_format = "%-d.%-m.%Y"
+        dm_format = "%-d.%-m."
+        d_format = "%-d."
+    
     if start_date.year == end_date.year:
         if start_date.month == end_date.month:
             if start_date.day == end_date.day:
                 # Y, M, D match
-                return start_date.strftime('%-d.%-m.%Y')
+                return start_date.strftime(full_format)
             else:
                 # Y, M match, D differ
-                return u"{start_date}–{end_date}".format(
-                    start_date=start_date.strftime('%-d.'),
-                    end_date=end_date.strftime('%-d.%-m.%Y'),
+
+                return range_format.format(
+                    start_date=start_date.strftime(d_format),
+                    end_date=end_date.strftime(full_format),
                 )
         else:
             # Y match, M, D differ
-            return u"{start_date}–{end_date}".format(
-                start_date=start_date.strftime('%-d.%-m.'),
-                end_date=end_date.strftime('%-d.%-m.%Y')
+            return range_format.format(
+                start_date=start_date.strftime(dm_format),
+                end_date=end_date.strftime(full_format)
             )
     else:
         # Y, M, D differ
-        return u"{start_date}–{end_date}".format(
-            start_date=start_date.strftime('%-d.%-m.%Y'),
-            end_date=end_date.strftime('%-d.%-m.%Y'),
+        return range_format.format(
+            start_date=start_date.strftime(full_format),
+            end_date=end_date.strftime(full_format),
         )
 
 
@@ -460,8 +474,7 @@ def event_meta_property(app_label, code_path):
 
 def pick_attrs(obj, *attr_names, **extra_attrs):
     return dict(
-        (attr_name, getattr(obj, attr_name))
-        for attr_name in attr_names,
+        ((attr_name, getattr(obj, attr_name)) for attr_name in attr_names),
         **extra_attrs
     )
 
@@ -484,3 +497,28 @@ def groupby_strict(*args, **kwargs):
 
 def create_temporary_password():
     return "".join(chr(randint(ord('0'), ord('z'))) for _ in range(64))
+
+
+def mutate_query_params(request, mutations):
+    """
+    Return a mutated version of the query string of the request.
+
+    The values of the `mutations` dict are interpreted thus:
+
+    * `None`, `False`: Remove the key.
+    * Any other value: Replace with this value.
+
+    :param request: A HTTP request.
+    :type request: django.http.HttpRequest
+    :param mutations: A mutation dict.
+    :type mutations: dict[str, object]
+    :return: query string
+    """
+
+    new_qs = request.GET.copy()
+    for key, value in mutations.items():
+        if value in (None, False):
+            new_qs.pop(key, None)
+        else:
+            new_qs[key] = value
+    return new_qs.urlencode()

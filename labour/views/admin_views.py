@@ -13,11 +13,13 @@ from django.views.decorators.http import require_http_methods, require_GET
 from django.utils import timezone
 
 from core.csv_export import csv_response
+from core.sort_and_filter import Filter, Sorter
 from core.models import Event, Person
 from core.utils import initialize_form, url, json_response, render_string
 
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
 from ..helpers import labour_admin_required
+from ..utils import SignupStateFilter
 from ..models import (
     JobCategory,
     LabourEventMeta,
@@ -123,27 +125,34 @@ def labour_admin_signup_view(request, vars, event, person_id):
 def labour_admin_signups_view(request, vars, event):
     signups = event.signup_set.all()
 
-    job_category_filter = request.GET.get('job_category', None)
-    job_category_filters = [(jc, jc.slug == job_category_filter) for jc in event.jobcategory_set.all()]
-    if job_category_filter:
-        signups = signups.filter(job_categories__slug=job_category_filter)
+    job_categories = event.jobcategory_set.all()
 
+    job_category_filters = Filter(request, "job_category").add_objects("job_categories__slug", job_categories)
+    signups = job_category_filters.filter_queryset(signups)
+    job_category_accepted_filters = Filter(request, "job_category_accepted").add_objects("job_categories_accepted__slug", job_categories)
+    signups = job_category_accepted_filters.filter_queryset(signups)
 
-    job_category_accepted_filter = request.GET.get('job_category_accepted', None)
-    job_category_accepted_filters = [(jc, jc.slug == job_category_accepted_filter) for jc in event.jobcategory_set.all()]
-    if job_category_accepted_filter:
-        signups = signups.filter(job_categories_accepted__slug=job_category_accepted_filter)
+    sorter = Sorter(request, "sort")
+    sorter.add("name", name=u'Sukunimi, Etunimi', definition=('person__surname', 'person__first_name'))
+    sorter.add("newest", name=u'Uusin ensin', definition=('-created_at',))
+    sorter.add("oldest", name=u'Vanhin ensin', definition=('created_at',))
+    signups = sorter.order_queryset(signups)
 
-    # state_filter = request.GET.get('state', None)
-    # if state_filter:
-    #     signups = signups.filter
-
-    signups = signups.order_by('person__surname', 'person__first_name')
+    # Must be done after sorting, since `SignupStateFilter` doesn't currently operate in the database
+    state_filter = SignupStateFilter(request, "state")
+    state_filter.add_state("new", "Haettu")
+    state_filter.add_state("accepted", "Odottaa vuoroja")
+    state_filter.add_state("finished", "Vuorot lähetetty")
+    state_filter.add_state("complained", "Reklamoitu")
+    state_filter.add_state("rejected", "Hylätty")
+    signups = state_filter.filter_queryset(signups)
 
     vars.update(
         signups=signups,
         job_category_filters=job_category_filters,
-        job_category_accepted_filters=job_category_accepted_filters
+        job_category_accepted_filters=job_category_accepted_filters,
+        state_filter=state_filter,
+        sorter=sorter
     )
 
     return render(request, 'labour_admin_signups_view.jade', vars)

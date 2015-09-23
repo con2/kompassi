@@ -11,22 +11,42 @@ block admin_content
         .col-md-9
           for jc, active in job_category_filters
             if active
-              a.label.label-info.kompassi-space-after(href='?') {{ jc.name }}
+              span.label.label-info.kompassi-space-after
+                a(href='?{{ jc.qs_del }}') {{ jc.name }}
             else
-              a.label.label-default.kompassi-space-after(href='?job_category={{ jc.slug }}') {{ jc.name }}
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ jc.qs_add }}') {{ jc.name }}
       .row
         .col-md-3: strong Hyväksytty tehtävä
         .col-md-9
           for jc, active in job_category_accepted_filters
             if active
               span.label.label-info.kompassi-space-after
-                a(href='?') {{ jc.name }}
+                a(href='?{{ jc.qs_del }}') {{ jc.name }}
             else
               span.label.label-default.kompassi-space-after
-                a(href='?job_category_accepted={{ jc.slug }}') {{ jc.name }}
-      //- .row
-      //-   .col-md-3: strong Hakemuksen tila
-      //-   .col-md-9
+                a(href='?{{ jc.qs_add }}') {{ jc.name }}
+      .row
+        .col-md-3: strong Hakemuksen tila
+        .col-md-9
+          for sf, active in state_filter
+            if active
+              span.label.label-info.kompassi-space-after
+                a(href='?{{ sf.qs_del }}') {{ sf.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ sf.qs_add }}') {{ sf.name }}
+      hr
+      .row
+        .col-md-3: strong Luettelojärjestys
+        .col-md-9
+          for so, active in sorter
+            if active
+              span.label.label-info.kompassi-space-after
+                a(href='?{{ so.qs_add }}') {{ so.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ so.qs_add }}') {{ so.name }}
     table.table.table-striped
       include labour_admin_signup_table_contents.jade
     .panel-footer.clearfix
