@@ -49,7 +49,7 @@ class SignupExtra(SignupExtraBase):
         choices=SHIFT_TYPE_CHOICES,
     )
 
-    desu_amount = models.IntegerField(
+    desu_amount = models.PositiveIntegerField(
         verbose_name=u'Desumäärä',
         help_text=u'Kuinka monessa Desuconissa olet ollut vänkärinä?',
     )
