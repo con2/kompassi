@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Privilege, GroupPrivilege, GrantedPrivilege
+from .models import Privilege, GroupPrivilege, GrantedPrivilege, SlackAccess
 
 
 class PrivilegeAdmin(admin.ModelAdmin):
@@ -23,7 +23,13 @@ class GroupPrivilegeAdmin(admin.ModelAdmin):
     search_fields = ('group__name',)
 
 
+class SlackAccessAdmin(admin.ModelAdmin):
+    model = SlackAccess
+    list_display = ('privilege', 'team_name')
+    search_fields = ('privilege__slug', 'privilege__title', 'team_name')
+
 
 admin.site.register(Privilege, PrivilegeAdmin)
 admin.site.register(GroupPrivilege, GroupPrivilegeAdmin)
 admin.site.register(GrantedPrivilege, GrantedPrivilegeAdmin)
+admin.site.register(SlackAccess, SlackAccessAdmin)

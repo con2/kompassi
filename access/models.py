@@ -1,13 +1,20 @@
 # encoding: utf-8
 
+import logging
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.auth.models import Group
 
+import requests
+from requests.exceptions import HTTPError
+
 from core.utils import get_code, SLUG_FIELD_PARAMS
 from core.models import Person, Event
 
+
+logger = logging.getLogger('kompassi')
 
 STATE_CHOICES = [
     ('pending', u'Odottaa hyväksyntää'),
@@ -120,3 +127,50 @@ class GrantedPrivilege(models.Model):
         verbose_name_plural = u'Myönnetyt käyttöoikeudet'
 
         unique_together = [('privilege', 'person')]
+
+
+class SlackError(RuntimeError):
+    pass
+
+
+class SlackAccess(models.Model):
+    privilege = models.OneToOneField(Privilege, related_name='slack_access')
+    team_name = models.CharField(max_length=255, verbose_name=u'Slack-yhteisön nimi')
+    api_token = models.CharField(max_length=255, default=u'test', verbose_name=u'API-koodi')
+
+    @property
+    def invite_url(self):
+        return 'https://{team_name}.slack.com/api/users.admin.invite'.format(team_name=self.team_name)
+
+    def grant(self, person):
+        if self.api_token == 'test':
+            logger.warn(u'Using test mode for SlackAccess Privileges. No invites are actually being sent. '
+                u'Would invite {name_and_email} to Slack if an actual API token were set.'.format(
+                    name_and_email=person.name_and_email,
+                )
+            )
+            return
+
+        try:
+            response = requests.get(settings.KOMPASSI_ACCESS_SLACK_INVITE_URL, params=dict(
+                token=settings.KOMPASSI_ACCESS_SLACK_API_TOKEN,
+                email=person.email,
+                first_name=person.first_name,
+                last_name=person.surname,
+                set_active=True,
+            ))
+
+            response.raise_for_status()
+            result = response.json()
+
+            if not result.get('ok'):
+                raise SlackError(result)
+
+            return result
+        except (HTTPError, KeyError, IndexError, ValueError) as e:
+            unused, unused, trace = sys.exc_info()
+            raise SlackError(e), None, trace
+
+    class Meta:
+        verbose_name = u'Slack-kutsuautomaatti'
+        verbose_name_plural = u'Slack-kutsuautomaatit'

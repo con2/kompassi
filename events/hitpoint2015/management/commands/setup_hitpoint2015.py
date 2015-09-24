@@ -29,6 +29,7 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_tickets()
+        self.setup_access()
         self.setup_payments()
 
     def setup_core(self):
@@ -223,8 +224,8 @@ class Setup(object):
             slug=u'conitea',
             defaults=dict(
                 title=u'Conitean ilmoittautumislomake',
-                signup_form_class_path='hitpoint2015.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='hitpoint2015.forms:OrganizerSignupExtraForm',
+                signup_form_class_path='events.hitpoint2015.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='events.hitpoint2015.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2014, 11, 15, 12, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2015, 11, 22, 23, 59, 59, tzinfo=self.tz),
             ),
@@ -320,12 +321,13 @@ class Setup(object):
                 product.limit_groups = limit_groups
                 product.save()
 
-        # v5
-        # if not meta.print_logo_path:
-        #     meta.print_logo_path = mkpath('static', 'images', 'hitpoint.png')
-        #     meta.print_logo_width_mm = 30
-        #     meta.print_logo_height_mm = 30
-        #     meta.save()
+    def setup_access(self):
+        from access.models import Privilege, GroupPrivilege
+
+        # Grant accepted workers access to Tracon Slack
+        group = self.event.labour_event_meta.get_group('accepted')
+        privilege = Privilege.objects.get(slug='tracon-slack')
+        GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
     def setup_payments(self):
         from payments.models import PaymentsEventMeta

@@ -26,7 +26,7 @@ from core.utils import create_temporary_password, get_next
 from .models import Connection, ConfirmationCode, Desuprofile
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('kompassi')
 
 
 def get_session(request, **kwargs):
