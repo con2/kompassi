@@ -90,9 +90,9 @@ class CallbackView(View):
 
         try:
             desuprofile = get_desuprofile(session)
-        except JSONSchemaValidationError:
-            logging.exception('Desuprofile failed validation')
-            messages.error(request, u'Etunimi, sukunimi ja sähköpostiosoite ovat Kompassin kannalta välttämättömiä '
+        except JSONSchemaValidationError as e:
+            logging.exception('Desuprofile {username} failed validation'.format(username=e.instance.get('username', None)))
+            messages.error(request, u'Etunimi, sukunimi ja vahvistettu sähköpostiosoite ovat Kompassin kannalta välttämättömiä '
                 u'kenttiä Desuprofiilissa. Kirjaudu <a href="https://desucon.fi/desuprofiili" target="_blank">Desuprofiiliisi</a> '
                 u'ja korjaa nämä kentät, ja yritä sitten uudelleen.')
             return redirect('core_login_view')
