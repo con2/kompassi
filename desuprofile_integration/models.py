@@ -45,12 +45,13 @@ class ConfirmationCode(OneTimeCode):
         return render_to_string('desuprofile_integration_confirmation_message.eml', vars, context_instance=RequestContext(request, {}))
 
 
-DesuprofileBase = namedtuple('Desuprofile', 'id first_name last_name nickname email phone birth_date')
+DesuprofileBase = namedtuple('Desuprofile', 'id username first_name last_name nickname email phone birth_date')
 class Desuprofile(DesuprofileBase):
     schema = dict(
         type='object',
         properties=dict(
             id=dict(type='number'),
+            username=dict(type='string', minLength=1),
             first_name=dict(type='string', minLength=1),
             last_name=dict(type='string', minLength=1),
             nickname=dict(type='string', optional=True),
@@ -58,7 +59,7 @@ class Desuprofile(DesuprofileBase):
             phone=dict(type='string'),
             birth_date=dict(type='string', pattern=r'\d{4}-\d{1,2}-\d{1,2}'),
         ),
-        required=['id', 'first_name', 'last_name', 'email'],
+        required=['id', 'username', 'first_name', 'last_name', 'email'],
     )
 
     @classmethod

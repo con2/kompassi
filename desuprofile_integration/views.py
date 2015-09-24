@@ -119,7 +119,16 @@ class CallbackView(View):
 
     def respond_with_new_user(self, request, next_url, desuprofile):
         User = get_user_model()
-        username = "desuprofile_{id}".format(id=desuprofile.id)
+
+        try:
+            User.objects.get(username=desuprofile.username)
+        except User.DoesNotExist:
+            # Username is free
+            username = desuprofile.username
+        else:
+            # Username clash with an existing account, use safe username
+            username = "desuprofile_{id}".format(id=desuprofile.id)
+
         password = create_temporary_password()
 
         user = User(
