@@ -152,8 +152,8 @@ class SlackAccess(models.Model):
             return
 
         try:
-            response = requests.get(settings.KOMPASSI_ACCESS_SLACK_INVITE_URL, params=dict(
-                token=settings.KOMPASSI_ACCESS_SLACK_API_TOKEN,
+            response = requests.get(self.invite_url, params=dict(
+                token=self.api_token,
                 email=person.email,
                 first_name=person.first_name,
                 last_name=person.surname,
