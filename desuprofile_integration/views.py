@@ -9,14 +9,16 @@ from django.http import HttpResponse
 from django.views.generic import View
 from django.shortcuts import redirect
 from django.conf import settings
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib import messages
 from django.utils.timezone import now
 
-from jsonschema import ValidationError
+from jsonschema import ValidationError as JSONSchemaValidationError
 from requests_oauthlib import OAuth2Session
 
+from core.forms import valid_username
 from core.models import Person
 from core.views import do_login
 from core.utils import create_temporary_password, get_next
@@ -88,7 +90,7 @@ class CallbackView(View):
 
         try:
             desuprofile = get_desuprofile(session)
-        except ValidationError:
+        except JSONSchemaValidationError:
             logging.exception('Desuprofile failed validation')
             messages.error(request, u'Etunimi, sukunimi ja sähköpostiosoite ovat Kompassin kannalta välttämättömiä '
                 u'kenttiä Desuprofiilissa. Kirjaudu <a href="https://desucon.fi/desuprofiili" target="_blank">Desuprofiiliisi</a> '
@@ -122,14 +124,24 @@ class CallbackView(View):
         User = get_user_model()
         password = create_temporary_password()
 
+        # Kompassi has stricter rules for username validation than Desusite
+        username = desuprofile.username.lower()
+        try:
+            valid_username(username)
+        except DjangoValidationError:
+            username = None
+
         with transaction.atomic():
             try:
-                User.objects.get(username=desuprofile.username)
+                User.objects.get(username=username)
             except User.DoesNotExist:
                 # Username is free
-                username = desuprofile.username
+                pass
             else:
                 # Username clash with an existing account, use safe username
+                username = None
+
+            if username is None:
                 username = "desuprofile_{id}".format(id=desuprofile.id)
 
             user = User(
