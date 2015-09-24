@@ -24,6 +24,7 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
+        self.setup_access()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -178,6 +179,14 @@ class Setup(object):
                 active_until=None,
             ),
         )
+
+    def setup_access(self):
+        from access.models import Privilege, GroupPrivilege
+
+        # Grant accepted workers access to Tracon Slack
+        group = self.event.labour_event_meta.get_group('accepted')
+        privilege = Privilege.objects.get(slug='desuslack')
+        GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
 
 class Command(BaseCommand):
