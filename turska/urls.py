@@ -15,7 +15,6 @@ for app_name in [
     'programme',
     'tickets',
     'payments',
-    'atlassian_integration',
     'api',
     'api_v2',
     'badges',

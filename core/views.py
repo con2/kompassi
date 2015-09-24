@@ -155,64 +155,17 @@ def do_login(request, user, password=None, next='core_frontpage_view'):
 
     login(request, user)
 
-    username = request.user.username
-
-    crowd_cookie = None
-    if 'atlassian_integration' in settings.INSTALLED_APPS:
-        from atlassian_integration.utils import crowd_login, CrowdError
-        try:
-            crowd_cookie = crowd_login(
-                username=username,
-                password=password,
-                request=request,
-            )
-        except CrowdError, e:
-            messages.warning(request,
-                u'Sisäänkirjautuminen {kompassiin} onnistui, mutta sisäänkirjautuminen '
-                u'Atlassian-tuotteiden kertakirjautumispalveluun ei onnistunut. '
-                u'Voit käyttää useimpia {kompassin} toimintoja normaalisti, mutta '
-                u'esimerkiksi työvoimawikin käyttö ei välttämättä onnistu. '
-                u'Jos ongelma toistuu, ole hyvä ja ota yhteyttä: {adminiin}'
-                .format(
-                    kompassin=settings.KOMPASSI_INSTALLATION_NAME_GENITIVE,
-                    kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE,
-                    adminiin=settings.DEFAULT_FROM_EMAIL
-                )
-            )
-
     remind_email_verification_if_needed(request, next)
 
-    response = redirect(next)
-
-    if crowd_cookie is not None:
-        response.set_cookie(**crowd_cookie)
-
-    return response
+    return redirect(next)
 
 
 @require_http_methods(['GET', 'POST'])
 def core_logout_view(request):
     next = get_next(request)
-
-    crowd_cookie = None
-    if 'atlassian_integration' in settings.INSTALLED_APPS:
-        from atlassian_integration.utils import crowd_logout, CrowdError
-
-        try:
-            crowd_cookie = crowd_logout(request)
-        except CrowdError as e:
-            pass
-
     logout(request)
-
     messages.success(request, u'Olet nyt kirjautunut ulos.')
-
-    response = redirect(next)
-
-    if crowd_cookie is not None:
-        response.delete_cookie(**crowd_cookie)
-
-    return response
+    return redirect(next)
 
 
 @require_http_methods(['GET','POST'])

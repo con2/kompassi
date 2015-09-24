@@ -173,9 +173,6 @@ INSTALLED_APPS = (
     # Uncomment if you have Celery
     # 'background_tasks',
 
-    # Uncomment if you have Crowd and Confluence
-    # 'atlassian_integration',
-
     'branding',
     'desuprofile_integration',
 
@@ -235,11 +232,6 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'propagate': True
         },
-        'atlassian_integration.utils': {
-            'handlers': ['console'],
-            'level': 'DEBUG' if DEBUG else 'WARNING',
-            'propagate': True
-        }
     }
 }
 
@@ -393,25 +385,6 @@ if 'background_tasks' in INSTALLED_APPS:
     CELERY_RESULT_SERIALIZER = 'json'
 
 
-if 'atlassian_integration' in INSTALLED_APPS:
-    KOMPASSI_CROWD_URL = 'https://crowd.tracon.fi/crowd'
-    KOMPASSI_CROWD_APPLICATION_NAME = 'your application name here'
-    KOMPASSI_CROWD_APPLICATION_PASSWORD = 'your application password here'
-    KOMPASSI_CROWD_SESSION_URL = '{KOMPASSI_CROWD_URL}/rest/usermanagement/1/session'.format(**locals())
-    KOMPASSI_CROWD_COOKIE_ATTRS = dict(
-        key='crowd.token_key',
-        httponly=True,
-        secure=True,
-        domain='.tracon.fi',
-        path='/',
-    )
-    KOMPASSI_CONFLUENCE_URL = 'https://confluence.tracon.fi'
-    KOMPASSI_CROWD_VALIDATION_FACTORS = {
-        'remote_address': lambda request: '127.0.0.1',
-        'X-Forwarded-For': lambda request: request.META['HTTP_X_FORWARDED_FOR'],
-    }
-
-
 if 'api' in INSTALLED_APPS:
     KOMPASSI_APPLICATION_USER_GROUP = '{KOMPASSI_INSTALLATION_SLUG}-apps'.format(**locals())
 
@@ -428,10 +401,12 @@ if 'api_v2' in INSTALLED_APPS:
         )
     )
 
+
 if 'access' in INSTALLED_APPS:
     KOMPASSI_ACCESS_SLACK_TEAM_NAME = 'traconfi'
     KOMPASSI_ACCESS_SLACK_INVITE_URL = 'https://{team}.slack.com/api/users.admin.invite'.format(team=KOMPASSI_ACCESS_SLACK_TEAM_NAME)
     KOMPASSI_ACCESS_SLACK_API_TOKEN = ''
+
 
 if 'nexmo' in INSTALLED_APPS:
     NEXMO_USERNAME = 'username'
@@ -439,12 +414,14 @@ if 'nexmo' in INSTALLED_APPS:
     NEXMO_FROM = 'Name or number'
     NEXMO_INBOUND_KEY = '0123456789abcdef'
 
+
 if 'branding' in INSTALLED_APPS:
     KOMPASSI_ACCOUNT_BRANDING = u'Kompassi-tunnus'
     KOMPASSI_ACCOUNT_BRANDING_PARTITIVE = u'Kompassi-tunnusta'
     KOMPASSI_ACCOUNT_BRANDING_GENITIVE = u'Kompassi-tunnuksen (ent. Tracon-tunnuksen)'
     KOMPASSI_ACCOUNT_BRANDING_ADESSIVE = u'Kompassi-tunnuksella'
     KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = u'Kompassi-tunnuksellasi'
+
 
 if 'desuprofile_integration' in INSTALLED_APPS:
     KOMPASSI_DESUPROFILE_HOST = 'https://desucon.fi'
