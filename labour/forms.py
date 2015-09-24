@@ -27,11 +27,12 @@ class AdminPersonForm(PersonForm):
         event = kwargs.pop('event')
         super(AdminPersonForm, self).__init__(*args, **kwargs)
 
-        self.fields['age_now'].initial = calculate_age(self.instance.birth_date, date.today())
         self.fields['age_now'].widget.attrs['readonly'] = True
-        if event.start_time:
-            self.fields['age_event_start'].initial = calculate_age(self.instance.birth_date, event.start_time.date())
         self.fields['age_event_start'].widget.attrs['readonly'] = True
+        if self.instance.birth_date is not None:
+            self.fields['age_now'].initial = calculate_age(self.instance.birth_date, date.today())
+            if event.start_time is not None:
+                self.fields['age_event_start'].initial = calculate_age(self.instance.birth_date, event.start_time.date())
 
         # XXX copypasta
         self.helper.layout = Layout(
