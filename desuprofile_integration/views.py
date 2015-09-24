@@ -4,6 +4,7 @@ import json
 import logging
 from datetime import datetime
 
+from django.db import transaction
 from django.http import HttpResponse
 from django.views.generic import View
 from django.shortcuts import redirect
@@ -119,51 +120,52 @@ class CallbackView(View):
 
     def respond_with_new_user(self, request, next_url, desuprofile):
         User = get_user_model()
-
-        try:
-            User.objects.get(username=desuprofile.username)
-        except User.DoesNotExist:
-            # Username is free
-            username = desuprofile.username
-        else:
-            # Username clash with an existing account, use safe username
-            username = "desuprofile_{id}".format(id=desuprofile.id)
-
         password = create_temporary_password()
 
-        user = User(
-            username=username,
-            is_active=True,
-            is_staff=False,
-            is_superuser=False,
-        )
+        with transaction.atomic():
+            try:
+                User.objects.get(username=desuprofile.username)
+            except User.DoesNotExist:
+                # Username is free
+                username = desuprofile.username
+            else:
+                # Username clash with an existing account, use safe username
+                username = "desuprofile_{id}".format(id=desuprofile.id)
 
-        user.set_password(password)
-        user.save()
+            user = User(
+                username=username,
+                is_active=True,
+                is_staff=False,
+                is_superuser=False,
+            )
 
-        person = Person(
-            first_name=desuprofile.first_name,
-            surname=desuprofile.last_name,
-            nick=desuprofile.nickname,
-            email=desuprofile.email,
-            phone=desuprofile.phone,
-            birth_date=datetime.strptime(desuprofile.birth_date, '%Y-%m-%d').date() if desuprofile.birth_date else None,
-            notes=u'Luotu Desuprofiilista',
-            user=user,
-        )
+            user.set_password(password)
+            user.save()
 
-        person.save()
+            person = Person(
+                first_name=desuprofile.first_name,
+                surname=desuprofile.last_name,
+                nick=desuprofile.nickname,
+                email=desuprofile.email,
+                phone=desuprofile.phone,
+                birth_date=datetime.strptime(desuprofile.birth_date, '%Y-%m-%d').date() if desuprofile.birth_date else None,
+                notes=u'Luotu Desuprofiilista',
+                user=user,
+            )
+
+            person.save()
+
+            connection = Connection(
+                id=int(desuprofile.id),
+                user=user,
+            )
+            connection.save()
+
         person.setup_email_verification(request)
 
         if 'external_auth' in settings.INSTALLED_APPS:
             from external_auth.utils import create_user
             create_user(user, password)
-
-        connection = Connection(
-            id=int(desuprofile.id),
-            user=user,
-        )
-        connection.save()
 
         messages.success(request, u'Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!')
 
