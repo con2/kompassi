@@ -51,8 +51,8 @@ class LoginView(View):
 
     def get(self, request):
         authorization_url, state = get_session(request).authorization_url(settings.KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL)
-        request.session['oauth_state'] = state
-        request.session['oauth_next'] = request.GET.get('next', None)
+        request.session['desuprofile_oauth_state'] = state
+        request.session['desuprofile_oauth_next'] = request.GET.get('next', None)
         return redirect(authorization_url)
 
 
@@ -74,19 +74,19 @@ class CallbackView(View):
     """
 
     def get(self, request):
-        if 'oauth_state' not in request.session or 'oauth_next' not in request.session:
+        if 'desuprofile_oauth_state' not in request.session or 'desuprofile_oauth_next' not in request.session:
             return HttpResponse('OAuth2 callback accessed outside OAuth2 authorization flow', status=400)
 
-        session = get_session(request, state=request.session['oauth_state'])
+        session = get_session(request, state=request.session['desuprofile_oauth_state'])
         token = session.fetch_token(settings.KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL,
             client_secret=settings.KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET,
             authorization_response=request.build_absolute_uri(),
         )
 
-        next_url = request.session['oauth_next']
+        next_url = request.session['desuprofile_oauth_next']
 
-        del request.session['oauth_state']
-        del request.session['oauth_next']
+        del request.session['desuprofile_oauth_state']
+        del request.session['desuprofile_oauth_next']
 
         try:
             desuprofile = get_desuprofile(session)
