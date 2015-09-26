@@ -52,7 +52,7 @@ class LoginView(View):
     def get(self, request):
         authorization_url, state = get_session(request).authorization_url(settings.KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL)
         request.session['desuprofile_oauth_state'] = state
-        request.session['desuprofile_oauth_next'] = request.GET.get('next', None)
+        request.session['desuprofile_oauth_next'] = get_next(request)
         return redirect(authorization_url)
 
 

@@ -3,7 +3,6 @@
 from functools import wraps
 from itertools import groupby
 from random import randint
-from urllib import urlencode
 import json
 import sys
 import re
@@ -18,6 +17,7 @@ from django.db import models
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
+from django.utils.http import urlencode
 from django.utils.timezone import now
 from django.template import RequestContext, defaultfilters
 from django.template.loader import render_to_string
@@ -157,7 +157,7 @@ def format_date_range(start_date, end_date):
         full_format = "%-d.%-m.%Y"
         dm_format = "%-d.%-m."
         d_format = "%-d."
-    
+
     if start_date.year == end_date.year:
         if start_date.month == end_date.month:
             if start_date.day == end_date.day:
