@@ -15,7 +15,6 @@ from .admin_views import (
     labour_admin_mail_editor_view,
     labour_admin_mail_view,
     labour_admin_menu_items,
-    labour_admin_roster_job_category_fragment,
     labour_admin_roster_view,
     labour_admin_signup_view,
     labour_admin_signups_view,

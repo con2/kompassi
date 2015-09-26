@@ -1,0 +1,59 @@
+{
+  "name": "kompassi",
+  "version": "1.0.0",
+  "description": "Event Management System",
+  "main": "gulpfile.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "gulp",
+    "build": "gulp build",
+    "test": "mocha gallery/static_src/**/__tests__/*.js --compilers js:babel/register --require gallery/static_src/__tests__/test-helper.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tracon/kompassi.git"
+  },
+  "author": "Santtu Pajukanta <japsu@tracon.fi>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tracon/kompassi/issues"
+  },
+  "homepage": "https://github.com/tracon/kompassi#readme",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babelify": "^6.3.0",
+    "browser-sync": "^2.9.3",
+    "browserify": "^11.1.0",
+    "chai": "^3.2.0",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.0.1",
+    "gulp-duration": "^0.0.0",
+    "gulp-jade": "^1.1.0",
+    "gulp-replace": "^0.5.4",
+    "gulp-rev": "^6.0.1",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-streamify": "^1.0.2",
+    "gulp-stylus": "^2.0.7",
+    "gulp-uglify": "^1.4.1",
+    "gulp-util": "^3.0.6",
+    "hammerjs": "^2.0.4",
+    "jsdom": "^6.5.0",
+    "knockout": "^3.3.0",
+    "lodash": "^3.10.1",
+    "mocha": "^2.3.2",
+    "nib": "^1.1.0",
+    "node-notifier": "^4.2.3",
+    "page": "^1.6.3",
+    "rimraf": "^2.4.3",
+    "vinyl-source-stream": "^1.1.0",
+    "whatwg-fetch": "^0.9.0",
+    "watchify": "^3.4.0"
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  }
+}

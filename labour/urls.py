@@ -38,12 +38,6 @@ urlpatterns = patterns('',
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/roster/jobcategories/(?P<job_category>\d+).json$',
-        labour_admin_roster_job_category_fragment,
-        name='labour_admin_roster_job_category_fragment'
-    ),
-
-    url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/mail$',
         labour_admin_mail_view,
         name='labour_admin_mail_view'

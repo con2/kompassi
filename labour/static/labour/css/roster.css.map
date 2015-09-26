@@ -1,0 +1,1 @@
+{"version":3,"sources":["roster.styl","roster.css"],"names":[],"mappings":"AAAA;EACE,YAAA;CCCD","file":"roster.css","sourcesContent":["h1\n  color red\n","h1 {\n  color: #f00;\n}\n"],"sourceRoot":"/source/"}

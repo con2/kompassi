@@ -158,45 +158,9 @@ def labour_admin_signups_view(request, vars, event):
     return render(request, 'labour_admin_signups_view.jade', vars)
 
 
-def labour_admin_roster_vars(request, event):
-    from programme.utils import full_hours_between
-
-    hours = full_hours_between(event.labour_event_meta.work_begins, event.labour_event_meta.work_ends)
-
-    return dict(
-        hours=hours,
-        num_hours=len(hours)
-    )
-
-
 @labour_admin_required
 def labour_admin_roster_view(request, vars, event):
-    vars.update(
-        **labour_admin_roster_vars(request, event)
-    )
-
     return render(request, 'labour_admin_roster_view.jade', vars)
-
-
-@labour_admin_required
-def labour_admin_roster_job_category_fragment(request, vars, event, job_category):
-    job_category = get_object_or_404(JobCategory, event=event, pk=job_category)
-
-    vars.update(
-        **labour_admin_roster_vars(request, event)
-    )
-
-    hours = vars['hours']
-
-    vars.update(
-        job_category=job_category,
-        totals=[0 for i in hours],
-    )
-
-    return json_response(dict(
-        replace='#jobcategory-{0}-placeholder'.format(job_category.pk),
-        content=render_string(request, 'labour_admin_roster_job_category_fragment.jade', vars)
-    ))
 
 
 @labour_admin_required
