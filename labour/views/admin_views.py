@@ -305,7 +305,7 @@ def labour_admin_menu_items(request, event):
     mail_text = u"Työvoimaviestit"
 
     roster_url = url('labour_admin_roster_view', event.slug)
-    roster_active = request.path == roster_url
+    roster_active = request.path.startswith(roster_url)
     roster_text = u"Työvuorojen suunnittelu"
 
     query_url = url('labour_admin_query', event.slug)

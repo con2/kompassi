@@ -12,5 +12,5 @@ import config from './services/ConfigService';
 
 moment.locale(config.lang);
 page.base(config.urls.base);
-ko.applyBindings(new Roster(), document.getElementById('labour-admin-roster-view'));
+ko.applyBindings((window.kompassiLabourRoster = new Roster()), document.getElementById('labour-admin-roster-view'));
 page()

@@ -1,0 +1,22 @@
+// ko if: $root.activeView() == 'JobCategory'
+// ko with: jobCategory
+tbody
+  tr(data-bind='with: jobCategory')
+    th
+      div
+        a.kompassi-space-after(data-bind="attr: {href: urls.edit}", title='Muokkaa tehtäväaluetta...')
+          <span data-bind='text: title'></span>&nbsp;<i class="fa fa-pencil-square-o"></i>
+        small: a(data-bind='attr: {href: $root.config.urls.base}') Takaisin
+    // ko foreach: $root.config.workHours
+    th.text-muted 0/0
+    // /ko
+  // ko foreach: jobCategory().jobs
+  tr
+    td
+      div(data-bind='text: title')
+    // ko foreach: $root.config.workHours
+    td.text-muted 0/0
+    // /ko
+  // /ko
+// /ko
+// /ko

@@ -1,0 +1,10 @@
+// ko if: $root.activeView() == 'Overview'
+// ko with: overview
+tbody(data-bind="foreach: jobCategories")
+  tr(data-bind='attr: { id: "jobcategory-" + slug }')
+    th: a(data-bind='text: title, attr: {href: urls.detail}')
+    // ko foreach: $root.config.workHours
+    th.text-muted 0/0
+    // /ko
+// /ko
+// /ko

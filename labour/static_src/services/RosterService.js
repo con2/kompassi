@@ -1,3 +1,7 @@
+import _ from 'lodash';
+
+import config from './ConfigService';
+
 // TODO mock data
 const MOCK_JOB_CATEGORIES = [
   {
@@ -76,7 +80,17 @@ const MOCK_JOB_CATEGORIES = [
     title: "Ohjelmanpitäjä",
     slug: "ohjelmanpitaja"
   },
-]
+];
+
+const MOCK_JOB_CATEGORIES_BY_SLUG = _.indexBy(MOCK_JOB_CATEGORIES, 'slug')
+
+
+MOCK_JOB_CATEGORIES.forEach(jobCategory => {
+  jobCategory.urls = {
+    detail: `${config.urls.base}/jobcategory/${jobCategory.slug}`,
+    edit: `${config.urls.base}/jobcategory/${jobCategory.slug}/edit`
+  };
+});
 
 
 export function getJobCategories() {
@@ -85,5 +99,10 @@ export function getJobCategories() {
 
 
 export function getJobCategory(slug) {
-  return Promise.resolve(MOCK_JOB_CATEGORIES[slug]);
+  return Promise.resolve(MOCK_JOB_CATEGORIES_BY_SLUG[slug]);
+}
+
+
+export function saveJobCategory(newJobCategory) {
+  return getJobCategory.then(oldJobCategory => { _.extend(oldJobCategory, newJobCategory)});
 }

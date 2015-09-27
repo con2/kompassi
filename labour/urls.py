@@ -32,7 +32,7 @@ urlpatterns = patterns('',
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups\.xlsx$', labour_admin_export_view, name='labour_admin_export_view'),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/roster$',
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/roster(/.*)?$',
         labour_admin_roster_view,
         name='labour_admin_roster_view'
     ),

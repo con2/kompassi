@@ -6,12 +6,15 @@ block content_full_width
     include core_admin_menu_items.jade
 
   #labour-admin-roster-view
-    table.table.table-striped.table-bordered
+    noscript
+      p
+      .container
+        .alert.alert-danger(role="alert") Tämä näkymä edellyttää JavaScriptiä.
+    table.table.table-striped.table-bordered.hidden(data-bind="css: {hidden: false}")
       thead
         th
-          | Tehtäväalue
-          br
-          small Tehtävä
+          span(data-bind="if: $root.activeView() == 'Overview'") Tehtäväalue
+          span(data-bind="if: $root.activeView() == 'JobCategory'") Tehtävä
 
         // ko foreach: $root.config.workHours
         th
@@ -20,16 +23,13 @@ block content_full_width
         // /ko
 
 
-      // ko if: $root.activeView() == 'Overview'
-      // ko with: overview
-      tbody(data-bind="foreach: jobCategories")
-        tr(data-bind='attr: { id: "jobcategory-" + slug }')
-          td: a(href, data-bind='text: title')
-      // /ko
-      // /ko
-      tbody(data-bind="if: $root.activeView() == 'JobCategory'")
+      include labour_admin_roster_views/Overview.jade
+      include labour_admin_roster_views/JobCategory.jade
+
+  include labour_admin_roster_views/JobCategoryEditor.jade
 
 block extra_scripts
+  link(rel='stylesheet', href='{{ STATIC_URL }}core/css/font-awesome.min.css')
   link(rel='stylesheet', href='{{ STATIC_URL }}labour/css/roster.css')
   script
     window.kompassiLabourRosterConfig = {{ config_json|safe }};
