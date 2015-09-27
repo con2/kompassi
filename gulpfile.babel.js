@@ -5,6 +5,7 @@ var browserSync = require('browser-sync');
 var childProcess = require('child_process');
 // Insert subgulps here ===========>
 require('./gulpfile.roster.js');
+require('./gulpfile.style.js');
 // <================================
 genv.verifyPrefixes();
 genv.registerPkgBuildAliases();  // `foo:build` available as `foo`, etc.
