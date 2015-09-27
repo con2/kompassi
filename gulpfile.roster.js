@@ -20,10 +20,10 @@ var streamify = require('gulp-streamify');
 var stylus = require('gulp-stylus');
 var uglify = require('gulp-uglify');
 var watchify = require('watchify');
-var childProcess = require('child_process');
+var genv = require("./gulp-env");
 
 /*eslint "no-process-env":0 */
-var production = process.env.NODE_ENV === 'production';
+var production = genv.production;
 
 var config = {
   destination: './labour/static/labour',
@@ -74,7 +74,7 @@ function handleError(err) {
   return this.emit('end');
 }
 
-gulp.task('scripts', function() {
+gulp.task('roster:scripts', function() {
   var pipeline = browserify(browserifyConfig)
     .bundle()
     .on('error', handleError)
@@ -87,7 +87,7 @@ gulp.task('scripts', function() {
   return pipeline.pipe(gulp.dest(config.scripts.destination));
 });
 
-gulp.task('templates', function() {
+gulp.task('roster:templates', function() {
   var pipeline = gulp.src(config.templates.source)
   .pipe(jade({
     // Always minify HTML in order to get rid of whitespace between elements
@@ -105,7 +105,7 @@ gulp.task('templates', function() {
   }));
 });
 
-gulp.task('styles', function() {
+gulp.task('roster:styles', function() {
   var pipeline = gulp.src(config.styles.source);
 
   if(!production) {
@@ -135,32 +135,15 @@ gulp.task('styles', function() {
   }));
 });
 
-gulp.task('assets', function() {
+gulp.task('roster:assets', function() {
   return gulp.src(config.assets.source)
     .pipe(gulp.dest(config.assets.destination));
 });
 
-gulp.task('browsersync-server', function() {
-  return browserSync({
-    open: false,
-    port: 9001,
-    proxy: {
-      target: 'http://localhost:9002',
-      ws: true
-    }
-  });
-});
-
-gulp.task('django-server', function() {
-  return childProcess.spawn('/usr/bin/env', ['python', 'manage.py', 'runserver', '127.0.0.1:9002'], {
-    stdio: [null, process.stdout, process.stderr]
-  });
-})
-
-gulp.task('watch', function() {
-  gulp.watch(config.templates.watch, ['templates']);
-  gulp.watch(config.styles.watch, ['styles']);
-  gulp.watch(config.assets.watch, ['assets']);
+gulp.task('roster:watch', function() {
+  gulp.watch(config.templates.watch, ['roster:templates']);
+  gulp.watch(config.styles.watch, ['roster:styles']);
+  gulp.watch(config.assets.watch, ['roster:assets']);
 
   var bundle = watchify(browserify(browserifyConfig));
 
@@ -175,9 +158,9 @@ gulp.task('watch', function() {
   }).emit('update');
 });
 
-var buildTasks = ['templates', 'styles', 'assets'];
+var buildTasks = ['roster:templates', 'roster:styles', 'roster:assets'];
 
-gulp.task('revision', buildTasks.concat(['scripts']), function() {
+gulp.task('roster:revision', buildTasks.concat(['roster:scripts']), function() {
   return gulp.src(config.revision.source, {base: config.revision.base})
     .pipe(rev())
     .pipe(gulp.dest(config.revision.destination))
@@ -185,7 +168,7 @@ gulp.task('revision', buildTasks.concat(['scripts']), function() {
     .pipe(gulp.dest('./'));
 });
 
-gulp.task('replace-revision-references', ['revision', 'templates'], function() {
+gulp.task('roster:replace-revision-references', ['roster:revision', 'roster:templates'], function() {
   var revisions = require('./rev-manifest.json');
 
   var pipeline = gulp.src(config.templates.revision);
@@ -197,9 +180,7 @@ gulp.task('replace-revision-references', ['revision', 'templates'], function() {
   return pipeline.pipe(gulp.dest(config.templates.destination));
 });
 
-gulp.task('build', function() {
+gulp.task('roster:build', function() {
   rimraf.sync(config.destination);
-  gulp.start(buildTasks.concat(['scripts', 'revision', 'replace-revision-references']));
+  gulp.start(buildTasks.concat(['roster:scripts', 'roster:revision', 'roster:replace-revision-references']));
 });
-
-gulp.task('default', buildTasks.concat(['watch', 'browsersync-server', 'django-server']));
