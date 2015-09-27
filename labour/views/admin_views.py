@@ -172,6 +172,9 @@ def labour_admin_roster_view(request, vars, event):
             for hour in event.labour_event_meta.work_hours
         ],
         lang='fi', # XXX I18N hardcoded
+        urls=dict(
+            base=url('labour_admin_roster_view', event.slug),
+        )
     )
 
     vars.update(
