@@ -23,3 +23,18 @@ module.exports.registerMetatask = function registerMetatask(task) {
     const subtasks = Object.keys(gulp.tasks).filter(test);
     gulp.task(task, subtasks);
 };
+
+module.exports.registerPkgBuildAliases = function registerMetatask() {
+  const builders = {};
+  Object.keys(gulp.tasks).forEach((name) => {
+    const m = /^(.+?):build$/.exec(name);
+    if (m)
+    {
+      builders[m[1]] = name;
+    }
+  });
+  Object.keys(builders).forEach((pkg) => {
+    gulp.task(pkg, [builders[pkg]]);
+  });
+};
+
