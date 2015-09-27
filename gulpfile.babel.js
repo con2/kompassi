@@ -7,8 +7,9 @@ var childProcess = require('child_process');
 require('./gulpfile.roster.js');
 // <================================
 genv.verifyPrefixes();
-genv.registerMetatask('watch');
-genv.registerMetatask('build');
+genv.registerPkgBuildAliases();  // `foo:build` available as `foo`, etc.
+genv.registerMetatask('watch');  // `watch` = foo:watch, bar:watch, quux:watch, etc.
+genv.registerMetatask('build');  // `build` = foo:build, bar:build, quux:build, etc.
 
 gulp.task('browsersync-server', function() {
   return browserSync({
