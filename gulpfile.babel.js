@@ -24,6 +24,8 @@ gulp.task('browsersync-server', function() {
 gulp.task('django-server', function() {
   return childProcess.spawn('/usr/bin/env', ['python', 'manage.py', 'runserver', '127.0.0.1:9002'], {
     stdio: [null, process.stdout, process.stderr]
+  }).on("error", function(e) {
+    console.error("Unable to spawn Django server for you :(", e);
   });
 });
 
