@@ -5,23 +5,32 @@ block content_full_width
   .nav.nav-tabs
     include core_admin_menu_items.jade
 
-  .labour-admin-roster-view
+  #labour-admin-roster-view
     table.table.table-striped.table-bordered
       thead
         th
           | Tehtäväalue
           br
           small Tehtävä
-        for hour in event.labour_event_meta.work_hours
-          th
-            | {{ hour|date:'D' }}
-            br
-            | {{ hour|date:'H' }}
-      tbody
-        for job_category in event.jobcategory_set.all
-          tr(id='jobcategory-{{ job_category.pk }}')
-            td: a(href) {{ job_category.name }}
+
+        // ko foreach: $root.config.workHours
+        th
+          div(data-bind="text: moment.format('ddd')")
+          div(data-bind="text: moment.format('HH')")
+        // /ko
+
+
+      // ko if: $root.activeView() == 'Overview'
+      // ko with: overview
+      tbody(data-bind="foreach: jobCategories")
+        tr(data-bind='attr: { id: "jobcategory-" + slug }')
+          td: a(href, data-bind='text: title')
+      // /ko
+      // /ko
+      tbody(data-bind="if: $root.activeView() == 'JobCategory'")
 
 block extra_scripts
   link(rel='stylesheet', href='{{ STATIC_URL }}labour/css/roster.css')
+  script
+    window.kompassiLabourRosterConfig = {{ config_json|safe }};
   script(src='{{ STATIC_URL }}labour/js/roster.js')

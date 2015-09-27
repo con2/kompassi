@@ -12,6 +12,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 from django.utils import timezone
 
+from dateutil.tz import tzlocal
+
 from core.csv_export import csv_response
 from core.sort_and_filter import Filter, Sorter
 from core.models import Event, Person
@@ -160,6 +162,22 @@ def labour_admin_signups_view(request, vars, event):
 
 @labour_admin_required
 def labour_admin_roster_view(request, vars, event):
+    # use javaScriptCase because this gets directly embedded in <script> as json
+    tz = tzlocal()
+
+    config = dict(
+        event=event.as_dict(),
+        workHours=[
+            dict(timestamp=hour.astimezone(tz).isoformat())
+            for hour in event.labour_event_meta.work_hours
+        ],
+        lang='fi', # XXX I18N hardcoded
+    )
+
+    vars.update(
+        config_json=json.dumps(config),
+    )
+
     return render(request, 'labour_admin_roster_view.jade', vars)
 
 
@@ -283,18 +301,25 @@ def labour_admin_menu_items(request, event):
     mail_active = request.path.startswith(mail_url)
     mail_text = u"Työvoimaviestit"
 
-    # roster_url = url('labour_admin_roster_view', event.slug)
-    # roster_active = request.path == roster_url
-    # roster_text = u"Työvuorojen suunnittelu"
+    roster_url = url('labour_admin_roster_view', event.slug)
+    roster_active = request.path == roster_url
+    roster_text = u"Työvuorojen suunnittelu"
 
     query_url = url('labour_admin_query', event.slug)
     query_active = request.path == query_url
     query_text = u"Hakemusten suodatus"
 
-    return [
+    menu_items = [
         (dashboard_active, dashboard_url, dashboard_text),
         (signups_active, signups_url, signups_text),
         (mail_active, mail_url, mail_text),
-        # (roster_active, roster_url, roster_text),
-        (query_active, query_url, query_text),
     ]
+
+    # unstable / development features
+    if settings.DEBUG:
+        menu_items.extend((
+            (roster_active, roster_url, roster_text),
+            (query_active, query_url, query_text),
+        ))
+
+    return menu_items
