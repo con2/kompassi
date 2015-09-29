@@ -3,6 +3,22 @@ import _ from 'lodash';
 import config from './ConfigService';
 
 
+function getJSON(url) {
+  return fetch(url, {credentials: 'include'}).then(response => response.json());
+}
+
+
+function postJSON(url, body) {
+  return fetch(url, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  }).then(response => response.json());
+}
+
+
 function enrichJobCategories(jobCategories) {
   jobCategories.forEach(enrichJobCategory);
   return jobCategories;
@@ -40,16 +56,12 @@ function requirementsToCells(requirements) {
 
 
 export function getJobCategories() {
-  return fetch(config.urls.jobCategoryApi, {credentials: 'include'})
-  .then(response => response.json())
-  .then(enrichJobCategories);
+  return getJSON(config.urls.jobCategoryApi).then(enrichJobCategories);
 }
 
 
 export function getJobCategory(slug) {
-  return fetch(`${config.urls.jobCategoryApi}/${slug}`, {credentials: 'include'})
-  .then(response => response.json())
-  .then(enrichJobCategory);
+  return getJSON(`${config.urls.jobCategoryApi}/${slug}`).then(enrichJobCategory);
 }
 
 
