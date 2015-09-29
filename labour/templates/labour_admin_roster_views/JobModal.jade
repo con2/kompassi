@@ -21,10 +21,9 @@
       .modal-footer.clearfix
         .btn-group
           a.btn.btn-default(href='', data-bind='click: cancel') Peruuta
-          // ko if: job() && job().slug
+          // ko if: isRemoveButtonShown()
           a.btn.btn-danger(href='', data-bind='click: remove,
-                                               css: { disabled: !canRemove() },
-                                               attr: { title: removeButtonTitle() }')
+                                               css: { disabled: !canRemove() }')
             i.kompassi-icon-space-right.fa.fa-trash-o
             | Poista
           // /ko

@@ -42,9 +42,14 @@ export default class JobModal {
     });
   }
 
+  isRemoveButtonShown() {
+    const job = this.job();
+    return job && typeof job.slug !== 'undefined';
+  }
+
   canRemove() {
     const job = this.job();
-    return job && _.sum(job.requirements) == 0 && _.sum(job.allocated) == 0;
+    return this.isRemoveButtonShown() && _.sum(job.requirements) == 0 && _.sum(job.allocated) == 0;
   }
 
   remove() {
