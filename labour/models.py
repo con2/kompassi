@@ -14,6 +14,7 @@ from core.utils import (
     alias_property,
     ensure_user_is_member_of_group,
     ensure_user_is_not_member_of_group,
+    full_hours_between,
     is_within_period,
     NONUNIQUE_SLUG_FIELD_PARAMS,
     pick_attrs,
@@ -196,7 +197,6 @@ class LabourEventMeta(EventMetaBase):
 
     @property
     def work_hours(self):
-        from programme.utils import full_hours_between
         return full_hours_between(self.work_begins, self.work_ends)
 
     @property

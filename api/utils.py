@@ -3,7 +3,7 @@ from datetime import datetime, date
 from functools import wraps
 
 from django.conf import settings
-from django.http import HttpResponse, Http404
+from django.http import JsonResponse, HttpResponse, Http404
 
 
 # https://djangosnippets.org/snippets/1304/
@@ -23,13 +23,6 @@ def http_basic_auth(func):
     return _decorator
 
 
-def json_default_handler(obj):
-    if type(obj) in [date, datetime]:
-        return obj.isoformat()
-    else:
-        return None
-
-
 class NotAuthorized(RuntimeError):
     pass
 
@@ -40,19 +33,22 @@ def api_view(view_func):
         try:
             result = view_func(request, *args, **kwargs)
         except NotAuthorized as e:
-            return HttpResponse(
-                json.dumps(dict(error='Unauthorized')),
+            return JsonResponse(
+                dict(error='Unauthorized'),
                 status=401,
-                content_type='application/json'
             )
         except Http404 as e:
-            return HttpResponse(
-                json.dumps(dict(error='Not Found')),
+            return JsonResponse(
+                dict(error='Not Found'),
                 status=404,
-                content_type='application/json'
+            )
+        except ValidationError as e:
+            return JsonResponse(
+                dict(error='Bad Request'),
+                status=400,
             )
 
-        return HttpResponse(json.dumps(result, default=json_default_handler), content_type='application/json')
+        return JsonResponse(result)
 
     return _decorator
 
