@@ -2,7 +2,7 @@ import ko from 'knockout';
 import page from 'page';
 
 import {getJobCategories} from '../services/RosterService';
-
+import RequirementCell from './RequirementCell';
 
 export default class Overview {
   constructor(app) {
@@ -12,14 +12,14 @@ export default class Overview {
   }
 
   setupRoutes() {
-    this.actions = {
-      selectJobCategories: (ctx, next) => { getJobCategories().then(this.jobCategories).then(next); },
-      activate: (ctx) => { this.app.activeView('Overview'); },
-    }
-
-    page('/',
-      this.actions.selectJobCategories,
-      this.actions.activate
-    );
+    page('/', (ctx) => {
+      getJobCategories().then(jobCategories => {
+        jobCategories.forEach(jobCategory => {
+          jobCategory.requirementCells = RequirementCell.forJobCategory(this.app, jobCategory);
+        });
+        this.jobCategories(jobCategories);
+        this.app.activeView('Overview');
+      });
+    });
   }
 }

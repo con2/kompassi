@@ -8,7 +8,7 @@ tbody
         | &nbsp;
         small: a(data-bind='attr: {href: $root.config.urls.base}') Takaisin
     // ko foreach: requirementCells
-    th(data-bind="css: $root.requirementCellCss($data)")
+    th(data-bind="css: css()")
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
   // ko foreach: jobCategory().jobs
@@ -19,8 +19,8 @@ tbody
         i.fa.fa-pencil-square-o.kompassi-icon-space-left
 
     // ko foreach: requirementCells
-    td.roster-editable(data-bind="click: $root.jobRequirementModal.show,
-                                  css: $root.requirementCellCss($data)")
+    td.roster-editable(data-bind="click: prompt,
+                                  css: css()")
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
   // /ko

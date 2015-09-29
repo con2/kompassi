@@ -2,7 +2,8 @@ import _ from 'lodash';
 import ko from 'knockout';
 import page from 'page';
 
-import {getJobCategory, saveJobCategory} from '../services/RosterService';
+import {getJobCategory, setRequirement} from '../services/RosterService';
+import RequirementCell from './RequirementCell';
 
 
 export default class JobCategory {
@@ -14,20 +15,29 @@ export default class JobCategory {
   }
 
   setupRoutes() {
-    this.actions = {
-      selectJobCategory: (ctx, next) => { getJobCategory(ctx.params.jobCategorySlug).then(this.jobCategory).then(next); },
-      activate: (ctx) => { this.app.activeView('JobCategory'); },
-    }
-
-    page('/:jobCategorySlug',
-      this.actions.selectJobCategory,
-      this.actions.activate
-    );
+    page('/:jobCategorySlug', (ctx) => {
+      getJobCategory(ctx.params.jobCategorySlug)
+      .then((jobCategory) => { this.loadJobCategory(jobCategory); })
+    });
   }
 
-  promptForJobRequirement(requirementCell) {
-    app.jobRequirementModal.prompt(requirementCell)
-    .then(result => setJobRequirement(requirementCell.job, result))
-    .then(this.jobCategory);
+  loadJobCategory(jobCategory) {
+    jobCategory.requirementCells = RequirementCell.forJobCategory(this.app, jobCategory);
+    jobCategory.jobs.forEach(job => {
+      job.requirementCells = RequirementCell.forJob(this.app, job);
+    });
+
+    this.jobCategory(jobCategory);
+    this.app.activeView('JobCategory');
+  }
+
+  promptForRequirementCell(requirementCell) {
+    this.app.requirementModal.prompt(requirementCell)
+    .then(result => {
+      if (result.result === 'ok') {
+        setRequirement(requirementCell.job, result.request)
+        .then((jobCategory) => { this.loadJobCategory(jobCategory) });
+      }
+    });
   }
 }

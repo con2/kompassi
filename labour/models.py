@@ -1345,7 +1345,7 @@ class InfoLink(models.Model):
 SetJobRequirementsRequestBase = namedtuple('SetJobRequirementsRequest', [
     'startTime',
     'hours',
-    'count',
+    'required',
 ])
 class SetJobRequirementsRequest(SetJobRequirementsRequestBase):
     schema = dict(
@@ -1353,7 +1353,7 @@ class SetJobRequirementsRequest(SetJobRequirementsRequestBase):
         properties=dict(
             startTime=dict(type='string', format='date-time'),
             hours=dict(type='integer', minimum=1),
-            count=dict(type='integer', minimum=0),
+            required=dict(type='integer', minimum=0),
         ),
         required=list(SetJobRequirementsRequestBase._fields),
     )

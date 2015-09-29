@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime, date
 from functools import wraps
 
@@ -7,6 +8,9 @@ from jsonschema import ValidationError as JSONValidationError
 from django.conf import settings
 from django.forms import ValidationError as DjangoValidationError
 from django.http import JsonResponse, HttpResponse, Http404
+
+
+logger = logging.getLogger('kompassi')
 
 
 # https://djangosnippets.org/snippets/1304/
@@ -36,18 +40,21 @@ def api_view(view_func):
         try:
             result = view_func(request, *args, **kwargs)
         except NotAuthorized as e:
+            logger.exception('Unauthorized at %s', request.path)
             return JsonResponse(
                 dict(error='Unauthorized'),
                 status=401,
                 safe=False,
             )
         except Http404 as e:
+            logger.exception('Not Found at %s', request.path)
             return JsonResponse(
                 dict(error='Not Found'),
                 status=404,
                 safe=False,
             )
         except (JSONValidationError, DjangoValidationError) as e:
+            logger.exception('Bad Request at %s', request.path)
             return JsonResponse(
                 dict(error='Bad Request'),
                 status=400,

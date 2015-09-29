@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import json
+import logging
 from datetime import datetime, timedelta
 
 from django.conf import settings
@@ -22,6 +23,8 @@ from ..models import (
     SetJobRequirementsRequest
 )
 
+
+logger = logging.getLogger('kompassi')
 
 
 @labour_admin_required
@@ -54,17 +57,20 @@ def labour_api_set_job_requirements_view(request, vars, event, job_category_slug
     start_time = parse_datetime(params.startTime)
     end_time = start_time + timedelta(hours=params.hours)
 
+    start_time = max(start_time, event.labour_event_meta.work_begins)
+    end_time = min(end_time, event.labour_event_meta.work_ends)
+
     for hour in full_hours_between(start_time, end_time): # start/end inclusive
         requirement, created = JobRequirement.objects.get_or_create(
             job=job,
             start_time=hour,
             defaults=dict(
-                count=params.count,
+                count=params.required,
             ),
         )
 
         if not created:
-            requirement.count = params.count
+            requirement.count = params.required
             requirement.save()
 
     # Successful result emulates that of /api/v1/events/tracon11/jobcategories/conitea

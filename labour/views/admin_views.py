@@ -168,7 +168,7 @@ def labour_admin_roster_view(request, vars, event):
     config = dict(
         event=event.as_dict(),
         workHours=[
-            dict(timestamp=hour.astimezone(tz).isoformat())
+            dict(startTime=hour.astimezone(tz).isoformat())
             for hour in event.labour_event_meta.work_hours
         ],
         lang='fi', # XXX I18N hardcoded

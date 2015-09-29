@@ -1,7 +1,7 @@
-.modal.fade#roster-job-requirement-modal(tabindex="-1",
+.modal.fade#roster-requirement-modal(tabindex="-1",
                                          role="dialog",
-                                         aria-labelledby="roster-job-requirement-modal-title",
-                                         data-bind='with: jobRequirementModal')
+                                         aria-labelledby="roster-requirement-modal-title",
+                                         data-bind='with: requirementModal')
   .modal-dialog(role="document")
     .modal-content
       .modal-header
@@ -17,20 +17,22 @@
           .form-group
             label.control-label.col-md-3 Alkuaika
             .col-md-9
-              select.form-control
+              select.form-control(data-bind="options: $root.config.workHours,
+                                             optionsValue: 'startTime',
+                                             optionsText: 'formatted',
+                                             value: startTime")
                 option(value="") pe 15.1.2016 12:00
           .form-group
             label.control-label.col-md-3 Kesto (tuntia)
             .col-md-9
-              input.form-control(type="number", min="1", step="1")
+              input.form-control(type="number", min="1", step="1", data-bind='value: hours')
           .form-group
             label.control-label.col-md-3 Henkilömäärä
             .col-md-9
-              input.form-control(type="number", min="0", step="1",
-                                 aria-describedby='roster-job-requirement-modal-num-persons-help')
+              input.form-control(type="number", min="0", step="1", data-bind='value: required')
       .modal-footer.clearfix
         .btn-group.pull-right
-          button.btn.btn-default Peruuta
-          .btn.btn-success
+          button.btn.btn-default(data-bind='click: cancel') Peruuta
+          button.btn.btn-success(data-bind='click: ok')
             i.kompassi-icon-space-right.fa.fa-check
             | Aseta
