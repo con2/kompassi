@@ -1,5 +1,11 @@
-h1 {
-  color: #f00;
+#labour-admin-roster-view .roster-editable {
+  cursor: pointer;
+}
+#labour-admin-roster-view .roster-editable:hover {
+  background-color: #ccf;
+}
+.kompassi-inline-icon {
+  margin-right: 0.5em;
 }
 
 /*# sourceMappingURL=roster.css.map */

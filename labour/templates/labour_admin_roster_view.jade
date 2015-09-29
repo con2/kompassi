@@ -11,22 +11,11 @@ block content_full_width
       .container
         .alert.alert-danger(role="alert") Tämä näkymä edellyttää JavaScriptiä.
     table.table.table-striped.table-bordered.hidden(data-bind="css: {hidden: false}")
-      thead
-        th
-          span(data-bind="if: $root.activeView() == 'Overview'") Tehtäväalue
-          span(data-bind="if: $root.activeView() == 'JobCategory'") Tehtävä
-
-        // ko foreach: $root.config.workHours
-        th
-          div(data-bind="text: moment.format('ddd')")
-          div(data-bind="text: moment.format('HH')")
-        // /ko
-
-
+      include labour_admin_roster_views/Header.jade
       include labour_admin_roster_views/Overview.jade
       include labour_admin_roster_views/JobCategory.jade
 
-  include labour_admin_roster_views/JobCategoryEditor.jade
+    include labour_admin_roster_views/JobRequirementModal.jade
 
 block extra_scripts
   link(rel='stylesheet', href='{{ STATIC_URL }}core/css/font-awesome.min.css')

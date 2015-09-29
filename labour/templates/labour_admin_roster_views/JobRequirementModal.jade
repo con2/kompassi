@@ -1,0 +1,36 @@
+.modal.fade#roster-job-requirement-modal(tabindex="-1",
+                                         role="dialog",
+                                         aria-labelledby="roster-job-requirement-modal-title",
+                                         data-bind='with: jobRequirementModal')
+  .modal-dialog(role="document")
+    .modal-content
+      .modal-header
+        h4 Aseta työvoimatarve
+      .modal-body
+        form.form-horizontal
+          .form-group
+            label.control-label.col-md-3 Tehtävä
+            .col-md-9
+              ol.breadcrumb(data-bind='with: job')
+                li(data-bind='text: jobCategory.title')
+                li(data-bind='text: title')
+          .form-group
+            label.control-label.col-md-3 Alkuaika
+            .col-md-9
+              select.form-control
+                option(value="") pe 15.1.2016 12:00
+          .form-group
+            label.control-label.col-md-3 Kesto (tuntia)
+            .col-md-9
+              input.form-control(type="number", min="1", step="1")
+          .form-group
+            label.control-label.col-md-3 Henkilömäärä
+            .col-md-9
+              input.form-control(type="number", min="0", step="1",
+                                 aria-describedby='roster-job-requirement-modal-num-persons-help')
+      .modal-footer.clearfix
+        .btn-group.pull-right
+          button.btn.btn-default Peruuta
+          .btn.btn-success
+            i.kompassi-inline-icon.fa.fa-check
+            | Aseta

@@ -104,5 +104,5 @@ export function getJobCategory(slug) {
 
 
 export function saveJobCategory(newJobCategory) {
-  return getJobCategory.then(oldJobCategory => { _.extend(oldJobCategory, newJobCategory)});
+  return getJobCategory(newJobCategory.slug).then(oldJobCategory => { _.extend(oldJobCategory, newJobCategory)});
 }
