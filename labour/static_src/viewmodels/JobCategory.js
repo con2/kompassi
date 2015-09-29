@@ -24,4 +24,10 @@ export default class JobCategory {
       this.actions.activate
     );
   }
+
+  promptForJobRequirement(requirementCell) {
+    app.jobRequirementModal.prompt(requirementCell)
+    .then(result => setJobRequirement(requirementCell.job, result))
+    .then(this.jobCategory);
+  }
 }

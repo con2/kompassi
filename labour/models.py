@@ -1,12 +1,14 @@
 # encoding: utf-8
 
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from datetime import date, datetime, timedelta
 
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.timezone import now
+
+import jsonschema
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
@@ -1338,6 +1340,29 @@ class InfoLink(models.Model):
 
     def __unicode__(self):
         return self.title
+
+
+SetJobRequirementsRequestBase = namedtuple('SetJobRequirementsRequest', [
+    'startTime',
+    'hours',
+    'count',
+])
+class SetJobRequirementsRequest(SetJobRequirementsRequestBase):
+    schema = dict(
+        type='object',
+        properties=dict(
+            startTime=dict(type='string', format='date-time'),
+            hours=dict(type='integer', minimum=1),
+            count=dict(type='integer', minimum=0),
+        ),
+        required=list(SetJobRequirementsRequestBase._fields),
+    )
+
+    @classmethod
+    def from_dict(cls, d):
+        jsonschema.validate(d, cls.schema)
+        attrs = [d.get(key, u'') for key in cls._fields]
+        return cls(*attrs)
 
 
 __all__ = [

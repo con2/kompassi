@@ -2,7 +2,10 @@ import json
 from datetime import datetime, date
 from functools import wraps
 
+from jsonschema import ValidationError as JSONValidationError
+
 from django.conf import settings
+from django.forms import ValidationError as DjangoValidationError
 from django.http import JsonResponse, HttpResponse, Http404
 
 
@@ -44,7 +47,7 @@ def api_view(view_func):
                 status=404,
                 safe=False,
             )
-        except ValidationError as e:
+        except (JSONValidationError, DjangoValidationError) as e:
             return JsonResponse(
                 dict(error='Bad Request'),
                 status=400,

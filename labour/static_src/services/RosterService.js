@@ -1,6 +1,11 @@
 import _ from 'lodash';
 
+import Cookies from 'js-cookie';
+
 import config from './ConfigService';
+
+
+const csrfToken = Cookies.get('csrftoken');
 
 
 function getJSON(url) {
@@ -13,6 +18,7 @@ function postJSON(url, body) {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken,
     },
     body: JSON.stringify(body),
   }).then(response => response.json());
@@ -65,6 +71,7 @@ export function getJobCategory(slug) {
 }
 
 
-export function saveJobCategory(newJobCategory) {
-  return getJobCategory(newJobCategory.slug).then(oldJobCategory => { _.extend(oldJobCategory, newJobCategory)});
+export function setJobRequirement(job, doc) {
+  return postJSON(`${config.urls.jobCategoryApi}/${job.jobCategory.slug}/jobs/${job.slug}/requirements`, doc)
+  .then(enrichJobCategory);
 }
