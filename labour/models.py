@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from collections import defaultdict
 from datetime import date, datetime, timedelta
 
 from django.conf import settings
@@ -424,8 +425,8 @@ class JobCategory(models.Model):
         Returns an array of integers representing the sum of JobRequirements for this JobCategory
         where indexes correspond to those of work_hours for this event.
         """
-        n = self.job_set.count()
-        return [n, n, n, n] # XXX stub
+        requirements = JobRequirement.objects.filter(job__job_category=self)
+        return JobRequirement.requirements_as_integer_array(self.event, requirements)
 
     def save(self, *args, **kwargs):
         if self.slug is None and self.name is not None:
@@ -484,11 +485,11 @@ class Job(models.Model):
         Returns an array of integers representing the sum of JobRequirements for this JobCategory
         where indexes correspond to those of work_hours for this event.
         """
-        return [1, 1, 1, 1] # XXX stub
+        return JobRequirement.requirements_as_integer_array(self.job_category.event, self.requirements.all())
 
 
 class JobRequirement(models.Model):
-    job = models.ForeignKey(Job, verbose_name=u'tehtävä')
+    job = models.ForeignKey(Job, verbose_name=u'tehtävä', related_name='requirements')
 
     count = models.IntegerField(
         verbose_name=u'vaadittu henkilömäärä',
@@ -498,6 +499,16 @@ class JobRequirement(models.Model):
 
     start_time = models.DateTimeField(verbose_name=u'vaatimuksen alkuaika')
     end_time = models.DateTimeField(verbose_name=u'vaatimuksen päättymisaika')
+
+    @staticmethod
+    def requirements_as_integer_array(event, requirements):
+        work_hours = event.labour_event_meta.work_hours
+
+        requirements_by_start_time = defaultdict(list)
+        for requirement in requirements:
+            requirements_by_start_time[requirement.start_time].append(requirement)
+
+        return [sum(r.count for r in requirements_by_start_time[t]) for t in work_hours]
 
     class Meta:
         verbose_name = u'henkilöstövaatimus'
