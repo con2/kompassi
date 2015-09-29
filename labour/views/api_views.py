@@ -55,7 +55,6 @@ def labour_api_set_job_requirements_view(request, vars, event, job_category_slug
     end_time = start_time + timedelta(hours=params.hours)
 
     for hour in full_hours_between(start_time, end_time): # start/end inclusive
-        print hour
         requirement, created = JobRequirement.objects.get_or_create(
             job=job,
             start_time=hour,
