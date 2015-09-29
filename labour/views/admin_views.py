@@ -174,6 +174,7 @@ def labour_admin_roster_view(request, vars, event):
         lang='fi', # XXX I18N hardcoded
         urls=dict(
             base=url('labour_admin_roster_view', event.slug),
+            jobCategoryApi=url('labour_api_job_categories_view', event.slug),
         )
     )
 

@@ -434,15 +434,17 @@ class JobCategory(models.Model):
 
         return super(JobCategory, self).save(*args, **kwargs)
 
-    def as_dict(self, include_jobs=False):
+    def as_dict(self, include_jobs=False, include_requirements=False):
         doc = pick_attrs(self,
             'title',
             'slug',
-            requirements=self._make_requirements()
         )
 
         if include_jobs:
             doc['jobs'] = [job.as_dict() for job in self.job_set.all()]
+
+        if include_requirements:
+            doc['requirements'] = self._make_requirements()
 
         return doc
 
@@ -471,14 +473,27 @@ ONE_HOUR = timedelta(hours=1)
 
 class Job(models.Model):
     job_category = models.ForeignKey(JobCategory, verbose_name=u'tehtäväalue')
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     title = models.CharField(max_length=63, verbose_name=u'tehtävän nimi')
 
     class Meta:
         verbose_name = u'tehtävä'
         verbose_name_plural = u'tehtävät'
+        unique_together = [('job_category', 'slug')]
+
+    def save(self, *args, **kwargs):
+        if self.title and not self.slug:
+            self.slug = slugify(self.title)
+
+        return super(Job, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title
+
+    def admin_get_event(self):
+        return self.job_category.event if self.job_category else None
+    admin_get_event.short_description = u'Tapahtuma'
+    admin_get_event.admin_order_field = 'job_category__event'
 
     def _make_requirements(self):
         """
@@ -486,6 +501,13 @@ class Job(models.Model):
         where indexes correspond to those of work_hours for this event.
         """
         return JobRequirement.requirements_as_integer_array(self.job_category.event, self.requirements.all())
+
+    def as_dict(self):
+        return pick_attrs(self,
+            'slug',
+            'title',
+            requirements=self._make_requirements(),
+        )
 
 
 class JobRequirement(models.Model):

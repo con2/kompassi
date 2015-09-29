@@ -19,7 +19,6 @@ const MOCK_JOB_CATEGORIES = [
         requirements: []
       }
     ],
-    requirements: [1, 1, 1, 1]
   },
   {
     title: "Erikoistehtävä",
@@ -87,37 +86,35 @@ const MOCK_JOB_CATEGORIES_BY_SLUG = _.indexBy(MOCK_JOB_CATEGORIES, 'slug')
 
 
 MOCK_JOB_CATEGORIES.forEach(jobCategory => {
-  jobCategory.urls = {
-    detail: `${config.urls.base}/${jobCategory.slug}`
-  };
+
 });
 
 
-export function getJobCategories() {
-  return Promise.resolve(MOCK_JOB_CATEGORIES)
-  .then(jobCategories => {
-    jobCategories.forEach(jobCategory => {
-      jobCategory.requirementCells = requirementsToCells(jobCategory.requirements);
-    });
-
-    return jobCategories;
-  })
+function enrichJobCategories(jobCategories) {
+  jobCategories.forEach(enrichJobCategory);
+  return jobCategories;
 }
 
 
-export function getJobCategory(slug) {
-  return Promise.resolve(MOCK_JOB_CATEGORIES_BY_SLUG[slug])
-  .then(jobCategory => {
-    jobCategory.requirementCells = requirementsToCells(jobCategory.requirements);
+function enrichJobCategory(jobCategory) {
+  jobCategory.urls = {
+    detail: `${config.urls.base}/${jobCategory.slug}`
+  };
 
-    // XXX || [] is for early devt
-    (jobCategory.jobs || []).forEach(job => {
+  if(jobCategory.jobs) {
+    jobCategory.jobs.forEach(job => {
       job.jobCategory = jobCategory;
       job.requirementCells = requirementsToCells(job.requirements);
     });
 
-    return jobCategory;
-  });
+    if(!jobCategory.requirements) {
+      jobCategory.requirements = _.zip.apply(_, _.pluck(jobCategory.jobs, 'requirements')).map(_.sum);
+    }
+  }
+
+  jobCategory.requirementCells = requirementsToCells(jobCategory.requirements);
+
+  return jobCategory;
 }
 
 
@@ -129,6 +126,20 @@ function requirementsToCells(requirements) {
     allocated: 0, // TODO
     required: numPeopleRequired || 0, // XXX || 0 is for early devt
   })).value();
+}
+
+
+export function getJobCategories() {
+  return fetch(config.urls.jobCategoryApi, {credentials: 'include'})
+  .then(response => response.json())
+  .then(enrichJobCategories);
+}
+
+
+export function getJobCategory(slug) {
+  return fetch(`${config.urls.jobCategoryApi}/${slug}`, {credentials: 'include'})
+  .then(response => response.json())
+  .then(enrichJobCategory);
 }
 
 
