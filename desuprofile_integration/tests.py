@@ -12,6 +12,7 @@ class DesuprofileValidationTestCase(TestCase):
     def test_idempotence(self):
         valid_profile = dict(
             id=2559,
+            username='japsu',
             email='foo@bar.fi', # required
             first_name='Foo',
             last_name='Bar',
@@ -25,6 +26,7 @@ class DesuprofileValidationTestCase(TestCase):
     def test_desuprofile_without_required_attributes(self):
         blank_email = dict(
             id=2559,
+            username='japsu',
             email='', # required
             first_name='Foo',
             last_name='Bar',
@@ -38,6 +40,7 @@ class DesuprofileValidationTestCase(TestCase):
 
         missing_first_name = dict(
             id=2559,
+            username='japsu',
             email='foo@bar.fi',
             # first_name='Foo',
             last_name='Bar',
@@ -52,6 +55,7 @@ class DesuprofileValidationTestCase(TestCase):
     def test_invalid_values(self):
         malformed_birth_date = dict(
             id=2559,
+            username='japsu',
             email='foo@bar.fi',
             first_name='Foo',
             last_name='Bar',
@@ -65,6 +69,7 @@ class DesuprofileValidationTestCase(TestCase):
 
         malformed_email = dict(
             id=2559,
+            username='japsu',
             email='look no at sign.fi',
             first_name='Foo',
             last_name='Bar',
