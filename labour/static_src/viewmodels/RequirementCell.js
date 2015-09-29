@@ -11,9 +11,8 @@ export default class RequirementCell {
     this.required = required;
   }
 
-  prompt() {
-    console.log('RequirementCell', 'prompt', 'startTime', this.startTime);
-    this.app.jobCategory.promptForRequirementCell(this);
+  edit() {
+    this.app.jobCategory.editRequirement(this);
   }
 
   css() {

@@ -14,19 +14,19 @@ tbody
   // ko foreach: jobCategory().jobs
   tr
     td
-      a(href='')
+      a(href='', data-bind="click: function() { $parent.editJob($data) }")
         span(data-bind='text: title')
         i.fa.fa-pencil-square-o.kompassi-icon-space-left
 
     // ko foreach: requirementCells
-    td.roster-editable(data-bind="click: prompt,
+    td.roster-editable(data-bind="click: edit,
                                   css: css()")
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
   // /ko
   tr
     td
-      a(href='')
+      a(href='', data-bind="click: createJob")
         i.fa.fa-plus.kompassi-icon-space-right
         span Lisää tehtävä
 // /ko

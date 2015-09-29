@@ -3,7 +3,10 @@ import logging
 from datetime import datetime, date
 from functools import wraps
 
-from jsonschema import ValidationError as JSONValidationError
+from jsonschema import (
+    ValidationError as JSONValidationError,
+    validate,
+)
 
 from django.conf import settings
 from django.forms import ValidationError as DjangoValidationError
@@ -33,35 +36,47 @@ def http_basic_auth(func):
 class NotAuthorized(RuntimeError):
     pass
 
+class MethodNotAllowed(RuntimeError):
+    pass
+
+class BadRequest(RuntimeError):
+    pass
+
 
 def api_view(view_func):
     @wraps(view_func)
     def _decorator(request, *args, **kwargs):
         try:
             result = view_func(request, *args, **kwargs)
+        except (JSONValidationError, DjangoValidationError, BadRequest) as e:
+            logger.exception('Bad Request at %s', request.path)
+            return JsonResponse(
+                dict(error='Bad Request'),
+                status=400,
+            )
         except NotAuthorized as e:
             logger.exception('Unauthorized at %s', request.path)
             return JsonResponse(
                 dict(error='Unauthorized'),
                 status=401,
-                safe=False,
             )
         except Http404 as e:
             logger.exception('Not Found at %s', request.path)
             return JsonResponse(
                 dict(error='Not Found'),
                 status=404,
-                safe=False,
             )
-        except (JSONValidationError, DjangoValidationError) as e:
-            logger.exception('Bad Request at %s', request.path)
+        except MethodNotAllowed as e:
+            logger.exception('Method Not Allowed at %s', request.path)
             return JsonResponse(
-                dict(error='Bad Request'),
-                status=400,
-                safe=False,
+                dict(error='Not Found'),
+                status=405,
             )
 
-        return JsonResponse(result, safe=False)
+        if result is None:
+            return HttpResponse('', status=204)
+        else:
+            return JsonResponse(result, safe=False)
 
     return _decorator
 
@@ -79,3 +94,20 @@ def api_login_required(view_func):
             raise NotAuthorized()
 
     return _decorator
+
+
+class JSONSchemaObject(object):
+    """
+    A mixin to use in conjunction with collections.namedtuple. For examples, see
+    desuprofile_integration/models.py.
+    """
+
+    @classmethod
+    def from_dict(cls, d):
+        validate(d, cls.schema)
+        attrs = [d.get(key, u'') for key in cls._fields]
+        return cls(*attrs)
+
+    @classmethod
+    def from_json(cls, s):
+        return cls.from_dict(json.loads(s))

@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 
 from jsonschema import validate
 
+from api.utils import JSONSchemaObject
 from core.models import OneTimeCode
 from core.utils import url
 
@@ -46,7 +47,7 @@ class ConfirmationCode(OneTimeCode):
 
 
 DesuprofileBase = namedtuple('Desuprofile', 'id username first_name last_name nickname email phone birth_date')
-class Desuprofile(DesuprofileBase):
+class Desuprofile(DesuprofileBase, JSONSchemaObject):
     schema = dict(
         type='object',
         properties=dict(
@@ -62,8 +63,3 @@ class Desuprofile(DesuprofileBase):
         required=['id', 'username', 'first_name', 'last_name', 'email'],
     )
 
-    @classmethod
-    def from_dict(cls, d):
-        validate(d, cls.schema)
-        attrs = [d.get(key, u'') for key in cls._fields]
-        return cls(*attrs)

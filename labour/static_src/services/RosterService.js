@@ -1,28 +1,7 @@
 import _ from 'lodash';
 
-import Cookies from 'js-cookie';
-
 import config from './ConfigService';
-
-const csrfToken = Cookies.get('csrftoken');
-
-
-function getJSON(url) {
-  return fetch(url, {credentials: 'include'}).then(response => response.json());
-}
-
-
-function postJSON(url, body) {
-  return fetch(url, {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': csrfToken,
-    },
-    body: JSON.stringify(body),
-    credentials: 'include',
-  }).then(response => response.json());
-}
+import {getJSON, putJSON, postJSON, deleteJSON} from '../helpers/FetchHelper';
 
 
 function enrichJobCategories(jobCategories) {
@@ -60,4 +39,22 @@ export function getJobCategory(slug) {
 export function setRequirement(job, doc) {
   return postJSON(`${config.urls.jobCategoryApi}/${job.jobCategory.slug}/jobs/${job.slug}/requirements`, doc)
   .then(enrichJobCategory);
+}
+
+
+export function createJob(jobCategory, newJob) {
+  return postJSON(`${config.urls.jobCategoryApi}/${jobCategory.slug}/jobs`, newJob)
+  .then(enrichJobCategory);
+}
+
+
+export function updateJob(job, update) {
+  const url = `${config.urls.jobCategoryApi}/${job.jobCategory.slug}/jobs/${job.slug}`;
+  return putJSON(url, update).then(enrichJobCategory);
+}
+
+
+export function deleteJob(job) {
+  const url = `${config.urls.jobCategoryApi}/${job.jobCategory.slug}/jobs/${job.slug}`;
+  return deleteJSON(url).then(enrichJobCategory);
 }

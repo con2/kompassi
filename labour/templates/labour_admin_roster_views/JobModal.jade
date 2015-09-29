@@ -1,0 +1,33 @@
+.modal.fade#roster-job-modal(tabindex="-1",
+                             role="dialog",
+                             aria-labelledby="roster-job-modal-title",
+                             data-bind='with: jobCategory.jobModal')
+  .modal-dialog(role="document")
+    form(data-bind='submit: ok').modal-content
+      .modal-header
+        h4 Muokkaa tehtävää
+      .modal-body
+        .form-horizontal
+          .form-group(data-bind='with: job')
+            label.control-label.col-md-3 Tehtävä
+            .col-md-9
+              ol.breadcrumb
+                li(data-bind='text: jobCategory.title')
+                li(data-bind='text: title')
+          .form-group
+            label.control-label.col-md-3 Tehtävän nimi
+            .col-md-9
+              input.form-control(type='text', required, data-bind='value: title')
+      .modal-footer.clearfix
+        .btn-group
+          a.btn.btn-default(href='', data-bind='click: cancel') Peruuta
+          // ko if: job() && job().slug
+          a.btn.btn-danger(href='', data-bind='click: remove,
+                                               css: { disabled: !canRemove() },
+                                               attr: { title: removeButtonTitle() }')
+            i.kompassi-icon-space-right.fa.fa-trash-o
+            | Poista
+          // /ko
+          button.btn.btn-success(type='submit')
+            i.kompassi-icon-space-right.fa.fa-check
+            | Tallenna

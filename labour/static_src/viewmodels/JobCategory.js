@@ -2,8 +2,17 @@ import _ from 'lodash';
 import ko from 'knockout';
 import page from 'page';
 
-import {getJobCategory, setRequirement} from '../services/RosterService';
+import {
+  createJob,
+  deleteJob,
+  getJobCategory,
+  setRequirement,
+  updateJob,
+} from '../services/RosterService';
+
+import JobModal from './JobModal';
 import RequirementCell from './RequirementCell';
+import RequirementModal from './RequirementModal';
 
 
 export default class JobCategory {
@@ -11,14 +20,10 @@ export default class JobCategory {
     this.app = app;
     this.jobCategory = ko.observable(null);
 
-    this.setupRoutes();
-  }
+    this.requirementModal = new RequirementModal(app);
+    this.jobModal = new JobModal(app);
 
-  setupRoutes() {
-    page('/:jobCategorySlug', (ctx) => {
-      getJobCategory(ctx.params.jobCategorySlug)
-      .then((jobCategory) => { this.loadJobCategory(jobCategory); })
-    });
+    this.setupRoutes();
   }
 
   loadJobCategory(jobCategory) {
@@ -31,13 +36,39 @@ export default class JobCategory {
     this.app.activeView('JobCategory');
   }
 
-  promptForRequirementCell(requirementCell) {
-    this.app.requirementModal.prompt(requirementCell)
+  editRequirement(requirementCell) {
+    this.requirementModal.prompt(requirementCell)
     .then(result => {
       if (result.result === 'ok') {
         setRequirement(requirementCell.job, result.request)
-        .then((jobCategory) => { this.loadJobCategory(jobCategory) });
+        .then(jobCategory => this.loadJobCategory(jobCategory));
       }
+    });
+  }
+
+  editJob(job) {
+    this.jobModal.prompt(job)
+    .then(result => {
+      if (result.result === 'ok') {
+        updateJob(job, result.request).then(jobCategory => this.loadJobCategory(jobCategory));
+      } else if (result.result === 'delete' && typeof job.slug !== 'undefined') {
+        deleteJob(job).then(jobCategory => this.loadJobCategory(jobCategory));
+      }
+    });
+  }
+
+  createJob() {
+    this.jobModal.prompt({title: "Uusi tehtävä", jobCategory: this.jobCategory()})
+    .then(result => {
+      if (result.result === 'ok') {
+        createJob(this.jobCategory(), result.request).then(jobCategory => this.loadJobCategory(jobCategory));
+      }
+    });
+  }
+
+  setupRoutes() {
+    page('/:jobCategorySlug', (ctx) => {
+      getJobCategory(ctx.params.jobCategorySlug).then(jobCategory => this.loadJobCategory(jobCategory))
     });
   }
 }

@@ -1,13 +1,13 @@
 .modal.fade#roster-requirement-modal(tabindex="-1",
                                          role="dialog",
                                          aria-labelledby="roster-requirement-modal-title",
-                                         data-bind='with: requirementModal')
+                                         data-bind='with: jobCategory.requirementModal')
   .modal-dialog(role="document")
-    .modal-content
+    form(data-bind='submit: ok').modal-content
       .modal-header
         h4 Aseta työvoimatarve
       .modal-body
-        form.form-horizontal
+        .form-horizontal
           .form-group
             label.control-label.col-md-3 Tehtävä
             .col-md-9
@@ -17,7 +17,8 @@
           .form-group
             label.control-label.col-md-3 Alkuaika
             .col-md-9
-              select.form-control(data-bind="options: $root.config.workHours,
+              select.form-control(required,
+                                  data-bind="options: $root.config.workHours,
                                              optionsValue: 'startTime',
                                              optionsText: 'formatted',
                                              value: startTime")
@@ -25,14 +26,14 @@
           .form-group
             label.control-label.col-md-3 Kesto (tuntia)
             .col-md-9
-              input.form-control(type="number", min="1", step="1", data-bind='value: hours')
+              input.form-control(type="number", required, min="1", step="1", data-bind='value: hours')
           .form-group
             label.control-label.col-md-3 Henkilömäärä
             .col-md-9
-              input.form-control(type="number", min="0", step="1", data-bind='value: required')
+              input.form-control(type="number", required, min="0", step="1", data-bind='value: required')
       .modal-footer.clearfix
         .btn-group.pull-right
-          button.btn.btn-default(data-bind='click: cancel') Peruuta
+          a.btn.btn-default(href='', data-bind='click: cancel') Peruuta
           button.btn.btn-success(data-bind='click: ok')
             i.kompassi-icon-space-right.fa.fa-check
-            | Aseta
+            | Tallenna

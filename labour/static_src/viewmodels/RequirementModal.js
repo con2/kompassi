@@ -18,9 +18,7 @@ export default class RequirementModal {
     this.resolve = null;
   }
 
-  // XXX wip
   prompt(requirementCell) {
-    console.log('RequirementModal', 'prompt', requirementCell)
     this.job(requirementCell.job);
     this.startTime(requirementCell.startTime);
     this.hours(1);

@@ -10,6 +10,7 @@ from django.utils.timezone import now
 
 import jsonschema
 
+from api.utils import JSONSchemaObject
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
 from core.utils import (
@@ -1342,12 +1343,8 @@ class InfoLink(models.Model):
         return self.title
 
 
-SetJobRequirementsRequestBase = namedtuple('SetJobRequirementsRequest', [
-    'startTime',
-    'hours',
-    'required',
-])
-class SetJobRequirementsRequest(SetJobRequirementsRequestBase):
+SetJobRequirementsRequestBase = namedtuple('SetJobRequirementsRequest', 'startTime hours required')
+class SetJobRequirementsRequest(SetJobRequirementsRequestBase, JSONSchemaObject):
     schema = dict(
         type='object',
         properties=dict(
@@ -1358,15 +1355,21 @@ class SetJobRequirementsRequest(SetJobRequirementsRequestBase):
         required=list(SetJobRequirementsRequestBase._fields),
     )
 
-    @classmethod
-    def from_dict(cls, d):
-        jsonschema.validate(d, cls.schema)
-        attrs = [d.get(key, u'') for key in cls._fields]
-        return cls(*attrs)
+
+EditJobRequestBase = namedtuple('EditJobRequest', 'title')
+class EditJobRequest(EditJobRequestBase, JSONSchemaObject):
+    schema = dict(
+        type='object',
+        properties=dict(
+            title=dict(type='string', minLength=1),
+        ),
+        required=['title',],
+    )
 
 
 __all__ = [
     'AlternativeSignupForm',
+    'EditJobRequest',
     'InfoLink',
     'Job',
     'JobCategory',
@@ -1374,6 +1377,7 @@ __all__ = [
     'PersonQualification',
     'Qualification',
     'QualificationExtraBase',
+    'SetJobRequirementsRequest',
     'Signup',
     'SignupExtraBase',
     'WorkPeriod',
