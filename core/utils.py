@@ -529,6 +529,10 @@ ONE_HOUR = timedelta(hours=1)
 
 
 def full_hours_between(start_time_inclusive, end_time_inclusive, unless=lambda x: False):
+    """
+    Note that the parameters are start and end inclusive: ie. if you ask for full hours between
+    3:00 PM and 5:00 PM, you get 3.00 PM, 4.00 PM and 5.00 PM.
+    """
     if any((
         start_time_inclusive.minute,
         start_time_inclusive.second,

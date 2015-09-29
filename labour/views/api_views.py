@@ -55,7 +55,7 @@ def labour_api_set_job_requirements_view(request, vars, event, job_category_slug
     params = SetJobRequirementsRequest.from_dict(json.loads(request.body))
 
     start_time = parse_datetime(params.startTime)
-    end_time = start_time + timedelta(hours=params.hours)
+    end_time = start_time + timedelta(hours=params.hours - 1) # -1 due to end parameter being inclusive
 
     start_time = max(start_time, event.labour_event_meta.work_begins)
     end_time = min(end_time, event.labour_event_meta.work_ends)
