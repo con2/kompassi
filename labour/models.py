@@ -532,6 +532,12 @@ class JobRequirement(models.Model):
 
         return [sum(r.count for r in requirements_by_start_time[t]) for t in work_hours]
 
+    def save(self, *args, **kwargs):
+        if self.start_time and not self.end_time:
+            self.end_time = self.start_time + ONE_HOUR
+
+        return super(JobRequirement, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = u'henkilöstövaatimus'
         verbose_name_plural = u'henkilöstövaatimukset'
