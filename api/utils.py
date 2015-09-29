@@ -36,19 +36,22 @@ def api_view(view_func):
             return JsonResponse(
                 dict(error='Unauthorized'),
                 status=401,
+                safe=False,
             )
         except Http404 as e:
             return JsonResponse(
                 dict(error='Not Found'),
                 status=404,
+                safe=False,
             )
         except ValidationError as e:
             return JsonResponse(
                 dict(error='Bad Request'),
                 status=400,
+                safe=False,
             )
 
-        return JsonResponse(result)
+        return JsonResponse(result, safe=False)
 
     return _decorator
 
