@@ -8,7 +8,7 @@ export default class RequirementCell {
     this.job = job; // might be null
     this.startTime = startTime;
     this.allocated = 0;
-    this.required = required;
+    this.required = required || 0;
   }
 
   edit() {
