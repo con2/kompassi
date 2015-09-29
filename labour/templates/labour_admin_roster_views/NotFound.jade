@@ -1,0 +1,4 @@
+.roster-not-found(data-bind="visible: $root.activeView() === 'NotFound'")
+  p
+  .container
+    .alert.alert-danger(role="alert") Alasivua ei löydy. <a data-bind="attr: { href: $root.config.urls.base }">Työvuorotyökalun etusivulle...</a>

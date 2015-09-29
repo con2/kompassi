@@ -2,10 +2,16 @@
   cursor: pointer;
 }
 #labour-admin-roster-view .roster-editable:hover {
-  background-color: #ccf;
+  text-decoration: underline;
 }
-.kompassi-inline-icon {
-  margin-right: 0.5em;
+.kompassi-icon-space-right {
+  margin-right: 0.3em;
+}
+.kompassi-icon-space-left {
+  margin-left: 0.3em;
+}
+.kompassi-space-above {
+  margin-top: 2em;
 }
 
 /*# sourceMappingURL=roster.css.map */

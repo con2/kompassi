@@ -15,5 +15,23 @@ export default class Roster {
     this.jobCategory = new JobCategory(this);
     this.jobRequirementModal = new JobRequirementModal(this);
     this.activeView = ko.observable('Overview');
+
+    this.setupRoutes();
+  }
+
+  // Not sure if $root is the best place for this
+  requirementCellCss(requirementCell) {
+    const {required, allocated} = requirementCell;
+
+    return {
+      'text-muted': required === 0,
+       danger: allocated === 0 && required > 0,
+       success: allocated > 0 && allocated === required,
+       info: allocated > required
+    };
+  }
+
+  setupRoutes() {
+    page('*', (ctx) => { this.activeView('NotFound'); });
   }
 }

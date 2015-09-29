@@ -3,8 +3,9 @@
 tbody(data-bind="foreach: jobCategories")
   tr(data-bind='attr: { id: "jobcategory-" + slug }')
     th: a(data-bind='text: title, attr: {href: urls.detail}')
-    // ko foreach: $root.config.workHours
-    th.text-muted 0/0
+    // ko foreach: requirementCells
+    th(data-bind="css: $root.requirementCellCss($data)")
+      |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
 // /ko
 // /ko

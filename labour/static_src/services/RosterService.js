@@ -11,14 +11,15 @@ const MOCK_JOB_CATEGORIES = [
       {
         title: "Tapahtumavastaava",
         slug: "tapv",
-        requirements: []
+        requirements: [1, 1, 1, 1]
       },
       {
         title: "Johtokeskuspäivystäjä",
         slug: "jkp",
         requirements: []
       }
-    ]
+    ],
+    requirements: [1, 1, 1, 1]
   },
   {
     title: "Erikoistehtävä",
@@ -87,19 +88,47 @@ const MOCK_JOB_CATEGORIES_BY_SLUG = _.indexBy(MOCK_JOB_CATEGORIES, 'slug')
 
 MOCK_JOB_CATEGORIES.forEach(jobCategory => {
   jobCategory.urls = {
-    detail: `${config.urls.base}/jobcategory/${jobCategory.slug}`,
-    edit: `${config.urls.base}/jobcategory/${jobCategory.slug}/edit`
+    detail: `${config.urls.base}/${jobCategory.slug}`
   };
 });
 
 
 export function getJobCategories() {
-  return Promise.resolve(MOCK_JOB_CATEGORIES);
+  return Promise.resolve(MOCK_JOB_CATEGORIES)
+  .then(jobCategories => {
+    jobCategories.forEach(jobCategory => {
+      jobCategory.requirementCells = requirementsToCells(jobCategory.requirements);
+    });
+
+    return jobCategories;
+  })
 }
 
 
 export function getJobCategory(slug) {
-  return Promise.resolve(MOCK_JOB_CATEGORIES_BY_SLUG[slug]);
+  return Promise.resolve(MOCK_JOB_CATEGORIES_BY_SLUG[slug])
+  .then(jobCategory => {
+    jobCategory.requirementCells = requirementsToCells(jobCategory.requirements);
+
+    // XXX || [] is for early devt
+    (jobCategory.jobs || []).forEach(job => {
+      job.jobCategory = jobCategory;
+      job.requirementCells = requirementsToCells(job.requirements);
+    });
+
+    return jobCategory;
+  });
+}
+
+
+function requirementsToCells(requirements) {
+  return _.chain(config.workHours)
+  .zip(requirements)
+  .map(([hour, numPeopleRequired]) => ({
+    hour: hour,
+    allocated: 0, // TODO
+    required: numPeopleRequired || 0, // XXX || 0 is for early devt
+  })).value();
 }
 
 

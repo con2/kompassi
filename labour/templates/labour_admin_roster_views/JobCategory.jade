@@ -7,16 +7,27 @@ tbody
         span(data-bind='text: title')
         | &nbsp;
         small: a(data-bind='attr: {href: $root.config.urls.base}') Takaisin
-    // ko foreach: $root.config.workHours
-    th.text-muted 0/0
+    // ko foreach: requirementCells
+    th(data-bind="css: $root.requirementCellCss($data)")
+      |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
   // ko foreach: jobCategory().jobs
   tr
     td
-      div(data-bind='text: title')
-    // ko foreach: $root.config.workHours
-    td.text-muted.roster-editable(data-bind='click: $root.jobRequirementModal.show') 0/0
+      a(href='')
+        span(data-bind='text: title')
+        i.fa.fa-pencil-square-o.kompassi-icon-space-left
+
+    // ko foreach: requirementCells
+    td.roster-editable(data-bind="click: $root.jobRequirementModal.show,
+                                  css: $root.requirementCellCss($data)")
+      |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
   // /ko
+  tr
+    td
+      a(href='')
+        i.fa.fa-plus.kompassi-icon-space-right
+        span Lisää tehtävä
 // /ko
 // /ko

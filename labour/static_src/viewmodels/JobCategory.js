@@ -19,7 +19,7 @@ export default class JobCategory {
       activate: (ctx) => { this.app.activeView('JobCategory'); },
     }
 
-    page('/jobcategory/:jobCategorySlug',
+    page('/:jobCategorySlug',
       this.actions.selectJobCategory,
       this.actions.activate
     );
