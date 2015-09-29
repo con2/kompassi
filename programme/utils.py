@@ -9,7 +9,7 @@ def window(seq, n=2):
     it = iter(seq)
     result = tuple(islice(it, n))
     if len(result) == n:
-        yield result    
+        yield result
     for elem in it:
         result = result[1:] + (elem,)
         yield result
@@ -20,28 +20,3 @@ def next_full_hour(t):
     return t
   else:
     return t.replace(hour=t.hour + 1, minute=0, second=0, microsecond=0)
-
-
-def full_hours_between(start_time_inclusive, end_time_inclusive, unless=lambda x: False):
-  if any((
-    start_time_inclusive.minute,
-    start_time_inclusive.second,
-    start_time_inclusive.microsecond,
-    end_time_inclusive.minute,
-    end_time_inclusive.second,
-    end_time_inclusive.microsecond
-  )):
-    raise ValueError('expecting full hours')
-
-  if start_time_inclusive > end_time_inclusive:
-    raise ValueError('start > end')
-
-  result = []
-
-  cur = start_time_inclusive
-  while cur <= end_time_inclusive:
-    if not unless(cur):
-      result.append(cur)
-    cur = cur + timedelta(hours=1)
-
-  return result

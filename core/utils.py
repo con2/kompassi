@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from datetime import datetime, timedelta
 from functools import wraps
 from itertools import groupby
 from random import randint
@@ -522,3 +523,31 @@ def mutate_query_params(request, mutations):
         else:
             new_qs[key] = value
     return new_qs.urlencode()
+
+
+ONE_HOUR = timedelta(hours=1)
+
+
+def full_hours_between(start_time_inclusive, end_time_inclusive, unless=lambda x: False):
+    if any((
+        start_time_inclusive.minute,
+        start_time_inclusive.second,
+        start_time_inclusive.microsecond,
+        end_time_inclusive.minute,
+        end_time_inclusive.second,
+        end_time_inclusive.microsecond
+    )):
+        raise ValueError('expecting full hours')
+
+    if start_time_inclusive > end_time_inclusive:
+        raise ValueError('start > end')
+
+    result = []
+
+    cur = start_time_inclusive
+    while cur <= end_time_inclusive:
+        if not unless(cur):
+            result.append(cur)
+        cur = cur + ONE_HOUR
+
+    return result

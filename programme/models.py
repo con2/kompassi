@@ -8,9 +8,9 @@ from django.utils.timezone import now
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, OneTimeCode
-from core.utils import url, alias_property, slugify
+from core.utils import url, alias_property, slugify, full_hours_between
 
-from .utils import window, next_full_hour, full_hours_between
+from .utils import window, next_full_hour
 
 
 ONE_HOUR = datetime.timedelta(hours=1)
