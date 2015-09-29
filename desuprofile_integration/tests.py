@@ -81,3 +81,17 @@ class DesuprofileValidationTestCase(TestCase):
         with self.assertRaises(ValidationError):
             Desuprofile.from_dict(malformed_email)
 
+    def test_quirks(self):
+        # Desuprofile gives null instead of missing key or empty string for birth_date
+        null_birth_date = dict(
+            id=2559,
+            username='japsu',
+            email='foo@bar.fi',
+            first_name='Foo',
+            last_name='Bar',
+            nickname='Quux',
+            phone='',
+            birth_date=None,
+        )
+
+        Desuprofile.from_dict(null_birth_date)

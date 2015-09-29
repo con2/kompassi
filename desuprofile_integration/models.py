@@ -58,7 +58,12 @@ class Desuprofile(DesuprofileBase, JSONSchemaObject):
             nickname=dict(type='string', optional=True),
             email=dict(type='string', pattern=r'.+@.+\..+'),
             phone=dict(type='string'),
-            birth_date=dict(type='string', pattern=r'\d{4}-\d{1,2}-\d{1,2}'),
+
+            # XXX
+            birth_date=dict(anyOf=[
+                dict(type='string', pattern=r'\d{4}-\d{1,2}-\d{1,2}'),
+                dict(type='null'),
+            ]),
         ),
         required=['id', 'username', 'first_name', 'last_name', 'email'],
     )
