@@ -35,4 +35,9 @@ export default class RequirementCell {
     return _.zip(app.config.workHours, jobCategory.requirements)
     .map(([hour, required]) => new RequirementCell(app, jobCategory, null, hour.startTime, required));
   }
+
+  static forOverview(app, requirements) {
+    return _.zip(app.config.workHours, requirements)
+    .map(([hour, required]) => new RequirementCell(app, null, null, hour.startTime, required));
+  }
 }

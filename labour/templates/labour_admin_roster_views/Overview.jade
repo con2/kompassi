@@ -1,10 +1,17 @@
 // ko if: $root.activeView() == 'Overview'
 // ko with: overview
-tbody(data-bind="foreach: jobCategories")
-  tr(data-bind='attr: { id: "jobcategory-" + slug }')
+thead
+  tr
+    th Yhteensä
+    // ko foreach: totals
+    th(data-bind="css: css()")
+      |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
+    // /ko
+tbody(data-bind='foreach: jobCategories')
+  tr
     th: a(data-bind='text: title, attr: {href: urls.detail}')
     // ko foreach: requirementCells
-    th(data-bind="css: css($data)")
+    th(data-bind="css: css()")
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
 // /ko

@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import config from './ConfigService';
 import {getJSON, putJSON, postJSON, deleteJSON} from '../helpers/FetchHelper';
+import {sumRequirements} from '../helpers/RequirementHelper';
 
 
 function enrichJobCategories(jobCategories) {
@@ -19,7 +20,7 @@ function enrichJobCategory(jobCategory) {
   };
 
   if(jobCategory.jobs) {
-    jobCategory.requirements = _.zip.apply(_, _.pluck(jobCategory.jobs, 'requirements')).map(_.sum);
+    jobCategory.requirements = sumRequirements(jobCategory.jobs);
     jobCategory.jobs.forEach(job => { job.jobCategory = jobCategory; });
   }
 

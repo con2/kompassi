@@ -1,6 +1,6 @@
 // ko if: $root.activeView() == 'JobCategory'
 // ko with: jobCategory
-tbody
+thead
   tr(data-bind='with: jobCategory')
     th
       div
@@ -11,6 +11,7 @@ tbody
     th(data-bind="css: css()")
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
+tbody
   // ko foreach: jobCategory().jobs
   tr
     td
