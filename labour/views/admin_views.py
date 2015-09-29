@@ -317,12 +317,12 @@ def labour_admin_menu_items(request, event):
         (dashboard_active, dashboard_url, dashboard_text),
         (signups_active, signups_url, signups_text),
         (mail_active, mail_url, mail_text),
+        (roster_active, roster_url, roster_text),
     ]
 
     # unstable / development features
     if settings.DEBUG:
         menu_items.extend((
-            (roster_active, roster_url, roster_text),
             (query_active, query_url, query_text),
         ))
 
