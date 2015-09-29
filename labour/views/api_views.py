@@ -70,7 +70,6 @@ def labour_api_job_view(request, vars, event, job_category_slug, job_slug=None):
 
 @labour_admin_required
 @require_POST
-@csrf_exempt
 @api_view
 def labour_api_set_job_requirements_view(request, vars, event, job_category_slug, job_slug):
     job_category = get_object_or_404(JobCategory, event=event, slug=job_category_slug)
