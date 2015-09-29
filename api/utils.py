@@ -3,7 +3,7 @@ from datetime import datetime, date
 from functools import wraps
 
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 
 # https://djangosnippets.org/snippets/1304/
@@ -43,6 +43,12 @@ def api_view(view_func):
             return HttpResponse(
                 json.dumps(dict(error='Unauthorized')),
                 status=401,
+                content_type='application/json'
+            )
+        except Http404 as e:
+            return HttpResponse(
+                json.dumps(dict(error='Not Found')),
+                status=404,
                 content_type='application/json'
             )
 

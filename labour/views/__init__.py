@@ -24,3 +24,8 @@ from .query_views import (
     query_index,
     query_exec,
 )
+
+from .api_views import (
+    labour_api_job_categories_view,
+    labour_api_job_category_view,
+)

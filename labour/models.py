@@ -14,8 +14,9 @@ from core.utils import (
     ensure_user_is_member_of_group,
     ensure_user_is_not_member_of_group,
     is_within_period,
-    SLUG_FIELD_PARAMS,
     NONUNIQUE_SLUG_FIELD_PARAMS,
+    pick_attrs,
+    SLUG_FIELD_PARAMS,
     slugify,
     time_bool_property,
 )
@@ -357,6 +358,7 @@ class JobCategory(models.Model):
     event = models.ForeignKey('core.Event', verbose_name=u'tapahtuma')
     app_label = models.CharField(max_length=63, blank=True, default='labour')
 
+    # TODO rename this to "title"
     name = models.CharField(max_length=63, verbose_name=u'tehtäväalueen nimi')
     slug = models.CharField(**dict(NONUNIQUE_SLUG_FIELD_PARAMS))
 
@@ -401,6 +403,13 @@ class JobCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def title(self):
+        return self.name
+    @title.setter
+    def title(self, new_title):
+        self.name = new_title
+
     @classmethod
     def get_or_create_dummies(cls):
         from core.models import Event
@@ -410,11 +419,31 @@ class JobCategory(models.Model):
 
         return [jc1, jc2]
 
+    def _make_requirements(self):
+        """
+        Returns an array of integers representing the sum of JobRequirements for this JobCategory
+        where indexes correspond to those of work_hours for this event.
+        """
+        n = self.job_set.count()
+        return [n, n, n, n] # XXX stub
+
     def save(self, *args, **kwargs):
         if self.slug is None and self.name is not None:
             self.slug = slugify(self.name)
 
         return super(JobCategory, self).save(*args, **kwargs)
+
+    def as_dict(self, include_jobs=False):
+        doc = pick_attrs(self,
+            'title',
+            'slug',
+            requirements=self._make_requirements()
+        )
+
+        if include_jobs:
+            doc['jobs'] = [job.as_dict() for job in self.job_set.all()]
+
+        return doc
 
 
 class WorkPeriod(models.Model):
@@ -450,28 +479,12 @@ class Job(models.Model):
     def __unicode__(self):
         return self.title
 
-    @property
-    def expanded_requirements(self):
-        requirements = []
-
-        for hour in self.job_category.event.labour_event_meta.work_hours:
-            try:
-                job_requirement = self.jobrequirement_set.get(
-                    start_time__lte=hour,
-                    end_time__gt=hour,
-                )
-                count = job_requirement.count
-            except JobRequirement.DoesNotExist:
-                count = 0
-
-            requirements.append(JobRequirement(
-                job=self,
-                start_time=hour,
-                end_time=hour + ONE_HOUR,
-                count=count
-            ))
-
-        return requirements
+    def _make_requirements(self):
+        """
+        Returns an array of integers representing the sum of JobRequirements for this JobCategory
+        where indexes correspond to those of work_hours for this event.
+        """
+        return [1, 1, 1, 1] # XXX stub
 
 
 class JobRequirement(models.Model):

@@ -64,4 +64,16 @@ urlpatterns = patterns('',
         query_exec,
         name='labour_admin_query_exec'
     ),
+
+
+    url(
+        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/jobcategories/?$',
+        labour_api_job_categories_view,
+        name='labour_api_job_categories_view'
+    ),
+    url(
+        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/jobcategories/(?P<job_category_slug>[a-z0-9-]+)/?$',
+        labour_api_job_category_view,
+        name='labour_api_job_category_view'
+    )
 )
