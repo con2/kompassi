@@ -11,7 +11,7 @@ block admin_content
         .col-md-9
           for jc, active in job_category_filters
             if active
-              span.label.label-info.kompassi-space-after
+              span.label.label-brand.kompassi-space-after
                 a(href='?{{ jc.qs_del }}') {{ jc.name }}
             else
               span.label.label-default.kompassi-space-after
@@ -21,7 +21,7 @@ block admin_content
         .col-md-9
           for jc, active in job_category_accepted_filters
             if active
-              span.label.label-info.kompassi-space-after
+              span.label.label-brand.kompassi-space-after
                 a(href='?{{ jc.qs_del }}') {{ jc.name }}
             else
               span.label.label-default.kompassi-space-after
@@ -31,7 +31,7 @@ block admin_content
         .col-md-9
           for sf, active in state_filter
             if active
-              span.label.label-info.kompassi-space-after
+              span.label.label-brand.kompassi-space-after
                 a(href='?{{ sf.qs_del }}') {{ sf.name }}
             else
               span.label.label-default.kompassi-space-after
@@ -42,7 +42,7 @@ block admin_content
         .col-md-9
           for so, active in sorter
             if active
-              span.label.label-info.kompassi-space-after
+              span.label.label-brand.kompassi-space-after
                 a(href='?{{ so.qs_add }}') {{ so.name }}
             else
               span.label.label-default.kompassi-space-after
