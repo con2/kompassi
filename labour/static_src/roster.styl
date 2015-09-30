@@ -5,6 +5,10 @@
     &:hover
       text-decoration underline
 
+  // necessary to avoid all kinds of graphical glitches with frozen first column
+  .roster-timeline, .roster-timeline th, .roster-timeline td
+    height 60px
+
 .kompassi-icon-space-right
   margin-right 0.3em
 
@@ -13,3 +17,15 @@
 
 .kompassi-space-above
   margin-top 2em
+
+.kompassi-frozen-table-container
+  overflow-x scroll
+  margin-left 200px
+  overflow-y visible
+  padding-bottom 1px
+
+.kompassi-freeze-first-column
+  position absolute
+  width 200px
+  left 0
+  top auto

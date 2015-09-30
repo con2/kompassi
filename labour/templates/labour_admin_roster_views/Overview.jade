@@ -2,14 +2,14 @@
 // ko with: overview
 thead
   tr
-    th Yhteensä
+    th.kompassi-freeze-first-column Yhteensä
     // ko foreach: totals
     th(data-bind="css: css()")
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
 tbody(data-bind='foreach: jobCategories')
   tr
-    th: a(data-bind='text: title, attr: {href: urls.detail}')
+    th.kompassi-freeze-first-column: a(data-bind='text: title, attr: {href: urls.detail}')
     // ko foreach: requirementCells
     th(data-bind="css: css()")
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>

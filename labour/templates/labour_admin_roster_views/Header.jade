@@ -1,10 +1,11 @@
 thead
-  td
-    div: strong Tehtäväalue
-    div(data-bind="if: $root.activeView() == 'JobCategory'") Tehtävä
+  tr.roster-timeline
+    td.kompassi-freeze-first-column
+      div: strong Tehtäväalue
+      div(data-bind="if: $root.activeView() == 'JobCategory'") Tehtävä
 
-  // ko foreach: $root.config.workHours
-  th
-    div(data-bind="text: moment.format('ddd')")
-    div(data-bind="text: moment.format('HH')")
-  // /ko
+    // ko foreach: $root.config.workHours
+    th
+      div(data-bind="text: moment.format('ddd')")
+      div(data-bind="text: moment.format('HH')")
+    // /ko

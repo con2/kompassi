@@ -2,7 +2,7 @@
 // ko with: jobCategory
 thead
   tr(data-bind='with: jobCategory')
-    th
+    th.kompassi-freeze-first-column
       div
         span(data-bind='text: title')
         | &nbsp;
@@ -14,7 +14,7 @@ thead
 tbody
   // ko foreach: jobCategory().jobs
   tr
-    td
+    td.kompassi-freeze-first-column
       a(href='', data-bind="click: function() { $parent.editJob($data) }")
         span(data-bind='text: title')
         i.fa.fa-pencil-square-o.kompassi-icon-space-left
@@ -26,7 +26,7 @@ tbody
     // /ko
   // /ko
   tr
-    td
+    td.kompassi-freeze-first-column
       a(href='', data-bind="click: createJob")
         i.fa.fa-plus.kompassi-icon-space-right
         span Lisää tehtävä

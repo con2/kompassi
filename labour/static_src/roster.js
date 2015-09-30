@@ -1,5 +1,8 @@
 'use strict';
 
+// polyfills
+import 'babelify/polyfill';
+import 'whatwg-fetch';
 
 import ko from 'knockout';
 import page from 'page';
