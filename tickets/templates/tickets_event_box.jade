@@ -3,11 +3,11 @@ h3 Lipunmyynti
 if event.tickets_event_meta.is_ticket_sales_open
   h4 Tapahtuman lipunmyynti on käynnissä
 
-  p: a(href='{% url "tickets_welcome_view" event.slug %}') Osta lippuja
+  p: a(href='{% url "tickets_welcome_view" event.slug %}').btn.btn-primary Osta lippuja
 else
   h4 Tapahtuman lipunmyynti ei ole tällä hetkellä käynnissä.
 
 if is_tickets_admin
-  h4 Sinulla on lipunmyyntivastaavan oikeudet tähän tapahtumaan
+  h4 Sinulla on lipunmyynti&shy;vastaavan oikeudet tähän tapahtumaan
 
-  p: a(href='{% url "tickets_admin_stats_view" event.slug %}') Siirry lipunmyynnin hallintaan
+  p: a(href='{% url "tickets_admin_stats_view" event.slug %}').btn.btn-primary Siirry lipunmyynnin hallintaan

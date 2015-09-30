@@ -4,12 +4,12 @@ block title
   if alternative_signup_form
     | {{ alternative_signup_form.title }}
   else
-    | Ilmoittaudu vapaaehtoistyöhön
+    | Ilmoittaudu vapaaehtois&shy;työhön
 block content
   if alternative_signup_form
     h2 {{ alternative_signup_form.title }}
   else
-    h2 Ilmoittaudu vapaaehtoistyöhön {{ event.name_illative }}
+    h2 Ilmoittaudu vapaaehtois&shy;työhön {{ event.name_illative }}
 
   form(method='POST', role='form').form-horizontal
     .labour-signup-form

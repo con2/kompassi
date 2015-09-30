@@ -7,7 +7,7 @@ block content
       .col-md-8
         h2 {{ event.name }}
           small.text-muted
-            | {{ event.venue.name_inessive }}
+            | &nbsp; {{ event.venue.name_inessive }}
             if event.start_time
               {{ event.formatted_start_and_end_date }}
 
@@ -19,15 +19,20 @@ block content
 
     if event.labour_event_meta
       include labour_event_box.jade
+      hr
 
     if event.programme_event_meta
       include programme_event_box.jade
+      hr
 
     if event.tickets_event_meta
       include tickets_event_box.jade
+      hr
 
     if event.badges_event_meta
       include badges_event_box.jade
+      hr
 
     if event.sms_event_meta
       include sms_event_box.jade
+      hr

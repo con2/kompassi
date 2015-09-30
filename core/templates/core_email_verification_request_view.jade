@@ -1,14 +1,14 @@
 extend core_profile_base
 block title
-  | Sähköpostiosoitteen vahvistaminen
+  | Sähköposti&shy;osoitteen vahvistaminen
 block profile_content
   fieldset
-    legend Sähköpostiosoitteen vahvistaminen
+    legend Sähköposti&shy;osoitteen vahvistaminen
 
-    p Pyydämme kaikkia käyttäjiä vahvistamaan sähköpostiosoitteensa napsauttamalla sähköpostiinsa lähetettyä vahvistuslinkkiä. Jotkin {{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} toiminnot edellyttävät vahvistettua sähköpostiosoitetta.
+    p Pyydämme kaikkia käyttäjiä vahvistamaan sähköposti&shy;osoitteensa napsauttamalla sähköpostiinsa lähetettyä vahvistuslinkkiä. Jotkin {{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} toiminnot edellyttävät vahvistettua sähköposti&shy;osoitetta.
 
     if code
-      p Sähköpostiosoitteeseesi <em>{{ user.person.email }}</em> on {{ code.created_at|date }} lähetetty vahvistuslinkki, jota napsauttamalla voit vahvistaa sähköpostiosoitteesi. Jos viesti ei ole tullut perille tai vahvistaminen ei sen linkillä jostain syystä onnistu, voit pyytää uuden vahvistuslinkin allaolevalla napilla.
+      p Sähköposti&shy;osoitteeseesi <em>{{ user.person.email }}</em> on {{ code.created_at|date }} lähetetty vahvistuslinkki, jota napsauttamalla voit vahvistaa sähköposti&shy;osoitteesi. Jos viesti ei ole tullut perille tai vahvistaminen ei sen linkillä jostain syystä onnistu, voit pyytää uuden vahvistuslinkin allaolevalla napilla.
 
     form(action='{% url "core_email_verification_request_view" %}', method='post')
       {% csrf_token %}

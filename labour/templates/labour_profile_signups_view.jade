@@ -1,6 +1,6 @@
 extends core_profile_base
 block title
-  | Työvoimahakemukset
+  | Työvoima&shy;hakemukset
 block profile_content
   if signup_current_events.exists
     h3 Työskentely parhaillaan käynnissä olevissa tapahtumissa
@@ -15,5 +15,5 @@ block profile_content
     for signup in signups_past_events
       include labour_profile_signup_box.jade
   if no_signups
-    h3 Ei työvoimahakemuksia
-    p Et ole hakenut töihin yhteenkään {{ KOMPASSI_INSTALLATION_NAME_PARTITIVE }} työvoimanhallintaan käyttävään tapahtumaan.
+    h3 Ei työvoima&shy;hakemuksia
+    p Et ole hakenut töihin yhteenkään {{ KOMPASSI_INSTALLATION_NAME_PARTITIVE }} työvoiman&shy;hallintaa käyttävään tapahtumaan.
