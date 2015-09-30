@@ -15,7 +15,7 @@ block profile_content
         .panel-body
           {{ granted_privilege.privilege.description|safe }}
   else
-    p Sinulle ei ole myönnetty käyttöoikeuksia.
+    p Sinulle ei ole myönnetty käyttö&shy;oikeuksia.
 
   h3 Mahdolliset käyttöoikeudet
   if potential_privileges.exists
@@ -34,6 +34,6 @@ block profile_content
               input.btn.btn-success(type='submit', value='Pyydä käyttöoikeutta')
           else
             button.btn.disabled(disabled) Pyydä käyttöoikeutta
-            strong.text-danger &emsp;Käyttöoikeuden pyytäminen edellyttää <a href='{% url "core_email_verification_request_view" %}'>vahvistettua sähköpostiosoitetta</a>.
+            strong.text-danger &emsp;Käyttöoikeuden pyytäminen edellyttää <a href='{% url "core_email_verification_request_view" %}'>vahvistettua sähköposti&shy;osoitetta</a>.
   else
-    p Et tällä hetkellä voi pyytää mitään käyttöoikeuksia.
+    p Et tällä hetkellä voi pyytää mitään käyttö&shy;oikeuksia.

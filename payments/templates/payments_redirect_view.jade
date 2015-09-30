@@ -5,10 +5,10 @@ html
     link(rel='stylesheet', href='{{ STATIC_URL }}bootstrap/bootstrap.min.css')
   body
     .container
-      h1 Uudelleenohjaus
+      h1 Uudelleen&shy;ohjaus
       .row
         .col-md-5.well
-          p Uudelleenohjataan maksupalveluun. Jos tämä sivu jää pitkäksi aikaa näkyviin, paina allaolevaa nappia.
+          p Uudelleen&shy;ohjataan maksupalveluun. Jos tämä sivu jää pitkäksi aikaa näkyviin, paina allaolevaa nappia.
 
           form(id='payment_form', method='post', action='https://payment.checkout.fi/')
             input(type='hidden', name='VERSION', value='{{ CHECKOUT_PARAMS.VERSION }}')

@@ -28,10 +28,10 @@ block admin_content
               button(type='submit', name='delete', value='delete').btn.btn-danger Poista ohjelmanumero
       if can_send_link
         .panel.panel-default
-          .panel-heading: strong Muokkauslinkin lähettäminen ohjelmanpitäjälle
+          .panel-heading: strong Muokkauslinkin lähettäminen ohjelman&shy;pitäjälle
           if programme.programmeedittoken_set.exists
             .panel-body
-              p Ohjelmanumerolle on lähetetty seuraavat muokkauslinkit:
+              p Ohjelma&shy;numerolle on lähetetty seuraavat muokkauslinkit:
             ul.list-group
               for token in programme.programmeedittoken_set.all
                 li.list-group-item
@@ -41,7 +41,7 @@ block admin_content
                     span.badge.badge-success käytetty viimeksi {{ token.used_at|date:"SHORT_DATETIME_FORMAT" }}
           else
             .panel-body
-              p Muokkauslinkkejä ei ole lähetetty.
+              p Muokkaus&shy;linkkejä ei ole lähetetty.
           .panel-footer.clearfix
             p.text-muted Myös nämä toiminnot tallentavat ohjelmanumeron tiedot.
             .btn-group.pull-right

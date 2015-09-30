@@ -23,6 +23,6 @@ block admin_content
       .btn-group.pull-right
         button.btn.btn-default(type='button', data-toggle='dropdown') Vie <span class='caret'></span>
         ul.dropdown-menu(role='menu')
-          li: a.btn.btn-link(href='{% url "programme_admin_email_list_view" event.slug %}', target='_blank') Sähköpostiosoitteet
+          li: a.btn.btn-link(href='{% url "programme_admin_email_list_view" event.slug %}', target='_blank') Sähköposti&shy;osoitteet
           li: a.btn.btn-link(href='{% url "programme_admin_export_view" event.slug %}') Kaikki ohjelmatiedot
         a.btn.btn-primary(href='{% url "programme_admin_new_view" event.slug %}') Uusi ohjelma
