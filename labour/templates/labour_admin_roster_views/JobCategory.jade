@@ -24,6 +24,13 @@ tbody
                                   css: css()")
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
+  // ko foreach: lanes
+  tr
+    td
+    // ko foreach: cells
+    td(data-bind="attr: {colspan: hours}")
+    // /ko
+  // /ko
   // /ko
   tr
     td.kompassi-freeze-first-column

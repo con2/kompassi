@@ -13,6 +13,7 @@ import {
 import JobModal from './JobModal';
 import RequirementCell from './RequirementCell';
 import RequirementModal from './RequirementModal';
+import Lane from './Lane';
 
 
 export default class JobCategory {
@@ -30,6 +31,12 @@ export default class JobCategory {
     jobCategory.requirementCells = RequirementCell.forJobCategory(this.app, jobCategory);
     jobCategory.jobs.forEach(job => {
       job.requirementCells = RequirementCell.forJob(this.app, job);
+
+      job.lanes = [];
+      const numLanes = _.max(job.requirements);
+      for (let i = 0; i < numLanes; ++i) {
+        job.lanes.push(new Lane(this.app, job, i));
+      }
     });
 
     this.jobCategory(jobCategory);
