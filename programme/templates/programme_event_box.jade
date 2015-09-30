@@ -3,11 +3,11 @@ h3 Ohjelma
 if event.programme_event_meta.is_public
   h4 Tapahtuman ohjelmakartta on julkaistu
 
-  p: a(href='{% url "programme_timetable_view" event.slug %}') Tutustu ohjelmakarttaan
+  p: a(href='{% url "programme_timetable_view" event.slug %}').btn.btn-primary Tutustu ohjelmakarttaan
 else
   h4 Tapahtuman ohjelmakarttaa ei ole vielä julkaistu.
 
 if is_programme_admin
   h4 Sinulla on ohjelmavastaavan oikeudet tähän tapahtumaan
 
-  p: a(href='{% url "programme_admin_view" event.slug %}') Siirry ohjelman hallintaan
+  p: a(href='{% url "programme_admin_view" event.slug %}').btn.btn-primary Siirry ohjelman hallintaan
