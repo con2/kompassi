@@ -19,6 +19,7 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.layout = Layout(
             'shift_type',
             'total_work',
+            'night_work',
             indented_without_label('construction'),
             indented_without_label('overseer'),
 
@@ -30,8 +31,9 @@ class SignupExtraForm(forms.ModelForm):
                 'shirt_size',
                 'special_diet',
                 'special_diet_other',
-                'lodging_needs',
+                indented_without_label('need_lodging'),
                 'prior_experience',
+                'shift_wishes',
                 'free_text',
             )
         )
@@ -42,6 +44,7 @@ class SignupExtraForm(forms.ModelForm):
         fields = (
             'shift_type',
             'total_work',
+            'night_work',
             'construction',
             'overseer',
             'want_certificate',
@@ -49,14 +52,14 @@ class SignupExtraForm(forms.ModelForm):
             'shirt_size',
             'special_diet',
             'special_diet_other',
-            'lodging_needs',
+            'need_lodging',
             'prior_experience',
+            'shift_wishes',
             'free_text',
         )
 
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
-            lodging_needs=forms.CheckboxSelectMultiple,
         )
 
     def clean_certificate_delivery_address(self):
@@ -136,6 +139,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             total_work='yli12h',
             construction=False,
             overseer=False,
+            need_lodging=False,
             want_certificate=False,
             certificate_delivery_address=u'',
             prior_experience=u'',
@@ -144,5 +148,4 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict(
-            lodging_needs=[],
         )

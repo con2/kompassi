@@ -65,7 +65,7 @@ class Setup(object):
             Qualification,
             WorkPeriod,
         )
-        from ...models import SignupExtra, SpecialDiet, Night
+        from ...models import SignupExtra, SpecialDiet
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, created = LabourEventMeta.get_or_create_group(self.event, 'admins')
@@ -140,7 +140,7 @@ class Setup(object):
         ylivankari = PersonnelClass.objects.get(event=self.event, slug='ylivankari')
         ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
-        for name, description, pcs in [
+        for jc_data in [
             (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen', [conitea]),
 
             (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, ylivankari]),
@@ -149,17 +149,23 @@ class Setup(object):
             (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima, ylivankari]),
             (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.', [tyovoima, ylivankari]),
             (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima, ylivankari]),
-            (u'Lipunmyynti ja narikka', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, ylivankari]),
-            (u'Info-, ohjelma- ja yleisvänkäri', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, ylivankari]),
+            (u'myynti', u'Lipunmyynti ja narikka', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, ylivankari]),
+            (u'info', u'Info-, ohjelma- ja yleisvänkäri', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, ylivankari]),
 
             (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
+            if len(jc_data) == 3:
+                name, description, pcs = jc_data
+                slug = slugify(name)
+            elif len(jc_data) == 4:
+                slug, name, description, pcs = jc_data
+
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
-                name=name,
+                slug=slug,
                 defaults=dict(
+                    name=name,
                     description=description,
-                    slug=slugify(name),
                 )
             )
 
@@ -175,7 +181,6 @@ class Setup(object):
         for jc_name, qualification_name in [
             (u'Järjestyksenvalvoja', u'JV-kortti'),
             (u'Logistiikka', u'Henkilöauton ajokortti (B)'),
-            (u'Green room', u'Hygieniapassi'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
@@ -205,12 +210,6 @@ class Setup(object):
             u'Lakto-ovo-vegaaninen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
-
-        for night in [
-            u'Perjantain ja lauantain välinen yö',
-            u'Lauantain ja sunnuntain välinen yö',
-        ]:
-            Night.objects.get_or_create(name=night)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,

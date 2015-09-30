@@ -26,6 +26,12 @@ SHIRT_SIZES = [
     (u'LF_XL', u'XL Ladyfit'),
 ]
 
+NIGHT_WORK_CHOICES = [
+    (u'miel', u'Työskentelen mielelläni yövuorossa'),
+    (u'tarv', u'Voin tarvittaessa työskennellä yövuorossa'),
+    (u'ei', u'En vaan voi työskennellä yövuorossa'),
+]
+
 SHIFT_TYPE_CHOICES = [
     (u'yksipitka', 'Yksi pitkä vuoro'),
     (u'montalyhytta', 'Monta lyhyempää vuoroa'),
@@ -34,7 +40,7 @@ SHIFT_TYPE_CHOICES = [
 
 TOTAL_WORK_CHOICES = [
     (u'8h', 'Minimi - 8 tuntia (1 lämmin ateria)'),
-    (u'12h', '12 tuntia (2 lämmintä ateriaa)'),
+    (u'12h', '10–12 tuntia (2 lämmintä ateriaa)'),
     (u'yli12h', 'Työn Sankari! Yli 12 tuntia! (2 lämmintä ateriaa)'),
 ]
 
@@ -53,10 +59,6 @@ class SpecialDiet(SimpleChoice):
     pass
 
 
-class Night(SimpleChoice):
-    pass
-
-
 class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(max_length=15,
         verbose_name=u'Toivottu työvuoron pituus',
@@ -70,16 +72,22 @@ class SignupExtra(SignupExtraBase):
         choices=TOTAL_WORK_CHOICES,
     )
 
+    night_work = models.CharField(max_length=5,
+        verbose_name=u'Voitko työskennellä yöllä?',
+        help_text=u'Yötöitä voi olla ainoastaan lauantain ja sunnuntain välisenä yönä.',
+        choices=NIGHT_WORK_CHOICES,
+    )
+
     construction = models.BooleanField(
         default=False,
-        verbose_name=u'Voin osallistua perjantain kasaustalkoisiin',
-        help_text=u'Kasaustalkoisiin osallistumista ei lasketa tapahtuman aikaiseen kokonaistyömäärään.',
+        verbose_name=u'Voin työskennellä jo perjantaina 27. marraskuuta',
+        help_text=u'Huomaathan, että perjantain ja lauantain väliselle yölle ei ole tarjolla majoitusta.',
     )
 
     overseer = models.BooleanField(
         default=False,
-        verbose_name=u'Olen kiinnostunut vänkärikersantin tehtävistä',
-        help_text=u'Ylivänkärit eli kersantit ovat kokeneempia conityöläisiä, jotka toimivat oman tehtäväalueensa tiiminvetäjänä.',
+        verbose_name=u'Olen kiinnostunut vuorovastaavan tehtävistä',
+        help_text=u'Vuorovastaavat ovat kokeneempia conityöläisiä, jotka toimivat oman tehtäväalueensa tiiminvetäjänä.',
     )
 
     want_certificate = models.BooleanField(
@@ -110,11 +118,9 @@ class SignupExtra(SignupExtraBase):
             u'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
     )
 
-    lodging_needs = models.ManyToManyField(Night,
-        blank=True,
-        verbose_name=u'Tarvitsen lattiamajoitusta',
-        help_text=u'Ruksaa ne yöt, joille tarvitset lattiamajoitusta. Lattiamajoitus sijaitsee '
-            u'kävelymatkan päässä tapahtumapaikalta.',
+    need_lodging = models.BooleanField(
+        default=False,
+        verbose_name=u'Tarvitsen lattiamajoitusta lauantain ja sunnuntain väliseksi yöksi',
     )
 
     prior_experience = models.TextField(
@@ -123,6 +129,13 @@ class SignupExtra(SignupExtraBase):
         help_text=u'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
             u'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
             u'hakemassasi tehtävässä.'
+    )
+
+    shift_wishes = models.TextField(
+        blank=True,
+        verbose_name=u'Alustavat työvuorotoiveet',
+        help_text=u'Jos tiedät nyt jo, ettet pääse paikalle johonkin tiettyyn aikaan tai haluat '
+            u'osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.'
     )
 
     free_text = models.TextField(
@@ -139,42 +152,4 @@ class SignupExtra(SignupExtraBase):
 
     @staticmethod
     def get_query_class():
-        return SignupX
-
-    @property
-    def formatted_lodging_needs(self):
-        return u"\n".join(u"{night}: {need}".format(
-            night=night.name,
-            need=u'Tarvitsee lattiamajoitusta' if self.lodging_needs.filter(pk=night.pk).exists() else u'Ei tarvetta lattiamajoitukselle',
-        ) for night in Night.objects.all())
-
-
-class SignupX(QueryBuilder):
-    model = SignupExtra
-    query_related_exclude = {
-        "signup": ("event",),
-    }
-    query_related_filter = {
-        "signup": "*",
-        "signup__person": ("birth_date",),
-    }
-    view_related_filter = {
-        "signup__person": ("first_name", "surname", "nick", "birth_date", "email", "phone",),
-    }
-    default_views = [
-        "signup__person__first_name",
-        "signup__person__surname",
-        "signup__person__nick",
-    ]
-    view_groups = (
-        (u"Henkilötiedot", add_prefix("signup__person__", (
-            "surname", "first_name", "nick", "phone", "email", "birth_date"))),
-        (u"Sisäiset", add_prefix("signup__", (
-            "state", "job_categories_accepted__pk", "notes", "created_at", "updated_at"))),
-        (u"Työvuorotoiveet", "signup__job_categories__pk", "shift_type", "total_work", "construction", "overseer"),
-        (u"Työtodistus", "want_certificate", "certificate_delivery_address"),
-        (u"Lisätiedot", "shirt_size", "special_diet__pk", "special_diet_other",
-            "lodging_needs__pk", "prior_experience", "free_text"),
-        (u"Tila", add_prefix("signup__time_", ("accepted", "finished", "complained", "cancelled",
-                                              "rejected", "arrived", "work_accepted", "reprimanded",))),
-    )
+        raise NotImplementedError()
