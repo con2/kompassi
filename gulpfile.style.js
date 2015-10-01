@@ -9,7 +9,7 @@ import size from "gulp-size";
 import {production} from "./gulp-env";
 
 gulp.task("style:build", () => {
-    return gulp.src("static_src/less/kompassi.less")
+    return gulp.src("core/static_src/less/kompassi.less")
         .pipe(sourcemaps.init())
         .pipe(less())
         .pipe(autoprefixer())
@@ -21,5 +21,5 @@ gulp.task("style:build", () => {
 });
 
 gulp.task("style:watch", () => {
-    gulp.watch("static_src/less/**/*.less", ["style:build"]);
+    gulp.watch("core/static_src/less/**/*.less", ["style:build"]);
 });
