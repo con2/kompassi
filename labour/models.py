@@ -1349,8 +1349,8 @@ class SetJobRequirementsRequest(SetJobRequirementsRequestBase, JSONSchemaObject)
         type='object',
         properties=dict(
             startTime=dict(type='string', format='date-time'),
-            hours=dict(type='integer', minimum=1),
-            required=dict(type='integer', minimum=0),
+            hours=dict(type='integer', minimum=1, maximum=999),
+            required=dict(type='integer', minimum=0, maximum=99),
         ),
         required=list(SetJobRequirementsRequestBase._fields),
     )
