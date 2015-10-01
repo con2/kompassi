@@ -128,11 +128,14 @@ def labour_admin_signups_view(request, vars, event):
     signups = event.signup_set.all()
 
     job_categories = event.jobcategory_set.all()
+    personnel_classes = event.personnelclass_set.filter(app_label='labour')
 
     job_category_filters = Filter(request, "job_category").add_objects("job_categories__slug", job_categories)
     signups = job_category_filters.filter_queryset(signups)
     job_category_accepted_filters = Filter(request, "job_category_accepted").add_objects("job_categories_accepted__slug", job_categories)
     signups = job_category_accepted_filters.filter_queryset(signups)
+    personnel_class_filters = Filter(request, "personnel_class").add_objects("personnel_classes__slug", personnel_classes)
+    signups = personnel_class_filters.filter_queryset(signups)
 
     sorter = Sorter(request, "sort")
     sorter.add("name", name=u'Sukunimi, Etunimi', definition=('person__surname', 'person__first_name'))
@@ -153,6 +156,7 @@ def labour_admin_signups_view(request, vars, event):
         signups=signups,
         job_category_filters=job_category_filters,
         job_category_accepted_filters=job_category_accepted_filters,
+        personnel_class_filters=personnel_class_filters,
         state_filter=state_filter,
         sorter=sorter
     )
