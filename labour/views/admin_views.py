@@ -158,7 +158,14 @@ def labour_admin_signups_view(request, vars, event):
         job_category_accepted_filters=job_category_accepted_filters,
         personnel_class_filters=personnel_class_filters,
         state_filter=state_filter,
-        sorter=sorter
+        sorter=sorter,
+        css_to_show_filter_panel='in' if any(f.selected_slug != f.default for f in [
+            job_category_filters,
+            job_category_accepted_filters,
+            personnel_class_filters,
+            state_filter,
+            sorter,
+        ]) else '',
     )
 
     return render(request, 'labour_admin_signups_view.jade', vars)

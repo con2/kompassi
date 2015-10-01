@@ -3,9 +3,10 @@ block title
   | Tapahtumaan ilmoittautuneet henkilöt
 block admin_content
   .panel.panel-default
-    .panel-heading: strong Tapahtumaan ilmoittautuneet henkilöt
-    .panel-body.signup-filters
-      p Suodata hakemuksia:
+    .panel-heading
+      strong
+        a(role='button', data-toggle='collapse', data-target='#kompassi-labour-signup-filters') Suodata hakemuksia
+    .panel-body.signup-filters.collapse#kompassi-labour-signup-filters(class='{{ css_to_show_filter_panel }}')
       .row
         .col-md-3: strong Haettu tehtävä
         .col-md-9
@@ -57,6 +58,9 @@ block admin_content
             else
               span.label.label-default.kompassi-space-after
                 a(href='?{{ so.qs_add }}') {{ so.name }}
+
+  .panel.panel-default
+    .panel-heading: strong Tapahtumaan ilmoittautuneet henkilöt
     table.table.table-striped
       include labour_admin_signup_table_contents.jade
     .panel-footer.clearfix
