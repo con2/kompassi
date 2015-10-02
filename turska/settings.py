@@ -192,6 +192,7 @@ INSTALLED_APPS = (
     'events.finncon2016',
     'events.frostbite2016',
     'events.tracon11',
+    'events.kuplii2016',
 )
 
 LOGGING = {
