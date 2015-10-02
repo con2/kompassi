@@ -14,7 +14,7 @@ from django.utils import timezone
 
 from dateutil.tz import tzlocal
 
-from core.csv_export import csv_response
+from core.csv_export import csv_response, CSV_EXPORT_FORMATS
 from core.sort_and_filter import Filter, Sorter
 from core.models import Event, Person
 from core.utils import initialize_form, url, json_response, render_string
@@ -124,7 +124,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
 
 @labour_admin_required
-def labour_admin_signups_view(request, vars, event):
+def labour_admin_signups_view(request, vars, event, format='screen'):
     signups = event.signup_set.all()
 
     job_categories = event.jobcategory_set.all()
@@ -152,23 +152,38 @@ def labour_admin_signups_view(request, vars, event):
     state_filter.add_state("rejected", "Hylätty")
     signups = state_filter.filter_queryset(signups)
 
-    vars.update(
-        signups=signups,
-        job_category_filters=job_category_filters,
-        job_category_accepted_filters=job_category_accepted_filters,
-        personnel_class_filters=personnel_class_filters,
-        state_filter=state_filter,
-        sorter=sorter,
-        css_to_show_filter_panel='in' if any(f.selected_slug != f.default for f in [
-            job_category_filters,
-            job_category_accepted_filters,
-            personnel_class_filters,
-            state_filter,
-            sorter,
-        ]) else '',
-    )
+    if format == 'screen':
+        vars.update(
+            signups=signups,
+            job_category_filters=job_category_filters,
+            job_category_accepted_filters=job_category_accepted_filters,
+            personnel_class_filters=personnel_class_filters,
+            state_filter=state_filter,
+            sorter=sorter,
+            css_to_show_filter_panel='in' if any(f.selected_slug != f.default for f in [
+                job_category_filters,
+                job_category_accepted_filters,
+                personnel_class_filters,
+                state_filter,
+                sorter,
+            ]) else '',
+        )
 
-    return render(request, 'labour_admin_signups_view.jade', vars)
+        return render(request, 'labour_admin_signups_view.jade', vars)
+    elif format in CSV_EXPORT_FORMATS:
+        filename = "{event.slug}_signups_{timestamp}.{format}".format(
+            event=event,
+            timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
+            format=format,
+        )
+
+        return csv_response(event, Signup, signups,
+            dialect='xlsx',
+            filename=filename,
+            m2m_mode='separate_columns',
+        )
+    else:
+        raise NotImplementedError(format)
 
 
 @labour_admin_required
@@ -273,34 +288,6 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
     )
 
     return render(request, 'labour_admin_mail_editor_view.jade', vars)
-
-
-@labour_admin_required
-@require_GET
-def labour_admin_export_view(request, vars, event):
-    signup_ids = request.GET.get('signup_ids', None)
-
-    if signup_ids == "":
-        # fmh
-        signups = []
-    elif signup_ids is not None:
-        signup_ids = [int(id) for id in signup_ids.split(',')]
-        signups = Signup.objects.filter(event=event, pk__in=signup_ids)
-    else:
-        signups = Signup.objects.filter(event=event)
-
-    signups = signups.select_related('person').select_related('event').select_related('event__laboureventmeta')
-
-    filename="{event.slug}_signups_{timestamp}.xlsx".format(
-        event=event,
-        timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
-    )
-
-    return csv_response(event, Signup, signups,
-        dialect='xlsx',
-        filename=filename,
-        m2m_mode='separate_columns',
-    )
 
 
 def labour_admin_menu_items(request, event):
