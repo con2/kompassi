@@ -66,3 +66,4 @@ block admin_content
     .panel-footer.clearfix
       .pull-right
         a(href='{% url "labour_admin_export_view" event.slug %}?{{ request.META.QUERY_STRING }}') Vie Exceliin...
+      p.text-muted {{ num_signups }} henkilö{{ num_signups|pluralize:"ä" }} (yhteensä {{ num_all_signups }}).

@@ -127,6 +127,9 @@ def labour_admin_signup_view(request, vars, event, person_id):
 def labour_admin_signups_view(request, vars, event, format='screen'):
     signups = event.signup_set.all()
 
+    if format == 'screen':
+        num_all_signups = signups.count()
+
     job_categories = event.jobcategory_set.all()
     personnel_classes = event.personnelclass_set.filter(app_label='labour')
 
@@ -154,6 +157,8 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
 
     if format == 'screen':
         vars.update(
+            num_all_signups=num_all_signups,
+            num_signups=len(signups), # need to use .len instead of .count because state_filter
             signups=signups,
             job_category_filters=job_category_filters,
             job_category_accepted_filters=job_category_accepted_filters,
