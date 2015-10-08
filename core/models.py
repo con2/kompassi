@@ -26,7 +26,16 @@ from .utils import (
 class Organization(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
     name = models.CharField(max_length=255, verbose_name=u'Nimi')
+    description = models.TextField(blank=True, verbose_name=u'Kuvaus')
     homepage_url = models.CharField(blank=True, max_length=255, verbose_name=u'Kotisivu')
+
+    logo_url = models.CharField(
+        blank=True,
+        max_length=255,
+        default='',
+        verbose_name=u'Organisaation logon URL',
+        help_text=u'Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)',
+    )
 
     def save(self, *args, **kwargs):
         if self.name and not self.slug:
@@ -46,6 +55,18 @@ class Organization(models.Model):
                 homepage_url='http://example.com',
             )
         )
+
+    @property
+    def membership_organization_meta(self):
+        if 'membership' not in settings.INSTALLED_APPS:
+            return None
+
+        from membership.models import MembershipOrganizationMeta
+
+        try:
+            return self.membershiporganizationmeta
+        except MembershipOrganizationMeta.DoesNotExist:
+            return None
 
     class Meta:
         verbose_name = u'Organisaatio'

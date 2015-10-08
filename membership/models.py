@@ -9,6 +9,11 @@ from core.models import Organization, Person, GroupManagementMixin
 class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
     organization = models.OneToOneField(Organization, primary_key=True, verbose_name=u'Organisaatio')
     admin_group = models.ForeignKey(Group, verbose_name=u'Ylläpitäjäryhmä')
+    receiving_applications = models.BooleanField(
+        default=True,
+        verbose_name=u'Ottaa vastaan hakemuksia',
+        help_text=u'Tämä asetus kontrolloi, voiko yhdistyksen jäseneksi hakea suoraan Kompassin kautta.',
+    )
 
     def __unicode__(self):
         return self.organization.name if self.organization is not None else u'None'

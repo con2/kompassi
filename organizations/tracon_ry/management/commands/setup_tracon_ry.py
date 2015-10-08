@@ -26,6 +26,17 @@ class Setup(object):
             defaults=dict(
                 name='Tracon ry',
                 homepage_url='https://ry.tracon.fi',
+                logo_url='https://media.tracon.fi/ry/vaakuna-vari.png',
+                receiving_applications=False,
+                description=u"""
+Tracon ry on tamperelainen yhdistys, jonka tarkoituksena on edistää, kehittää ja tehdä tunnetuksi roolipeli-, korttipeli-, lautapeli-, miniatyyripeli-, animaatio-, elokuva- ja sarjakuvaharrastuksia, sekä näihin liittyviä alakulttuureita.
+
+Yhdistyksen keskeisintä toimintaa on roolipeli- ja animetapahtuma Traconin järjestäminen. Yhdistyksen jäseniä ovat tapahtuman järjestämiseen osallistuvat aktiivit.
+
+Yhdistys toimii läheisessä yhteistyössä muiden tamperelaisten alan kerhojen kanssa. Näitä ovat muun muassa Anime- ja mangayhteisö Hidoi ry, Tampereen teekkareiden roolipelikerho Excalibur, Tampereen Seudun Roolipelaajat ry, Herwannan Nykyaikain Teekkarein Animaatioiltamat, Eru, Tampereen yliopiston roolipelaajat ja Roolipeliseura Korpimetsä.
+
+Tracon ry:n yhdistysrekisteritunnus on 194.820.
+                """.strip(),
             )
         )
 

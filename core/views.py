@@ -11,9 +11,32 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods, require_GET
 
-from .models import Event, Person, PasswordResetError, PasswordResetToken, EmailVerificationError, EmailVerificationToken
-from .forms import PersonForm, RegistrationForm, PasswordForm, LoginForm, PasswordResetForm, PasswordResetRequestForm
-from .utils import initialize_form, get_next, next_redirect, page_wizard_clear, page_wizard_vars, url, groups_of_n
+from .models import (
+    EmailVerificationError,
+    EmailVerificationToken,
+    Event,
+    Organization,
+    PasswordResetError,
+    PasswordResetToken,
+    Person,
+)
+from .forms import (
+    LoginForm,
+    PasswordForm,
+    PasswordResetForm,
+    PasswordResetRequestForm,
+    PersonForm,
+    RegistrationForm,
+)
+from .utils import (
+    get_next,
+    groups_of_n,
+    initialize_form,
+    next_redirect,
+    page_wizard_clear,
+    page_wizard_vars,
+    url,
+)
 from .helpers import person_required
 
 
@@ -25,7 +48,6 @@ def core_frontpage_view(request):
     future_events = Event.objects.filter((Q(start_time__gt=t) | Q(start_time__isnull=True)) & Q(public=True)).order_by('start_time')
 
     vars = dict(
-        settings=settings,
         past_events_rows=list(groups_of_n(past_events, 4)),
         current_events_rows=list(groups_of_n(current_events, 4)),
         future_events_rows=list(groups_of_n(future_events, 4)),
@@ -33,6 +55,24 @@ def core_frontpage_view(request):
 
     return render(request, 'core_frontpage_view.jade', vars)
 
+
+def core_organization_view(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    t = now()
+
+    past_events = Event.objects.filter(organization=organization, public=True, end_time__lte=t).order_by('-start_time')
+    current_events = Event.objects.filter(organization=organization, public=True, start_time__lte=t, end_time__gt=t).order_by('-start_time')
+    future_events = Event.objects.filter(Q(organization=organization, public=True) & (Q(start_time__gt=t) | Q(start_time__isnull=True))).order_by('start_time')
+
+    vars = dict(
+        organization=organization,
+        past_events_rows=list(groups_of_n(past_events, 4)),
+        current_events_rows=list(groups_of_n(current_events, 4)),
+        future_events_rows=list(groups_of_n(future_events, 4)),
+    )
+
+    return render(request, 'core_organization_view.jade', vars)
 
 def core_event_view(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
