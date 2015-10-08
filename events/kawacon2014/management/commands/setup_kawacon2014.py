@@ -62,7 +62,7 @@ class Command(BaseCommand):
             venue=venue,
         ))
 
-        admin_group, unused = ProgrammeEventMeta.get_or_create_group(event=event, suffix='admins')
+        admin_group, unused = ProgrammeEventMeta.get_or_create_group(event, 'admins')
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
             public=False,
             admin_group=admin_group,

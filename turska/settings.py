@@ -163,6 +163,7 @@ INSTALLED_APPS = (
     'access',
     'nexmo',
     'sms',
+    'membership',
 
     # Uncomment if you have IPA
     #'external_auth',
@@ -193,6 +194,8 @@ INSTALLED_APPS = (
     'events.frostbite2016',
     'events.tracon11',
     'events.kuplii2016',
+
+    'organizations.tracon_ry',
 )
 
 LOGGING = {

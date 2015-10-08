@@ -506,13 +506,7 @@ class Person(models.Model):
         )
 
 
-class EventMetaBase(models.Model):
-    event = models.OneToOneField('core.Event', primary_key=True, related_name='%(class)s')
-    admin_group = models.ForeignKey('auth.Group')
-
-    class Meta:
-        abstract = True
-
+class GroupManagementMixin(object):
     def is_user_admin(self, user):
         if not user.is_authenticated():
             return False
@@ -523,23 +517,31 @@ class EventMetaBase(models.Model):
         return user.groups.filter(pk=self.admin_group.pk).exists()
 
     @classmethod
-    def make_group_name(cls, event, suffix):
+    def make_group_name(cls, host, suffix):
         from django.contrib.contenttypes.models import ContentType
 
         ctype = ContentType.objects.get_for_model(cls)
 
-        return '{installation_slug}-{event_slug}-{app_label}-{suffix}'.format(
+        return '{installation_slug}-{host_slug}-{app_label}-{suffix}'.format(
             installation_slug=settings.KOMPASSI_INSTALLATION_SLUG,
-            event_slug=event.slug,
+            host_slug=host.slug,
             app_label=ctype.app_label,
             suffix=suffix,
         )
 
     @classmethod
-    def get_or_create_group(cls, event, suffix):
-        group_name = cls.make_group_name(event, suffix)
+    def get_or_create_group(cls, host, suffix):
+        group_name = cls.make_group_name(host, suffix)
 
         return ensure_group_exists(group_name)
+
+
+class EventMetaBase(models.Model, GroupManagementMixin):
+    event = models.OneToOneField('core.Event', primary_key=True, related_name='%(class)s')
+    admin_group = models.ForeignKey('auth.Group')
+
+    class Meta:
+        abstract = True
 
     def get_group(self, suffix):
         group_name = self.make_group_name(self.event, suffix)

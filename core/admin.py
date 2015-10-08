@@ -6,9 +6,17 @@ from django.conf import settings
 from .models import Organization, Event, Person, Venue
 
 
+organization_admin_inlines = []
+
+if 'membership' in settings.INSTALLED_APPS:
+    from membership.admin import InlineMembershipOrganizationMetaAdmin
+    organization_admin_inlines.append(InlineMembershipOrganizationMetaAdmin)
+
+
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'homepage_url')
     ordering = ('name',)
+    inlines = tuple(organization_admin_inlines)
 
 
 def merge_selected_people(modeladmin, request, queryset):
@@ -36,31 +44,31 @@ class PersonAdmin(admin.ModelAdmin):
     actions = [merge_selected_people]
 
 
-extra_inlines = []
+event_admin_inlines = []
 
 if 'labour' in settings.INSTALLED_APPS:
     from labour.admin import InlineLabourEventMetaAdmin
-    extra_inlines.append(InlineLabourEventMetaAdmin)
+    event_admin_inlines.append(InlineLabourEventMetaAdmin)
 
 if 'programme' in settings.INSTALLED_APPS:
     from programme.admin import InlineProgrammeEventMetaAdmin
-    extra_inlines.append(InlineProgrammeEventMetaAdmin)
+    event_admin_inlines.append(InlineProgrammeEventMetaAdmin)
 
 if 'tickets' in settings.INSTALLED_APPS:
     from tickets.admin import InlineTicketsEventMetaAdmin
-    extra_inlines.append(InlineTicketsEventMetaAdmin)
+    event_admin_inlines.append(InlineTicketsEventMetaAdmin)
 
 if 'payments' in settings.INSTALLED_APPS:
     from payments.admin import InlinePaymentsEventMetaAdmin
-    extra_inlines.append(InlinePaymentsEventMetaAdmin)
+    event_admin_inlines.append(InlinePaymentsEventMetaAdmin)
 
 if 'badges' in settings.INSTALLED_APPS:
     from badges.admin import InlineBadgesEventMetaAdmin
-    extra_inlines.append(InlineBadgesEventMetaAdmin)
+    event_admin_inlines.append(InlineBadgesEventMetaAdmin)
 
 
 class EventAdmin(admin.ModelAdmin):
-    inlines = tuple(extra_inlines)
+    inlines = tuple(event_admin_inlines)
 
     fieldsets = (
         ('Tapahtuman nimi', dict(fields=(

@@ -31,8 +31,12 @@ class Setup(object):
         self.setup_sms()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Organization, Venue, Event
 
+        self.organization, unused = Organization.objects.get_or_create(slug='tracon-ry', defaults=dict(
+            name='Tracon ry',
+            homepage_url='https://ry.tracon.fi',
+        ))
         self.venue, unused = Venue.objects.get_or_create(name='Tampere-talo')
         self.event, unused = Event.objects.get_or_create(slug='tracon11', defaults=dict(
             name='Tracon 11',
@@ -40,8 +44,7 @@ class Setup(object):
             name_illative='Tracon 11 -tapahtumaan',
             name_inessive='Tracon 11 -tapahtumassa',
             homepage_url='http://2016.tracon.fi',
-            organization_name='Tracon ry',
-            organization_url='http://ry.tracon.fi',
+            organization=self.organization,
             start_time=datetime(2016, 9, 3, 10, 0, tzinfo=self.tz),
             end_time=datetime(2016, 9, 4, 18, 0, tzinfo=self.tz),
             venue=self.venue,

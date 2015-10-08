@@ -28,6 +28,10 @@ class Command(BaseCommand):
         test = options['test']
 
         commands = get_commands()
+
+        organizations = [app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("organizations.")]
+        organization_commands = [command for command in ("setup_%s" % organization for organization in organizations) if command in commands]
+
         events = [app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("events.")]
         event_commands = [command for command in ("setup_%s" % event for event in events) if command in commands]
 
@@ -38,7 +42,10 @@ class Command(BaseCommand):
             (('setup_labour_common_qualifications',), dict(test=test)),
             (('setup_api_v2',), dict(test=test)),
             (('setup_access',), dict(test=test)),
-        ] + [((command,), dict(test=test)) for command in event_commands]
+        ]
+
+        management_commands.extend(((command,), dict(test=test)) for command in organization_commands)
+        management_commands.extend(((command,), dict(test=test)) for command in event_commands)
 
         if test:
             management_commands.extend((
