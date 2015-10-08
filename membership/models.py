@@ -32,6 +32,12 @@ class Membership(models.Model):
     organization = models.ForeignKey(Organization, verbose_name=u'Organisaatio')
     person = models.ForeignKey(Person, verbose_name=u'Henkilö')
 
+    def __unicode__(self):
+        return u"{organization}/{person}".format(
+            organization=self.organization,
+            person=self.person,
+        )
+
     class Meta:
         verbose_name = u'Jäsenyys'
         verbose_name_plural = u'Jäsenyydet'
