@@ -52,8 +52,8 @@ html
       .container
         p.credit
           small.text-muted
-            if event and event.homepage_url and event.organization_url and event.organization_name
-              | <a href='{{ event.homepage_url }}' target='_blank'>{{ event.name_genitive }}</a> järjestää <a href='{{ event.organization_url }}' target='_blank'>{{ event.organization_name }}</a>.
+            if event and event.homepage_url and event.organization.homepage_url and event.organization.name
+              | <a href='{{ event.homepage_url }}' target='_blank'>{{ event.name_genitive }}</a> järjestää <a href='{{ event.organization.homepage_url }}' target='_blank'>{{ event.organization.name }}</a>.
             | {{ KOMPASSI_APPLICATION_NAME }} &copy; 2009&ndash;2015 <a href='https://github.com/tracon/kompassi/blob/master/LICENSE.md'>Santtu Pajukanta et al</a>. <a href='{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}'>Rekisteriseloste</a>.
 
     script(src='{{ STATIC_URL }}jquery-1.10.2.min.js')

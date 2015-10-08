@@ -3,7 +3,12 @@
 from django.contrib import admin
 from django.conf import settings
 
-from .models import Event, Person, Venue
+from .models import Organization, Event, Person, Venue
+
+
+class OrganizationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'homepage_url')
+    ordering = ('name',)
 
 
 def merge_selected_people(modeladmin, request, queryset):
@@ -14,8 +19,8 @@ def merge_selected_people(modeladmin, request, queryset):
 
     person_to_spare, people_to_merge = find_best_candidate(queryset)
     merge_people(people_to_merge, into=person_to_spare)
-
 merge_selected_people.short_description = u'Yhdistä valitut henkilöt'
+
 
 class PersonAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -72,12 +77,7 @@ class EventAdmin(admin.ModelAdmin):
             'end_time',
             'description',
             'logo_url',
-        ))),
-
-        ('Järjestäjän tiedot', dict(fields=(
-            'homepage_url',
-            'organization_name',
-            'organization_url',
+            'organization',
         ))),
     )
 
@@ -90,6 +90,7 @@ class EventAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 
+admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Venue)

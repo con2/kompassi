@@ -19,7 +19,37 @@ from .utils import (
     SLUG_FIELD_PARAMS,
     url,
     validate_slug,
+    slugify,
 )
+
+
+class Organization(models.Model):
+    slug = models.CharField(**SLUG_FIELD_PARAMS)
+    name = models.CharField(max_length=255, verbose_name=u'Nimi')
+    homepage_url = models.CharField(blank=True, max_length=255, verbose_name=u'Kotisivu')
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        return super(Organization, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.name
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        return cls.objects.get_or_create(
+            slug='dummy-organization',
+            defaults=dict(
+                name='Dummy organization',
+                homepage_url='http://example.com',
+            )
+        )
+
+    class Meta:
+        verbose_name = u'Organisaatio'
+        verbose_name_plural = u'Organisaatiot'
 
 
 class Venue(models.Model):
@@ -54,6 +84,8 @@ class Event(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
 
     name = models.CharField(max_length=63, verbose_name=u'Tapahtuman nimi')
+
+    organization = models.ForeignKey(Organization, verbose_name=u'Järjestäjätaho')
 
     headline = models.CharField(
         max_length=63,
@@ -104,18 +136,6 @@ class Event(models.Model):
         verbose_name=u'Tapahtuman kotisivu',
     )
 
-    organization_name = models.CharField(
-        blank=True,
-        max_length=63,
-        verbose_name=u'Järjestävä taho',
-    )
-
-    organization_url = models.CharField(
-        blank=True,
-        max_length=255,
-        verbose_name=u'Järjestävän tahon kotisivu'
-    )
-
     public = models.BooleanField(
         default=True,
         verbose_name=u'Julkinen',
@@ -140,6 +160,23 @@ class Event(models.Model):
     class Meta:
         verbose_name = u'Tapahtuma'
         verbose_name_plural = u'Tapahtumat'
+
+    def __init__(self, *args, **kwargs):
+        # Avoid having to manually transform 20 or so event setup scripts with organization_name and organization_url
+        # in get_or_create.defaults
+        if 'organization_name' in kwargs:
+            organization_name = kwargs.pop('organization_name')
+            organization_url = kwargs.pop('organization_url', u'')
+
+            kwargs['organization'], unused = Organization.objects.get_or_create(
+                slug=slugify(organization_name),
+                defaults=dict(
+                    name=organization_name,
+                    homepage_url=organization_url,
+                )
+            )
+
+        super(Event, self).__init__(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
@@ -170,6 +207,7 @@ class Event(models.Model):
     @classmethod
     def get_or_create_dummy(cls):
         venue, unused = Venue.get_or_create_dummy()
+        organization, unused = Organization.get_or_create_dummy()
         t = timezone.now()
 
         return cls.objects.get_or_create(
@@ -179,6 +217,7 @@ class Event(models.Model):
                 start_time=t + timedelta(days=60),
                 end_time=t + timedelta(days=61),
                 slug='dummy',
+                organization=organization,
             ),
         )
 
