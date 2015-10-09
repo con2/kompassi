@@ -20,7 +20,7 @@ from requests_oauthlib import OAuth2Session
 
 from core.forms import valid_username
 from core.models import Person
-from core.views import do_login
+from core.views.login_views import do_login
 from core.utils import create_temporary_password, get_next
 
 from .models import Connection, ConfirmationCode, Desuprofile

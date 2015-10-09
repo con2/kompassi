@@ -1,0 +1,109 @@
+# encoding: utf-8
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.db.models import Q
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.timezone import now
+from django.views.decorators.http import require_http_methods, require_GET
+
+from ..models import (
+    EmailVerificationError,
+    EmailVerificationToken,
+    Event,
+    Organization,
+    PasswordResetError,
+    PasswordResetToken,
+    Person,
+)
+from ..forms import (
+    LoginForm,
+    PasswordForm,
+    PasswordResetForm,
+    PasswordResetRequestForm,
+    PersonForm,
+    RegistrationForm,
+)
+from ..utils import (
+    get_next,
+    groups_of_n,
+    initialize_form,
+    next_redirect,
+    page_wizard_clear,
+    page_wizard_vars,
+    url,
+)
+from ..helpers import person_required
+
+
+@require_http_methods(['GET', 'POST'])
+def core_password_reset_view(request, code):
+    if request.user.is_authenticated():
+        return redirect('core_password_view')
+
+    form = initialize_form(PasswordResetForm, request)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                PasswordResetToken.reset_password(code, form.cleaned_data['new_password'])
+            except PasswordResetError, e:
+                messages.error(request,
+                    u'Salasanan nollaus epäonnistui. Ole hyvä ja yritä uudestaan. Tarvittaessa voit '
+                    u'ottaa yhteyttä osoitteeseen {settings.DEFAULT_FROM_EMAIL}.'
+                    .format(settings=settings)
+                )
+                return redirect('core_frontpage_view')
+
+            messages.success(request,
+                u'Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi.'
+            )
+            return redirect('core_login_view')
+        else:
+            messages.error(request, u'Ole hyvä ja korjaa lomakkeen virheet.')
+
+    vars = dict(
+        form=form,
+        login_page=True,
+    )
+
+    return render(request, 'core_password_reset_view.jade', vars)
+
+
+@require_http_methods(['GET', 'POST'])
+def core_password_reset_request_view(request):
+    if request.user.is_authenticated():
+        return redirect('core_password_view')
+
+    form = initialize_form(PasswordResetRequestForm, request)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                person = Person.objects.get(
+                    email=form.cleaned_data['email'],
+                    user__isnull=False,
+                )
+            except Person.DoesNotExist:
+                # Fail silently - do not give information about users
+
+                pass
+            else:
+                person.setup_password_reset(request)
+
+            messages.success(request,
+                u'Ohjeet salasanan vaihtamiseksi on lähetetty antamaasi sähköpostiosoitteeseen.'
+            )
+        else:
+            messages.error(request, u'Ole hyvä ja korjaa lomakkeen virheet.')
+
+    vars = dict(
+        form=form,
+        login_page=True,
+    )
+
+    return render(request, 'core_password_reset_request_view.jade', vars)
