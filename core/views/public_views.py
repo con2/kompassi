@@ -72,6 +72,10 @@ def core_organization_view(request, organization_slug):
         future_events_rows=list(groups_of_n(future_events, 4)),
     )
 
+    if 'membership' in settings.INSTALLED_APPS:
+        from membership.views import membership_organization_box_context
+        vars.update(membership_organization_box_context(request, organization))
+
     return render(request, 'core_organization_view.jade', vars)
 
 def core_event_view(request, event_slug):

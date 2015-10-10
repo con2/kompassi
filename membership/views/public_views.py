@@ -1,9 +1,11 @@
 # encoding: utf-8
 
-from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.core.urlresolvers import reverse
+from django.shortcuts import render, redirect
 
 from core.helpers import person_required
+from core.models import Organization
 from core.utils import initialize_form
 
 from ..helpers import membership_organization_required
@@ -67,9 +69,44 @@ def membership_apply_view(request, organization):
     return render(request, 'membership_apply_view.jade', vars)
 
 
+@person_required
 def membership_profile_view(request):
-    raise NotImplementedError()
+    memberships = Membership.objects.filter(person=request.user.person)
+    potential_organizations = Organization.objects.filter(
+        membershiporganizationmeta__receiving_applications=True,
+    ).exclude(
+        members__person=request.user.person,
+    )
+
+    vars = dict(
+        memberships=memberships,
+        potential_organizations=potential_organizations,
+    )
+
+    return render(request, 'membership_profile_view.jade', vars)
 
 
 def membership_organization_box_context(request, organization):
-    return dict()
+    if request.user.is_anonymous() or not request.user.person:
+        membership = None
+    else:
+        membership = Membership.objects.filter(
+            organization=organization,
+            person=request.user.person,
+        ).first()
+
+    print 'person', request.user.person
+    print 'membership', membership
+
+    return dict(
+        can_apply=organization.membership_organization_meta.receiving_applications and not membership,
+        membership=membership,
+    )
+
+
+def membership_profile_menu_items(request):
+    membership_profile_url = reverse('membership_profile_view')
+    membership_profile_active = request.path.startswith(membership_profile_url)
+    membership_profile_text = u'Yhdistysten jäsenyydet'
+
+    return [(membership_profile_active, membership_profile_url, membership_profile_text)]

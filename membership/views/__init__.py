@@ -2,6 +2,7 @@ from .public_views import (
     membership_apply_view,
     membership_organization_box_context,
     membership_profile_box_context,
+    membership_profile_menu_items,
     membership_profile_view,
 )
 

@@ -46,10 +46,16 @@ STATE_CHOICES = [
     (u'discharged', u'Erotettu'),
 ]
 
+STATE_CSS = dict(
+    approval='label-info',
+    in_effect='label-success',
+    discharged='label-danger',
+)
+
 
 class Membership(models.Model):
-    organization = models.ForeignKey(Organization, verbose_name=u'Organisaatio')
-    person = models.ForeignKey(Person, verbose_name=u'Henkilö')
+    organization = models.ForeignKey(Organization, verbose_name=u'Organisaatio', related_name='members')
+    person = models.ForeignKey(Person, verbose_name=u'Henkilö', related_name='memberships')
     state = models.CharField(
         max_length=max(len(key) for (key, val) in STATE_CHOICES),
         choices=STATE_CHOICES,
@@ -58,6 +64,22 @@ class Membership(models.Model):
         blank=True,
         verbose_name=u'Viesti hakemuksen käsittelijälle',
     )
+
+    @property
+    def is_pending_approval(self):
+        return self.state == 'approval'
+
+    @property
+    def is_in_effect(self):
+        return self.state == 'in_effect'
+
+    @property
+    def is_discharged(self):
+        return self.state == 'discharged'
+
+    @property
+    def state_css(self):
+        return STATE_CSS[self.state]
 
     def __unicode__(self):
         return u"{organization}/{person}".format(

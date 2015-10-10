@@ -147,6 +147,10 @@ def core_profile_menu_items(request):
         from programme.views import programme_profile_menu_items
         items.extend(programme_profile_menu_items(request))
 
+    if 'membership' in settings.INSTALLED_APPS:
+        from membership.views import membership_profile_menu_items
+        items.extend(membership_profile_menu_items(request))
+
     if 'access' in settings.INSTALLED_APPS:
         from access.views import access_profile_menu_items
         items.extend(access_profile_menu_items(request))

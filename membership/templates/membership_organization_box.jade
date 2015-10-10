@@ -1,11 +1,15 @@
 h3 Yhdistyksen jäsenyys
 
 if membership
-  p Olet tämän yhdistyksen jäsen.
-  a.btn.btn-primary(href='{% url "membership_profile_view" organization.slug %}') Hallinnoi jäsenyyttäsi
+  if membership.is_pending_approval
+    p Jäsenhakemuksesi odottaa hyväksyntää.
+  if membership.is_in_effect
+    p Olet tämän yhdistyksen jäsen.
+  if membership.is_discharged
+    p Sinut on erotettu tästä yhdistyksestä. Yleensä tämä johtuu maksamattomasta jäsenmaksusta. Saattaaksesi jäsenyytesi takaisin voimaan ota yhteyttä yhdistyksen hallitukseen.
 else
-  if organization.membership_organization_meta.receiving_applications
+  if can_apply
     p Voit hakea tämän yhdistyksen jäsenyyttä.
     a.btn.btn-primary(href='{% url "membership_apply_view" organization.slug %}') Hae jäsenyyttä
   else
-    p Tämä yhdistys ei tällä hetkellä ota vastaan hakemuksia Kompassin kautta.
+    p Tämä yhdistys ei tällä hetkellä ota vastaan jäsenhakemuksia Kompassin kautta.

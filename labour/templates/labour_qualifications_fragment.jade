@@ -1,5 +1,5 @@
 if person_qualifications
-  h4 Olet ilmoittanut sinulla olevan seuraavat pätevyydet
+  h3 Olet ilmoittanut sinulla olevan seuraavat pätevyydet
   ul.list-group
     for person_qualification in person_qualifications
       li.list-group-item
@@ -10,7 +10,7 @@ if person_qualifications
           a.btn.btn-danger(href='{% url "labour_person_disqualify_view" person_qualification.qualification.slug %}') Poista
 
 if available_qualifications
-  h4 Onko sinulla jokin seuraavista pätevyyksistä?
+  h3 Onko sinulla jokin seuraavista pätevyyksistä?
   ul.list-group
     for available_qualification in available_qualifications
       li.list-group-item
