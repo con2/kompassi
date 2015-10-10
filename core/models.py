@@ -300,6 +300,13 @@ class Person(models.Model):
         validators=[birth_date_validator],
     )
 
+    muncipality = models.CharField(
+        blank=True,
+        max_length=127,
+        verbose_name=u'Kotikunta',
+        help_text=u'Virallinen kotikuntasi eli kunta jossa olet kirjoilla.',
+    )
+
     email = models.EmailField(
         blank=True,
         max_length=EMAIL_LENGTH,
@@ -353,6 +360,10 @@ class Person(models.Model):
             style = 'firstname_surname'
 
         return NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
+
+    @property
+    def official_name(self):
+        return NAME_DISPLAY_STYLE_FORMATS['firstname_surname'].format(self=self)
 
     @property
     def name_and_email(self):

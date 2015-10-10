@@ -79,7 +79,8 @@ class PersonForm(forms.ModelForm):
                 'surname',
                 'nick',
                 'preferred_name_display_style',
-                'birth_date'
+                'birth_date',
+                'muncipality',
             ),
             Fieldset(u'Yhteystiedot',
                 'phone',
@@ -134,6 +135,7 @@ class PersonForm(forms.ModelForm):
             'email',
             'first_name',
             'may_send_info',
+            'muncipality',
             'nick',
             'phone',
             'preferred_name_display_style',

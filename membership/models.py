@@ -14,6 +14,18 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
         verbose_name=u'Ottaa vastaan hakemuksia',
         help_text=u'Tämä asetus kontrolloi, voiko yhdistyksen jäseneksi hakea suoraan Kompassin kautta.',
     )
+    membership_requirements = models.TextField(
+        default=u'',
+        blank=True,
+        verbose_name=u'Kuka voi hakea jäsenyyttä?',
+        help_text=u'Esim. copy-paste säännöistä.'
+    )
+    membership_fee = models.TextField(
+        default=u'',
+        blank=True,
+        verbose_name=u'Jäsenmaksu',
+        help_text=u'Minkä suuruinen on liittymis- ja jäsenmaksu ja miten se maksetaan?',
+    )
 
     def __unicode__(self):
         return self.organization.name if self.organization is not None else u'None'
@@ -28,9 +40,24 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
         return Group.objects.get(name=group_name)
 
 
+STATE_CHOICES = [
+    (u'approval', u'Odottaa hyväksyntää'),
+    (u'in_effect', u'Voimassa'),
+    (u'discharged', u'Erotettu'),
+]
+
+
 class Membership(models.Model):
     organization = models.ForeignKey(Organization, verbose_name=u'Organisaatio')
     person = models.ForeignKey(Person, verbose_name=u'Henkilö')
+    state = models.CharField(
+        max_length=max(len(key) for (key, val) in STATE_CHOICES),
+        choices=STATE_CHOICES,
+    )
+    message = models.TextField(
+        blank=True,
+        verbose_name=u'Viesti hakemuksen käsittelijälle',
+    )
 
     def __unicode__(self):
         return u"{organization}/{person}".format(

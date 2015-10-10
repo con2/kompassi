@@ -38,6 +38,7 @@ from ..utils import (
     url,
 )
 from ..helpers import person_required
+from .email_verification_views import remind_email_verification_if_needed
 
 
 @require_http_methods(['GET','POST'])
