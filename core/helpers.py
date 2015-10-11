@@ -2,9 +2,11 @@
 
 from functools import wraps
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 
-from .models import Person
+from .models import Person, Organization
 from .utils import login_redirect
 
 def person_required(view_func):
@@ -99,3 +101,17 @@ def unperson_page_wizard(*pages):
 
         return inner
     return outer
+
+def public_organization_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, organization_slug, *args, **kwargs):
+        if request.user.is_staff:
+            organization = get_object_or_404(Organization, slug=organization_slug)
+            if not organization.public:
+                messages.warning(request, u'Tämä yhdistys ei ole julkinen. Tämä sivu ei näy tavallisille käyttäjille.')
+        else:
+            organization = get_object_or_404(Organization, slug=organization_slug, public=True)
+
+        return view_func(request, organization, *args, **kwargs)
+
+    return wrapper

@@ -28,6 +28,17 @@ class Organization(models.Model):
     name = models.CharField(max_length=255, verbose_name=u'Nimi')
     description = models.TextField(blank=True, verbose_name=u'Kuvaus')
     homepage_url = models.CharField(blank=True, max_length=255, verbose_name=u'Kotisivu')
+    muncipality = models.CharField(
+        blank=True,
+        max_length=127,
+        verbose_name=u'Yhdistyksen kotipaikka',
+        help_text=u'Kunta, johon yhdistys on rekisteröity.',
+    )
+    public = models.BooleanField(
+        default=False,
+        verbose_name=u'Julkinen',
+        help_text=u'Julkisilla yhdistyksillä on yhdistyssivu ja ne näytetään etusivulla.',
+    )
 
     logo_url = models.CharField(
         blank=True,

@@ -275,6 +275,7 @@ KOMPASSI_APPLICATION_NAME = u'Kompassi'
 KOMPASSI_INSTALLATION_NAME = u'Kompassi (DEV)'
 KOMPASSI_INSTALLATION_NAME_ILLATIVE = u'Kompassin kehitys\u00ADinstanssiin'
 KOMPASSI_INSTALLATION_NAME_GENITIVE = u'Kompassin kehitys\u00ADinstanssin'
+KOMPASSI_INSTALLATION_NAME_PARTITIVE = u'Kompassin kehitys\u00ADinstanssia'
 KOMPASSI_INSTALLATION_SLUG = 'turskadev'
 KOMPASSI_PRIVACY_POLICY_URL = 'http://media.tracon.fi/2014/tracon9_turska_rekisteriseloste.pdf'
 

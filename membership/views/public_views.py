@@ -13,10 +13,6 @@ from ..models import Membership
 from ..forms import MembershipForm
 
 
-def membership_profile_box_context(request):
-    return dict()
-
-
 @membership_organization_required
 @person_required
 def membership_apply_view(request, organization):
@@ -87,7 +83,12 @@ def membership_profile_view(request):
 
 
 def membership_organization_box_context(request, organization):
+    meta = organization.membership_organization_meta
+    if not meta:
+        return dict()
+
     if request.user.is_anonymous() or not request.user.person:
+        can_apply = True
         membership = None
     else:
         membership = Membership.objects.filter(
@@ -95,11 +96,8 @@ def membership_organization_box_context(request, organization):
             person=request.user.person,
         ).first()
 
-    print 'person', request.user.person
-    print 'membership', membership
-
     return dict(
-        can_apply=organization.membership_organization_meta.receiving_applications and not membership,
+        can_apply=meta.receiving_applications and not membership,
         membership=membership,
     )
 

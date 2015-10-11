@@ -1,0 +1,13 @@
+h2 {{ settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE }} käyttävät yhdistykset
+for organizations_row in organizations_rows
+  .row
+    for organization in organizations_row
+      .col-md-3
+        .panel.panel-default
+          .panel-heading
+            strong
+              a(href='{% url "core_organization_view" organization.slug %}')= organization.name
+          .panel-body
+            p= organization.muncipality
+            if organization.membership_organization_meta
+              .label.label-primary Jäsenrekisteri

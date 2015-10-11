@@ -40,6 +40,11 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
             )
         )
 
+        # v10
+        self.organization.muncipality = u'Tampere'
+        self.organization.public = True
+        self.organization.save()
+
     def setup_membership(self):
         from membership.models import MembershipOrganizationMeta
 

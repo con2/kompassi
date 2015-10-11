@@ -7,6 +7,9 @@ block content
       h2 {{ organization.name }}
 
       {{ organization.description|linebreaks }}
+
+      if organization.homepage_url
+        a.btn.btn-primary(href='{{ organization.homepage_url }}', target='_blank') Yhdistyksen kotisivuille
     .col-md-4.hidden-sm.hidden-xs
       if organization.logo_url
         a(href='{{ organization.homepage_url }}', target='_blank')
