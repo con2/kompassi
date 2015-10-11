@@ -36,8 +36,12 @@ block admin_content
           tr
             td
               a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.surname
-            td
-              a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.official_first_names
+            if member.person.official_first_names
+              td
+                a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.official_first_names
+            else
+              td.danger
+                a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.first_name
             td
               a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.muncipality
             td.text-right
