@@ -72,6 +72,7 @@ def merge_people(people_to_merge, into):
             ('labour', 'signup'),
             ('mailings', 'personmessage'),
             ('programme', 'programmerole'),
+            ('membership', 'membership'),
         ]:
             if app_label in settings.INSTALLED_APPS:
                 Model = ContentType.objects.get_by_natural_key(app_label, model_name).model_class()
