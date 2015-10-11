@@ -10,4 +10,7 @@ for organizations_row in organizations_rows
           .panel-body
             p= organization.muncipality
             if organization.membership_organization_meta
-              .label.label-primary Jäsenrekisteri
+              if organization.receiving_applications
+                .label.label-primary Jäsenrekisteri
+              else
+                .label.label-default Jäsenrekisteri
