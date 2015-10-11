@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import now
@@ -45,7 +45,7 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
         self.organization.save()
 
     def setup_membership(self):
-        from membership.models import MembershipOrganizationMeta
+        from membership.models import MembershipOrganizationMeta, Term
 
         membership_admin_group, created = MembershipOrganizationMeta.get_or_create_group(self.organization, 'admins')
 
@@ -53,6 +53,23 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
             admin_group=membership_admin_group,
             receiving_applications=True,
         ))
+
+        for year, membership_fee_cents in [
+            (2015, 100),
+        ]:
+            start_date = date(year, 1, 1)
+            end_date = date(year, 12, 31)
+
+            Term.objects.get_or_create(
+                organization=self.organization,
+                start_date=start_date,
+                defaults=dict(
+                    end_date=end_date,
+                    entrance_fee_cents=0,
+                    membership_fee_cents=membership_fee_cents,
+                )
+            )
+
 
 
 class Command(BaseCommand):

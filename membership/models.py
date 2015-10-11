@@ -52,7 +52,7 @@ STATE_CSS = dict(
 
 
 class Membership(models.Model):
-    organization = models.ForeignKey(Organization, verbose_name=u'Organisaatio', related_name='members')
+    organization = models.ForeignKey(Organization, verbose_name=u'Yhdistys', related_name='members')
     person = models.ForeignKey(Person, verbose_name=u'Henkilö', related_name='memberships')
     state = models.CharField(
         max_length=max(len(key) for (key, val) in STATE_CHOICES),
@@ -115,3 +115,68 @@ class Membership(models.Model):
     class Meta:
         verbose_name = u'Jäsenyys'
         verbose_name_plural = u'Jäsenyydet'
+
+
+class Term(models.Model):
+    organization = models.ForeignKey(Organization,
+        verbose_name=u'Yhdistys',
+        related_name='terms'
+    )
+    title = models.CharField(max_length=63, verbose_name=u'Otsikko', help_text=u'Yleensä vuosiluku')
+    start_date = models.DateField(verbose_name=u'Alkamispäivä', help_text=u'Yleensä vuoden ensimmäinen päivä')
+    end_date = models.DateField(verbose_name=u'Päättymispäivä', help_text=u'Yleensä vuoden viimeinen päivä')
+
+    entrance_fee_cents = models.PositiveIntegerField(
+        default=0,
+        null=True,
+        blank=True,
+        verbose_name=u'Liittymismaksu (snt)',
+        help_text=u'Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella liittymismaksua. '
+            u'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.',
+    )
+
+    membership_fee_cents = models.PositiveIntegerField(
+        default=0,
+        null=True,
+        blank=True,
+        verbose_name=u'Jäsenmaksu (snt)',
+        help_text=u'Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella jäsenmaksua. '
+            u'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.',
+    )
+
+    def save(self, *args, **kwargs):
+        if self.start_date and not self.title:
+            self.title = unicode(self.start_date.year)
+
+        return super(Term, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = u'Toimikausi'
+        verbose_name_plural = u'Toimikaudet'
+
+
+class MembershipFeePayment(models.Model):
+    term = models.ForeignKey(Term, related_name='membership_fee_payments')
+    member = models.ForeignKey(Membership, related_name='membership_fee_payments')
+
+    payment_date = models.DateField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.term.title if self.term else u'None'
+
+    class Meta:
+        verbose_name = u'Jäsenmaksusuoritus'
+        verbose_name_plural = u'Jäsenmaksusuoritukset'
+
+    def admin_get_organization(self):
+        return self.term.organization if self.term else None
+    admin_get_organization.short_description = u'Yhdistys'
+    admin_get_organization.admin_order_field = 'organization'
+
+    def admin_get_official_name(self):
+        return self.member.person.official_name if self.member else None
+    admin_get_official_name.short_description = u'Jäsen'
+    admin_get_official_name.admin_order_field = u'member'

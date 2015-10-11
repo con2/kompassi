@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import MembershipOrganizationMeta, Membership
+from .models import (
+    Membership,
+    MembershipFeePayment,
+    MembershipOrganizationMeta,
+    Term,
+)
 
 
 class InlineMembershipOrganizationMetaAdmin(admin.StackedInline):
@@ -18,6 +23,21 @@ class MembershipAdmin(admin.ModelAdmin):
         'person__email',
     )
     raw_id_fields = ('person',)
+    ordering = ('organization', 'person__surname', 'person__official_first_names')
+
+
+class TermAdmin(admin.ModelAdmin):
+    list_display = ('organization', 'title', 'start_date', 'end_date')
+    list_filter = ('organization',)
+    ordering = ('organization', 'start_date')
+
+
+class MembershipFeePaymentAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_organization', 'term', 'admin_get_official_name', 'payment_date')
+    list_filter = ('term__organization',)
+    ordering = ('term__organization', 'member__person__surname', 'member__person__official_first_names')
 
 
 admin.site.register(Membership, MembershipAdmin)
+admin.site.register(Term, TermAdmin)
+admin.site.register(MembershipFeePayment, MembershipFeePaymentAdmin)
