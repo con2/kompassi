@@ -322,8 +322,8 @@ class Person(models.Model):
         verbose_name=u'Kotikunta',
         help_text=u'Virallinen kotikuntasi eli kunta jossa olet kirjoilla. Kotikunta ja väestörekisteriin '
             u'merkityt etunimesi (kaikki) ovat pakollisia tietoja, mikäli kuulut '
-            u'tai haluat liittyä johonkin yhdistykseen joka käyttää {kompassia} jäsenrekisterin '
-            u'hallintaan.'.format(kompassia=settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE),
+            u'tai haluat liittyä johonkin yhdistykseen joka käyttää tätä sivustoa jäsenrekisterin '
+            u'hallintaan.'
     )
 
     email = models.EmailField(
