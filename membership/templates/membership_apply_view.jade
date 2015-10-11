@@ -69,7 +69,7 @@ block content
               button(type='submit').btn.btn-success
                 i.fa.fa-check.kompassi-inline-icon
                 | Hae jäsenyyttä
-          p.text-muted Hyväksyn yhdistyksen tarkoituksen ja säännöt ja haen yhdistyksen jäsenyyttä. Vakuutan täyttäväni yhdistyksen sääntöjen mukaiset jäsenyyden ehdot ja hyväksyn henkilötietojeni tallentamisen yhdistyksen jäsenrekisteriin sen rekisteriselosteen mukaisesti.
+          p.text-muted Hyväksyn yhdistyksen tarkoituksen ja säännöt ja haen yhdistyksen jäsenyyttä. Vakuutan täyttäväni yhdistyksen sääntöjen mukaiset jäsenyyden ehdot ja hyväksyn henkilötietojeni tallentamisen yhdistyksen jäsenrekisteriin <a href='{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}' target='_blank'>{{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} rekisteriselosteen</a> mukaisesti.
         else
           .btn-group.pull-right
             button.btn.disabled(disabled) Hae jäsenyyttä

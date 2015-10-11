@@ -80,7 +80,6 @@ class PersonForm(forms.ModelForm):
                 'nick',
                 'preferred_name_display_style',
                 'birth_date',
-                'muncipality',
             ),
             Fieldset(u'Jäsenrekisteritiedot',
                 'official_first_names',

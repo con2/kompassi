@@ -15,13 +15,11 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
         help_text=u'Tämä asetus kontrolloi, voiko yhdistyksen jäseneksi hakea suoraan Kompassin kautta.',
     )
     membership_requirements = models.TextField(
-        default=u'',
         blank=True,
         verbose_name=u'Kuka voi hakea jäsenyyttä?',
         help_text=u'Esim. copy-paste säännöistä.'
     )
     membership_fee = models.TextField(
-        default=u'',
         blank=True,
         verbose_name=u'Jäsenmaksu',
         help_text=u'Minkä suuruinen on liittymis- ja jäsenmaksu ja miten se maksetaan?',
