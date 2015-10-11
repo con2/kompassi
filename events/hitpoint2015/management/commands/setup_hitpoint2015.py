@@ -113,7 +113,7 @@ class Setup(object):
 
         for pc_name, pc_slug, pc_app_label, pc_afterparty in [
             (u'Conitea', 'conitea', 'labour', True),
-            (u'Ylivänkäri', 'ylivankari', 'labour', True),
+            (u'Vuorovastaava', 'ylivankari', 'labour', True),
             (u'Työvoima', 'tyovoima', 'labour', True),
             (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme', True),
             (u'Guest of Honour', 'goh', 'programme', False), # tervetullut muttei kutsuta automaattiviestillä
