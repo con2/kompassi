@@ -9,7 +9,6 @@ block content_full_width
     include labour_admin_roster_views/Roster.jade
 
 block extra_scripts
-  link(rel='stylesheet', href='{{ STATIC_URL }}core/css/font-awesome.min.css')
   link(rel='stylesheet', href='{{ STATIC_URL }}labour/css/roster.css')
   script
     window.kompassiLabourRosterConfig = {{ config_json|safe }};

@@ -39,8 +39,9 @@ block admin_content
                 td {{ personnel_class.count_revoked_badges }}
                 td {{ personnel_class.count_printed_badges }}
                 td {{ personnel_class.count_badges }}
-                td: a.btn.btn-xs.btn-success(href='{% url "badges_admin_create_with_template_view" event.slug personnel_class.slug %}', title='Lisää uusi käsin')
-                  Lisää
+                td
+                  a.btn.btn-xs.btn-success(href='{% url "badges_admin_create_with_template_view" event.slug personnel_class.slug %}', title='Lisää uusi käsin')
+                    i.fa.fa-plus
             tr
               th Yhteensä
               th {{ meta.count_badges_awaiting_batch }}
