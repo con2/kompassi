@@ -57,6 +57,7 @@ class Membership(models.Model):
     state = models.CharField(
         max_length=max(len(key) for (key, val) in STATE_CHOICES),
         choices=STATE_CHOICES,
+        verbose_name=u'Tila',
     )
     message = models.TextField(
         blank=True,
