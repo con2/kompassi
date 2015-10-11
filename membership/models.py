@@ -93,8 +93,8 @@ class Membership(models.Model):
 
     def __unicode__(self):
         return u"{organization}/{person}".format(
-            organization=self.organization,
-            person=self.person,
+            organization=self.organization.name if self.organization else None,
+            person=self.person.official_name if self.person else None,
         )
 
     @classmethod
