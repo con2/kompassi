@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
 
 from core.utils import url
@@ -76,8 +76,15 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
             m2m_mode='separate_columns',
         )
 
-def membership_admin_member_view(request):
-    raise NotImplementedError()
+@membership_admin_required
+def membership_admin_member_view(request, vars, organization, person_id):
+    membership = get_object_or_404(Membership, organization=organization, person=int(person_id))
+
+    vars.update(
+        membership=membership
+    )
+
+    return render(request, 'membership_admin_member_view.jade', vars)
 
 
 def membership_admin_menu_items(request, organization):

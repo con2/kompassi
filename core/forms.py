@@ -82,6 +82,10 @@ class PersonForm(forms.ModelForm):
                 'birth_date',
                 'muncipality',
             ),
+            Fieldset(u'Jäsenrekisteritiedot',
+                'official_first_names',
+                'muncipality',
+            ),
             Fieldset(u'Yhteystiedot',
                 'phone',
                 'email',
@@ -138,6 +142,7 @@ class PersonForm(forms.ModelForm):
             'muncipality',
             'nick',
             'phone',
+            'official_first_names',
             'preferred_name_display_style',
             'surname',
         )

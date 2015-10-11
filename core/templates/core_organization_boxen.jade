@@ -10,7 +10,8 @@ for organizations_row in organizations_rows
           .panel-body
             p= organization.muncipality
             if organization.membership_organization_meta
-              if organization.receiving_applications
-                .label.label-primary Jäsenrekisteri
+              if organization.membership_organization_meta.receiving_applications
+                .label.label-primary
+                  a(href='{% url "core_organization_view" organization.slug %}') Jäsenrekisteri
               else
                 .label.label-default Jäsenrekisteri

@@ -28,7 +28,7 @@ block admin_content
       thead
         tr
           th Sukunimi
-          th Etunimi
+          th Etunimet
           th Kotikunta
           th.text-right Jäsenyyden tila
       tbody
@@ -37,7 +37,7 @@ block admin_content
             td
               a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.surname
             td
-              a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.first_name
+              a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.official_first_names
             td
               a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.muncipality
             td.text-right

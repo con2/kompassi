@@ -25,8 +25,20 @@ block content
       .panel-body
         .row
           .control-group
-            label.control-label.col-md-2 Hakijan nimi
-            .col-md-10 {{ request.user.person.official_name }}
+            label.control-label.col-md-2 Sukunimi
+            .col-md-10
+              if request.user.person.surname
+                |{{ request.user.person.surname }}
+              else
+                .label.label-danger Sukunimi puuttuu
+        .row
+          .control-group
+            label.control-label.col-md-2 Viralliset etunimet
+            .col-md-10
+              if request.user.person.official_first_names
+                |{{ request.user.person.official_first_names }}
+              else
+                .label.label-danger Etunimet puuttuvat
 
         .row
           .control-group
@@ -65,3 +77,5 @@ block content
             p.text-danger Ennen kuin voit hakea yhdistyksen jäsenyyttä, sinun täytyy päivittää täydentää profiilistasi puuttuvat tiedot.
           if already_member
             p.text-danger Olet jo tämän yhdistyksen jäsen, tai jäsenyytesi on käsiteltävänä.
+          if not_receiving_applications
+            p.text-danger Tämä tapahtuma ei tällä hetkellä ota vastaan hakemuksia {{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} kautta.

@@ -18,7 +18,7 @@ from ..forms import MembershipForm
 def membership_apply_view(request, organization):
     mandatory_information_missing = not (
         request.user.person and
-        request.user.person.first_name and
+        request.user.person.official_first_names and
         request.user.person.surname and
         request.user.person.muncipality and
         request.user.person.email

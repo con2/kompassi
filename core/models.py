@@ -301,6 +301,11 @@ def birth_date_validator(value):
 
 class Person(models.Model):
     first_name = models.CharField(max_length=1023, verbose_name=u'Etunimi')
+    official_first_names = models.CharField(
+        blank=True,
+        max_length=1023,
+        verbose_name=u'Viralliset etunimet',
+    )
     surname = models.CharField(max_length=1023, verbose_name=u'Sukunimi')
     nick = models.CharField(blank=True, max_length=1023, help_text='Lempi- tai kutsumanimi')
     birth_date = models.DateField(
@@ -315,7 +320,10 @@ class Person(models.Model):
         blank=True,
         max_length=127,
         verbose_name=u'Kotikunta',
-        help_text=u'Virallinen kotikuntasi eli kunta jossa olet kirjoilla.',
+        help_text=u'Virallinen kotikuntasi eli kunta jossa olet kirjoilla. Kotikunta ja väestörekisteriin '
+            u'merkityt etunimesi (kaikki) ovat pakollisia tietoja, mikäli kuulut '
+            u'tai haluat liittyä johonkin yhdistykseen joka käyttää {kompassia} jäsenrekisterin '
+            u'hallintaan.'.format(kompassia=settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE),
     )
 
     email = models.EmailField(
@@ -374,7 +382,15 @@ class Person(models.Model):
 
     @property
     def official_name(self):
-        return NAME_DISPLAY_STYLE_FORMATS['firstname_surname'].format(self=self)
+        if self.official_first_names:
+            first_name = self.official_first_names
+        else:
+            first_name = self.first_name
+
+        return "{surname}, {first_name}".format(
+            surname=self.surname,
+            first_name=first_name,
+        )
 
     @property
     def name_and_email(self):
