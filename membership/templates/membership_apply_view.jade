@@ -13,7 +13,24 @@ block content
 
   h3 Jäsenmaksu
 
-  {{ meta.membership_fee|linebreaks }}
+  if current_term
+    .row
+      .control-group
+        label.control-label.col-md-2 Liittymismaksu
+        .col-md-10= current_term.formatted_entrance_fee
+
+    .row
+      .control-group
+        label.control-label.col-md-2 Jäsenmaksu
+        .col-md-10= current_term.formatted_membership_fee
+
+    .row
+      .control-group
+        label.control-label.col-md-2 Maksutapa
+        .col-md-10
+          p Tilisiirrolla. Yhdistyksen hallitus ohjeistaa jäsenmaksun maksamisen sähköpostitse liittymisen jälkeen.
+  else
+    p.text-danger Nykyisen toimikauden tiedot puuttuvat.
 
   p &nbsp;
 

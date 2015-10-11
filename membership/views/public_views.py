@@ -9,13 +9,14 @@ from core.models import Organization
 from core.utils import initialize_form
 
 from ..helpers import membership_organization_required
-from ..models import Membership
+from ..models import Membership, Term
 from ..forms import MembershipForm
 
 
 @membership_organization_required
 @person_required
 def membership_apply_view(request, organization):
+    meta = organization.membership_organization_meta
     mandatory_information_missing = not (
         request.user.person and
         request.user.person.official_first_names and
@@ -31,6 +32,11 @@ def membership_apply_view(request, organization):
     can_apply = (not mandatory_information_missing) and (not already_member)
 
     form = initialize_form(MembershipForm, request)
+
+    try:
+        current_term = meta.get_current_term()
+    except Term.DoesNotExist:
+        current_term = None
 
     if request.method == 'POST':
         if already_member:
@@ -54,12 +60,13 @@ def membership_apply_view(request, organization):
         return redirect('core_organization_view', organization.slug)
 
     vars = dict(
-        form=form,
-        organization=organization,
-        meta=organization.membership_organization_meta,
-        mandatory_information_missing=mandatory_information_missing,
         already_member=already_member,
         can_apply=can_apply,
+        form=form,
+        mandatory_information_missing=mandatory_information_missing,
+        meta=meta,
+        organization=organization,
+        current_term=current_term,
     )
 
     return render(request, 'membership_apply_view.jade', vars)

@@ -1,9 +1,13 @@
 # encoding: utf-8
 
+from datetime import date
+
 from django.contrib.auth.models import Group
 from django.db import models
 
 from core.models import Organization, Person, GroupManagementMixin
+from core.utils import format_date
+from tickets.utils import format_price
 
 
 class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
@@ -19,11 +23,6 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
         verbose_name=u'Kuka voi hakea jäsenyyttä?',
         help_text=u'Esim. copy-paste säännöistä.'
     )
-    membership_fee = models.TextField(
-        blank=True,
-        verbose_name=u'Jäsenmaksu',
-        help_text=u'Minkä suuruinen on liittymis- ja jäsenmaksu ja miten se maksetaan?',
-    )
 
     def __unicode__(self):
         return self.organization.name if self.organization is not None else u'None'
@@ -36,6 +35,15 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
         group_name = self.make_group_name(self.organization, suffix)
 
         return Group.objects.get(name=group_name)
+
+    def get_current_term(self, d=None):
+        if d is None:
+            d = date.today()
+
+        return self.organization.terms.get(
+            start_date__lte=d,
+            end_date__gte=d,
+        )
 
 
 STATE_CHOICES = [
@@ -144,6 +152,26 @@ class Term(models.Model):
             u'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.',
     )
 
+    @property
+    def formatted_entrance_fee(self):
+        if self.entrance_fee_cents is None:
+            return u'Liittymismaksu ei ole tiedossa.'
+        elif self.entrance_fee_cents == 0:
+            return u'Ei liittymismaksua.'
+        else:
+            return format_price(self.entrance_fee_cents)
+
+    @property
+    def formatted_membership_fee(self):
+        if self.membership_fee_cents is None:
+            return u'Jäsenmaksu ei ole tiedossa.'
+        elif self.membership_fee_cents == 0:
+            return u'Ei jäsenmaksua kaudella {title}.'.format(title=self.title,)
+        else:
+            return u'{money} (voimassa {end_date} asti).'.format(
+                money=format_price(self.membership_fee_cents),
+                end_date=format_date(self.end_date),
+            )
     def save(self, *args, **kwargs):
         if self.start_date and not self.title:
             self.title = unicode(self.start_date.year)

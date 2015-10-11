@@ -49,9 +49,14 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
 
         membership_admin_group, created = MembershipOrganizationMeta.get_or_create_group(self.organization, 'admins')
 
-        self.meta = MembershipOrganizationMeta.objects.get_or_create(organization=self.organization, defaults=dict(
+        self.meta, created = MembershipOrganizationMeta.objects.get_or_create(organization=self.organization, defaults=dict(
             admin_group=membership_admin_group,
             receiving_applications=True,
+            membership_requirements=u"""
+Yhdistyksen varsinaiseksi jäseneksi voi liittyä jokainen yksityinen henkilö tai oikeuskelpoinen yhdistys, joka hyväksyy yhdistyksen tarkoituksen ja säännöt ja osallistuu sen toimintaan.
+
+Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksymättä hakemusta, mikäli siihen on selvät perusteet.
+""".strip(),
         ))
 
         for year, membership_fee_cents in [
