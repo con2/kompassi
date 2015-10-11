@@ -27,7 +27,6 @@ class Setup(object):
                 name='Tracon ry',
                 homepage_url='https://ry.tracon.fi',
                 logo_url='https://media.tracon.fi/ry/vaakuna-vari.png',
-                receiving_applications=False,
                 description=u"""
 Tracon ry on tamperelainen yhdistys, jonka tarkoituksena on edistää, kehittää ja tehdä tunnetuksi roolipeli-, korttipeli-, lautapeli-, miniatyyripeli-, animaatio-, elokuva- ja sarjakuvaharrastuksia, sekä näihin liittyviä alakulttuureita.
 
@@ -51,7 +50,8 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
         membership_admin_group, created = MembershipOrganizationMeta.get_or_create_group(self.organization, 'admins')
 
         self.meta = MembershipOrganizationMeta.objects.get_or_create(organization=self.organization, defaults=dict(
-            admin_group=membership_admin_group
+            admin_group=membership_admin_group,
+            receiving_applications=True,
         ))
 
 
