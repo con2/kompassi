@@ -31,6 +31,8 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
         state_filters,
     ])
 
+    members = members.order_by('person__surname', 'person__official_first_names')
+
     export_type = state_filters.selected_slug
     if export_type == 'approval':
         export_type_verbose = u'Hyväksyntää odottavat hakemukset'
