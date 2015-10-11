@@ -65,5 +65,10 @@ block admin_content
       include labour_admin_signup_table_contents.jade
     .panel-footer.clearfix
       .pull-right
-        a(href='{% url "labour_admin_export_view" event.slug %}?{{ request.META.QUERY_STRING }}') Vie Exceliin...
+        button.btn.btn-default.dropdown-toggle#membership-admin-export-dropdown(type='button',
+                                                                                data-toggle='dropdown',
+                                                                                aria-haspopup='true',
+                                                                                aria-expanded='true') Vie...
+          span.caret
+        a(href='{% url "labour_admin_export_view" event.slug %}?{{ request.META.QUERY_STRING }}')
       p.text-muted {{ num_signups }} henkilö{{ num_signups|pluralize:"ä" }} (yhteensä {{ num_all_signups }}).

@@ -88,17 +88,19 @@ def membership_organization_box_context(request, organization):
         return dict()
 
     if request.user.is_anonymous() or not request.user.person:
-        can_apply = True
         membership = None
+        is_membership_admin = False
     else:
         membership = Membership.objects.filter(
             organization=organization,
             person=request.user.person,
         ).first()
+        is_membership_admin = meta.is_user_admin(request.user)
 
     return dict(
         can_apply=meta.receiving_applications and not membership,
         membership=membership,
+        is_membership_admin=is_membership_admin,
     )
 
 

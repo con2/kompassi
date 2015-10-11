@@ -78,14 +78,40 @@ class Membership(models.Model):
         return self.state == 'discharged'
 
     @property
+    def formatted_state(self):
+        return self.get_state_display()
+
+    @property
     def state_css(self):
         return STATE_CSS[self.state]
+
+    def to_html_print(self):
+        return u'{surname}, {first_name}, {muncipality}'.format(
+            surname=self.person.surname,
+            first_name=self.person.first_name,
+            muncipality=self.person.muncipality,
+        )
 
     def __unicode__(self):
         return u"{organization}/{person}".format(
             organization=self.organization,
             person=self.person,
         )
+
+    @classmethod
+    def get_csv_fields(cls, unused_organization):
+        return [
+            (Person, 'surname'),
+            (Person, 'first_name'),
+            (Person, 'muncipality'),
+            (cls, 'formatted_state'),
+        ]
+
+    def get_csv_related(self):
+        return {
+            Membership: self,
+            Person: self.person,
+        }
 
     class Meta:
         verbose_name = u'Jäsenyys'

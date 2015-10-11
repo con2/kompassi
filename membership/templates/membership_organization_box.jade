@@ -2,14 +2,19 @@ h3 Yhdistyksen jäsenyys
 
 if membership
   if membership.is_pending_approval
-    p Jäsenhakemuksesi odottaa hyväksyntää.
+    h4 Jäsenhakemuksesi odottaa hyväksyntää.
   if membership.is_in_effect
-    p Olet tämän yhdistyksen jäsen.
+    h4 Olet tämän yhdistyksen jäsen.
   if membership.is_discharged
-    p Sinut on erotettu tästä yhdistyksestä. Yleensä tämä johtuu maksamattomasta jäsenmaksusta. Saattaaksesi jäsenyytesi takaisin voimaan ota yhteyttä yhdistyksen hallitukseen.
+    h4 Sinut on erotettu tästä yhdistyksestä.
+    p Yleensä tämä johtuu maksamattomasta jäsenmaksusta. Saattaaksesi jäsenyytesi takaisin voimaan ota yhteyttä yhdistyksen hallitukseen.
 else
   if can_apply
-    p Voit hakea tämän yhdistyksen jäsenyyttä.
+    h4 Voit hakea tämän yhdistyksen jäsenyyttä.
     a.btn.btn-primary(href='{% url "membership_apply_view" organization.slug %}') Hae jäsenyyttä
   else
-    p Tämä yhdistys ei tällä hetkellä ota vastaan jäsenhakemuksia Kompassin kautta.
+    h4 Tämä yhdistys ei tällä hetkellä ota vastaan jäsenhakemuksia Kompassin kautta.
+
+if is_membership_admin
+  h4 Sinulla on jäsenrekisterin ylläpito-oikeudet
+  a.btn.btn-primary(href='{% url "membership_admin_members_view" organization.slug %}') Siirry jäsenrekisterin ylläpitonäkymään

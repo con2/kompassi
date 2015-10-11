@@ -124,3 +124,15 @@ class Filter(SortAndFilterBase):
         for obj in object_list:
             self.add(slug=obj.slug, name=force_text(obj), definition={filter_field: obj.slug})
         return self
+
+    def add_choices(self, filter_field, choices):
+        """
+        Add a 'choices' list (as accepted by model and form fields) as definitions.
+
+        :param filter_field: Field name on the target queryset
+        :param choices: Choices to add
+        :return: Self, for chaining
+        """
+        for (slug, name) in choices:
+            self.add(slug=slug, name=name, definition={filter_field: slug})
+        return self

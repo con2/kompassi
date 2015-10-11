@@ -26,7 +26,7 @@ def membership_admin_required(view_func):
         vars = dict(
             organization=organization,
             admin_menu_items=membership_admin_menu_items(request, organization),
-            admin_title=u'Yhdistyksen hallinta'
+            admin_title=u'Jäsenrekisterin ylläpito'
         )
 
         return view_func(request, vars, organization, *args, **kwargs)

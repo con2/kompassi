@@ -13,7 +13,14 @@ urlpatterns = patterns('',
     url(
         r'^organizations/(?P<organization_slug>[a-z0-9-]+)/admin/members/?$',
         membership_admin_members_view,
+        kwargs=dict(format='screen'),
         name='membership_admin_members_view'
+    ),
+
+    url(
+        r'^organizations/(?P<organization_slug>[a-z0-9-]+)/admin/members.(?P<format>html|xlsx|csv)/?$',
+        membership_admin_members_view,
+        name='membership_admin_export_view'
     ),
 
     url(
