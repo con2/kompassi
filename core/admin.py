@@ -34,6 +34,7 @@ class PersonAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Basic information', {'fields': [('first_name', 'surname'), 'nick']}),
         ('Contact information', {'fields': ['email', 'phone']}),
+        ('Official information', {'fields': ['official_first_names', 'muncipality']}),
         ('Display', {'fields': ['preferred_name_display_style']}),
         ('Notes', {'fields': ['notes']}),
     ]
