@@ -387,7 +387,7 @@ class Person(models.Model):
         else:
             first_name = self.first_name
 
-        return "{surname}, {first_name}".format(
+        return u"{surname}, {first_name}".format(
             surname=self.surname,
             first_name=first_name,
         )
