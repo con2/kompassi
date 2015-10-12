@@ -29,30 +29,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
 
 
-
-
-def login_redirect(request, view='core_login_view'):
-    path = reverse(view)
-    query = urlencode(dict(next=request.path))
-    return HttpResponseRedirect("{path}?{query}".format(**locals()))
-
-
-def get_next(request, default='/'):
-    if request.method == 'GET':
-        next = request.GET.get('next', None)
-    elif request.method == 'POST':
-        next = request.POST.get('next', None)
-    else:
-        raise NotImplemented(request.method)
-
-    return next if next else default
-
-
-def next_redirect(request, default='/'):
-    next = get_next(request, default)
-    return redirect(next)
-
-
 CHARACTER_CLASSES = [re.compile(r) for r in [
     r'.*[a-z]',
     r'.*[A-Z]',
@@ -140,27 +116,6 @@ def set_attrs(obj, **attrs):
         setattr(obj, key, value)
 
     return obj
-
-
-SLUGIFY_CHAR_MAP = {
-  u'ä': u'a',
-  u'å': u'a',
-  u'ö': u'o',
-  u'ü': u'u',
-  u' ': u'-',
-  u'_': u'-',
-  u'.': u'-',
-}
-SLUGIFY_FORBANNAD_RE = re.compile(ur'[^a-z0-9-]', re.UNICODE)
-SLUGIFY_MULTIDASH_RE = re.compile(ur'-+', re.UNICODE)
-
-
-def slugify(ustr):
-    ustr = ustr.lower()
-    ustr = u''.join(SLUGIFY_CHAR_MAP.get(c, c) for c in ustr)
-    ustr = SLUGIFY_FORBANNAD_RE.sub(u'', ustr)
-    ustr = SLUGIFY_MULTIDASH_RE.sub(u'-', ustr)
-    return ustr
 
 
 def simple_object_init(self, **kwargs):
