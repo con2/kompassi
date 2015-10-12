@@ -1,5 +1,8 @@
 # encoding: utf-8
 
+from .page_wizard import page_wizard_clear
+
+
 NEVER_BLOW_PAGE_WIZARD_PREFIXES = [
     # we have addresses like /desuprofile/confirm/475712413a0ddc3c7a57c6721652b75449bf3c89
     # that should not blow the page wizard when used within a signup page wizard flow
@@ -30,7 +33,6 @@ class PageWizardMiddleware(object):
         elif any(request.path.startswith(prefix) for prefix in NEVER_BLOW_PAGE_WIZARD_PREFIXES):
             pass
         else:
-            from core.utils import page_wizard_clear
             page_wizard_clear(request)
 
         return None

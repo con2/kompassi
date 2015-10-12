@@ -13,13 +13,13 @@ from django.utils import timezone
 
 from .utils import (
     ensure_group_exists,
-    event_meta_property,
     format_date_range,
     pick_attrs,
     SLUG_FIELD_PARAMS,
     url,
     validate_slug,
     slugify,
+    event_meta_property,
 )
 
 

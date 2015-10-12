@@ -6,8 +6,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 
-from .models import Person, Organization
+from .models import Person, Organization, Event
 from .utils import login_redirect
+from .page_wizard import page_wizard_init, page_wizard_clear
+
 
 def person_required(view_func):
     @login_required
@@ -58,8 +60,6 @@ def app_event_required(app_label, error_message):
     def outer(view_func):
         @wraps(view_func)
         def inner(request, event, *args, **kwargs):
-            from core.models import Event
-
             event = get_object_or_404(Event, slug=event)
             meta = event.labour_event_meta
 
@@ -115,3 +115,19 @@ def public_organization_required(view_func):
         return view_func(request, organization, *args, **kwargs)
 
     return wrapper
+
+
+def event_meta_property(app_label, code_path):
+    if app_label not in settings.INSTALLED_APPS:
+        return property(lambda self: None)
+
+    def _get(self):
+        # NOTE moving get_code invocation outside _get would create a circular import
+        EventMetaClass = get_code(code_path)
+
+        try:
+            return EventMetaClass.objects.get(event=self)
+        except EventMetaClass.DoesNotExist:
+            return None
+
+    return property(_get)

@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
 
-from core.utils import url
+from core.utils import url, initialize_form
 from core.sort_and_filter import Filter
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS
 
@@ -82,8 +82,11 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
 def membership_admin_member_view(request, vars, organization, person_id):
     membership = get_object_or_404(Membership, organization=organization, person=int(person_id))
 
+    form = initialize_form(PersonForm, membership.person, readonly=membership.person.user is not None)
+
     vars.update(
-        membership=membership
+        membership=membership,
+        form=form,
     )
 
     return render(request, 'membership_admin_member_view.jade', vars)

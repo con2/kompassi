@@ -16,11 +16,13 @@ from core.models import Event, Person
 from core.utils import (
     initialize_form,
     login_redirect,
+    url,
+    set_attrs,
+)
+from core.page_wizard import (
     page_wizard_clear,
     page_wizard_init,
     page_wizard_vars,
-    url,
-    set_attrs,
 )
 
 from ..forms import SignupForm

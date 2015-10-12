@@ -33,11 +33,10 @@ from ..utils import (
     groups_of_n,
     initialize_form,
     next_redirect,
-    page_wizard_clear,
-    page_wizard_vars,
     url,
 )
 from ..helpers import person_required
+from ..page_wizard import page_wizard_clear, page_wizard_vars
 from .email_verification_views import remind_email_verification_if_needed
 
 

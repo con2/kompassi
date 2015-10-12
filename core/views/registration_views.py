@@ -33,10 +33,9 @@ from ..utils import (
     groups_of_n,
     initialize_form,
     next_redirect,
-    page_wizard_clear,
-    page_wizard_vars,
     url,
 )
+from ..page_wizard import page_wizard_vars
 from ..helpers import person_required
 from .login_views import do_login
 

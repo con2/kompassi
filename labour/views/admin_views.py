@@ -17,7 +17,7 @@ from dateutil.tz import tzlocal
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS
 from core.sort_and_filter import Filter, Sorter
 from core.models import Event, Person
-from core.utils import initialize_form, url, json_response, render_string
+from core.utils import initialize_form, url
 
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
 from ..helpers import labour_admin_required
