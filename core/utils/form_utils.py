@@ -1,31 +1,9 @@
 # encoding: utf-8
 
-from datetime import datetime, timedelta
-from functools import wraps
-from itertools import groupby
-from random import randint
-import json
-import sys
-import re
-
 from django import forms
-from django.conf import settings
-from django.contrib.auth.models import Group, User
-from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
-from django.core.validators import RegexValidator
-from django.db import models
-from django.forms import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
-from django.utils.timezone import now
-from django.template import RequestContext, defaultfilters
-from django.template.loader import render_to_string
-
-from dateutil.tz import tzlocal
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
+from crispy_forms.layout import Div
 
 
 def make_field_readonly(field):
