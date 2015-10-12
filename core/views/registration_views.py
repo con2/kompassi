@@ -38,6 +38,7 @@ from ..utils import (
     url,
 )
 from ..helpers import person_required
+from .login_views import do_login
 
 
 @require_http_methods(['GET','POST'])
