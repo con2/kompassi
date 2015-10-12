@@ -47,7 +47,7 @@
     "jsdom": "^6.5.1",
     "knockout": "^3.3.0",
     "lodash": "^3.10.1",
-    "mocha": "^2.3.2",
+    "mocha": "^2.3.3",
     "moment": "^2.10.6",
     "nib": "^1.1.0",
     "node-notifier": "^4.3.1",
