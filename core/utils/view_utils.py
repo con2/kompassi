@@ -1,5 +1,8 @@
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.utils.http import urlencode
 
 
 def url(view_name, *args):
@@ -22,7 +25,7 @@ def get_next(request, default='/'):
     elif request.method == 'POST':
         next = request.POST.get('next', None)
     else:
-        raise NotImplemented(request.method)
+        raise NotImplementedError(request.method)
 
     return next if next else default
 

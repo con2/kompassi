@@ -1,6 +1,8 @@
 # encoding: utf-8
 
-from .utils import get_next
+from django.core.urlresolvers import reverse
+
+from .utils import get_next, url
 
 
 def page_wizard_init(request, pages):

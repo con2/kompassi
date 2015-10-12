@@ -18,7 +18,6 @@ from django.db import models
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.utils.http import urlencode
 from django.utils.timezone import now
 from django.template import RequestContext, defaultfilters
 from django.template.loader import render_to_string
