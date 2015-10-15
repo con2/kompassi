@@ -5,7 +5,7 @@ from django import forms
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
-from labour.forms import AlternativeFormMixin
+from labour.forms import AlternativeFormMixin, SignupForm
 from labour.models import Signup, JobCategory, WorkPeriod
 
 from .models import SignupExtra
@@ -99,3 +99,14 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             desu_amount=666,
             free_text=u'Syötetty käyttäen vastaavan ilmoittautumislomaketta',
         )
+
+
+class LatecomerSignupForm(SignupForm, AlternativeFormMixin):
+    def get_excluded_field_defaults(self):
+        return dict(
+            notes=u'Syötetty käyttäen jälki-ilmoittautumislomaketta',
+        )
+
+
+class LatecomerSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
+    pass

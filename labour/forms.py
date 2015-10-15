@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from datetime import date, datetime
+
 from django import forms
 from django.utils.timezone import now
 
@@ -11,7 +13,6 @@ from core.utils import horizontal_form_helper, indented_without_label
 
 from .models import Signup, JobCategory, EmptySignupExtra, PersonnelClass, WorkPeriod
 
-from datetime import date, datetime
 
 
 # http://stackoverflow.com/a/9754466

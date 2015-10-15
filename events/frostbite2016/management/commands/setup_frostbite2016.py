@@ -168,7 +168,7 @@ class Setup(object):
             jc.required_qualifications = [qual]
             jc.save()
 
-        AlternativeSignupForm.objects.get_or_create(
+        organizer_form, unused = AlternativeSignupForm.objects.get_or_create(
             event=self.event,
             slug=u'vastaava',
             defaults=dict(
@@ -176,7 +176,25 @@ class Setup(object):
                 signup_form_class_path='events.frostbite2016.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.frostbite2016.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2015, 8, 18, 0, 0, 0, tzinfo=self.tz),
-                active_until=None,
+                active_until=self.event.start_time,
+            ),
+        )
+
+        if organizer_form.active_until is None:
+            organizer_form.active_until = self.event.start_time
+            organizer_form.save()
+
+        AlternativeSignupForm.objects.get_or_create(
+            event=self.event,
+            slug=u'xxlomake',
+            defaults=dict(
+                title=u'Jälki-ilmoittautumislomake',
+                signup_form_class_path='events.frostbite2016.forms:LatecomerSignupForm',
+                signup_extra_form_class_path='events.frostbite2016.forms:LatecomerSignupExtraForm',
+                active_from=datetime(2015, 8, 18, 0, 0, 0, tzinfo=self.tz),
+                active_until=self.event.start_time,
+                signup_message=u'Yleinen työvoimahaku Desucon Frostbiteen ei ole enää auki. Täytä tämä lomake vain, '
+                    u'jos joku Desuconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella. ',
             ),
         )
 
