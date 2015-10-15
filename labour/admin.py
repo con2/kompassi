@@ -40,10 +40,21 @@ class QualificationAdmin(admin.ModelAdmin):
     readonly_fields = ('slug',)
 
 
+def make_selected_job_categories_public(modeladmin, request, queryset):
+    queryset.update(public=True)
+make_selected_job_categories_public.short_description = u'Laita valitut tehtävät julkiseen hakuun'
+
+
+def make_selected_job_categories_nonpublic(modeladmin, request, queryset):
+    queryset.update(public=False)
+make_selected_job_categories_nonpublic.short_description = u'Ota valitut tehtävät pois julkisesta hausta'
+
+
 class JobCategoryAdmin(admin.ModelAdmin):
     list_display = ('event', 'name', 'public')
     list_filter = ('event', 'public')
     ordering = ('event', 'name')
+    actions = [make_selected_job_categories_public, make_selected_job_categories_nonpublic]
 
 
 class JobAdmin(admin.ModelAdmin):
