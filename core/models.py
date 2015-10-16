@@ -354,6 +354,12 @@ class Person(models.Model):
         verbose_name=u'Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>',
     )
 
+    allow_work_history_sharing = models.BooleanField(
+        default=False,
+        verbose_name=u'Työskentelyhistoriani saa näyttää kokonaisuudessaan niille tapahtumille, joihin haen vapaaehtoistyöhön <i>(vapaaehtoinen)</i>',
+        help_text=u'Mikäli et anna tähän lupaa, tapahtuman työvoimavastaavalle näytetään ainoastaan työskentelysi aikaisemmissa saman organisaation järjestämissä tapahtumissa.'
+    )
+
     preferred_name_display_style = models.CharField(
         max_length=31,
         verbose_name=u'Nimen esittäminen',

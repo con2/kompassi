@@ -106,12 +106,11 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
     previous_signup, next_signup = signup.get_previous_and_next_signup()
 
-    historic_signups = Signup.objects.filter(
-        event__organization=signup.event.organization,
-        person=signup.person,
-    ).exclude(
-        event=signup.event,
-    )
+    historic_signups = Signup.objects.filter(person=signup.person).exclude(event=event)
+    if not person.allow_work_history_sharing:
+        # The user has elected to not share their full work history between organizations.
+        # Only show work history for the current organization.
+        historic_signups = historic_signups.filter(event__organization=event.organization)
 
     tabs = [
         Tab('labour-admin-signup-state-tab', u'Hakemuksen tila', active=True),

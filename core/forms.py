@@ -88,8 +88,11 @@ class PersonForm(forms.ModelForm):
             Fieldset(u'Yhteystiedot',
                 'phone',
                 'email',
-                indented_without_label('may_send_info'),
             ),
+            Fieldset(u'Yksityisyys',
+                indented_without_label('may_send_info'),
+                indented_without_label('allow_work_history_sharing'),
+            )
         ]
 
         if submit_button:
@@ -134,6 +137,7 @@ class PersonForm(forms.ModelForm):
     class Meta:
         model = Person
         fields = (
+            'allow_work_history_sharing',
             'birth_date',
             'email',
             'first_name',

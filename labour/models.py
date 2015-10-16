@@ -936,6 +936,12 @@ class Signup(models.Model, CsvExportMixin):
         return labels
 
     @property
+    def personnel_class_labels(self):
+        state = self.state
+        label_texts = [pc.name for pc in self.personnel_classes.all()]
+        return [('label-default', label_text, None) for label_text in label_texts]
+
+    @property
     def some_job_title(self):
         """
         Tries to figure a job title for this worker using the following methods in this order
