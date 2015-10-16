@@ -159,9 +159,9 @@ class SignupAdminForm(forms.ModelForm):
         personnel_classes = self.cleaned_data['personnel_classes']
 
         if self.instance.is_accepted and not personnel_classes:
-            raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi yhteiskuntaluokka.')
+            raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi Henkilöstöluokka.')
         elif (self.instance.is_rejected or self.instance.is_cancelled) and personnel_classes:
-            raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään yhteiskuntaluokka ei saa olla valittuna.')
+            raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään Henkilöstöluokka ei saa olla valittuna.')
 
         return personnel_classes
 

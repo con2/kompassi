@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='signup',
             name='personnel_classes',
-            field=models.ManyToManyField(help_text='Mihin henkil\xf6st\xf6ryhmiin t\xe4m\xe4 henkil\xf6 kuuluu? Henkil\xf6 saa valituista ryhmist\xe4 ylimm\xe4n mukaisen badgen.', to='labour.PersonnelClass', verbose_name='Yhteiskuntaluokat', blank=True),
+            field=models.ManyToManyField(help_text='Mihin henkil\xf6st\xf6ryhmiin t\xe4m\xe4 henkil\xf6 kuuluu? Henkil\xf6 saa valituista ryhmist\xe4 ylimm\xe4n mukaisen badgen.', to='labour.PersonnelClass', verbose_name='Henkilöstöluokat', blank=True),
             preserve_default=True,
         ),
     ]

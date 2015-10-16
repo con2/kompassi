@@ -385,7 +385,7 @@ class JobCategory(models.Model):
 
     personnel_classes = models.ManyToManyField(PersonnelClass,
         blank=True,
-        verbose_name=u'yhteiskuntaluokat'
+        verbose_name=u'Henkilöstöluokat'
     )
 
     def is_person_qualified(self, person):
@@ -737,7 +737,7 @@ class Signup(models.Model, CsvExportMixin):
 
     personnel_classes = models.ManyToManyField(PersonnelClass,
         blank=True,
-        verbose_name=u'Yhteiskuntaluokat',
+        verbose_name=u'Henkilöstöluokat',
         help_text=u'Mihin henkilöstöryhmiin tämä henkilö kuuluu? Henkilö saa valituista ryhmistä '
             u'ylimmän mukaisen badgen.',
     )
