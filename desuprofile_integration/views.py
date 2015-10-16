@@ -91,7 +91,7 @@ class CallbackView(View):
         try:
             desuprofile = get_desuprofile(session)
         except JSONSchemaValidationError:
-            logging.exception('Desuprofile failed validation')
+            logger.exception('Desuprofile failed validation')
             messages.error(request, u'Etunimi, sukunimi ja sähköpostiosoite ovat Kompassin kannalta välttämättömiä '
                 u'kenttiä Desuprofiilissa. Kirjaudu <a href="https://desucon.fi/desuprofiili" target="_blank">Desuprofiiliisi</a> '
                 u'ja korjaa nämä kentät, ja yritä sitten uudelleen.')
@@ -106,7 +106,21 @@ class CallbackView(View):
             return self.respond_with_new_connection(request, next_url, desuprofile)
         else:
             # Case 1
-            return respond_with_connection(request, next_url, connection)
+            return self.respond_with_existing_connection(request, next_url, desuprofile, connection)
+
+    def respond_with_existing_connection(self, request, next_url, desuprofile, connection):
+        # Update desuprofile username on record
+        # This field was added later, and Desuprofile usernames might change by admin action.
+        if connection.desuprofile_username != desuprofile.username:
+            logger.warn(u'Desuprofile %d changed username from %s to %s',
+                desuprofile.id,
+                connection.desuprofile_username,
+                desuprofile.username,
+            )
+            connection.desuprofile_username = desuprofile.username
+            connection.save()
+
+        return respond_with_connection(request, next_url, connection)
 
     def respond_with_new_connection(self, request, next_url, desuprofile):
         User = get_user_model()
@@ -169,6 +183,7 @@ class CallbackView(View):
 
             connection = Connection(
                 id=int(desuprofile.id),
+                desuprofile_username=desuprofile.username,
                 user=user,
             )
             connection.save()
@@ -188,6 +203,7 @@ class CallbackView(View):
             person=user.person,
             state='valid',
             desuprofile_id=int(desuprofile.id),
+            desuprofile_username=desuprofile.username,
             next_url=next_url,
         )
 
@@ -228,6 +244,7 @@ class ConfirmationView(View):
 
         connection = Connection(
             id=code.desuprofile_id,
+            desuprofile_username=code.desuprofile_username,
             user=code.person.user,
         )
         connection.save()

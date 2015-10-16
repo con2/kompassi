@@ -22,7 +22,16 @@ class Connection(models.Model):
         verbose_name=u'Desuprofiilin numero',
     )
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=u'Käyttäjä', unique=True)
+    desuprofile_username = models.CharField(
+        max_length=30,
+        blank=True,
+        verbose_name=u'Desuprofiilin käyttäjänimi',
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+        verbose_name=u'Käyttäjä',
+        unique=True,
+    )
 
     def __unicode__(self):
         return self.user.username
@@ -30,6 +39,13 @@ class Connection(models.Model):
 
 class ConfirmationCode(OneTimeCode):
     desuprofile_id = models.IntegerField()
+
+    desuprofile_username = models.CharField(
+        max_length=30,
+        blank=True,
+        verbose_name=u'Desuprofiilin käyttäjänimi',
+    )
+
     next_url = models.CharField(max_length=1023, blank=True, default='')
 
     def get_desuprofile(self):
@@ -52,7 +68,7 @@ class Desuprofile(DesuprofileBase, JSONSchemaObject):
         type='object',
         properties=dict(
             id=dict(type='number'),
-            username=dict(type='string', minLength=1),
+            username=dict(type='string', minLength=1, maxLength=30),
             first_name=dict(type='string', minLength=1),
             last_name=dict(type='string', minLength=1),
             nickname=dict(type='string', optional=True),

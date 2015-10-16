@@ -471,6 +471,21 @@ class Person(models.Model):
     def is_email_verified(self):
         return self.email_verified_at is not None
 
+    @property
+    def desuprofile_connection(self):
+        if not hasattr(self, '_desuprofile_connection'):
+            if 'desuprofile_integration' not in settings.INSTALLED_APPS or self.user is None:
+                self._desuprofile_connection = None
+
+            from desuprofile_integration.models import Connection
+
+            try:
+                self._desuprofile_connection = Connection.objects.get(user=self.user)
+            except Connection.DoesNotExist:
+                self._desuprofile_connection = None
+
+        return self._desuprofile_connection
+
     def get_pending_code(self, CodeModel):
         try:
             return CodeModel.objects.get(person=self, state='valid')
