@@ -106,20 +106,20 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
     previous_signup, next_signup = signup.get_previous_and_next_signup()
 
-    tabs = [
-        Tab('labour-admin-signup-state-tab', u'Hakemuksen tila', True),
-        Tab('labour-admin-signup-person-tab', u'Hakijan tiedot', False),
-        Tab('labour-admin-signup-application-tab', u'Hakemuksen tiedot', False),
-        Tab('labour-admin-signup-messages-tab', u'Työvoimaviestit', False),
-        Tab('labour-admin-signup-history-tab', u'Työskentelyhistoria', False),
-    ]
-
     historic_signups = Signup.objects.filter(
         event__organization=signup.event.organization,
         person=signup.person,
     ).exclude(
         event=signup.event,
     )
+
+    tabs = [
+        Tab('labour-admin-signup-state-tab', u'Hakemuksen tila', active=True),
+        Tab('labour-admin-signup-person-tab', u'Hakijan tiedot'),
+        Tab('labour-admin-signup-application-tab', u'Hakemuksen tiedot'),
+        Tab('labour-admin-signup-messages-tab', u'Työvoimaviestit', notifications=signup.person_messages.count()),
+        Tab('labour-admin-signup-history-tab', u'Työskentelyhistoria', notifications=historic_signups.count()),
+    ]
 
     vars.update(
         historic_signups=historic_signups,

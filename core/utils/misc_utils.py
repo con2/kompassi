@@ -103,7 +103,7 @@ def set_attrs(obj, **attrs):
     return obj
 
 
-def simple_object_init(self, **kwargs):
+def simple_object_init(self, *args, **kwargs):
     """
     Want a simple class that has a number of attributes writable via assignment or
     keywords in initialization?
@@ -114,6 +114,9 @@ def simple_object_init(self, **kwargs):
 
     my_simple_objects = MySimpleClass(foo=5)
     """
+
+    for key, value in zip(self.__slots__, args):
+        setattr(self, key, value)
 
     for key, value in kwargs.iteritems():
         setattr(self, key, value)
