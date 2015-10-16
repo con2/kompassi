@@ -644,10 +644,10 @@ SIGNUP_STATE_NAMES = dict(
     new=u'Uusi',
     accepted=u'Hyväksytty, odottaa vuoroja',
     finished=u'Hyväksytty, vuorot lähetetty',
-    complained=u'Hyväksytty, vuorot lähetetty, vuoroista reklamoitu',
+    complained=u'Hyväksytty, vuoroista reklamoitu',
 
-    rejected=u'Hylätty (työvoimavastaava ei hyväksynyt töihin)',
-    cancelled=u'Peruutettu (hakijan itsensä peruma)',
+    rejected=u'Hylätty',
+    cancelled=u'Peruutettu',
 
     arrived=u'Saapunut tapahtumaan',
 
@@ -656,7 +656,7 @@ SIGNUP_STATE_NAMES = dict(
     no_show=u'Jätti saapumatta paikalle',
     relieved=u'Vapautettu tehtävästään',
 
-    beyond_logic=u'Perätilassa (irrotettu kaikesta automaattisesta käsittelystä)',
+    beyond_logic=u'Perätilassa',
 )
 
 SIGNUP_STATE_CLASSES = dict(

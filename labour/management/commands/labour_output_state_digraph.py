@@ -21,6 +21,9 @@ class Command(BaseCommand):
                 if destination_state == 'beyond_logic':
                     continue
 
-                print "    {src} -> {dest};".format(src=originating_state, dest=destination_state)
+                print u'    "{src}" -> "{dest}";'.format(
+                    src=SIGNUP_STATE_NAMES[originating_state],
+                    dest=SIGNUP_STATE_NAMES[destination_state],
+                ).encode('UTF-8')
             print
         print '}'
