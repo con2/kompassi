@@ -14,7 +14,7 @@ from django.utils import timezone
 
 from dateutil.tz import tzlocal
 
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS
+from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
 from core.sort_and_filter import Filter, Sorter
 from core.models import Event, Person
 from core.utils import initialize_form, url
@@ -157,14 +157,15 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
 
     if format == 'screen':
         vars.update(
+            export_formats=EXPORT_FORMATS,
+            job_category_accepted_filters=job_category_accepted_filters,
+            job_category_filters=job_category_filters,
             num_all_signups=num_all_signups,
             num_signups=len(signups), # need to use .len instead of .count because state_filter
-            signups=signups,
-            job_category_filters=job_category_filters,
-            job_category_accepted_filters=job_category_accepted_filters,
             personnel_class_filters=personnel_class_filters,
-            state_filter=state_filter,
+            signups=signups,
             sorter=sorter,
+            state_filter=state_filter,
             css_to_show_filter_panel='in' if any(f.selected_slug != f.default for f in [
                 job_category_filters,
                 job_category_accepted_filters,

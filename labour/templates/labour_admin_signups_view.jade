@@ -64,11 +64,14 @@ block admin_content
     table.table.table-striped
       include labour_admin_signup_table_contents.jade
     .panel-footer.clearfix
-      .pull-right
+      .btn-group.pull-right
         button.btn.btn-default.dropdown-toggle#membership-admin-export-dropdown(type='button',
                                                                                 data-toggle='dropdown',
                                                                                 aria-haspopup='true',
                                                                                 aria-expanded='true') Vie...
           span.caret
-        a(href='{% url "labour_admin_export_view" event.slug %}?{{ request.META.QUERY_STRING }}')
+        ul.dropdown-menu(aria-labelledby='membership-admin-export-dropdown')
+          for export_format in export_formats
+            li: a(href='{% url "labour_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')= export_format.name
+
       p.text-muted {{ num_signups }} henkilö{{ num_signups|pluralize:"ä" }} (yhteensä {{ num_all_signups }}).

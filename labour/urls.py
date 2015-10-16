@@ -28,8 +28,8 @@ urlpatterns = patterns('',
 
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin$', labour_admin_dashboard_view, name='labour_admin_dashboard_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups$', labour_admin_signups_view, name='labour_admin_signups_view'),
+    url(r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups\.(?P<format>xlsx|csv|tsv)$', labour_admin_signups_view, name='labour_admin_export_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups/(?P<person_id>\d+)$', labour_admin_signup_view, name='labour_admin_signup_view'),
-    url(r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups\.xlsx$', labour_admin_signups_view, dict(format='xlsx'), name='labour_admin_export_view'),
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/roster(/.*)?$',

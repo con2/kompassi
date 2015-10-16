@@ -1,4 +1,5 @@
 # encoding: utf-8
+from collections import namedtuple
 
 import unicodecsv
 
@@ -8,13 +9,21 @@ from django.db import models
 
 ENCODING = 'ISO-8859-15'
 
+
+ExportFormat = namedtuple('ExportFormat', [
+    'name',
+    'csv_dialect',
+    'extension',
+])
+
 # TODO better naming
 EXPORT_FORMATS = [
-    # (name, dialect, extension)
-    ('XLSX', 'xlsx', 'xlsx'),
-    ('CSV', 'excel', 'csv'),
-    ('TSV', 'excel-tab', 'tsv'),
+    ExportFormat('XLSX', 'xlsx', 'xlsx'),
+    ExportFormat('CSV', 'excel', 'csv'),
+    ExportFormat('TSV', 'excel-tab', 'tsv'),
 ]
+
+# Deprecated
 CSV_EXPORT_FORMATS = dict(
     csv='excel',
     tsv='excel-tab',
