@@ -116,6 +116,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
     historic_signups = Signup.objects.filter(
         event__organization=signup.event.organization,
+        person=signup.person,
     ).exclude(
         event=signup.event,
     )
