@@ -245,6 +245,7 @@ def labour_profile_signups_view(request):
     signups_future_events = person.signup_set.filter(event__start_time__gt=t).order_by('-event__start_time')
 
     vars = dict(
+        person=person,
         signups_past_events=signups_past_events,
         signups_current_events=signups_current_events,
         signups_future_events=signups_future_events,
