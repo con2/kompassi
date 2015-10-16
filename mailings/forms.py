@@ -4,14 +4,18 @@ from core.utils import horizontal_form_helper
 
 from .models import RecipientGroup, Message
 
+
 class MessageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
         super(MessageForm, self).__init__(*args, **kwargs)
 
-        # TODO Disable sending SMS for events that are not using
-        #self.fields['channel'].choices = []
+        if not event.sms_event_meta and self.instance.channel != 'sms':
+            self.fields['channel'].choices = [
+                (key, value) for (key, value) in self.fields['channel'].choices
+                if key != 'sms'
+            ]
 
         self.fields['recipient'].queryset = RecipientGroup.objects.filter(
             app_label='labour',
