@@ -1,3 +1,21 @@
 .tab-pane#labour-admin-signup-history-tab
-  .panel.panel-default
-    .panel-heading: strong Työskentelyhistoria {{ signup.event.organization.name_genitive }} tapahtumissa
+  if historic_signups.exists
+    for signup in historic_signups
+      .panel.panel-default
+        .panel-heading
+          .pull-right
+            .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}
+          strong {{ signup.event.name }}
+        .panel-body
+          .row
+            label.col-md-3 {{ signup.job_categories_label }}:
+            .col-md-9: include labour_profile_job_category_labels.jade
+          .row
+            .col-md-3: label Työvoimavastaavan merkinnät:
+            if signup.notes
+              .col-md-9 {{ signup.notes|linebreaks }}
+            else
+              .col-md-9.text-muted Ei merkintöjä.
+    p.kompassi-space-above.text-muted Tässä näytetään ainoastaan työskentely {{ signup.event.organization.name_genitive }} tapahtumissa. Tietosuojasyistä mahdollista työskentelyä muiden järjestäjien {{ settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE }} käyttävissä tapahtumissa ei näytetä.
+  else
+    p.kompassi-space-above.text-muted Tämä henkilö ei ole työskennellyt muissa {{ signup.event.organization.name_genitive }} tapahtumissa.

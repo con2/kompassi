@@ -25,7 +25,10 @@ from .utils import (
 
 class Organization(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
+
     name = models.CharField(max_length=255, verbose_name=u'Nimi')
+    name_genitive = models.CharField(max_length=255, verbose_name=u'Nimi genetiivissä')
+
     description = models.TextField(blank=True, verbose_name=u'Kuvaus')
     homepage_url = models.CharField(blank=True, max_length=255, verbose_name=u'Kotisivu')
     muncipality = models.CharField(
@@ -51,6 +54,12 @@ class Organization(models.Model):
     def save(self, *args, **kwargs):
         if self.name and not self.slug:
             self.slug = slugify(self.name)
+
+        if self.name and not self.name_genitive:
+            if self.name.endswith(u' ry'):
+                self.name_genitive = self.name + u':n'
+            else:
+                self.name_genitive = self.name + u'n'
 
         return super(Organization, self).save(*args, **kwargs)
 

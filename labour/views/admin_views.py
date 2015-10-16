@@ -114,15 +114,21 @@ def labour_admin_signup_view(request, vars, event, person_id):
         Tab('labour-admin-signup-history-tab', u'Työskentelyhistoria', False),
     ]
 
+    historic_signups = Signup.objects.filter(
+        event__organization=signup.event.organization,
+    ).exclude(
+        event=signup.event,
+    )
+
     vars.update(
+        historic_signups=historic_signups,
+        next_signup=next_signup,
         person_form=person_form,
+        previous_signup=previous_signup,
         signup=signup,
         signup_admin_form=signup_admin_form,
         signup_extra_form=signup_extra_form,
         signup_form=signup_form,
-
-        next_signup=next_signup,
-        previous_signup=previous_signup,
         tabs=tabs,
 
         # XXX hack: widget customization is very difficult, so apply styles via JS
