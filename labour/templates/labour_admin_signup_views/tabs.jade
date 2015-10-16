@@ -1,0 +1,4 @@
+ul.nav.nav-tabs(role='tablist')
+  for tab in tabs
+    li(role='presentation', class='#{tab.active_css}')
+      a(href='##{tab.id}', aria-controls='#{tab.id}', role='tab', data-toggle='tab')= tab.title

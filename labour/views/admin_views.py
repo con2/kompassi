@@ -17,6 +17,7 @@ from dateutil.tz import tzlocal
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
 from core.sort_and_filter import Filter, Sorter
 from core.models import Event, Person
+from core.tabs import Tab
 from core.utils import initialize_form, url
 
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
@@ -105,6 +106,14 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
     previous_signup, next_signup = signup.get_previous_and_next_signup()
 
+    tabs = [
+        Tab('labour-admin-signup-state-tab', u'Hakemuksen tila', True),
+        Tab('labour-admin-signup-person-tab', u'Hakijan tiedot', False),
+        Tab('labour-admin-signup-application-tab', u'Hakemuksen tiedot', False),
+        Tab('labour-admin-signup-messages-tab', u'Työvoimaviestit', False),
+        Tab('labour-admin-signup-history-tab', u'Työskentelyhistoria', False),
+    ]
+
     vars.update(
         person_form=person_form,
         signup=signup,
@@ -114,6 +123,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
         next_signup=next_signup,
         previous_signup=previous_signup,
+        tabs=tabs,
 
         # XXX hack: widget customization is very difficult, so apply styles via JS
         non_applied_category_names_json=json.dumps(non_applied_category_names),

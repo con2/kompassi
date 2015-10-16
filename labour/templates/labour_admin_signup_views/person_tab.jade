@@ -1,0 +1,20 @@
+- load crispy from crispy_forms_tags
+.tab-pane#labour-admin-signup-person-tab
+  .panel.panel-default
+    .panel-heading
+      .pull-right.text-muted Nämä tiedot ovat vain henkilön itsensä muokattavissa.
+      strong Hakijan tiedot
+    .panel-body.labour-signup-form
+      - crispy person_form
+
+  .panel.panel-default
+    .panel-heading: strong Hakijan pätevyydet
+    ul.list-group
+    if signup.person.personqualification_set.exists
+      for pq in signup.person.personqualification_set.all
+        li.list-group-item
+          | {{ pq.qualification }}
+          if pq.qualification_extra
+            span.pull-right.text-muted {{ pq.qualification_extra }}
+    else
+      .panel-body Ei pätevyyksiä.

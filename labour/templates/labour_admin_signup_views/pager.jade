@@ -3,7 +3,9 @@ ul.pager
     li.previous
       a(href='{% url "labour_admin_signup_view" event.slug previous_signup.person.id %}') &larr; {{ previous_signup.person.full_name }}
 
-  li.current: .btn.disabled {{ signup.person.full_name }}
+  li.current
+    .btn.disabled {{ signup.person.full_name }}
+    .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}
 
   if next_signup
     li.next

@@ -6070,5 +6070,17 @@ footer {
     height: 185px;
   }
 }
+.kompassi-icon-space-right {
+  margin-right: 0.3em;
+}
+.kompassi-icon-space-left {
+  margin-left: 0.3em;
+}
+.kompassi-space-above {
+  margin-top: 2em;
+}
+.kompassi-slight-space-above {
+  margin-top: 0.2em;
+}
 
 /*# sourceMappingURL=kompassi.css.map */

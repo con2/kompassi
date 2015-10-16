@@ -1,0 +1,27 @@
+- load crispy from crispy_forms_tags
+.tab-pane.active(role='tabpanel')#labour-admin-signup-state-tab
+  .panel.panel-default
+    .panel-heading: strong Hakemuksen tila
+    table.table.table-striped
+      thead
+        th Päivämäärä ja kellonaika
+        th Tapahtuma
+      tbody
+        for state_text, state_timestamp in signup.state_times
+          tr
+            td {{ state_timestamp }}
+            td {{ state_text }}
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        for state_name, button_class, button_text in signup.next_states_buttons
+          input.btn(class='{{ button_class }}'
+                    type='submit'
+                    name='set-state-{{ state_name }}'
+                    value='{{ button_text }}')
+
+  .panel.panel-default
+    .panel-heading: strong Työvoima&shy;vastaavan merkinnät
+    .panel-body.labour-admin-form
+      - crispy signup_admin_form
+    .panel-footer.clearfix
+      include labour_admin_signup_views/actions.jade

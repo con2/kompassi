@@ -3,80 +3,23 @@ extends core_admin_base
 block title
   | {{ signup.person.full_name }}
 block admin_content
-  include labour_admin_signup_pager.jade
+  include labour_admin_signup_views/pager.jade
+  include labour_admin_signup_views/tabs.jade
 
   form(method='POST', role='form').form-horizontal
-    div
-      .panel.panel-default
-        .panel-heading
-          .pull-right
-            .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}
-          strong Hakemuksen tila
-        table.table.table-striped
-          thead
-            th Päivämäärä ja kellonaika
-            th Tapahtuma
-          tbody
-            for state_text, state_timestamp in signup.state_times
-              tr
-                td {{ state_timestamp }}
-                td {{ state_text }}
-        .panel-footer.clearfix
-          p.text-muted Myös nämä toiminnot tallentavat lomakkeen tiedot.
-          .pull-right
-            for state_name, button_class, button_text in signup.next_states_buttons
-              input.btn(class='{{ button_class }}'
-                        type='submit'
-                        name='set-state-{{ state_name }}'
-                        value='{{ button_text }}')
+    //- To catch Enter button presses
+    input.btn.btn-success.hidden(type='submit', name='save-edit', value='Tallenna ja jatka muokkaamista')
 
-      .panel.panel-default
-        .panel-heading: strong Hakijan tiedot
-        .panel-body
-          .form-horizontal
-            - crispy person_form
-        .panel-footer
-          p.text-muted Nämä tiedot ovat vain henkilön itsensä muokattavissa.
-
-      .panel.panel-default
-        .panel-heading: strong Hakijan pätevyydet
-        if signup.person.personqualification_set.exists
-          ul.list-group
-            for pq in signup.person.personqualification_set.all
-              li.list-group-item
-                | {{ pq.qualification }}
-                if pq.qualification_extra
-                  span.pull-right.text-muted {{ pq.qualification_extra }}
-        else
-          .panel-body
-            p Ei pätevyyksiä.
-
-      .panel.panel-default
-        .panel-heading: strong Hakemus
-        .panel-body
-          .labour-signup-form
-            - crispy signup_form
-          - crispy signup_extra_form
-
-      .panel.panel-default
-        .panel-heading: strong Työvoima&shy;vastaavan merkinnät
-        .panel-body.labour-admin-form
-          - crispy signup_admin_form
-        .panel-footer.clearfix
-          .btn-group.pull-right
-            a.btn.btn-default(href='{% url "labour_admin_signups_view" event.slug %}') Hylkää muutokset ja palaa listaan
-            input.btn.btn-success(type='submit', name='save-return', value='Tallenna ja palaa listaan')
-            input.btn.btn-success(type='submit', name='save-edit', value='Tallenna ja jatka muokkaamista')
-
-  .panel.panel-default
-    .panel-heading: strong Työvoima&shy;viestit
-    .panel-body
-      p Tässä näet tälle hakijalle lähteneet työvoima&shy;viestit (massapostitukset). Napsauttamalla viestin otsikkoa voit tarkastella viestin tekstiä sellaisena, kun se on lähtenyt tälle hakijalle.
-    include labour_profile_message_table.jade
+    .tab-content.kompassi-slight-space-above
+      include labour_admin_signup_views/state_tab.jade
+      include labour_admin_signup_views/person_tab.jade
+      include labour_admin_signup_views/application_tab.jade
+      include labour_admin_signup_views/messages_tab.jade
+      include labour_admin_signup_views/history_tab.jade
 
   for message in signup.person_messages
     include labour_profile_message_modal.jade
-  include labour_admin_signup_pager.jade
+  include labour_admin_signup_views/pager.jade
 
 block extra_scripts
   script
