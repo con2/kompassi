@@ -1,0 +1,20 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('labour', '0011_job_slug'),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name='jobcategory',
+            name='personnel_classes',
+            field=models.ManyToManyField(to='labour.PersonnelClass', verbose_name='Henkil\xf6st\xf6luokat', blank=True),
+            preserve_default=True,
+        ),
+    ]

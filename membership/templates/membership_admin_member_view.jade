@@ -1,0 +1,33 @@
+extends core_admin_base.jade
+- load crispy from crispy_forms_tags
+block title
+  |{{ organization.name }}: {{ member.official_name }}
+block admin_content
+  form(method='POST', role='form').form-horizontal
+    //- To capture Enter button presses
+    input.hidden(type='submit', name='action', value='save-edit')
+
+    .panel.panel-default
+      .panel-heading
+        .pull-right: .label(class='{{ membership.state_css }}')= membership.get_state_display
+        strong Jäsenen tiedot
+      .panel-body
+        - crispy form
+      .panel-footer.clearfix
+        if read_only
+          .btn-group.pull-right
+              a.btn.btn-default(href='{% url "membership_admin_members_view" organization.slug %}')
+                i.fa.fa-undo.kompassi-icon-space-right
+                | Palaa jäsenlistaan
+          p.help-block Koska jäsenellä on Kompassi-tunnus, vain jäsen itse voi muokata näitä tietoja.
+        else
+          .btn-group.pull-right
+            a.btn.btn-default(href='{% url "membership_admin_members_view" organization.slug %}')
+              i.fa.fa-undo.kompassi-icon-space-right
+              | Palaa jäsenlistaan
+            button.btn.btn-success(type='submit', name='action', value='save-edit')
+              i.fa.fa-check.kompassi-icon-space-right
+              | Tallenna ja jatka muokkaamista
+            button.btn.btn-success(type='submit', name='action', value='save-return')
+              i.fa.fa-check.kompassi-icon-space-right
+              | Tallenna ja palaa listaan

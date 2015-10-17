@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
@@ -8,6 +9,7 @@ from core.utils import url, initialize_form
 from core.sort_and_filter import Filter
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS
 
+from ..forms import MemberForm, MembershipForm
 from ..helpers import membership_admin_required
 from ..models import STATE_CHOICES, Membership
 
@@ -81,12 +83,30 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
 @membership_admin_required
 def membership_admin_member_view(request, vars, organization, person_id):
     membership = get_object_or_404(Membership, organization=organization, person=int(person_id))
+    read_only = membership.person.user is not None
+    form = initialize_form(MemberForm, request, instance=membership.person, readonly=read_only)
 
-    form = initialize_form(PersonForm, membership.person, readonly=membership.person.user is not None)
+    if request.method == 'POST':
+        action = request.POST['action']
+
+        if read_only:
+            messages.error(request, u'Koska jäsenellä on Kompassi-tunnus, vain jäsen itse voi muokata näitä tietoja.')
+        elif action in ['save-edit', 'save-return']:
+            if form.is_valid():
+                form.save()
+
+                messages.success(request, u'Jäsenen tiedot tallennettiin.')
+
+                if action == 'save-return':
+                    return redirect('membership_admin_members_view', organization.slug)
+        else:
+            raise NotImplementedError(action)
 
     vars.update(
         membership=membership,
+        member=membership.person,
         form=form,
+        read_only=read_only,
     )
 
     return render(request, 'membership_admin_member_view.jade', vars)
