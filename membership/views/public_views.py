@@ -10,7 +10,7 @@ from core.utils import initialize_form
 
 from ..helpers import membership_organization_required
 from ..models import Membership, Term
-from ..forms import MembershipForm
+from ..forms import ApplicationForm
 
 
 @membership_organization_required
@@ -31,7 +31,7 @@ def membership_apply_view(request, organization):
 
     can_apply = (not mandatory_information_missing) and (not already_member)
 
-    form = initialize_form(MembershipForm, request)
+    form = initialize_form(ApplicationForm, request)
 
     try:
         current_term = meta.get_current_term()

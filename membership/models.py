@@ -60,7 +60,7 @@ STATE_CSS = dict(
 
 
 class Membership(models.Model):
-    organization = models.ForeignKey(Organization, verbose_name=u'Yhdistys', related_name='members')
+    organization = models.ForeignKey(Organization, verbose_name=u'Yhdistys', related_name='memberships')
     person = models.ForeignKey(Person, verbose_name=u'Henkilö', related_name='memberships')
     state = models.CharField(
         max_length=max(len(key) for (key, val) in STATE_CHOICES),
@@ -92,6 +92,11 @@ class Membership(models.Model):
     def state_css(self):
         return STATE_CSS[self.state]
 
+    @property
+    def events(self):
+        # XXX STUB
+        return []
+
     def to_html_print(self):
         return u'{surname}, {first_name}, {muncipality}'.format(
             surname=self.person.surname,
@@ -119,6 +124,25 @@ class Membership(models.Model):
             Membership: self,
             Person: self.person,
         }
+
+    def get_previous_and_next(self):
+        if not self.pk:
+            return None, None
+
+        # TODO inefficient, done using a list
+        memberships = list(self.organization.memberships.order_by('person__surname', 'person__official_first_names', 'id'))
+
+        previous_membership = None
+        current_membership = None
+
+        for next_signup in memberships + [None]:
+            if current_membership and current_membership.pk == self.pk:
+                return previous_membership, next_signup
+
+            previous_membership = current_membership
+            current_membership = next_signup
+
+        return None, None
 
     class Meta:
         verbose_name = u'Jäsenyys'

@@ -1,0 +1,12 @@
+.tab-pane(role='tabpanel')#membership-admin-events-tab
+  .panel.panel-default
+    .panel-heading: strong Jäsenyyteen liittyvät tapahtumat
+    table.table.table-striped
+      thead
+        th Päivämäärä ja kellonaika
+        th Tapahtuma
+      tbody
+        for event in membership.events
+          tr
+            td {{ event.timestamp }}
+            td {{ event.short_description }}

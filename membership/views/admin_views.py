@@ -5,9 +5,10 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
 
-from core.utils import url, initialize_form
-from core.sort_and_filter import Filter
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS
+from core.sort_and_filter import Filter
+from core.tabs import Tab
+from core.utils import url, initialize_form
 
 from ..forms import MemberForm, MembershipForm
 from ..helpers import membership_admin_required
@@ -23,17 +24,17 @@ EXPORT_FORMATS = [
 
 @membership_admin_required
 def membership_admin_members_view(request, vars, organization, format='screen'):
-    members = organization.members.all().select_related('person')
-    num_all_members = members.count()
+    memberships = organization.memberships.all().select_related('person')
+    num_all_members = memberships.count()
 
     state_filters = Filter(request, 'state').add_choices('state', STATE_CHOICES)
-    members = state_filters.filter_queryset(members)
+    memberships = state_filters.filter_queryset(memberships)
 
     filter_active = any(f.selected_slug != f.default for f in [
         state_filters,
     ])
 
-    members = members.order_by('person__surname', 'person__official_first_names')
+    memberships = memberships.order_by('person__surname', 'person__official_first_names')
 
     export_type = state_filters.selected_slug
     if export_type == 'approval':
@@ -52,8 +53,8 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
     )
 
     vars.update(
-        members=members,
-        num_members=members.count(),
+        memberships=memberships,
+        num_members=memberships.count(),
         num_all_members=num_all_members,
         state_filters=state_filters,
         filter_active=filter_active,
@@ -84,29 +85,51 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
 def membership_admin_member_view(request, vars, organization, person_id):
     membership = get_object_or_404(Membership, organization=organization, person=int(person_id))
     read_only = membership.person.user is not None
-    form = initialize_form(MemberForm, request, instance=membership.person, readonly=read_only)
+    member_form = initialize_form(MemberForm, request, instance=membership.person, readonly=read_only, prefix='member')
+    membership_form = initialize_form(MembershipForm, request, instance=membership, prefix='membership')
 
     if request.method == 'POST':
         action = request.POST['action']
 
-        if read_only:
-            messages.error(request, u'Koska jäsenellä on Kompassi-tunnus, vain jäsen itse voi muokata näitä tietoja.')
-        elif action in ['save-edit', 'save-return']:
-            if form.is_valid():
-                form.save()
+        if action in ['save-edit', 'save-return']:
+            if read_only:
+                valid = membership_form.is_valid()
+            else:
+                valid = membership_form.is_valid() and member_form.is_valid()
+
+            if valid:
+                membership_form.save()
+                if not read_only:
+                    member_form.save()
 
                 messages.success(request, u'Jäsenen tiedot tallennettiin.')
 
                 if action == 'save-return':
                     return redirect('membership_admin_members_view', organization.slug)
+
+            else:
+                messages.error(request, u'Tarkista lomakkeen tiedot.')
         else:
             raise NotImplementedError(action)
 
+    previous_membership, next_membership = membership.get_previous_and_next()
+
+    tabs = [
+        Tab('membership-admin-person-tab', u'Jäsenen tiedot', active=True),
+        Tab('membership-admin-state-tab', u'Jäsenyyden tila'),
+        #Tab('membership-admin-events-tab', u'Jäsenyyteen liittyvät tapahtumat'),
+        #Tab('membership-admin-payments-tab', u'Jäsenmaksut'),
+    ]
+
     vars.update(
-        membership=membership,
         member=membership.person,
-        form=form,
+        member_form=member_form,
+        membership=membership,
+        membership_form=membership_form,
+        next_membership=next_membership,
+        previous_membership=previous_membership,
         read_only=read_only,
+        tabs=tabs,
     )
 
     return render(request, 'membership_admin_member_view.jade', vars)

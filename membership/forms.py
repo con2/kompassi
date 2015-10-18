@@ -6,7 +6,7 @@ from crispy_forms.layout import Layout, Fieldset
 
 from core.forms import PersonForm
 from core.models import Person
-from core.utils import indented_without_label
+from core.utils import indented_without_label, horizontal_form_helper
 
 from .models import Membership
 
@@ -19,6 +19,7 @@ class MemberForm(PersonForm):
 
         super(MemberForm, self).__init__(*args, **kwargs)
 
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             'first_name',
             'surname',
@@ -51,7 +52,22 @@ class MemberForm(PersonForm):
         ]
 
 
-class MembershipForm(forms.ModelForm):
+class ApplicationForm(forms.ModelForm):
     class Meta:
         model = Membership
         fields = ('message',)
+
+
+class MembershipForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(MembershipForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.layout = Layout(
+            'state',
+            'message',
+        )
+
+    class Meta:
+        model = Membership
+        fields = ('state', 'message',)

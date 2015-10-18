@@ -5,8 +5,8 @@ block admin_content
   .panel.panel-default
     .panel-heading
       strong
-        a(role='button', data-toggle='collapse', data-target='#kompassi-member-filters') Suodata jäseniä
-    .panel-body.signup-filters.collapse#kompassi-member-filters(class='{{ css_to_show_filter_panel }}')
+        a(role='button', data-toggle='collapse', data-target='#kompassi-membership-filters') Suodata jäseniä
+    .panel-body.signup-filters.collapse#kompassi-membership-filters(class='{{ css_to_show_filter_panel }}')
       .row
         .col-md-3: strong Jäsenyyden tila
         .col-md-9
@@ -32,26 +32,26 @@ block admin_content
           th Kotikunta
           th.text-right Jäsenyyden tila
       tbody
-        for member in members
+        for membership in memberships
           tr
             td
-              a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.surname
+              a(href='{% url "membership_admin_member_view" organization.slug membership.person.id %}')= membership.person.surname
 
-            if member.person.official_first_names
+            if membership.person.official_first_names
               td
-                a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.official_first_names
+                a(href='{% url "membership_admin_member_view" organization.slug membership.person.id %}')= membership.person.official_first_names
             else
               td.danger
-                a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.first_name
+                a(href='{% url "membership_admin_member_view" organization.slug membership.person.id %}')= membership.person.first_name
 
-            if member.person.muncipality
+            if membership.person.muncipality
               td
-                a(href='{% url "membership_admin_member_view" organization.slug member.person.id %}')= member.person.muncipality
+                a(href='{% url "membership_admin_member_view" organization.slug membership.person.id %}')= membership.person.muncipality
             else
               td.danger
 
             td.text-right
-              .label(class='{{ member.state_css }}')= member.get_state_display
+              .label(class='{{ membership.state_css }}')= membership.get_state_display
     .panel-footer.clearfix
       .btn-group.pull-right
         button.btn.btn-default.dropdown-toggle#membership-admin-export-dropdown(type='button',

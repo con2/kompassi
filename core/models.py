@@ -408,6 +408,13 @@ class Person(models.Model):
         )
 
     @property
+    def official_name_short(self):
+        return u"{surname}, {first_name}".format(
+            surname=self.surname,
+            first_name=self.first_name,
+        )
+
+    @property
     def name_and_email(self):
         return u"{self.first_name} {self.surname} <{self.email}>".format(self=self)
 

@@ -1,0 +1,10 @@
+.btn-group.pull-right
+  a.btn.btn-default(href='{% url "membership_admin_members_view" organization.slug %}')
+    i.fa.fa-undo.kompassi-icon-space-right
+    | Palaa jäsenlistaan
+  button.btn.btn-success(type='submit', name='action', value='save-edit')
+    i.fa.fa-check.kompassi-icon-space-right
+    | Tallenna ja jatka muokkaamista
+  button.btn.btn-success(type='submit', name='action', value='save-return')
+    i.fa.fa-check.kompassi-icon-space-right
+    | Tallenna ja palaa listaan

@@ -1,0 +1,12 @@
+ul.pager
+  if previous_membership
+    li.previous
+      a(href='{% url "membership_admin_member_view" organization.slug previous_membership.person.id %}') &larr; {{ previous_membership.person.official_name_short }}
+
+  li.current
+    .btn.disabled {{ membership.person.official_name }}
+    .label(class='{{ membership.state_css }}') {{ membership.formatted_state }}
+
+  if next_membership
+    li.next
+      a(href='{% url "membership_admin_member_view" organization.slug next_membership.person.id %}') {{ next_membership.person.official_name_short }} &rarr;
