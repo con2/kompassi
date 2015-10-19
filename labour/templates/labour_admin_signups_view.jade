@@ -132,7 +132,7 @@ block admin_content
 
             h4.modal-title#labour-admin-mass-request-confirmation-modal-title Vaadi vahvistusta hyväksytyiltä
           .modal-body
-            p Tällä toiminnolla voit vaatia tapahtuman vapaaehtoistyöntekijöitä vahvistamaan osallistumisensa tapahtumaan. Toiminto siirtää kaikki <em>Hyväksytty, odottaa vuoroja</em> -tilassa olevat tilaan <em>Hyväksytty, odottaa vahvistusta</em>.
+            p Tällä toiminnolla voit vaatia tapahtuman vapaaehtoistyöntekijöitä vahvistamaan osallistumisensa tapahtumaan. Toiminto siirtää kaikki parhaillaan näkyvissä olevat <em>Hyväksytty, odottaa vuoroja</em> -tilassa olevat hakemukset tilaan <em>Hyväksytty, odottaa vahvistusta</em>.
             p Kunkin vapaaehtoistyöntekijän tulee tämän jälkeen käydä vahvistamassa osallistumisensa kirjautumalla sisään Kompassiin ja painamalla tapahtumasivulla tai profiilinsa työhakemussivulla <em>Vahvista osallistuminen</em> -nappia. Työvoimavastaava voi määräajan umpeuduttua hylätä ne hakijat, jotka eivät ole vahvistaneet osallistumistaan.
             p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Vahvistusta vaadittu</em> -ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
           .modal-footer
