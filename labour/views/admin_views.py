@@ -35,7 +35,7 @@ from ..models import (
 from .view_helpers import initialize_signup_forms
 
 
-MassOperationBase = namedtuple('MassOperation', 'modal_id text num_candidates')
+MassOperationBase = namedtuple('MassOperation', 'name modal_id text num_candidates')
 class MassOperation(MassOperationBase):
     @property
     def disabled_attr(self):
@@ -178,9 +178,9 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
 
     if request.method == 'POST':
         action = request.POST.get('action', None)
-        if action == 'mass-reject':
+        if action == 'reject':
             Signup.mass_reject(signups)
-        elif action == 'mass-request-confirmation':
+        elif action == 'request_confirmation':
             Signup.mass_request_confirmation(signups)
         else:
             messages.error(request, u'Ei semmosta toimintoa oo.')
@@ -193,11 +193,13 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
 
         mass_operations = OrderedDict([
             ('reject', MassOperation(
+                'reject',
                 'labour-admin-mass-reject-modal',
                 u'Hylkää kaikki käsittelemättömät...',
                 num_would_mass_reject
             )),
             ('request_confirmation', MassOperation(
+                'request_confirmation',
                 'labour-admin-mass-request-confirmation-modal',
                 u'Vaadi vahvistusta kaikilta hyväksytyiltä...',
                 num_would_mass_request_confirmation

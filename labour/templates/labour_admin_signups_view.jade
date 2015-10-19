@@ -100,7 +100,7 @@ block admin_content
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               i.fa.fa-times-circle(aria-hidden='true')
 
-            h4.modal-title#labour-admin-mass-reject-modal-title Vaadi vahvistusta hyväksytyiltä
+            h4.modal-title#labour-admin-mass-reject-modal-title Hylkää kaikki käsittelemättömät hakemukset
           .modal-body
             p Tällä toiminnolla voit hylätä nyt näkyvistä hakemuksista kaikki ne, jotka ovat tilassa <em>Uusi</em>.
             p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Hylätyt</em>-ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
@@ -112,13 +112,13 @@ block admin_content
                   i.fa.fa-undo.kompassi-icon-space-right
                   |Peruuta
                 if mass_operation.num_candidates
-                  button.btn.btn-danger(type='submit', name='action', value='mass-reject')
+                  button.btn.btn-danger(type='submit', name='action', value='{{ mass_operation.name }}')
                     i.fa.fa-exclamation-triangle.kompassi-icon-space-right
-                    |Hylkää {{ mass_operation.num_candidates }} hakemusta
+                    |Hylkää {{ mass_operation.num_candidates }} hakemus{{ mass_operation.num_candidates|pluralize:"ta" }}
                 else
                   button.btn.btn-danger(type='button', disabled)
                     i.fa.fa-exclamation-triangle.kompassi-icon-space-right
-                    |Hylkää {{ mass_operation.num_candidates }} hakemusta
+                    |Hylkää 0 hakemusta
 
   - with mass_operation=mass_operations.request_confirmation
     .modal.fade#labour-admin-mass-request-confirmation-modal(tabindex='-1',
@@ -143,7 +143,7 @@ block admin_content
                   i.fa.fa-undo.kompassi-icon-space-right
                   |Peruuta
                 if mass_operation.num_candidates
-                  button.btn.btn-warning(type='submit', name='action', value='mass-reject')
+                  button.btn.btn-warning(type='submit', name='action', value='{{ mass_operation.name }}')
                     i.fa.fa-exclamation-triangle.kompassi-icon-space-right
                     |Vaadi vahvistusta {{ mass_operation.num_candidates }} henkilöltä
                 else
