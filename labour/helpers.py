@@ -5,14 +5,16 @@ from functools import wraps
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 
+from core.models import Event
+from core.sort_and_filter import Filter
+from core.utils import login_redirect
+from labour.constants import SIGNUP_STATE_NAMES
+
+from .models import Signup
 
 def labour_admin_required(view_func):
     @wraps(view_func)
     def wrapper(request, event_slug, *args, **kwargs):
-        from core.models import Event
-        from core.utils import login_redirect
-        from .views import labour_admin_menu_items
-
         event = get_object_or_404(Event, slug=event_slug)
         meta = event.labour_event_meta
 
@@ -36,8 +38,6 @@ def labour_admin_required(view_func):
 def labour_event_required(view_func):
     @wraps(view_func)
     def wrapper(request, event_slug, *args, **kwargs):
-        from core.models import Event
-
         event = get_object_or_404(Event, slug=event_slug)
         meta = event.labour_event_meta
 
@@ -47,3 +47,23 @@ def labour_event_required(view_func):
 
         return view_func(request, event, *args, **kwargs)
     return wrapper
+
+
+class SignupStateFilter(Filter):
+    def add_state(self, state, name=None):
+        """
+        Add a state to the filter. Name defaults to the long name for the state.
+
+        :param state: State mnemonic.
+        :param name: Name, or None.
+        :return: This object.
+        """
+        if state not in SIGNUP_STATE_NAMES:
+            raise ValueError("Unknown state: %s" % state)
+        if not name:
+            name = SIGNUP_STATE_NAMES[state]
+        self.add(state, name, Signup.get_state_query_params(state))
+
+
+# circular import
+from .views.admin_views import labour_admin_menu_items

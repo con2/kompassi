@@ -1,15 +1,24 @@
 # -- encoding: UTF-8 --
 from collections import OrderedDict
-from core.utils import mutate_query_params
+from core.utils import mutate_query_params, simple_object_repr
 from django.utils.encoding import force_text
 
 
 class Definition(object):
+    __slots__ = [
+        'slug',
+        'name',
+        'definition',
+        'owner',
+    ]
+
     def __init__(self, slug, name, definition, owner=None):
         self.slug = slug
         self.name = name
         self.definition = definition
         self.owner = owner
+
+    __repr__ = simple_object_repr
 
     @property
     def qs_add(self):
