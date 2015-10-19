@@ -151,8 +151,8 @@ def labour_admin_signup_view(request, vars, event, person_id):
 @require_http_methods(['GET', 'POST'])
 def labour_admin_signups_view(request, vars, event, format='screen'):
     signups = event.signup_set.all()
-    # signups = signups.select_related('person')
-    # signups = signups.prefetch_related('job_categories').prefetch_related('job_categories_accepted')
+    signups = signups.select_related('person')
+    signups = signups.prefetch_related('job_categories').prefetch_related('job_categories_accepted')
 
     if format == 'screen':
         num_all_signups = signups.count()
