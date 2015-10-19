@@ -78,7 +78,7 @@ def membership_profile_view(request):
     potential_organizations = Organization.objects.filter(
         membershiporganizationmeta__receiving_applications=True,
     ).exclude(
-        members__person=request.user.person,
+        memberships__person=request.user.person,
     )
 
     vars = dict(
