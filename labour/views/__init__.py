@@ -1,4 +1,5 @@
 from .public_views import (
+    labour_confirm_view,
     labour_event_box_context,
     labour_person_disqualify_view,
     labour_person_qualification_view,

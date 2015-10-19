@@ -1150,6 +1150,7 @@ class Signup(models.Model, CsvExportMixin):
     def applicant_has_actions(self):
         return any([
             self.applicant_can_edit,
+            self.applicant_can_confirm,
             self.applicant_can_cancel,
         ])
 
@@ -1163,6 +1164,17 @@ class Signup(models.Model, CsvExportMixin):
             return self.alternative_signup_form_used.is_active
         else:
             return self.event.labour_event_meta.is_registration_open
+
+    @property
+    def applicant_can_confirm(self):
+        return self.state == 'confirmation'
+
+    def confirm(self):
+        assert self.state == 'confirmation'
+
+        self.state = 'accepted'
+        self.save()
+        self.apply_state()
 
     @property
     def applicant_can_cancel(self):

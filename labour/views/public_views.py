@@ -255,6 +255,23 @@ def labour_profile_signups_view(request):
 
     return render(request, 'labour_profile_signups_view.jade', vars)
 
+
+@person_required
+@labour_event_required
+@require_http_methods(['POST'])
+def labour_confirm_view(request, event):
+    signup = get_object_or_404(Signup, event=event, person=request.user.person)
+
+    if not signup.state == 'confirmation':
+        messages.error(request, u'Hakemuksesi ei ole vahvistusta edellyttävässä tilassa.')
+        return redirect('labour_profile_signups_view')
+
+    signup.confirm()
+    messages.success(request, u'Hakemuksesi on nyt vahvistettu.')
+
+    return redirect('labour_profile_signups_view')
+
+
 @person_required
 def labour_qualifications_view(request):
     vars = page_wizard_vars(request)

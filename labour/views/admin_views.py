@@ -170,8 +170,6 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
     state_filter = SignupStateFilter(request, "state")
     signups = state_filter.filter_queryset(signups)
 
-    print signups.query
-
     sorter = Sorter(request, "sort")
     sorter.add("name", name=u'Sukunimi, Etunimi', definition=('person__surname', 'person__first_name'))
     sorter.add("newest", name=u'Uusin ensin', definition=('-created_at',))

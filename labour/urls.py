@@ -21,6 +21,12 @@ urlpatterns = patterns('',
     ),
 
     url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/confirm/?$',
+        labour_confirm_view,
+        name='labour_confirm_view',
+    ),
+
+    url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/admin(?P<suffix>.*)',
         RedirectView.as_view(url='/events/%(event_slug)s/labour/admin%(suffix)s'),
         name='labour_admin_old_urls_redirect'
