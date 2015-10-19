@@ -50,7 +50,13 @@ def labour_event_required(view_func):
 
 
 class SignupStateFilter(Filter):
-    def add_state(self, state, name=None):
+    def __init__(self, *args, **kwargs):
+        super(SignupStateFilter, self).__init__(*args, **kwargs)
+
+        for state_slug in SIGNUP_STATE_NAMES.iterkeys():
+            self._add_state(state_slug)
+
+    def _add_state(self, state):
         """
         Add a state to the filter. Name defaults to the long name for the state.
 
@@ -58,11 +64,7 @@ class SignupStateFilter(Filter):
         :param name: Name, or None.
         :return: This object.
         """
-        if state not in SIGNUP_STATE_NAMES:
-            raise ValueError("Unknown state: %s" % state)
-        if not name:
-            name = SIGNUP_STATE_NAMES[state]
-        self.add(state, name, Signup.get_state_query_params(state))
+        self.add(state, SIGNUP_STATE_NAMES[state], Signup.get_state_query_params(state))
 
 
 # circular import

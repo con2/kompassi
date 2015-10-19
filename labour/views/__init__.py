@@ -17,6 +17,7 @@ from .admin_views import (
     labour_admin_roster_view,
     labour_admin_signup_view,
     labour_admin_signups_view,
+    labour_admin_tools_view,
 )
 
 from .query_views import (

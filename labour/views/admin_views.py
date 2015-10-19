@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from collections import OrderedDict, namedtuple
 import json
 
 from django.conf import settings
@@ -20,9 +21,9 @@ from core.models import Event, Person
 from core.tabs import Tab
 from core.utils import initialize_form, url
 
+from ..constants import SIGNUP_STATE_NAMES
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
-from ..helpers import labour_admin_required
-from ..utils import SignupStateFilter
+from ..helpers import labour_admin_required, SignupStateFilter
 from ..models import (
     JobCategory,
     LabourEventMeta,
@@ -32,6 +33,13 @@ from ..models import (
 )
 
 from .view_helpers import initialize_signup_forms
+
+
+MassOperationBase = namedtuple('MassOperation', 'modal_id text num_candidates')
+class MassOperation(MassOperationBase):
+    @property
+    def disabled_attr(self):
+        return 'disabled' if not self.num_candidates else ''
 
 
 @labour_admin_required
@@ -140,8 +148,11 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
 
 @labour_admin_required
+@require_http_methods(['GET', 'POST'])
 def labour_admin_signups_view(request, vars, event, format='screen'):
     signups = event.signup_set.all()
+    # signups = signups.select_related('person')
+    # signups = signups.prefetch_related('job_categories').prefetch_related('job_categories_accepted')
 
     if format == 'screen':
         num_all_signups = signups.count()
@@ -156,28 +167,52 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
     personnel_class_filters = Filter(request, "personnel_class").add_objects("personnel_classes__slug", personnel_classes)
     signups = personnel_class_filters.filter_queryset(signups)
 
+    state_filter = SignupStateFilter(request, "state")
+    signups = state_filter.filter_queryset(signups)
+
+    print signups.query
+
     sorter = Sorter(request, "sort")
     sorter.add("name", name=u'Sukunimi, Etunimi', definition=('person__surname', 'person__first_name'))
     sorter.add("newest", name=u'Uusin ensin', definition=('-created_at',))
     sorter.add("oldest", name=u'Vanhin ensin', definition=('created_at',))
     signups = sorter.order_queryset(signups)
 
-    # Must be done after sorting, since `SignupStateFilter` doesn't currently operate in the database
-    state_filter = SignupStateFilter(request, "state")
-    state_filter.add_state("new", "Haettu")
-    state_filter.add_state("accepted", "Odottaa vuoroja")
-    state_filter.add_state("finished", "Vuorot lähetetty")
-    state_filter.add_state("complained", "Reklamoitu")
-    state_filter.add_state("rejected", "Hylätty")
-    signups = state_filter.filter_queryset(signups)
+    if request.method == 'POST':
+        action = request.POST.get('action', None)
+        if action == 'mass-reject':
+            Signup.mass_reject(signups)
+        elif action == 'mass-request-confirmation':
+            Signup.mass_request_confirmation(signups)
+        else:
+            messages.error(request, u'Ei semmosta toimintoa oo.')
 
-    if format == 'screen':
+        return redirect('labour_admin_signups_view', event.slug)
+
+    elif format == 'screen':
+        num_would_mass_reject = signups.filter(**Signup.get_state_query_params('new')).count()
+        num_would_mass_request_confirmation = signups.filter(**Signup.get_state_query_params('accepted')).count()
+
+        mass_operations = OrderedDict([
+            ('reject', MassOperation(
+                'labour-admin-mass-reject-modal',
+                u'Hylkää kaikki käsittelemättömät...',
+                num_would_mass_reject
+            )),
+            ('request_confirmation', MassOperation(
+                'labour-admin-mass-request-confirmation-modal',
+                u'Vaadi vahvistusta kaikilta hyväksytyiltä...',
+                num_would_mass_request_confirmation
+            )),
+        ])
+
         vars.update(
             export_formats=EXPORT_FORMATS,
             job_category_accepted_filters=job_category_accepted_filters,
             job_category_filters=job_category_filters,
+            mass_operations=mass_operations,
             num_all_signups=num_all_signups,
-            num_signups=len(signups), # need to use .len instead of .count because state_filter
+            num_signups=signups.count(),
             personnel_class_filters=personnel_class_filters,
             signups=signups,
             sorter=sorter,
@@ -310,6 +345,10 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
     )
 
     return render(request, 'labour_admin_mail_editor_view.jade', vars)
+
+
+def labour_admin_tools_view(request, vars, event):
+    return render(request, 'labour_admin_tools_view.jade', vars)
 
 
 def labour_admin_menu_items(request, event):

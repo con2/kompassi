@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from collections import defaultdict, namedtuple
+from collections import defaultdict, namedtuple, OrderedDict
 from datetime import date, datetime, timedelta
 
 from django.conf import settings
@@ -20,42 +20,27 @@ from core.utils import (
     full_hours_between,
     is_within_period,
     NONUNIQUE_SLUG_FIELD_PARAMS,
+    ONE_HOUR,
     pick_attrs,
     SLUG_FIELD_PARAMS,
     slugify,
     time_bool_property,
 )
 
-
-GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
-    admins=u'Työvoimavastaavat',
-    applicants=u'Aktiiviset',
-    new=u'Uudet hakijat',
-    processed=u'Käsitellyt',
-    accepted=u'Hyväksytyt',
-    finished=u'Työvuorotetut',
-    complained=u'Reklamoidut',
-    cancelled=u'Peruutetut',
-    rejected=u'Hylätyt',
-    arrived=u'Saapuneet',
-    workaccepted=u'Työnsä hyväksytysti suorittaneet',
-    reprimanded=u'Työnsä moitittavasti suorittaneet',
+from .constants import (
+    SIGNUP_STATE_NAMES,
+    NUM_FIRST_CATEGORIES,
+    SIGNUP_STATE_CLASSES,
+    SIGNUP_STATE_LABEL_CLASSES,
+    SIGNUP_STATE_BUTTON_CLASSES,
+    SIGNUP_STATE_DESCRIPTIONS,
+    SIGNUP_STATE_IMPERATIVES,
+    STATE_FLAGS_BY_NAME,
+    STATE_NAME_BY_FLAGS,
+    STATE_TIME_FIELDS,
+    GROUP_VERBOSE_NAMES_BY_SUFFIX,
+    SIGNUP_STATE_GROUPS,
 )
-
-
-SIGNUP_STATE_GROUPS = [
-    'applicants',
-    'new',
-    'processed',
-    'accepted',
-    'finished',
-    'complained',
-    'cancelled',
-    'rejected',
-    'arrived',
-    'workaccepted',
-    'reprimanded',
-]
 
 
 class LabourEventMeta(EventMetaBase):
@@ -471,9 +456,6 @@ class WorkPeriod(models.Model):
         return self.description
 
 
-ONE_HOUR = timedelta(hours=1)
-
-
 class Job(models.Model):
     job_category = models.ForeignKey(JobCategory, verbose_name=u'tehtäväalue')
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
@@ -639,98 +621,6 @@ class AlternativeSignupForm(models.Model):
         ]
 
 
-NUM_FIRST_CATEGORIES = 5
-SIGNUP_STATE_NAMES = dict(
-    new=u'Uusi',
-    accepted=u'Hyväksytty, odottaa vuoroja',
-    finished=u'Hyväksytty, vuorot lähetetty',
-    complained=u'Hyväksytty, vuoroista reklamoitu',
-
-    rejected=u'Hylätty',
-    cancelled=u'Peruutettu',
-
-    arrived=u'Saapunut tapahtumaan',
-
-    honr_discharged=u'Työpanos suoritettu hyväksytysti',
-    dish_discharged=u'Työpanoksessa moitittavaa',
-    no_show=u'Jätti saapumatta paikalle',
-    relieved=u'Vapautettu tehtävästään',
-
-    beyond_logic=u'Perätilassa',
-)
-
-SIGNUP_STATE_CLASSES = dict(
-    new=u'default',
-    accepted=u'info',
-    finished=u'success',
-    complained=u'warning',
-    rejected=u'danger',
-    cancelled=u'danger',
-    arrived=u'success',
-    honr_discharged=u'success',
-    dish_discharged=u'danger',
-    no_show=u'danger',
-    beyond_logic=u'danger',
-    relieved=u'danger',
-)
-SIGNUP_STATE_LABEL_CLASSES = dict(
-    (state_name, "label-{generic_class}".format(generic_class=generic_class))
-    for (state_name, generic_class) in SIGNUP_STATE_CLASSES.iteritems()
-)
-SIGNUP_STATE_BUTTON_CLASSES = dict(
-    (state_name, "btn-{generic_class}".format(generic_class=generic_class))
-    for (state_name, generic_class) in SIGNUP_STATE_CLASSES.iteritems()
-)
-SIGNUP_STATE_DESCRIPTIONS = dict(
-    new=u'Hakemuksesi on vastaanotettu, ja työvoimavastaavat käsittelevät sen lähiaikoina. Saat tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sähköpostitse.',
-    accepted=u'Työvoimavastaavat ovat alustavasti hyväksyneet sinut vapaaehtoistyöhön tähän tapahtumaan, mutta sinulle ei ole vielä määritelty työvuoroja. Saat tiedon työvuoroistasi myöhemmin sähköpostitse.',
-)
-SIGNUP_STATE_IMPERATIVES = dict(
-    new=u'Palauta tilaan Uusi',
-    accepted=u'Hyväksy hakemus',
-    finished=u'Lähetä vuorot',
-    arrived=u'Merkitse saapuneeksi',
-    complained=u'Kirjaa reklamaatio vuoroista',
-    honr_discharged=u'Teki työnsä hyväksytysti',
-    dish_discharged=u'Teki työnsä moitittavasti',
-    no_show=u'Ei saapunut paikalle',
-    relieved=u'Vapauta tehtävästään',
-    rejected=u'Hylkää',
-    cancelled=u'Merkitse peruutetuksi',
-    beyond_logic=u'Aseta perätilaan',
-)
-
-STATE_FLAGS_BY_NAME = dict(
-    #                active accept ready  compla arrive workac reprim reject cancel
-    new=            (True,  False, False, False, False, False, False, False, False),
-    accepted=       (True,  True,  False, False, False, False, False, False, False),
-    finished=       (True,  True,  True,  False, False, False, False, False, False),
-    complained=     (True,  True,  True,  True,  False, False, False, False, False),
-    arrived=        (True,  True,  True,  False, True,  False, False, False, False),
-    honr_discharged=(True,  True,  True,  False, True,  True,  False, False, False),
-    dish_discharged=(True,  True,  True,  False, True,  False, True,  False, False),
-    no_show=        (True,  True,  True,  False, False, False, True,  False, False),
-    rejected=       (False, False, False, False, False, False, False, True,  False),
-    relieved=       (False, True,  False, False, False, False, False, False, True ),
-    cancelled=      (False, False, False, False, False, False, False, False, True ),
-    beyond_logic=   (False, False, False, False, False, False, False, False, False),
-)
-
-STATE_NAME_BY_FLAGS = dict((flags, name) for (name, flags) in STATE_FLAGS_BY_NAME.iteritems())
-
-STATE_TIME_FIELDS = [
-    'created_at',
-    'time_accepted',
-    'time_finished',
-    'time_complained',
-    'time_cancelled',
-    'time_rejected',
-    'time_arrived',
-    'time_work_accepted',
-    'time_reprimanded',
-]
-
-
 class Signup(models.Model, CsvExportMixin):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
@@ -805,6 +695,12 @@ class Signup(models.Model, CsvExportMixin):
         verbose_name=u'Hyväksytty',
     )
 
+    time_confirmation_requested = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=u'Vahvistusta vaadittu',
+    )
+
     time_finished = models.DateTimeField(
         null=True,
         blank=True,
@@ -848,6 +744,7 @@ class Signup(models.Model, CsvExportMixin):
     )
 
     is_accepted = time_bool_property('time_accepted')
+    is_confirmation_requested = time_bool_property('time_confirmation_requested')
     is_finished = time_bool_property('time_finished')
     is_complained = time_bool_property('time_complained')
     is_cancelled = time_bool_property('time_cancelled')
@@ -859,6 +756,7 @@ class Signup(models.Model, CsvExportMixin):
 
     is_new = property(lambda self: self.state == 'new')
     is_applicants = alias_property('is_active') # group is called applicants for historical purposes
+    is_confirmation = alias_property('is_confirmation_requested')
     is_processed = property(lambda self: self.state != 'new')
 
     class Meta:
@@ -993,6 +891,42 @@ class Signup(models.Model, CsvExportMixin):
 
         return signup, created
 
+    @classmethod
+    def get_state_query_params(cls, state):
+        flag_values = STATE_FLAGS_BY_NAME[state]
+        assert len(STATE_TIME_FIELDS) == len(flag_values)
+
+        query_params = []
+
+        for time_field_name, flag_value in zip(STATE_TIME_FIELDS, flag_values):
+            time_field_preposition = '{}__isnull'.format(time_field_name)
+            query_params.append((time_field_preposition, not flag_value))
+
+        # First state flag is not a time bool field, but an actual bona fide boolean field.
+        # Also "is null" semantics mean that flag values are flipped, so we need to backflip it.
+        query_params[0] = ('is_active', not query_params[0][1])
+
+        return OrderedDict(query_params)
+
+    @classmethod
+    def mass_reject(cls, signups):
+        return cls._mass_state_change('new', 'rejected', signups)
+
+    @classmethod
+    def mass_request_confirmation(cls, signups):
+        return cls._mass_state_change('accepted', 'confirmation', signups)
+
+    @classmethod
+    def _mass_state_change(cls, old_state, new_state, signups):
+        signups = signups.filter(**Signup.get_state_query_params(old_state))
+
+        for signup in signups:
+            signup.state = new_state
+            signup.save()
+            signup.apply_state()
+
+        return signups
+
     def apply_state(self):
         self.apply_state_sync()
 
@@ -1097,9 +1031,11 @@ class Signup(models.Model, CsvExportMixin):
 
     @property
     def _state_flags(self):
+        # The Grand Order is defined here.
         return (
             self.is_active,
             self.is_accepted,
+            self.is_confirmation_requested,
             self.is_finished,
             self.is_complained,
             self.is_arrived,
@@ -1111,9 +1047,11 @@ class Signup(models.Model, CsvExportMixin):
 
     @_state_flags.setter
     def _state_flags(self, flags):
+        # These need to be in the Grand Order.
         (
             self.is_active,
             self.is_accepted,
+            self.is_confirmation_requested,
             self.is_finished,
             self.is_complained,
             self.is_arrived,
@@ -1140,7 +1078,9 @@ class Signup(models.Model, CsvExportMixin):
         if cur_state == 'new':
             states.extend(('accepted', 'rejected', 'cancelled'))
         elif cur_state == 'accepted':
-            states.extend(('finished', 'cancelled'))
+            states.extend(('finished', 'confirmation', 'cancelled'))
+        elif cur_state == 'confirmation':
+            states.extend(('accepted', 'cancelled'))
         elif cur_state == 'finished':
             states.extend(('arrived', 'complained', 'no_show', 'relieved'))
         elif cur_state == 'complained':

@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from core.models import Event, Person
 
-from .models import LabourEventMeta, Qualification, JobCategory
+from .models import LabourEventMeta, Qualification, JobCategory, Signup
 
 
 class LabourEventAdminTest(TestCase):
@@ -23,6 +23,8 @@ class LabourEventAdminTest(TestCase):
 
         assert labour_event_meta.is_user_admin(person.user)
 
+
+class QualificationTest(TestCase):
     def test_qualifications(self):
         person, unused = Person.get_or_create_dummy()
         qualification1, qualification2 = Qualification.get_or_create_dummies()
@@ -42,3 +44,12 @@ class LabourEventAdminTest(TestCase):
 
         assert jc1.is_person_qualified(person)
         assert jc2.is_person_qualified(person)
+
+
+class SignupTest(TestCase):
+    def test_get_state_query_params(self):
+        params = Signup.get_state_query_params('accepted')
+
+        self.assertTrue(params['is_active'])
+        self.assertFalse(params['time_accepted__isnull'])
+        self.assertTrue(params['time_finished__isnull'])

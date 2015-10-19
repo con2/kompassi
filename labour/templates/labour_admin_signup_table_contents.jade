@@ -6,15 +6,11 @@ thead
     th
       | Tehtäväalueet
       span(style='display: inline-block').legend.pull-right
-        span.label.label-default Haettu
-        | &#x20;
-        span.label.label-info Odottaa vuoroja
-        | &#x20;
-        span.label.label-success Vuorot lähetetty
-        | &#x20;
-        span.label.label-warning Reklamoitu
-        | &#x20;
-        span.label.label-danger Hylätty
+        span.label.label-default.kompassi-icon-space-right Haettu
+        span.label.label-info.kompassi-icon-space-right Odottaa vuoroja
+        span.label.label-success.kompassi-icon-space-right Vuorot lähetetty
+        span.label.label-warning.kompassi-icon-space-right Vaatii huomiota
+        span.label.label-danger.kompassi-icon-space-right Hylätty
 tbody
   for signup in signups
     tr

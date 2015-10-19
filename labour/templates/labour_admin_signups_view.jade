@@ -65,13 +65,88 @@ block admin_content
       include labour_admin_signup_table_contents.jade
     .panel-footer.clearfix
       .btn-group.pull-right
-        button.btn.btn-default.dropdown-toggle#membership-admin-export-dropdown(type='button',
+        .btn-group
+          button.btn.btn-default.dropdown-toggle#membership-admin-mass-dropdown(type='button',
                                                                                 data-toggle='dropdown',
                                                                                 aria-haspopup='true',
-                                                                                aria-expanded='true') Vie...
-          span.caret
-        ul.dropdown-menu(aria-labelledby='membership-admin-export-dropdown')
-          for export_format in export_formats
-            li: a(href='{% url "labour_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')= export_format.name
+                                                                                aria-expanded='true') Muokkaa kaikkia näkyviä
+            i.fa.fa-caret-down.kompassi-icon-space-left
+          ul.dropdown-menu(aria-labelledby='membership-admin-mass-dropdown')
+            for mass_operation in mass_operations.values
+              li: a(href='', data-toggle='modal', data-target='##{mass_operation.modal_id}')= mass_operation.text
+
+        .btn-group
+          button.btn.btn-default.dropdown-toggle#membership-admin-export-dropdown(type='button',
+                                                                                  data-toggle='dropdown',
+                                                                                  data-target='membership-admin-export-dropdown-menu'
+                                                                                  aria-haspopup='true',
+                                                                                  aria-expanded='true') Vie
+            i.fa.fa-caret-down.kompassi-icon-space-left
+          ul.dropdown-menu#membership-admin-export-dropdown-menu(aria-labelledby='membership-admin-export-dropdown')
+            for export_format in export_formats
+              li: a(href='{% url "labour_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+                i.fa.fa-cloud-download.kompassi-icon-space-right
+                |{{ export_format.name }}
 
       p.text-muted {{ num_signups }} henkilö{{ num_signups|pluralize:"ä" }} (yhteensä {{ num_all_signups }}).
+
+  - with mass_operation=mass_operations.reject
+    .modal.fade#labour-admin-mass-reject-modal(tabindex='-1',
+                                                  role='dialog',
+                                                  aria-labelledby='labour-admin-mass-reject-modal-title')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              i.fa.fa-times-circle(aria-hidden='true')
+
+            h4.modal-title#labour-admin-mass-reject-modal-title Vaadi vahvistusta hyväksytyiltä
+          .modal-body
+            p Tällä toiminnolla voit hylätä nyt näkyvistä hakemuksista kaikki ne, jotka ovat tilassa <em>Uusi</em>.
+            p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Hylätyt</em>-ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
+          .modal-footer
+            form(method='POST')
+              {% csrf_token %}
+              .btn-group
+                button.btn.btn-default(type='button', data-dismiss='modal')
+                  i.fa.fa-undo.kompassi-icon-space-right
+                  |Peruuta
+                if mass_operation.num_candidates
+                  button.btn.btn-danger(type='submit', name='action', value='mass-reject')
+                    i.fa.fa-exclamation-triangle.kompassi-icon-space-right
+                    |Hylkää {{ mass_operation.num_candidates }} hakemusta
+                else
+                  button.btn.btn-danger(type='button', disabled)
+                    i.fa.fa-exclamation-triangle.kompassi-icon-space-right
+                    |Hylkää {{ mass_operation.num_candidates }} hakemusta
+
+  - with mass_operation=mass_operations.request_confirmation
+    .modal.fade#labour-admin-mass-request-confirmation-modal(tabindex='-1',
+                                                             role='dialog',
+                                                             aria-labelledby='labour-admin-mass-request-confirmation-modal-title')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              i.fa.fa-times-circle(aria-hidden='true')
+
+            h4.modal-title#labour-admin-mass-request-confirmation-modal-title Vaadi vahvistusta hyväksytyiltä
+          .modal-body
+            p Tällä toiminnolla voit vaatia tapahtuman vapaaehtoistyöntekijöitä vahvistamaan osallistumisensa tapahtumaan. Toiminto siirtää kaikki <em>Hyväksytty, odottaa vuoroja</em> -tilassa olevat tilaan <em>Hyväksytty, odottaa vahvistusta</em>.
+            p Kunkin vapaaehtoistyöntekijän tulee tämän jälkeen käydä vahvistamassa osallistumisensa kirjautumalla sisään Kompassiin ja painamalla tapahtumasivulla tai profiilinsa työhakemussivulla <em>Vahvista osallistuminen</em> -nappia. Työvoimavastaava voi määräajan umpeuduttua hylätä ne hakijat, jotka eivät ole vahvistaneet osallistumistaan.
+            p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Vahvistusta vaadittu</em> -ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
+          .modal-footer
+            form(method='POST')
+              {% csrf_token %}
+              .btn-group
+                button.btn.btn-default(type='button', data-dismiss='modal')
+                  i.fa.fa-undo.kompassi-icon-space-right
+                  |Peruuta
+                if mass_operation.num_candidates
+                  button.btn.btn-warning(type='submit', name='action', value='mass-reject')
+                    i.fa.fa-exclamation-triangle.kompassi-icon-space-right
+                    |Vaadi vahvistusta {{ mass_operation.num_candidates }} henkilöltä
+                else
+                  button.btn.btn-warning(type='button', disabled)
+                    i.fa.fa-exclamation-triangle.kompassi-icon-space-right
+                    |Vaadi vahvistusta {{ mass_operation.num_candidates }} henkilöltä
