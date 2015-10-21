@@ -2,7 +2,7 @@
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
 
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS
