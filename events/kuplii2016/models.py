@@ -77,34 +77,4 @@ class SignupExtra(SignupExtraBase):
 
     @staticmethod
     def get_query_class():
-        return SignupKuplii2015
-
-
-class SignupKuplii2015(QueryBuilder):
-    model = SignupExtra
-    query_related_exclude = {
-        "signup": ("event",),
-    }
-    query_related_filter = {
-        "signup": "*",
-        "signup__person": ("birth_date",),
-    }
-    view_related_filter = {
-        "signup__person": ("first_name", "surname", "nick", "birth_date", "email", "phone",),
-    }
-    default_views = [
-        "signup__person__first_name",
-        "signup__person__surname",
-        "signup__person__nick",
-    ]
-    view_groups = (
-        (u"Henkilötiedot", add_prefix("signup__person__", (
-            "surname", "first_name", "nick", "phone", "email", "birth_date"))),
-        (u"Sisäiset", add_prefix("signup__", (
-            "state", "job_categories_accepted__pk", "notes", "created_at", "updated_at"))),
-        (u"Työvuorotoiveet", "signup__job_categories__pk", "shift_type", "total_work"),
-        (u"Lisätiedot", "special_diet__pk", "special_diet_other",
-            "prior_experience", "free_text"),
-        (u"Tila", add_prefix("signup__time_", ("accepted", "finished", "complained", "cancelled",
-                                              "rejected", "arrived", "work_accepted", "reprimanded",))),
-    )
+        raise NotImplementedError()
