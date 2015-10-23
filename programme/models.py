@@ -94,12 +94,17 @@ class Room(models.Model):
     def __unicode__(self):
         return self.name
 
-    def programme_continues_at(self, the_time, **conditions):
-        latest_programme = self.programme_set.filter(
+    def programme_continues_at(self, the_time, include_unpublished=False, **conditions):
+        criteria = dict(
             start_time__lt=the_time,
             length__isnull=False,
             **conditions
-        ).order_by('-start_time')[:1]
+        )
+
+        if not include_unpublished:
+            criteria.update(state='published')
+
+        latest_programme = self.programme_set.filter(**criteria).order_by('-start_time')[:1]
         if latest_programme:
             return the_time < latest_programme[0].end_time
         else:
@@ -419,12 +424,20 @@ class ProgrammeRole(models.Model):
 
 class ViewMethodsMixin(object):
     @property
-    def programmes_by_start_time(self):
+    def programmes_by_start_time(self, include_unpublished=False):
         results = []
         prev_start_time = None
 
         for start_time in self.start_times():
             cur_row = []
+            criteria = dict(
+                category__event=self.event,
+                start_time=start_time,
+                length__isnull=False,
+            )
+
+            if not include_unpublished:
+                criteria.update(state='published')
 
             incontinuity = prev_start_time and (start_time - prev_start_time > ONE_HOUR)
             incontinuity = 'incontinuity' if incontinuity else ''
@@ -433,15 +446,11 @@ class ViewMethodsMixin(object):
             results.append((start_time, incontinuity, cur_row))
             for room in self.rooms.all():
                 try:
-                    programme = room.programme_set.get(
-                        category__event=self.event,
-                        start_time=start_time,
-                        length__isnull=False,
-                    )
+                    programme = room.programme_set.get(**criteria)
                     rowspan = self.rowspan(programme)
                     cur_row.append((programme, rowspan))
                 except Programme.DoesNotExist:
-                    if room.programme_continues_at(start_time):
+                    if room.programme_continues_at(start_time, include_unpublished):
                         # programme still continues, handled by rowspan
                         pass
                     else:
