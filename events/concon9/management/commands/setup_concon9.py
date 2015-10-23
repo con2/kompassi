@@ -80,8 +80,9 @@ class Command(BaseCommand):
             name='Ohjelmakartta',
         )
 
-        view.rooms = Room.objects.filter(venue=venue, public=True)
-        view.save()
+        if not view.rooms.exists():
+            view.rooms = Room.objects.filter(venue=venue)
+            view.save()
 
         for category_name, category_style in [
             (u'Ohjelma', u'anime'),
