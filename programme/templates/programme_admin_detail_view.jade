@@ -12,6 +12,8 @@ block admin_content
     div
       .panel.panel-default
         .panel-heading
+          .pull-right
+            span.label(class="{{ programme.state_css }}")= programme.get_state_display
           strong
             if programme.pk
               | Ohjelmanumeron tiedot

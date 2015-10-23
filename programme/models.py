@@ -174,7 +174,7 @@ RECORDING_PERMISSION_CHOICES = [
 START_TIME_LABEL = u'Alkuaika'
 
 STATE_CHOICES = [
-    (u'idea', u'Ideoitu sisäisti'),
+    (u'idea', u'Ideoitu sisäisesti'),
     (u'asked', u'Kysytty ohjelmanjärjestäjältä'),
     (u'offered', u'Ohjelmatarjous vastaanotettu'),
     (u'accepted', u'Hyväksytty'),
@@ -183,6 +183,16 @@ STATE_CHOICES = [
     (u'cancelled', u'Peruutettu'),
     (u'rejected', u'Hylätty'),
 ]
+
+STATE_CSS = dict(
+    idea='label-default',
+    asked='label-default',
+    offered='label-default',
+    accepted='label-primary',
+    published='label-success',
+    cancelled='label-danger',
+    rejected='label-danger',
+)
 
 
 class Programme(models.Model, CsvExportMixin):
@@ -368,6 +378,10 @@ class Programme(models.Model, CsvExportMixin):
     def local_start_time(self):
         from django.utils.timezone import localtime
         return localtime(self.start_time)
+
+    @property
+    def state_css(self):
+        return STATE_CSS[self.state]
 
 
 class ProgrammeRole(models.Model):

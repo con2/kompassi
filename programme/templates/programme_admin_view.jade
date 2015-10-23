@@ -11,6 +11,7 @@ block admin_content
           th Sali
           th Otsikko
           th Ohjelmanpitäjä
+          th Tila
       tbody
         for programme in programmes
           tr
@@ -18,6 +19,7 @@ block admin_content
             td {{ programme.room.name }}
             td: a(href='{% url "programme_admin_detail_view" event.slug programme.pk %}') {{ programme.title }}
             td {{ programme.formatted_hosts }}
+            td: span.label(class="{{ programme.state_css }}")= programme.get_state_display
 
     .panel-footer.clearfix
       .btn-group.pull-right
