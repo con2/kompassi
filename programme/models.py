@@ -32,6 +32,13 @@ class ProgrammeEventMeta(EventMetaBase):
             u'osoitteesta, ja tämä osoite näytetään ohjelmanjärjestäjälle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
     )
 
+    def get_special_programmes(self, include_unpublished=False):
+        schedule_rooms = Room.objects.filter(view__event=self.event).only('id')
+        criteria = dict(category__event=self.event)
+        if not include_unpublished:
+            criteria.update(state='published')
+        return Programme.objects.filter(**criteria).exclude(room__in=schedule_rooms)
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
@@ -89,18 +96,22 @@ class Room(models.Model):
     venue = models.ForeignKey('core.Venue')
     name = models.CharField(max_length=1023)
     order = models.IntegerField()
-    public = models.BooleanField(default=True)
     notes = models.TextField(blank=True)
 
     def __unicode__(self):
         return self.name
 
-    def programme_continues_at(self, the_time, **conditions):
-        latest_programme = self.programme_set.filter(
+    def programme_continues_at(self, the_time, include_unpublished=False, **conditions):
+        criteria = dict(
             start_time__lt=the_time,
             length__isnull=False,
             **conditions
-        ).order_by('-start_time')[:1]
+        )
+
+        if not include_unpublished:
+            criteria.update(state='published')
+
+        latest_programme = self.programme_set.filter(**criteria).order_by('-start_time')[:1]
         if latest_programme:
             return the_time < latest_programme[0].end_time
         else:
@@ -154,7 +165,7 @@ class Role(models.Model):
 
 class Tag(models.Model):
     event = models.ForeignKey('core.Event')
-    title = models.CharField(max_length=15)
+    title = models.CharField(max_length=63)
     order = models.IntegerField(default=0)
     style = models.CharField(max_length=15, default='label-default')
 
@@ -173,6 +184,27 @@ RECORDING_PERMISSION_CHOICES = [
     (u'forbidden', u'Kiellän ohjelmanumeroni videoinnin'),
 ]
 START_TIME_LABEL = u'Alkuaika'
+
+STATE_CHOICES = [
+    (u'idea', u'Ideoitu sisäisesti'),
+    (u'asked', u'Kysytty ohjelmanjärjestäjältä'),
+    (u'offered', u'Ohjelmatarjous vastaanotettu'),
+    (u'accepted', u'Hyväksytty'),
+    (u'published', u'Julkaistu'),
+
+    (u'cancelled', u'Peruutettu'),
+    (u'rejected', u'Hylätty'),
+]
+
+STATE_CSS = dict(
+    idea='label-default',
+    asked='label-default',
+    offered='label-default',
+    accepted='label-primary',
+    published='label-success',
+    cancelled='label-danger',
+    rejected='label-danger',
+)
 
 
 class Programme(models.Model, CsvExportMixin):
@@ -216,6 +248,13 @@ class Programme(models.Model, CsvExportMixin):
         help_text=u'Jos haluat sanoa ohjelmanumeroosi liittyen jotain, mikä ei sovi mihinkään yllä olevista kentistä, käytä tätä kenttää.',
     )
 
+    state = models.CharField(
+        max_length=15,
+        choices=STATE_CHOICES,
+        default='accepted',
+        verbose_name=u'Ohjelmanumeron tila',
+        help_text=u'Tilassa "Julkaistu" olevat ohjelmat näkyvät ohjelmakartassa, jos ohjelmakartta on julkinen.',
+    )
     start_time = models.DateTimeField(blank=True, null=True, verbose_name=START_TIME_LABEL)
     length = models.IntegerField(
         blank=True,
@@ -258,12 +297,12 @@ class Programme(models.Model, CsvExportMixin):
         return self.category.style if self.category.style else ''
 
     @property
-    def public(self):
-        return self.category.public
-
-    @property
     def event(self):
         return self.category.event
+
+    @property
+    def is_active(self):
+        return self.state not in ['rejected', 'cancelled']
 
     def send_edit_codes(self, request):
         for person in self.organizers.all():
@@ -283,12 +322,12 @@ class Programme(models.Model, CsvExportMixin):
         ordering = ['start_time', 'room']
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, title=u'Dummy program'):
         category, unused = Category.get_or_create_dummy()
         room, unused = Room.get_or_create_dummy()
 
         return cls.objects.get_or_create(
-            title=u'Dummy program',
+            title=title,
             defaults=dict(
                 category=category,
                 room=room,
@@ -310,8 +349,8 @@ class Programme(models.Model, CsvExportMixin):
         return self.room.name if self.room is not None else None
 
     @property
-    def public(self):
-        return self.category.public if self.category is not None else False
+    def is_public(self):
+        return self.state == 'published' and self.category is not None and self.category.public
 
     def as_json(self, format='default'):
         from core.utils import pick_attrs
@@ -346,11 +385,9 @@ class Programme(models.Model, CsvExportMixin):
         else:
             raise NotImplementedError(format)
 
-    # for konopas
     @property
-    def local_start_time(self):
-        from django.utils.timezone import localtime
-        return localtime(self.start_time)
+    def state_css(self):
+        return STATE_CSS[self.state]
 
 
 class ProgrammeRole(models.Model):
@@ -371,12 +408,14 @@ class ProgrammeRole(models.Model):
         verbose_name_plural = u'ohjelmanpitäjien roolit'
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, programme=None):
         from core.models import Person
 
         person, unused = Person.get_or_create_dummy()
         role, unused = Role.get_or_create_dummy()
-        programme, unused = Programme.get_or_create_dummy()
+
+        if programme is None:
+            programme, unused = Programme.get_or_create_dummy()
 
         ProgrammeRole.objects.get_or_create(
             person=person,
@@ -385,33 +424,35 @@ class ProgrammeRole(models.Model):
         )
 
 
-
 class ViewMethodsMixin(object):
     @property
-    def programmes_by_start_time(self):
+    def programmes_by_start_time(self, include_unpublished=False):
         results = []
         prev_start_time = None
 
         for start_time in self.start_times():
             cur_row = []
+            criteria = dict(
+                category__event=self.event,
+                start_time=start_time,
+                length__isnull=False,
+            )
+
+            if not include_unpublished:
+                criteria.update(state='published')
 
             incontinuity = prev_start_time and (start_time - prev_start_time > ONE_HOUR)
             incontinuity = 'incontinuity' if incontinuity else ''
             prev_start_time = start_time
 
             results.append((start_time, incontinuity, cur_row))
-            for room in self.public_rooms:
+            for room in self.rooms.all():
                 try:
-                    programme = room.programme_set.get(
-                        category__event=self.event,
-                        start_time=start_time,
-                        room__public=True,
-                        length__isnull=False,
-                    )
+                    programme = room.programme_set.get(**criteria)
                     rowspan = self.rowspan(programme)
                     cur_row.append((programme, rowspan))
                 except Programme.DoesNotExist:
-                    if room.programme_continues_at(start_time):
+                    if room.programme_continues_at(start_time, include_unpublished):
                         # programme still continues, handled by rowspan
                         pass
                     else:
@@ -439,10 +480,6 @@ class ViewMethodsMixin(object):
 
         return sorted(set(result))
 
-    @property
-    def public_rooms(self):
-        return self.rooms.filter(public=True)
-
     def rowspan(self, programme):
         return len(self.start_times(programme=programme))
 
@@ -468,7 +505,7 @@ class AllRoomsPseudoView(ViewMethodsMixin):
         self.name = 'All rooms'
         self.public = True
         self.order = 0
-        self.rooms = Room.objects.filter(venue=event.venue)
+        self.rooms = Room.objects.filter(venue=event.venue, view__event=event)
         self.event = event
 
 

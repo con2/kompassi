@@ -15,7 +15,7 @@ def programme_event_required(view_func):
         meta = event.programme_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa ohjelman hallintaan.")
+            messages.error(request, u"Tämä tapahtuma ei käytä tätä sivustoa ohjelman hallintaan.")
             return redirect('core_event_view', event.slug)
 
         return view_func(request, event, *args, **kwargs)
@@ -29,9 +29,8 @@ def public_programme_required(view_func):
         meta = event.programme_event_meta
 
         if not meta.is_public:
-            messages.error(request, u"Tämän tapahtuman ohjelma ei ole vielä julkinen.")
-
             if not meta.is_user_admin(request.user):
+                messages.error(request, u"Tämän tapahtuman ohjelma ei ole vielä julkinen.")
                 return redirect('core_event_view', event.slug)
 
         return view_func(request, event, *args, **kwargs)
@@ -49,7 +48,7 @@ def programme_admin_required(view_func):
         meta = event.programme_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa ohjelman hallintaan.")
+            messages.error(request, u"Tämä tapahtuma ei käytä tätä sivustoa ohjelman hallintaan.")
             return redirect('core_event_view', event.slug)
 
         if not event.programme_event_meta.is_user_admin(request.user):

@@ -181,19 +181,40 @@ def programme_admin_timetable_view(request, vars, event):
     )
 
 
+@programme_admin_required
+@require_GET
+def programme_admin_special_view(request, vars, event):
+    from .public_views import actual_special_view
+
+    return actual_special_view(
+        request,
+        event,
+        template='programme_admin_special_view.jade',
+        vars=vars,
+    )
+
+
 def programme_admin_menu_items(request, event):
     timetable_url = url('programme_admin_timetable_view', event.slug)
     timetable_active = request.path == timetable_url
     timetable_text = u'Ohjelmakartan esikatselu'
 
+    special_url = url('programme_admin_special_view', event.slug)
+    special_active = request.path == special_url
+    special_text = u'Ohjelmakartan ulkopuolisten esikatselu'
+
     index_url = url('programme_admin_view', event.slug)
-    index_active = request.path.startswith(index_url) and not timetable_active # XXX
+    index_active = request.path.startswith(index_url) and not any((
+        timetable_active,
+        special_active,
+    ))
     index_text = u'Ohjelmaluettelo'
 
 
     return [
         (index_active, index_url, index_text),
         (timetable_active, timetable_url, timetable_text),
+        (special_active, special_url, special_text),
     ]
 
 

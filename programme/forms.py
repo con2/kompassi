@@ -147,6 +147,7 @@ class ProgrammeAdminForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Ohjelmavastaavan merkinnät (eivät näy ohjelmanjärjestäjälle)',
+                'state',
                 'category',
                 'room',
                 'start_time',
@@ -169,9 +170,9 @@ class ProgrammeAdminForm(forms.ModelForm):
             ) for start_time in AllRoomsPseudoView(event).start_times()
         ]
 
-    # XXX
     def clean_start_time(self):
-        start_time = self.cleaned_data['start_time']
+        start_time = self.cleaned_data.get('start_time')
+
         if start_time == '':
             start_time = None
 
@@ -185,6 +186,7 @@ class ProgrammeAdminForm(forms.ModelForm):
             'notes',
             'room',
             'start_time',
+            'state',
             'tags',
         )
 

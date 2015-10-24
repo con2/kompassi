@@ -1,0 +1,20 @@
+for start_time, unused, programmes in programmes_by_start_time
+  h3 {{ start_time|date:"l H:i"|capfirst }}
+  for programme, rowspan in programmes
+    if programme and programme.is_public or programme and internal_programmes
+      .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')
+        h4
+          span.title {{ programme.title }}
+          for tag in programme.tags.all
+            |
+            span.label(class='{{ tag.style }}') {{ tag.title }}
+        .programme-info
+          .meta
+            ul.programme-metadata
+              if programme.room
+                li.room {{ programme.room.name }}
+              if programme.start_time
+                li.times klo {{ programme.start_time|date:"H:i"}}{% if programme.end_time %}&ndash;{{ programme.end_time|date:"H:i"}}{% endif %}
+              if programme.organizers.exists
+                li.host {{ programme.formatted_hosts }}
+          .description {{ programme.description|safe|linebreaks }}
