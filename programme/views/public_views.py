@@ -98,7 +98,7 @@ def actual_timetable_view(
         views=View.objects.filter(event=event, public=True),
         categories=Category.objects.filter(**category_query),
         internal_programmes=internal_programmes,
-        programmes_by_start_time=all_rooms.programmes_by_start_time
+        programmes_by_start_time=all_rooms.get_programmes_by_start_time(request=request),
     )
 
     return render(request, template, vars)
@@ -164,7 +164,7 @@ def programme_mobile_timetable_view(request, event):
 @programme_event_required
 @require_GET
 def programme_internal_adobe_taggedtext_view(request, event):
-    vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).programmes_by_start_time)
+    vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).get_programmes_by_start_time(request=request))
     data = render_string(request, 'programme_timetable.taggedtext', vars)
 
     # force all line endings to CRLF (Windows)
@@ -209,7 +209,7 @@ def programme_self_service_view(request, event, programme_edit_code):
 def programme_json_view(request, event, format='default'):
     result = []
 
-    for start_time, incontinuity, row in AllRoomsPseudoView(event).programmes_by_start_time:
+    for start_time, incontinuity, row in AllRoomsPseudoView(event).get_programmes_by_start_time(request=request):
         for programme, rowspan in row:
             if programme is None:
                 continue

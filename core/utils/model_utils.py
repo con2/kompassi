@@ -14,7 +14,7 @@ from django.contrib.auth.models import Group, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
-from django.db import models
+from django.db import models, connection
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -67,3 +67,12 @@ def slugify(ustr):
     ustr = SLUGIFY_FORBANNAD_RE.sub(u'', ustr)
     ustr = SLUGIFY_MULTIDASH_RE.sub(u'-', ustr)
     return ustr
+
+
+def get_postgresql_version_num():
+    if not 'postgresql' in settings.DATABASES['default']['ENGINE']:
+        return 0
+
+    with connection.cursor() as cursor:
+        cursor.execute('SHOW server_version_num')
+        return int(cursor.fetchone()[0])

@@ -1,5 +1,8 @@
 # encoding: utf-8
 
+import logging
+from pkg_resources import resource_string
+
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
@@ -26,6 +29,9 @@ from ..forms import (
 )
 
 
+logger = logging.getLogger('kompassi')
+
+
 @programme_admin_required
 def programme_admin_view(request, vars, event):
     programmes = Programme.objects.filter(category__event=event)
@@ -45,11 +51,23 @@ def programme_admin_detail_view(request, vars, event, programme_id=None):
     else:
         programme = Programme()
 
+    if programme.start_time and programme.length and programme.room:
+        if 'postgresql' in settings.DATABASES['default']['ENGINE']:
+            overlapping_programmes = Programme.objects.raw(
+                resource_string(__name__, 'sql/overlapping_programmes.sql'),
+                programme.start_time,
+                programme.end_time,
+                event.id,
+            )
+        else:
+            logger.warn('Not using PostgreSQL. Cannot detect overlapping programmes.')
+
     return actual_detail_view(request, vars, event, programme,
         template='programme_admin_detail_view.jade',
         self_service=False,
         redirect_success=lambda ev, prog: redirect('programme_admin_detail_view', ev.slug, prog.pk),
     )
+
 
 def actual_detail_view(request, vars, event, programme, template, self_service, redirect_success):
     hosts = Person.objects.filter(programmerole__programme=programme)

@@ -46,6 +46,7 @@ from .model_utils import (
     SLUG_FIELD_PARAMS,
     slugify,
     validate_slug,
+    get_postgresql_version_num,
 )
 
 from .view_utils import (

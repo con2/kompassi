@@ -1,19 +1,29 @@
 # encoding: utf-8
 
+import logging
 import datetime
+from datetime import timedelta
+from pkg_resources import resource_string
 
 from django.db import models
 from django.conf import settings
+from django.contrib import messages
 from django.utils.timezone import now
+
+from dateutil.tz import tzlocal
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, OneTimeCode
-from core.utils import url, alias_property, slugify, full_hours_between
+from core.utils import url, alias_property, slugify, full_hours_between, format_datetime, get_postgresql_version_num
 
 from .utils import window, next_full_hour
 
 
 ONE_HOUR = datetime.timedelta(hours=1)
+logger = logging.getLogger('kompassi')
+
+
+HAVE_POSTGRESQL_TIME_RANGE_FUNCTIONS = get_postgresql_version_num() > 90200
 
 
 class ProgrammeEventMeta(EventMetaBase):
@@ -256,6 +266,10 @@ class Programme(models.Model, CsvExportMixin):
         help_text=u'Tilassa "Julkaistu" olevat ohjelmat näkyvät ohjelmakartassa, jos ohjelmakartta on julkinen.',
     )
     start_time = models.DateTimeField(blank=True, null=True, verbose_name=START_TIME_LABEL)
+
+    # denormalized
+    end_time = models.DateTimeField(blank=True, null=True, verbose_name=u'Päättymisaika')
+
     length = models.IntegerField(
         blank=True,
         null=True,
@@ -276,10 +290,6 @@ class Programme(models.Model, CsvExportMixin):
     @property
     def event(self):
         return self.category.event
-
-    @property
-    def end_time(self):
-        return (self.start_time + datetime.timedelta(minutes=self.length))
 
     @property
     def formatted_hosts(self):
@@ -389,6 +399,35 @@ class Programme(models.Model, CsvExportMixin):
     def state_css(self):
         return STATE_CSS[self.state]
 
+    def save(self, *args, **kwargs):
+        if self.start_time and self.length:
+            self.end_time = self.start_time + timedelta(minutes=self.length)
+
+        return super(Programme, self).save(*args, **kwargs)
+
+    def get_overlapping_programmes(self):
+        if any((
+            self.id is None,
+            self.room is None,
+            self.start_time is None,
+            self.length is None,
+        )):
+            return Programme.objects.none()
+        elif HAVE_POSTGRESQL_TIME_RANGE_FUNCTIONS:
+            return Programme.objects.raw(
+                resource_string(__name__, 'sql/overlapping_programmes.sql'),
+                (
+                    self.category.event.id,
+                    self.id,
+                    self.room.id,
+                    self.start_time,
+                    self.end_time,
+                )
+            )
+        else:
+            logger.warn('DB engine not PostgreSQL >= 9.2. Cannot detect overlapping programmes.')
+            return Programme.objects.none()
+
 
 class ProgrammeRole(models.Model):
     person = models.ForeignKey('core.Person')
@@ -426,7 +465,10 @@ class ProgrammeRole(models.Model):
 
 class ViewMethodsMixin(object):
     @property
-    def programmes_by_start_time(self, include_unpublished=False):
+    def programmes_by_start_time(self):
+        return self.get_programmes_by_start_time()
+
+    def get_programmes_by_start_time(self, include_unpublished=False, request=None):
         results = []
         prev_start_time = None
 
@@ -448,9 +490,7 @@ class ViewMethodsMixin(object):
             results.append((start_time, incontinuity, cur_row))
             for room in self.rooms.all():
                 try:
-                    programme = room.programme_set.get(**criteria)
-                    rowspan = self.rowspan(programme)
-                    cur_row.append((programme, rowspan))
+                    programmes = room.programme_set.filter(**criteria)
                 except Programme.DoesNotExist:
                     if room.programme_continues_at(start_time, include_unpublished):
                         # programme still continues, handled by rowspan
@@ -458,8 +498,22 @@ class ViewMethodsMixin(object):
                     else:
                         # there is no (visible) programme in the room at start_time, insert a blank
                         cur_row.append((None, None))
-                except Programme.MultipleObjectsReturned:
-                    raise ValueError('Room {room} has multiple programs starting at {start_time}'.format(**locals()))
+                else:
+                    if programmes.count() > 1:
+                        logger.warn('Room %s has multiple programs starting at %s', room, start_time)
+
+                        if request is not None and self.event.programme_event_meta.is_user_admin(request.user):
+                            messages.warning(request,
+                                u'Tilassa {room} on päällekkäisiä ohjelmanumeroita kello {start_time}'.format(
+                                    room=room,
+                                    start_time=format_datetime(start_time.astimezone(tzlocal())),
+                                )
+                            )
+
+                    programme = programmes.first()
+
+                    rowspan = self.rowspan(programme)
+                    cur_row.append((programme, rowspan))
 
         return results
 
