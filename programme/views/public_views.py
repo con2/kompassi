@@ -73,7 +73,11 @@ def programme_internal_timetable_view(
     internal_programmes=True,
     template='programme_timetable_view.jade',
 ):
-    return actual_timetable_view(request, event, internal_programmes, template)
+    vars = dict(
+        tabs=get_timetable_tabs(request, event),
+    )
+
+    return actual_timetable_view(request, event, internal_programmes, template, vars)
 
 
 def actual_timetable_view(

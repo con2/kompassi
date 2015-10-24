@@ -30,7 +30,7 @@ ONE_HOUR = datetime.timedelta(hours=1)
 logger = logging.getLogger('kompassi')
 
 
-HAVE_POSTGRESQL_TIME_RANGE_FUNCTIONS = get_postgresql_version_num() > 90200
+HAVE_POSTGRESQL_TIME_RANGE_FUNCTIONS = get_postgresql_version_num() >= 90200
 
 
 class ProgrammeEventMeta(EventMetaBase):
@@ -118,15 +118,12 @@ class Room(models.Model):
     def __unicode__(self):
         return self.name
 
-    def programme_continues_at(self, the_time, include_unpublished=False, **conditions):
+    def programme_continues_at(self, the_time, **conditions):
         criteria = dict(
             start_time__lt=the_time,
             length__isnull=False,
             **conditions
         )
-
-        if not include_unpublished:
-            criteria.update(state='published')
 
         latest_programme = self.programme_set.filter(**criteria).order_by('-start_time')[:1]
         if latest_programme:
@@ -484,6 +481,7 @@ class ViewMethodsMixin(object):
     def get_programmes_by_start_time(self, include_unpublished=False, request=None):
         results = []
         prev_start_time = None
+        cont_criteria = dict() if include_unpublished else dict(state='published')
 
         for start_time in self.start_times():
             cur_row = []
@@ -502,10 +500,10 @@ class ViewMethodsMixin(object):
 
             results.append((start_time, incontinuity, cur_row))
             for room in self.rooms.all():
-                try:
-                    programmes = room.programme_set.filter(**criteria)
-                except Programme.DoesNotExist:
-                    if room.programme_continues_at(start_time, include_unpublished):
+                programmes = room.programme_set.filter(**criteria)
+                num_programmes = programmes.count()
+                if num_programmes == 0:
+                    if room.programme_continues_at(start_time, **cont_criteria):
                         # programme still continues, handled by rowspan
                         pass
                     else:
@@ -515,7 +513,10 @@ class ViewMethodsMixin(object):
                     if programmes.count() > 1:
                         logger.warn('Room %s has multiple programs starting at %s', room, start_time)
 
-                        if request is not None and self.event.programme_event_meta.is_user_admin(request.user):
+                        if (
+                            request is not None and
+                            self.event.programme_event_meta.is_user_admin(request.user)
+                        ):
                             messages.warning(request,
                                 u'Tilassa {room} on päällekkäisiä ohjelmanumeroita kello {start_time}'.format(
                                     room=room,
