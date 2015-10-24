@@ -14,7 +14,14 @@ from dateutil.tz import tzlocal
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, OneTimeCode
-from core.utils import url, alias_property, slugify, full_hours_between, format_datetime, get_postgresql_version_num
+from core.utils import (
+    alias_property,
+    format_datetime,
+    full_hours_between,
+    get_postgresql_version_num,
+    slugify,
+    url,
+)
 
 from .utils import window, next_full_hour
 
@@ -346,8 +353,14 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def formatted_start_time(self):
-        from core.utils import format_datetime
         return format_datetime(self.start_time) if self.start_time else ''
+
+    @property
+    def formatted_times(self):
+        return u'{start_time} – {end_time}'.format(
+            start_time=format_datetime(self.start_time),
+            end_time=format_datetime(self.end_time),
+        )
 
     # for json
     @property

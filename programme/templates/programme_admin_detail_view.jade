@@ -8,6 +8,8 @@ block title
     else
       | Uusi ohjelmanumero
 block admin_content
+  for overlapping_programme in overlapping_programmes
+    .alert.alert-warning Päällekkäinen ohjelmanumero: <a href='{% url "programme_admin_detail_view" event.slug overlapping_programme.id %}'>{{ overlapping_programme.title }}</a> ({{ overlapping_programme.formatted_times }})
   form(method='POST', role='form').form-horizontal
     div
       .panel.panel-default
