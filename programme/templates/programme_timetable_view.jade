@@ -2,6 +2,8 @@ extends base.jade
 block title
   | Ohjelmakartta
 block content
+  include programme_timetable_admin_public_warning.jade
+  include programme_timetable_tabs.jade
   include programme_timetable_fragment.jade
 block extra_scripts
   script(src='{{ STATIC_URL }}timetable.js')

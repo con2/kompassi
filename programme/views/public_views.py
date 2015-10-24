@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from itertools import groupby
 from datetime import datetime
 import json
 
@@ -16,7 +17,8 @@ from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.http import require_http_methods, require_GET
 
 from api.utils import api_view
-from core.utils import render_string, initialize_form
+from core.tabs import Tab
+from core.utils import render_string, initialize_form, url
 
 from ..models import (
     View,
@@ -27,6 +29,22 @@ from ..models import (
     ProgrammeEditToken,
 )
 from ..helpers import programme_event_required, public_programme_required
+
+
+def get_timetable_tabs(request, event):
+    timetable_url = url('programme_timetable_view', event.slug)
+    timetable_active = request.path == timetable_url
+    timetable_text = u'Ohjelmakartta'
+
+    special_url = url('programme_special_view', event.slug)
+    special_active = request.path == special_url
+    special_text = u'Ohjelmakartan ulkopuolinen ohjelma'
+
+    return [
+        Tab(timetable_url, timetable_text, timetable_active, 0),
+        Tab(special_url, special_text, special_active, 0),
+    ]
+
 
 @public_programme_required
 @cache_control(public=True, max_age=5 * 60)
@@ -41,6 +59,7 @@ def programme_timetable_view(
     vars = dict(
         # hide the user menu to prevent it getting cached
         login_page=True,
+        tabs=get_timetable_tabs(request, event),
     )
 
     return actual_timetable_view(request, event, internal_programmes, template, vars)
@@ -79,7 +98,40 @@ def actual_timetable_view(
         views=View.objects.filter(event=event, public=True),
         categories=Category.objects.filter(**category_query),
         internal_programmes=internal_programmes,
-        all_programmes_by_start_time=all_rooms.programmes_by_start_time
+        programmes_by_start_time=all_rooms.programmes_by_start_time
+    )
+
+    return render(request, template, vars)
+
+
+@public_programme_required
+@require_GET
+def programme_special_view(request, event):
+    return actual_special_view(request, event)
+
+
+def actual_special_view(
+        request,
+        event,
+        include_unpublished=False,
+        template='programme_special_view.jade',
+        vars=None
+    ):
+    programmes = event.programme_event_meta.get_special_programmes(include_unpublished=include_unpublished).order_by('start_time')
+
+    programmes_by_start_time = groupby(programmes, lambda p: p.start_time)
+    programmes_by_start_time = (
+        (start_time, None, programmes)
+        for (start_time, programmes) in programmes_by_start_time
+    )
+
+    if vars is None:
+        vars = dict()
+
+    vars.update(
+        tabs=get_timetable_tabs(request, event),
+        event=event,
+        programmes_by_start_time=programmes_by_start_time,
     )
 
     return render(request, template, vars)
@@ -122,64 +174,6 @@ def programme_internal_adobe_taggedtext_view(request, event):
     data = data.encode('UTF-16LE')
 
     return HttpResponse(data, 'text/plain; charset=utf-16')
-
-
-@programme_event_required
-@require_GET
-def programme_internal_konopas_javascript_view(request, event):
-    program = []
-    people = {}
-
-    for programme in Programme.objects.filter(
-        category__event=event,
-        category__public=True,
-        start_time__isnull=False,
-        room__isnull=False,
-    ):
-        program.append(dict(
-            id=str(programme.pk),
-            title=programme.title,
-            tags=[programme.category.title],
-            date=programme.local_start_time.strftime("%Y-%m-%d"),
-            time=programme.local_start_time.strftime("%H:%M"),
-            mins=programme.length,
-            loc=[programme.room.name],
-            people=[dict(
-                id=person.pk,
-                name=person.display_name,
-            ) for person in programme.organizers.all()],
-            desc=programme.description,
-        ))
-
-        for person in programme.organizers.all():
-            if person.preferred_name_display_style == 'nick':
-                name_list = [person.nick, "", "", ""]
-            else:
-                name_list = [person.surname, person.first_name, "", ""]
-
-            people[str(person.pk)] = dict(
-                id=str(person.pk),
-                name=name_list,
-                tags=[],
-                prog=[str(prog.pk) for prog in person.programme_set.filter(
-                    category__event=event,
-                    category__public=True,
-                    start_time__isnull=False,
-                    room__isnull=False,
-                )],
-                links={},
-                bio="",
-            )
-
-    context = RequestContext(request, dict(
-        program=json.dumps(program),
-        people=json.dumps(people),
-    ))
-
-    return TemplateResponse(request, 'programme_internal_konopas_javascript_view.js',
-        context=context,
-        content_type='application/javascript',
-    )
 
 
 @programme_event_required

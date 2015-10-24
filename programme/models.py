@@ -32,6 +32,13 @@ class ProgrammeEventMeta(EventMetaBase):
             u'osoitteesta, ja tämä osoite näytetään ohjelmanjärjestäjälle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
     )
 
+    def get_special_programmes(self, include_unpublished=False):
+        schedule_rooms = Room.objects.filter(view__event=self.event).only('id')
+        criteria = dict(category__event=self.event)
+        if not include_unpublished:
+            criteria.update(state='published')
+        return Programme.objects.filter(**criteria).exclude(room__in=schedule_rooms)
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
@@ -377,12 +384,6 @@ class Programme(models.Model, CsvExportMixin):
             )
         else:
             raise NotImplementedError(format)
-
-    # for konopas
-    @property
-    def local_start_time(self):
-        from django.utils.timezone import localtime
-        return localtime(self.start_time)
 
     @property
     def state_css(self):
