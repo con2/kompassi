@@ -158,7 +158,7 @@ class Role(models.Model):
 
 class Tag(models.Model):
     event = models.ForeignKey('core.Event')
-    title = models.CharField(max_length=15)
+    title = models.CharField(max_length=63)
     order = models.IntegerField(default=0)
     style = models.CharField(max_length=15, default='label-default')
 
@@ -315,12 +315,12 @@ class Programme(models.Model, CsvExportMixin):
         ordering = ['start_time', 'room']
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, title=u'Dummy program'):
         category, unused = Category.get_or_create_dummy()
         room, unused = Room.get_or_create_dummy()
 
         return cls.objects.get_or_create(
-            title=u'Dummy program',
+            title=title,
             defaults=dict(
                 category=category,
                 room=room,
@@ -407,19 +407,20 @@ class ProgrammeRole(models.Model):
         verbose_name_plural = u'ohjelmanpitäjien roolit'
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, programme=None):
         from core.models import Person
 
         person, unused = Person.get_or_create_dummy()
         role, unused = Role.get_or_create_dummy()
-        programme, unused = Programme.get_or_create_dummy()
+
+        if programme is None:
+            programme, unused = Programme.get_or_create_dummy()
 
         ProgrammeRole.objects.get_or_create(
             person=person,
             programme=programme,
             role=role,
         )
-
 
 
 class ViewMethodsMixin(object):
