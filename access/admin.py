@@ -14,6 +14,7 @@ class GrantedPrivilegeAdmin(admin.ModelAdmin):
     list_display = ('privilege', 'person', 'state')
     list_filter = ('privilege', 'state')
     search_fields = ('person__surname', 'person__first_name', 'person__nick', 'person__email')
+    raw_id_fields = ('person',)
 
 
 class GroupPrivilegeAdmin(admin.ModelAdmin):
