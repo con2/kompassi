@@ -1,0 +1,14 @@
+.programme-metadata {
+  margin-top: 0;
+  list-style-type: none;
+  padding-left: 0;
+  font-style: italic;
+}
+
+.programme-metadata li {
+  display: inline-block;
+}
+
+h4 {
+  margin-bottom: 0;
+}

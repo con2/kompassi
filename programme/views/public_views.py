@@ -28,7 +28,7 @@ from ..models import (
     Programme,
     ProgrammeEditToken,
 )
-from ..helpers import programme_event_required, public_programme_required
+from ..helpers import programme_event_required, public_programme_required, group_programmes_by_start_time
 
 
 def get_timetable_tabs(request, event):
@@ -121,13 +121,11 @@ def actual_special_view(
         template='programme_special_view.jade',
         vars=None
     ):
-    programmes = event.programme_event_meta.get_special_programmes(include_unpublished=include_unpublished).order_by('start_time')
+    programmes = event.programme_event_meta.get_special_programmes(
+        include_unpublished=include_unpublished
+    ).order_by('start_time')
 
-    programmes_by_start_time = groupby(programmes, lambda p: p.start_time)
-    programmes_by_start_time = (
-        (start_time, None, programmes)
-        for (start_time, programmes) in programmes_by_start_time
-    )
+    programmes_by_start_time = group_programmes_by_start_time(programmes)
 
     if vars is None:
         vars = dict()

@@ -22,7 +22,7 @@ from ..models import (
     Room,
     STATE_CHOICES,
 )
-from ..helpers import programme_admin_required
+from ..helpers import programme_admin_required, group_programmes_by_start_time
 from ..forms import (
     AdminProgrammePersonFormSet,
     ProgrammeAdminForm,
@@ -33,10 +33,9 @@ from ..forms import (
 )
 
 
-# CONDB-365
-# EXPORT_FORMATS = EXPORT_FORMATS + [
-#     ExportFormat(u'Tulostettava versio', 'html', 'html'),
-# ]
+EXPORT_FORMATS = EXPORT_FORMATS + [
+    ExportFormat(u'Tulostettava versio', 'html', 'html'),
+]
 logger = logging.getLogger('kompassi')
 
 
@@ -52,11 +51,12 @@ def programme_admin_view(request, vars, event, format='screen'):
     state_filters.filter_queryset(programmes)
     programmes = state_filters.filter_queryset(programmes)
 
-    sorter = Sorter(request, 'sort')
-    sorter.add('title', name='Otsikko', definition=('title',))
-    sorter.add('start_time', name='Alkuaika', definition=('start_time','room'))
-    sorter.add('room', name='Sali', definition=('room','start_time'))
-    programmes = sorter.order_queryset(programmes)
+    if format != 'html':
+        sorter = Sorter(request, 'sort')
+        sorter.add('title', name='Otsikko', definition=('title',))
+        sorter.add('start_time', name='Alkuaika', definition=('start_time','room'))
+        sorter.add('room', name='Sali', definition=('room','start_time'))
+        programmes = sorter.order_queryset(programmes)
 
     if format == 'screen':
         vars.update(
@@ -79,6 +79,27 @@ def programme_admin_view(request, vars, event, format='screen'):
             dialect='xlsx',
             filename=filename,
         )
+    elif format == 'html':
+        title = u"{event_name}: Ohjelma".format(event_name=event.name)
+
+        if room_filters.selected_slug != None:
+            room = Room.objects.get(slug=room_filters.selected_slug)
+            title += u' – {room.name}'.format(room=room)
+
+        if state_filters.selected_slug != None:
+            state_name = next(name for (slug, name) in STATE_CHOICES if slug == state_filters.selected_slug)
+            title += u' ({state_name})'.format(state_name=state_name)
+
+        programmes_by_start_time = group_programmes_by_start_time(programmes)
+
+        vars.update(
+            title=title,
+            now=timezone.now(),
+            programmes=programmes,
+            programmes_by_start_time=programmes_by_start_time,
+        )
+
+        return render(request, 'programme_admin_print_view.jade', vars)
     else:
         raise NotImplementedError(format)
 

@@ -1,9 +1,12 @@
 # encoding: utf-8
 
+from itertools import groupby
 from functools import wraps
 
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
+
+from core.utils import groupby_strict
 
 
 def programme_event_required(view_func):
@@ -62,3 +65,11 @@ def programme_admin_required(view_func):
 
         return view_func(request, vars, event, *args, **kwargs)
     return wrapper
+
+
+def group_programmes_by_start_time(programmes):
+    programmes_by_start_time = groupby_strict(programmes, lambda p: p.start_time)
+    return [
+        (start_time, None, programmes)
+        for (start_time, programmes) in programmes_by_start_time
+    ]
