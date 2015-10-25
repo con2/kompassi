@@ -19,6 +19,7 @@ from core.utils import (
     format_datetime,
     full_hours_between,
     get_postgresql_version_num,
+    NONUNIQUE_SLUG_FIELD_PARAMS,
     slugify,
     url,
 )
@@ -114,6 +115,7 @@ class Room(models.Model):
     name = models.CharField(max_length=1023)
     order = models.IntegerField()
     notes = models.TextField(blank=True)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
     def __unicode__(self):
         return self.name
@@ -131,16 +133,13 @@ class Room(models.Model):
         else:
             return False
 
-    @property
-    def slug(self):
-        return slugify(self.name)
-
     class Meta:
         ordering = ['venue', 'order']
         verbose_name = u'tila'
         verbose_name_plural = u'tilat'
         unique_together = [
             ('venue', 'order'),
+            ('venue', 'slug'),
         ]
 
     @classmethod

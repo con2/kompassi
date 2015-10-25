@@ -5,7 +5,6 @@ from django.views.generic import RedirectView
 from .views import (
     programme_admin_detail_view,
     programme_admin_email_list_view,
-    programme_admin_export_view,
     programme_special_view,
     programme_admin_special_view,
     programme_admin_timetable_view,
@@ -42,7 +41,7 @@ actual_patterns = [
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/timetable/?$', programme_admin_timetable_view, name='programme_admin_timetable_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/special/?$', programme_admin_special_view, name='programme_admin_special_view'),
 
-    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/programme\.xlsx$', programme_admin_export_view, name='programme_admin_export_view'),
+    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/programme\.(?P<format>xlsx|csv|tsv|html)$', programme_admin_view, name='programme_admin_export_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/emails\.txt$', programme_admin_email_list_view, name='programme_admin_email_list_view'),
 ]
 

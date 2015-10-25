@@ -9,7 +9,9 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_GET
 
+from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat
 from core.models import Person
+from core.sort_and_filter import Filter, Sorter
 from core.utils import initialize_form, initialize_form_set, url
 
 from ..models import (
@@ -17,6 +19,8 @@ from ..models import (
     ProgrammeEditToken,
     ProgrammeRole,
     Role,
+    Room,
+    STATE_CHOICES,
 )
 from ..helpers import programme_admin_required
 from ..forms import (
@@ -29,18 +33,54 @@ from ..forms import (
 )
 
 
+# CONDB-365
+# EXPORT_FORMATS = EXPORT_FORMATS + [
+#     ExportFormat(u'Tulostettava versio', 'html', 'html'),
+# ]
 logger = logging.getLogger('kompassi')
 
 
 @programme_admin_required
-def programme_admin_view(request, vars, event):
+def programme_admin_view(request, vars, event, format='screen'):
     programmes = Programme.objects.filter(category__event=event)
 
-    vars.update(
-        programmes=programmes
-    )
+    rooms = Room.objects.filter(venue=event.venue)
+    room_filters = Filter(request, 'room').add_objects('room__slug', rooms)
+    programmes = room_filters.filter_queryset(programmes)
 
-    return render(request, 'programme_admin_view.jade', vars)
+    state_filters = Filter(request, 'state').add_choices('state', STATE_CHOICES)
+    state_filters.filter_queryset(programmes)
+    programmes = state_filters.filter_queryset(programmes)
+
+    sorter = Sorter(request, 'sort')
+    sorter.add('title', name='Otsikko', definition=('title',))
+    sorter.add('start_time', name='Alkuaika', definition=('start_time','room'))
+    sorter.add('room', name='Sali', definition=('room','start_time'))
+    programmes = sorter.order_queryset(programmes)
+
+    if format == 'screen':
+        vars.update(
+            export_formats=EXPORT_FORMATS,
+            programmes=programmes,
+            room_filters=room_filters,
+            sorter=sorter,
+            state_filters=state_filters,
+        )
+
+        return render(request, 'programme_admin_view.jade', vars)
+    elif format in CSV_EXPORT_FORMATS:
+        filename = "{event.slug}_programmes_{timestamp}.xlsx".format(
+            event=event,
+            timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
+        )
+
+        return csv_response(event, Programme, programmes,
+            m2m_mode='comma_separated',
+            dialect='xlsx',
+            filename=filename,
+        )
+    else:
+        raise NotImplementedError(format)
 
 
 @programme_admin_required
@@ -225,23 +265,6 @@ def programme_admin_menu_items(request, event):
         (timetable_active, timetable_url, timetable_text),
         (special_active, special_url, special_text),
     ]
-
-
-@programme_admin_required
-def programme_admin_export_view(request, vars, event):
-    from core.csv_export import csv_response
-
-    programmes = Programme.objects.filter(category__event=event)
-    filename = "{event.slug}_programmes_{timestamp}.xlsx".format(
-        event=event,
-        timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
-    )
-
-    return csv_response(event, Programme, programmes,
-        m2m_mode='comma_separated',
-        dialect='xlsx',
-        filename=filename,
-    )
 
 
 @programme_admin_required

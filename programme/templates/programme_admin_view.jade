@@ -3,6 +3,41 @@ block title
   | Ohjelman hallinta
 block admin_content
   .panel.panel-default
+    .panel-heading: strong Suodata ohjelmaa
+    .panel-body.signup-filters
+      .row
+        .col-md-3: strong Sali
+        .col-md-9
+          for rf, active in room_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ rf.qs_del }}') {{ rf.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ rf.qs_add }}') {{ rf.name }}
+      .row
+        .col-md-3: strong Ohjelmanumeron tila
+        .col-md-9
+          for sf, active in state_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ sf.qs_del }}') {{ sf.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ sf.qs_add }}') {{ sf.name }}
+      hr
+      .row
+        .col-md-3: strong Luettelojärjestys
+        .col-md-9
+          for so, active in sorter
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ so.qs_add }}') {{ so.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ so.qs_add }}') {{ so.name }}
+
+  .panel.panel-default
     .panel-heading: strong Ohjelmaluettelo
     table.table.table-striped
       thead
@@ -24,7 +59,12 @@ block admin_content
     .panel-footer.clearfix
       .btn-group.pull-right
         button.btn.btn-default(type='button', data-toggle='dropdown') Vie <span class='caret'></span>
-        ul.dropdown-menu(role='menu')
-          li: a.btn.btn-link(href='{% url "programme_admin_email_list_view" event.slug %}', target='_blank') Sähköposti&shy;osoitteet
-          li: a.btn.btn-link(href='{% url "programme_admin_export_view" event.slug %}') Kaikki ohjelmatiedot
+        ul.dropdown-menu#programme-admin-export-dropdown-menu(aria-labelledby='programme-admin-export-dropdown')
+          for export_format in export_formats
+            li: a(href='{% url "programme_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+              i.fa.fa-cloud-download.kompassi-icon-space-right
+              |{{ export_format.name }}
+          li: a.btn.btn-link(href='{% url "programme_admin_email_list_view" event.slug %}', target='_blank')
+            i.fa.fa-envelope.kompassi-icon-space-right
+            |Sähköposti&shy;osoitteet
         a.btn.btn-primary(href='{% url "programme_admin_new_view" event.slug %}') Uusi ohjelma
