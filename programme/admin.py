@@ -65,10 +65,15 @@ class TimeBlockAdmin(admin.ModelAdmin):
     list_filter = ('event',)
 
 
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('event', 'title')
+    list_filter = ('event',)
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Role)
-admin.site.register(Tag)
+admin.site.register(Tag, TagAdmin)
 admin.site.register(Programme, ProgrammeAdmin)
 admin.site.register(View, ViewAdmin)
 admin.site.register(TimeBlock, TimeBlockAdmin)
