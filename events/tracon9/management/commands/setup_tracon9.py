@@ -252,8 +252,9 @@ class Command(BaseCommand):
             room_order += 100
             Room.objects.get_or_create(
                 venue=venue,
-                name=room_name,
+                slug=slugify(room_name),
                 defaults=dict(
+                    name=room_name,
                     order=room_order
                 )
             )

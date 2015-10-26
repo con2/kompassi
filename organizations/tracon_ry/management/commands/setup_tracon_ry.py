@@ -7,7 +7,10 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
+from access.models import EmailAliasDomain, EmailAliasType
+from core.models import Organization
 from core.utils import slugify
+from membership.models import MembershipOrganizationMeta, Term
 
 
 class Setup(object):
@@ -17,10 +20,9 @@ class Setup(object):
     def setup(self):
         self.setup_core()
         self.setup_membership()
+        self.setup_access()
 
     def setup_core(self):
-        from core.models import Organization
-
         self.organization, unused = Organization.objects.get_or_create(
             slug='tracon-ry',
             defaults=dict(
@@ -45,7 +47,6 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
         self.organization.save()
 
     def setup_membership(self):
-        from membership.models import MembershipOrganizationMeta, Term
 
         membership_admin_group, created = MembershipOrganizationMeta.get_or_create_group(self.organization, 'admins')
 
@@ -75,6 +76,25 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
                 )
             )
 
+    def setup_access(self):
+        domain, created = EmailAliasDomain.objects.get_or_create(
+            domain='tracon.fi',
+            defaults=dict(
+                organization=self.organization,
+            )
+        )
+
+        for type_code, type_metavar in [
+            ('access.email_aliases:firstname_surname', u'etunimi.sukunimi'),
+            ('access.email_aliases:nick', u'nick'),
+        ]:
+            alias_type, created = EmailAliasType.objects.get_or_create(
+                domain=domain,
+                account_name_code=type_code,
+                defaults=dict(
+                    metavar=type_metavar,
+                )
+            )
 
 
 class Command(BaseCommand):

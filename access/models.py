@@ -5,13 +5,15 @@ import logging
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.contrib.auth.models import Group
 
 import requests
 from requests.exceptions import HTTPError
 
 from core.utils import get_code, SLUG_FIELD_PARAMS
-from core.models import Person, Event
+from core.models import Person, Event, Organization
 
 
 logger = logging.getLogger('kompassi')
@@ -174,3 +176,147 @@ class SlackAccess(models.Model):
     class Meta:
         verbose_name = u'Slack-kutsuautomaatti'
         verbose_name_plural = u'Slack-kutsuautomaatit'
+
+
+class EmailAliasDomain(models.Model):
+    domain = models.CharField(
+        max_length=255,
+        unique=True,
+        verbose_name=u'Verkkotunnus',
+        help_text=u'Esim. example.com'
+    )
+    organization = models.ForeignKey(Organization, verbose_name=u'Organisaatio')
+
+    @classmethod
+    def get_or_create_dummy(cls, domain='example.com'):
+        organization, unused = Organization.get_or_create_dummy()
+
+        return cls.objects.get_or_create(domain=domain, defaults=dict(organization=organization))
+
+    def __unicode__(self):
+        return self.domain
+
+    class Meta:
+        verbose_name = u'Verkkotunnus'
+        verbose_name_plural = u'Verkkotunnukset'
+
+
+
+class EmailAliasType(models.Model):
+    domain = models.ForeignKey(EmailAliasDomain, verbose_name=u'Verkkotunnus')
+    metavar = models.CharField(
+        max_length=255,
+        default=u'etunimi.sukunimi',
+        verbose_name=u'Metamuuttuja',
+        help_text=u'Esim. "etunimi.sukunimi"',
+    )
+    account_name_code = models.CharField(max_length=255, default='access.email_aliases:firstname_surname')
+
+    def _make_account_name_for_person(self, person):
+        account_name_func = get_code(self.account_name_code)
+        return account_name_func(person)
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        domain, unused = EmailAliasDomain.get_or_create_dummy()
+        return cls.objects.get_or_create(domain=domain)
+
+    def admin_get_organization(self):
+        return self.domain.organization if self.domain else None
+    admin_get_organization.short_description = u'Organisaatio'
+    admin_get_organization.admin_order_field = 'domain__organization'
+
+    def __unicode__(self):
+        return u'{metavar}@{domain}'.format(
+            metavar=self.metavar,
+            domain=self.domain.domain if self.domain else None,
+        )
+
+    class Meta:
+        verbose_name = u'Sähköpostialiaksen tyyppi'
+        verbose_name_plural = u'Sähköpostialiasten tyypit'
+
+
+class GroupEmailAliasGrant(models.Model):
+    group = models.ForeignKey(Group, verbose_name=u'Ryhmä')
+    type = models.ForeignKey(EmailAliasType, verbose_name=u'Tyyppi')
+
+    def __unicode__(self):
+        return self.group.name
+
+    class Meta:
+        verbose_name = u'Myöntämiskanava'
+        verbose_name_plural = u'Myöntämiskanavat'
+
+
+class EmailAlias(models.Model):
+    type = models.ForeignKey(EmailAliasType, verbose_name=u'Tyyppi')
+    person = models.ForeignKey(Person, verbose_name=u'Henkilö')
+    account_name = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=u'Tunnus',
+        help_text=u'Ennen @-merkkiä tuleva osa sähköpostiosoitetta. Muodostetaan automaattisesti jos tyhjä.',
+    )
+
+    # denormalized to facilitate searching etc
+    email_address = models.CharField(
+        max_length=511,
+        verbose_name=u'Sähköpostiosoite',
+        help_text=u'Muodostetaan automaattisesti',
+    )
+
+    # to facilitate easy pruning of old addresses
+    group_grant = models.ForeignKey(GroupEmailAliasGrant,
+        blank=True,
+        null=True,
+        verbose_name=u'Myöntämiskanava',
+        help_text=u'Myöntämiskanava antaa kaikille tietyn ryhmän jäsenille tietyntyyppisen sähköpostialiaksen. '
+            u'Jos aliakselle on asetettu myöntämiskanava, alias on myönnetty tämän myöntämiskanavan perusteella, '
+            u'ja kun myöntämiskanava vanhenee, kaikki sen perusteella myönnetyt aliakset voidaan poistaa kerralla.'
+    )
+
+    # denormalized, for unique_together and easy queries
+    domain = models.ForeignKey(EmailAliasDomain, verbose_name=u'Verkkotunnus')
+
+    def _make_email_address(self):
+        return u'{account_name}@{domain}'.format(
+            account_name=self.account_name,
+            domain=self.domain.domain,
+        ) if self.account_name and self.domain else None
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        alias_type, unused = EmailAliasType.get_or_create_dummy()
+        person, unused = Person.get_or_create_dummy()
+
+        return cls.objects.get_or_create(
+            type=alias_type,
+            person=person,
+        )
+
+    def admin_get_organization(self):
+        return self.type.domain.organization if self.type else None
+    admin_get_organization.short_description = u'Organisaatio'
+    admin_get_organization.admin_order_field = 'type__domain__organization'
+
+    def __unicode__(self):
+        return self.email_address
+
+    class Meta:
+        verbose_name = u'Sähköpostialias'
+        verbose_name_plural = u'Sähköpostialiakset'
+
+        unique_together = [('domain', 'account_name')]
+
+
+@receiver(pre_save, sender=EmailAlias)
+def populate_email_alias_computed_fields(sender, instance, **kwargs):
+    if instance.type:
+        instance.domain = instance.type.domain
+
+        if instance.person and not instance.account_name:
+            instance.account_name = instance.type._make_account_name_for_person(instance.person)
+
+        if instance.account_name:
+            instance.email_address = instance._make_email_address()

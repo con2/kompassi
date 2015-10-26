@@ -6,8 +6,10 @@ from datetime import timedelta
 from pkg_resources import resource_string
 
 from django.db import models
+from django.db.models.signals import pre_save
 from django.conf import settings
 from django.contrib import messages
+from django.dispatch import receiver
 from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
@@ -153,6 +155,12 @@ class Room(models.Model):
                 order=0,
             )
         )
+
+
+@receiver(pre_save, sender=Room)
+def populate_room_slug(sender, instance, **kwargs):
+    if not instance.slug:
+        instance.slug = slugify(instance.name)
 
 
 class Role(models.Model):

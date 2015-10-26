@@ -1,16 +1,23 @@
 from django.contrib import admin
 
-from .models import Privilege, GroupPrivilege, GrantedPrivilege, SlackAccess
+from .models import (
+    EmailAliasDomain,
+    EmailAliasType,
+    GroupEmailAliasGrant,
+    EmailAlias,
+    GrantedPrivilege,
+    GroupPrivilege,
+    Privilege,
+    SlackAccess,
+)
 
 
 class PrivilegeAdmin(admin.ModelAdmin):
-    model = Privilege
     list_display = ('slug', 'title')
     readonly_fields = ('slug',)
 
 
 class GrantedPrivilegeAdmin(admin.ModelAdmin):
-    model = GrantedPrivilege
     list_display = ('privilege', 'person', 'state')
     list_filter = ('privilege', 'state')
     search_fields = ('person__surname', 'person__first_name', 'person__nick', 'person__email')
@@ -18,19 +25,40 @@ class GrantedPrivilegeAdmin(admin.ModelAdmin):
 
 
 class GroupPrivilegeAdmin(admin.ModelAdmin):
-    model = GroupPrivilege
     list_display = ('privilege', 'group')
     list_filter = ('privilege',)
     search_fields = ('group__name',)
 
 
 class SlackAccessAdmin(admin.ModelAdmin):
-    model = SlackAccess
     list_display = ('privilege', 'team_name')
     search_fields = ('privilege__slug', 'privilege__title', 'team_name')
+
+
+class EmailAliasDomainAdmin(admin.ModelAdmin):
+    list_display = ('organization', 'domain')
+    list_filter = ('organization',)
+    search_fields = ('organization__name', 'domain')
+
+
+class EmailAliasTypeAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_organization', 'domain', 'metavar')
+    list_filter = ('domain__organization', 'domain')
+    search_fields = ('domain__organization__name', 'domain__domain', 'metavar')
+
+
+class EmailAliasAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_organization', 'email_address')
+    list_filter = ('domain__organization', 'domain', 'type')
+    search_fields = ('domain__organization__name', 'email_address')
+    readonly_fields = ('email_address', 'domain')
+
 
 
 admin.site.register(Privilege, PrivilegeAdmin)
 admin.site.register(GroupPrivilege, GroupPrivilegeAdmin)
 admin.site.register(GrantedPrivilege, GrantedPrivilegeAdmin)
 admin.site.register(SlackAccess, SlackAccessAdmin)
+admin.site.register(EmailAliasDomain, EmailAliasDomainAdmin)
+admin.site.register(EmailAliasType, EmailAliasTypeAdmin)
+admin.site.register(EmailAlias, EmailAliasAdmin)
