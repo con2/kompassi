@@ -279,6 +279,9 @@ class EmailAlias(models.Model):
     # denormalized, for unique_together and easy queries
     domain = models.ForeignKey(EmailAliasDomain, verbose_name=u'Verkkotunnus')
 
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
+    modified_at = models.DateTimeField(auto_now=True, verbose_name=u'Muokattu')
+
     def _make_email_address(self):
         return u'{account_name}@{domain}'.format(
             account_name=self.account_name,

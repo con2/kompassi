@@ -2,12 +2,19 @@ from django.conf.urls import patterns, include, url
 from django.views.generic.base import RedirectView
 
 from .views import (
+    access_profile_aliases_view,
     access_profile_privileges_view,
     access_profile_request_privilege_view,
     access_admin_aliases_api,
 )
 
 urlpatterns = patterns('',
+    url(
+        r'^profile/aliases/?$',
+        access_profile_aliases_view,
+        name='access_profile_aliases_view',
+    ),
+
     url(
         r'^profile/privileges/?$',
         access_profile_privileges_view,

@@ -1,0 +1,24 @@
+extends core_profile_base
+block title
+  | Sähköpostialiakset
+block profile_content
+  h3 Sähköpostialiakset
+  p Perustuen työskentelyysi tapahtumissa sinulle on luotu yksi tai useampia sähköpostialiaksia. Ne kaikki ohjataan <a href='{% url "core_profile_view" %}'>profiilissasi</a> ilmoittamaasi sähköpostiosoitteeseen <em>{{ person.email }}</em>.
+  p Huomaathan, että jos vaihdat sähköpostiosoitettasi tai sinulle luodaan uusia aliaksia, saattaa kestää maksimissaan noin vuorokausi ennen kuin aliakset ohjautuvat oikeaan paikkaan.
+  p Mikäli tarvitset sähköpostialiaksiisi muutoksia, ota yhteyttä ylläpitoon: <em>{{ settings.DEFAULT_FROM_EMAIL}}</em>
+
+  for domain, aliases in aliases_by_domain
+    .panel.panel-default
+      .panel-heading
+        strong.kompassi-icon-space-right= domain.domain_name
+        small.text-muted= domain.organization.name
+      table.table.table-striped
+        thead
+          tr
+            th Osoite
+            th Luotu
+        tbody
+          for alias in aliases
+            tr
+              td= alias.email_address
+              td {{ alias.created_at|date:"SHORT_DATETIME_FORMAT" }}

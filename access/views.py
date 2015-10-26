@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 from api.utils import api_view, api_login_required
 from core.helpers import person_required
 from core.models import Person
+from core.utils import groupby_strict
 
 from .models import Privilege, EmailAliasDomain
 
@@ -54,15 +55,38 @@ def access_profile_request_privilege_view(request, privilege_slug):
     return redirect('access_profile_privileges_view')
 
 
+@person_required
+def access_profile_aliases_view(request):
+    person = request.user.person
+
+    aliases_by_domain = groupby_strict(person.email_aliases.all(), lambda alias: alias.domain)
+
+    vars = dict(
+        person=person,
+        aliases_by_domain=aliases_by_domain,
+    )
+
+    return render(request, 'access_profile_aliases_view.jade', vars)
+
+
 def access_profile_menu_items(request):
     privileges_url = reverse('access_profile_privileges_view')
     privileges_active = request.path.startswith(privileges_url)
     privileges_text = u"Käyttöoikeudet"
 
-    return [
+    items = [
         (privileges_active, privileges_url, privileges_text),
     ]
 
+    aliases_visible = request.user.person.email_aliases.exists()
+    if aliases_visible:
+        aliases_url = reverse('access_profile_aliases_view')
+        aliases_active = request.path == aliases_url
+        aliases_text = u'Sähköpostialiakset'
+
+        items.append((aliases_active, aliases_url, aliases_text))
+
+    return items
 
 @api_login_required
 def access_admin_aliases_api(request, domain_name):

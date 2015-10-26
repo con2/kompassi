@@ -19,6 +19,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('account_name', models.CharField(help_text='Ennen @-merkki\xe4 tuleva osa s\xe4hk\xf6postiosoitetta. Muodostetaan automaattisesti jos tyhj\xe4.', max_length=255, verbose_name='Tunnus', blank=True)),
                 ('email_address', models.CharField(help_text='Muodostetaan automaattisesti', max_length=511, verbose_name='S\xe4hk\xf6postiosoite')),
+                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Luotu')),
+                ('modified_at', models.DateTimeField(auto_now=True, verbose_name='Muokattu')),
             ],
             options={
                 'verbose_name': 'S\xe4hk\xf6postialias',
@@ -81,7 +83,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='emailalias',
             name='person',
-            field=models.ForeignKey(verbose_name='Henkil\xf6', to='core.Person'),
+            field=models.ForeignKey(related_name='email_aliases', verbose_name='Henkil\xf6', to='core.Person'),
             preserve_default=True,
         ),
         migrations.AddField(
