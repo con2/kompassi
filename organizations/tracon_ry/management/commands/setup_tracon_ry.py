@@ -78,7 +78,7 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
 
     def setup_access(self):
         domain, created = EmailAliasDomain.objects.get_or_create(
-            domain='tracon.fi',
+            domain_name='tracon.fi',
             defaults=dict(
                 organization=self.organization,
             )

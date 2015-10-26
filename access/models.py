@@ -179,7 +179,7 @@ class SlackAccess(models.Model):
 
 
 class EmailAliasDomain(models.Model):
-    domain = models.CharField(
+    domain_name = models.CharField(
         max_length=255,
         unique=True,
         verbose_name=u'Verkkotunnus',
@@ -188,13 +188,13 @@ class EmailAliasDomain(models.Model):
     organization = models.ForeignKey(Organization, verbose_name=u'Organisaatio')
 
     @classmethod
-    def get_or_create_dummy(cls, domain='example.com'):
+    def get_or_create_dummy(cls, domain_name='example.com'):
         organization, unused = Organization.get_or_create_dummy()
 
-        return cls.objects.get_or_create(domain=domain, defaults=dict(organization=organization))
+        return cls.objects.get_or_create(domain_name=domain_name, defaults=dict(organization=organization))
 
     def __unicode__(self):
-        return self.domain
+        return self.domain_name
 
     class Meta:
         verbose_name = u'Verkkotunnus'
@@ -229,7 +229,7 @@ class EmailAliasType(models.Model):
     def __unicode__(self):
         return u'{metavar}@{domain}'.format(
             metavar=self.metavar,
-            domain=self.domain.domain if self.domain else None,
+            domain=self.domain.domain_name if self.domain else None,
         )
 
     class Meta:
@@ -251,7 +251,7 @@ class GroupEmailAliasGrant(models.Model):
 
 class EmailAlias(models.Model):
     type = models.ForeignKey(EmailAliasType, verbose_name=u'Tyyppi')
-    person = models.ForeignKey(Person, verbose_name=u'Henkilö')
+    person = models.ForeignKey(Person, verbose_name=u'Henkilö', related_name='email_aliases')
     account_name = models.CharField(
         max_length=255,
         blank=True,
@@ -282,7 +282,7 @@ class EmailAlias(models.Model):
     def _make_email_address(self):
         return u'{account_name}@{domain}'.format(
             account_name=self.account_name,
-            domain=self.domain.domain,
+            domain=self.domain.domain_name,
         ) if self.account_name and self.domain else None
 
     @classmethod

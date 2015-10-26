@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='EmailAlias',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('account_name', models.CharField(help_text='Ennen @-merkki\xe4 tuleva osa s\xe4hk\xf6postiosoitetta', max_length=255, verbose_name='Tunnus')),
+                ('account_name', models.CharField(help_text='Ennen @-merkki\xe4 tuleva osa s\xe4hk\xf6postiosoitetta. Muodostetaan automaattisesti jos tyhj\xe4.', max_length=255, verbose_name='Tunnus', blank=True)),
                 ('email_address', models.CharField(help_text='Muodostetaan automaattisesti', max_length=511, verbose_name='S\xe4hk\xf6postiosoite')),
             ],
             options={
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             name='EmailAliasDomain',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('domain', models.CharField(help_text='Esim. example.com', unique=True, max_length=255, verbose_name='Verkkotunnus')),
+                ('domain_name', models.CharField(help_text='Esim. example.com', unique=True, max_length=255, verbose_name='Verkkotunnus')),
                 ('organization', models.ForeignKey(verbose_name='Organisaatio', to='core.Organization')),
             ],
             options={

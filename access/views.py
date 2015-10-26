@@ -3,13 +3,15 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
+from api.utils import api_view, api_login_required
 from core.helpers import person_required
+from core.models import Person
 
-from .models import Privilege
+from .models import Privilege, EmailAliasDomain
 
 
 @person_required
@@ -60,3 +62,24 @@ def access_profile_menu_items(request):
     return [
         (privileges_active, privileges_url, privileges_text),
     ]
+
+
+@api_login_required
+def access_admin_aliases_api(request, domain_name):
+    domain = get_object_or_404(EmailAliasDomain, domain_name=domain_name)
+
+    lines = []
+
+    for person in Person.objects.filter(email_aliases__domain=domain):
+        lines.append(u'# {name}'.format(name=person.full_name))
+
+        for alias in person.email_aliases.filter(domain=domain):
+            lines.append(u'{alias.account_name}: {person.email}'.format(
+                alias=alias,
+                person=person,
+            ))
+
+        lines.append('')
+
+    return HttpResponse('\n'.join(lines), content_type='text/plain')
+

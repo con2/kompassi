@@ -36,15 +36,15 @@ class SlackAccessAdmin(admin.ModelAdmin):
 
 
 class EmailAliasDomainAdmin(admin.ModelAdmin):
-    list_display = ('organization', 'domain')
+    list_display = ('organization', 'domain_name')
     list_filter = ('organization',)
-    search_fields = ('organization__name', 'domain')
+    search_fields = ('organization__name', 'domain_name')
 
 
 class EmailAliasTypeAdmin(admin.ModelAdmin):
     list_display = ('admin_get_organization', 'domain', 'metavar')
     list_filter = ('domain__organization', 'domain')
-    search_fields = ('domain__organization__name', 'domain__domain', 'metavar')
+    search_fields = ('domain__organization__name', 'domain__domain_name', 'metavar')
 
 
 class EmailAliasAdmin(admin.ModelAdmin):
