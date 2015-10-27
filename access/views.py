@@ -7,7 +7,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
-from api.utils import api_view, api_login_required
+from api.utils import api_view, api_login_required, handle_api_errors
 from core.helpers import person_required
 from core.models import Person
 from core.utils import groupby_strict
@@ -92,6 +92,7 @@ def access_profile_menu_items(request):
 
     return items
 
+@handle_api_errors
 @api_login_required
 def access_admin_aliases_api(request, domain_name):
     domain = get_object_or_404(EmailAliasDomain, domain_name=domain_name)

@@ -43,11 +43,11 @@ class BadRequest(RuntimeError):
     pass
 
 
-def api_view(view_func):
+def handle_api_errors(view_func):
     @wraps(view_func)
     def _decorator(request, *args, **kwargs):
         try:
-            result = view_func(request, *args, **kwargs)
+            return view_func(request, *args, **kwargs)
         except (JSONValidationError, DjangoValidationError, BadRequest) as e:
             logger.exception('Bad Request at %s', request.path)
             return JsonResponse(
@@ -73,6 +73,13 @@ def api_view(view_func):
                 status=405,
             )
 
+    return _decorator
+
+
+def api_view(view_func):
+    @wraps(view_func)
+    @handle_api_errors
+    def _decorator(request, *args, **kwargs):
         if result is None:
             return HttpResponse('', status=204)
         else:
