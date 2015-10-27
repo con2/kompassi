@@ -7,4 +7,9 @@ def firstname_surname(person):
     return emailify(u'{person.first_name} {person.surname}'.format(person=person))
 
 def nick(person):
-    return emailify(person.nick)
+    if person.nick:
+        return emailify(person.nick)
+    elif person.first_name:
+        return emailify(person.first_name)
+    else:
+        return None

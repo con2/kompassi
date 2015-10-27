@@ -219,9 +219,9 @@ class EmailAliasType(models.Model):
         return account_name_func(person)
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, **kwargs):
         domain, unused = EmailAliasDomain.get_or_create_dummy()
-        return cls.objects.get_or_create(domain=domain)
+        return cls.objects.get_or_create(domain=domain, **kwargs)
 
     def admin_get_organization(self):
         return self.domain.organization if self.domain else None
@@ -258,14 +258,21 @@ class GroupEmailAliasGrant(models.Model):
         group_grants = group_grants.filter(Q(active_until__gt=t) | Q(active_until__isnull=True))
 
         for group_grant in group_grants:
-            logger.info('Granting email alias type %s to %s', group_grant.type, person)
-            EmailAlias.objects.get_or_create(
-                person=person,
-                type=group_grant.type,
-                defaults=dict(
+            if EmailAlias.objects.filter(person=person, type=group_grant.type).exists():
+                logger.debug('Email alias of type %s already exists for %s')
+                continue
+
+            account_name = group_grant.type._make_account_name_for_person(person)
+            if account_name is not None:
+                logger.info('Granting email alias of type %s to %s', group_grant.type, person)
+                EmailAlias(
+                    person=person,
+                    type=group_grant.type,
                     group_grant=group_grant,
-                )
-            )
+                    account_name=account_name,
+                ).save()
+            else:
+                logger.warn('Not creating alias of type %s for %s (account name generator said None)')
 
     class Meta:
         verbose_name = u'Myöntämiskanava'
