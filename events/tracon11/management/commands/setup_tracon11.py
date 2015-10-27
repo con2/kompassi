@@ -663,12 +663,24 @@ class Setup(object):
                 view.save()
 
     def setup_access(self):
-        from access.models import Privilege, GroupPrivilege
+        from access.models import Privilege, GroupPrivilege, EmailAliasType, GroupEmailAliasGrant
 
         # Grant accepted workers access to Tracon Slack
         group = self.event.labour_event_meta.get_group('accepted')
         privilege = Privilege.objects.get(slug='tracon-slack')
         GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+
+        cc_group = self.event.labour_event_meta.get_group('conitea')
+
+        for metavar in [
+            'etunimi.sukunimi',
+            'nick',
+        ]:
+            alias_type = EmailAliasType.objects.get(domain__domain_name='tracon.fi', metavar=metavar)
+            GroupEmailAliasGrant.objects.get_or_create(
+                group=cc_group,
+                type=alias_type,
+            )
 
     def setup_sms(self):
         from sms.models import SMSEventMeta

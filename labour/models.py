@@ -944,6 +944,7 @@ class Signup(models.Model, CsvExportMixin):
         self.apply_state_group_membership()
         self.apply_state_send_messages()
         self.apply_state_create_badges()
+        self.apply_state_email_aliases()
 
     def apply_state_group_membership(self):
         for group_suffix in SIGNUP_STATE_GROUPS:
@@ -957,6 +958,13 @@ class Signup(models.Model, CsvExportMixin):
             group = self.event.labour_event_meta.get_group(job_category.slug)
 
             ensure_user_is_member_of_group(self.person.user, group, should_belong_to_group)
+
+    def apply_state_email_aliases(self):
+        if 'access' not in settings.INSTALLED_APPS:
+            return
+
+        from access.models import GroupEmailAliasGrant
+        GroupEmailAliasGrant.ensure_aliases(self.person)
 
     def apply_state_send_messages(self, resend=False):
         if 'mailings' not in settings.INSTALLED_APPS:

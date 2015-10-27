@@ -5,9 +5,11 @@ import logging
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import Group
+from django.utils.timezone import now
 
 import requests
 from requests.exceptions import HTTPError
@@ -240,9 +242,30 @@ class EmailAliasType(models.Model):
 class GroupEmailAliasGrant(models.Model):
     group = models.ForeignKey(Group, verbose_name=u'Ryhmä')
     type = models.ForeignKey(EmailAliasType, verbose_name=u'Tyyppi')
+    active_until = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.group.name
+
+    @classmethod
+    def ensure_aliases(cls, person, t=None):
+        if t is None:
+            t = now()
+
+        group_grants = cls.objects.filter(group__in=person.user.groups.all())
+
+        # filter out inactive grants
+        group_grants = group_grants.filter(Q(active_until__gt=t) | Q(active_until__isnull=True))
+
+        for group_grant in group_grants:
+            logger.info('Granting email alias type %s to %s', group_grant.type, person)
+            EmailAlias.objects.get_or_create(
+                person=person,
+                type=group_grant.type,
+                defaults=dict(
+                    group_grant=group_grant,
+                )
+            )
 
     class Meta:
         verbose_name = u'Myöntämiskanava'
@@ -250,8 +273,9 @@ class GroupEmailAliasGrant(models.Model):
 
 
 class EmailAlias(models.Model):
-    type = models.ForeignKey(EmailAliasType, verbose_name=u'Tyyppi')
+    type = models.ForeignKey(EmailAliasType, verbose_name=u'Tyyppi', related_name='email_aliases')
     person = models.ForeignKey(Person, verbose_name=u'Henkilö', related_name='email_aliases')
+
     account_name = models.CharField(
         max_length=255,
         blank=True,
