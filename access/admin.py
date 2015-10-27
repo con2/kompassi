@@ -48,7 +48,7 @@ class EmailAliasTypeAdmin(admin.ModelAdmin):
 
 
 class EmailAliasAdmin(admin.ModelAdmin):
-    list_display = ('admin_get_organization', 'email_address')
+    list_display = ('admin_get_organization', 'email_address', 'person')
     list_filter = ('domain__organization', 'domain', 'type')
     search_fields = ('domain__organization__name', 'email_address')
     readonly_fields = ('email_address', 'domain')
