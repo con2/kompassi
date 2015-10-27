@@ -116,7 +116,7 @@ def access_admin_aliases_api(request, domain_name):
 
 @access_admin_required
 def access_admin_aliases_view(request, vars, organization):
-    aliases = EmailAlias.objects.filter(domain__organization=organization)
+    aliases = EmailAlias.objects.filter(domain__organization=organization).order_by('person')
 
     vars.update(
         aliases=aliases,
