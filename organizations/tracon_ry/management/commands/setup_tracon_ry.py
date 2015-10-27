@@ -7,7 +7,7 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from access.models import EmailAliasDomain, EmailAliasType
+from access.models import EmailAliasDomain, EmailAliasType, AccessOrganizationMeta
 from core.models import Organization
 from core.utils import slugify
 from membership.models import MembershipOrganizationMeta, Term
@@ -77,6 +77,15 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
             )
 
     def setup_access(self):
+        admin_group, created = AccessOrganizationMeta.get_or_create_group(self.organization, 'admins')
+
+        meta, created = AccessOrganizationMeta.objects.get_or_create(
+            organization=self.organization,
+            defaults=dict(
+                admin_group=admin_group,
+            )
+        )
+
         domain, created = EmailAliasDomain.objects.get_or_create(
             domain_name='tracon.fi',
             defaults=dict(

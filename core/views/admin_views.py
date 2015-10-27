@@ -24,3 +24,17 @@ def core_admin_impersonate_view(request, username):
     )
 
     return do_login(request, user, password=None, next=next)
+
+
+def organization_admin_menu_items(request, organization):
+    items = []
+
+    if 'membership' in settings.INSTALLED_APPS and organization.membership_organization_meta is not None:
+        from membership.views.admin_views import membership_admin_menu_items
+        items.extend(membership_admin_menu_items(request, organization))
+
+    if 'access' in settings.INSTALLED_APPS and organization.access_organization_meta is not None:
+        from access.views import access_admin_menu_items
+        items.extend(access_admin_menu_items(request, organization))
+
+    return items

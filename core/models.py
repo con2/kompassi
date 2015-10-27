@@ -88,6 +88,18 @@ class Organization(models.Model):
         except MembershipOrganizationMeta.DoesNotExist:
             return None
 
+    @property
+    def access_organization_meta(self):
+        if 'access' not in settings.INSTALLED_APPS:
+            return None
+
+        from access.models import AccessOrganizationMeta
+
+        try:
+            return self.accessorganizationmeta
+        except AccessOrganizationMeta.DoesNotExist:
+            return None
+
     class Meta:
         verbose_name = u'Organisaatio'
         verbose_name_plural = u'Organisaatiot'

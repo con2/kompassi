@@ -12,6 +12,10 @@ if 'membership' in settings.INSTALLED_APPS:
     from membership.admin import InlineMembershipOrganizationMetaAdmin
     organization_admin_inlines.append(InlineMembershipOrganizationMetaAdmin)
 
+if 'access' in settings.INSTALLED_APPS:
+    from access.admin import InlineAccessOrganizationMetaAdmin
+    organization_admin_inlines.append(InlineAccessOrganizationMetaAdmin)
+
 
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'homepage_url')

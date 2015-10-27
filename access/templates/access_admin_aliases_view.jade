@@ -1,0 +1,20 @@
+extends core_admin_base
+block title
+  | Sähköpostialiakset
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Sähköpostialiakset
+    .panel-body
+      p Yhdistyksen aktiiveille on luotu seuraavat sähköpostialiakset. Mikäli aliaksissa on korjattavaa tai lisättävää, ota yhteyttä ylläpitoon: <em>{{ settings.DEFAULT_FROM_EMAIL }}</em>
+    table.table.table-striped
+      thead
+        tr
+          th Sähköpostiosoite
+          th Henkilö
+          th Luotu
+      tbody
+        for alias in aliases
+          tr
+            td: em= alias.email_address
+            td= alias.person.full_name
+            td {{ alias.created_at|date:"SHORT_DATETIME_FORMAT" }}

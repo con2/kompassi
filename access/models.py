@@ -15,7 +15,7 @@ import requests
 from requests.exceptions import HTTPError
 
 from core.utils import get_code, SLUG_FIELD_PARAMS
-from core.models import Person, Event, Organization
+from core.models import Person, Event, Organization, GroupManagementMixin
 
 
 logger = logging.getLogger('kompassi')
@@ -32,6 +32,22 @@ STATE_CSS = dict(
     granted='label-success',
     rejected='label-danger',
 )
+
+
+class AccessOrganizationMeta(models.Model, GroupManagementMixin):
+    organization = models.OneToOneField(Organization, primary_key=True, verbose_name=u'Organisaatio')
+    admin_group = models.ForeignKey(Group, verbose_name=u'Ylläpitäjäryhmä')
+
+    def __unicode__(self):
+        return self.organization.name if self.organization is not None else u'None'
+
+    class Meta:
+        verbose_name = u'Pääsynvalvonnan asetukset'
+        verbose_name = u'Pääsynvalvonnan asetukset'
+
+    def get_group(self, suffix):
+        group_name = self.make_group_name(self.organization, suffix)
+        return Group.objects.get(name=group_name)
 
 
 class Privilege(models.Model):

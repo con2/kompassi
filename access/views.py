@@ -10,9 +10,10 @@ from django.views.decorators.http import require_POST
 from api.utils import api_view, api_login_required, handle_api_errors
 from core.helpers import person_required
 from core.models import Person
-from core.utils import groupby_strict
+from core.utils import groupby_strict, url
 
-from .models import Privilege, EmailAliasDomain
+from .models import Privilege, EmailAliasDomain, EmailAlias
+from .helpers import access_admin_required
 
 
 @person_required
@@ -112,3 +113,21 @@ def access_admin_aliases_api(request, domain_name):
 
     return HttpResponse('\n'.join(lines), content_type='text/plain; charset=UTF-8')
 
+
+@access_admin_required
+def access_admin_aliases_view(request, vars, organization):
+    aliases = EmailAlias.objects.filter(domain__organization=organization)
+
+    vars.update(
+        aliases=aliases,
+    )
+
+    return render(request, 'access_admin_aliases_view.jade', vars)
+
+
+def access_admin_menu_items(request, organization):
+    aliases_url = url('access_admin_aliases_view', organization.slug)
+    aliases_active = request.path == aliases_url
+    aliases_text = u'Sähköpostialiakset'
+
+    return [(aliases_active, aliases_url, aliases_text)]

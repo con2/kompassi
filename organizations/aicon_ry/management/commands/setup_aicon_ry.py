@@ -2,12 +2,13 @@
 
 from datetime import date, datetime, timedelta
 
+from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, make_option
 from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from access.models import EmailAliasDomain, EmailAliasType
+from access.models import EmailAliasDomain, EmailAliasType, AccessOrganizationMeta
 from core.models import Organization
 from core.utils import slugify
 from membership.models import MembershipOrganizationMeta, Term
@@ -36,11 +37,11 @@ class Setup(object):
         self.organization.public = True
         self.organization.save()
 
-    def setup_membership(self):
-        membership_admin_group, created = MembershipOrganizationMeta.get_or_create_group(self.organization, 'admins')
+        self.group, unused = Group.objects.get_or_create(name='aicon-staff')
 
+    def setup_membership(self):
         self.meta, created = MembershipOrganizationMeta.objects.get_or_create(organization=self.organization, defaults=dict(
-            admin_group=membership_admin_group,
+            admin_group=self.group,
         ))
 
         for year, membership_fee_cents in [
@@ -60,6 +61,13 @@ class Setup(object):
             )
 
     def setup_access(self):
+        meta, created = AccessOrganizationMeta.objects.get_or_create(
+            organization=self.organization,
+            defaults=dict(
+                admin_group=self.group,
+            )
+        )
+
         domain, created = EmailAliasDomain.objects.get_or_create(
             domain_name='aicon.fi',
             defaults=dict(

@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import (
+    AccessOrganizationMeta,
     EmailAliasDomain,
     EmailAliasType,
     GroupEmailAliasGrant,
@@ -10,6 +11,10 @@ from .models import (
     Privilege,
     SlackAccess,
 )
+
+
+class InlineAccessOrganizationMetaAdmin(admin.StackedInline):
+    model = AccessOrganizationMeta
 
 
 class PrivilegeAdmin(admin.ModelAdmin):
