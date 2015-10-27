@@ -234,6 +234,62 @@ class EmailAliasType(models.Model):
             domain=self.domain.domain_name if self.domain else None,
         )
 
+    def create_alias_for_person(self, person, **kwargs):
+        domain_name = self.domain.domain_name
+
+        existing = EmailAlias.objects.filter(person=person, type=self).first()
+        if existing:
+            logger.debug('Email alias of type %s already exists for %s',
+                self,
+                person,
+            )
+            return existing
+
+        account_name = self._make_account_name_for_person(person)
+        if account_name:
+            email_address = '{account_name}@{domain_name}'.format(
+                account_name=account_name,
+                domain_name=domain_name,
+            )
+
+            existing = EmailAlias.objects.filter(email_address=email_address).first()
+            if existing:
+                logger.warning('Cross-type collision on email alias %s on type %s for %s',
+                    email_address,
+                    self,
+                    person,
+                )
+                return existing
+
+            if person.email == email_address:
+                logger.warning('Cannot grant alias %s because user %s has it as their email',
+                    email_address,
+                    person,
+                )
+                return None
+
+            logger.info('Granting email alias %s of type %s to %s',
+                email_address,
+                self,
+                person,
+            )
+
+            newly_created = EmailAlias(
+                person=person,
+                type=self,
+                account_name=account_name,
+                **kwargs
+            )
+
+            newly_created.save()
+            return newly_created
+        else:
+            logger.warn('Not creating alias of type %s for %s (account name generator said None)',
+                self,
+                person,
+            )
+
+
     class Meta:
         verbose_name = u'Sähköpostialiaksen tyyppi'
         verbose_name_plural = u'Sähköpostialiasten tyypit'
@@ -258,21 +314,7 @@ class GroupEmailAliasGrant(models.Model):
         group_grants = group_grants.filter(Q(active_until__gt=t) | Q(active_until__isnull=True))
 
         for group_grant in group_grants:
-            if EmailAlias.objects.filter(person=person, type=group_grant.type).exists():
-                logger.debug('Email alias of type %s already exists for %s')
-                continue
-
-            account_name = group_grant.type._make_account_name_for_person(person)
-            if account_name:
-                logger.info('Granting email alias of type %s to %s', group_grant.type, person)
-                EmailAlias(
-                    person=person,
-                    type=group_grant.type,
-                    group_grant=group_grant,
-                    account_name=account_name,
-                ).save()
-            else:
-                logger.warn('Not creating alias of type %s for %s (account name generator said None)')
+            group_grant.type.create_alias_for_person(person, group_grant=group_grant)
 
     class Meta:
         verbose_name = u'Myöntämiskanava'

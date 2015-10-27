@@ -94,7 +94,7 @@ class Setup(object):
 
         for pc_name, pc_slug, pc_app_label in [
             (u'Vastaava', 'vastaava', 'labour'),
-            (u'Ylivänkäri', 'ylivankari', 'labour'),
+            (u'Vuorovastaava', 'ylivankari', 'labour'),
             (u'Työvoima', 'tyovoima', 'labour'),
             (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
             (u'Guest of Honour', 'goh', 'programme'),
@@ -119,25 +119,25 @@ class Setup(object):
 
         for name, description, pcs in [
             (u'Vastaava', u'Tapahtuman vastaava', [vastaava]),
-            (u'Pelisalivänkäri', u'', [tyovoima, ylivankari]),
+            (u'Pelisali', u'', [tyovoima, ylivankari]),
             (u'Meido', u'', [tyovoima, ylivankari]),
             (u'Sidosryhmät', u'', [tyovoima, ylivankari]),
             (u'AV-tekniikka', u'', [tyovoima, ylivankari]),
             (u'DesuTV', u'', [tyovoima, ylivankari]),
             (u'Tulkki', u'', [tyovoima, ylivankari]),
 
-            (u'Narikkavänkäri', u'Narikkavänkärit ovat vastuussa tapahtuman narikoiden pyörittämisestä. Työ itsessään on yksinkertaista, mutta tekemistä sen sijaan on varmasti riittävästi. Narikkavänkärit ovat määrällisesti suurin vänkäriryhmä.', [tyovoima, ylivankari]),
-            (u'Siivousvänkäri', u'Siivousvänkärit ovat vastuussa tapahtuman yleisestä siisteydestä. He kulkevat ympäriinsä tehtävänään roskakorien tyhjennys, vesipisteiden täyttö, vessoihin papereiden lisääminen ja monet muut pienet askareet. Työ tehdään pääsääntöisesti vänkäripareittain.', [tyovoima, ylivankari]),
-            (u'Green Room -vänkäri', u'GreenRoom -vänkärinä sinun täytyy olla kykeneväinen itsenäiseen ja oma-aloitteeseen työskentelyyn. Tehtäviisi kuuluu kahvin keitto, esivalmistelutyöt, paikkojen siistiminen ym. Huomioithan että tekemistä riittää GreenRoomissa lähestulkoon läpi vuorokauden, joten tämä ei ole pesti jossa pärjää peukkujen pyörittelyllä.', [tyovoima, ylivankari]),
-            (u'Infovänkäri', u'Infotiski on tapahtuman hyvin öljytty hermokeskus, joka ottaa vastaan ja ohjaa informaatiota eteenpäin. Työnkuvaasi infotiskillä kuuluu kysymyksiin vastaaminen niin kävijöille kuin työvoimallekin, neuvonta, kuulutukset ja muun informaation edelleenlähetys asianomaisille. Infopiste on yksi tapahtumapaikan näkyvimmistä työvoimapisteistä. Sen työntekijöiltä toivotaan asiakaspalveluosaamista ja ongelmanratkaisutaitoja sekä hyvää huumorintajua.', [tyovoima, ylivankari]),
+            (u'Narikka', u'Narikkavänkärit ovat vastuussa tapahtuman narikoiden pyörittämisestä. Työ itsessään on yksinkertaista, mutta tekemistä sen sijaan on varmasti riittävästi. Narikkavänkärit ovat määrällisesti suurin vänkäriryhmä.', [tyovoima, ylivankari]),
+            (u'Siivous', u'Siivousvänkärit ovat vastuussa tapahtuman yleisestä siisteydestä. He kulkevat ympäriinsä tehtävänään roskakorien tyhjennys, vesipisteiden täyttö, vessoihin papereiden lisääminen ja monet muut pienet askareet. Työ tehdään pääsääntöisesti vänkäripareittain.', [tyovoima, ylivankari]),
+            (u'Green Room', u'GreenRoom -vänkärinä sinun täytyy olla kykeneväinen itsenäiseen ja oma-aloitteeseen työskentelyyn. Tehtäviisi kuuluu kahvin keitto, esivalmistelutyöt, paikkojen siistiminen ym. Huomioithan että tekemistä riittää GreenRoomissa lähestulkoon läpi vuorokauden, joten tämä ei ole pesti jossa pärjää peukkujen pyörittelyllä.', [tyovoima, ylivankari]),
+            (u'Info', u'Infotiski on tapahtuman hyvin öljytty hermokeskus, joka ottaa vastaan ja ohjaa informaatiota eteenpäin. Työnkuvaasi infotiskillä kuuluu kysymyksiin vastaaminen niin kävijöille kuin työvoimallekin, neuvonta, kuulutukset ja muun informaation edelleenlähetys asianomaisille. Infopiste on yksi tapahtumapaikan näkyvimmistä työvoimapisteistä. Sen työntekijöiltä toivotaan asiakaspalveluosaamista ja ongelmanratkaisutaitoja sekä hyvää huumorintajua.', [tyovoima, ylivankari]),
             (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, ylivankari]),
             (u'Valokuvaaja', u'Desukuvaajana tehtävänäsi on yleis-, ohjelma- ja photoshoot-kuvaus. Kuvauspisteen kuvaajat kuvaavat cosplayasuja studiossa. Valokuvaus tapahtuu kuvaajien omalla kalustolla.', [tyovoima, ylivankari]),
-            (u'Taltiointivänkäri', u'Taltiointivänkärit tallentavat Desuconin ohjelmista äänen ja kuvan. Osa taltiointitiimin jäsenistä myös editoi tämän materiaalin, jotta ohjelmat ovat nähtävissä myöhemminkin. Lisäksi taltiointivänkärit kuvaavat videomateriaalia muuten tapahtumasta.', [tyovoima, ylivankari]),
-            (u'Myyntisalivänkäri', u'Myyntisalivänkärin tehtävänä on pääsääntöisesti vastata Desuconin oman oheistuotemyyntipöydän tuotteiden järjestelemisestä ja myymisestä. Myyntisalivänkärin toimenkuvaan kuuluu myös myyntisalissa päivystäminen: tämä tarkoittaa kävijöiden kysymyksiin vastaamista, ohjeistamista, myyjien Green Roomin ylläpitoa ja myyjien auttamista ongelmatilanteissa. Hakijoilta vaaditaan aiempaa rahankäsittelykokemusta.', [tyovoima, ylivankari]),
-            (u'Lipunmyyntivänkäri', u'Lipunmyyntivänkärin tehtävänä on lukea kävijöiden lippuvarmenteita ja antaa heille rannekkeita. Tässä pestissä ei välttämättä tule minimi työvaatimus täyteen, joten lipunmyyntivänkäri saattaa löytää itsensä tekemästä jännittäviä yllätystehtäviä.', [tyovoima, ylivankari]),
-            (u'Tekniikkavänkäri', u'Tekniikkavänkärit huolehtivat tapahtuman aikana teknologian toimivuudesta. Työtehtävät ovat hyvin monipuolisia jatkojohtojen toimittamisesta ohjelmansalien äänentoistosta huolehtimiseen, joten tietotekniikan laaja perustuntemus on valinnan edellytyksenä.', [tyovoima, ylivankari]),
-            (u'Cosplayvänkäri', u'Cosplayvänkäreiden tehtävänä on huolehtia etupäässä cosplaykisaajien avustamisesta harjoitusten ja kilpailujen aikana takahuoneessa ja kulisseissa. Työ jakautuu kaikille conipäiville ja sisältää moninaista puuhaa kisaajien ohjaamisesta paikkalippujen jakamiseen ja lavasteiden kuljettamiseen.', [tyovoima, ylivankari]),
-            (u'Majoitusvänkäri', u'Majoitusvänkärin tehtävä on vastata majoittujien turvallisuudesta. Vänkärit ottavat majoittujat vastaan, ja pitävät huolta siitä, että ketään ylimääräistä ei päästetä majoitustiloihin. Vänkärit myös kiertelevät majoitustiloja ympäri valvomassa järjestystä. Työ tehdään lattiamajoitusalueella.', [tyovoima, ylivankari]),
+            (u'Taltiointi', u'Taltiointivänkärit tallentavat Desuconin ohjelmista äänen ja kuvan. Osa taltiointitiimin jäsenistä myös editoi tämän materiaalin, jotta ohjelmat ovat nähtävissä myöhemminkin. Lisäksi taltiointivänkärit kuvaavat videomateriaalia muuten tapahtumasta.', [tyovoima, ylivankari]),
+            (u'Myyntisali', u'Myyntisalivänkärin tehtävänä on pääsääntöisesti vastata Desuconin oman oheistuotemyyntipöydän tuotteiden järjestelemisestä ja myymisestä. Myyntisalivänkärin toimenkuvaan kuuluu myös myyntisalissa päivystäminen: tämä tarkoittaa kävijöiden kysymyksiin vastaamista, ohjeistamista, myyjien Green Roomin ylläpitoa ja myyjien auttamista ongelmatilanteissa. Hakijoilta vaaditaan aiempaa rahankäsittelykokemusta.', [tyovoima, ylivankari]),
+            (u'Lipunmyynti', u'Lipunmyyntivänkärin tehtävänä on lukea kävijöiden lippuvarmenteita ja antaa heille rannekkeita. Tässä pestissä ei välttämättä tule minimi työvaatimus täyteen, joten lipunmyyntivänkäri saattaa löytää itsensä tekemästä jännittäviä yllätystehtäviä.', [tyovoima, ylivankari]),
+            (u'Tekniikka', u'Tekniikkavänkärit huolehtivat tapahtuman aikana teknologian toimivuudesta. Työtehtävät ovat hyvin monipuolisia jatkojohtojen toimittamisesta ohjelmansalien äänentoistosta huolehtimiseen, joten tietotekniikan laaja perustuntemus on valinnan edellytyksenä.', [tyovoima, ylivankari]),
+            (u'Cosplay', u'Cosplayvänkäreiden tehtävänä on huolehtia etupäässä cosplaykisaajien avustamisesta harjoitusten ja kilpailujen aikana takahuoneessa ja kulisseissa. Työ jakautuu kaikille conipäiville ja sisältää moninaista puuhaa kisaajien ohjaamisesta paikkalippujen jakamiseen ja lavasteiden kuljettamiseen.', [tyovoima, ylivankari]),
+            (u'Majoitus', u'Majoitusvänkärin tehtävä on vastata majoittujien turvallisuudesta. Vänkärit ottavat majoittujat vastaan, ja pitävät huolta siitä, että ketään ylimääräistä ei päästetä majoitustiloihin. Vänkärit myös kiertelevät majoitustiloja ympäri valvomassa järjestystä. Työ tehdään lattiamajoitusalueella.', [tyovoima, ylivankari]),
 
             (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
@@ -156,7 +156,7 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Vastaava', u'Pelisalivänkäri', u'Meido', u'Sidosryhmät', u'AV-tekniikka', u'DesuTV', u'Tulkki', ]:
+        for name in [u'Vastaava', u'Pelisali', u'Meido', u'Sidosryhmät', u'AV-tekniikka', u'DesuTV', u'Tulkki', ]:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [

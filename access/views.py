@@ -78,7 +78,11 @@ def access_profile_menu_items(request):
         (privileges_active, privileges_url, privileges_text),
     ]
 
-    aliases_visible = request.user.person.email_aliases.exists()
+    try:
+        aliases_visible = request.user.person.email_aliases.exists()
+    except Person.DoesNotExist:
+        aliases_visible = False
+
     if aliases_visible:
         aliases_url = reverse('access_profile_aliases_view')
         aliases_active = request.path == aliases_url
@@ -94,7 +98,7 @@ def access_admin_aliases_api(request, domain_name):
 
     lines = []
 
-    for person in Person.objects.filter(email_aliases__domain=domain):
+    for person in Person.objects.filter(email_aliases__domain=domain).distinct():
         lines.append(u'# {name}'.format(name=person.full_name))
 
         for alias in person.email_aliases.filter(domain=domain):
@@ -105,5 +109,5 @@ def access_admin_aliases_api(request, domain_name):
 
         lines.append('')
 
-    return HttpResponse('\n'.join(lines), content_type='text/plain')
+    return HttpResponse('\n'.join(lines), content_type='text/plain; charset=UTF-8')
 
