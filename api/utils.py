@@ -56,10 +56,12 @@ def handle_api_errors(view_func):
             )
         except NotAuthorized as e:
             logger.exception('Unauthorized at %s', request.path)
-            return JsonResponse(
+            response = JsonResponse(
                 dict(error='Unauthorized'),
                 status=401,
             )
+            response['WWW-Authenticate'] = 'Basic realm=api'
+            return response
         except Http404 as e:
             logger.exception('Not Found at %s', request.path)
             return JsonResponse(
