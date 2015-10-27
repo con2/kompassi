@@ -18,3 +18,5 @@ block admin_content
             td: em= alias.email_address
             td= alias.person.full_name
             td {{ alias.created_at|date:"SHORT_DATETIME_FORMAT" }}
+    .panel-footer
+      p.text-muted {{ aliases.count }} sähköpostialias{{ aliases.count|pluralize:"ta" }}.
