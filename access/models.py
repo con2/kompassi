@@ -75,7 +75,7 @@ class Privilege(models.Model):
         return cls.objects.filter(
             group_privileges__group__in=person.user.groups.all(),
             **extra_criteria
-        ).exclude(granted_privileges__person=person)
+        ).exclude(granted_privileges__person=person).distinct()
 
     def get_absolute_url(self):
         return u'{base_url}#privilege-{id}'.format(
