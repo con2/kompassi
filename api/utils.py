@@ -82,6 +82,8 @@ def api_view(view_func):
     @wraps(view_func)
     @handle_api_errors
     def _decorator(request, *args, **kwargs):
+        result = view_func(request, *args, **kwargs)
+
         if result is None:
             return HttpResponse('', status=204)
         else:
