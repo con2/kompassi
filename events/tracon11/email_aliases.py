@@ -1,4 +1,4 @@
-from access.email_alias import nick
+from access.email_aliases import nick
 from access.utils import emailify
 from labour.models import Signup
 

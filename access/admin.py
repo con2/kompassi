@@ -52,7 +52,7 @@ class EmailAliasAdmin(admin.ModelAdmin):
     list_filter = ('domain__organization', 'domain', 'type')
     search_fields = ('domain__organization__name', 'email_address')
     readonly_fields = ('email_address', 'domain')
-
+    raw_id_fields = ('person',)
 
 
 admin.site.register(Privilege, PrivilegeAdmin)
