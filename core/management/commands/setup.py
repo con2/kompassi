@@ -49,7 +49,7 @@ class Command(BaseCommand):
 
         if test:
             management_commands.extend((
-                (('test', 'core', 'labour', 'labour_common_qualifications', 'programme', 'tickets'), dict()),
+                (('test', 'access', 'core', 'desuprofile_integration', 'labour', 'labour_common_qualifications', 'payments', 'programme', 'tickets'), dict()),
                 (('behave',), dict()),
             ))
 

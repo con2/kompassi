@@ -86,7 +86,7 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
 
         for type_code, type_metavar in [
             ('access.email_aliases:firstname_surname', u'etunimi.sukunimi'),
-            ('access.email_aliases:nick', u'nick'),
+            ('events.tracon11.email_aliases:requested_alias_or_nick', u'nick'),
         ]:
             alias_type, created = EmailAliasType.objects.get_or_create(
                 domain=domain,

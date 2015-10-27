@@ -680,6 +680,9 @@ class Setup(object):
             GroupEmailAliasGrant.objects.get_or_create(
                 group=cc_group,
                 type=alias_type,
+                defaults=dict(
+                    active_until=self.event.end_time,
+                )
             )
 
     def setup_sms(self):

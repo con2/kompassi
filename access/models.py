@@ -263,7 +263,7 @@ class GroupEmailAliasGrant(models.Model):
                 continue
 
             account_name = group_grant.type._make_account_name_for_person(person)
-            if account_name is not None:
+            if account_name:
                 logger.info('Granting email alias of type %s to %s', group_grant.type, person)
                 EmailAlias(
                     person=person,
