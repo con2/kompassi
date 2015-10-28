@@ -156,8 +156,8 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Vastaava', u'Pelisali', u'Meido', u'Sidosryhmät', u'AV-tekniikka', u'DesuTV', u'Tulkki', ]:
-            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+        # for name in [u'Vastaava', u'Pelisali', u'Meido', u'Sidosryhmät', u'AV-tekniikka', u'DesuTV', u'Tulkki', ]:
+        #     JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
             (u'Järjestyksenvalvoja', u'JV-kortti'),
