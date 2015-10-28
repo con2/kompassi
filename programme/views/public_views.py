@@ -217,7 +217,7 @@ def programme_json_view(request, event, format='default'):
                 continue
 
             # TODO revise
-            if format == 'desucon' and not programme.public:
+            if format == 'desucon' and not programme.is_public:
                 continue
 
             result.append(programme.as_json(format=format))
