@@ -401,7 +401,7 @@ class Programme(models.Model, CsvExportMixin):
                 'end_time',
 
                 language='fi', # XXX hardcoded
-                status=1 if self.public else 0,
+                status=1 if self.is_public else 0,
                 kind=self.category.slug,
                 kind_display=self.category.title,
                 identifier=u'p{id}'.format(id=self.id),
