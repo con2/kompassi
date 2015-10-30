@@ -62,7 +62,7 @@ def access_profile_aliases_view(request):
     person = request.user.person
 
     if request.method == 'POST':
-        domain = get_object_or_404(EmailAliasDomain,
+        domain = get_object_or_404(EmailAliasDomain.objects.all().distinct(),
             domain_name=request.POST.get('create_new_password_for_domain'),
             emailaliastype__email_aliases__person=request.user.person,
         )
@@ -78,7 +78,7 @@ def access_profile_aliases_view(request):
             SMTPPassword.objects.filter(person=request.user.person, smtp_server__domains=domain),
             aliases,
         )
-        for (domain, aliases) in groupby_strict(person.email_aliases.all(), lambda alias: alias.domain)
+        for (domain, aliases) in groupby_strict(person.email_aliases.all().order_by('domain__domain_name'), lambda alias: alias.domain)
     ]
 
     vars = dict(
