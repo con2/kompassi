@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 
 from api.utils import api_view, api_login_required, handle_api_errors
 from core.helpers import person_required
@@ -57,14 +57,34 @@ def access_profile_request_privilege_view(request, privilege_slug):
 
 
 @person_required
+@require_http_methods(['GET', 'POST'])
 def access_profile_aliases_view(request):
     person = request.user.person
 
-    aliases_by_domain = groupby_strict(person.email_aliases.all(), lambda alias: alias.domain)
+    if request.method == 'POST':
+        domain = get_object_or_404(EmailAliasDomain,
+            domain_name=request.POST.get('create_new_password_for_domain'),
+            emailaliastype__email_aliases__person=request.user.person,
+        )
+
+        newly_created_password, unused = SMTPPassword.create_for_domain_and_person(domain, request.user.person)
+    else:
+        newly_created_password = None
+
+    aliases_by_domain = [
+        (
+            domain,
+            SMTPServer.objects.filter(domains=domain).exists(),
+            SMTPPassword.objects.filter(person=request.user.person, smtp_server__domains=domain),
+            aliases,
+        )
+        for (domain, aliases) in groupby_strict(person.email_aliases.all(), lambda alias: alias.domain)
+    ]
 
     vars = dict(
-        person=person,
         aliases_by_domain=aliases_by_domain,
+        newly_created_password=newly_created_password,
+        person=person,
     )
 
     return render(request, 'access_profile_aliases_view.jade', vars)

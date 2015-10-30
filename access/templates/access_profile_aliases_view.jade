@@ -7,11 +7,31 @@ block profile_content
   p Huomaathan, että jos vaihdat sähköpostiosoitettasi tai sinulle luodaan uusia aliaksia, saattaa kestää maksimissaan noin vuorokausi ennen kuin aliakset ohjautuvat oikeaan paikkaan.
   p Mikäli tarvitset sähköpostialiaksiisi muutoksia, ota yhteyttä ylläpitoon: <em>{{ settings.DEFAULT_FROM_EMAIL}}</em>
 
-  for domain, aliases in aliases_by_domain
+  for domain, have_smtp_servers, smtp_passwords, aliases in aliases_by_domain
     .panel.panel-default
       .panel-heading
         strong.kompassi-icon-space-right= domain.domain_name
         small.text-muted= domain.organization.name
+      if have_smtp_servers
+        .panel-body
+          if smtp_passwords.exists
+            for smtp_password in smtp_passwords.all
+              .row
+                label.control-label.col-md-3 Lähtevän postin palvelin
+                .col-md-9: em= smtp_password.smtp_server.hostname
+              .row
+                label.control-label.col-md-3 Käyttäjänimi
+                .col-md-9: em= person.user.username
+              .row
+                label.control-label.col-md-3 Salasana
+                if newly_created_password
+                  .col-md-9
+                    p: em= newly_created_password
+                    p.text-danger Huomaathan, että salasana näytetään vain tämän yhden kerran. Ota se nyt muistiin. Mikäli hukkaat salasanan, voit luoda uuden salasanan alla olevalla napilla.
+                else
+                  .col-md-9.text-muted Salasana on näytetty sinulle, kun se on luotu. Jos olet hukannut salasanan, luo uusi alla olevalla napilla. Uuden salasanan luonti poistaa vanhat salasanat käytöstä.
+          else
+            p Mikäli tarvitset lähtevän postin palvelimen tämän verkkotunnuksen sähköpostialiaksia varten, saat käyttäjätunnuksen alla olevalla napilla.
       table.table.table-striped
         thead
           tr
@@ -22,3 +42,11 @@ block profile_content
             tr
               td: em= alias.email_address
               td {{ alias.created_at|date:"SHORT_DATETIME_FORMAT" }}
+      if have_smtp_servers
+        .panel-footer.clearfix
+          form(method='POST')
+            {% csrf_token %}
+            .btn-group.pull-right
+              button.btn.btn-primary(type='submit', name='create_new_password_for_domain', value='#{domain.domain_name}')
+                i.fa.fa-undo.kompassi-icon-space-right
+                |Luo uusi lähtevän postin salasana
