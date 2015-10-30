@@ -448,6 +448,13 @@ class Person(models.Model):
     def username(self):
         return self.user.username if self.user is not None else None
 
+    @property
+    def nick_or_first_name(self):
+        if 'nick' in self.preferred_name_display_style and self.nick:
+            return self.nick
+        else
+            return self.first_name
+
     @classmethod
     def get_or_create_dummy(cls, superuser=True):
         user, unused = User.objects.get_or_create(
