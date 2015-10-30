@@ -452,7 +452,7 @@ class Person(models.Model):
     def nick_or_first_name(self):
         if 'nick' in self.preferred_name_display_style and self.nick:
             return self.nick
-        else
+        else:
             return self.first_name
 
     @classmethod
