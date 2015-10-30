@@ -29,9 +29,15 @@ block profile_content
                     p: em= newly_created_password
                     p.text-danger Huomaathan, että salasana näytetään vain tämän yhden kerran. Ota se nyt muistiin. Mikäli hukkaat salasanan, voit luoda uuden salasanan alla olevalla napilla.
                 else
-                  .col-md-9.text-muted Salasana on näytetty sinulle, kun se on luotu. Jos olet hukannut salasanan, luo uusi alla olevalla napilla. Uuden salasanan luonti poistaa vanhat salasanat käytöstä.
+                  .col-md-9
+                    .label.label-default Asetettu
+                    .help-block Salasana on näytetty sinulle, kun se on luotu. Jos olet hukannut salasanan, luo uusi alla olevalla napilla. Uuden salasanan luonti poistaa vanhat salasanat käytöstä.
           else
-            p Mikäli tarvitset lähtevän postin palvelimen tämän verkkotunnuksen sähköpostialiaksia varten, saat käyttäjätunnuksen alla olevalla napilla.
+            p.help-block Mikäli tarvitset lähtevän postin palvelimen tämän verkkotunnuksen sähköpostialiaksia varten, saat käyttäjätunnuksen alla olevalla napilla.
+          .row
+            label.col-md-3.control-label Ohjeet
+            .col-md-9
+              a(href='https://support.google.com/mail/answer/22370?hl=en', target='_blank') Ohjeet lähettäjän sähköpostiosoitteen asettamiseksi GMailiin
       table.table.table-striped
         thead
           tr
