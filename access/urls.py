@@ -7,6 +7,7 @@ from .views import (
     access_profile_request_privilege_view,
     access_admin_aliases_api,
     access_admin_aliases_view,
+    access_admin_smtppasswd_api,
 )
 
 urlpatterns = patterns('',
@@ -32,6 +33,12 @@ urlpatterns = patterns('',
         r'^api/v1/domains/(?P<domain_name>[a-z0-9-\.]+)/aliases.txt$',
         access_admin_aliases_api,
         name='access_admin_aliases_api',
+    ),
+
+    url(
+        r'^api/v1/smtpservers/(?P<smtp_server_hostname>[a-z0-9-\.]+)/smtppasswd.txt$',
+        access_admin_smtppasswd_api,
+        name='access_admin_smtppasswd_api',
     ),
 
     url(

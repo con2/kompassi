@@ -12,7 +12,7 @@ from core.helpers import person_required
 from core.models import Person
 from core.utils import groupby_strict, url
 
-from .models import Privilege, EmailAliasDomain, EmailAlias
+from .models import Privilege, EmailAliasDomain, EmailAlias, SMTPServer, SMTPPassword
 from .helpers import access_admin_required
 
 
@@ -110,6 +110,23 @@ def access_admin_aliases_api(request, domain_name):
             ))
 
         lines.append('')
+
+    return HttpResponse('\n'.join(lines), content_type='text/plain; charset=UTF-8')
+
+
+@handle_api_errors
+@api_login_required
+def access_admin_smtppasswd_api(request, smtp_server_hostname):
+    smtp_server = get_object_or_404(SMTPServer, hostname=smtp_server_hostname)
+
+    lines = []
+
+    for smtp_password in smtp_server.smtp_passwords.all():
+        lines.append('{username}:{password_hash}:{full_name}'.format(
+            username=smtp_password.person.user.username,
+            password_hash=smtp_password.password_hash,
+            full_name=smtp_password.person.full_name,
+        ))
 
     return HttpResponse('\n'.join(lines), content_type='text/plain; charset=UTF-8')
 

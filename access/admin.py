@@ -2,14 +2,16 @@ from django.contrib import admin
 
 from .models import (
     AccessOrganizationMeta,
+    EmailAlias,
     EmailAliasDomain,
     EmailAliasType,
-    GroupEmailAliasGrant,
-    EmailAlias,
     GrantedPrivilege,
+    GroupEmailAliasGrant,
     GroupPrivilege,
     Privilege,
     SlackAccess,
+    SMTPPassword,
+    SMTPServer,
 )
 
 
@@ -55,8 +57,18 @@ class EmailAliasTypeAdmin(admin.ModelAdmin):
 class EmailAliasAdmin(admin.ModelAdmin):
     list_display = ('admin_get_organization', 'email_address', 'person')
     list_filter = ('domain__organization', 'domain', 'type')
-    search_fields = ('domain__organization__name', 'email_address')
+    search_fields = ('domain__organization__name', 'email_address', 'person__surname', 'person__first_name', 'person__nick',)
     readonly_fields = ('email_address', 'domain')
+    raw_id_fields = ('person',)
+
+
+class SMTPServerAdmin(admin.ModelAdmin):
+    list_display = ('hostname',)
+
+
+class SMTPPasswordAdmin(admin.ModelAdmin):
+    list_display = ('smtp_server', 'person')
+    list_filter = ('smtp_server',)
     raw_id_fields = ('person',)
 
 
@@ -67,3 +79,5 @@ admin.site.register(SlackAccess, SlackAccessAdmin)
 admin.site.register(EmailAliasDomain, EmailAliasDomainAdmin)
 admin.site.register(EmailAliasType, EmailAliasTypeAdmin)
 admin.site.register(EmailAlias, EmailAliasAdmin)
+admin.site.register(SMTPServer, SMTPServerAdmin)
+admin.site.register(SMTPPassword, SMTPPasswordAdmin)

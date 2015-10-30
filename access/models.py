@@ -4,7 +4,8 @@ import logging
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.db import models
+from django.contrib.auth import get_user_model
+from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -13,9 +14,12 @@ from django.utils.timezone import now
 
 import requests
 from requests.exceptions import HTTPError
+from passlib.hash import md5_crypt
 
 from core.utils import get_code, SLUG_FIELD_PARAMS
 from core.models import Person, Event, Organization, GroupManagementMixin
+
+from .utils import generate_machine_password
 
 
 logger = logging.getLogger('kompassi')
@@ -317,7 +321,10 @@ class GroupEmailAliasGrant(models.Model):
     active_until = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.group.name
+        return '{group_name}: {type}'.format(
+            group_name=self.group.name if self.group else None,
+            type=self.type,
+        )
 
     @classmethod
     def ensure_aliases(cls, person, t=None):
@@ -412,3 +419,57 @@ def populate_email_alias_computed_fields(sender, instance, **kwargs):
 
         if instance.account_name:
             instance.email_address = instance._make_email_address()
+
+
+class SMTPServer(models.Model):
+    hostname = models.CharField(
+        max_length=255,
+        verbose_name=u'SMTP-palvelin',
+    )
+
+    domains = models.ManyToManyField(EmailAliasDomain, verbose_name=u'Verkkotunnukset', related_name='smtp_servers')
+
+    def __unicode__(self):
+        return self.hostname
+
+    class Meta:
+        verbose_name = u'SMTP-palvelin'
+        verbose_name_plural = u'SMTP-palvelimet'
+
+
+class SMTPPassword(models.Model):
+    smtp_server = models.ForeignKey(SMTPServer,
+        related_name='smtp_passwords',
+        verbose_name=u'SMTP-palvelin',
+    )
+
+    person = models.ForeignKey(Person,
+        related_name='smtp_passwords',
+        verbose_name=u'Henkilö',
+    )
+
+    password_hash = models.CharField(
+        max_length=255,
+        verbose_name=u'Salasanan tarkiste',
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=u'Luotu'
+    )
+
+    @classmethod
+    def create_for_domain_and_person(cls, domain, person, hash_module=md5_crypt):
+        smtp_server = domain.smtp_servers.first()
+        pw = generate_machine_password()
+
+        with transaction.atomic():
+            cls.objects.filter(smtp_server=smtp_server, person=person).delete()
+            obj = cls(smtp_server=smtp_server, person=person, password_hash=hash_module.encrypt(pw))
+            obj.save()
+
+        return pw, obj
+
+    class Meta:
+        verbose_name = u'SMTP-salasana'
+        verbose_name_plural = u'SMTP-salasanat'
