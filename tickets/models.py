@@ -754,6 +754,10 @@ class Order(models.Model):
         return self.order_product_set.filter(count__gt=0, product__electronic_ticket=True).exists()
 
     @property
+    def etickets_delivered(self):
+        return self.contains_electronic_tickets and self.is_paid
+
+    @property
     def lippukala_prefix(self):
         if 'lippukala' not in settings.INSTALLED_APPS:
             raise NotImplementedError('lippukala is not installed')
@@ -831,6 +835,22 @@ class Order(models.Model):
         except LippukalaOrder.DoesNotExist:
             return None
 
+    def get_etickets_pdf(self):
+        if 'lippukala' not in settings.INSTALLED_APPS:
+            raise NotImplementedError('lippukala not installed')
+
+        from lippukala.printing import OrderPrinter
+
+        meta = self.event.tickets_event_meta
+
+        printer = OrderPrinter(
+            print_logo_path=meta.print_logo_path,
+            print_logo_size_cm=meta.print_logo_size_cm,
+        )
+        printer.process_order(self.lippukala_order)
+
+        return printer.finish()
+
     def send_confirmation_message(self, msgtype):
         # don't fail silently, warn admins instead
         msgbcc = []
@@ -847,14 +867,7 @@ class Order(models.Model):
 
         if msgtype == "payment_confirmation":
             if 'lippukala' in settings.INSTALLED_APPS and self.contains_electronic_tickets:
-                from lippukala.printing import OrderPrinter
-
-                printer = OrderPrinter(
-                    print_logo_path=meta.print_logo_path,
-                    print_logo_size_cm=meta.print_logo_size_cm,
-                )
-                printer.process_order(self.lippukala_order)
-                attachments.append(('e-lippu.pdf', printer.finish(), 'application/pdf'))
+                attachments.append(('e-lippu.pdf', self.get_etickets_pdf(), 'application/pdf'))
 
                 msgsubject = u"{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
                 msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)

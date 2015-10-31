@@ -24,6 +24,8 @@ block admin_content
         p.text-muted Toimitettujen tuotteiden määriä ei voi muuttaa.
         .btn-group.pull-right
           a.btn.btn-default(href='{% url "tickets_admin_orders_view" event.slug %}') Hylkää muutokset ja palaa listaan
+          if order.etickets_delivered
+            a.btn.btn-default(href='{% url "tickets_admin_etickets_view" event.slug order.id %}') Näytä e-liput
           button.btn.btn-success(type='submit', name='save', value='save') Tallenna muutokset ja jatka muokkaamista
     .panel.panel-default
       .panel-heading: strong Sähköpostia lähettävät toiminnot

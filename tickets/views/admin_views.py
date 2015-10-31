@@ -294,6 +294,14 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
 
 @tickets_admin_required
+@require_GET
+def tickets_admin_etickets_view(request, vars, event, order_id):
+    order = get_object_or_404(Order, pk=int(order_id))
+
+    return HttpResponse(order.get_etickets_pdf(), content_type='application/pdf')
+
+
+@tickets_admin_required
 def tickets_admin_tools_view(request, vars, event):
     if request.method == 'POST':
         if 'cancel-unpaid' in request.POST:
