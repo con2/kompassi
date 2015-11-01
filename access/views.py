@@ -169,7 +169,7 @@ def access_admin_group_emails_api(request, group_name):
     group = get_object_or_404(Group, name=group_name)
 
     return HttpResponse(
-        '\n'.join(user.email for user in group.user_set.all() if user.email),
+        u'\n'.join(user.email for user in group.user_set.all() if user.email),
         content_type='text/plain; charset=UTF-8'
     )
 

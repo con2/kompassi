@@ -33,5 +33,11 @@ urlpatterns = patterns('',
         r'^profile/organizations/?$',
         membership_profile_view,
         name='membership_profile_view'
-    )
+    ),
+
+    url(
+        r'^api/v1/organizations/(?P<organization_slug>[a-z0-9-]+)/members/emails.txt$',
+        membership_admin_emails_api,
+        name='membership_admin_emails_api'
+    ),
 )

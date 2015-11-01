@@ -4,8 +4,11 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
+from django.http import HttpResponse
 
+from api.utils import handle_api_errors, api_login_required
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS
+from core.models import Organization
 from core.sort_and_filter import Filter
 from core.tabs import Tab
 from core.utils import url, initialize_form
@@ -135,6 +138,17 @@ def membership_admin_member_view(request, vars, organization, person_id):
     )
 
     return render(request, 'membership_admin_member_view.jade', vars)
+
+
+@handle_api_errors
+@api_login_required
+def membership_admin_emails_api(request, organization_slug):
+    organization = get_object_or_404(Organization, slug=organization_slug)
+
+    return HttpResponse(
+        u'\n'.join(membership.person.email for membership in organization.memberships.all() if membership.person.email),
+        content_type='text/plain; charset=UTF-8'
+    )
 
 
 def membership_admin_menu_items(request, organization):
