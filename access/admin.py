@@ -59,7 +59,13 @@ class EmailAliasAdmin(admin.ModelAdmin):
     list_filter = ('domain__organization', 'domain', 'type')
     search_fields = ('domain__organization__name', 'email_address', 'person__surname', 'person__first_name', 'person__nick',)
     readonly_fields = ('email_address', 'domain')
-    raw_id_fields = ('person',)
+    raw_id_fields = ('person', 'group_grant')
+
+
+class GroupEmailAliasGrantAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_organization', 'type', 'group')
+    list_filter = ('type__domain__organization', 'type__domain__domain_name', 'type__metavar', 'group__name')
+    raw_id_fields = ('group',)
 
 
 class SMTPServerAdmin(admin.ModelAdmin):
@@ -79,5 +85,6 @@ admin.site.register(SlackAccess, SlackAccessAdmin)
 admin.site.register(EmailAliasDomain, EmailAliasDomainAdmin)
 admin.site.register(EmailAliasType, EmailAliasTypeAdmin)
 admin.site.register(EmailAlias, EmailAliasAdmin)
+admin.site.register(GroupEmailAliasGrant, GroupEmailAliasGrantAdmin)
 admin.site.register(SMTPServer, SMTPServerAdmin)
 admin.site.register(SMTPPassword, SMTPPasswordAdmin)

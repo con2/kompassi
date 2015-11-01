@@ -254,7 +254,7 @@ class EmailAliasType(models.Model):
             domain=self.domain.domain_name if self.domain else None,
         )
 
-    def create_alias_for_person(self, person, **kwargs):
+    def create_alias_for_person(self, person, group_grant=None):
         domain_name = self.domain.domain_name
 
         existing = EmailAlias.objects.filter(person=person, type=self).first()
@@ -298,7 +298,7 @@ class EmailAliasType(models.Model):
                 person=person,
                 type=self,
                 account_name=account_name,
-                **kwargs
+                group_grant=group_grant,
             )
 
             newly_created.save()
@@ -338,6 +338,11 @@ class GroupEmailAliasGrant(models.Model):
 
         for group_grant in group_grants:
             group_grant.type.create_alias_for_person(person, group_grant=group_grant)
+
+    def admin_get_organization(self):
+        return self.type.domain.organization
+    admin_get_organization.short_description = u'Organisaatio'
+    admin_get_organization.admin_order_field = 'type__domain__organization'
 
     class Meta:
         verbose_name = u'Myöntämiskanava'
