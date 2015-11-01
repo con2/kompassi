@@ -154,12 +154,23 @@ class Membership(models.Model):
             self._apply_state()
 
     def _apply_state(self):
+        self._apply_state_group_membership()
+        self._apply_state_email_aliases()
+
+    def _apply_state_group_membership(self):
         if self.person.user:
             ensure_user_is_member_of_group(
                 user=self.person.user,
                 group=self.organization.membership_organization_meta.members_group,
                 group_membership=self.is_in_effect,
             )
+
+    def _apply_state_email_aliases(self):
+        if 'access' not in settings.INSTALLED_APPS:
+            return
+
+        from access.models import GroupEmailAliasGrant
+        GroupEmailAliasGrant.ensure_aliases(self.person)
 
     class Meta:
         verbose_name = u'Jäsenyys'
