@@ -427,6 +427,13 @@ class Person(models.Model):
         )
 
     @property
+    def official_first_names_or_first_name(self):
+        if self.official_first_names:
+            return self.official_first_names
+        else:
+            return self.first_name
+
+    @property
     def name_and_email(self):
         return u"{self.first_name} {self.surname} <{self.email}>".format(self=self)
 

@@ -100,9 +100,9 @@ class Membership(models.Model):
         return []
 
     def to_html_print(self):
-        return u'{surname}, {first_name}, {muncipality}'.format(
+        return u'{surname}, {official_first_names}, {muncipality}'.format(
             surname=self.person.surname,
-            first_name=self.person.first_name,
+            official_first_names=self.person.official_first_names,
             muncipality=self.person.muncipality,
         )
 
@@ -116,8 +116,11 @@ class Membership(models.Model):
     def get_csv_fields(cls, unused_organization):
         return [
             (Person, 'surname'),
-            (Person, 'first_name'),
+            (Person, 'official_first_names_or_first_name'),
             (Person, 'muncipality'),
+            (Person, 'email'),
+            (Person, 'phone'),
+            (Person, 'birth_date'),
             (cls, 'formatted_state'),
         ]
 
