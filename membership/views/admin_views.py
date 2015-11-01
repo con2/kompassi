@@ -78,7 +78,7 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
             format=format,
         )
 
-        return csv_response(organization, Membership, members,
+        return csv_response(organization, Membership, memberships,
             dialect='xlsx',
             filename=filename,
             m2m_mode='separate_columns',

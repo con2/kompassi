@@ -7,9 +7,9 @@ html
       h1 {{ title|safe }}
       p Tulostettu {{ now }}.
     article(style='font-size: 10pt')
-      for member in members
-        div(style='display: inline-block; width: 24em') {{ member.to_html_print|safe }}
+      for membership in memberships
+        div(style='display: inline-block; width: 24em') {{ membership.to_html_print|safe }}
           if not filter_active
-            |  ({{ member.get_state_display }})
+            |  ({{ membership.get_state_display }})
     footer
       p {{ members.count }} hlö
