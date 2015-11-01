@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -160,6 +161,17 @@ def access_admin_aliases_view(request, vars, organization):
     )
 
     return render(request, 'access_admin_aliases_view.jade', vars)
+
+
+@handle_api_errors
+@api_login_required
+def access_admin_group_emails_api(request, group_name):
+    group = get_object_or_404(Group, name=group_name)
+
+    return HttpResponse(
+        '\n'.join(user.email for user in group.user_set.all() if user.email),
+        content_type='text/plain; charset=UTF-8'
+    )
 
 
 def access_admin_menu_items(request, organization):

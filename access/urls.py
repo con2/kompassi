@@ -2,12 +2,13 @@ from django.conf.urls import patterns, include, url
 from django.views.generic.base import RedirectView
 
 from .views import (
+    access_admin_aliases_api,
+    access_admin_aliases_view,
+    access_admin_group_emails_api,
+    access_admin_smtppasswd_api,
     access_profile_aliases_view,
     access_profile_privileges_view,
     access_profile_request_privilege_view,
-    access_admin_aliases_api,
-    access_admin_aliases_view,
-    access_admin_smtppasswd_api,
 )
 
 urlpatterns = patterns('',
@@ -39,6 +40,12 @@ urlpatterns = patterns('',
         r'^api/v1/smtpservers/(?P<smtp_server_hostname>[a-z0-9-\.]+)/smtppasswd.txt$',
         access_admin_smtppasswd_api,
         name='access_admin_smtppasswd_api',
+    ),
+
+    url(
+        r'^api/v1/groups/(?P<group_name>[a-z0-9-]+)/emails.txt$',
+        access_admin_group_emails_api,
+        name='access_admin_group_emails_api',
     ),
 
     url(
