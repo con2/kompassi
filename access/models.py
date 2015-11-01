@@ -328,6 +328,10 @@ class GroupEmailAliasGrant(models.Model):
 
     @classmethod
     def ensure_aliases(cls, person, t=None):
+        if person.user is None:
+            logger.warn('Cannot ensure_aliases for Person without User: %s', person.full_name)
+            return
+
         if t is None:
             t = now()
 
