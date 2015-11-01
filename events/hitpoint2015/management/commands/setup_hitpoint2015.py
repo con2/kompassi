@@ -224,8 +224,8 @@ class Setup(object):
         )
 
         for wiki_space, link_title, link_group in [
-            ('HITPTWORK', 'Työvoimawiki', 'accepted'),
-            ('HITPTINFO', 'Infowiki', 'info'),
+            ('HTPTWORK', 'Työvoimawiki', 'accepted'),
+            ('HTPTINFO', 'Infowiki', 'info'),
         ]:
             InfoLink.objects.get_or_create(
                 event=self.event,
