@@ -620,6 +620,13 @@ class Person(models.Model):
             groups=[group.name for group in self.user.groups.all()] if self.user else [],
         )
 
+    @classmethod
+    def is_user_person(cls, user):
+        if user.is_anonymous():
+            return False
+        else:
+            return Person.objects.filter(user=user).exists()
+
 
 class GroupManagementMixin(object):
     def is_user_admin(self, user):

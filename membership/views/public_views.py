@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 
 from core.helpers import person_required
-from core.models import Organization
+from core.models import Organization, Person
 from core.utils import initialize_form
 
 from ..helpers import membership_organization_required
@@ -94,15 +94,15 @@ def membership_organization_box_context(request, organization):
     if not meta:
         return dict()
 
-    if request.user.is_anonymous() or not request.user.person:
-        membership = None
-        is_membership_admin = False
-    else:
+    if Person.is_user_person(request.user):
         membership = Membership.objects.filter(
             organization=organization,
             person=request.user.person,
         ).first()
         is_membership_admin = meta.is_user_admin(request.user)
+    else:
+        membership = None
+        is_membership_admin = False
 
     return dict(
         can_apply=meta.receiving_applications and not membership,
