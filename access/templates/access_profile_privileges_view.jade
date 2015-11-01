@@ -27,6 +27,7 @@ block profile_content
             strong= privilege.title
         .panel-body
           {{ privilege.description|safe }}
+          {{ privilege.disclaimers|safe }}
         .panel-footer
           if request.user.person.is_email_verified
             form(action='{% url "access_profile_request_privilege_view" privilege.slug %}', method='POST')

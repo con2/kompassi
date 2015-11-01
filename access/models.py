@@ -58,6 +58,7 @@ class Privilege(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
     title = models.CharField(max_length=256)
     description = models.TextField(blank=True)
+    disclaimers = models.TextField(blank=True)
     request_success_message = models.TextField(blank=True)
 
     grant_code = models.CharField(max_length=256)
