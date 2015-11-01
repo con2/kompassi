@@ -2,17 +2,19 @@
 
 from datetime import date
 
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
 
 from core.models import Organization, Person, GroupManagementMixin
-from core.utils import format_date
+from core.utils import format_date, ensure_user_is_member_of_group
 from tickets.utils import format_price
 
 
 class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
     organization = models.OneToOneField(Organization, primary_key=True, verbose_name=u'Organisaatio')
-    admin_group = models.ForeignKey(Group, verbose_name=u'Ylläpitäjäryhmä')
+    admin_group = models.ForeignKey(Group, verbose_name=u'Ylläpitäjäryhmä', related_name='admin_group_for')
+    members_group = models.ForeignKey(Group, verbose_name=u'Jäsenryhmä', related_name='members_group_for')
     receiving_applications = models.BooleanField(
         default=True,
         verbose_name=u'Ottaa vastaan hakemuksia',
@@ -143,6 +145,21 @@ class Membership(models.Model):
             current_membership = next_signup
 
         return None, None
+
+    def apply_state(self):
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from .tasks import membership_apply_state
+            membership_apply_state.delay(self.pk)
+        else:
+            self._apply_state()
+
+    def _apply_state(self):
+        if self.person.user:
+            ensure_user_is_member_of_group(
+                user=self.person.user,
+                group=self.organization.membership_organization_meta.members_group,
+                group_membership=self.is_in_effect,
+            )
 
     class Meta:
         verbose_name = u'Jäsenyys'

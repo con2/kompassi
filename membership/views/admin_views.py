@@ -102,6 +102,8 @@ def membership_admin_member_view(request, vars, organization, person_id):
                 if not read_only:
                     member_form.save()
 
+                membership.apply_state()
+
                 messages.success(request, u'Jäsenen tiedot tallennettiin.')
 
                 if action == 'save-return':
