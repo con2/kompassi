@@ -21,10 +21,10 @@ block profile_content
                 .col-md-9: em= smtp_password.smtp_server.hostname
               .row
                 label.control-label.col-md-3 Portti
-                .col-md-9 587
+                .col-md-9= smtp_password.smtp_server.port
               .row
                 label.control-label.col-md-3 Salaus
-                .col-md-9 SSL/TLS
+                .col-md-9= smtp_password.smtp_server.get_crypto_display
               .row
                 label.control-label.col-md-3 Käyttäjänimi
                 .col-md-9: em= person.user.username

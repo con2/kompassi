@@ -437,6 +437,18 @@ class SMTPServer(models.Model):
         verbose_name=u'SMTP-palvelin',
     )
 
+    crypto = models.CharField(
+        max_length=5,
+        verbose_name=u'Salaus',
+        default='tls',
+        choices=[('plain', 'Ei salausta'), ('ssl', 'SSL'), ('tls', 'TLS')],
+    )
+
+    port = models.IntegerField(
+        verbose_name=u'Porttinumero',
+        default=587,
+    )
+
     domains = models.ManyToManyField(EmailAliasDomain, verbose_name=u'Verkkotunnukset', related_name='smtp_servers')
 
     def __unicode__(self):
