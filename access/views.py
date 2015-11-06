@@ -143,7 +143,7 @@ def access_admin_smtppasswd_api(request, smtp_server_hostname):
     lines = []
 
     for smtp_password in smtp_server.smtp_passwords.all():
-        lines.append('{username}:{password_hash}:{full_name}'.format(
+        lines.append(u'{username}:{password_hash}:{full_name}'.format(
             username=smtp_password.person.user.username,
             password_hash=smtp_password.password_hash,
             full_name=smtp_password.person.full_name,
