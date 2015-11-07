@@ -322,7 +322,7 @@ class GroupEmailAliasGrant(models.Model):
     active_until = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return '{group_name}: {type}'.format(
+        return u'{group_name}: {type}'.format(
             group_name=self.group.name if self.group else None,
             type=self.type,
         )
