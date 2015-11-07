@@ -16,12 +16,21 @@ def mkpath(*parts):
 
 
 class Setup(object):
+    def __init__(self):
+        self._ordering = 0
+
+    def get_ordering_number(self):
+        self._ordering += 10
+        return self._ordering
+
     def setup(self, test=False):
         self.test = test
         self.tz = tzlocal()
         self.setup_core()
         self.setup_tickets()
         self.setup_payments()
+        self.setup_labour()
+        # self.setup_badges()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -121,6 +130,251 @@ class Setup(object):
     def setup_payments(self):
         from payments.models import PaymentsEventMeta
         PaymentsEventMeta.get_or_create_dummy(event=self.event)
+
+    def setup_labour(self):
+        from core.models import Person
+        from labour.models import (
+            AlternativeSignupForm,
+            InfoLink,
+            Job,
+            JobCategory,
+            LabourEventMeta,
+            Perk,
+            PersonnelClass,
+            Qualification,
+            WorkPeriod,
+        )
+        from ...models import SignupExtra, SpecialDiet
+        from django.contrib.contenttypes.models import ContentType
+
+        labour_admin_group, created = LabourEventMeta.get_or_create_group(self.event, 'admins')
+
+        if self.test and created:
+            from core.models import Person
+            person, unused = Person.get_or_create_dummy()
+            labour_admin_group.user_set.add(person.user)
+
+        content_type = ContentType.objects.get_for_model(SignupExtra)
+
+        labour_event_meta_defaults = dict(
+            signup_extra_content_type=content_type,
+            work_begins=self.event.start_time - timedelta(days=1),
+            work_ends=self.event.end_time + timedelta(hours=4),
+            admin_group=labour_admin_group,
+            contact_email='Yukiconin työvoimatiimi <yukicon@yukicon.fi>',
+        )
+
+        if self.test:
+            t = now()
+            labour_event_meta_defaults.update(
+                registration_opens=t - timedelta(days=60),
+                registration_closes=t + timedelta(days=60),
+            )
+        else:
+            pass
+
+        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=labour_event_meta_defaults,
+        )
+
+        for pc_name, pc_slug, pc_app_label in [
+            (u'Conitea', 'conitea', 'labour'),
+            (u'Työvoima', 'tyovoima', 'labour'),
+            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            (u'Media', 'media', 'badges'),
+            (u'Myyjä', 'myyja', 'badges'),
+            (u'Vieras', 'vieras', 'badges'),
+        ]:
+            personnel_class, created = PersonnelClass.objects.get_or_create(
+                event=self.event,
+                slug=pc_slug,
+                defaults=dict(
+                    name=pc_name,
+                    app_label=pc_app_label,
+                    priority=self.get_ordering_number(),
+                ),
+            )
+
+        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
+        conitea = PersonnelClass.objects.get(event=self.event, slug='conitea')
+
+        for jc_data in [
+            (
+                u'Conitea',
+                u'Tapahtuman järjestelytoimikunnan eli conitean jäsen',
+                [conitea]
+            ),
+            (
+                u'Erikoistehtävä',
+                u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, '
+                u'valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut '
+                u'on valittu.',
+                [tyovoima]
+            ),
+            (
+                u'Info',
+                u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman '
+                u'aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.',
+                [tyovoima]
+            ),
+            (
+                u'Järjestyksenvalvoja',
+                u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa '
+                u'JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole '
+                u'täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).',
+                [tyovoima]
+            ),
+            (
+                u'Lipuntarkastaja',
+                u'Lipuntarkastajana hoidat e-lippujen vaihtoa rannekkeiksi ja tarkistat lippuja ovella. Tehtävä '
+                u'edellyttää asiakaspalveluasennetta.',
+                [tyovoima]
+            ),
+            (
+                u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan '
+                u'ajokortti vaaditaan. Työvuoroja myös perjantaille.',
+                [tyovoima]
+            ),
+            (
+                u'Narikka',
+                u'Narikassa  säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.',
+                [tyovoima]
+            ),
+            (
+                u'Pukuhuoneet',
+                u'KUVAUS PUUTTUU',
+                [tyovoima]
+            ),
+            (
+                u'Salivänkäri',
+                u'Luennoitsijoiden ja muiden ohjelmanpitäjien avustamista ohjelmanumeroiden yhteydessä.',
+                [tyovoima]
+            ),
+            (
+                u'Siivous',
+                u'Siivousvänkärit ovat vastuussa tapahtuman yleisestä siisteydestä. He kulkevat ympäriinsä '
+                u'tehtävänään roskakorien tyhjennys, vesipisteiden täyttö, vessoihin papereiden lisääminen '
+                u'ja monet muut pienet askareet. Työ tehdään pääsääntöisesti vänkäripareittain.',
+                [tyovoima]
+            ),
+            (
+                u'Tekniikka',
+                u'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä '
+                u'ongelmanratkaisua.',
+                [tyovoima]
+            ),
+            (
+                u'Valokuvaus',
+                u'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla '
+                u'studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta '
+                u'valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit '
+                u'tapahtumassa valokuvata.',
+                [tyovoima]
+            ),
+            (
+                u'Yleisvänkäri',
+                u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi '
+                u'kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.',
+                [tyovoima]
+            ),
+
+            # (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima]),
+            # (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima]),
+            # (u'Green room', u'Työvoiman ruokahuolto green roomissa. Edellyttää hygieniapassia.', [tyovoima]),
+            # (u'Taltiointi', u'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.', [tyovoima]),
+        ]:
+            if len(jc_data) == 3:
+                name, description, pcs = jc_data
+                job_names = []
+            elif len(jc_data) == 4:
+                name, description, pcs, job_names = jc_data
+            else:
+                raise ValueError("Length of jc_data must be 3 or 4")
+
+            job_category, created = JobCategory.objects.get_or_create(
+                event=self.event,
+                slug=slugify(name),
+                defaults=dict(
+                    name=name,
+                    description=description,
+                )
+            )
+
+            if created:
+                job_category.personnel_classes = pcs
+                job_category.save()
+
+            for job_name in job_names:
+                job, created = Job.objects.get_or_create(
+                    job_category=job_category,
+                    slug=slugify(job_name),
+                    defaults=dict(
+                        title=job_name,
+                    )
+                )
+
+        labour_event_meta.create_groups()
+
+        for name in [u'Conitea']:
+            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+
+        for jc_name, qualification_name in [
+            (u'Järjestyksenvalvoja', u'JV-kortti'),
+            (u'Logistiikka', u'Henkilöauton ajokortti (B)'),
+            # (u'Green room', u'Hygieniapassi'),
+        ]:
+            jc = JobCategory.objects.get(event=self.event, name=jc_name)
+            qual = Qualification.objects.get(name=qualification_name)
+            if not jc.required_qualifications.exists():
+                jc.required_qualifications = [qual]
+                jc.save()
+
+        for diet_name in [
+            u'Gluteeniton',
+            u'Laktoositon',
+            u'Maidoton',
+            u'Vegaaninen',
+            u'Lakto-ovo-vegetaarinen',
+        ]:
+            SpecialDiet.objects.get_or_create(name=diet_name)
+
+        AlternativeSignupForm.objects.get_or_create(
+            event=self.event,
+            slug=u'conitea',
+            defaults=dict(
+                title=u'Conitean ilmoittautumislomake',
+                signup_form_class_path='events.yukicon2016.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='events.yukicon2016.forms:OrganizerSignupExtraForm',
+                active_from=datetime(2015, 11, 7, 12, 0, 0, tzinfo=self.tz),
+                active_until=self.event.start_time,
+            ),
+        )
+
+        for wiki_space, link_title, link_group in [
+            # ('YUKIWORK', 'Työvoimawiki', 'accepted'),
+            # ('YUKINFO', 'Infowiki', 'info'),
+        ]:
+            InfoLink.objects.get_or_create(
+                event=self.event,
+                title=link_title,
+                defaults=dict(
+                    url='https://confluence.tracon.fi/display/{wiki_space}'.format(wiki_space=wiki_space),
+                    group=labour_event_meta.get_group(link_group),
+                )
+            )
+
+    def setup_badges(self):
+        from badges.models import BadgesEventMeta
+
+        badge_admin_group, unused = BadgesEventMeta.get_or_create_group(self.event, 'admins')
+        meta, unused = BadgesEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=badge_admin_group,
+                badge_layout='nick',
+            )
+        )
 
 
 class Command(BaseCommand):
