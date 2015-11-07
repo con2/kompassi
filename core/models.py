@@ -140,13 +140,6 @@ class Event(models.Model):
 
     organization = models.ForeignKey(Organization, verbose_name=u'Järjestäjätaho')
 
-    headline = models.CharField(
-        max_length=63,
-        blank=True,
-        default=u'',
-        verbose_name=u'Alaotsikko',
-    )
-
     name_genitive = models.CharField(
         max_length=63,
         verbose_name=u'Tapahtuman nimi genetiivissä',
@@ -256,6 +249,16 @@ class Event(models.Model):
     @property
     def formatted_start_and_end_date(self):
         return format_date_range(self.start_time, self.end_time)
+
+    @property
+    def headline(self):
+        headline_parts = [
+            (self.venue.name_inessive if self.venue else None),
+            (self.formatted_start_and_end_date if self.start_time and self.end_time else None),
+        ]
+        headline_parts = [part for part in headline_parts if part]
+
+        return u' '.join(headline_parts)
 
     @classmethod
     def get_or_create_dummy(cls):

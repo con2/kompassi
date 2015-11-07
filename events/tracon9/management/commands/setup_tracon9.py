@@ -68,12 +68,6 @@ class Command(BaseCommand):
             venue=venue,
         ))
 
-        # core v7
-        if not event.headline:
-            event.headline = u'Tampere-talossa 13.-14.9.2014'
-            event.save()
-
-
         #
         # Labour
         #
