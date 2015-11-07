@@ -15,6 +15,7 @@ from core.sort_and_filter import Filter, Sorter
 from core.utils import initialize_form, initialize_form_set, url
 
 from ..models import (
+    Category,
     Programme,
     ProgrammeEditToken,
     ProgrammeRole,
@@ -43,6 +44,10 @@ logger = logging.getLogger('kompassi')
 def programme_admin_view(request, vars, event, format='screen'):
     programmes = Programme.objects.filter(category__event=event)
 
+    categories = Category.objects.filter(event=event)
+    category_filters = Filter(request, 'category').add_objects('category__slug', categories)
+    programmes = category_filters.filter_queryset(programmes)
+
     rooms = Room.objects.filter(venue=event.venue)
     room_filters = Filter(request, 'room').add_objects('room__slug', rooms)
     programmes = room_filters.filter_queryset(programmes)
@@ -60,6 +65,7 @@ def programme_admin_view(request, vars, event, format='screen'):
 
     if format == 'screen':
         vars.update(
+            category_filters=category_filters,
             export_formats=EXPORT_FORMATS,
             programmes=programmes,
             room_filters=room_filters,

@@ -6,6 +6,16 @@ block admin_content
     .panel-heading: strong Suodata ohjelmaa
     .panel-body.signup-filters
       .row
+        .col-md-3: strong Tyyppi
+        .col-md-9
+          for cf, active in category_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ cf.qs_del }}') {{ cf.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ cf.qs_add }}') {{ cf.name }}
+      .row
         .col-md-3: strong Sali
         .col-md-9
           for rf, active in room_filters

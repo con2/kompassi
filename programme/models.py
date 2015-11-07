@@ -83,6 +83,7 @@ class ProgrammeEventMeta(EventMetaBase):
 class Category(models.Model):
     event = models.ForeignKey('core.Event')
     title = models.CharField(max_length=1023)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     style = models.CharField(max_length=15)
     notes = models.TextField(blank=True)
     public = models.BooleanField(default=True)
@@ -90,12 +91,9 @@ class Category(models.Model):
     def __unicode__(self):
         return self.title
 
-    @property
-    def slug(self):
-        return slugify(self.title)
-
     class Meta:
         ordering = ['title']
+        unique_together = [('event', 'slug')]
         verbose_name = u'ohjelmaluokka'
         verbose_name_plural = u'ohjelmaluokat'
 
@@ -110,6 +108,12 @@ class Category(models.Model):
                 style='dummy',
             )
         )
+
+
+@receiver(pre_save, sender=Category)
+def populate_category_slug(sender, instance, **kwargs):
+    if instance.title and not instance.slug:
+        instance.slug = slugify(instance.title)
 
 
 class Room(models.Model):
@@ -159,7 +163,7 @@ class Room(models.Model):
 
 @receiver(pre_save, sender=Room)
 def populate_room_slug(sender, instance, **kwargs):
-    if not instance.slug:
+    if instance.name and not instance.slug:
         instance.slug = slugify(instance.name)
 
 
