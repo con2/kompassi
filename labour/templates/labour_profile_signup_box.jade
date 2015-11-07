@@ -2,8 +2,7 @@
   .panel-heading
     .pull-right
       .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}
-    strong {{ signup.event.name }}
-    |&thinsp;
+    strong.kompassi-space-after {{ signup.event.name }}
     small.text-muted {{ signup.event.headline }}
   if signup.is_active
     .panel-body
