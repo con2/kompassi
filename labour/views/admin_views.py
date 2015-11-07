@@ -114,7 +114,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
     previous_signup, next_signup = signup.get_previous_and_next_signup()
 
-    historic_signups = Signup.objects.filter(person=signup.person).exclude(event=event).order_by('-start_time')
+    historic_signups = Signup.objects.filter(person=signup.person).exclude(event=event).order_by('-event__start_time')
     if not person.allow_work_history_sharing:
         # The user has elected to not share their full work history between organizations.
         # Only show work history for the current organization.
