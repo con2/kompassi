@@ -4,7 +4,7 @@ for start_time, unused, programmes in programmes_by_start_time
     if programme and programme.is_public or programme and internal_programmes
       .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')
         h4
-          span.title {{ programme.title }}
+          span.title.kompassi-space-after {{ programme.title }}
           for tag in programme.tags.all
             span.label.kompassi-space-after(class='{{ tag.style }}') {{ tag.title }}
         .programme-info
