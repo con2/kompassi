@@ -74,6 +74,10 @@ class Message(models.Model):
         return self.expired_at is not None
 
     def send(self, recipients=None, resend=False):
+        if not self.sent_at:
+            self.sent_at = timezone.now()
+            self.save()
+
         if 'background_tasks' in settings.INSTALLED_APPS:
             from mailings.tasks import message_send
             message_send.delay(
@@ -86,10 +90,6 @@ class Message(models.Model):
 
     def _send(self, recipients, resend):
         from django.contrib.auth.models import User
-
-        if not self.sent_at:
-            self.sent_at = timezone.now()
-            self.save()
 
         if recipients is None:
             recipients = [user.person for user in self.recipient.group.user_set.all()]
