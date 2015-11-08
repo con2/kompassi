@@ -37,6 +37,7 @@ SHIRT_SIZES = [
 SHIRT_TYPES = [
     (u'STAFF', u'Staff'),
     (u'DESURITY', u'Desurity'),
+    (u'KUVAAJA', u'Kuvaaja'),
     (u'VENDOR', u'Myynti'),
 ]
 
