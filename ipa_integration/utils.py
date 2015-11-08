@@ -2,6 +2,7 @@
 
 import re
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.forms import ValidationError
 
 from access.utils import generate_machine_password
@@ -61,3 +62,26 @@ def ensure_groups_exist(groups):
     with IPASession.get_admin_session() as admin_session:
         for group_name in groups:
             admin_session.create_group(group_name)
+
+
+def set_user_attrs_from_ipa_user_info(user, user_info):
+    groups = set()
+    groups.update(user_info['memberof_group'])
+    groups.update(user_info['memberofindirect_group'])
+
+    user.first_name = user_info['givenname'][0]
+    user.last_name = user_info['sn'][0]
+    user.is_active = settings.KOMPASSI_USERS_GROUP in groups
+    user.is_staff = settings.KOMPASSI_STAFF_GROUP in groups
+    user.is_superuser = settings.KOMPASSI_SUPERUSERS_GROUP in groups
+    user.groups = [Group.objects.get_or_create(name=group_name)[0] for group_name in groups]
+
+    return user
+
+
+def sync_user_info(user):
+    with IPASession.get_admin_session() as admin_session:
+        user_info = admin_session.get_user_info(user.username)
+
+    set_user_attrs_from_ipa_user_info(user, user_info)
+    user.save()

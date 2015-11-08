@@ -62,7 +62,7 @@ class IPASession(object):
         if username is None:
             username = self.username
 
-        return self._json_rpc('user_show', username)
+        return self._json_rpc('user_show', username)['result']['result']
 
     def change_password_for_another_user(self, username, new_password):
         return self._json_rpc('passwd', username, new_password, IPA_OTHER_USER_PASSWORD_MAGICK)

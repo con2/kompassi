@@ -215,6 +215,11 @@ class CallbackView(View):
 def respond_with_connection(request, next_url, connection):
     user = connection.user
     user.backend = 'django.contrib.auth.backends.ModelBackend'
+
+    if 'ipa_integration' in settings.INSTALLED_APPS:
+        from ipa_integration.utils import sync_user_info
+        sync_user_info(user)
+
     return do_login(request, user, next=next_url)
 
 
