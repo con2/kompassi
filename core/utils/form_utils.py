@@ -53,9 +53,13 @@ def initialize_form_set(FormSetClass, request, **kwargs):
     return form_set
 
 
-# Deprecated
 def indented_without_label(input, css_class='col-md-offset-3 col-md-9'):
-    return input
+    # Checkboxen handled by pyjade
+    if isinstance(input, basestring):
+        return input
+    # Submits we need to handle ourselves
+    else:
+        return Div(Div(input, css_class='controls {}'.format(css_class)), css_class='form-group')
 
 
 def make_horizontal_form_helper(helper):

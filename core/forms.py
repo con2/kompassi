@@ -9,7 +9,7 @@ from django.core.validators import RegexValidator
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
 
-from core.utils import DateField
+from core.utils import DateField, indented_without_label
 
 from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH, BIRTH_DATE_HELP_TEXT
 from .utils import horizontal_form_helper, check_password_strength
@@ -97,7 +97,7 @@ class PersonForm(forms.ModelForm):
 
         if submit_button:
             layout_parts.append(
-                Submit('submit', save_button_text, css_class='btn-success')
+                indented_without_label(Submit('submit', save_button_text, css_class='btn-success'))
             )
 
         self.helper.layout = Layout(*layout_parts)
