@@ -38,7 +38,7 @@ def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
     groups_to_remove = [group if isinstance(group, basestring) else group.name for group in groups_to_remove]
 
     with IPASession.get_admin_session() as admin_session:
-        for group_name in groups:
+        for group_name in groups_to_add:
             admin_session.add_user_to_group(username, group_name)
 
         for group_name in groups_to_remove:
