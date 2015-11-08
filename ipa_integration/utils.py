@@ -23,8 +23,8 @@ def create_user(user, password):
         for group_name in settings.KOMPASSI_NEW_USER_INITIAL_GROUPS:
             admin_session.add_user_to_group(user.username, group_name)
 
-    with IPASession(user.username, temporary_password) as user_session:
-        user_session.change_own_password(temporary_password, password)
+    with IPASession(user.username, temporary_password, login=False) as user_session:
+        user_session.change_own_password(password)
 
 
 def change_current_user_password(request, old_password, new_password):

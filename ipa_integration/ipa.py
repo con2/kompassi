@@ -13,6 +13,7 @@ from requests.exceptions import HTTPError
 logger = logging.getLogger('kompassi')
 
 IPA_LOGIN_URL = '{ipa}/session/login_password'.format(ipa=settings.KOMPASSI_IPA)
+IPA_CHANGE_PASSWORD_URL = '{ipa}/session/change_password'.format(ipa=settings.KOMPASSI_IPA)
 IPA_JSONRPC_URL = '{ipa}/session/json'.format(ipa=settings.KOMPASSI_IPA)
 IPA_OTHER_USER_PASSWORD_MAGICK = 'CHANGING_PASSWORD_FOR_ANOTHER_USER'
 IPA_GROUP_ADD_ERROR_ALREADY_EXISTS = 4002
@@ -28,27 +29,40 @@ class IPAError(RuntimeError):
 
 class IPASession(object):
     # Public API
-    def __init__(self, username, password):
+    def __init__(self, username, password, login=True):
         self.username = username
         self.password = password
+        self.login_on_enter = login
         self.session = Session()
         self.session.headers = dict(IPA_HEADERS)
 
     def __enter__(self):
-        self._login()
+        if self.login_on_enter:
+            self._login()
+
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.session.close()
+
+    def change_own_password(self, new_password):
+        """
+        Do not login first, just use an unauthenticated session for this one.
+
+        >>> with IPASession(username, old_password, login=False) as session:
+        ...     session.change_own_password(new_password)
+        """
+        return self._send_form(IPA_CHANGE_PASSWORD_URL,
+            user=self.username,
+            old_password=self.password,
+            new_password=new_password,
+        )
 
     def get_user_info(self, username=None):
         if username is None:
             username = self.username
 
         return self._json_rpc('user_show', username)
-
-    def change_own_password(self, new_password):
-        return self._json_rpc('passwd', self.username, new_password, self.password)
 
     def change_password_for_another_user(self, username, new_password):
         return self._json_rpc('passwd', username, new_password, IPA_OTHER_USER_PASSWORD_MAGICK)
@@ -87,12 +101,13 @@ class IPASession(object):
 
     # Internal implementation
     def _login(self):
-        payload = {
-            'user': self.username,
-            'password': self.password,
-        }
+        return self._send_form(IPA_LOGIN_URL,
+            user=self.username,
+            password=self.password,
+        )
 
-        response = self.session.post(IPA_LOGIN_URL,
+    def _send_form(self, url, **payload):
+        response = self.session.post(url,
             data=payload,
             verify=settings.KOMPASSI_IPA_CACERT_PATH,
         )
@@ -103,7 +118,7 @@ class IPASession(object):
             logger.exception('IPA login failed: %s', response.content)
             raise IPAError(e)
 
-        return response.cookies
+        return True
 
     def _json_rpc(self, method_name, *args, **kwargs):
         headers = {
