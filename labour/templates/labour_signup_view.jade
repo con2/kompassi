@@ -32,7 +32,7 @@ block extra_scripts
     window.labourJobDescriptions = {{job_descriptions_json|safe}};
   script(src='{{ STATIC_URL }}job_descriptions.js')
 
-  script
+  script.
     var nonQualifiedCategoryNames = {{ non_qualified_category_names_json|safe }};
     $.each(nonQualifiedCategoryNames, function(index, categoryName) {
       var selector = '.labour-signup-form label.checkbox:contains("' + categoryName + '")',

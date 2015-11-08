@@ -2,7 +2,8 @@
 
 from datetime import datetime, timedelta
 
-from django.core.management.base import BaseCommand, make_option
+from django.conf import settings
+from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 
 from ...models import Person
@@ -12,17 +13,8 @@ class Command(BaseCommand):
     args = ''
     help = 'Setup core specific stuff'
 
-    option_list = BaseCommand.option_list + (
-        make_option('--test',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='Set the core up for testing'
-        ),
-    )
-
     def handle(self, *args, **options):
-        if options['test']:
+        if settings.DEBUG:
             print "Setting up core in test mode"
             Person.get_or_create_dummy()
         else:

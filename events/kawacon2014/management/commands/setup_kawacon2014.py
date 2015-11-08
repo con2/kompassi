@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 
 from dateutil.tz import tzlocal
 
@@ -11,21 +11,7 @@ from programme.models import ProgrammeEventMeta, Category, Room, TimeBlock, View
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('--test',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='Setup kawacon for testing'
-        ),
-    )
-
     def handle(*args, **options):
-        if options['test']:
-            print 'Setting up kawacon2014 in test mode'
-        else:
-            print 'Setting up kawacon2014 in production mode'
-
         tz = tzlocal()
 
         venue, unused = Venue.objects.get_or_create(name='Peltolan ammattiopisto', defaults=dict(

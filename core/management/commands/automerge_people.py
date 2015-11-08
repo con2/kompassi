@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 
 from core.merge_people import possible_merges, merge_people
 from core.models import Person

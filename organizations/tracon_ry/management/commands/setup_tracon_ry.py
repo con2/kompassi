@@ -2,7 +2,7 @@
 
 from datetime import date, datetime, timedelta
 
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
@@ -110,15 +110,6 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
 class Command(BaseCommand):
     args = ''
     help = 'Setup Tracon ry specific stuff'
-
-    option_list = BaseCommand.option_list + (
-        make_option('--test',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='Set the organization up for testing',
-        ),
-    )
 
     def handle(self, *args, **opts):
         Setup().setup()

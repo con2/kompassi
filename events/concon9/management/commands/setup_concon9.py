@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 
 from dateutil.tz import tzlocal
 
@@ -18,21 +18,7 @@ from programme.models import (
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('--test',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='Setup concon9 for testing'
-        ),
-    )
-
     def handle(*args, **options):
-        if options['test']:
-            print 'Setting up concon9 in test mode'
-        else:
-            print 'Setting up concon9 in production mode'
-
         tz = tzlocal()
 
         venue, unused = Venue.objects.get_or_create(

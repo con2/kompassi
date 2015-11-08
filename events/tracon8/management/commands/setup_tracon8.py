@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 
 from dateutil.tz import tzlocal
 
@@ -16,21 +16,7 @@ class Command(BaseCommand):
     args = ''
     help = 'Setup tracon8 specific stuff'
 
-    option_list = BaseCommand.option_list + (
-        make_option('--test',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='Set the event up for testing'
-        ),
-    )
-
     def handle(*args, **options):
-        if options['test']:
-            print 'Setting up tracon8 in test mode'
-        else:
-            print 'Setting up tracon8 in production mode'
-
         tz = tzlocal()
 
         venue, unused = Venue.objects.get_or_create(name='Tampere-talo')

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 
 from sms.utils import fake_inbound_message
 

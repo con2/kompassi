@@ -28,9 +28,8 @@ class Connection(models.Model):
         verbose_name=u'Desuprofiilin käyttäjänimi',
     )
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
         verbose_name=u'Käyttäjä',
-        unique=True,
     )
 
     def __unicode__(self):

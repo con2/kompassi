@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 
 import subprocess
 

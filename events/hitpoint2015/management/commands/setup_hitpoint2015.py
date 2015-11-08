@@ -3,7 +3,8 @@
 import os
 from datetime import datetime, timedelta
 
-from django.core.management.base import BaseCommand, make_option
+from django.conf import settings
+from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
@@ -346,14 +347,5 @@ class Command(BaseCommand):
     args = ''
     help = 'Setup hitpoint2015 specific stuff'
 
-    option_list = BaseCommand.option_list + (
-        make_option('--test',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='Set the event up for testing',
-        ),
-    )
-
     def handle(self, *args, **opts):
-        Setup().setup(test=opts['test'])
+        Setup().setup(test=settings.DEBUG)

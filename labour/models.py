@@ -655,7 +655,6 @@ class Signup(models.Model, CsvExportMixin):
 
     job_categories_accepted = models.ManyToManyField(JobCategory,
         blank=True,
-        null=True,
         related_name='accepted_signup_set',
         verbose_name=u'Hyväksytyt tehtäväalueet',
         help_text=u'Tehtäväalueet, joilla hyväksytty vapaaehtoistyöntekijä tulee työskentelemään. '

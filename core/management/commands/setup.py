@@ -1,7 +1,7 @@
 # encoding: utf-8
 from django.conf import settings
 from django.core.management import call_command, get_commands
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 from django.db.transaction import atomic
 from contextlib import contextmanager
 
@@ -15,17 +15,8 @@ class Command(BaseCommand):
     args = ''
     help = 'Setup all the things'
 
-    option_list = BaseCommand.option_list + (
-        make_option('--test',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='Setup all the things for testing'
-        ),
-    )
-
     def handle(self, *args, **options):
-        test = options['test']
+        test = settings.DEBUG
 
         commands = get_commands()
 
@@ -49,7 +40,7 @@ class Command(BaseCommand):
 
         if test:
             management_commands.extend((
-                (('test', 'access', 'core', 'desuprofile_integration', 'labour', 'labour_common_qualifications', 'payments', 'programme', 'tickets'), dict()),
+                (('test', '--keepdb', 'access', 'core', 'desuprofile_integration', 'labour', 'labour_common_qualifications', 'payments', 'programme', 'tickets'), dict()),
                 (('behave',), dict()),
             ))
 

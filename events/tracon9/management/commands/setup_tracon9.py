@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
@@ -31,17 +31,8 @@ class Command(BaseCommand):
     args = ''
     help = 'Setup tracon9 specific stuff'
 
-    option_list = BaseCommand.option_list + (
-        make_option('--test',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='Set the event up for testing'
-        ),
-    )
-
     def handle(*args, **options):
-        if options['test']:
+        if settings.DEBUG:
             print 'Setting up tracon9 in test mode'
         else:
             print 'Setting up tracon9 in production mode'
@@ -74,7 +65,7 @@ class Command(BaseCommand):
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(event, ['admins'])
 
-        if options['test']:
+        if settings.DEBUG:
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
@@ -85,7 +76,7 @@ class Command(BaseCommand):
             admin_group=labour_admin_group,
         )
 
-        if options['test']:
+        if settings.DEBUG:
             t = now()
             labour_event_meta_defaults.update(
                 registration_opens=t - timedelta(days=60),
@@ -285,7 +276,7 @@ class Command(BaseCommand):
                 )
             )
 
-        if options['test']:
+        if settings.DEBUG:
             # create some test programme
             Programme.objects.get_or_create(
                 category=Category.objects.get(title='Animeohjelma', event=event),
@@ -368,7 +359,7 @@ class Command(BaseCommand):
                 u"Tervetuloa Traconiin!"
         )
 
-        if options['test']:
+        if settings.DEBUG:
             t = now()
             tickets_event_meta_defaults.update(
                 ticket_sales_starts=t - timedelta(days=60),

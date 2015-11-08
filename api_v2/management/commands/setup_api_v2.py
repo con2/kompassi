@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-from django.core.management.base import BaseCommand, make_option
+from django.conf import settings
+from django.core.management.base import BaseCommand
 
 from oauth2_provider.models import Application
 
@@ -8,17 +9,8 @@ from core.models import Person
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('--test',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='Setup api_v2 for testing'
-        ),
-    )
-
     def handle(*args, **options):
-        if options['test']:
+        if settings.DEBUG:
             person, unused = Person.get_or_create_dummy()
 
             Application.objects.get_or_create(
