@@ -166,7 +166,7 @@ INSTALLED_APPS = (
     'membership',
 
     # Uncomment if you have IPA
-    #'external_auth',
+    'external_auth',
 
     # Uncomment if you do PDF tickets
     'lippukala',
@@ -244,6 +244,11 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'propagate': True
         },
+        'requests': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'propagate': True
+        },
     }
 }
 
@@ -313,7 +318,8 @@ if 'external_auth' in INSTALLED_APPS:
     KOMPASSI_LDAP_USERS = 'cn=users,cn=accounts,{KOMPASSI_LDAP_DOMAIN}'.format(**locals())
     KOMPASSI_LDAP_GROUPS = 'cn=groups,cn=accounts,{KOMPASSI_LDAP_DOMAIN}'.format(**locals())
 
-    KOMPASSI_IPA_JSONRPC = 'https://moukari.tracon.fi/ipa/json'
+    KOMPASSI_IPA = 'https://moukari.tracon.fi/ipa'
+    KOMPASSI_IPA_JSONRPC = '{KOMPASSI_IPA}/json'.format(**locals())
     KOMPASSI_IPA_CACERT_PATH = '/etc/ipa/ca.crt'
 
     import ldap

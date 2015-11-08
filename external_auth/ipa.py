@@ -1,126 +1,131 @@
 # encoding: utf-8
 
-from contextlib import contextmanager
 import json
-from tempfile import NamedTemporaryFile
+import logging
 
 from django.conf import settings
 
-import ldap
-import ldap.sasl
 import requests
-from requests_kerberos import HTTPKerberosAuth
+from requests import Session
+from requests.exceptions import HTTPError
 
 
-@contextmanager
-def ldap_session():
-    for key, value in settings.AUTH_LDAP_GLOBAL_OPTIONS.iteritems():
-        ldap.set_option(key, value)
+logger = logging.getLogger('kompassi')
 
-    try:
-        l = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
-        auth = ldap.sasl.gssapi("")
-        l.sasl_interactive_bind_s("", auth)
-        yield l
-    except ldap.LDAPError, e:
-        raise IPAError(e)
-    finally:
-        l.unbind_s()
-
-
-def u(unicode_string):
-    return unicode_string.encode('UTF-8')
+IPA_LOGIN_URL = '{ipa}/session/login_password'.format(ipa=settings.KOMPASSI_IPA)
+IPA_JSONRPC_URL = '{ipa}/session/json'.format(ipa=settings.KOMPASSI_IPA)
+IPA_OTHER_USER_PASSWORD_MAGICK = 'CHANGING_PASSWORD_FOR_ANOTHER_USER'
+IPA_GROUP_ADD_ERROR_ALREADY_EXISTS = 4002
+IPA_HEADERS = {
+    'Referer': settings.KOMPASSI_IPA,
+}
 
 
 class IPAError(RuntimeError):
     pass
 
 
-def add_user_to_group(username, groupname):
-    return json_rpc('group_add_member', groupname, user=[username])
+class IPASession(object):
+    # Public API
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        self.session = Session()
+        self.session.headers = dict(IPA_HEADERS)
 
+    def __enter__(self):
+        self._login()
+        return self
 
-def remove_user_from_group(username, groupname):
-    return json_rpc('group_remove_member', groupname, user=[username])
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.session.close()
 
+    def change_own_password(self, new_password):
+        return self._json_rpc('passwd', self.username, new_password, self.password)
 
-def change_user_password(dn, old_password, new_password):
-    with ldap_session() as l:
-        l.simple_bind_s(dn, u(old_password))
-        l.passwd_s(dn, u(old_password), u(new_password))
+    def change_password_for_another_user(self, username, new_password):
+        return self._json_rpc('passwd', username, new_password, IPA_OTHER_USER_PASSWORD_MAGICK)
 
+    def add_user_to_group(self, username, groupname):
+        return self._json_rpc('group_add_member', groupname, user=[username])
 
-def ldap_modify(dn, *modlist):
-    with ldap_session() as l:
-        l.modify_s(dn, modlist)
+    def remove_user_from_group(self, username, groupname):
+        return self._json_rpc('group_remove_member', groupname, user=[username])
 
-
-def create_user(username, first_name, surname, password):
-    return json_rpc('user_add', username,
-        givenname=first_name,
-        sn=surname,
-        userpassword=password,
-    )
-
-
-def create_group(group_name):
-    try:
-        return json_rpc('group_add', group_name, description=group_name)
-    except IPAError as e:
+    def create_group(self, group_name):
         try:
-            error, = e.args
-            code = error['code']
-        except (KeyError, IndexError):
-            # ipa connectivity error or something else, bad
-            raise e
-        else:
-            if code == 4002:
-                # group already exists
-                # we are under "ensure exists" semantics so this is kosher
-                return None
-            else:
-                # some other error
+            return self._json_rpc('group_add', group_name, description=group_name)
+        except IPAError as e:
+            try:
+                error, = e.args
+                code = error['code']
+            except (KeyError, IndexError):
+                # ipa connectivity error or something else, bad
                 raise e
+            else:
+                if code == IPA_GROUP_ADD_ERROR_ALREADY_EXISTS:
+                    # group already exists
+                    # we are under "ensure exists" semantics so this is kosher
+                    return None
+                else:
+                    # some other error
+                    raise e
 
+    # Internal implementation
+    def _login(self):
+        payload = {
+            'user': self.username,
+            'password': self.password,
+        }
 
-def json_rpc(method_name, *args, **kwargs):
-    headers = {
-        "Referer": settings.KOMPASSI_IPA_JSONRPC,
-        "Content-Type": "application/json",
-    }
+        response = self.session.post(IPA_LOGIN_URL, data=payload, verify=False)
 
-    payload = {
-        "params": [args, kwargs],
-        "method": method_name,
-        "id": 0,
-    }
+        try:
+            response.raise_for_status()
+        except HTTPError as e:
+            logger.exception('IPA login failed: %s', response.content)
+            raise IPAError(e)
 
-    response = requests.post(settings.KOMPASSI_IPA_JSONRPC,
-        auth=HTTPKerberosAuth(),
-        data=json.dumps(payload),
-        headers=headers,
-        verify=settings.KOMPASSI_IPA_CACERT_PATH,
-    )
+        return response.cookies
 
-    try:
-        response.raise_for_status()
-    except requests.HTTPError, e:
-        raise IPAError(e)
+    def _json_rpc(self, method_name, *args, **kwargs):
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
 
-    result = response.json()
+        payload = {
+            "params": [args, kwargs],
+            "method": method_name,
+            "id": 0,
+        }
 
-    error = result.get('error', None)
-    if error:
-        raise IPAError(error)
+        response = self.session.post(IPA_JSONRPC_URL,
+            data=json.dumps(payload),
+            headers=headers,
 
-    return result
+            # XXX
+            # verify=settings.KOMPASSI_IPA_CACERT_PATH,
+            verify=False,
+        )
 
+        try:
+            response.raise_for_status()
+        except requests.HTTPError, e:
+            logger.exception('IPA JSON-RPC call failed: %s', response.content)
+            raise IPAError(e)
 
-def admin_set_user_password(username, new_password):
-    return json_rpc('user_mod', username,
-        all=False,
-        rights=False,
-        userpassword=new_password,
-        random=False,
-        raw=False,
-    )
+        result = response.json()
+
+        error = result.get('error', None)
+        if error:
+            raise IPAError(error)
+
+        return result
+
+    @classmethod
+    def get_admin_session(cls):
+        if not hasattr(cls, '_admin_session'):
+            cls._admin_session = IPASession(settings.IPA_ADMIN_USERNAME, settings.IPA_ADMIN_PASSWORD)
+
+        return cls._admin_session
