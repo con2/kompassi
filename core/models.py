@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+import logging
 from datetime import date, datetime, timedelta
 from django.core.exceptions import ValidationError
 
@@ -21,6 +22,9 @@ from .utils import (
     slugify,
     event_meta_property,
 )
+
+
+logger = logging.getLogger('kompassi')
 
 
 class Organization(models.Model):
@@ -731,22 +735,27 @@ class OneTimeCode(models.Model):
         raise NotImplemented()
 
     def send(self, request, **kwargs):
-        from django.core.mail import EmailMessage
-
         body = self.render_message_body(request)
-
-        if settings.DEBUG:
-            print body
+        subject = self.render_message_subject(request)
 
         opts = dict(
-            subject=self.render_message_subject(request),
+            subject=subject,
             body=body,
             to=(self.person.name_and_email,),
         )
 
         opts.update(kwargs)
 
-        EmailMessage(**opts).send(fail_silently=True)
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from .tasks import send_email
+            send_email.delay(**opts)
+        else:
+            from django.core.mail import EmailMessage
+
+            if settings.DEBUG:
+                logger.debug(body)
+
+            EmailMessage(**opts).send(fail_silently=True)
 
     def mark_used(self):
         assert self.state == 'valid'
