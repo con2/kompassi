@@ -201,7 +201,7 @@ class RegistrationForm(forms.Form):
                 'password_again'
             ),
             Fieldset(u'Suostumus henkilötietojen käsittelyyn',
-                indented_without_label('accept_terms_and_conditions')
+                'accept_terms_and_conditions'
             ),
         )
 

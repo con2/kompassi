@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     'pyjade',
     'crispy_forms',
     'oauth2_provider',
+    'nexmo',
 
     'core',
     'programme',
@@ -161,7 +162,6 @@ INSTALLED_APPS = (
     'api_v2',
     'badges',
     'access',
-    'nexmo',
     'sms',
     'membership',
 
