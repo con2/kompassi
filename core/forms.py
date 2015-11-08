@@ -12,7 +12,7 @@ from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hid
 from core.utils import DateField
 
 from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH, BIRTH_DATE_HELP_TEXT
-from .utils import horizontal_form_helper, indented_without_label, check_password_strength
+from .utils import horizontal_form_helper, check_password_strength
 
 
 valid_username = RegexValidator(
@@ -90,16 +90,14 @@ class PersonForm(forms.ModelForm):
                 'email',
             ),
             Fieldset(u'Yksityisyys',
-                indented_without_label('may_send_info'),
-                indented_without_label('allow_work_history_sharing'),
+                'may_send_info',
+                'allow_work_history_sharing',
             )
         ]
 
         if submit_button:
             layout_parts.append(
-                indented_without_label(
-                    Submit('submit', save_button_text, css_class='btn-success')
-                )
+                Submit('submit', save_button_text, css_class='btn-success')
             )
 
         self.helper.layout = Layout(*layout_parts)

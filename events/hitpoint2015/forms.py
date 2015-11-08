@@ -4,7 +4,7 @@ from django import forms
 
 from crispy_forms.layout import Layout, Fieldset
 
-from core.utils import horizontal_form_helper, indented_without_label
+from core.utils import horizontal_form_helper
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory, WorkPeriod
 
@@ -20,17 +20,17 @@ class SignupExtraForm(forms.ModelForm):
             'shift_type',
             'total_work',
             'night_work',
-            indented_without_label('construction'),
-            indented_without_label('overseer'),
+            'construction',
+            'overseer',
 
             Fieldset(u'Työtodistus',
-                indented_without_label('want_certificate'),
+                'want_certificate',
                 'certificate_delivery_address',
             ),
             Fieldset(u'Lisätiedot',
                 'special_diet',
                 'special_diet_other',
-                indented_without_label('need_lodging'),
+                'need_lodging',
                 'prior_experience',
                 'shift_wishes',
                 'free_text',

@@ -46,7 +46,7 @@ class AdminPersonForm(PersonForm):
             'age_event_start', # not in PersonForm
             'phone',
             'email',
-            indented_without_label('may_send_info'),
+            'may_send_info',
         )
 
     class Meta:
