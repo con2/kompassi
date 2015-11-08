@@ -166,7 +166,7 @@ INSTALLED_APPS = (
     'membership',
 
     # Uncomment if you have IPA
-    'ipa_integration',
+    # 'ipa_integration',
 
     # Uncomment if you do PDF tickets
     'lippukala',
