@@ -21,7 +21,7 @@ from .views import (
 actual_patterns = [
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/timetable(?P<suffix>.*)',
-        RedirectView.as_view(url='/events/%(event_slug)s/programme%(suffix)s'),
+        RedirectView.as_view(url='/events/%(event_slug)s/programme%(suffix)s', permanent=False),
         name='programme_old_urls_redirect'
     ),
 
