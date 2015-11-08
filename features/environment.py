@@ -11,7 +11,7 @@ def before_all(context):
     django.setup()
 
     from django.test.runner import DiscoverRunner
-    context.runner = DiscoverRunner()
+    context.runner = DiscoverRunner(keepdb=True)
 
     from django.test import RequestFactory
     context.request_factory = RequestFactory()
