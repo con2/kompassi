@@ -47,8 +47,8 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
         self.organization.save()
 
     def setup_membership(self):
-        membership_admin_group, created = MembershipOrganizationMeta.get_or_create_group(self.organization, 'admins')
-        members_group, created = MembershipOrganizationMeta.get_or_create_group(self.organization, 'members')
+        membership_admin_group, = MembershipOrganizationMeta.get_or_create_groups(self.organization, ['admins'])
+        members_group, = MembershipOrganizationMeta.get_or_create_groups(self.organization, ['members'])
 
         self.meta, created = MembershipOrganizationMeta.objects.get_or_create(organization=self.organization, defaults=dict(
             admin_group=membership_admin_group,
@@ -78,7 +78,7 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
             )
 
     def setup_access(self):
-        admin_group, created = AccessOrganizationMeta.get_or_create_group(self.organization, 'admins')
+        admin_group, = AccessOrganizationMeta.get_or_create_groups(self.organization, ['admins'])
 
         meta, created = AccessOrganizationMeta.objects.get_or_create(
             organization=self.organization,

@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from core.utils import ensure_user_is_member_of_group
+from core.utils import ensure_user_group_membership
 
 from .models import SlackAccess
 
@@ -19,4 +19,4 @@ def add_to_group(privilege, person):
     """
 
     group = Group.objects.get(name=privilege.slug)
-    ensure_user_is_member_of_group(person.user, group)
+    ensure_user_group_membership(person.user, groups_to_add=[group])

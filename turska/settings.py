@@ -166,7 +166,7 @@ INSTALLED_APPS = (
     'membership',
 
     # Uncomment if you have IPA
-    'external_auth',
+    'ipa_integration',
 
     # Uncomment if you do PDF tickets
     'lippukala',
@@ -301,69 +301,22 @@ EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 DEFAULT_FROM_EMAIL = 'suunnistajat@kompassi.eu'
 
 
-if 'external_auth' in INSTALLED_APPS:
-    # in case of emergency, break glass
-    if DEBUG:
-        import logging
-
-        logger = logging.getLogger('django_auth_ldap')
-        logger.addHandler(logging.StreamHandler())
-        logger.setLevel(logging.DEBUG)
-
+if 'ipa_integration' in INSTALLED_APPS:
     AUTHENTICATION_BACKENDS = (
-        'django_auth_ldap.backend.LDAPBackend',
+        'ipa_integration.backends.KompassiIPABackend',
     ) + AUTHENTICATION_BACKENDS
-
-    KOMPASSI_LDAP_DOMAIN = 'dc=tracon,dc=fi'
-    KOMPASSI_LDAP_USERS = 'cn=users,cn=accounts,{KOMPASSI_LDAP_DOMAIN}'.format(**locals())
-    KOMPASSI_LDAP_GROUPS = 'cn=groups,cn=accounts,{KOMPASSI_LDAP_DOMAIN}'.format(**locals())
 
     KOMPASSI_IPA = 'https://moukari.tracon.fi/ipa'
     KOMPASSI_IPA_JSONRPC = '{KOMPASSI_IPA}/json'.format(**locals())
-    KOMPASSI_IPA_CACERT_PATH = '/etc/ipa/ca.crt'
+    KOMPASSI_IPA_CACERT_PATH = mkpath('tmp', 'ca.crt')
+    KOMPASSI_IPA_ADMIN_USERNAME = 'turskasync'
+    KOMPASSI_IPA_ADMIN_PASSWORD = 'secret'
 
-    import ldap
-    from django_auth_ldap.config import LDAPSearch, PosixGroupType, NestedGroupOfNamesType
+    KOMPASSI_USERS_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-users".format(**locals())
+    KOMPASSI_STAFF_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-staff".format(**locals())
+    KOMPASSI_SUPERUSERS_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-admins".format(**locals())
 
-    #AUTH_LDAP_SERVER_URI = "ldaps://moukari.tracon.fi"
-    AUTH_LDAP_SERVER_URI = "ldaps://localhost:64636"
-
-    # AUTH_LDAP_BIND_DN = ""
-    # AUTH_LDAP_BIND_PASSWORD = ""
-    # AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,{KOMPASSI_LDAP_USERS}".format(**locals())
-    AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        KOMPASSI_LDAP_USERS,
-        ldap.SCOPE_SUBTREE,
-        "(uid=%(user)s)"
-    )
-    AUTH_LDAP_ALWAYS_UPDATE_USER = True
-
-    AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-        KOMPASSI_LDAP_GROUPS,
-        ldap.SCOPE_SUBTREE,
-        "(objectClass=groupOfNames)"
-    )
-    AUTH_LDAP_GROUP_TYPE = NestedGroupOfNamesType()
-    AUTH_LDAP_MIRROR_GROUPS = True
-
-    AUTH_LDAP_REQUIRE_GROUP = "cn={KOMPASSI_INSTALLATION_SLUG}-users,{KOMPASSI_LDAP_GROUPS}".format(**locals())
-    # AUTH_LDAP_DENY_GROUP = "cn={KOMPASSI_INSTALLATION_SLUG}-banned,{KOMPASSI_LDAP_GROUPS}".format(**locals())
-
-    AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-        "is_active": "cn={KOMPASSI_INSTALLATION_SLUG}-users,{KOMPASSI_LDAP_GROUPS}".format(**locals()),
-        "is_staff": "cn={KOMPASSI_INSTALLATION_SLUG}-staff,{KOMPASSI_LDAP_GROUPS}".format(**locals()),
-        "is_superuser": "cn={KOMPASSI_INSTALLATION_SLUG}-admins,{KOMPASSI_LDAP_GROUPS}".format(**locals()),
-    }
-
-    AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
-    AUTH_LDAP_GLOBAL_OPTIONS = {
-        ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_ALLOW,
-        ldap.OPT_X_TLS_CACERTFILE: KOMPASSI_IPA_CACERT_PATH,
-           ldap.OPT_REFERRALS: 0,
-    }
-
-    from sets import Set
-    KOMPASSI_NEW_USER_INITIAL_GROUPS = Set([
+    KOMPASSI_NEW_USER_INITIAL_GROUPS = set([
         "{KOMPASSI_INSTALLATION_SLUG}-users".format(**locals()),
 
         # to make sure users created via turskadev.tracon.fi can also access the

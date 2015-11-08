@@ -15,8 +15,7 @@ from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
 from core.utils import (
     alias_property,
-    ensure_user_is_member_of_group,
-    ensure_user_is_not_member_of_group,
+    ensure_user_group_membership,
     full_hours_between,
     is_within_period,
     NONUNIQUE_SLUG_FIELD_PARAMS,
@@ -117,7 +116,7 @@ class LabourEventMeta(EventMetaBase):
 
         event, unused = Event.get_or_create_dummy()
         content_type = ContentType.objects.get_for_model(EmptySignupExtra)
-        admin_group, unused = LabourEventMeta.get_or_create_group(event, 'admins')
+        admin_group, = LabourEventMeta.get_or_create_groups(event, ['admins'])
 
         t = now()
 
@@ -140,35 +139,38 @@ class LabourEventMeta(EventMetaBase):
         return labour_event_meta, created
 
     @classmethod
-    def get_or_create_group(cls, event, suffix):
-        if isinstance(suffix, (str, unicode)):
-            verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[suffix]
-        else:
-            verbose_name = suffix.name
-            suffix = suffix.slug
+    def get_or_create_groups(cls, event, job_categories_or_suffixes):
+        suffixes = [
+            jc_or_suffix if isinstance(jc_or_suffix, basestring) else jc_or_suffix.slug
+            for jc_or_suffix in job_categories_or_suffixes
+        ]
 
-        group, created = super(LabourEventMeta, cls).get_or_create_group(event, suffix)
+        groups = super(LabourEventMeta, cls).get_or_create_groups(event, suffixes)
 
         if 'mailings' in settings.INSTALLED_APPS:
             from mailings.models import RecipientGroup
 
-            RecipientGroup.objects.get_or_create(
-                event=event,
-                app_label='labour',
-                group=group,
-                defaults=dict(
-                    verbose_name=verbose_name,
-                ),
-            )
+            for jc_or_suffix, group in zip(job_categories_or_suffixes, groups):
+                if isinstance(jc_or_suffix, basestring):
+                    verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[jc_or_suffix]
+                else:
+                    verbose_name = jc_or_suffix.name
 
-        return group, created
+                RecipientGroup.objects.get_or_create(
+                    event=event,
+                    app_label='labour',
+                    group=group,
+                    defaults=dict(
+                        verbose_name=verbose_name,
+                    ),
+                )
+
+        return groups
 
     def create_groups(self):
-        for group_suffix in SIGNUP_STATE_GROUPS:
-            group, created = LabourEventMeta.get_or_create_group(self.event, group_suffix)
-
-        for job_category in JobCategory.objects.filter(event=self.event):
-            group, created = LabourEventMeta.get_or_create_group(self.event, job_category)
+        job_categories_or_suffixes = list(SIGNUP_STATE_GROUPS)
+        job_categories_or_suffixes.extend(JobCategory.objects.filter(event=self.event))
+        return LabourEventMeta.get_or_create_groups(self.event, job_categories_or_suffixes)
 
     @property
     def is_registration_open(self):
@@ -947,17 +949,28 @@ class Signup(models.Model, CsvExportMixin):
         self.apply_state_email_aliases()
 
     def apply_state_group_membership(self):
+        groups_to_add = set()
+        groups_to_remove = set()
+
         for group_suffix in SIGNUP_STATE_GROUPS:
             should_belong_to_group = getattr(self, 'is_{group_suffix}'.format(group_suffix=group_suffix))
             group = self.event.labour_event_meta.get_group(group_suffix)
 
-            ensure_user_is_member_of_group(self.person.user, group, should_belong_to_group)
+            if should_belong_to_group:
+                groups_to_add.add(group)
+            else:
+                groups_to_remove.add(group)
 
         for job_category in JobCategory.objects.filter(event=self.event):
             should_belong_to_group = self.job_categories_accepted.filter(pk=job_category.pk).exists()
             group = self.event.labour_event_meta.get_group(job_category.slug)
 
-            ensure_user_is_member_of_group(self.person.user, group, should_belong_to_group)
+            if should_belong_to_group:
+                groups_to_add.add(group)
+            else:
+                groups_to_remove.add(group)
+
+        ensure_user_group_membership(self.person.user, groups_to_add, groups_to_remove)
 
     def apply_state_email_aliases(self):
         if 'access' not in settings.INSTALLED_APPS:

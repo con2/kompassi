@@ -17,6 +17,7 @@ IPA_JSONRPC_URL = '{ipa}/session/json'.format(ipa=settings.KOMPASSI_IPA)
 IPA_OTHER_USER_PASSWORD_MAGICK = 'CHANGING_PASSWORD_FOR_ANOTHER_USER'
 IPA_GROUP_ADD_ERROR_ALREADY_EXISTS = 4002
 IPA_HEADERS = {
+    'Connection': 'keep-alive',
     'Referer': settings.KOMPASSI_IPA,
 }
 
@@ -40,6 +41,12 @@ class IPASession(object):
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.session.close()
 
+    def get_user_info(self, username=None):
+        if username is None:
+            username = self.username
+
+        return self._json_rpc('user_show', username)
+
     def change_own_password(self, new_password):
         return self._json_rpc('passwd', self.username, new_password, self.password)
 
@@ -51,6 +58,13 @@ class IPASession(object):
 
     def remove_user_from_group(self, username, groupname):
         return self._json_rpc('group_remove_member', groupname, user=[username])
+
+    def create_user(self, username, first_name, surname, password):
+        return self._json_rpc('user_add', username,
+            givenname=first_name,
+            sn=surname,
+            userpassword=password,
+        )
 
     def create_group(self, group_name):
         try:
@@ -78,7 +92,10 @@ class IPASession(object):
             'password': self.password,
         }
 
-        response = self.session.post(IPA_LOGIN_URL, data=payload, verify=False)
+        response = self.session.post(IPA_LOGIN_URL,
+            data=payload,
+            verify=settings.KOMPASSI_IPA_CACERT_PATH,
+        )
 
         try:
             response.raise_for_status()
@@ -103,10 +120,7 @@ class IPASession(object):
         response = self.session.post(IPA_JSONRPC_URL,
             data=json.dumps(payload),
             headers=headers,
-
-            # XXX
-            # verify=settings.KOMPASSI_IPA_CACERT_PATH,
-            verify=False,
+            verify=settings.KOMPASSI_IPA_CACERT_PATH,
         )
 
         try:
@@ -124,8 +138,12 @@ class IPASession(object):
         return result
 
     @classmethod
-    def get_admin_session(cls):
+    def get_admin_session(
+        cls,
+        username=settings.KOMPASSI_IPA_ADMIN_USERNAME,
+        password=settings.KOMPASSI_IPA_ADMIN_PASSWORD
+    ):
         if not hasattr(cls, '_admin_session'):
-            cls._admin_session = IPASession(settings.IPA_ADMIN_USERNAME, settings.IPA_ADMIN_PASSWORD)
+            cls._admin_session = IPASession(username, password)
 
         return cls._admin_session

@@ -71,7 +71,7 @@ class Setup(object):
 
         labour_admin_group, created = Group.objects.get_or_create(name='aicon-staff')
 
-        if self.test and created:
+        if self.test:
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
@@ -212,7 +212,7 @@ class Setup(object):
         # XXX update for Aicon
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, unused = TicketsEventMeta.get_or_create_group(self.event, 'admins')
+        tickets_admin_group, = TicketsEventMeta.get_or_create_groups(self.event, ['admins'])
 
         defaults = dict(
             admin_group=tickets_admin_group,

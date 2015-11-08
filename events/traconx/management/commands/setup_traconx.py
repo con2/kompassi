@@ -63,10 +63,9 @@ class Setup(object):
         from ...models import SignupExtra, SpecialDiet, Night
         from django.contrib.contenttypes.models import ContentType
 
-        labour_admin_group, created = LabourEventMeta.get_or_create_group(self.event, 'admins')
+        labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
 
-        if self.test and created:
-            from core.models import Person
+        if self.test:
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
@@ -257,7 +256,7 @@ class Setup(object):
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
-        badge_admin_group, unused = BadgesEventMeta.get_or_create_group(self.event, 'admins')
+        badge_admin_group, = BadgesEventMeta.get_or_create_groups(self.event, ['admins'])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -269,7 +268,7 @@ class Setup(object):
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, unused = TicketsEventMeta.get_or_create_group(self.event, 'admins')
+        tickets_admin_group, = TicketsEventMeta.get_or_create_groups(self.event, ['admins'])
 
         defaults = dict(
             admin_group=tickets_admin_group,
@@ -514,7 +513,7 @@ class Setup(object):
             View,
         )
 
-        programme_admin_group, unused = ProgrammeEventMeta.get_or_create_group(self.event, 'admins')
+        programme_admin_group, = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins'])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
             public=False,
             admin_group=programme_admin_group,
@@ -657,7 +656,7 @@ class Setup(object):
     def setup_sms(self):
         from sms.models import SMSEventMeta
 
-        sms_admin_group, unused = SMSEventMeta.get_or_create_group(self.event, 'admins')
+        sms_admin_group, = SMSEventMeta.get_or_create_groups(self.event, ['admins'])
         meta, unused = SMSEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(

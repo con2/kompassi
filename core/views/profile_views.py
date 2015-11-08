@@ -85,8 +85,8 @@ def core_password_view(request):
 
             ldap_user = getattr(request.user, 'ldap_user', None)
             if ldap_user:
-                from external_auth.utils import change_current_user_password
-                from external_auth.ipa import IPAError
+                from ipa_integration.utils import change_current_user_password
+                from ipa_integration.ipa import IPAError
 
                 try:
                     change_current_user_password(request,

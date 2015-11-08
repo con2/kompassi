@@ -11,9 +11,8 @@ from .form_utils import (
 from .misc_utils import (
     check_password_strength,
     create_temporary_password,
-    ensure_group_exists,
-    ensure_user_is_member_of_group,
-    ensure_user_is_not_member_of_group,
+    ensure_groups_exist,
+    ensure_user_group_membership,
     get_code,
     give_all_app_perms_to_group,
     groupby_strict,

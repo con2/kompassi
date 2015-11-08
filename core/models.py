@@ -12,7 +12,7 @@ from django.utils.dateformat import format as format_date
 from django.utils import timezone
 
 from .utils import (
-    ensure_group_exists,
+    ensure_groups_exist,
     format_date_range,
     pick_attrs,
     SLUG_FIELD_PARAMS,
@@ -650,6 +650,10 @@ class GroupManagementMixin(object):
 
     @classmethod
     def make_group_name(cls, host, suffix):
+        # to avoid cases where someone calls .get_or_create_groups(foo, 'admins')
+        # and would otherwise get groups a, d, m, i, n, s...
+        assert isinstance(suffix, basestring) and len(suffix) > 1
+
         from django.contrib.contenttypes.models import ContentType
 
         ctype = ContentType.objects.get_for_model(cls)
@@ -662,10 +666,10 @@ class GroupManagementMixin(object):
         )
 
     @classmethod
-    def get_or_create_group(cls, host, suffix):
-        group_name = cls.make_group_name(host, suffix)
+    def get_or_create_groups(cls, host, suffixes):
+        group_names = [cls.make_group_name(host, suffix) for suffix in suffixes]
 
-        return ensure_group_exists(group_name)
+        return ensure_groups_exist(group_names)
 
 
 class EventMetaBase(models.Model, GroupManagementMixin):
@@ -782,9 +786,9 @@ class PasswordResetToken(OneTimeCode):
 
         user = code.person.user
 
-        if 'external_auth' in settings.INSTALLED_APPS:
-            from external_auth.utils import reset_user_password
-            from external_auth.ipa import IPAError
+        if 'ipa_integration' in settings.INSTALLED_APPS:
+            from ipa_integration.utils import reset_user_password
+            from ipa_integration.ipa import IPAError
 
             try:
                 reset_user_password(user, new_password)

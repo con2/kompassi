@@ -64,7 +64,7 @@ class ProgrammeEventMeta(EventMetaBase):
         from core.models import Event
 
         event, unused = Event.get_or_create_dummy()
-        admin_group, unused = cls.get_or_create_group(event, 'admins')
+        admin_group, = cls.get_or_create_groups(event, ['admins'])
 
         return cls.objects.get_or_create(
             event=event,

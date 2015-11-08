@@ -23,7 +23,7 @@ class PaymentsEventMeta(EventMetaBase):
         if event is None:
             event, unused = Event.get_or_create_dummy()
 
-        group, unused = PaymentsEventMeta.get_or_create_group(event, 'admins')
+        group, = PaymentsEventMeta.get_or_create_groups(event, ['admins'])
 
         return cls.objects.get_or_create(event=event, defaults=dict(
             EVENT_META_DEFAULTS,

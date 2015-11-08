@@ -9,10 +9,7 @@ from labour.models import LabourEventMeta
 @given(u'the event has a message that is to be sent to all applicants')
 @when(u'a message is added that should be sent to all applicants')
 def message_to_be_sent_to_all_applicants(context):
-    applicants_group, unused = LabourEventMeta.get_or_create_group(
-        event=context.event,
-        suffix='applicants',
-    )
+    applicants_group, = LabourEventMeta.get_or_create_groups(context.event, ['applicants'])
 
     context.message = Message.objects.create(
         recipient=RecipientGroup.objects.get(group=applicants_group),
@@ -26,10 +23,7 @@ def message_to_be_sent_to_all_applicants(context):
 @given(u'the event has a message that is to be sent to all accepted workers')
 @when(u'a message is added that should be sent to all accepted workers')
 def message_to_be_sent_to_all_accepted(context):
-    accepted_group, unused = LabourEventMeta.get_or_create_group(
-        event=context.event,
-        suffix='accepted',
-    )
+    accepted_group, = LabourEventMeta.get_or_create_groups(context.event, ['accepted'])
 
     context.message = Message.objects.create(
         recipient=RecipientGroup.objects.get(group=accepted_group),
@@ -52,10 +46,7 @@ def receive_the_message(context):
 
 @given(u'the event has a message that is to be sent to all workers with finished shifts')
 def step_impl(context):
-    finished_group, unused = LabourEventMeta.get_or_create_group(
-        event=context.event,
-        suffix='finished',
-    )
+    finished_group, = LabourEventMeta.get_or_create_groups(context.event, ['finished'])
 
     context.message = Message.objects.create(
         recipient=RecipientGroup.objects.get(group=finished_group),
@@ -72,10 +63,7 @@ def step_impl(context):
 
 @when(u'a message is added that should be sent to all rejected workers')
 def step_impl(context):
-    rejected_group, unused = LabourEventMeta.get_or_create_group(
-        event=context.event,
-        suffix='rejected',
-    )
+    rejected_group, = LabourEventMeta.get_or_create_groups(context.event, ['rejected'])
 
     context.message = Message.objects.create(
         recipient=RecipientGroup.objects.get(group=rejected_group),

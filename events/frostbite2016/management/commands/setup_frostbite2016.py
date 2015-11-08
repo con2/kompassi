@@ -61,9 +61,9 @@ class Setup(object):
         from ...models import SignupExtra
         from django.contrib.contenttypes.models import ContentType
 
-        labour_admin_group, created = LabourEventMeta.get_or_create_group(self.event, 'admins')
+        labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
 
-        if self.test and created:
+        if self.test:
             from core.models import Person
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)

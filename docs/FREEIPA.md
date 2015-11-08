@@ -6,7 +6,7 @@ Turska supports optional integration with FreeIPA via LDAP, Kerberos and JSON-RP
 
 In `turska/settings.py`:
 
-* `INSTALLED_APPS`: If `external_auth` is installed, integrates with IPA.
+* `INSTALLED_APPS`: If `ipa_integration` is installed, integrates with IPA.
 * `TURSKA_INSTALLATION_SLUG`: Used as a prefix in many things such as FreeIPA groups.
 * `TURSKA_IPA_JSONRPC`: The FreeIPA JSON-RPC endpoint.
 * `TURSKA_IPA_CACERT_PATH`
@@ -27,7 +27,7 @@ If you need to do development on the FreeIPA integration, follow this short HOWT
 ### Install Kerberos & LDAP libraries and utilities
 
     sudo apt-get install krb5-user libkrb5-dev libldap2-dev libsasl2-dev libsasl2-modules-gssapi-mit python-dev build-essential
-    pip install -r requirements-external_auth.txt
+    pip install -r requirements-ipa_integration.txt
 
 ### Get the FreeIPA CA certificate
 

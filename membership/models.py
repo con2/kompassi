@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django.db import models
 
 from core.models import Organization, Person, GroupManagementMixin
-from core.utils import format_date, ensure_user_is_member_of_group
+from core.utils import format_date, ensure_user_group_membership
 from tickets.utils import format_price
 
 
@@ -162,11 +162,16 @@ class Membership(models.Model):
 
     def _apply_state_group_membership(self):
         if self.person.user:
-            ensure_user_is_member_of_group(
-                user=self.person.user,
-                group=self.organization.membership_organization_meta.members_group,
-                group_membership=self.is_in_effect,
-            )
+            members_group = self.organization.membership_organization_meta.members_group
+
+            if self.is_in_effect:
+                groups_to_add = [members_group]
+                groups_to_remove = []
+            else:
+                groups_to_add = []
+                groups_to_remove = [members_group]
+
+            ensure_user_group_membership(self.person.user, groups_to_add, groups_to_remove)
 
     def _apply_state_email_aliases(self):
         if 'access' not in settings.INSTALLED_APPS:

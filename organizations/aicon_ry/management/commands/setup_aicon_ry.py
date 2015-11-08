@@ -40,7 +40,7 @@ class Setup(object):
         self.group, unused = Group.objects.get_or_create(name='aicon-staff')
 
     def setup_membership(self):
-        members_group, created = MembershipOrganizationMeta.get_or_create_group(self.organization, 'members')
+        members_group, = MembershipOrganizationMeta.get_or_create_groups(self.organization, ['members'])
         self.meta, created = MembershipOrganizationMeta.objects.get_or_create(organization=self.organization, defaults=dict(
             admin_group=self.group,
             members_group=members_group,

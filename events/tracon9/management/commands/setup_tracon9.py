@@ -72,9 +72,9 @@ class Command(BaseCommand):
         # Labour
         #
 
-        labour_admin_group, created = LabourEventMeta.get_or_create_group(event, 'admins')
+        labour_admin_group, = LabourEventMeta.get_or_create_groups(event, ['admins'])
 
-        if options['test'] and created:
+        if options['test']:
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
@@ -217,7 +217,7 @@ class Command(BaseCommand):
         # Programme
         #
 
-        programme_admin_group, unused = ProgrammeEventMeta.get_or_create_group(event, 'admins')
+        programme_admin_group, = ProgrammeEventMeta.get_or_create_groups(event, ['admins'])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=event, defaults=dict(
             public=False,
             admin_group=programme_admin_group,
@@ -349,7 +349,7 @@ class Command(BaseCommand):
         # Tickets
         #
 
-        tickets_admin_group, unused = TicketsEventMeta.get_or_create_group(event, 'admins')
+        tickets_admin_group, = TicketsEventMeta.get_or_create_groups(event, ['admins'])
         give_all_app_perms_to_group('tickets', tickets_admin_group)
 
         tickets_event_meta_defaults = dict(
@@ -529,7 +529,7 @@ class Command(BaseCommand):
         #
         # Badges
         #
-        badge_admin_group, unused = BadgesEventMeta.get_or_create_group(event, 'admins')
+        badge_admin_group, = BadgesEventMeta.get_or_create_groups(event, ['admins'])
 
         BadgesEventMeta.objects.get_or_create(
             event=event,

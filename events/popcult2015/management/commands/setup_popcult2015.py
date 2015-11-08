@@ -45,7 +45,7 @@ class Setup(object):
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, unused = TicketsEventMeta.get_or_create_group(self.event, 'admins')
+        tickets_admin_group, = TicketsEventMeta.get_or_create_groups(self.event, ['admins'])
 
         defaults = dict(
             admin_group=tickets_admin_group,

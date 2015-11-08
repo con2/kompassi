@@ -116,7 +116,7 @@ class SMSEventMeta(EventMetaBase):
     def get_or_create_dummy(cls):
         from core.models import Event
         event, unused = Event.get_or_create_dummy()
-        group, unused = cls.get_or_create_group(event, 'admins')
+        group, unused = cls.get_or_create_groups(event, ['admins'])
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
     class Meta:

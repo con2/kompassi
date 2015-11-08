@@ -190,8 +190,8 @@ class CallbackView(View):
 
         person.setup_email_verification(request)
 
-        if 'external_auth' in settings.INSTALLED_APPS:
-            from external_auth.utils import create_user
+        if 'ipa_integration' in settings.INSTALLED_APPS:
+            from ipa_integration.utils import create_user
             create_user(user, password)
 
         messages.success(request, u'Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!')

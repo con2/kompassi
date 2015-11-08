@@ -52,37 +52,27 @@ def give_all_app_perms_to_group(app_label, group):
             perm.group_set.add(group)
 
 
-def ensure_user_is_member_of_group(user, group, group_membership=True):
-    if not group_membership:
-        return ensure_user_is_not_member_of_group(user, group)
-
-    if type(user) is not User:
+def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
+    if not isinstance(user, User):
         user = user.user
 
-    group.user_set.add(user)
+    for group in groups_to_add:
+        group.user_set.add(user)
 
-    if 'external_auth' in settings.INSTALLED_APPS:
-        from external_auth.utils import add_user_to_group
-        add_user_to_group(user, group)
+    for group in groups_to_remove:
+        group.user_set.remove(user)
 
-
-def ensure_user_is_not_member_of_group(user, group):
-    if type(user) is not User:
-        user = user.user
-
-    group.user_set.remove(user)
-
-    if 'external_auth' in settings.INSTALLED_APPS:
-        from external_auth.utils import remove_user_from_group
-        remove_user_from_group(user, group)
+    if 'ipa_integration' in settings.INSTALLED_APPS:
+        from ipa_integration.utils import ensure_user_group_membership as ea_ensure_user_group_membership
+        ea_ensure_user_group_membership(user, groups_to_add, groups_to_remove)
 
 
-def ensure_group_exists(group_name):
-    if 'external_auth' in settings.INSTALLED_APPS:
-        from external_auth.utils import ensure_group_exists as ea_ensure_group_exists
-        ea_ensure_group_exists(group_name)
+def ensure_groups_exist(group_names):
+    if 'ipa_integration' in settings.INSTALLED_APPS:
+        from ipa_integration.utils import ensure_groups_exist as ea_ensure_groups_exist
+        ea_ensure_groups_exist(group_names)
 
-    return Group.objects.get_or_create(name=group_name)
+    return [Group.objects.get_or_create(name=group_name)[0] for group_name in group_names]
 
 
 def get_code(path):
