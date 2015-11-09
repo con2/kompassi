@@ -39,6 +39,7 @@ SHIRT_TYPES = [
     (u'DESURITY', u'Desurity'),
     (u'KUVAAJA', u'Kuvaaja'),
     (u'VENDOR', u'Myynti'),
+    (u'TOOLATE', u'Myöhästyi paitatilauksesta'),
 ]
 
 
@@ -75,6 +76,7 @@ class SignupExtra(SignupExtraBase):
     shirt_size = models.CharField(
         max_length=8,
         choices=SHIRT_SIZES,
+        default=u'NO_SHIRT',
         verbose_name=u'Paidan koko',
         help_text=u'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. '
                   u'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
@@ -85,7 +87,7 @@ class SignupExtra(SignupExtraBase):
     shirt_type = models.CharField(
         max_length=8,
         choices=SHIRT_TYPES,
-        default=u'STAFF',
+        default=u'TOOLATE',
         verbose_name=u'Paidan tyyppi',
     )
 
