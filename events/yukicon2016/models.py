@@ -87,7 +87,7 @@ class SignupExtra(SignupExtraBase):
 
     want_certificate = models.BooleanField(
         default=False,
-        verbose_name=u'Haluan todistuksen työskentelystäni Hitpointissa',
+        verbose_name=u'Haluan todistuksen työskentelystäni Yukiconissa',
     )
 
     # certificate_delivery_address = models.TextField(
