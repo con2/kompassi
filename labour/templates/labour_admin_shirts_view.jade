@@ -1,0 +1,27 @@
+extends core_admin_base
+- load crispy_forms_tags
+block title
+  | Paitakoot
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Paitakoot
+    table.table.table-striped
+      thead
+        tr
+          th
+          for shirt_type_slug, shirt_type_name in shirt_types
+            th= shirt_type_name
+      tfoot
+        tr
+          th Yhteensä
+          for num_shirts in shirt_type_totals
+            th= num_shirts
+      tbody
+        for shirt_size_name, num_shirts_by_type in shirt_size_rows
+          tr
+            th= shirt_size_name
+            for num_shirts in num_shirts_by_type
+              td= num_shirts
+    .panel-footer.clearfix
+      p.text-muted {{ num_shirts }} paita{{ num_shirts|pluralize:"a" }} (sisältää mahdolliset <em>Ei paitaa</em> -vastaukset). Vain hyväksytyt hakemukset lasketaan.
+

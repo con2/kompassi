@@ -1287,6 +1287,28 @@ class SignupExtraBase(models.Model):
     def get_query_class():
         return None
 
+    @classmethod
+    def get_shirt_size_field(cls):
+        if not hasattr(cls, '_shirt_size_field'):
+            cls._shirt_size_field = None
+            for field in cls._meta.fields:
+                if field.name == 'shirt_size':
+                    cls._shirt_size_field = field
+                    break
+
+        return cls._shirt_size_field
+
+    @classmethod
+    def get_shirt_type_field(cls):
+        if not hasattr(cls, '_shirt_type_field'):
+            cls._shirt_type_field = None
+            for field in cls._meta.fields:
+                if field.name == 'shirt_type':
+                    cls._shirt_type_field = field
+                    break
+
+        return cls._shirt_type_field
+
     class Meta:
         abstract = True
 

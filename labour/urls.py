@@ -82,6 +82,12 @@ urlpatterns = patterns('',
     ),
 
     url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/shirts/?$',
+        labour_admin_shirts_view,
+        name='labour_admin_shirts_view'
+    ),
+
+    url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/query$',
         query_index,
         name='labour_admin_query'
