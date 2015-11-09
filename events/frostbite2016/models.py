@@ -3,7 +3,6 @@
 from django.db import models
 
 from labour.models import SignupExtraBase
-from labour.querybuilder import QueryBuilder, add_prefix
 
 from core.utils import validate_slug
 
@@ -103,33 +102,4 @@ class SignupExtra(SignupExtraBase):
 
     @staticmethod
     def get_query_class():
-        return Signupfrostbite2016
-
-
-class Signupfrostbite2016(QueryBuilder):
-    model = SignupExtra
-    query_related_exclude = {
-        "signup": ("event",),
-    }
-    query_related_filter = {
-        "signup": "*",
-        "signup__person": ("birth_date",),
-    }
-    view_related_filter = {
-        "signup__person": ("first_name", "surname", "nick", "birth_date", "email", "phone",),
-    }
-    default_views = [
-        "signup__person__first_name",
-        "signup__person__surname",
-        "signup__person__nick",
-    ]
-    view_groups = (
-        (u"Henkilötiedot", add_prefix("signup__person__", (
-            "surname", "first_name", "nick", "phone", "email", "birth_date"))),
-        (u"Sisäiset", add_prefix("signup__", (
-            "state", "job_categories_accepted__pk", "notes", "created_at", "updated_at"))),
-        (u"Työvuorotoiveet", "signup__job_categories__pk", "shift_type",),
-        (u"Lisätiedot", "shirt_size", "shirt_type", "desu_amount", "prior_experience", "free_text"),
-        (u"Tila", add_prefix("signup__time_", ("accepted", "finished", "complained", "cancelled",
-                                              "rejected", "arrived", "work_accepted", "reprimanded",))),
-    )
+        raise NotImplementedError()
