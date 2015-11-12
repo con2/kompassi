@@ -57,7 +57,7 @@ var config = {
 };
 
 var browserifyConfig = {
-  entries: [config.scripts.source],
+  entries: ['node_modules/babel-polyfill/dist/polyfill', config.scripts.source],
   extensions: config.scripts.extensions,
   debug: !production,
   cache: {},
