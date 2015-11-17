@@ -15,7 +15,10 @@ class Command(BaseCommand):
         for event_slug in args[1:]:
             event = Event.objects.get(slug=event_slug)
 
-            for programme in Programme.objects.filter(category__event=event):
+            for programme in Programme.objects.filter(category__event=event).exclude(state__in=['rejected', 'cancelled']):
                 for person in programme.organizers.all():
-                    print person
-                    Badge.get_or_create(event=event, person=person)
+                    try:
+                        Badge.get_or_create(event=event, person=person)
+                        print person
+                    except Badge.MultipleObjectsReturned:
+                        print u'WARNING: Multiple badges for', person
