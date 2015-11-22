@@ -395,7 +395,7 @@ class Programme(models.Model, CsvExportMixin):
                 'room_name',
                 'length',
                 'start_time',
-                'public',
+                'is_public',
             )
         elif format == 'desucon':
             return pick_attrs(self,
