@@ -624,6 +624,7 @@ class Person(models.Model):
                 'nick',
                 'full_name',
                 'display_name',
+                'preferred_name_display_style',
 
                 'phone',
                 'email',
