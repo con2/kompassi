@@ -796,17 +796,7 @@ class PasswordResetToken(OneTimeCode):
 
         user = code.person.user
 
-        if 'ipa_integration' in settings.INSTALLED_APPS:
-            from ipa_integration.utils import reset_user_password
-            from ipa_integration.ipa import IPAError
-
-            try:
-                reset_user_password(user, new_password)
-            except IPAError, e:
-                raise PasswordResetError(e)
-
-        user.set_password(new_password)
-        user.save()
+        change_user_password(user, old_password=None, new_password=new_password)
 
 
 class EmailVerificationToken(OneTimeCode):

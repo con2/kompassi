@@ -28,8 +28,8 @@ def create_user(user, password):
         user_session.change_own_password(password)
 
 
-def change_current_user_password(request, old_password, new_password):
-    with IPASession(request.user.username, old_password) as user_session:
+def change_user_password(user, old_password, new_password):
+    with IPASession(user.username, old_password) as user_session:
         user_session.change_own_password(old_password, new_password)
 
 

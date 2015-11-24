@@ -9,6 +9,7 @@ from .form_utils import (
 )
 
 from .misc_utils import (
+    change_user_password,
     check_password_strength,
     create_temporary_password,
     ensure_groups_exist,

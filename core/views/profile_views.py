@@ -34,6 +34,7 @@ from ..utils import (
     initialize_form,
     next_redirect,
     url,
+    change_user_password,
 )
 from ..page_wizard import (
     page_wizard_clear,
@@ -83,25 +84,15 @@ def core_password_view(request):
             old_password = form.cleaned_data['old_password']
             new_password = form.cleaned_data['new_password']
 
-            ldap_user = getattr(request.user, 'ldap_user', None)
-            if ldap_user:
-                from ipa_integration.utils import change_current_user_password
-                from ipa_integration.ipa import IPAError
-
-                try:
-                    change_current_user_password(request,
-                        old_password=old_password,
-                        new_password=new_password,
-                    )
-                except IPAError, e:
-                    # TODO need to tell the user if this is due to too simple pw
-                    messages.error(request, u'Salasanan vaihto epäonnistui.')
-                else:
-                    messages.success(request, u'Salasanasi on vaihdettu.')
-
-            request.user.set_password(new_password)
-            request.user.save()
-            messages.success(request, u'Salasanasi on vaihdettu.')
+            try:
+                change_user_password(request.user, old_password=old_password, new_password=new_password)
+            except RuntimeError:
+                logger.exception('Failed to change password')
+                messages.error(request, u'Salasanan vaihto epäonnistui. Ole hyvä ja yritä myöhemmin uudelleen.')
+                return redirect('core_password_view')
+            else:
+                messages.success(request, u'Salasanasi on vaihdettu. Voit nyt kirjautua uudestaan sisään uudella salasanallasi.')
+                return redirect('core_frontpage_view')
         else:
             messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
 

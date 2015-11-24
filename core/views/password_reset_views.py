@@ -34,6 +34,7 @@ from ..utils import (
     initialize_form,
     next_redirect,
     url,
+    change_user_password,
 )
 from ..helpers import person_required
 

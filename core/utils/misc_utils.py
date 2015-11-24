@@ -75,6 +75,23 @@ def ensure_groups_exist(group_names):
     return [Group.objects.get_or_create(name=group_name)[0] for group_name in group_names]
 
 
+class AllowPasswordChangeWithoutOldPassword(object):
+    pass
+
+
+def change_user_password(user, new_password, old_password=AllowPasswordChangeWithoutOldPassword):
+    if 'ipa_integration' in settings.INSTALLED_APPS:
+        if old_password is AllowPasswordChangeWithoutOldPassword:
+            from ipa_integration.utils import reset_user_password
+            reset_user_password(user, new_password)
+        else:
+            from ipa_integration.utils import change_user_password as ea_change_user_password
+            ea_change_user_password(user, old_password=old_password, new_password=new_password)
+
+    user.set_password(new_password)
+    user.save()
+
+
 def get_code(path):
     """
     Given "core.utils:get_code", imports the module "core.utils" and returns
