@@ -13,6 +13,7 @@ from django.utils.dateformat import format as format_date
 from django.utils import timezone
 
 from .utils import (
+    change_user_password,
     ensure_groups_exist,
     format_date_range,
     pick_attrs,
@@ -796,7 +797,7 @@ class PasswordResetToken(OneTimeCode):
 
         user = code.person.user
 
-        change_user_password(user, old_password=None, new_password=new_password)
+        change_user_password(user, new_password=new_password)
 
 
 class EmailVerificationToken(OneTimeCode):

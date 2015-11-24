@@ -30,7 +30,7 @@ def create_user(user, password):
 
 def change_user_password(user, old_password, new_password):
     with IPASession(user.username, old_password) as user_session:
-        user_session.change_own_password(old_password, new_password)
+        user_session.change_own_password(new_password)
 
 
 def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
