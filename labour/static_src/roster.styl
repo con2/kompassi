@@ -1,13 +1,12 @@
-#labour-admin-roster-view
-  .roster-editable
-    cursor pointer
+.roster-editable
+  cursor pointer
 
-    &:hover
-      text-decoration underline
+  &:hover
+    text-decoration underline
 
-  // necessary to avoid all kinds of graphical glitches with frozen first column
-  .roster-timeline, .roster-timeline th, .roster-timeline td
-    height 60px
+// necessary to avoid all kinds of graphical glitches with frozen first column
+.roster-timeline, .roster-timeline th, .roster-timeline td
+  height 60px
 
 .kompassi-frozen-table-container
   overflow-x scroll
@@ -20,3 +19,27 @@
   width 250px
   left 0
   top auto
+
+.roster-lane td
+  height 20px
+  padding 0 !important
+  text-align center
+  font-size 13px
+
+.roster-slot
+  @extend .roster-editable
+
+  // @extend .danger
+  background-color #f2dede
+
+.roster-shift-planned
+  // @extend .info
+  background-color #d9edf7
+
+.roster-shift-confirmed
+  // @extend .success
+  background-color #dff0d8
+
+.roster-shift-complained
+  background-color #fcf8e3
+  // @extend .warning

@@ -1,0 +1,39 @@
+.modal.fade#roster-shift-modal(tabindex="-1",
+                                         role="dialog",
+                                         aria-labelledby="roster-shift-modal-title",
+                                         data-bind='with: jobCategory.shiftModal')
+  .modal-dialog(role="document")
+    form(data-bind='submit: ok').modal-content
+      .modal-header
+        h4 Määrää vänkäri vuoroon
+      .modal-body
+        .form-horizontal
+          .form-group
+            label.control-label.col-md-3 Tehtävä
+            .col-md-9
+              ol.breadcrumb(data-bind='with: job')
+                li(data-bind='text: jobCategory.title')
+                li(data-bind='text: title')
+          .form-group
+            label.control-label.col-md-3 Alkuaika
+            .col-md-9
+              select.form-control(required,
+                                  data-bind="options: $root.config.workHours,
+                                             optionsValue: 'startTime',
+                                             optionsText: 'formatted',
+                                             value: startTime")
+                option(value="") pe 15.1.2016 12:00
+          .form-group
+            label.control-label.col-md-3 Kesto (tuntia)
+            .col-md-9
+              input.form-control(type="number", required, min="1", step="1", max="99", data-bind='value: hours')
+          .form-group
+            label.control-label.col-md-3 Henkilö
+            .col-md-9
+              input.form-control(type="number", required, min="0", step="1", max="99", data-bind='value: person')
+      .modal-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-default(href='', data-bind='click: cancel') Peruuta
+          button.btn.btn-success(data-bind='click: ok')
+            i.kompassi-icon-space-right.fa.fa-check
+            | Tallenna

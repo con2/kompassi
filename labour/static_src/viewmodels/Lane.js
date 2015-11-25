@@ -3,7 +3,8 @@ import _ from 'lodash';
 
 class EmptyCell {
   constructor(lane, startTime) {
-    this.type = 'EmptyCell';
+    this.cssClass = 'roster-empty-cell';
+    this.text = '';
     this.lane = lane;
     this.startTime = startTime;
     this.hours = 1; // might increase
@@ -15,17 +16,32 @@ class EmptyCell {
 
 class Slot {
   constructor(lane, startTime) {
-    this.type = 'Slot';
+    this.cssClass = "roster-slot";
+    this.text = '+';
     this.lane = lane;
     this.startTime = startTime;
     this.hours = 1; // always 1
   }
 
-  click() {}
+  click() {
+    this.lane.app.jobCategory.shiftModal.prompt(this);
+  }
 }
 
 
 class Shift {
+  constructor(lane, startTime) {
+    this.state = 'planned'
+    this.cssClass = `roster-shift roster-shift-${this.state}`;
+    this.text = 'Erkki Esimerkki';
+    this.lane = lane;
+    this.startTime = startTime;
+    this.hours = 1; // might increase
+  }
+
+  click() {
+    console.log('Shift', 'click!');
+  }
 }
 
 

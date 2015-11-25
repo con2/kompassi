@@ -13,6 +13,7 @@ import {
 import JobModal from './JobModal';
 import RequirementCell from './RequirementCell';
 import RequirementModal from './RequirementModal';
+import ShiftModal from './ShiftModal';
 import Lane from './Lane';
 
 
@@ -23,6 +24,7 @@ export default class JobCategory {
 
     this.requirementModal = new RequirementModal(app);
     this.jobModal = new JobModal(app);
+    this.shiftModal = new ShiftModal(app);
 
     this.setupRoutes();
   }

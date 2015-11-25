@@ -11,8 +11,8 @@ thead
     th(data-bind="css: css()")
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
+// ko foreach: jobCategory().jobs
 tbody
-  // ko foreach: jobCategory().jobs
   tr
     td.kompassi-freeze-first-column
       a(href='', data-bind="click: function() { $parent.editJob($data) }")
@@ -25,13 +25,14 @@ tbody
       |<span data-bind='text: allocated'></span>/<span data-bind='text: required'></span>
     // /ko
   // ko foreach: lanes
-  tr
+  tr.roster-lane
     td.kompassi-freeze-first-column
     // ko foreach: cells
-    td(data-bind="attr: {colspan: hours}")
+    td(data-bind="attr: {colspan: hours}, css: cssClass, text: text, click: click")
     // /ko
   // /ko
-  // /ko
+// /ko
+tbody
   tr
     td.kompassi-freeze-first-column
       a(href='', data-bind="click: createJob")
