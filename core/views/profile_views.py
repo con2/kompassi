@@ -44,7 +44,7 @@ from ..helpers import person_required
 
 
 @person_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def core_profile_view(request):
     person = request.user.person
     old_email = person.email
@@ -75,7 +75,7 @@ def core_profile_view(request):
 
 
 @login_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def core_password_view(request):
     form = initialize_form(PasswordForm, request, the_request=request)
 

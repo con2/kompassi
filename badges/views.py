@@ -77,7 +77,7 @@ badges_to_yoink_fake_personnel_class = BadgesToYoinkFakePersonnelClass()
 
 
 @badges_admin_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
     if request.method == 'POST':
         form = initialize_form(HiddenBadgeCrouchingForm, request)
@@ -206,7 +206,7 @@ def badges_admin_export_view(request, vars, event, batch_id, format='csv'):
 
 
 @badges_admin_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
     # XXX move this to core
     from programme.forms import ProgrammePersonForm

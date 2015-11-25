@@ -107,7 +107,7 @@ def do_login(request, user, password=None, next='core_frontpage_view'):
     return redirect(next)
 
 
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def core_logout_view(request):
     next = get_next(request)
     logout(request)

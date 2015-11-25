@@ -71,7 +71,7 @@ def core_email_verification_view(request, code):
 
 
 @person_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def core_email_verification_request_view(request):
     person = request.user.person
 

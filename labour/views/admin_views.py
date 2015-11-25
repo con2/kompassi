@@ -56,7 +56,7 @@ def labour_admin_dashboard_view(request, vars, event):
 
 
 @labour_admin_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def labour_admin_signup_view(request, vars, event, person_id):
     person = get_object_or_404(Person, pk=int(person_id))
     signup = get_object_or_404(Signup, person=person, event=event)
@@ -148,7 +148,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
 
 @labour_admin_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def labour_admin_signups_view(request, vars, event, format='screen'):
     signups = event.signup_set.all()
     signups = signups.select_related('person')
@@ -283,7 +283,7 @@ def labour_admin_mail_view(request, vars, event):
 
 
 @labour_admin_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def labour_admin_mail_editor_view(request, vars, event, message_id=None):
     from mailings.models import Message
     from mailings.forms import MessageForm

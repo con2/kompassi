@@ -302,6 +302,7 @@ def tickets_admin_etickets_view(request, vars, event, order_id):
 
 
 @tickets_admin_required
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def tickets_admin_tools_view(request, vars, event):
     if request.method == 'POST':
         if 'cancel-unpaid' in request.POST:
@@ -323,6 +324,7 @@ def tickets_admin_tools_view(request, vars, event):
 
 
 @tickets_admin_required
+@require_safe
 def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
     if limit_group_id is not None:
         limit_group_id = int(limit_group_id)

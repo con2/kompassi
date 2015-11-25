@@ -39,7 +39,7 @@ from ..utils import (
 from ..helpers import person_required
 
 
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def core_password_reset_view(request, code):
     if request.user.is_authenticated():
         return redirect('core_password_view')
@@ -73,7 +73,7 @@ def core_password_reset_view(request, code):
     return render(request, 'core_password_reset_view.jade', vars)
 
 
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def core_password_reset_request_view(request):
     if request.user.is_authenticated():
         return redirect('core_password_view')

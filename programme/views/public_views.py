@@ -179,7 +179,7 @@ def programme_internal_adobe_taggedtext_view(request, event):
 
 
 @programme_event_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def programme_self_service_view(request, event, programme_edit_code):
     token = get_object_or_404(ProgrammeEditToken,
         programme__category__event=event,

@@ -111,7 +111,7 @@ def programme_admin_view(request, vars, event, format='screen'):
 
 
 @programme_admin_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def programme_admin_detail_view(request, vars, event, programme_id=None):
     if programme_id:
         programme = get_object_or_404(Programme, category__event=event, pk=int(programme_id))

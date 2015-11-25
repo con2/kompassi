@@ -98,7 +98,7 @@ def core_registration_view(request):
 
 
 @login_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def core_personify_view(request):
     try:
         person = request.user.person

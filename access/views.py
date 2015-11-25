@@ -58,7 +58,7 @@ def access_profile_request_privilege_view(request, privilege_slug):
 
 
 @person_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def access_profile_aliases_view(request):
     person = request.user.person
 

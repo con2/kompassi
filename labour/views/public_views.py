@@ -65,7 +65,7 @@ def qualifications_related():
 
 
 @labour_event_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def labour_signup_view(request, event, alternative_form_slug=None):
     """
     This is the "gate" function. The implementation is in
@@ -294,7 +294,7 @@ def labour_qualifications_view(request):
 
 
 @person_required
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def labour_person_qualification_view(request, qualification):
     vars = page_wizard_vars(request)
 
