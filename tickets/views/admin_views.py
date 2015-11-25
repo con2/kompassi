@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpRespon
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
 from django.utils.timezone import now
-from django.views.decorators.http import require_POST, require_GET, require_http_methods
+from django.views.decorators.http import require_POST, require_safe, require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 
 try:
@@ -65,7 +65,7 @@ tickets_admin_batches_view = tickets_admin_required(batches_view(
 
 
 @tickets_admin_required
-@require_GET
+@require_safe
 def tickets_admin_batch_view(request, vars, event, batch_id):
     batch = get_object_or_404(Batch, id=int(batch_id), event=event)
 
@@ -294,7 +294,7 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
 
 @tickets_admin_required
-@require_GET
+@require_safe
 def tickets_admin_etickets_view(request, vars, event, order_id):
     order = get_object_or_404(Order, pk=int(order_id))
 

@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
-from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_POST, require_safe
 import itertools
 
 from core.utils import url
@@ -57,7 +57,7 @@ def get_query_config(vars, query_builder):
     )
 
 
-@require_GET
+@require_safe
 @labour_admin_required
 def query_index(request, vars, event):
     query_builder_class = get_query(event)

@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.query import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.decorators.http import require_http_methods, require_GET
+from django.views.decorators.http import require_http_methods, require_safe
 from django.utils import timezone
 
 from dateutil.tz import tzlocal
@@ -269,7 +269,7 @@ def labour_admin_roster_view(request, vars, event):
 
 
 @labour_admin_required
-@require_GET
+@require_safe
 def labour_admin_mail_view(request, vars, event):
     from mailings.models import Message
 

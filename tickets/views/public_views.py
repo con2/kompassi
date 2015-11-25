@@ -10,7 +10,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
-from django.views.decorators.http import require_POST, require_GET, require_http_methods
+from django.views.decorators.http import require_POST, require_safe, require_http_methods
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.db.models import Sum
 

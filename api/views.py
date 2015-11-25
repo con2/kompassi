@@ -1,4 +1,4 @@
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_safe
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
@@ -7,7 +7,7 @@ from core.models import Person
 from .utils import api_view, api_login_required
 
 
-@require_GET
+@require_safe
 @api_view
 @api_login_required
 def api_person_view(request, username):

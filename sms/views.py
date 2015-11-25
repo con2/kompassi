@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from django.views.decorators.http import require_http_methods, require_GET
+from django.views.decorators.http import require_http_methods, require_safe
 from django.db.models import Count
 from django.conf import settings
 
@@ -15,7 +15,7 @@ from .helpers import sms_admin_required
 
 
 @sms_admin_required
-@require_GET
+@require_safe
 def sms_admin_votes_view(request, vars, event):
     vars.update(
         hotwords=Hotword.objects.all(),
@@ -29,7 +29,7 @@ def sms_admin_votes_view(request, vars, event):
 
 
 @sms_admin_required
-@require_GET
+@require_safe
 def sms_admin_received_view(request, vars, event):
     vars.update(
         received_messages=SMSMessageIn.objects.all(),

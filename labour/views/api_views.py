@@ -5,7 +5,7 @@ import logging
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.views.decorators.http import require_http_methods, require_GET, require_POST
+from django.views.decorators.http import require_http_methods, require_safe, require_POST
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
@@ -29,7 +29,7 @@ logger = logging.getLogger('kompassi')
 
 
 @labour_admin_required
-@require_GET
+@require_safe
 @api_view
 def labour_api_job_categories_view(request, vars, event):
     return [
@@ -39,7 +39,7 @@ def labour_api_job_categories_view(request, vars, event):
 
 
 @labour_admin_required
-@require_GET
+@require_safe
 @api_view
 def labour_api_job_category_view(request, vars, event, job_category_slug):
     return get_object_or_404(JobCategory, event=event, slug=job_category_slug).as_dict(include_jobs=True)

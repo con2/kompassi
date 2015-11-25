@@ -14,7 +14,7 @@ from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.utils.timezone import now
 from django.views.decorators.cache import cache_page, cache_control
-from django.views.decorators.http import require_http_methods, require_GET
+from django.views.decorators.http import require_http_methods, require_safe
 
 from api.utils import api_view
 from core.tabs import Tab
@@ -49,7 +49,7 @@ def get_timetable_tabs(request, event):
 @public_programme_required
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60) # XXX remove once nginx cache is in place
-@require_GET
+@require_safe
 def programme_timetable_view(
     request,
     event,
@@ -66,7 +66,7 @@ def programme_timetable_view(
 
 # look, no cache
 @programme_event_required
-@require_GET
+@require_safe
 def programme_internal_timetable_view(
     request,
     event,
@@ -109,7 +109,7 @@ def actual_timetable_view(
 
 
 @public_programme_required
-@require_GET
+@require_safe
 def programme_special_view(request, event):
     return actual_special_view(request, event)
 
@@ -140,7 +140,7 @@ def actual_special_view(
 
 
 @user_passes_test(lambda u: u.is_superuser)
-@require_GET
+@require_safe
 def programme_internal_dumpdata_view(request):
     from django.core import management
     from cStringIO import StringIO
@@ -156,7 +156,7 @@ def programme_internal_dumpdata_view(request):
 @cache_control(public=True, max_age=1 * 60)
 @cache_page(1 * 60) # XXX remove once nginx cache is in place
 @public_programme_required
-@require_GET
+@require_safe
 def programme_mobile_timetable_view(request, event):
     vars = dict(event=event)
 
@@ -164,7 +164,7 @@ def programme_mobile_timetable_view(request, event):
 
 
 @programme_event_required
-@require_GET
+@require_safe
 def programme_internal_adobe_taggedtext_view(request, event):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).get_programmes_by_start_time(request=request))
     data = render_string(request, 'programme_timetable.taggedtext', vars)
@@ -206,7 +206,7 @@ def programme_self_service_view(request, event, programme_edit_code):
 
 
 @programme_event_required
-@require_GET
+@require_safe
 @api_view
 def programme_json_view(request, event, format='default'):
     result = []

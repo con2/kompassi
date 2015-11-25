@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
-from django.views.decorators.http import require_http_methods, require_GET
+from django.views.decorators.http import require_http_methods, require_safe
 
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat
 from core.models import Person
@@ -244,7 +244,7 @@ def actual_detail_view(request, vars, event, programme, template, self_service, 
 
 
 @programme_admin_required
-@require_GET
+@require_safe
 def programme_admin_timetable_view(request, vars, event):
     from .public_views import actual_timetable_view
 
@@ -258,7 +258,7 @@ def programme_admin_timetable_view(request, vars, event):
 
 
 @programme_admin_required
-@require_GET
+@require_safe
 def programme_admin_special_view(request, vars, event):
     from .public_views import actual_special_view
 

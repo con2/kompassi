@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from django.views.decorators.http import require_http_methods, require_GET
+from django.views.decorators.http import require_http_methods, require_safe
 
 from core.batches_view import batches_view
 from core.utils import url, initialize_form, groupby_strict
@@ -51,7 +51,7 @@ class PersonnelClassProxy(CountBadgesMixin):
 
 
 @badges_admin_required
-@require_GET
+@require_safe
 def badges_admin_dashboard_view(request, vars, event):
     meta = event.badges_event_meta
 
@@ -188,7 +188,7 @@ badges_admin_batches_view = badges_admin_required(batches_view(
 
 
 @badges_admin_required
-@require_GET
+@require_safe
 def badges_admin_export_view(request, vars, event, batch_id, format='csv'):
     if format not in CSV_EXPORT_FORMATS:
         raise NotImplemented(format)

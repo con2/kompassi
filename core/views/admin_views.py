@@ -4,14 +4,14 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import user_passes_test
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_safe
 
 from ..utils import get_next
 from .login_views import do_login
 
 
 @user_passes_test(lambda user: user.is_superuser)
-@require_GET
+@require_safe
 def core_admin_impersonate_view(request, username):
     next = get_next(request)
     user = authenticate(username=username) # look, no password
