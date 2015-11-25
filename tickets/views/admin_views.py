@@ -211,7 +211,7 @@ def tickets_admin_orders_view(request, vars, event):
 @tickets_admin_required
 @require_http_methods(["GET","POST"])
 def tickets_admin_order_view(request, vars, event, order_id):
-    order = get_object_or_404(Order, pk=int(order_id))
+    order = get_object_or_404(Order, id=int(order_id), event=event)
 
     customer_form = initialize_form(CustomerForm, request,
         instance=order.customer,
@@ -297,7 +297,7 @@ def tickets_admin_order_view(request, vars, event, order_id):
 @tickets_admin_required
 @require_safe
 def tickets_admin_etickets_view(request, vars, event, order_id):
-    order = get_object_or_404(Order, pk=int(order_id))
+    order = get_object_or_404(Order, id=int(order_id), event=event)
 
     return HttpResponse(order.get_etickets_pdf(), content_type='application/pdf')
 
@@ -329,7 +329,7 @@ def tickets_admin_tools_view(request, vars, event):
 def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
     if limit_group_id is not None:
         limit_group_id = int(limit_group_id)
-        limit_group = get_object_or_404(LimitGroup, id=limit_group_id)
+        limit_group = get_object_or_404(LimitGroup, id=limit_group_id, event=event)
         query = Q(
             # Belongs to the selected night and school
             limit_groups=limit_group,
@@ -389,7 +389,7 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def tickets_admin_accommodation_create_view(request, vars, event, limit_group_id):
     limit_group_id = int(limit_group_id)
-    limit_group = get_object_or_404(LimitGroup, id=limit_group_id)
+    limit_group = get_object_or_404(LimitGroup, id=limit_group_id, event=event)
 
     form = initialize_form(AccommodationInformationForm, request)
 
