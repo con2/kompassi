@@ -299,7 +299,7 @@ class AccommodationPhase(Phase):
     def save(self, request, event, form):
         forms = form
         for form in forms:
-            info = form.save(commit=False)
+            info = form.save()
             info.limit_groups = info.order_product.product.limit_groups.all()
             info.save()
 
