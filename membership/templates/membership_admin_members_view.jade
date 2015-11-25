@@ -53,14 +53,20 @@ block admin_content
             td.text-right
               .label(class='{{ membership.state_css }}')= membership.get_state_display
     .panel-footer.clearfix
-      .btn-group.pull-right
-        button.btn.btn-default.dropdown-toggle#membership-admin-export-dropdown(type='button',
+      form(method='POST')
+        {% csrf_token %}
+        .btn-group.pull-right
+          if show_approve_all_button
+            button.btn.btn-success(type='submit')
+              i.fa.fa-check.kompassi-icon-space-right
+              |Hyväksy kaikki hyväksyntää odottavat
+          button.btn.btn-default.dropdown-toggle#membership-admin-export-dropdown(type='button',
                                                                                 data-toggle='dropdown',
                                                                                 aria-haspopup='true',
                                                                                 aria-expanded='true') Vie... <span class='caret'></span>
-        ul.dropdown-menu(aria-labelledby='membership-admin-export-dropdown')
-          for format, text in export_formats
-            li: a(href='{% url "membership_admin_export_view" organization.slug format %}?{{ request.META.QUERY_STRING }}')= text
+          ul.dropdown-menu(aria-labelledby='membership-admin-export-dropdown')
+            for format, text in export_formats
+              li: a(href='{% url "membership_admin_export_view" organization.slug format %}?{{ request.META.QUERY_STRING }}')= text
 
       p.text-muted {{ num_members }} henkilö{{ num_members|pluralize:"ä" }} (yhteensä {{ num_all_members }}).
 
