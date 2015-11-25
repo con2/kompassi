@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
-from django.views.decorators.http import require_safe
+from django.views.decorators.http import require_GET
 
 from tickets.helpers import get_order, tickets_event_required
 from core.utils import url
@@ -28,7 +28,7 @@ class PaymentStatus:
 
 
 @tickets_event_required
-@require_safe
+@require_GET
 def payments_redirect_view(request, event):
     order = get_order(request, event)
     meta = event.payments_event_meta
@@ -57,7 +57,7 @@ def payments_redirect_view(request, event):
 
 
 @tickets_event_required
-@require_safe
+@require_GET
 def payments_process_view(request, event):
     order = get_order(request, event)
     event = order.event
