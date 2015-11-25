@@ -9,9 +9,7 @@ block content_full_width
   #labour-admin-roster-view
     include labour_admin_roster_views/Roster.jade
 block extra_scripts
-  link(rel='stylesheet', href='{% static "select2.min.css" %}')
   link(rel='stylesheet', href='{% static "labour/css/roster.css" %}')
   script.
     window.kompassiLabourRosterConfig = {{ config_json|safe }};
-  script(src='{% static "select2.min.js" %}')
   script(src='{% static "labour/js/roster.js" %}')

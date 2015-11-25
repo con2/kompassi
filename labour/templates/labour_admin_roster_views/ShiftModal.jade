@@ -30,7 +30,12 @@
           .form-group
             label.control-label.col-md-3 Henkilö
             .col-md-9
-              div(data-bind='value: person, select2: { data: people() }')
+              select.form-control(data-bind="options: people,
+                                             optionsText: 'text',
+                                             optionsValue: 'id',
+                                             optionsCaption: 'Valitse henkilö...',
+                                             value: person")
+                option(value="")
       .modal-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-default(href='', data-bind='click: cancel') Peruuta

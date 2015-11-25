@@ -8,8 +8,6 @@ import page from 'page';
 import moment from 'moment';
 import 'moment/locale/fi'; // XXX I18N hardcoded fi only
 
-import './bindings/select2';
-
 import Roster from './viewmodels/Roster';
 import config from './services/ConfigService';
 
