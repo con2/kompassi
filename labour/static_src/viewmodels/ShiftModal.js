@@ -15,6 +15,16 @@ export default class ShiftModal {
     this.hours = ko.observable(1);
     this.person = ko.observable(null);
 
+    this.shiftWishes = ko.pureComputed(() => {
+      const person = this.person();
+
+      if (person) {
+        return person.shiftWishes || '';
+      } else {
+        return 'Henkilön työvuorotoiveet näkyvät tässä valittuasi henkilön...';
+      }
+    });
+
     this.people = ko.observable([{id: "foo", text: "Foo Bar"}, {id: "bar", text: "Bar Foo"}]);
 
     this.resolve = null;

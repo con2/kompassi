@@ -36,6 +36,10 @@
                                              optionsCaption: 'Valitse henkilö...',
                                              value: person")
                 option(value="")
+          .form-group
+            label.control-label.col-md-3 Työvuorotoiveet
+            .col-md-9
+              textarea.form-control(disabled, data-bind='value: shiftWishes')
       .modal-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-default(href='', data-bind='click: cancel') Peruuta
