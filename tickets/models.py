@@ -990,7 +990,10 @@ class OrderProduct(models.Model):
 
 
 class AccommodationInformation(models.Model):
-    order_product = models.ForeignKey(OrderProduct, related_name="accommodation_information_set")
+    order_product = models.ForeignKey(OrderProduct, blank=True, null=True, related_name="accommodation_information_set")
+
+    # XXX ugly hack: We hijack limit groups to represent (night, accommodation centre).
+    limit_groups = models.ManyToManyField(LimitGroup, blank=True, related_name="accommodation_information_set")
 
     # allow blank because these are pre-created
     first_name = models.CharField(max_length=100, blank=True, default=u'', verbose_name="Etunimi")

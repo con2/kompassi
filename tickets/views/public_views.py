@@ -297,7 +297,11 @@ class AccommodationPhase(Phase):
         return AccommodationInformationForm.get_for_order(request, order)
 
     def save(self, request, event, form):
-        multiform_save(form)
+        forms = form
+        for form in forms:
+            info = form.save(commit=False)
+            info.limit_groups = info.order_product.product.limit_groups.all()
+            info.save()
 
 
 tickets_accommodation_phase = AccommodationPhase()

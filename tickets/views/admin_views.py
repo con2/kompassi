@@ -329,7 +329,7 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
         limit_group = get_object_or_404(LimitGroup, id=limit_group_id)
         accommodees = AccommodationInformation.objects.filter(
             # Belongs to the selected night and school
-            order_product__product__limit_groups=limit_group,
+            limit_groups=limit_group,
 
             # Order is confirmed
             order_product__order__confirm_time__isnull=False,
