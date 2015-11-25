@@ -1021,15 +1021,16 @@ class AccommodationInformation(models.Model):
 
     @property
     def event(self):
-        return self.order_product.product.event
+        return self.limit_groups.first().event if self.limit_groups.exists() else None
 
     @property
     def product_name(self):
-        return self.order_product.product.name
+        # XXX
+        return self.limit_groups.first().description if self.limit_groups.exists() else None
 
     @property
     def formatted_order_number(self):
-        return self.order_product.order.formatted_order_number
+        return self.order_product.order.formatted_order_number if self.order_product else u''
 
     @classmethod
     def get_csv_fields(cls, event):

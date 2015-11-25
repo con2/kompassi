@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.messages import add_message, INFO, WARNING, ERROR
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
@@ -28,6 +28,7 @@ from core.csv_export import csv_response, CSV_EXPORT_FORMATS
 from core.utils import url, initialize_form, slugify
 
 from ..forms import (
+    AccommodationInformationForm,
     AdminOrderForm,
     CreateBatchForm,
     CustomerForm,
@@ -329,19 +330,25 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
     if limit_group_id is not None:
         limit_group_id = int(limit_group_id)
         limit_group = get_object_or_404(LimitGroup, id=limit_group_id)
-        accommodees = AccommodationInformation.objects.filter(
+        query = Q(
             # Belongs to the selected night and school
             limit_groups=limit_group,
-
+        ) & (
+            Q(
+                # Accommodation information is manually added
+                order_product__isnull=True
+            ) | Q(
             # Order is confirmed
-            order_product__order__confirm_time__isnull=False,
+                order_product__order__confirm_time__isnull=False,
 
-            # Order is paid
-            order_product__order__payment_date__isnull=False,
+                # Order is paid
+                order_product__order__payment_date__isnull=False,
 
-            # Order is not cancelled
-            order_product__order__cancellation_time__isnull=True,
-        ).order_by('last_name', 'first_name')
+                # Order is not cancelled
+                order_product__order__cancellation_time__isnull=True,
+            )
+        )
+        accommodees = AccommodationInformation.objects.filter(query).order_by('last_name', 'first_name')
         active_filter = limit_group
     else:
         accommodees = []
@@ -376,6 +383,30 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
         return render(request, 'tickets_admin_accommodation_view.jade', vars)
     else:
         raise NotImplementedError(format)
+
+
+@tickets_admin_required
+@require_http_methods(['GET', 'HEAD', 'POST'])
+def tickets_admin_accommodation_create_view(request, vars, event, limit_group_id):
+    limit_group_id = int(limit_group_id)
+    limit_group = get_object_or_404(LimitGroup, id=limit_group_id)
+
+    form = initialize_form(AccommodationInformationForm, request)
+
+    if request.method == 'POST':
+        info = form.save()
+        info.limit_groups = [limit_group]
+        info.save()
+
+        messages.success(request, u'Majoittuja lisättiin.')
+        return redirect('tickets_admin_accommodation_filtered_view', event.slug, limit_group_id)
+
+    vars.update(
+        form=form,
+        limit_group=limit_group,
+    )
+
+    return render(request, 'tickets_admin_accommodation_create_view.jade', vars)
 
 
 if 'lippukala' in settings.INSTALLED_APPS:

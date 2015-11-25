@@ -62,6 +62,7 @@ class OrderAdmin(admin.ModelAdmin):
 #        CustomerInline
     ]
 
+
 class AccommodationInformationAdmin(admin.ModelAdmin):
     model = AccommodationInformation
     list_display = (
@@ -78,6 +79,7 @@ class AccommodationInformationAdmin(admin.ModelAdmin):
     ordering = ('order_product__product__event', 'order_product__product', 'last_name', 'first_name')
     search_fields = ('last_name', 'first_name', 'phone_number', 'email', 'order_product__order__id')
     fields = ('last_name', 'first_name', 'phone_number', 'email')
+
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)

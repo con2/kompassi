@@ -31,6 +31,9 @@ block admin_content
     .panel-footer.clearfix
       if active_filter
         .btn-group.pull-right
+          a.btn.btn-success(href='{% url "tickets_admin_accommodation_create_view" event.slug active_filter.id %}')
+            i.fa.fa-plus.kompassi-icon-space-right
+            | Lisää uusi majoittuja käsin
           //- a.btn.btn-default(href='?format=print', target='_blank') Tulostettava versio
           button.btn.btn-default(type='button', data-toggle='dropdown') Vie <span class='caret'></span>
           ul.dropdown-menu(role='menu')
