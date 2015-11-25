@@ -30,7 +30,7 @@
           .form-group
             label.control-label.col-md-3 Henkilö
             .col-md-9
-              input.form-control(type="number", required, min="0", step="1", max="99", data-bind='value: person')
+              div(data-bind='value: person, select2: { data: people() }')
       .modal-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-default(href='', data-bind='click: cancel') Peruuta

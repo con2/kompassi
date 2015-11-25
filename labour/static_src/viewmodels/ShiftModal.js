@@ -15,6 +15,8 @@ export default class ShiftModal {
     this.hours = ko.observable(1);
     this.person = ko.observable(null);
 
+    this.people = ko.observable([{id: "foo", text: "Foo Bar"}, {id: "bar", text: "Bar Foo"}]);
+
     this.resolve = null;
   }
 
@@ -22,6 +24,7 @@ export default class ShiftModal {
     this.job(shiftCell.lane.job);
     this.startTime(shiftCell.startTime);
     this.hours(1);
+    this.person(null);
 
     this.$el.modal('show');
     return new Promise((resolve, reject) => {

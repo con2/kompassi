@@ -1,4 +1,5 @@
 extends base
+- load static from staticfiles
 block title
   | Työvoimatarpeet ja työvuorot
 block content_full_width
@@ -8,7 +9,9 @@ block content_full_width
   #labour-admin-roster-view
     include labour_admin_roster_views/Roster.jade
 block extra_scripts
-  link(rel='stylesheet', href='{{ STATIC_URL }}labour/css/roster.css')
+  link(rel='stylesheet', href='{% static "select2.min.css" %}')
+  link(rel='stylesheet', href='{% static "labour/css/roster.css" %}')
   script.
     window.kompassiLabourRosterConfig = {{ config_json|safe }};
-  script(src='{{ STATIC_URL }}labour/js/roster.js')
+  script(src='{% static "select2.min.js" %}')
+  script(src='{% static "labour/js/roster.js" %}')
