@@ -418,13 +418,19 @@ class JobCategory(models.Model):
         requirements = JobRequirement.objects.filter(job__job_category=self)
         return JobRequirement.requirements_as_integer_array(self.event, requirements)
 
+    def _make_people(self):
+        """
+        Returns an array of accepted workers. Used by the Roster API.
+        """
+        return [signup.as_dict() for signup in self.accepted_signup_set.filter(is_active=Tru)e]
+
     def save(self, *args, **kwargs):
         if self.slug is None and self.name is not None:
             self.slug = slugify(self.name)
 
         return super(JobCategory, self).save(*args, **kwargs)
 
-    def as_dict(self, include_jobs=False, include_requirements=False):
+    def as_dict(self, include_jobs=False, include_requirements=False, include_people=False):
         doc = pick_attrs(self,
             'title',
             'slug',
@@ -435,6 +441,9 @@ class JobCategory(models.Model):
 
         if include_requirements:
             doc['requirements'] = self._make_requirements()
+
+        if include_people:
+            doc['people'] = self._make_people()
 
         return doc
 

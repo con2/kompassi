@@ -59,7 +59,7 @@ def labour_api_job_view(request, vars, event, job_category_slug, job_slug=None):
     elif request.method == 'DELETE' and job_slug is not None:
         job = get_object_or_404(Job, job_category=job_category, slug=job_slug)
         job.delete()
-        return job_category.as_dict(include_jobs=True)
+        return job_category.as_dict(include_jobs=True, include_people=True)
     else:
         raise MethodNotAllowed(request.method)
 
