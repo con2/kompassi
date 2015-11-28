@@ -9,16 +9,24 @@ export class ShiftCell {
 
 
 export class EmptyCell extends ShiftCell {
-  cssClass: "roster-empty-cell"
-  text: ''
+  constructor(lane, startTime) {
+    super(lane, startTime);
+
+    this.cssClass = "roster-empty-cell"
+    this.text = ''
+  }
 
   click() {}
 }
 
 
-export class Slot {
-  cssClass: "roster-slot";
-  text: '+'
+export class Slot extends ShiftCell {
+  constructor(lane, startTime) {
+    super(lane, startTime);
+
+    this.cssClass = "roster-slot"
+    this.text = '+'
+  }
 
   click() {
     this.lane.app.jobCategory.shiftModal.prompt(this);
@@ -26,7 +34,7 @@ export class Slot {
 }
 
 
-export class Shift {
+export class Shift extends ShiftCell {
   constructor(lane, startTime) {
     super(lane, startTime);
 

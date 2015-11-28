@@ -36,6 +36,10 @@
                                              value: person")
                 option(value="")
           .form-group
+            label.control-label.col-md-3 Lisätiedot
+            .col-md-9
+              textarea.form-control(data-bind='value: notes')
+          .form-group
             label.control-label.col-md-3 Työvuorotoiveet
             .col-md-9
               textarea.form-control(disabled, data-bind='value: shiftWishes')

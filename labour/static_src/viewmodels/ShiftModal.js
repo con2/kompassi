@@ -17,6 +17,7 @@ export default class ShiftModal {
     this.startTime = ko.observable('');
     this.hours = ko.observable(1);
     this.person = ko.observable(null);
+    this.notes = ko.observable('');
 
     this.shiftWishes = this.person.fmap(person => {
       if (person) {
@@ -57,7 +58,8 @@ export default class ShiftModal {
       request: {
         startTime: this.startTime(),
         hours: parseInt(this.hours()),
-        required: parseInt(this.required()),
+        person: this.person().id,
+        notes: this.notes(),
       },
     });
   }
