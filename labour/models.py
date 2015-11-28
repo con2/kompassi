@@ -422,7 +422,7 @@ class JobCategory(models.Model):
         """
         Returns an array of accepted workers. Used by the Roster API.
         """
-        return [signup.as_dict() for signup in self.accepted_signup_set.filter(is_active=Tru)e]
+        return [signup.as_dict() for signup in self.accepted_signup_set.filter(is_active=True)]
 
     def save(self, *args, **kwargs):
         if self.slug is None and self.name is not None:
@@ -1280,6 +1280,13 @@ class Signup(models.Model, CsvExportMixin):
                 related[JVKortti] = None
 
         return related
+
+    def as_dict(self):
+        return dict(
+            id=self.person.id,
+            fullName=self.person.full_name,
+            shiftWishes='TODO',
+        )
 
 
 class SignupExtraBase(models.Model):

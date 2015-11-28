@@ -1,8 +1,11 @@
 import ko from 'knockout';
+import _ from 'lodash';
 // import $ from 'jquery';
 // import 'bootstrap';
 
 import moment from 'moment';
+
+import '../helpers/KoHelper'; // fmap
 
 
 export default class ShiftModal {
@@ -15,9 +18,7 @@ export default class ShiftModal {
     this.hours = ko.observable(1);
     this.person = ko.observable(null);
 
-    this.shiftWishes = ko.pureComputed(() => {
-      const person = this.person();
-
+    this.shiftWishes = this.person.fmap(person => {
       if (person) {
         return person.shiftWishes || '';
       } else {
@@ -25,16 +26,18 @@ export default class ShiftModal {
       }
     });
 
-    this.people = ko.observable([{id: "foo", text: "Foo Bar"}, {id: "bar", text: "Bar Foo"}]);
+    this.people = ko.observable([]);
 
     this.resolve = null;
   }
 
   prompt(shiftCell) {
     this.job(shiftCell.lane.job);
+
+    this.people(shiftCell.lane.job.jobCategory.people);
     this.startTime(shiftCell.startTime);
-    this.hours(1);
-    this.person(null);
+    this.hours(shiftCell.hours);
+    this.person(shiftCell.person);
 
     this.$el.modal('show');
     return new Promise((resolve, reject) => {
