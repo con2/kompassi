@@ -1,6 +1,7 @@
+import {createShift} from '../services/RosterService';
+
 export class ShiftCell {
   constructor(lane, startTime) {
-    this.text = '';
     this.lane = lane;
     this.startTime = startTime;
     this.hours = 1; // might increase
@@ -29,13 +30,20 @@ export class Slot extends ShiftCell {
   }
 
   click() {
-    this.lane.app.jobCategory.shiftModal.prompt(this);
+    const jobCategoryViewModel = this.lane.app.jobCategory,
+          jobCategory = jobCategoryViewModel.jobCategory();
+
+    jobCategoryViewModel.shiftModal.prompt(this).then(result => {
+      if (result.result === 'ok') {
+        createShift(jobCategory, result.request).then(jobCategory => jobCategory.loadJobCategory(jobCategory));
+      }
+    });
   }
 }
 
 
 export class Shift extends ShiftCell {
-  constructor(lane, startTime) {
+  constructor(lane, shift) {
     super(lane, startTime);
 
     this.state = 'planned'

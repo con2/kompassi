@@ -17,11 +17,13 @@ from core.utils import full_hours_between
 
 from ..helpers import labour_admin_required, labour_event_required
 from ..models import (
+    EditJobRequest,
+    EditShiftRequest,
     Job,
     JobCategory,
     JobRequirement,
     SetJobRequirementsRequest,
-    EditJobRequest,
+    Shift,
 )
 
 
@@ -69,7 +71,32 @@ def labour_api_job_view(request, vars, event, job_category_slug, job_slug=None):
     job.title = body.title
     job.save()
 
-    return job_category.as_dict(include_jobs=True)
+    return job_category.as_dict(include_jobs=True, include_people=True)
+
+
+@labour_admin_required
+@api_view
+def labour_api_shift_view(request, vars, event, job_category_slug, shift_id=None):
+    job_category = get_object_or_404(JobCategory, event=event, slug=job_category_slug)
+
+    if request.method == 'POST' and shift_id is None:
+        shift = Shift()
+        edit_shift_request = EditShiftRequest.from_json(request.body)
+    elif request.method == 'PUT' and shift_id is not None:
+        shift = get_object_or_404(Shift, id=int(shift_id), job__job_category=job_category)
+        edit_shift_request = EditShiftRequest.from_json(request.body)
+    elif request.method == 'DELETE' and shift_id is not None:
+        shift = get_object_or_404(Shift, id=int(shift_id), job__job_category=job_category)
+        shift.delete()
+        return job_category.as_dict(include_jobs=True, include_people=True)
+    else:
+        raise MethodNotAllowed(request.method)
+
+    edit_shift_request.update(job_category, shift)
+    shift.save()
+
+    return job_category.as_dict(include_jobs=True, include_people=True)
+
 
 @labour_admin_required
 @require_POST

@@ -12,3 +12,11 @@
 h4 {
   margin-bottom: 0;
 }
+
+.kompassi-space-after {
+  margin-right: 0.5em;
+}
+
+.kompassi-space-before {
+  margin-left: 0.5em;
+}

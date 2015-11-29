@@ -123,5 +123,15 @@ urlpatterns = patterns('',
         r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/jobcategories/(?P<job_category_slug>[a-z0-9-]+)/jobs/(?P<job_slug>[a-z0-9-]+)/requirements/?$',
         labour_api_set_job_requirements_view,
         name='labour_api_set_job_requirements_view'
-    )
+    ),
+    url(
+        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/jobcategories/(?P<job_category_slug>[a-z0-9-]+)/shifts/?$',
+        labour_api_shift_view,
+        name='labour_api_create_shift_view'
+    ),
+    url(
+        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/jobcategories/(?P<job_category_slug>[a-z0-9-]+)/shifts/(?P<shift_id>\d+)/?$',
+        labour_api_shift_view,
+        name='labour_api_edit_shift_view'
+    ),
 )

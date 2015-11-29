@@ -9,6 +9,7 @@ from django.db import models
 from django.utils.timezone import now
 
 import jsonschema
+from dateutil.parser import parse as parse_date
 
 from api.utils import JSONSchemaObject
 from core.csv_export import CsvExportMixin
@@ -1359,6 +1360,50 @@ class InfoLink(models.Model):
         return self.title
 
 
+class Shift(models.Model):
+    job = models.ForeignKey(Job)
+    start_time = models.DateTimeField()
+    hours = models.PositiveIntegerField()
+    signup = models.ForeignKey(Signup)
+    notes = models.TextField()
+
+    def as_dict(self):
+        return dict(
+            job=self.job.id,
+            start_time=self.start_time.isoformat() if self.start_time else None,
+            hours=self.hours,
+            person=self.signup.person.id if signup and signup.person else None,
+            notes=self.notes,
+        )
+
+    def admin_get_event(self):
+        return self.job.job_category.event if self.job and self.job.job_category else None
+    admin_get_event.short_description = u'Tapahtuma'
+    admin_get_event.admin_order_field = 'job__job_category__event'
+
+    def admin_get_job_category(self):
+        return self.job.job_category if self.job else None
+    admin_get_job_category.short_description = u'Tehtäväalue'
+    admin_get_job_category.admin_order_field = 'job__job_category'
+
+    def admin_get_person(self):
+        return self.signup.person if self.signup else None
+    admin_get_person.short_description = u'Henkilö'
+    admin_get_person.admin_order_field = 'signup__person'
+
+
+    def __unicode__(self):
+        return u'{signup} {job} {start_time}'.format(
+            signup=self.signup,
+            job=self.job,
+            start_time=self.start_time,
+        )
+
+    class Meta:
+        verbose_name = u'työvuoro'
+        verbose_name_plural = u'työvuorot'
+
+
 SetJobRequirementsRequestBase = namedtuple('SetJobRequirementsRequest', 'startTime hours required')
 class SetJobRequirementsRequest(SetJobRequirementsRequestBase, JSONSchemaObject):
     schema = dict(
@@ -1383,9 +1428,32 @@ class EditJobRequest(EditJobRequestBase, JSONSchemaObject):
     )
 
 
+EditShiftRequestBase = namedtuple('EditShiftRequest', 'job start_time hours person notes')
+class EditShiftRequest(EditShiftRequestBase, JSONSchemaObject):
+    schema = dict(
+        type='object',
+        properties=dict(
+            hours=dict(type='integer', minimum=1, maximum=99),
+            job=dict(type='string', minLength=1),
+            notes=dict(type='string'),
+            person=dict(type='integer', minimum=1),
+            startTime=dict(type='string', format='date-time'),
+        ),
+        required=['job', 'startTime', 'person', 'hours']
+    )
+
+    def update(self, job_category, shift):
+        shift.job = Job.objects.get(slug=self.job, job_category=job_category)
+        shift.start_time = parse_date(self.start_time)
+        shift.hours = self.hours
+        shift.signup = Signup.objects.get(person=self.person, event=job_category.event)
+        shift.notes = self.notes
+
+
 __all__ = [
     'AlternativeSignupForm',
     'EditJobRequest',
+    'EditShiftRequest',
     'InfoLink',
     'Job',
     'JobCategory',

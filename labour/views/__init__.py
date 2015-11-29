@@ -31,4 +31,5 @@ from .api_views import (
     labour_api_job_category_view,
     labour_api_job_view,
     labour_api_set_job_requirements_view,
+    labour_api_shift_view,
 )

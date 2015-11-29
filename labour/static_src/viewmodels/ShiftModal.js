@@ -56,6 +56,7 @@ export default class ShiftModal {
     this.resolve({
       result: 'ok',
       request: {
+        job: this.job().slug,
         startTime: this.startTime(),
         hours: parseInt(this.hours()),
         person: this.person().id,

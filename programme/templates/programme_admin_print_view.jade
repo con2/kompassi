@@ -4,10 +4,11 @@ html
   head
     meta(charset='utf-8')
     title {{ title|safe }} | {{ KOMPASSI_INSTALLATION_NAME }}
+    link(rel='stylesheet', href='{% static "kompassi.css" %}')
     link(rel='stylesheet', href='{% static "programme/css/print.css" %}')
 
   body
-    header
+    .container
       h1 {{ title|safe }}
       p Tulostettu {{ now }}.
 
@@ -18,8 +19,7 @@ html
             h4
               span.title {{ programme.title }}
               for tag in programme.tags.all
-                |
-                span.label(class='{{ tag.style }}') {{ tag.title }}
+                span.label.kompassi-space-before(class='{{ tag.style }}') {{ tag.title }}
             .programme-info
               .meta
                 ul.programme-metadata
@@ -30,5 +30,5 @@ html
                   if programme.organizers.exists
                     li.host {{ programme.formatted_hosts }}
               .description {{ programme.description|safe|linebreaks }}
-    footer
+
       p {{ programmes.count }} ohjelmanumero{{ programmes.count|pluralize:"a" }}

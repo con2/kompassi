@@ -11,6 +11,7 @@ from .models import (
     PersonnelClass,
     PersonQualification,
     Qualification,
+    Shift,
     Signup,
     WorkPeriod,
 )
@@ -80,11 +81,18 @@ class InfoLinkAdmin(admin.ModelAdmin):
     list_filter = ('event',)
 
 
-admin.site.register(Signup, SignupAdmin)
-admin.site.register(WorkPeriod)
-admin.site.register(JobCategory, JobCategoryAdmin)
-admin.site.register(Job, JobAdmin)
-admin.site.register(PersonnelClass, PersonnelClassAdmin)
-admin.site.register(Qualification, QualificationAdmin)
+class ShiftAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_event', 'admin_get_job_category', 'job', 'start_time', 'admin_get_person')
+    list_filter = ('job__job_category__event',)
+    raw_id_fields = ('job', 'signup')
+
+
 admin.site.register(AlternativeSignupForm, AlternativeSignupFormAdmin)
 admin.site.register(InfoLink, InfoLinkAdmin)
+admin.site.register(Job, JobAdmin)
+admin.site.register(JobCategory, JobCategoryAdmin)
+admin.site.register(PersonnelClass, PersonnelClassAdmin)
+admin.site.register(Qualification, QualificationAdmin)
+admin.site.register(Shift, ShiftAdmin)
+admin.site.register(Signup, SignupAdmin)
+admin.site.register(WorkPeriod)

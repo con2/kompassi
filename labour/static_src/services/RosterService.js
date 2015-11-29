@@ -59,3 +59,21 @@ export function deleteJob(job) {
   const url = `${config.urls.jobCategoryApi}/${job.jobCategory.slug}/jobs/${job.slug}`;
   return deleteJSON(url).then(enrichJobCategory);
 }
+
+
+export function createShift(jobCategory, newShift) {
+  return postJSON(`${config.urls.jobCategoryApi}/${jobCategory.slug}/shifts`, newShift)
+  .then(enrichJobCategory);
+}
+
+
+export function updateShift(shift, update) {
+  const url = `${config.urls.jobCategoryApi}/${shift.job.jobCategory.slug}/shifts/${shift.id}`;
+  return putJSON(url, update).then(enrichJobCategory);
+}
+
+
+export function deleteShift(shift) {
+  const url = `${config.urls.jobCategoryApi}/${shift.job.jobCategory.slug}/shifts/${shift.id}`;
+  return deleteJSON(url).then(enrichJobCategory);
+}
