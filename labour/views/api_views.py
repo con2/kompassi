@@ -46,6 +46,7 @@ def labour_api_job_categories_view(request, vars, event):
 def labour_api_job_category_view(request, vars, event, job_category_slug):
     return get_object_or_404(JobCategory, event=event, slug=job_category_slug).as_dict(
         include_jobs=True,
+        include_shifts=True,
         include_people=True,
     )
 

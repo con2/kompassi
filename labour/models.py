@@ -431,14 +431,16 @@ class JobCategory(models.Model):
 
         return super(JobCategory, self).save(*args, **kwargs)
 
-    def as_dict(self, include_jobs=False, include_requirements=False, include_people=False):
+    def as_dict(self, include_jobs=False, include_requirements=False, include_people=False, include_shifts=False):
+        assert not (include_shifts and not include_jobs), u'If include_shifts is specified, must specify also include_jobs'
+
         doc = pick_attrs(self,
             'title',
             'slug',
         )
 
         if include_jobs:
-            doc['jobs'] = [job.as_dict() for job in self.job_set.all()]
+            doc['jobs'] = [job.as_dict(include_shifts=include_shifts) for job in self.job_set.all()]
 
         if include_requirements:
             doc['requirements'] = self._make_requirements()
@@ -499,12 +501,20 @@ class Job(models.Model):
         """
         return JobRequirement.requirements_as_integer_array(self.job_category.event, self.requirements.all())
 
-    def as_dict(self):
-        return pick_attrs(self,
+    def _make_shifts(self):
+        return [shift.as_dict() for shift in self.shift_set.all()]
+
+    def as_dict(self, include_shifts=False):
+        doc = pick_attrs(self,
             'slug',
             'title',
             requirements=self._make_requirements(),
         )
+
+        if include_shifts:
+            doc['shifts'] = self._make_shifts()
+
+        return doc
 
 
 class JobRequirement(models.Model):
@@ -1372,7 +1382,7 @@ class Shift(models.Model):
             job=self.job.id,
             start_time=self.start_time.isoformat() if self.start_time else None,
             hours=self.hours,
-            person=self.signup.person.id if signup and signup.person else None,
+            person=self.signup.person.id if self.signup and self.signup.person else None,
             notes=self.notes,
         )
 
@@ -1391,7 +1401,6 @@ class Shift(models.Model):
     admin_get_person.short_description = u'Henkilö'
     admin_get_person.admin_order_field = 'signup__person'
 
-
     def __unicode__(self):
         return u'{signup} {job} {start_time}'.format(
             signup=self.signup,
@@ -1402,6 +1411,7 @@ class Shift(models.Model):
     class Meta:
         verbose_name = u'työvuoro'
         verbose_name_plural = u'työvuorot'
+        ordering = ('job', 'start_time')
 
 
 SetJobRequirementsRequestBase = namedtuple('SetJobRequirementsRequest', 'startTime hours required')
