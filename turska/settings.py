@@ -184,6 +184,7 @@ INSTALLED_APPS = (
     'events.aicon2016',
     'events.popcult2016',
     'events.ropecon2016',
+    'events.kawacon2016',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
