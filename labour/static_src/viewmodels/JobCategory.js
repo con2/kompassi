@@ -15,6 +15,7 @@ import RequirementCell from './RequirementCell';
 import RequirementModal from './RequirementModal';
 import ShiftModal from './ShiftModal';
 import Lane from './Lane';
+import LaneAllocator from '../helpers/LaneHelper';
 
 
 export default class JobCategory {

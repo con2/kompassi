@@ -450,6 +450,9 @@ class JobCategory(models.Model):
 
         return doc
 
+    def as_roster_api_dict(self):
+        return self.as_dict(include_jobs=True, include_people=True, include_shifts=True)
+
 
 class WorkPeriod(models.Model):
     event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')

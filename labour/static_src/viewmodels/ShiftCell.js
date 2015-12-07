@@ -35,7 +35,7 @@ export class Slot extends ShiftCell {
 
     jobCategoryViewModel.shiftModal.prompt(this).then(result => {
       if (result.result === 'ok') {
-        createShift(jobCategory, result.request).then(jobCategory => jobCategory.loadJobCategory(jobCategory));
+        createShift(jobCategory, result.request).then(jobCategory => jobCategoryViewModel.loadJobCategory(jobCategory));
       }
     });
   }

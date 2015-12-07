@@ -65,14 +65,14 @@ def labour_api_job_view(request, vars, event, job_category_slug, job_slug=None):
     elif request.method == 'DELETE' and job_slug is not None:
         job = get_object_or_404(Job, job_category=job_category, slug=job_slug)
         job.delete()
-        return job_category.as_dict(include_jobs=True, include_people=True)
+        return job_category.as_roster_api_dict()
     else:
         raise MethodNotAllowed(request.method)
 
     job.title = body.title
     job.save()
 
-    return job_category.as_dict(include_jobs=True, include_people=True)
+    return job_category.as_roster_api_dict()
 
 
 @labour_admin_required
@@ -89,14 +89,14 @@ def labour_api_shift_view(request, vars, event, job_category_slug, shift_id=None
     elif request.method == 'DELETE' and shift_id is not None:
         shift = get_object_or_404(Shift, id=int(shift_id), job__job_category=job_category)
         shift.delete()
-        return job_category.as_dict(include_jobs=True, include_people=True)
+        return job_category.as_roster_api_dict()
     else:
         raise MethodNotAllowed(request.method)
 
     edit_shift_request.update(job_category, shift)
     shift.save()
 
-    return job_category.as_dict(include_jobs=True, include_people=True)
+    return job_category.as_roster_api_dict()
 
 
 @labour_admin_required
@@ -128,4 +128,4 @@ def labour_api_set_job_requirements_view(request, vars, event, job_category_slug
             requirement.save()
 
     # Successful result emulates that of /api/v1/events/tracon11/jobcategories/conitea
-    return job_category.as_dict(include_jobs=True)
+    return job_category.as_roster_api_dict()

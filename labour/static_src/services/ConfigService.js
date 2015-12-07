@@ -7,9 +7,12 @@ const config = window.kompassiLabourRosterConfig;
 moment.locale(config.lang);
 page.base(config.urls.base);
 
-config.workHours.forEach((hour) => {
+config.workHours.forEach((hour, index) => {
+  hour.index = index;
   hour.moment = moment(hour.startTime);
   hour.formatted = hour.moment.format('LLL');
 });
+
+config.workHoursByStartTime = _.indexBy(config.workHours, 'startTime');
 
 export default config;
