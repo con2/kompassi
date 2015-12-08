@@ -27,8 +27,8 @@ class Setup(object):
     def setup_core(self):
         from core.models import Venue, Event
 
-        self.venue, unused = Venue.objects.get_or_create(name='Helsingin kulttuuritalo', defaults=dict(
-            name_inessive='Helsingin kulttuuritalossa',
+        self.venue, unused = Venue.objects.get_or_create(name='Kulttuuritalo (Helsinki)', defaults=dict(
+            name_inessive='Kulttuuritalossa Helsingissä',
         ))
         self.event, unused = Event.objects.get_or_create(slug='popcult2015', defaults=dict(
             name='Popcult Helsinki',
