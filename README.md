@@ -9,7 +9,7 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
     git clone https://github.com/tracon/kompassi.git
     cd kompassi
     pip install -r requirements.txt
-    ./manage.py setup --test
+    ./manage.py setup
     ./manage.py runserver
     iexplore http://localhost:8000
 
