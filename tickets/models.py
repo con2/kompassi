@@ -852,6 +852,13 @@ class Order(models.Model):
         return printer.finish()
 
     def send_confirmation_message(self, msgtype):
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from .tasks import order_send_confirmation_message
+            order_send_confirmation_message.delay(self.pk, msgtype)
+        else:
+            self._send_confirmation_message(msgtype)
+
+    def _send_confirmation_message(self, msgtype):
         # don't fail silently, warn admins instead
         msgbcc = []
         meta = self.event.tickets_event_meta
