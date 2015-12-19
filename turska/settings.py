@@ -6,9 +6,6 @@ from datetime import datetime, timedelta
 
 from django.utils.translation import ugettext_lazy as _
 
-import django.conf.global_settings as defaults
-
-
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', *parts))
 
@@ -16,28 +13,6 @@ def mkpath(*parts):
 MKPATH = mkpath
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-if DEBUG:
-    # XXX Monkey patch is_secure_transport to allow development over insecure HTTP
-
-    from warnings import warn
-    warn(UserWarning("Monkey_patching oauthlib.oauth2:is_secure_transport to allow OAuth2 over HTTP. Never do this in production!"))
-
-    fake_is_secure_transport = lambda token_url: True
-
-    import oauthlib.oauth2
-    import requests_oauthlib.oauth2_session
-    import oauthlib.oauth2.rfc6749.parameters
-    import oauthlib.oauth2.rfc6749.clients.base
-
-    for module in [
-        oauthlib.oauth2,
-        requests_oauthlib.oauth2_session,
-        oauthlib.oauth2.rfc6749.parameters,
-        oauthlib.oauth2.rfc6749.clients.base,
-    ]:
-        module.is_secure_transport = fake_is_secure_transport
 
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_URLS_REGEX = r'^/(api|oauth2)/.*$'
@@ -101,13 +76,6 @@ STATICFILES_FINDERS = (
 
 SECRET_KEY = 'jhdjl*kxcet2aaz)%ixmois*j_p+d*q79%legoz+9el(c%zc$%'
 
-TEMPLATE_LOADERS = (
-    ('pyjade.ext.django.Loader',(
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
-
 MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -125,15 +93,31 @@ ROOT_URLCONF = 'turska.urls'
 WSGI_APPLICATION = 'turska.wsgi.application'
 APPEND_SLASH = False
 
-TEMPLATE_DIRS = (
-    mkpath('turska','templates'),
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = defaults.TEMPLATE_CONTEXT_PROCESSORS + (
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-    'core.context_processors.core_context',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            mkpath('turska','templates'),
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.request',
+                'core.context_processors.core_context',
+            ],
+            'loaders': [
+                ('pyjade.ext.django.Loader', (
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ))
+            ],
+            'builtins': ['pyjade.ext.django.templatetags'],
+        },
+    },
+]
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 

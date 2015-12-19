@@ -1,11 +1,12 @@
 doctype 5
+- load static from staticfiles
 html
   head
     title
       block full_title
         | {% if event %}{{ event.name }}: {% endif %}{% block title %}Nimetön näkymä{% endblock title %} &ndash; {{ settings.KOMPASSI_INSTALLATION_NAME }}
-    link(rel='stylesheet', href='{{ STATIC_URL }}kompassi.css')
-    link(rel='stylesheet', href='{{ STATIC_URL }}core/css/font-awesome.min.css')
+    link(rel='stylesheet', href='{% static "kompassi.css" %}')
+    link(rel='stylesheet', href='{% static "core/css/font-awesome.min.css" %}')
     link(rel='icon', type='image/png', href='/static/favicon.png')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
   body
@@ -57,6 +58,6 @@ html
               | <a href='{{ event.homepage_url }}' target='_blank'>{{ event.name_genitive }}</a> järjestää <a href='{{ event.organization.homepage_url }}' target='_blank'>{{ event.organization.name }}</a>.
             | {{ KOMPASSI_APPLICATION_NAME }} &copy; 2009&ndash;2015 <a href='https://github.com/tracon/kompassi/blob/master/LICENSE.md'>Santtu Pajukanta et al</a>. <a href='{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}'>Rekisteriseloste</a>.
 
-    script(src='{{ STATIC_URL }}jquery-1.10.2.min.js')
-    script(src='{{ STATIC_URL }}bootstrap.min.js')
+    script(src='{% static "jquery-1.10.2.min.js" %}')
+    script(src='{% static "bootstrap.min.js" %}')
     block extra_scripts

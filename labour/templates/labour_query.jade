@@ -1,12 +1,15 @@
 extends core_admin_base
+- load static from staticfiles
 block title
   | Hakemusten suodatus
 block extra_scripts
-  script(src='{{ STATIC_URL }}csrf.js')
-  script(src='{{ STATIC_URL }}querybuilder.js')
-  script(src='{{ STATIC_URL }}queryfilters.js')
-  script(src='{{ STATIC_URL }}moment.js')
-  script(src='{{ STATIC_URL }}{{ LANGUAGE_CODE|slice:"0:2" }}.js')
+  script(src='{% static "csrf.js" %}')
+  script(src='{% static "querybuilder.js" %}')
+  script(src='{% static "queryfilters.js" %}')
+  script(src='{% static "moment.js" %}')
+
+  //- XXX ugly hack
+  script(src='{% static "" %}{{ LANGUAGE_CODE|slice:"0:2" }}.js')
   include querybuilder_init.html
   style(type="text/css")
     .btn-remove {

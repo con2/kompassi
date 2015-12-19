@@ -1,8 +1,9 @@
 doctype html
+- load static from staticfiles
 html
   head
     title {{ event.name }}
-    link(rel='stylesheet', href='{{ STATIC_URL }}bootstrap/bootstrap.min.css')
+    link(rel='stylesheet', href='{% static "bootstrap/bootstrap.min.css" %}')
   body
     .container
       h1 Uudelleen&shy;ohjaus
@@ -37,5 +38,5 @@ html
             input(type='hidden', name='MAC', value='{{ checkout_mac }}')
             button.btn.btn-success.btn-large.btn-block(type='submit') Siirry maksamaan &#10004;
 
-    script(src='{{ STATIC_URL }}jquery-1.10.2.min.js')
-    script(src='{{ STATIC_URL }}payments_redirect.js')
+    script(src='{% static "jquery-1.10.2.min.js" %}')
+    script(src='{% static "payments_redirect.js" %}')
