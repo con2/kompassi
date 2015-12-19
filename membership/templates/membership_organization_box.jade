@@ -8,6 +8,9 @@ if membership
   if membership.is_discharged
     h4 Sinut on erotettu tästä yhdistyksestä.
     p Yleensä tämä johtuu maksamattomasta jäsenmaksusta. Saattaaksesi jäsenyytesi takaisin voimaan ota yhteyttä yhdistyksen hallitukseen.
+  if membership.is_declined
+    h4 Jäsenhakemuksesi on hylätty.
+    p Lisätietoja saat yhdistyksen hallitukselta.
 else
   if can_apply
     h4 Voit hakea tämän yhdistyksen jäsenyyttä.
