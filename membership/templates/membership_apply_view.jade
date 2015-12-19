@@ -28,7 +28,7 @@ block content
       .control-group
         label.control-label.col-md-2 Maksutapa
         .col-md-10
-          p Tilisiirrolla. Yhdistyksen hallitus ohjeistaa jäsenmaksun maksamisen sähköpostitse liittymisen jälkeen.
+          p {{ current_term.display_payment_type }}
   else
     p.text-danger Nykyisen toimikauden tiedot puuttuvat.
 

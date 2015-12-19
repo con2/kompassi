@@ -62,6 +62,9 @@ STATE_CSS = dict(
     declined='label-danger',
 )
 
+PAYMENT_TYPE_CHOICES = [
+    (u'bank_transfer', u'Tilisiirto'),
+]
 
 class Membership(models.Model):
     organization = models.ForeignKey(Organization, verbose_name=u'Yhdistys', related_name='memberships')
@@ -218,6 +221,13 @@ class Term(models.Model):
             u'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.',
     )
 
+    payment_type = models.CharField(
+        max_length=max(len(key) for (key, val) in PAYMENT_TYPE_CHOICES),
+        choices=PAYMENT_TYPE_CHOICES,
+        verbose_name=u'Maksutapa',
+        default=u'bank_transfer',
+    )
+
     @property
     def formatted_entrance_fee(self):
         if self.entrance_fee_cents is None:
@@ -243,6 +253,15 @@ class Term(models.Model):
             self.title = unicode(self.start_date.year)
 
         return super(Term, self).save(*args, **kwargs)
+
+    @property
+    def display_payment_type(self):
+      if self.payment_type is None:
+        return u'Maksutapa ei ole tiedossa.'
+      elif self.payment_type == 'bank_transfer':
+        return u'Tilisiirrolla. Yhdistyksen hallitus ohjeistaa jäsenmaksun maksamisen sähköpostitse liittymisen jälkeen.'
+      else:
+        return u'Maksutapa ei ole tiedossa.'
 
     def __unicode__(self):
         return self.title
