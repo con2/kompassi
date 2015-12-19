@@ -52,12 +52,14 @@ STATE_CHOICES = [
     (u'approval', u'Odottaa hyväksyntää'),
     (u'in_effect', u'Voimassa'),
     (u'discharged', u'Erotettu'),
+    (u'declined', u'Hylätty'),
 ]
 
 STATE_CSS = dict(
     approval='label-info',
     in_effect='label-success',
     discharged='label-danger',
+    declined='label-danger',
 )
 
 
@@ -85,6 +87,10 @@ class Membership(models.Model):
     @property
     def is_discharged(self):
         return self.state == 'discharged'
+
+    @property
+    def is_declined(self):
+        return self.state == 'declined'
 
     @property
     def formatted_state(self):

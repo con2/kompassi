@@ -51,6 +51,8 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
         export_type_verbose = u'Hyväksyntää odottavat hakemukset'
     elif export_type == 'discharged':
         export_type_verbose = u'Erotetut jäsenet'
+    elif export_type == 'declined':
+        export_type_verbose = u'Hylätyt jäsenhakemukset'
     elif export_type == 'in_effect':
         export_type_verbose = u'Jäsenluettelo'
     elif not export_type:

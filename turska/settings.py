@@ -199,6 +199,7 @@ INSTALLED_APPS = (
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
+    'organizations.yukitea_ry',
 )
 
 LOGGING = {
