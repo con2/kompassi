@@ -13,6 +13,13 @@ from core.utils import slugify
 from membership.models import MembershipOrganizationMeta, Term
 
 
+ORGANIZATION_DESCRIPTION = u"""
+Yukitea ry on voittoa tavoittelematon yhdistys, jonka tavoite on edistää ja kehittää videopeli-, animaatio-, elokuva- ja sarjakuvaharrastuksia.
+
+Yukitea ry on vuosittaisen Yukicon -anime- ja pelitapahtuman järjestäjä.
+""".strip()
+
+
 class Setup(object):
     def __init__(self):
         pass
@@ -28,17 +35,17 @@ class Setup(object):
                 name='Yukitea ry',
                 homepage_url='http://www.yukicon.fi',
                 logo_url='',
-                description=u"""
-Yukitea ry on voittoa tavoittelematon yhdistys, jonka tavoite on edistää ja kehittää videopeli-, animaatio-, elokuva- ja sarjakuvaharrastuksia.
-
-Yukitea ry on vuosittaisen Yukicon -anime- ja pelitapahtuman järjestäjä.
-                """.strip(),
+                description=ORGANIZATION_DESCRIPTION,
             )
         )
 
         # v10
-        self.organization.muncipality = u'Espoo'
-        self.organization.public = True
+        if not self.organization.muncipality:
+            self.organization.muncipality = u'Espoo'
+        if self.organization.public is None:
+            self.organization.public = True
+        if not self.organization.description:
+            self.organization.description = ORGANIZATION_DESCRIPTION
         self.organization.save()
 
     def setup_membership(self):
