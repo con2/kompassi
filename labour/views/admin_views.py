@@ -25,7 +25,7 @@ from core.utils import initialize_form, url
 
 from ..constants import SIGNUP_STATE_NAMES
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
-from ..helpers import labour_admin_required, SignupStateFilter, labour_event_required
+from ..helpers import labour_admin_required, SignupStateFilter, labour_event_required, labour_supervisor_required
 from ..models import (
     JobCategory,
     LabourEventMeta,
@@ -404,7 +404,7 @@ def labour_admin_shirts_view(request, vars, event):
     return render(request, 'labour_admin_shirts_view.jade', vars)
 
 
-@labour_event_required
+@labour_supervisor_required
 def labour_onboarding_view(request, event):
     if request.method == 'GET':
         signups = event.signup_set.all()

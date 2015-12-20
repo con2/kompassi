@@ -644,14 +644,18 @@ class Person(models.Model):
 
 
 class GroupManagementMixin(object):
-    def is_user_admin(self, user):
+    @staticmethod
+    def is_user_in_group(user, group):
         if not user.is_authenticated():
             return False
 
         if user.is_superuser:
             return True
 
-        return user.groups.filter(pk=self.admin_group.pk).exists()
+        return user.groups.filter(pk=group.pk).exists()
+
+    def is_user_admin(self, user):
+        return self.is_user_in_group(user, self.admin_group)
 
     @classmethod
     def make_group_name(cls, host, suffix):
