@@ -25,3 +25,4 @@ requests>=2.9,<2.10
 requests-oauthlib>=0.6,<0.7
 unicodecsv>=0.14,<0.15
 XlsxWriter>=0.7,<0.8
+git+https://github.com/akx/babel.git@allow-extract-callable#egg=Babel>=2.2.0
