@@ -1,3 +1,4 @@
+- load trans from i18n
 if user.is_authenticated
   li.dropdown
     a(href="#", class="dropdown-toggle", data-toggle="dropdown")
@@ -6,6 +7,6 @@ if user.is_authenticated
     ul.dropdown-menu
       include core_profile_menu_items.jade
       li.divider
-      li: a(href='/logout') Kirjaudu ulos
+      li: a(href='/logout') {% trans "Log out" %}
 else
-  li: a(href="/login") Rekisteröidy tai kirjaudu sisään...
+  li: a(href="/login") {% trans "Register or log in..." %}

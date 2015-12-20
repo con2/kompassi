@@ -52,7 +52,7 @@ ALLOWED_HOSTS = []
 
 TIME_ZONE = 'Europe/Helsinki'
 DATETIME_FORMAT = SHORT_DATETIME_FORMAT = 'd.m.Y H:i'
-LANGUAGE_CODE = 'fi'
+LANGUAGE_CODE = 'en'
 LANGUAGES = (
     ('fi', _('Finnish')),
     ('en', _('English')),

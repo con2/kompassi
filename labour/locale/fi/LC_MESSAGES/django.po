@@ -1,0 +1,80 @@
+#: views/public_views.py
+msgid "Apply for volunteer work"
+msgstr "Hae vapaaehtoistyöhön"
+
+#: views/public_views.py
+msgid "Complete contact information"
+msgstr "Täydennä yhteystiedot"
+
+#: views/public_views.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkista lomake."
+
+#: views/public_views.py
+msgid "Qualifications"
+msgstr "Pätevyydet"
+
+#: views/public_views.py
+msgid "Register or log in..."
+msgstr "Rekisteröidy tai kirjaudu sisään..."
+
+#: views/public_views.py
+msgid "Revise qualifications"
+msgstr "Ilmoita pätevyytesi"
+
+#: views/public_views.py
+msgid "Submit application"
+msgstr "Lähetä hakemus"
+
+#: views/public_views.py
+msgid "Thank you for your application!"
+msgstr "Kiitos hakemuksestasi!"
+
+#: views/public_views.py
+msgid "The qualification has been added."
+msgstr "Pätevyys on lisätty."
+
+#: views/public_views.py
+msgid "The qualification has been removed."
+msgstr "Pätevyys on poistettu."
+
+#: views/public_views.py
+msgid "The qualification has been updated."
+msgstr "Pätevyys on päivitetty."
+
+#: views/public_views.py
+msgid "The signup form you have requested is not currently active."
+msgstr "Pyytämäsi ilmoittautumislomake ei ole tällä hetkellä käytössä."
+
+#: views/public_views.py
+msgid "This event is not currently accepting applications."
+msgstr "Tämä tapahtuma ei ota tällä hetkellä vastaan hakemuksia."
+
+#: views/public_views.py
+msgid "Update application"
+msgstr "Päivitä hakemus"
+
+#: views/public_views.py
+msgid "Volunteer work applications"
+msgstr "Vapaaehtoistyöhakemukset"
+
+#: views/public_views.py
+msgid "Your application does not currently need to be confirmed."
+msgstr "Hakemus ei tällä hetkellä edellytä vahvistusta."
+
+#: views/public_views.py
+msgid "Your application has already been processed, so you can no longer edit it. Please contact the volunteer coordinator for any further changes."
+msgstr "Hakemus on jo käsitelty, joten et voi enää muokata sitä. Tarvittaessa ota yhteyttä tapahtuman työvoimatiimiin."
+
+#: views/public_views.py
+msgid "Your application has been confirmed."
+msgstr "Hakemus on vahvistettu."
+
+#: views/public_views.py
+msgid "Your application has been updated."
+msgstr "Hakemus on päivitetty."
+
+#: views/public_views.py
+msgid "Your application has not been submitted using this form."
+msgstr "Hakemusta ei ole tehty käyttäen tätä lomaketta."
+

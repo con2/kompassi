@@ -1,4 +1,64 @@
-#: templates/core_event_boxen.jade:0
+#: templates/core_event_box.jade
+msgid "Accepting volunteer work applications"
+msgstr "Työvoimahaku avoinna"
+
+#: views/profile_views.py
+msgid "Change password"
+msgstr "Salasanan vaihto"
+
+#: views/profile_views.py
+msgid "E-mail address verification"
+msgstr "Sähköpostiosoitteen vahvistaminen"
+
+#: templates/core_event_boxen.jade
 msgid "Events currently in progress"
 msgstr "Parhaillaan käynnissä olevat tapahtumat"
+
+#: templates/core_navbar_user.jade
+msgid "Log out"
+msgstr "Kirjaudu ulos"
+
+#: templates/core_event_boxen.jade
+msgid "Past events"
+msgstr "Menneet tapahtumat"
+
+#: templates/core_footer.html
+msgid "Privacy policy"
+msgstr "Rekisteriseloste"
+
+#: views/profile_views.py
+msgid "Profile"
+msgstr "Omat tiedot"
+
+#: templates/core_navbar_user.jade
+msgid "Register or log in..."
+msgstr "Rekisteröidy tai kirjaudu sisään..."
+
+#: templates/core_event_box.jade
+msgid "Schedule"
+msgstr "Ohjelmakartta"
+
+#: templates/core_event_box.jade
+msgid "Schedule published"
+msgstr "Ohjelmakartta julkaistu"
+
+#: templates/core_event_box.jade
+msgid "Selling tickets"
+msgstr "Lipunmyynti käynnissä"
+
+#: views/profile_views.py
+msgid "Site administration"
+msgstr "Sivuston ylläpito"
+
+#: templates/core_event_box.jade
+msgid "Ticket sales"
+msgstr "Lipunmyynti"
+
+#: templates/core_event_boxen.jade
+msgid "Upcoming events"
+msgstr "Tulevat tapahtumat"
+
+#: templates/core_event_box.jade
+msgid "Volunteers"
+msgstr "Työvoima"
 

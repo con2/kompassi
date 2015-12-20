@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_safe
 
 from ..models import (
@@ -111,13 +112,13 @@ def core_profile_menu_items(request):
 
     profile_url = reverse('core_profile_view')
     profile_active = request.path == profile_url
-    profile_text = u'Omat tiedot'
+    profile_text = _(u'Profile')
 
     items.append((profile_active, profile_url, profile_text))
 
     password_url = reverse('core_password_view')
     password_active = request.path == password_url
-    password_text = u'Salasanan vaihto'
+    password_text = _(u'Change password')
 
     items.append((password_active, password_url, password_text))
 
@@ -129,7 +130,7 @@ def core_profile_menu_items(request):
         if not person.is_email_verified:
             email_verification_url = reverse('core_email_verification_request_view')
             email_verification_active = request.path == email_verification_url
-            email_verification_text = u'Sähköpostiosoitteen vahvistaminen'
+            email_verification_text = _(u'E-mail address verification')
             items.append((email_verification_active, email_verification_url, email_verification_text))
 
     if 'labour' in settings.INSTALLED_APPS:
@@ -151,7 +152,7 @@ def core_profile_menu_items(request):
     if 'django.contrib.admin' in settings.INSTALLED_APPS and request.user.is_staff:
         admin_url = '/admin/' # XXX hardcoded
         admin_active = False
-        admin_text = 'Sivuston ylläpito'
+        admin_text = _(u'Site administration')
         items.append((admin_active, admin_url, admin_text))
 
     return items
