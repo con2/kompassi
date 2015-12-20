@@ -14,7 +14,7 @@ validate_jv_card_number = RegexValidator(
 
 class JVKortti(QualificationExtraBase):
     card_number = models.CharField(
-        max_length='13',
+        max_length=13,
         validators=[validate_jv_card_number,],
         verbose_name=u"JV-kortin numero",
         help_text=u"Muoto: 0000/J0000/00 tai XX/0000/00"

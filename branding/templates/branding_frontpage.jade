@@ -1,3 +1,4 @@
+- load static from staticfiles
 .row
   .col-md-8
     h1 Tervetuloa {{ KOMPASSI_INSTALLATION_NAME_ILLATIVE }}!
@@ -6,4 +7,4 @@
     p {{ KOMPASSI_INSTALLATION_NAME_GENITIVE }} palvelut ovat halutessasi myös maksutta oman tapahtumasi hyödynnettävissä. {{ KOMPASSI_APPLICATION_NAME }} on <a href="https://github.com/tracon/kompassi" target="_blank" title="GitHub">avoimen lähdekoodin sovellus</a>, jonka voit asentaa omalle palvelimellesi. Tracon tarjoaa myös <em>kompassi.eu</em>-sivuston palveluita muiden tapahtumien käyttöön ns. "pilvipalveluna".
     p Mikäli {{ KOMPASSI_APPLICATION_NAME }} omalle tapahtumallesi kiinnostaa, ota yhteyttä Santtu "Japsu" Pajukantaan sähköpostitse osoitteella <em>japsu&nbsp;ät&nbsp;tracon.fi</em>.
   .col-md-4.hidden-sm.hidden-xs
-    img(src='{{ STATIC_URL }}kompassi.svg', type='image/svg+xml', width='100%')
+    img(src='{% static "kompassi.svg" %}', type='image/svg+xml', width='100%')

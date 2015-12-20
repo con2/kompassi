@@ -1,9 +1,15 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.views.generic.base import RedirectView
 
-from .views import *
+from .views import (
+    membership_apply_view,
+    membership_admin_members_view,
+    membership_admin_member_view,
+    membership_profile_view,
+    membership_admin_emails_api,
+)
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(
         r'^organizations/(?P<organization_slug>[a-z0-9-]+)/apply/?$',
         membership_apply_view,
@@ -40,4 +46,4 @@ urlpatterns = patterns('',
         membership_admin_emails_api,
         name='membership_admin_emails_api'
     ),
-)
+]

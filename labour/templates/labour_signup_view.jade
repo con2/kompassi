@@ -1,5 +1,6 @@
 extends base.jade
 - load crispy_forms_tags
+- load static from staticfiles
 block title
   if alternative_signup_form
     | {{ alternative_signup_form.title }}
@@ -30,7 +31,7 @@ block content
 block extra_scripts
   script.
     window.labourJobDescriptions = {{job_descriptions_json|safe}};
-  script(src='{{ STATIC_URL }}job_descriptions.js')
+  script(src='{% static "job_descriptions.js" %}')
 
   script.
     var nonQualifiedCategoryNames = {{ non_qualified_category_names_json|safe }};

@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.views.generic.base import TemplateView
 
 from .views import (
@@ -8,7 +8,7 @@ from .views import (
 )
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(
         r'^desuprofile/oauth2/login/?$',
         LoginView.as_view(),
@@ -33,4 +33,4 @@ urlpatterns = patterns('',
         ConfirmationView.as_view(),
         name='desuprofile_integration_confirmation_view',
     ),
-)
+]

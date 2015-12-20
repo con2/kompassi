@@ -19,7 +19,6 @@ from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.timezone import now
-from django.template import RequestContext
 from django.template.loader import render_to_string
 
 from dateutil.tz import tzlocal

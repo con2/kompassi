@@ -53,6 +53,5 @@ from .view_utils import (
     get_next,
     login_redirect,
     next_redirect,
-    render_string,
     url,
 )

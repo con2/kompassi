@@ -1,4 +1,5 @@
 extends base
+- load static from staticfiles
 block title
   | Ohjelmakartan esikatselu
 block content
@@ -7,4 +8,4 @@ block content
 
   include programme_timetable_fragment.jade
 block extra_scripts
-  script(src='{{ STATIC_URL }}timetable.js')
+  script(src='{% static "timetable.js" %}')

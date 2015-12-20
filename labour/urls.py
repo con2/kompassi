@@ -1,9 +1,31 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.views.generic.base import RedirectView
 
-from .views import *
+from .views import (
+    labour_admin_dashboard_view,
+    labour_admin_mail_editor_view,
+    labour_admin_mail_view,
+    labour_admin_roster_view,
+    labour_admin_shirts_view,
+    labour_admin_signup_view,
+    labour_admin_signups_view,
+    labour_api_job_categories_view,
+    labour_api_job_category_view,
+    labour_api_job_view,
+    labour_api_set_job_requirements_view,
+    labour_confirm_view,
+    labour_person_disqualify_view,
+    labour_person_qualification_view,
+    labour_person_qualify_view,
+    labour_profile_signups_view,
+    labour_qualifications_view,
+    labour_signup_view,
+    query_exec,
+    query_index,
+)
 
-urlpatterns = patterns('',
+
+urlpatterns = [
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/signup/?$', labour_signup_view, name='labour_signup_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/signup/(?P<alternative_form_slug>[a-z0-9-]+)/?$', labour_signup_view, name='labour_special_signup_view'),
 
@@ -134,4 +156,4 @@ urlpatterns = patterns('',
         labour_api_shift_view,
         name='labour_api_edit_shift_view'
     ),
-)
+]

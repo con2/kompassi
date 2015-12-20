@@ -50,9 +50,3 @@ block admin_content
             td {{ limit_group.amount_sold }}
             td {{ limit_group.amount_available }}
             td {{ limit_group.limit }}
-
-//- block extra_scripts
-//-   script
-//-     window.turskaTicketData = {{ ticket_json }};
-//-   script(src="http://mbostock.github.com/d3/d3.v2.js")
-//-   script(src='{{ STATIC_URL }}js/tickets_by_date.js')

@@ -9,7 +9,7 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
     git clone https://github.com/tracon/kompassi.git
     cd kompassi
     pip install -r requirements.txt
-    ./manage.py setup --test
+    ./manage.py setup
     ./manage.py runserver
     iexplore http://localhost:8000
 
@@ -21,7 +21,7 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
 
     Copyright © 2009-2015 Santtu Pajukanta, Jussi Sorjonen
     Copyright © 2011 Petri Haikonen
-    Copyright © 2012-2014 Meeri Panula
+    Copyright © 2012-2015 Meeri Panula
     Copyright © 2013 Esa Ollitervo
     Copyright © 2014 Pekka Wallendahl
     Copyright © 2014-2015 Jyrki Launonen

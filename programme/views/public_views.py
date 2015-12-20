@@ -18,7 +18,7 @@ from django.views.decorators.http import require_http_methods, require_safe
 
 from api.utils import api_view
 from core.tabs import Tab
-from core.utils import render_string, initialize_form, url
+from core.utils import initialize_form, url
 
 from ..models import (
     View,
@@ -167,7 +167,7 @@ def programme_mobile_timetable_view(request, event):
 @require_safe
 def programme_internal_adobe_taggedtext_view(request, event):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).get_programmes_by_start_time(request=request))
-    data = render_string(request, 'programme_timetable.taggedtext', vars)
+    data = render_to_string('programme_timetable.taggedtext', vars, request=request)
 
     # force all line endings to CRLF (Windows)
     data = data.replace('\r\n', '\n').replace('\n', '\r\n')
