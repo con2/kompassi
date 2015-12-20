@@ -37,14 +37,18 @@ def filtered_walk(root):
         yield (dirpath, dirnames, filenames)
 
 
-def _patch_babel():
-    # Try to see if we're running a version of Babel without locale data;
-    # if we are, replace Catalog's MIME header generation with logic that
-    # does not require said locale data.
+def _babel_has_locale_data():
     from babel import core
+
     try:
         core.get_global(None)
+        return True
     except RuntimeError:
+        return False
+
+
+def _patch_babel():
+    if not _babel_has_locale_data():
         def _get_mime_headers(self):
             headers = []
             headers.append(('MIME-Version', '1.0'))
@@ -52,7 +56,10 @@ def _patch_babel():
             headers.append(('Content-Transfer-Encoding', '8bit'))
             return headers
 
-        Catalog.mime_headers = property(_get_mime_headers)
+        Catalog.mime_headers = property(
+            _get_mime_headers,
+            Catalog._set_mime_headers
+        )
 
 
 class Command(BaseCommand):
@@ -109,7 +116,9 @@ class Command(BaseCommand):
                 with open(po_path) as infp:
                     lang_catalog = pofile.read_po(infp, charset="utf8")
             else:
-                lang_catalog = Catalog(locale=lang, charset="utf8")
+                # When running on a version of Babel without proper locale data, pretend we don't even want
+                # to create a locale-bound catalog. Baka Babel.
+                lang_catalog = Catalog(locale=(lang if _babel_has_locale_data() else None), charset="utf8")
             lang_catalog.update(template_catalog)
             if len(lang_catalog):
                 with open(po_path, "w") as outf:
