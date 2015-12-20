@@ -1,0 +1,4 @@
+#: templates/core_event_boxen.jade:0
+msgid "Events currently in progress"
+msgstr "Parhaillaan käynnissä olevat tapahtumat"
+
