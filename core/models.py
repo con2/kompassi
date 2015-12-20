@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
-from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.dateformat import format as format_date
 from django.utils import timezone
@@ -784,7 +783,7 @@ class PasswordResetToken(OneTimeCode):
             link=request.build_absolute_uri(url('core_password_reset_view', self.code))
         )
 
-        return render_to_string('core_password_reset_message.eml', vars, context_instance=RequestContext(request, {}))
+        return render_to_string('core_password_reset_message.eml', vars, request=request)
 
     @classmethod
     def reset_password(cls, code, new_password):
@@ -817,7 +816,7 @@ class EmailVerificationToken(OneTimeCode):
             link=request.build_absolute_uri(url('core_email_verification_view', self.code))
         )
 
-        return render_to_string('core_email_verification_message.eml', vars, context_instance=RequestContext(request, {}))
+        return render_to_string('core_email_verification_message.eml', vars, request=request)
 
 
 class EmailVerificationError(RuntimeError):

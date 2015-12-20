@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.shortcuts import redirect
 
 from .views import (
@@ -10,9 +10,7 @@ from .views import (
 )
 
 
-urlpatterns = patterns(
-    '',
-
+urlpatterns = [
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/?$',
         badges_admin_dashboard_view,
@@ -54,4 +52,4 @@ urlpatterns = patterns(
         badges_admin_export_view,
         name='badges_admin_export_view',
     ),
-)
+]

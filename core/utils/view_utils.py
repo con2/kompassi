@@ -1,16 +1,10 @@
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.template import RequestContext
-from django.template.loader import render_to_string
 from django.utils.http import urlencode
 
 
 def url(view_name, *args):
     return reverse(view_name, args=args)
-
-
-def render_string(request, template_name, vars):
-    return render_to_string(template_name, vars, context_instance=RequestContext(request))
 
 
 def login_redirect(request, view='core_login_view'):

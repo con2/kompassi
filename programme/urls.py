@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.views.generic import RedirectView
 
 from .views import (
@@ -18,7 +18,7 @@ from .views import (
     programme_timetable_view,
 )
 
-actual_patterns = [
+urlpatterns = [
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/timetable(?P<suffix>.*)',
         RedirectView.as_view(url='/events/%(event_slug)s/programme%(suffix)s', permanent=False),
@@ -44,6 +44,3 @@ actual_patterns = [
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/programme\.(?P<format>xlsx|csv|tsv|html)$', programme_admin_view, name='programme_admin_export_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/emails\.txt$', programme_admin_email_list_view, name='programme_admin_email_list_view'),
 ]
-
-
-urlpatterns = patterns('', *actual_patterns)
