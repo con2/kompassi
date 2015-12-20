@@ -411,8 +411,9 @@ def labour_onboarding_view(request, event):
         return render(request, 'labour_admin_onboarding_view.jade', {'signups': signups, 'event': event})
     elif request.method == 'POST':
         signup_id = request.POST['id']
+        is_arrived = request.POST['arrived'] == 'true'
         signup = event.signup_set.get(pk=signup_id)
-        signup.time_arrived = datetime.datetime.now()
+        signup.is_arrived = is_arrived
         signup.save()
         return HttpResponse()
 
