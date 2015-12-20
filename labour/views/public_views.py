@@ -84,7 +84,7 @@ def labour_signup_view(request, event, alternative_form_slug=None):
 
     if not request.user.is_authenticated():
         pages = [
-            ('core_login_view', _(u'Register or log in...'), login_related()),
+            ('core_login_view', _(u'Sign up or sign in...'), login_related()),
             ('labour_qualifications_view', _(u'Revise qualifications'), qualifications_related()),
             (actual_signup_url, _(u'Apply for volunteer work')),
         ]

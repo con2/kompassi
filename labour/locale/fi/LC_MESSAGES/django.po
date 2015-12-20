@@ -15,12 +15,12 @@ msgid "Qualifications"
 msgstr "Pätevyydet"
 
 #: views/public_views.py
-msgid "Register or log in..."
-msgstr "Rekisteröidy tai kirjaudu sisään..."
-
-#: views/public_views.py
 msgid "Revise qualifications"
 msgstr "Ilmoita pätevyytesi"
+
+#: views/public_views.py
+msgid "Sign up or sign in..."
+msgstr "Rekisteröidy tai kirjaudu sisään..."
 
 #: views/public_views.py
 msgid "Submit application"

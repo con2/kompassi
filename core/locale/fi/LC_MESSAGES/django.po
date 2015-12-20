@@ -1,7 +1,3 @@
-#: templates/core_event_box.jade
-msgid "Accepting volunteer work applications"
-msgstr "Työvoimahaku avoinna"
-
 #: views/profile_views.py
 msgid "Change password"
 msgstr "Salasanan vaihto"
@@ -30,9 +26,9 @@ msgstr "Rekisteriseloste"
 msgid "Profile"
 msgstr "Omat tiedot"
 
-#: templates/core_navbar_user.jade
-msgid "Register or log in..."
-msgstr "Rekisteröidy tai kirjaudu sisään..."
+#: templates/core_event_box.jade
+msgid "Recruiting volunteers"
+msgstr "Työvoimahaku avoinna"
 
 #: templates/core_event_box.jade
 msgid "Schedule"
@@ -45,6 +41,10 @@ msgstr "Ohjelmakartta julkaistu"
 #: templates/core_event_box.jade
 msgid "Selling tickets"
 msgstr "Lipunmyynti käynnissä"
+
+#: templates/core_navbar_user.jade
+msgid "Sign up or sign in..."
+msgstr "Rekisteröidy tai kirjaudu sisään..."
 
 #: views/profile_views.py
 msgid "Site administration"

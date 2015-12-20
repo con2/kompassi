@@ -8,7 +8,7 @@
     p
       if event.labour_event_meta
         if event.labour_event_meta.is_registration_open
-          span.label.label-primary.kompassi-space-after: a(href='{% url "labour_signup_view" event.slug %}') {% trans "Accepting volunteer work applications" %}
+          span.label.label-primary.kompassi-space-after: a(href='{% url "labour_signup_view" event.slug %}') {% trans "Recruiting volunteers" %}
         else
           span.label.label-default.kompassi-space-after {% trans "Volunteers" %}
       if event.programme_event_meta
