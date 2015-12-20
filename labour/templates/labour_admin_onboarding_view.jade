@@ -24,6 +24,12 @@ block content
                     td.title= signup.job_title
                     td.shirt= signup.signup_extra.shirt_size
 
+block extra_head
+    style.
+        .signup {
+            cursor: pointer;
+        }
+
 block extra_scripts
     script(src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js')
     script.
@@ -50,7 +56,7 @@ block extra_scripts
             var data = { id: id, arrived: newArrivedState, csrfmiddlewaretoken: '{{ csrf_token }}' }
             $.post('{% url "labour_onboarding_view" event.slug %}', data)
                 .done(function () {
-                    $this.toggleClass('signup--arrived', newArrivedState)
+                    $this.toggleClass('signup--arrived success', newArrivedState)
                 })
                 .fail(function (xhr, status, errorText) {
                     alert(errorText)
