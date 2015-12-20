@@ -14,12 +14,15 @@ block content
     table.table.table-striped.onboarding__table
         thead
             tr
+                th
                 th Nimi
                 th Tehtävä
                 th Paita
         tbody
             each signup in signups
-                tr.signup(data-id=signup.id, class='{% if signup.is_arrived %}signup--arrived{% endif %}')
+                tr.signup(data-id=signup.id, class='{% if signup.is_arrived %}signup--arrived success{% endif %}')
+                    td.loading
+                        i.fa.fa-spinner.fa-spin
                     td.name= signup.full_name
                     td.title= signup.job_title
                     td.shirt= signup.signup_extra.shirt_size
@@ -28,6 +31,15 @@ block extra_head
     style.
         .signup {
             cursor: pointer;
+        }
+        .signup .loading {
+            width: 1.5em;
+        }
+        .signup .loading .fa {
+            visibility: hidden;
+        }
+        .signup--loading .loading .fa {
+            visibility: visible;
         }
 
 block extra_scripts
@@ -50,15 +62,20 @@ block extra_scripts
 
         $signups.on('click', function () {
             var $this = $(this)
+            if ($this.hasClass('signup--loading')) return
             var id = $this.data('id')
             var arrived = $this.hasClass('signup--arrived')
             var newArrivedState = !arrived
             var data = { id: id, arrived: newArrivedState, csrfmiddlewaretoken: '{{ csrf_token }}' }
+            $this.addClass('signup--loading')
             $.post('{% url "labour_onboarding_view" event.slug %}', data)
                 .done(function () {
                     $this.toggleClass('signup--arrived success', newArrivedState)
                 })
                 .fail(function (xhr, status, errorText) {
                     alert(errorText)
+                })
+                .always(function () {
+                    $this.removeClass('signup--loading')
                 })
         })
