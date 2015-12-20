@@ -12,6 +12,7 @@ from .views import (
     labour_api_job_categories_view,
     labour_api_job_category_view,
     labour_api_job_view,
+    labour_api_shift_view,
     labour_api_set_job_requirements_view,
     labour_confirm_view,
     labour_person_disqualify_view,

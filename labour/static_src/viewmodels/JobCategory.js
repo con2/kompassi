@@ -15,7 +15,7 @@ import RequirementCell from './RequirementCell';
 import RequirementModal from './RequirementModal';
 import ShiftModal from './ShiftModal';
 import Lane from './Lane';
-import LaneAllocator from '../helpers/LaneHelper';
+import buildLanes from '../helpers/LaneAllocator';
 
 
 export default class JobCategory {
@@ -32,15 +32,7 @@ export default class JobCategory {
 
   loadJobCategory(jobCategory) {
     jobCategory.requirementCells = RequirementCell.forJobCategory(this.app, jobCategory);
-    jobCategory.jobs.forEach(job => {
-      job.requirementCells = RequirementCell.forJob(this.app, job);
-
-      job.lanes = [];
-      const numLanes = _.max(job.requirements);
-      for (let i = 0; i < numLanes; ++i) {
-        job.lanes.push(new Lane(this.app, job, i));
-      }
-    });
+    jobCategory.jobs.forEach(job => job.lanes = buildLanes(this.app, job));
 
     this.jobCategory(jobCategory);
     this.app.activeView('JobCategory');

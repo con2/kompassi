@@ -24,8 +24,17 @@ export default class LaneBuilder {
     }
   }
 
-  build() {
+  isFreeAt(startTime) {
+    return true;
+  }
 
+  build() {
+    console.log('LaneBuilder', 'build!', this);
+    const cells = [];
+
+    // TODO
+
+    return new Lane(this.app, this.job, cells);
   }
 }
 
