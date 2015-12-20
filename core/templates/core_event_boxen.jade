@@ -1,6 +1,7 @@
+- load trans from i18n
 .kompassi-event-boxen
   if current_events_rows
-    h2 Parhaillaan käynnissä olevat tapahtumat
+    h2 {% trans "Events currently in progress" %}
     for current_events_row in current_events_rows
       .row
         for event in current_events_row
