@@ -58,6 +58,10 @@ msgstr "Päivitä hakemus"
 msgid "Volunteer work applications"
 msgstr "Vapaaehtoistyöhakemukset"
 
+#: apps.py
+msgid "Volunteer workforce management"
+msgstr "Vapaaehtoistyövoiman hallinta"
+
 #: views/public_views.py
 msgid "Your application does not currently need to be confirmed."
 msgstr "Hakemus ei tällä hetkellä edellytä vahvistusta."
