@@ -14,6 +14,10 @@ msgstr "Parhaillaan käynnissä olevat tapahtumat"
 msgid "Log out"
 msgstr "Kirjaudu ulos"
 
+#: templates/core_organization_boxen.jade
+msgid "Membership roster"
+msgstr "Jäsenrekisteri"
+
 #: templates/core_event_boxen.jade
 msgid "Past events"
 msgstr "Menneet tapahtumat"
@@ -53,6 +57,10 @@ msgstr "Sivuston ylläpito"
 #: templates/core_event_box.jade
 msgid "Ticket sales"
 msgstr "Lipunmyynti"
+
+#: templates/core_organization_boxen.jade
+msgid "Organizations using this site"
+msgstr "Tätä sivustoa käyttävät yhdistykset"
 
 #: templates/core_event_boxen.jade
 msgid "Upcoming events"

@@ -1,4 +1,5 @@
-h2 {{ settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE }} käyttävät yhdistykset
+- load trans from i18n
+h2 {% trans "Organizations using this site" %}
 for organizations_row in organizations_rows
   .row
     for organization in organizations_row
@@ -12,6 +13,6 @@ for organizations_row in organizations_rows
             if organization.membership_organization_meta
               if organization.membership_organization_meta.receiving_applications
                 .label.label-primary
-                  a(href='{% url "core_organization_view" organization.slug %}') Jäsenrekisteri
+                  a(href='{% url "core_organization_view" organization.slug %}') {% trans "Membership roster" %}
               else
-                .label.label-default Jäsenrekisteri
+                .label.label-default {% trans "Membership roster" %}
