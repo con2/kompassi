@@ -2,7 +2,7 @@
 .panel.panel-default
   .panel-heading: strong: a(href='{% url "core_event_view" event.slug %}') {{ event.name }}
   .panel-body
-    p {{ event.venue.name_inessive }}
+    p {{ event.venue.name }}
     if event.start_time
       p {{ event.formatted_start_and_end_date }}
     p
