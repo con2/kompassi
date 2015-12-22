@@ -168,7 +168,7 @@ class Command(BaseCommand):
             u'Laktoositon',
             u'Maidoton',
             u'Vegaaninen',
-            u'Lakto-ovo-vegaaninen',
+            u'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
