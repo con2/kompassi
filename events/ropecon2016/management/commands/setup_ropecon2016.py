@@ -56,7 +56,7 @@ class Setup(object):
             contact_email='Ropeconin lipunmyynti <rahat@ropecon.fi>',
             plain_contact_email='rahat@ropecon.fi',
             front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Ropeconiin!</h2>"
-                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä. Lippuja ei lähetetä postitse eikä erillisinä e-lippuina, vaan ne toimivat nimi listaan -periaatteella, ja saat rannekkeesi ovelta saapuessasi tapahtumaan.</p>"
+                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä. Liput lähetetään sähköpostitse e-lippuina, jotka vaihdetaan rannekkeiksi saapuessasi tapahtumaan.</p>"
                 u"<p>Lue lisää tapahtumasta <a href='http://ropecon.fi'>Ropeconin kotisivuilta</a>.</p>",
         )
 
@@ -100,7 +100,7 @@ class Setup(object):
                 ],
                 price_cents=3200,
                 requires_shipping=False,
-                electronic_ticket=False,
+                electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
             ),
@@ -112,7 +112,7 @@ class Setup(object):
                 ],
                 price_cents=2200,
                 requires_shipping=False,
-                electronic_ticket=False,
+                electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
             ),
@@ -124,7 +124,7 @@ class Setup(object):
                 ],
                 price_cents=2200,
                 requires_shipping=False,
-                electronic_ticket=False,
+                electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
             ),
@@ -136,7 +136,7 @@ class Setup(object):
                 ],
                 price_cents=1500,
                 requires_shipping=False,
-                electronic_ticket=False,
+                electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
             ),
