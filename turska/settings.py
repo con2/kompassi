@@ -183,6 +183,7 @@ INSTALLED_APPS = (
     'events.kuplii2016',
     'events.aicon2016',
     'events.popcult2016',
+    'events.ropecon2016',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
