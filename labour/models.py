@@ -7,6 +7,8 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
+
 
 import jsonschema
 
@@ -87,8 +89,8 @@ class LabourEventMeta(EventMetaBase):
     )
 
     class Meta:
-        verbose_name = u'tapahtuman työvoimatiedot'
-        verbose_name_plural = u'tapahtuman työvoimatiedot'
+        verbose_name = _(u'labour event meta')
+        verbose_name_plural = _(u'labour event metas')
 
     def __unicode__(self):
         return self.event.name if self.event else 'None'
@@ -215,8 +217,8 @@ class Qualification(models.Model):
     qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', null=True, blank=True)
 
     class Meta:
-        verbose_name = u'pätevyys'
-        verbose_name_plural = u'pätevyydet'
+        verbose_name = _(u'qualification')
+        verbose_name_plural = _(u'qualifications')
 
     def __unicode__(self):
         return self.name
@@ -250,8 +252,8 @@ class PersonQualification(models.Model):
     qualification = models.ForeignKey(Qualification, verbose_name=u'pätevyys')
 
     class Meta:
-        verbose_name = u'pätevyyden haltija'
-        verbose_name_plural=u'pätevyyden haltijat'
+        verbose_name = _(u'qualification holder')
+        verbose_name_plural = _(u'qualification holders')
 
     def __unicode__(self):
         return self.qualification.name if self.qualification else 'None'
@@ -292,8 +294,8 @@ class Perk(models.Model):
     name = models.CharField(max_length=63)
 
     class Meta:
-        verbose_name = u'etu'
-        verbose_name_plural = u'edut'
+        verbose_name = _(u'perk')
+        verbose_name_plural = _(u'perks')
 
         unique_together = [
             ('event', 'slug'),
@@ -318,8 +320,8 @@ class PersonnelClass(models.Model):
     priority = models.IntegerField(default=0)
 
     class Meta:
-        verbose_name = u'henkilöstöluokka'
-        verbose_name_plural = u'henkilöstöluokat'
+        verbose_name = _(u'personnel class')
+        verbose_name_plural = _(u'personnel classes')
 
         unique_together = [
             ('event', 'slug'),
@@ -384,8 +386,8 @@ class JobCategory(models.Model):
             return all(qual in quals for qual in self.required_qualifications.all())
 
     class Meta:
-        verbose_name = u'tehtäväalue'
-        verbose_name_plural=u'tehtäväalueet'
+        verbose_name = _(u'job category')
+        verbose_name_plural = _(u'job categories')
 
         unique_together = [
             ('event', 'slug'),
@@ -451,8 +453,8 @@ class WorkPeriod(models.Model):
     end_time = models.DateTimeField(verbose_name=u'Loppuaika', blank=True, null=True)
 
     class Meta:
-        verbose_name = u'työvuorotoive'
-        verbose_name_plural=u'työvuorotoiveet'
+        verbose_name = _(u'work period')
+        verbose_name_plural= _(u'work periods')
 
     def __unicode__(self):
         return self.description
@@ -464,8 +466,8 @@ class Job(models.Model):
     title = models.CharField(max_length=63, verbose_name=u'tehtävän nimi')
 
     class Meta:
-        verbose_name = u'tehtävä'
-        verbose_name_plural = u'tehtävät'
+        verbose_name = _(u'job')
+        verbose_name_plural = _(u'jobs')
         unique_together = [('job_category', 'slug')]
 
     def save(self, *args, **kwargs):
@@ -526,8 +528,8 @@ class JobRequirement(models.Model):
         return super(JobRequirement, self).save(*args, **kwargs)
 
     class Meta:
-        verbose_name = u'henkilöstövaatimus'
-        verbose_name_plural = u'henkilöstövaatimukset'
+        verbose_name = _(u'job requirement')
+        verbose_name_plural = _(u'job requirements')
 
 
 class AlternativeSignupForm(models.Model):
@@ -616,8 +618,8 @@ class AlternativeSignupForm(models.Model):
         return is_within_period(self.active_from, self.active_until)
 
     class Meta:
-        verbose_name = u'Vaihtoehtoinen ilmoittautumislomake'
-        verbose_name_plural = u'Vaihtoehtoiset ilmoittautumislomakkeet'
+        verbose_name = _(u'alternative signup form')
+        verbose_name_plural = _(u'alternative signup forms')
         unique_together = [
             ('event', 'slug'),
         ]
@@ -761,8 +763,8 @@ class Signup(models.Model, CsvExportMixin):
     is_processed = property(lambda self: self.state != 'new')
 
     class Meta:
-        verbose_name = u'ilmoittautuminen'
-        verbose_name_plural=u'ilmoittautumiset'
+        verbose_name = _(u'signup')
+        verbose_name_plural = _(u'signups')
 
     def __unicode__(self):
         p = self.person.full_name if self.person else 'None'
@@ -1336,8 +1338,8 @@ class InfoLink(models.Model):
     title = models.CharField(max_length=255, verbose_name=u'Teksti')
 
     class Meta:
-        verbose_name = u'työvoimaohje'
-        verbose_name_plural = u'työvoimaohjeet'
+        verbose_name = _(u'info link')
+        verbose_name_plural = _(u'info links')
 
     def __unicode__(self):
         return self.title

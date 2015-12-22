@@ -54,13 +54,14 @@ msgstr "Tämä tapahtuma ei ota tällä hetkellä vastaan hakemuksia."
 msgid "Update application"
 msgstr "Päivitä hakemus"
 
+#: apps.py
+#, fuzzy
+msgid "Volunteer management"
+msgstr "Vapaaehtoistyövoiman hallinta"
+
 #: views/public_views.py
 msgid "Volunteer work applications"
 msgstr "Vapaaehtoistyöhakemukset"
-
-#: apps.py
-msgid "Volunteer workforce management"
-msgstr "Vapaaehtoistyövoiman hallinta"
 
 #: views/public_views.py
 msgid "Your application does not currently need to be confirmed."
@@ -81,4 +82,104 @@ msgstr "Hakemus on päivitetty."
 #: views/public_views.py
 msgid "Your application has not been submitted using this form."
 msgstr "Hakemusta ei ole tehty käyttäen tätä lomaketta."
+
+#: models.py
+msgid "alternative signup form"
+msgstr "vaihtoehtoinen ilmoittautumislomake"
+
+#: models.py
+msgid "alternative signup forms"
+msgstr "vaihtoehtoiset ilmoittautumislomakkeet"
+
+#: models.py
+msgid "info link"
+msgstr "työvoimaohje"
+
+#: models.py
+msgid "info links"
+msgstr "työvoimaohjeet"
+
+#: models.py
+msgid "job"
+msgstr "tehtävä"
+
+#: models.py
+msgid "job categories"
+msgstr "tehtäväalueet"
+
+#: models.py
+msgid "job category"
+msgstr "tehtäväalue"
+
+#: models.py
+msgid "job requirement"
+msgstr "henkilöstövaatimus"
+
+#: models.py
+msgid "job requirements"
+msgstr "henkilöstövaatimukset"
+
+#: models.py
+msgid "jobs"
+msgstr "tehtävät"
+
+#: models.py
+msgid "labour event meta"
+msgstr "tapahtuman työvoima-asetukset"
+
+#: models.py
+msgid "labour event metas"
+msgstr "tapahtumien työvoima-asetukset"
+
+#: models.py
+msgid "perk"
+msgstr "etu"
+
+#: models.py
+msgid "perks"
+msgstr "edut"
+
+#: models.py
+msgid "personnel class"
+msgstr "henkilöstöluokka"
+
+#: models.py
+msgid "personnel classes"
+msgstr "henkilöstöluokat"
+
+#: models.py
+#, fuzzy
+msgid "qualification"
+msgstr "Pätevyydet"
+
+#: models.py
+#, fuzzy
+msgid "qualification holder"
+msgstr "Pätevyydet"
+
+#: models.py
+#, fuzzy
+msgid "qualification holders"
+msgstr "Pätevyydet"
+
+#: models.py
+#, fuzzy
+msgid "qualifications"
+msgstr "Pätevyydet"
+
+#: models.py
+msgid "signup"
+msgstr "ilmoittautuminen"
+
+#: models.py
+msgid "signups"
+msgstr "ilmoittautumiset"
+
+#: models.py
+msgid "work period"
+msgstr "aikajae"
+
+#: models.py
+msgid "work periods"
+msgstr "aikajakeet"
 
