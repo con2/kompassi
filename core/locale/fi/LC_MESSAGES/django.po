@@ -23,8 +23,8 @@ msgid "Membership roster"
 msgstr "Jäsenrekisteri"
 
 #: templates/core_organization_boxen.jade
-msgid "Organizations using this site"
-msgstr "Tätä sivustoa käyttävät yhdistykset"
+msgid "Organizations"
+msgstr "Yhdistykset"
 
 #: templates/core_event_boxen.jade
 msgid "Past events"
