@@ -13,6 +13,6 @@ for organizations_row in organizations_rows
             if organization.membership_organization_meta
               if organization.membership_organization_meta.receiving_applications
                 .label.label-primary
-                  a(href='{% url "core_organization_view" organization.slug %}') {% trans "Membership roster" %}
+                  a(href='{% url "membership_apply_view" organization.slug %}') {% trans "Accepting applications" %}
               else
                 .label.label-default {% trans "Membership roster" %}

@@ -1,3 +1,7 @@
+#: templates/core_organization_boxen.jade
+msgid "Accepting applications"
+msgstr "Ottaa vastaan hakemuksia"
+
 #: views/profile_views.py
 msgid "Change password"
 msgstr "Salasanan vaihto"
@@ -17,6 +21,10 @@ msgstr "Kirjaudu ulos"
 #: templates/core_organization_boxen.jade
 msgid "Membership roster"
 msgstr "Jäsenrekisteri"
+
+#: templates/core_organization_boxen.jade
+msgid "Organizations using this site"
+msgstr "Tätä sivustoa käyttävät yhdistykset"
 
 #: templates/core_event_boxen.jade
 msgid "Past events"
@@ -57,10 +65,6 @@ msgstr "Sivuston ylläpito"
 #: templates/core_event_box.jade
 msgid "Ticket sales"
 msgstr "Lipunmyynti"
-
-#: templates/core_organization_boxen.jade
-msgid "Organizations using this site"
-msgstr "Tätä sivustoa käyttävät yhdistykset"
 
 #: templates/core_event_boxen.jade
 msgid "Upcoming events"
