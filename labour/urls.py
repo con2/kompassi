@@ -22,6 +22,7 @@ from .views import (
     labour_signup_view,
     query_exec,
     query_index,
+    labour_onboarding_view,
 )
 
 
