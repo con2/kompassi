@@ -136,6 +136,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
     tabs = [
         Tab('programme-admin-programme-public-tab', _(u'Public information'), active=True),
+        Tab('programme-admin-programme-schedule-tab', _(u'Schedule information')),
         Tab('programme-admin-programme-hosts-tab', _(u'Programme hosts')),
         Tab('programme-admin-programme-internal-tab', _(u'Internal information')),
     ]
@@ -144,6 +145,8 @@ def programme_admin_detail_view(request, vars, event, programme_id):
         internal_form=public_form,
         overlapping_programmes=programme.get_overlapping_programmes(),
         public_form=public_form,
+        schedule_form=public_form,
+        add_host_form=public_form,
         tabs=tabs,
     )
 

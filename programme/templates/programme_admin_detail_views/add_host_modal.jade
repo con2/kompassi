@@ -1,0 +1,15 @@
+- load trans from i18n
+- load crispy from crispy_forms_tags
+.modal.fade#programme-admin-host-modal(tabindex="-1", role="dialog")
+  .modal-dialog(role="document")
+    form(method='POST').modal-content
+      .modal-header
+        h4 {% trans "Add host" %}
+      .modal-body
+        .form-horizontal {% crispy add_host_form %}
+      .modal-footer.clearfix
+        .btn-group
+          button.btn.btn-default(type='button', data-dismiss='modal') Peruuta
+          button.btn.btn-success(type='submit')
+            i.kompassi-icon-space-right.fa.fa-plus
+            {% trans "Add host" %}
