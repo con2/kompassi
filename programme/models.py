@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.dispatch import receiver
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 
 from dateutil.tz import tzlocal
 
@@ -94,8 +95,8 @@ class Category(models.Model):
     class Meta:
         ordering = ['title']
         unique_together = [('event', 'slug')]
-        verbose_name = u'ohjelmaluokka'
-        verbose_name_plural = u'ohjelmaluokat'
+        verbose_name = _(u'category')
+        verbose_name_plural = _(u'categories')
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -233,17 +234,17 @@ STATE_CSS = dict(
 
 
 class Programme(models.Model, CsvExportMixin):
-    category = models.ForeignKey(Category, verbose_name=u'Ohjelmaluokka')
+    category = models.ForeignKey(Category, verbose_name=_(u'category'))
 
     title = models.CharField(
         max_length=1023,
-        verbose_name=u'Otsikko',
-        help_text=u'Keksi ohjelmanumerollesi lyhyt ja ytimekäs otsikko ohjelmakarttaa sekä ohjelmalehteä varten. Tracon varaa oikeuden muuttaa otsikkoa.',
+        verbose_name=_(u'Title'),
+        help_text=_(u'Make up a concise title for your programme. We reserve the right to edit the title.'),
     )
     description = models.TextField(
         blank=True,
-        verbose_name=u'Ohjelmanumeron kuvaus',
-        help_text=u'Ohjelmakuvaus näkyy web-ohjelmakartassa sekä ohjelmalehdessä. Ohjelmakuvauksen tarkoitus on antaa kävijälle riittävät tiedot päättää, osallistuako ohjelmaasi, ja markkinoida ohjelmaasi kävijöille. Tracon varaa oikeuden editoida kuvausta.',
+        verbose_name=_(u'Description'),
+        help_text=_(u'This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description.'),
     )
     room_requirements = models.TextField(
         blank=True,

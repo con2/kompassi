@@ -12,6 +12,26 @@ from core.utils import horizontal_form_helper, format_datetime, indented_without
 from .models import Programme, Role, Category, Room, Tag, AllRoomsPseudoView, START_TIME_LABEL
 
 
+class CreateProgrammeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(CreateProgrammeForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.fields['category'].queryset = Category.objects.filter(event=event)
+
+    class Meta:
+        model = Programme
+        fields = (
+            'title',
+            'description',
+            'category',
+        )
+
+
 class ProgrammeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if 'self_service' in kwargs:

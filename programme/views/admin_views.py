@@ -26,6 +26,7 @@ from ..models import (
 from ..helpers import programme_admin_required, group_programmes_by_start_time
 from ..forms import (
     AdminProgrammePersonFormSet,
+    CreateProgrammeForm,
     ProgrammeAdminForm,
     ProgrammeExtraForm,
     ProgrammeForm,
@@ -108,6 +109,18 @@ def programme_admin_view(request, vars, event, format='screen'):
         return render(request, 'programme_admin_print_view.jade', vars)
     else:
         raise NotImplementedError(format)
+
+
+@programme_admin_required
+@require_http_methods(['GET', 'HEAD', 'POST'])
+def programme_admin_create_view(request, vars, event):
+    form = initialize_form(CreateProgrammeForm, request, event=event)
+
+    vars.update(
+        form=form,
+    )
+
+    return render(request, 'programme_admin_create_view.jade', vars)
 
 
 @programme_admin_required
