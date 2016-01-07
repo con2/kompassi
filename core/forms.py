@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
+from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
@@ -17,17 +18,17 @@ from .utils import horizontal_form_helper, check_password_strength
 
 valid_username = RegexValidator(
     regex=r'^[a-z0-9_]{4,30}$',
-    message=u'Käyttäjänimi ei kelpaa.'
+    message=_(u'Invalid user name'),
 )
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(required=True, max_length=30, label=u'Käyttäjänimi tai sähköpostiosoite')
+    username = forms.CharField(required=True, max_length=30, label=_(u'User name or e-mail address'))
 
     password = forms.CharField(
         required=True,
         max_length=1023,
-        label=u'Salasana',
+        label=_(u'Password'),
         widget=forms.PasswordInput,
     )
 
@@ -50,7 +51,7 @@ class LoginForm(forms.Form):
 
 
 class PersonForm(forms.ModelForm):
-    birth_date = DateField(required=True, label=u'Syntymäaika', help_text=BIRTH_DATE_HELP_TEXT)
+    birth_date = DateField(required=True, label=_(u'Birth date'), help_text=BIRTH_DATE_HELP_TEXT)
 
     def __init__(self, *args, **kwargs):
         if 'submit_button' in kwargs:
@@ -69,27 +70,27 @@ class PersonForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
 
         if self.instance.pk is None:
-            save_button_text = u'Rekisteröidy'
+            save_button_text = _(u'Sign up')
         else:
-            save_button_text = u'Tallenna tiedot'
+            save_button_text = _(u'Save')
 
         layout_parts = [
-            Fieldset(u'Perustiedot',
+            Fieldset(_(u'Basic information'),
                 'first_name',
                 'surname',
                 'nick',
                 'preferred_name_display_style',
                 'birth_date',
             ),
-            Fieldset(u'Jäsenrekisteritiedot',
+            Fieldset(_(u'Membership roster information'),
                 'official_first_names',
                 'muncipality',
             ),
-            Fieldset(u'Yhteystiedot',
+            Fieldset(_(u'Contact information'),
                 'phone',
                 'email',
             ),
-            Fieldset(u'Yksityisyys',
+            Fieldset(_(u'Privacy'),
                 'may_send_info',
                 'allow_work_history_sharing',
             )
@@ -107,10 +108,12 @@ class PersonForm(forms.ModelForm):
         qs = Person.objects.filter(email=email, user__isnull=False)
 
         if qs.exists() and self.instance not in qs:
-            raise forms.ValidationError(
-                u'Sähköpostiosoite on jo käytössä. Jos olet unohtanut '
-                u'salasanasi, ole hyvä ja käytä Salasana unohtunut -toimintoa.'
-            )
+            raise forms.ValidationError(_(
+                u'There is already a user account associated with this e-mail address. '
+                u'If you have forgotten your password, please do not create another user '
+                u'account but rather restore your password using the Forgot password link '
+                u'at the sign in form.'
+            ))
 
         return email
 
@@ -149,13 +152,12 @@ class PersonForm(forms.ModelForm):
         )
 
 
-PASSWORD_HELP_TEXT = (
-    u'Salasanan tulee olla vähintään {min_length} merkkiä pitkä ja sisältää ainakin '
-    u'{min_classes} seuraavista: pieni kirjain, iso kirjain, numero, erikoismerkki.'
-    .format(
-        min_classes=settings.KOMPASSI_PASSWORD_MIN_CLASSES,
-        min_length=settings.KOMPASSI_PASSWORD_MIN_LENGTH,
-    )
+PASSWORD_HELP_TEXT = _(
+    u'The password must consist of at least %(min_length)d characters and contain '
+    u'%(min_classes)d of the following: small letter, capital letter, number, special character.'
+) % dict(
+    min_classes=settings.KOMPASSI_PASSWORD_MIN_CLASSES,
+    min_length=settings.KOMPASSI_PASSWORD_MIN_LENGTH,
 )
 
 
@@ -164,30 +166,35 @@ class RegistrationForm(forms.Form):
         required=True,
         max_length=30,
         validators=[valid_username],
-        label=u'Käyttäjänimi',
-        help_text=u'Valitse itsellesi 4&ndash;30 merkin pituinen käyttäjänimi. Sallittuja '
-            u'merkkejä ovat <b>pienet</b> kirjaimet <i>a&ndash;z</i>, numerot <i>0&ndash;9</i> sekä '
-            u'alaviiva </i>_</i>.'
+        label=_(u'User name'),
+        help_text=_(
+            u'Please choose a user name. The user name must consist of 4 to 30 characters. '
+            u'The following characters are allowed: <b>small</b> letters <i>a&ndash;z</i>, numbers <i>0&ndash;9</i> '
+            u'and underscore </i>_</i>. You can use either this user name or your e-mail address to sign in.'
+        )
     )
 
     password = forms.CharField(
         required=True,
         max_length=1023,
-        label=u'Salasana',
+        label=_(u'Password'),
         widget=forms.PasswordInput,
         validators=[check_password_strength],
     )
     password_again = forms.CharField(
         required=True,
         max_length=1023,
-        label=u'Salasana uudestaan',
+        label=_(u'Password (again)'),
         widget=forms.PasswordInput,
         help_text=PASSWORD_HELP_TEXT,
     )
 
     accept_terms_and_conditions = forms.BooleanField(
         required=True,
-        label=u'Annan luvan henkilötietojeni käsittelyyn <a href="{}" target="_blank">rekisteriselosteen</a> mukaisesti <i>(pakollinen)</i>'.format(settings.KOMPASSI_PRIVACY_POLICY_URL)
+        label=_(
+            u'I hereby authorize the use of my personal information as outlined in the '
+            u'<a href="%(privacy_policy_url)s" target="_blank">privacy policy</a> <i>(mandatory)</i>.'
+        ) % dict(privacy_policy_url=settings.KOMPASSI_PRIVACY_POLICY_URL)
     )
 
     def __init__(self, *args, **kwargs):
@@ -195,12 +202,12 @@ class RegistrationForm(forms.Form):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Käyttäjätunnus ja salasana',
+            Fieldset(_(u'User name and password'),
                 'username',
                 'password',
                 'password_again'
             ),
-            Fieldset(u'Suostumus henkilötietojen käsittelyyn',
+            Fieldset(_(u'Acceptance of the privacy policy'),
                 'accept_terms_and_conditions'
             ),
         )
@@ -210,7 +217,7 @@ class RegistrationForm(forms.Form):
 
         username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
-            raise forms.ValidationError(u'Käyttäjänimi on jo käytössä.')
+            raise forms.ValidationError(_(u'This user name is already taken.'))
 
         return username
 
@@ -219,7 +226,7 @@ class RegistrationForm(forms.Form):
         password_again = self.cleaned_data.get('password_again')
 
         if password and password_again and password != password_again:
-            raise forms.ValidationError(u'Salasanat eivät täsmää.')
+            raise forms.ValidationError(_(u'Passwords do not match.'))
 
         return password_again
 
@@ -228,14 +235,14 @@ class PasswordForm(forms.Form):
     old_password = forms.CharField(
         required=True,
         max_length=1023,
-        label=u'Vanha salasana',
+        label=_(u'Old password'),
         widget=forms.PasswordInput,
     )
 
     new_password = forms.CharField(
         required=True,
         max_length=1023,
-        label=u'Uusi salasana',
+        label=_(u'New password'),
         widget=forms.PasswordInput,
         validators=[check_password_strength],
     )
@@ -243,7 +250,7 @@ class PasswordForm(forms.Form):
     new_password_again = forms.CharField(
         required=True,
         max_length=1023,
-        label=u'Salasana uudestaan',
+        label=_(u'New password (again)'),
         widget=forms.PasswordInput,
         help_text=PASSWORD_HELP_TEXT,
     )
@@ -255,12 +262,12 @@ class PasswordForm(forms.Form):
 
         self.helper = horizontal_form_helper()
         self.helper.layout = Layout(
-            Fieldset(u'Salasanan vaihto',
+            Fieldset(_(u'Change password'),
                 'old_password',
                 'new_password',
                 'new_password_again',
             ),
-            indented_without_label(Submit('submit', "Vaihda salasana", css_class='btn-primary'))
+            indented_without_label(Submit('submit', _(u'Change password'), css_class='btn-primary'))
         )
 
     def clean_old_password(self):
@@ -272,7 +279,7 @@ class PasswordForm(forms.Form):
         )
 
         if not authenticated_user:
-            raise forms.ValidationError(u'Vanha salasana on väärä.')
+            raise forms.ValidationError(_(u'Wrong password.'))
 
         return old_password
 
@@ -281,20 +288,20 @@ class PasswordForm(forms.Form):
         new_password_again = self.cleaned_data.get('new_password_again')
 
         if new_password and new_password_again and new_password != new_password_again:
-            raise forms.ValidationError(u'Salasanat eivät täsmää.')
+            raise forms.ValidationError(_(u'The passwords do not match.'))
 
         return new_password_again
 
 
 class PasswordResetRequestForm(forms.Form):
-    email = forms.EmailField(required=True, max_length=EMAIL_LENGTH, label=u'Sähköpostiosoite')
+    email = forms.EmailField(required=True, max_length=EMAIL_LENGTH, label=_(u'E-mail address'))
 
     def __init__(self, *args, **kwargs):
         super(PasswordResetRequestForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.layout = Layout(
             'email',
-            indented_without_label(Submit('submit', u'Lähetä', css_class='btn-success'))
+            indented_without_label(Submit('submit', _(u'Submit'), css_class='btn-success'))
         )
 
 class PasswordResetForm(forms.Form):
@@ -302,7 +309,7 @@ class PasswordResetForm(forms.Form):
     new_password = forms.CharField(
         required=True,
         max_length=1023,
-        label=u'Uusi salasana',
+        label=_(u'New password'),
         widget=forms.PasswordInput,
         validators=[check_password_strength],
     )
@@ -310,7 +317,7 @@ class PasswordResetForm(forms.Form):
     new_password_again = forms.CharField(
         required=True,
         max_length=1023,
-        label=u'Salasana uudestaan',
+        label=_(u'New password (again)'),
         widget=forms.PasswordInput,
         help_text=PASSWORD_HELP_TEXT,
     )
@@ -320,7 +327,7 @@ class PasswordResetForm(forms.Form):
         new_password_again = self.cleaned_data.get('new_password_again')
 
         if new_password and new_password_again and new_password != new_password_again:
-            raise forms.ValidationError(u'Salasanat eivät täsmää.')
+            raise forms.ValidationError(_(u'The passwords do not match.'))
 
         return new_password_again
     # XXX END UGLY COPYPASTA
@@ -331,5 +338,5 @@ class PasswordResetForm(forms.Form):
         self.helper.layout = Layout(
             'new_password',
             'new_password_again',
-            indented_without_label(Submit('submit', u'Vaihda salasana', css_class='btn-success'))
+            indented_without_label(Submit('submit', _(u'Change password'), css_class='btn-success'))
         )
