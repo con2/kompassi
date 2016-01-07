@@ -179,33 +179,6 @@ def programme_internal_adobe_taggedtext_view(request, event):
 
 
 @programme_event_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
-def programme_self_service_view(request, event, programme_edit_code):
-    token = get_object_or_404(ProgrammeEditToken,
-        programme__category__event=event,
-        code=programme_edit_code
-    )
-
-    token.used_at = now()
-    token.save()
-
-    programme = token.programme
-
-    from .admin_views import actual_detail_view
-
-    vars = dict(
-        event=event,
-        login_page=True, # XXX
-    )
-
-    return actual_detail_view(request, vars, event, programme,
-        template='programme_self_service_view.jade',
-        self_service=True,
-        redirect_success=lambda ev, unused: redirect('programme_self_service_view', ev.slug, token.code),
-    )
-
-
-@programme_event_required
 @require_safe
 @api_view
 def programme_json_view(request, event, format='default'):

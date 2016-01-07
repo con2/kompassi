@@ -3,50 +3,24 @@ block title
   if programme.title
     | {{ programme.title }}
   else
-    if programme.pk
-      | Ohjelmanumeron tiedot
-    else
-      | Uusi ohjelmanumero
+    | Ohjelmanumeron tiedot
 block admin_content
+
   for overlapping_programme in overlapping_programmes
     .alert.alert-warning Päällekkäinen ohjelmanumero: <a href='{% url "programme_admin_detail_view" event.slug overlapping_programme.id %}'>{{ overlapping_programme.title }}</a> ({{ overlapping_programme.formatted_times }})
+
+  ul.nav.nav-tabs
+    for tab in tabs
+      li(role='presentation', class='#{tab.active_css}')
+        a(href='##{tab.id}', aria-controls='#{tab.id}', role='tab', data-toggle='tab')= tab.title
+          if tab.notifications
+            .badge= tab.notifications
+
   form(method='POST', role='form').form-horizontal
-    div
-      .panel.panel-default
-        .panel-heading
-          .pull-right
-            span.label(class="{{ programme.state_css }}")= programme.get_state_display
-          strong
-            if programme.pk
-              | Ohjelmanumeron tiedot
-            else
-              | Uusi ohjelmanumero
-        .panel-body
-          .form-horizontal
-            include programme_admin_form.jade
-        .panel-footer.clearfix
-          .btn-group.pull-right
-            a(href='{% url "programme_admin_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa listaan
-            button(type='submit', name='save', value='save').btn.btn-success Tallenna ja jatka muokkaamista
-            if programme.pk
-              button(type='submit', name='delete', value='delete').btn.btn-danger Poista ohjelmanumero
-      if can_send_link
-        .panel.panel-default
-          .panel-heading: strong Muokkauslinkin lähettäminen ohjelman&shy;pitäjälle
-          if programme.programmeedittoken_set.exists
-            .panel-body
-              p Ohjelma&shy;numerolle on lähetetty seuraavat muokkauslinkit:
-            ul.list-group
-              for token in programme.programmeedittoken_set.all
-                li.list-group-item
-                  strong {{ token.person.full_name }}
-                  span.badge.badge-primary lähetetty {{ token.created_at|date:"SHORT_DATETIME_FORMAT" }}
-                  if token.is_used
-                    span.badge.badge-success käytetty viimeksi {{ token.used_at|date:"SHORT_DATETIME_FORMAT" }}
-          else
-            .panel-body
-              p Muokkaus&shy;linkkejä ei ole lähetetty.
-          .panel-footer.clearfix
-            p.text-muted Myös nämä toiminnot tallentavat ohjelmanumeron tiedot.
-            .btn-group.pull-right
-              button(type='submit', name='save-sendlink', value='save-sendlink').btn.btn-primary Lähetä muokkauslinkki
+    //- To catch Enter button presses
+    input.btn.btn-success.hidden(type='submit', name='save-edit', value='Tallenna ja jatka muokkaamista')
+
+    .tab-content.kompassi-slight-space-above
+      include programme_admin_detail_views/public_tab.jade
+      include programme_admin_detail_views/hosts_tab.jade
+      include programme_admin_detail_views/internal_tab.jade

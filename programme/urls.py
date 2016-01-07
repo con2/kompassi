@@ -14,7 +14,6 @@ from .views import (
     programme_internal_timetable_view,
     programme_json_view,
     programme_mobile_timetable_view,
-    programme_self_service_view,
     programme_special_view,
     programme_timetable_view,
 )
@@ -38,7 +37,6 @@ urlpatterns = [
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/?$', programme_admin_view, name='programme_admin_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/new/?$', programme_admin_create_view, name='programme_admin_create_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d{1,4})/?$', programme_admin_detail_view, name='programme_admin_detail_view'),
-    url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/token/(?P<programme_edit_code>[0-9a-f]+)/?$', programme_self_service_view, name='programme_self_service_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/timetable/?$', programme_admin_timetable_view, name='programme_admin_timetable_view'),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/special/?$', programme_admin_special_view, name='programme_admin_special_view'),
 
