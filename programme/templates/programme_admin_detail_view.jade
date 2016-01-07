@@ -9,6 +9,8 @@ block admin_content
   for overlapping_programme in overlapping_programmes
     .alert.alert-warning Päällekkäinen ohjelmanumero: <a href='{% url "programme_admin_detail_view" event.slug overlapping_programme.id %}'>{{ overlapping_programme.title }}</a> ({{ overlapping_programme.formatted_times }})
 
+  include programme_admin_detail_views/pager.jade
+
   ul.nav.nav-tabs
     for tab in tabs
       li(role='presentation', class='#{tab.active_css}')

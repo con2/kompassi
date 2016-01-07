@@ -142,12 +142,15 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     ]
 
     vars.update(
-        internal_form=public_form,
+        internal_form=public_form, # XXX
         overlapping_programmes=programme.get_overlapping_programmes(),
         public_form=public_form,
-        schedule_form=public_form,
-        add_host_form=public_form,
+        schedule_form=public_form, # XXX
+        add_host_form=public_form, # XXX
         tabs=tabs,
+        programme=programme,
+        previous_programme=None, # XXX
+        next_programme=None, # XXX
     )
 
     return render(request, 'programme_admin_detail_view.jade', vars)
