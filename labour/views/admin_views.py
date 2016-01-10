@@ -34,6 +34,7 @@ from ..models import (
     Qualification,
     Signup,
 )
+from ..proxies.signup.onboarding import OnboardingSignup
 
 from .view_helpers import initialize_signup_forms
 
@@ -406,17 +407,21 @@ def labour_admin_shirts_view(request, vars, event):
 
 
 @labour_supervisor_required
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def labour_onboarding_view(request, event):
-    if request.method == 'GET':
+    if request.method in ('GET', 'HEAD'):
         signups = event.signup_set.all()
         return render(request, 'labour_admin_onboarding_view.jade', {'signups': signups, 'event': event})
     elif request.method == 'POST':
         signup_id = request.POST['id']
         is_arrived = request.POST['arrived'] == 'true'
-        signup = event.signup_set.get(pk=signup_id)
-        signup.is_arrived = is_arrived
-        signup.save()
+
+        signup = get_object_or_404(OnboardingSignup, id=int(signup_id))
+        signup.mark_arrived(is_arrived)
+
         return HttpResponse()
+    else:
+        raise NotImplementedError(request.method)
 
 
 def labour_admin_menu_items(request, event):
