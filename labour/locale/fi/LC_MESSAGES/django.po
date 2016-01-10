@@ -167,24 +167,20 @@ msgid "personnel classes"
 msgstr "henkilöstöluokat"
 
 #: models.py
-#, fuzzy
 msgid "qualification"
-msgstr "Pätevyydet"
+msgstr "pätevyys"
 
 #: models.py
-#, fuzzy
 msgid "qualification holder"
-msgstr "Pätevyydet"
+msgstr "pätevyyden haltija"
 
 #: models.py
-#, fuzzy
 msgid "qualification holders"
-msgstr "Pätevyydet"
+msgstr "pätevyyksien haltijat"
 
 #: models.py
-#, fuzzy
 msgid "qualifications"
-msgstr "Pätevyydet"
+msgstr "pätevyydet"
 
 #: models.py
 msgid "signup"
