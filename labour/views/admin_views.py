@@ -445,11 +445,16 @@ def labour_admin_menu_items(request, event):
     query_active = request.path == query_url
     query_text = u"Hakemusten suodatus"
 
+    onboarding_url = url('labour_onboarding_view', event.slug)
+    onboarding_active = request.path == onboarding_url
+    onboarding_text = _(u'Onboarding')
+
     menu_items = [
         (dashboard_active, dashboard_url, dashboard_text),
         (signups_active, signups_url, signups_text),
         (mail_active, mail_url, mail_text),
         (roster_active, roster_url, roster_text),
+        (onboarding_active, onboarding_url, onboarding_text),
     ]
 
     if event.labour_event_meta.signup_extra_model.get_shirt_size_field():
