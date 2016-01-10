@@ -410,13 +410,13 @@ def labour_admin_shirts_view(request, vars, event):
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def labour_onboarding_view(request, event):
     if request.method in ('GET', 'HEAD'):
-        signups = event.signup_set.all()
+        signups = event.signup_set.filter(is_active=True)
         return render(request, 'labour_admin_onboarding_view.jade', {'signups': signups, 'event': event})
     elif request.method == 'POST':
         signup_id = request.POST['id']
         is_arrived = request.POST['arrived'] == 'true'
 
-        signup = get_object_or_404(OnboardingSignup, id=int(signup_id))
+        signup = get_object_or_404(OnboardingSignup, id=int(signup_id), is_active=True)
         signup.mark_arrived(is_arrived)
 
         return HttpResponse()
