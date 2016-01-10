@@ -11,7 +11,7 @@ from core.forms import PersonForm
 from core.models import Person
 from core.utils import horizontal_form_helper, indented_without_label
 
-from .models import Signup, JobCategory, EmptySignupExtra, PersonnelClass, WorkPeriod
+from .models import AlternativeFormMixin, Signup, JobCategory, EmptySignupExtra, PersonnelClass, WorkPeriod
 
 
 
@@ -164,20 +164,3 @@ class SignupAdminForm(forms.ModelForm):
             raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään Henkilöstöluokka ei saa olla valittuna.')
 
         return personnel_classes
-
-
-class AlternativeFormMixin(object):
-    """
-    Stub implementations of required methods for alternative signup form implementations.
-    Alternative signup form implementations should inherit from `django.forms.ModelForm` and this
-    mixin.
-
-    Part of the alternative signup form facility. For detailed explanation, see the documentation
-    of AlternativeSignupForm in `labour.models`.
-    """
-
-    def get_excluded_field_defaults(self):
-        return dict()
-
-    def get_excluded_m2m_field_defaults(self):
-        return dict()

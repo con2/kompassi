@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404, redirect
 from core.models import Event
 from core.sort_and_filter import Filter
 from core.utils import login_redirect
-from labour.constants import SIGNUP_STATE_NAMES
 
+from .models.constants import SIGNUP_STATE_NAMES
 from .models import Signup
 
 
