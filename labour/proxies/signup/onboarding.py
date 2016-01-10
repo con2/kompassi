@@ -9,7 +9,7 @@ STATE_ARRIVED = 'arrived'
 STATE_NOT_ARRIVED = 'finished'
 
 
-class OnboardingSignup(Signup):
+class SignupOnboardingProxy(Signup):
     """
     Contains methods used for onboarding, ie. marking workers as having arrived in the event.
 

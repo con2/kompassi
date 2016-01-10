@@ -34,7 +34,7 @@ from ..models import (
     Qualification,
     Signup,
 )
-from ..proxies.signup.onboarding import OnboardingSignup
+from ..proxies.signup.onboarding import SignupOnboardingProxy
 
 from .view_helpers import initialize_signup_forms
 
@@ -416,7 +416,7 @@ def labour_onboarding_view(request, event):
         signup_id = request.POST['id']
         is_arrived = request.POST['arrived'] == 'true'
 
-        signup = get_object_or_404(OnboardingSignup, id=int(signup_id), is_active=True)
+        signup = get_object_or_404(SignupOnboardingProxy, id=int(signup_id), is_active=True)
         signup.mark_arrived(is_arrived)
 
         return HttpResponse()
