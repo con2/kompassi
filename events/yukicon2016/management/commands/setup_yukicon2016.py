@@ -336,7 +336,7 @@ class Setup(object):
             u'Laktoositon',
             u'Maidoton',
             u'Vegaaninen',
-            u'Lakto-ovo-vegetaarinen',
+            u'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 

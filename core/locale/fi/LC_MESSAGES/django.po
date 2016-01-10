@@ -1,0 +1,215 @@
+#: forms.py
+msgid "Acceptance of the privacy policy"
+msgstr "Rekisteriselosteen hyväksyminen"
+
+#: templates/core_organization_boxen.jade
+msgid "Accepting applications"
+msgstr "Ottaa vastaan hakemuksia"
+
+#: forms.py
+msgid "Basic information"
+msgstr "Perustiedot"
+
+#: forms.py
+msgid "Birth date"
+msgstr "Syntymäpäivä"
+
+#: forms.py views/profile_views.py
+msgid "Change password"
+msgstr "Salasanan vaihto"
+
+#: forms.py
+msgid "Contact information"
+msgstr "Yhteystiedot"
+
+#: templates/core_login_view.jade
+msgid "Create a Kompassi account"
+msgstr "Luo Kompassi-tunnus"
+
+#: forms.py
+msgid "E-mail address"
+msgstr "Sähköpostiosoite"
+
+#: views/profile_views.py
+msgid "E-mail address verification"
+msgstr "Sähköpostiosoitteen vahvistaminen"
+
+#: templates/core_event_boxen.jade
+msgid "Events currently in progress"
+msgstr "Parhaillaan käynnissä olevat tapahtumat"
+
+#: templates/core_login_view.jade
+msgid "For some of the services of this site you will need a user account which you can easily create here."
+msgstr "Osaan tämän sivuston palveluista tarvitset Kompassi-tunnuksen, jonka voit helposti luoda tästä."
+
+#: templates/core_login_view.jade
+msgid "Forgot password"
+msgstr "Salasana unohtunut"
+
+#: forms.py
+#, python-format
+msgid "I hereby authorize the use of my personal information as outlined in the <a href=\"%(privacy_policy_url)s\" target=\"_blank\">privacy policy</a> <i>(mandatory)</i>."
+msgstr "Annan luvan henkilötietojeni käyttöön <a href=\"%(privacy_policy_url)s\" target=\"_blank\">rekisteriselosteen</a> mukaisesti <i>(pakollinen)</i>."
+
+#: forms.py
+msgid "Invalid user name"
+msgstr "Käyttäjänimi ei kelpaa"
+
+#: templates/core_navbar_user.jade
+msgid "Log out"
+msgstr "Kirjaudu ulos"
+
+#: templates/core_organization_boxen.jade
+msgid "Membership roster"
+msgstr "Jäsenrekisteri"
+
+#: forms.py
+msgid "Membership roster information"
+msgstr "Jäsenrekisteritiedot"
+
+#: forms.py
+msgid "New password"
+msgstr "Uusi salasana"
+
+#: forms.py
+#, fuzzy
+msgid "New password (again)"
+msgstr "Uusi salasana (uudestaan)"
+
+#: forms.py
+msgid "Old password"
+msgstr "Vanha salasanat"
+
+#: templates/core_organization_boxen.jade
+msgid "Organizations"
+msgstr "Yhdistykset"
+
+#: forms.py
+msgid "Password"
+msgstr "Salasana"
+
+#: forms.py
+msgid "Password (again)"
+msgstr "Salasana (uudestaan)"
+
+#: forms.py
+msgid "Passwords do not match."
+msgstr "Salasanat eivät täsmää."
+
+#: templates/core_event_boxen.jade
+msgid "Past events"
+msgstr "Menneet tapahtumat"
+
+#: forms.py
+msgid "Please choose a user name. The user name must consist of 4 to 30 characters. The following characters are allowed: <b>small</b> letters <i>a&ndash;z</i>, numbers <i>0&ndash;9</i> and underscore </i>_</i>. You can use either this user name or your e-mail address to sign in."
+msgstr "Valitse itsellesi 4–30 merkin pituinen käyttäjänimi. Seuraavat merkit ovat sallittuja: <b>pienet kirjaimet <i>a–z</i>, numerot <i>0–9</i> sekä alaviiva <i>_</i>. Voit käyttää sisäänkirjautumiseen tätä käyttäjänimeä tai sähköpostiosoitettasi."
+
+#: forms.py
+msgid "Privacy"
+msgstr "Yksityisyys"
+
+#: templates/core_footer.html
+msgid "Privacy policy"
+msgstr "Rekisteriseloste"
+
+#: views/profile_views.py
+msgid "Profile"
+msgstr "Omat tiedot"
+
+#: templates/core_event_box.jade
+msgid "Recruiting volunteers"
+msgstr "Työvoimahaku avoinna"
+
+#: forms.py
+msgid "Save"
+msgstr "Tallenna"
+
+#: templates/core_event_box.jade
+msgid "Schedule"
+msgstr "Ohjelmakartta"
+
+#: templates/core_event_box.jade
+msgid "Schedule published"
+msgstr "Ohjelmakartta julkaistu"
+
+#: templates/core_event_box.jade
+msgid "Selling tickets"
+msgstr "Lipunmyynti käynnissä"
+
+#: templates/core_login_view.jade
+msgid "Sign in"
+msgstr "Kirjaudu sisään"
+
+#: templates/core_login_view.jade
+msgid "Sign in or sign up"
+msgstr "Luo tunnus tai kirjaudu sisään..."
+
+#: templates/core_login_view.jade
+msgid "Sign in using your Kompassi account"
+msgstr "Kirjaudu sisään Kompassi-tunnuksellasi"
+
+#: forms.py templates/core_login_view.jade
+msgid "Sign up"
+msgstr "Luo tunnus"
+
+#: templates/core_registration_view.jade
+msgid "Sign up for a Kompassi account"
+msgstr "Luo Kompassi-tunnus"
+
+#: templates/core_navbar_user.jade
+msgid "Sign up or sign in..."
+msgstr "Rekisteröidy tai kirjaudu sisään..."
+
+#: views/profile_views.py
+msgid "Site administration"
+msgstr "Sivuston ylläpito"
+
+#: forms.py
+msgid "Submit"
+msgstr "Lähetä"
+
+#: forms.py
+#, python-format
+msgid "The password must consist of at least %(min_length)d characters and contain %(min_classes)d of the following: small letter, capital letter, number, special character."
+msgstr "Salasanassa tulee olla vähintään %(min_length)d merkkiä, ja sen tulee sisältää vähintään %(min_classes)d seuraavista: pieni kirjain, iso kirjain, numero, erikoismerkki."
+
+#: forms.py
+msgid "The passwords do not match."
+msgstr "Salasanat eivät täsmää."
+
+#: forms.py
+msgid "There is already a user account associated with this e-mail address. If you have forgotten your password, please do not create another user account but rather restore your password using the Forgot password link at the sign in form."
+msgstr "Tähän sähköpostiosoitteeseen on jo liitetty käyttäjätunnus. Jos olet unohtanut salasanasi, ole hyvä ja palauta salasanasi Salasana unohtunut -toiminnolla sisäänkirjautumislomakkeelta käsin."
+
+#: forms.py
+msgid "This user name is already taken."
+msgstr "Tämä käyttäjänimi on jo viety."
+
+#: templates/core_event_box.jade
+msgid "Ticket sales"
+msgstr "Lipunmyynti"
+
+#: templates/core_event_boxen.jade
+msgid "Upcoming events"
+msgstr "Tulevat tapahtumat"
+
+#: forms.py
+msgid "User name"
+msgstr "Käyttäjänimi"
+
+#: forms.py
+msgid "User name and password"
+msgstr "Käyttäjänimi ja salasana"
+
+#: forms.py
+msgid "User name or e-mail address"
+msgstr "Käyttäjänimi tai sähköpostiosoite"
+
+#: templates/core_event_box.jade
+msgid "Volunteers"
+msgstr "Työvoima"
+
+#: forms.py
+msgid "Wrong password."
+msgstr "Salasana väärin."
+

@@ -1,0 +1,200 @@
+#: views/public_views.py
+msgid "Apply for volunteer work"
+msgstr "Hae vapaaehtoistyöhön"
+
+#: views/public_views.py
+msgid "Complete contact information"
+msgstr "Täydennä yhteystiedot"
+
+#: templates/labour_admin_onboarding_view.jade
+msgid "Job title"
+msgstr "Tehtävänimike"
+
+#: templates/labour_admin_onboarding_view.jade
+msgid "Name"
+msgstr "Nimi"
+
+#: views/admin_views.py
+msgid "Onboarding"
+msgstr "Saapuneeksi kirjaaminen"
+
+#: views/public_views.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkista lomake."
+
+#: views/public_views.py
+msgid "Qualifications"
+msgstr "Pätevyydet"
+
+#: views/public_views.py
+msgid "Revise qualifications"
+msgstr "Ilmoita pätevyytesi"
+
+#: templates/labour_admin_onboarding_view.jade
+msgid "Shirt size"
+msgstr "Paitakoko"
+
+#: views/public_views.py
+msgid "Sign up or sign in..."
+msgstr "Rekisteröidy tai kirjaudu sisään..."
+
+#: views/public_views.py
+msgid "Submit application"
+msgstr "Lähetä hakemus"
+
+#: views/public_views.py
+msgid "Thank you for your application!"
+msgstr "Kiitos hakemuksestasi!"
+
+#: views/public_views.py
+msgid "The qualification has been added."
+msgstr "Pätevyys on lisätty."
+
+#: views/public_views.py
+msgid "The qualification has been removed."
+msgstr "Pätevyys on poistettu."
+
+#: views/public_views.py
+msgid "The qualification has been updated."
+msgstr "Pätevyys on päivitetty."
+
+#: views/public_views.py
+msgid "The signup form you have requested is not currently active."
+msgstr "Pyytämäsi ilmoittautumislomake ei ole tällä hetkellä käytössä."
+
+#: views/public_views.py
+msgid "This event is not currently accepting applications."
+msgstr "Tämä tapahtuma ei ota tällä hetkellä vastaan hakemuksia."
+
+#: views/public_views.py
+msgid "Update application"
+msgstr "Päivitä hakemus"
+
+#: apps.py
+msgid "Volunteer management"
+msgstr "Vapaaehtoistyövoiman hallinta"
+
+#: views/public_views.py
+msgid "Volunteer work applications"
+msgstr "Vapaaehtoistyöhakemukset"
+
+#: templates/labour_admin_onboarding_view.jade
+msgid "Volunteer worker onboarding"
+msgstr "Työvoiman kirjaaminen saapuneeksi"
+
+#: views/public_views.py
+msgid "Your application does not currently need to be confirmed."
+msgstr "Hakemus ei tällä hetkellä edellytä vahvistusta."
+
+#: views/public_views.py
+msgid "Your application has already been processed, so you can no longer edit it. Please contact the volunteer coordinator for any further changes."
+msgstr "Hakemus on jo käsitelty, joten et voi enää muokata sitä. Tarvittaessa ota yhteyttä tapahtuman työvoimatiimiin."
+
+#: views/public_views.py
+msgid "Your application has been confirmed."
+msgstr "Hakemus on vahvistettu."
+
+#: views/public_views.py
+msgid "Your application has been updated."
+msgstr "Hakemus on päivitetty."
+
+#: views/public_views.py
+msgid "Your application has not been submitted using this form."
+msgstr "Hakemusta ei ole tehty käyttäen tätä lomaketta."
+
+#: models.py
+msgid "alternative signup form"
+msgstr "vaihtoehtoinen ilmoittautumislomake"
+
+#: models.py
+msgid "alternative signup forms"
+msgstr "vaihtoehtoiset ilmoittautumislomakkeet"
+
+#: models.py
+msgid "info link"
+msgstr "työvoimaohje"
+
+#: models.py
+msgid "info links"
+msgstr "työvoimaohjeet"
+
+#: models.py
+msgid "job"
+msgstr "tehtävä"
+
+#: models.py
+msgid "job categories"
+msgstr "tehtäväalueet"
+
+#: models.py
+msgid "job category"
+msgstr "tehtäväalue"
+
+#: models.py
+msgid "job requirement"
+msgstr "henkilöstövaatimus"
+
+#: models.py
+msgid "job requirements"
+msgstr "henkilöstövaatimukset"
+
+#: models.py
+msgid "jobs"
+msgstr "tehtävät"
+
+#: models.py
+msgid "labour event meta"
+msgstr "tapahtuman työvoima-asetukset"
+
+#: models.py
+msgid "labour event metas"
+msgstr "tapahtumien työvoima-asetukset"
+
+#: models.py
+msgid "perk"
+msgstr "etu"
+
+#: models.py
+msgid "perks"
+msgstr "edut"
+
+#: models.py
+msgid "personnel class"
+msgstr "henkilöstöluokka"
+
+#: models.py
+msgid "personnel classes"
+msgstr "henkilöstöluokat"
+
+#: models.py
+msgid "qualification"
+msgstr "pätevyys"
+
+#: models.py
+msgid "qualification holder"
+msgstr "pätevyyden haltija"
+
+#: models.py
+msgid "qualification holders"
+msgstr "pätevyyksien haltijat"
+
+#: models.py
+msgid "qualifications"
+msgstr "pätevyydet"
+
+#: models.py
+msgid "signup"
+msgstr "ilmoittautuminen"
+
+#: models.py
+msgid "signups"
+msgstr "ilmoittautumiset"
+
+#: models.py
+msgid "work period"
+msgstr "aikajae"
+
+#: models.py
+msgid "work periods"
+msgstr "aikajakeet"
+

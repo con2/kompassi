@@ -120,6 +120,7 @@ GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
     arrived=u'Saapuneet',
     workaccepted=u'Työnsä hyväksytysti suorittaneet',
     reprimanded=u'Työnsä moitittavasti suorittaneet',
+    supervisors=u'Työvoiman valvojat',
 )
 
 SIGNUP_STATE_GROUPS = [

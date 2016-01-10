@@ -3,6 +3,8 @@
 from collections import Counter, OrderedDict, namedtuple
 import json
 
+import datetime
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -12,6 +14,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods, require_safe
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 from dateutil.tz import tzlocal
 
@@ -21,9 +24,9 @@ from core.models import Event, Person
 from core.tabs import Tab
 from core.utils import initialize_form, url
 
-from ..constants import SIGNUP_STATE_NAMES
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
-from ..helpers import labour_admin_required, SignupStateFilter
+from ..helpers import labour_admin_required, SignupStateFilter, labour_event_required, labour_supervisor_required
+from ..models.constants import SIGNUP_STATE_NAMES
 from ..models import (
     JobCategory,
     LabourEventMeta,
@@ -31,6 +34,7 @@ from ..models import (
     Qualification,
     Signup,
 )
+from ..proxies.signup.onboarding import SignupOnboardingProxy
 
 from .view_helpers import initialize_signup_forms
 
@@ -402,6 +406,24 @@ def labour_admin_shirts_view(request, vars, event):
     return render(request, 'labour_admin_shirts_view.jade', vars)
 
 
+@labour_supervisor_required
+@require_http_methods(['GET', 'HEAD', 'POST'])
+def labour_onboarding_view(request, event):
+    if request.method in ('GET', 'HEAD'):
+        signups = event.signup_set.filter(is_active=True)
+        return render(request, 'labour_admin_onboarding_view.jade', {'signups': signups, 'event': event})
+    elif request.method == 'POST':
+        signup_id = request.POST['id']
+        is_arrived = request.POST['arrived'] == 'true'
+
+        signup = get_object_or_404(SignupOnboardingProxy, id=int(signup_id), is_active=True)
+        signup.mark_arrived(is_arrived)
+
+        return HttpResponse()
+    else:
+        raise NotImplementedError(request.method)
+
+
 def labour_admin_menu_items(request, event):
     dashboard_url = url('labour_admin_dashboard_view', event.slug)
     dashboard_active = request.path == dashboard_url
@@ -423,11 +445,16 @@ def labour_admin_menu_items(request, event):
     query_active = request.path == query_url
     query_text = u"Hakemusten suodatus"
 
+    onboarding_url = url('labour_onboarding_view', event.slug)
+    onboarding_active = request.path == onboarding_url
+    onboarding_text = _(u'Onboarding')
+
     menu_items = [
         (dashboard_active, dashboard_url, dashboard_text),
         (signups_active, signups_url, signups_text),
         (mail_active, mail_url, mail_text),
         (roster_active, roster_url, roster_text),
+        (onboarding_active, onboarding_url, onboarding_text),
     ]
 
     if event.labour_event_meta.signup_extra_model.get_shirt_size_field():

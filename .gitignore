@@ -1,3 +1,5 @@
+*.mo
+*.pot
 *.pyc
 *.sqlite3
 /static/

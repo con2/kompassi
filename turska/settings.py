@@ -52,10 +52,13 @@ ALLOWED_HOSTS = []
 
 TIME_ZONE = 'Europe/Helsinki'
 DATETIME_FORMAT = SHORT_DATETIME_FORMAT = 'd.m.Y H:i'
-LANGUAGE_CODE = 'fi-FI'
-
+LANGUAGE_CODE = 'en'
+LANGUAGES = (
+    ('fi', _('Finnish')),
+    ('en', _('English')),
+    # and all the other languages you have translated.
+)
 SITE_ID = 1
-
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -101,12 +104,12 @@ TEMPLATES = [
         ],
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'core.context_processors.core_context',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
                 'django.template.context_processors.request',
-                'core.context_processors.core_context',
             ],
             'loaders': [
                 ('pyjade.ext.django.Loader', (
@@ -130,7 +133,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
 
-    'pyjade',
+    'pyjade.ext.django',
     'crispy_forms',
     'oauth2_provider',
     'nexmo',
@@ -180,6 +183,8 @@ INSTALLED_APPS = (
     'events.kuplii2016',
     'events.aicon2016',
     'events.popcult2016',
+    'events.ropecon2016',
+    'events.kawacon2016',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -253,16 +258,6 @@ DATE_FORMAT_STRFTIME = '%d.%m.%Y'
 DATETIME_FORMAT = 'j.n.Y G:i:s'
 DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 
-LANGUAGES = (
-    ('fi', _('Finnish')),
-    ('en', _('English')),
-    # and all the other languages you have translated.
-)
-
-LANGUAGE_CODE = 'fi'  # or which language you want to use.
-
-USE_L10N = True
-USE_L18N = True
 
 KOMPASSI_APPLICATION_NAME = u'Kompassi'
 KOMPASSI_INSTALLATION_NAME = u'Kompassi (DEV)'

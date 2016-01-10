@@ -1,25 +1,23 @@
+- load trans from i18n
 .panel.panel-default
   .panel-heading: strong: a(href='{% url "core_event_view" event.slug %}') {{ event.name }}
   .panel-body
-    p {{ event.venue.name_inessive }}
+    p {{ event.venue.name }}
     if event.start_time
       p {{ event.formatted_start_and_end_date }}
     p
       if event.labour_event_meta
         if event.labour_event_meta.is_registration_open
-          span.label.label-primary: a(href='{% url "labour_signup_view" event.slug %}') Työvoimahaku käynnissä
+          span.label.label-primary.kompassi-space-after: a(href='{% url "labour_signup_view" event.slug %}') {% trans "Recruiting volunteers" %}
         else
-          span.label.label-default Työvoima
-        | &thinsp;
+          span.label.label-default.kompassi-space-after {% trans "Volunteers" %}
       if event.programme_event_meta
         if event.programme_event_meta.is_public
-          span.label.label-primary: a(href='{% url "programme_timetable_view" event.slug %}') Ohjelmakartta
+          span.label.label-primary.kompassi-space-after: a(href='{% url "programme_timetable_view" event.slug %}') {% trans "Schedule published" %}
         else
-          span.label.label-default Ohjelma
-        | &thinsp;
+          span.label.label-default.kompassi-space-after {% trans "Schedule" %}
       if event.tickets_event_meta
         if event.tickets_event_meta.is_ticket_sales_open
-          span.label.label-primary: a(href='{% url "tickets_welcome_view" event.slug %}') Lipunmyynti käynnissä
+          span.label.label-primary.kompassi-space-after: a(href='{% url "tickets_welcome_view" event.slug %}') {% trans "Selling tickets" %}
         else
-          span.label.label-default Lippukauppa
-        | &thinsp;
+          span.label.label-default.kompassi-space-after {% trans "Ticket sales" %}
