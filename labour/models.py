@@ -171,7 +171,7 @@ class LabourEventMeta(EventMetaBase):
 
     def is_user_supervisor(self, user):
         supervisor_group, = LabourEventMeta.get_or_create_groups(self.event, ['supervisors'])
-        return self.is_user_in_group(user, supervisor_group)
+        return self.is_user_admin(user) or self.is_user_in_group(user, supervisor_group)
 
     def create_groups(self):
         job_categories_or_suffixes = list(SIGNUP_STATE_GROUPS)
