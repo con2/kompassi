@@ -16,7 +16,7 @@ class JobCategory(models.Model):
 
     # TODO rename this to "title"
     name = models.CharField(max_length=63, verbose_name=u'tehtäväalueen nimi')
-    slug = models.CharField(**dict(NONUNIQUE_SLUG_FIELD_PARAMS))
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
     description = models.TextField(
         verbose_name=u'tehtäväalueen kuvaus',
