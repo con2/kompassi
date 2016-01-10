@@ -71,7 +71,6 @@ msgid "Update application"
 msgstr "Päivitä hakemus"
 
 #: apps.py
-#, fuzzy
 msgid "Volunteer management"
 msgstr "Vapaaehtoistyövoiman hallinta"
 
@@ -81,7 +80,7 @@ msgstr "Vapaaehtoistyöhakemukset"
 
 #: templates/labour_admin_onboarding_view.jade
 msgid "Volunteer worker onboarding"
-msgstr ""
+msgstr "Työvoiman kirjaaminen saapuneeksi"
 
 #: views/public_views.py
 msgid "Your application does not currently need to be confirmed."
