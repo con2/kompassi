@@ -6,6 +6,18 @@ msgstr "Hae vapaaehtoistyöhön"
 msgid "Complete contact information"
 msgstr "Täydennä yhteystiedot"
 
+#: templates/labour_admin_onboarding_view.jade
+msgid "Job title"
+msgstr "Tehtävänimike"
+
+#: templates/labour_admin_onboarding_view.jade
+msgid "Name"
+msgstr "Nimi"
+
+#: views/admin_views.py
+msgid "Onboarding"
+msgstr "Saapuneeksi kirjaaminen"
+
 #: views/public_views.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
@@ -17,6 +29,10 @@ msgstr "Pätevyydet"
 #: views/public_views.py
 msgid "Revise qualifications"
 msgstr "Ilmoita pätevyytesi"
+
+#: templates/labour_admin_onboarding_view.jade
+msgid "Shirt size"
+msgstr "Paitakoko"
 
 #: views/public_views.py
 msgid "Sign up or sign in..."
@@ -62,6 +78,10 @@ msgstr "Vapaaehtoistyövoiman hallinta"
 #: views/public_views.py
 msgid "Volunteer work applications"
 msgstr "Vapaaehtoistyöhakemukset"
+
+#: templates/labour_admin_onboarding_view.jade
+msgid "Volunteer worker onboarding"
+msgstr ""
 
 #: views/public_views.py
 msgid "Your application does not currently need to be confirmed."

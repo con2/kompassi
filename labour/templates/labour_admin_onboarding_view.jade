@@ -1,11 +1,12 @@
 extends base.jade
+- load trans from i18n
 block title
-    | Työvoiman kirjaus sisään
+  {% trans "Volunteer worker onboarding" %}
 
 block content
     .row
         .col-xs-12
-            h1 Työvoiman kirjaus
+            h1 {% trans "Volunteer worker onboarding" %}
     .row
         .col-xs-12
             .form-group
@@ -15,9 +16,9 @@ block content
         thead
             tr
                 th
-                th Nimi
-                th Tehtävä
-                th Paita
+                th {% trans "Name" %}
+                th {% trans "Job title" %}
+                th {% trans "Shirt size" %}
         tbody
             each signup in signups
                 tr.signup(data-id=signup.id, class='{% if signup.is_arrived %}signup--arrived success{% endif %}')
