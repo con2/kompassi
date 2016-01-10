@@ -4,7 +4,7 @@
 
     Copyright © 2009-2015 Santtu Pajukanta, Jussi Sorjonen
     Copyright © 2011 Petri Haikonen
-    Copyright © 2012-2014 Meeri Panula
+    Copyright © 2012-2015 Meeri Panula
     Copyright © 2013 Esa Ollitervo
     Copyright © 2014 Pekka Wallendahl
     Copyright © 2014-2015 Jyrki Launonen
