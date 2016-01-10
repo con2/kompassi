@@ -22,6 +22,7 @@ from .views import (
     labour_signup_view,
     query_exec,
     query_index,
+    labour_onboarding_view,
 )
 
 
@@ -120,6 +121,11 @@ urlpatterns = [
         name='labour_admin_query_exec'
     ),
 
+    url(
+       r'^events/(?P<event_slug>[a-z0-9-]+)/labour/onboarding$',
+       labour_onboarding_view,
+       name='labour_onboarding_view'
+    ),
 
     url(
         r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/jobcategories/?$',

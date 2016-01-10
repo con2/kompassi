@@ -3,6 +3,8 @@
 from collections import Counter, OrderedDict, namedtuple
 import json
 
+import datetime
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -23,7 +25,7 @@ from core.utils import initialize_form, url
 
 from ..constants import SIGNUP_STATE_NAMES
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
-from ..helpers import labour_admin_required, SignupStateFilter
+from ..helpers import labour_admin_required, SignupStateFilter, labour_event_required, labour_supervisor_required
 from ..models import (
     JobCategory,
     LabourEventMeta,
@@ -400,6 +402,20 @@ def labour_admin_shirts_view(request, vars, event):
     )
 
     return render(request, 'labour_admin_shirts_view.jade', vars)
+
+
+@labour_supervisor_required
+def labour_onboarding_view(request, event):
+    if request.method == 'GET':
+        signups = event.signup_set.all()
+        return render(request, 'labour_admin_onboarding_view.jade', {'signups': signups, 'event': event})
+    elif request.method == 'POST':
+        signup_id = request.POST['id']
+        is_arrived = request.POST['arrived'] == 'true'
+        signup = event.signup_set.get(pk=signup_id)
+        signup.is_arrived = is_arrived
+        signup.save()
+        return HttpResponse()
 
 
 def labour_admin_menu_items(request, event):
