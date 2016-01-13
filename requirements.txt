@@ -1,4 +1,4 @@
-git+https://github.com/kcsry/lippukala@0.2.0#egg=lippukala==0.2.0
+git+https://github.com/kcsry/lippukala#egg=lippukala
 git+https://github.com/tracon/django-nexmo#egg=nexmo
 git+https://github.com/syrusakbary/pyjade.git#egg=pyjade
 behave>=1.2,<1.3
