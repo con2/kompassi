@@ -350,7 +350,7 @@ class Signup(models.Model, CsvExportMixin):
         self.apply_state_sync()
 
         if 'background_tasks' in settings.INSTALLED_APPS:
-            from .tasks import signup_apply_state
+            from ..tasks import signup_apply_state
             signup_apply_state.delay(self.pk)
         else:
             self._apply_state()
