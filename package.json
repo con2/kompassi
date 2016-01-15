@@ -54,7 +54,7 @@
     "nib": "^1.1.0",
     "node-notifier": "^4.4.0",
     "page": "^1.6.4",
-    "rimraf": "^2.4.5",
+    "rimraf": "^2.5.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.6.1",
     "whatwg-fetch": "^0.10.1"
