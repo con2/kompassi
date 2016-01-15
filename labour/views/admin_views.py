@@ -411,7 +411,13 @@ def labour_admin_shirts_view(request, vars, event):
 def labour_onboarding_view(request, event):
     if request.method in ('GET', 'HEAD'):
         signups = event.signup_set.filter(is_active=True)
-        return render(request, 'labour_admin_onboarding_view.jade', {'signups': signups, 'event': event})
+
+        vars = dict(
+            event=event,
+            signups=signups,
+        )
+
+        return render(request, 'labour_admin_onboarding_view.jade', vars)
     elif request.method == 'POST':
         signup_id = request.POST['id']
         is_arrived = request.POST['arrived'] == 'true'
