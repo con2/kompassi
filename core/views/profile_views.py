@@ -11,6 +11,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_safe
+from django.views.decorators.debug import sensitive_post_parameters
 
 from ..models import (
     EmailVerificationError,
@@ -75,6 +76,7 @@ def core_profile_view(request):
     return render(request, 'core_profile_view.jade', vars)
 
 
+@sensitive_post_parameters('new_password', 'new_password_again')
 @login_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def core_password_view(request):
