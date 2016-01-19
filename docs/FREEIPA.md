@@ -1,5 +1,7 @@
 # FreeIPA integration in Turska
 
+**WARNING**: This documentation is out of date. LDAP and Kerberos support have been removed from Kompassi and the FreeIPA JSON-RPC is currently used using form-authenticated HTTPS.
+
 Turska supports optional integration with FreeIPA via LDAP, Kerberos and JSON-RPC.
 
 ## Configuration
