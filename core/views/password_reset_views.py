@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
+from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods, require_safe
 
 from ..models import (
@@ -39,6 +40,7 @@ from ..utils import (
 from ..helpers import person_required
 
 
+@sensitive_post_parameters('new_password', 'new_password_again')
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def core_password_reset_view(request, code):
     if request.user.is_authenticated():

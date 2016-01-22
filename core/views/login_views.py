@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods, require_safe
+from django.views.decorators.debug import sensitive_post_parameters
 
 from ..models import (
     EmailVerificationError,
@@ -40,6 +41,7 @@ from ..page_wizard import page_wizard_clear, page_wizard_vars
 from .email_verification_views import remind_email_verification_if_needed
 
 
+@sensitive_post_parameters('password')
 @require_http_methods(['GET','POST'])
 def core_login_view(request):
     next = get_next(request, 'core_frontpage_view')

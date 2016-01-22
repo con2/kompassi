@@ -18,7 +18,10 @@ block content
                 th
                 th {% trans "Name" %}
                 th {% trans "Job title" %}
-                th {% trans "Shirt size" %}
+                if event.labour_event_meta.signup_extra_model.get_shirt_type_field
+                    th {% trans "Shirt type" %}
+                if event.labour_event_meta.signup_extra_model.get_shirt_size_field
+                    th {% trans "Shirt size" %}
         tbody
             each signup in signups
                 tr.signup(data-id=signup.id, class='{% if signup.is_arrived %}signup--arrived success{% endif %}')
@@ -26,7 +29,10 @@ block content
                         i.fa.fa-spinner.fa-spin
                     td.name= signup.full_name
                     td.title= signup.job_title
-                    td.shirt= signup.signup_extra.shirt_size
+                    if event.labour_event_meta.signup_extra_model.get_shirt_type_field
+                        td.shirt_type= signup.signup_extra.get_shirt_type_display
+                    if event.labour_event_meta.signup_extra_model.get_shirt_size_field
+                        td.shirt= signup.signup_extra.get_shirt_size_display
 
 block extra_head
     style.
