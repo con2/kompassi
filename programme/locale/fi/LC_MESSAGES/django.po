@@ -1,0 +1,84 @@
+#: templates/programme_admin_detail_views/add_host_modal.jade templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Add host"
+msgstr "Lisää ohjelmanjärjestäjä"
+
+#: models.py
+msgid "Description"
+msgstr "Kuvaus"
+
+#: templates/programme_admin_create_view.jade
+msgid "Discard changes and return to the list"
+msgstr "Hylkää muutokset ja palaa luetteloon"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "E-mail address"
+msgstr "Sähköpostiosoite"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "First name"
+msgstr "Etunimi"
+
+#: templates/programme_admin_detail_views/internal_tab.jade views/admin_views.py
+msgid "Internal information"
+msgstr "Sisäiset tiedot"
+
+#: models.py
+msgid "Make up a concise title for your programme. We reserve the right to edit the title."
+msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
+
+#: templates/programme_admin_create_view.jade
+msgid "New programme"
+msgstr "Uusi ohjelmanumero"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Nick name"
+msgstr "Nick"
+
+#: views/admin_views.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkasta lomake."
+
+#: templates/programme_admin_detail_views/hosts_tab.jade views/admin_views.py
+msgid "Programme hosts"
+msgstr "Ohjelmanjärjestäjät"
+
+#: templates/programme_admin_detail_views/public_tab.jade views/admin_views.py
+msgid "Public information"
+msgstr "Julkiset tiedot"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Role"
+msgstr "Rooli"
+
+#: templates/programme_admin_create_view.jade
+msgid "Save and continue"
+msgstr "Tallenna ja jatka"
+
+#: templates/programme_admin_detail_views/schedule_tab.jade views/admin_views.py
+msgid "Schedule information"
+msgstr "Ohjelmakarttatiedot"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Surname"
+msgstr "Sukunimi"
+
+#: views/admin_views.py
+msgid "The programme was created."
+msgstr "Ohjelmanumero luotiin."
+
+#: models.py
+msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
+msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta."
+
+#: models.py
+msgid "Title"
+msgstr "Otsikko"
+
+#: models.py
+msgid "categories"
+msgstr "ohjelmaluokat"
+
+#: models.py
+msgid "category"
+msgstr "ohjelmaluokka"
+
