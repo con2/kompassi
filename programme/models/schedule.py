@@ -1,7 +1,12 @@
 # encoding: utf-8
 
+from datetime import timedelta
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+
+ONE_HOUR = timedelta(hours=1)
 
 
 class ViewMethodsMixin(object):
@@ -101,6 +106,8 @@ class View(models.Model, ViewMethodsMixin):
 
 class AllRoomsPseudoView(ViewMethodsMixin):
     def __init__(self, event):
+        from .room import Room
+
         self.name = 'All rooms'
         self.public = True
         self.order = 0
