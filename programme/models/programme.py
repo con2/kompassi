@@ -132,6 +132,9 @@ class Programme(models.Model, CsvExportMixin):
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
     tags = models.ManyToManyField('programme.Tag', blank=True, verbose_name=u'Tägit')
 
+    created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_(u'Created at'))
+    updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name=_(u'Updated at'))
+
     @property
     def event(self):
         return self.category.event

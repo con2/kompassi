@@ -62,8 +62,23 @@ class ProgrammeInternalForm(forms.ModelForm):
             'tech_requirements',
             'requested_time_slot',
             'notes_from_host',
-            'notes',
             'video_permission',
+        )
+
+
+class ProgrammeAdditionalForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(ProgrammeAdditionalForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = Programme
+        fields = (
+            'notes',
         )
 
 
