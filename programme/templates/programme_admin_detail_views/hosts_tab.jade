@@ -11,8 +11,26 @@
         th {% trans "E-mail address" %}
         th {% trans "Role" %}
       tbody
+        for programme_role in programme_roles
+          tr
+            td= programme_role.person.surname
+            td= programme_role.person.first_name
+            td= programme_role.person.nick
+            td= programme_role.person.email
+            td= programme_role.role
+        for invitation in invitations
+          tr
+            td
+            td
+            td
+            td: em= invitation.email
+            td: em= invitation.role
     .panel-footer.clearfix
       .btn-group.pull-right
-        button.btn.btn-success(type='button', data-toggle="modal", data-target="#programme-admin-host-modal")
+        //- button.btn.btn-default(type='button', data-toggle='modal', data-target='#programme-admin-freeform-modal')
           i.fa.fa-plus.kompassi-icon-space-right
-          {% trans "Add host" %}
+          {% trans "Add free-form host" %}
+        button.btn.btn-success(type='button', data-toggle="modal", data-target='#programme-admin-host-modal')
+          i.fa.fa-plus.kompassi-icon-space-right
+          {% trans "Invite host" %}
+      .text-muted {% trans "Hosts shown in <i>italic</i> have not yet accepted their invitations." %}

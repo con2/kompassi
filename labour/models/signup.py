@@ -16,6 +16,7 @@ from core.utils import (
     alias_property,
     ensure_user_group_membership,
     full_hours_between,
+    get_previous_and_next,
     is_within_period,
     NONUNIQUE_SLUG_FIELD_PARAMS,
     ONE_HOUR,
@@ -451,23 +452,8 @@ class Signup(models.Model, CsvExportMixin):
             badge.save()
 
     def get_previous_and_next_signup(self):
-        if not self.pk:
-            return None, None
-
-        # TODO inefficient, done using a list
-        signups = list(self.event.signup_set.order_by('person__surname', 'person__first_name', 'id').all())
-
-        previous_signup = None
-        current_signup = None
-
-        for next_signup in signups + [None]:
-            if current_signup and current_signup.pk == self.pk:
-                return previous_signup, next_signup
-
-            previous_signup = current_signup
-            current_signup = next_signup
-
-        return None, None
+        queryset = self.event.signup_set.order_by('person__surname', 'person__first_name', 'id').all()
+        return get_previous_and_next(queryset, self)
 
     @property
     def _state_flags(self):

@@ -5,7 +5,7 @@ ul.pager
 
   li.current
     .btn.disabled {{ programme.title }}
-    .label(class='{{ programme.state_css }}') {{ programme.formatted_state }}
+    .label(class='{{ programme.state_css }}') {{ programme.get_state_display }}
 
   if next_programme
     li.next

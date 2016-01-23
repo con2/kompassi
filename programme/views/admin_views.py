@@ -26,9 +26,8 @@ from ..models import (
     STATE_CHOICES,
 )
 from ..helpers import programme_admin_required, group_programmes_by_start_time
-from ..forms import (
-    ProgrammePublicForm,
-)
+from ..forms import ProgrammePublicForm
+from .programme_admin_detail_view import programme_admin_detail_view
 
 
 EXPORT_FORMATS = EXPORT_FORMATS + [
@@ -125,35 +124,6 @@ def programme_admin_create_view(request, vars, event):
     )
 
     return render(request, 'programme_admin_create_view.jade', vars)
-
-
-@programme_admin_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
-def programme_admin_detail_view(request, vars, event, programme_id):
-    programme = get_object_or_404(Programme, category__event=event, pk=int(programme_id))
-
-    public_form = initialize_form(ProgrammePublicForm, request, instance=programme, event=event)
-
-    tabs = [
-        Tab('programme-admin-programme-public-tab', _(u'Public information'), active=True),
-        Tab('programme-admin-programme-schedule-tab', _(u'Schedule information')),
-        Tab('programme-admin-programme-hosts-tab', _(u'Programme hosts')),
-        Tab('programme-admin-programme-internal-tab', _(u'Internal information')),
-    ]
-
-    vars.update(
-        internal_form=public_form, # XXX
-        overlapping_programmes=programme.get_overlapping_programmes(),
-        public_form=public_form,
-        schedule_form=public_form, # XXX
-        add_host_form=public_form, # XXX
-        tabs=tabs,
-        programme=programme,
-        previous_programme=None, # XXX
-        next_programme=None, # XXX
-    )
-
-    return render(request, 'programme_admin_detail_view.jade', vars)
 
 
 @programme_admin_required

@@ -4,3 +4,5 @@
   .panel.panel-default
     .panel-heading: strong {% trans "Public information" %}
     .panel-body: {% crispy public_form %}
+    .panel-footer.clearfix
+      include programme_admin_detail_views/buttons.jade

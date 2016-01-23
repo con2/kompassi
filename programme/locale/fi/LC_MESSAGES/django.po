@@ -1,8 +1,20 @@
-#: templates/programme_admin_detail_views/add_host_modal.jade templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_admin_detail_views/buttons.jade
+msgid "Abandon changes and return to list"
+msgstr "Hylkää muutokset ja palaa luetteloon"
+
+#: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Add free-form host"
+msgstr "Lisää vapaamuotoinen järjestäjä"
+
+#: templates/programme_admin_detail_views/freeform_host_modal.jade
 msgid "Add host"
 msgstr "Lisää ohjelmanjärjestäjä"
 
-#: models.py
+#: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: models/programme.py
 msgid "Description"
 msgstr "Kuvaus"
 
@@ -10,7 +22,7 @@ msgstr "Kuvaus"
 msgid "Discard changes and return to the list"
 msgstr "Hylkää muutokset ja palaa luetteloon"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade
+#: models/hosts.py templates/programme_admin_detail_views/hosts_tab.jade
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -18,11 +30,19 @@ msgstr "Sähköpostiosoite"
 msgid "First name"
 msgstr "Etunimi"
 
-#: templates/programme_admin_detail_views/internal_tab.jade views/admin_views.py
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
+msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
+
+#: templates/programme_admin_detail_views/internal_tab.jade views/programme_admin_detail_view.py
 msgid "Internal information"
 msgstr "Sisäiset tiedot"
 
-#: models.py
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_detail_views/invitation_modal.jade
+msgid "Invite host"
+msgstr "Kutsu ohjelmanjärjestäjä"
+
+#: models/programme.py
 msgid "Make up a concise title for your programme. We reserve the right to edit the title."
 msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
 
@@ -34,19 +54,23 @@ msgstr "Uusi ohjelmanumero"
 msgid "Nick name"
 msgstr "Nick"
 
-#: views/admin_views.py
+#: views/admin_views.py views/programme_admin_detail_view.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkasta lomake."
 
-#: templates/programme_admin_detail_views/hosts_tab.jade views/admin_views.py
+#: models/hosts.py
+msgid "Programme"
+msgstr "Ohjelma"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade views/programme_admin_detail_view.py
 msgid "Programme hosts"
 msgstr "Ohjelmanjärjestäjät"
 
-#: templates/programme_admin_detail_views/public_tab.jade views/admin_views.py
+#: templates/programme_admin_detail_views/public_tab.jade views/programme_admin_detail_view.py
 msgid "Public information"
 msgstr "Julkiset tiedot"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade
+#: models/hosts.py templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Role"
 msgstr "Rooli"
 
@@ -54,31 +78,83 @@ msgstr "Rooli"
 msgid "Save and continue"
 msgstr "Tallenna ja jatka"
 
-#: templates/programme_admin_detail_views/schedule_tab.jade views/admin_views.py
+#: templates/programme_admin_detail_view.jade templates/programme_admin_detail_views/buttons.jade
+msgid "Save and continue editing"
+msgstr "Tallenna ja jatka"
+
+#: templates/programme_admin_detail_views/buttons.jade
+msgid "Save and return to list"
+msgstr "Tallenna ja palaa luetteloon"
+
+#: templates/programme_admin_detail_views/schedule_tab.jade views/programme_admin_detail_view.py
 msgid "Schedule information"
 msgstr "Ohjelmakarttatiedot"
+
+#: templates/programme_admin_detail_views/invitation_modal.jade
+msgid "Send invitation"
+msgstr "Lähetä kutsu"
 
 #: templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Surname"
 msgstr "Sukunimi"
 
+#: views/programme_admin_detail_view.py
+msgid "The changes were saved."
+msgstr "Muutokset tallennettiin."
+
+#: views/programme_admin_detail_view.py
+msgid "The host was successfully invited."
+msgstr "Kutsu lähetettiin onnistuneesti."
+
 #: views/admin_views.py
 msgid "The programme was created."
 msgstr "Ohjelmanumero luotiin."
 
-#: models.py
+#: models/programme.py
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
 msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta."
 
-#: models.py
+#: models/programme.py
 msgid "Title"
 msgstr "Otsikko"
 
-#: models.py
+#: models/category.py
 msgid "categories"
 msgstr "ohjelmaluokat"
 
-#: models.py
+#: models/category.py models/programme.py
 msgid "category"
 msgstr "ohjelmaluokka"
+
+#: models/hosts.py
+msgid "invitation"
+msgstr "kutsu"
+
+#: models/hosts.py
+msgid "invitations"
+msgstr "kutsut"
+
+#: models/hosts.py
+msgid "role"
+msgstr "rooli"
+
+#: models/hosts.py
+msgid "roles"
+msgstr "roolit"
+
+#: models/schedule.py
+msgid "schedule view"
+msgstr "ohjelmakarttanäkymä"
+
+#: models/schedule.py
+msgid "schedule views"
+msgstr "ohjelmakarttanäkymät"
+
+#: models/tag.py
+msgid "tag"
+msgstr "tägi"
+
+#: models/tag.py
+msgid "tags"
+msgstr "tägit"
 

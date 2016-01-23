@@ -70,9 +70,16 @@ class Invitation(models.Model):
     ProgrammeRole, the Role will be filled in from the Invitation.
     """
 
-    email = models.CharField(max_length=1023)
-    programme = models.ForeignKey('programme.Programme')
-    role = models.ForeignKey('programme.Role')
+    email = models.CharField(
+        max_length=1023,
+        verbose_name=_(u'E-mail address'),
+    )
+    programme = models.ForeignKey('programme.Programme',
+        verbose_name=_(u'Programme'),
+    )
+    role = models.ForeignKey('programme.Role',
+        verbose_name=_(u'Role'),
+    )
 
     def __unicode__(self):
         return u'{email} ({programme})'.format(email=self.email, programme=self.programme)

@@ -22,6 +22,7 @@ from core.utils import (
     format_datetime,
     full_hours_between,
     get_postgresql_version_num,
+    get_previous_and_next,
     NONUNIQUE_SLUG_FIELD_PARAMS,
     slugify,
     url,
@@ -280,3 +281,7 @@ class Programme(models.Model, CsvExportMixin):
         else:
             logger.warn('DB engine not PostgreSQL >= 9.2. Cannot detect overlapping programmes.')
             return Programme.objects.none()
+
+    def get_previous_and_next_programme(self):
+        queryset = Programme.objects.filter(category__event=self.category.event).order_by('title')
+        return get_previous_and_next(queryset, self)

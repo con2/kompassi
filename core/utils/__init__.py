@@ -42,11 +42,12 @@ from .time_utils import (
 )
 
 from .model_utils import (
+    get_postgresql_version_num,
+    get_previous_and_next,
     NONUNIQUE_SLUG_FIELD_PARAMS,
     SLUG_FIELD_PARAMS,
     slugify,
     validate_slug,
-    get_postgresql_version_num,
 )
 
 from .view_utils import (

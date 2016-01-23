@@ -7,9 +7,21 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset
 
 from core.models import Person
-from core.utils import horizontal_form_helper, format_datetime, indented_without_label, make_horizontal_form_helper
+from core.utils import (
+    format_datetime,
+    horizontal_form_helper,
+    indented_without_label,
+    make_horizontal_form_helper,
+)
 
-from .models import Programme, Role, Invitation
+from .models import (
+    Category,
+    Invitation,
+    Programme,
+    Role,
+    Room,
+    Tag,
+)
 
 
 class ProgrammePublicForm(forms.ModelForm):
@@ -22,6 +34,7 @@ class ProgrammePublicForm(forms.ModelForm):
         self.helper.form_tag = False
 
         self.fields['category'].queryset = Category.objects.filter(event=event)
+        self.fields['tags'].queryset = Tag.objects.filter(event=event)
 
     class Meta:
         model = Programme
@@ -29,19 +42,59 @@ class ProgrammePublicForm(forms.ModelForm):
             'title',
             'description',
             'category',
+            'tags',
         )
 
 
-class AddHostForm(forms.ModelForm):
+class ProgrammeInternalForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
-        super(AddHostForm, self).__init__(*args, **kwargs)
+        super(ProgrammeInternalForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-        self.fields['role'].queryset = Role.objects.filter(event=event)
+    class Meta:
+        model = Programme
+        fields = (
+            'room_requirements',
+            'tech_requirements',
+            'requested_time_slot',
+            'notes_from_host',
+            'notes',
+            'video_permission',
+        )
+
+
+class ScheduleForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(ScheduleForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.fields['room'].queryset = Room.objects.filter(venue=event.venue)
+        # XXX start_time.queryset
+
+    class Meta:
+        model = Programme
+        fields = (
+            'state',
+            'room',
+            'start_time',
+            'length',
+        )
+
+
+class InvitationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(InvitationForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
 
     class Meta:
         model = Invitation

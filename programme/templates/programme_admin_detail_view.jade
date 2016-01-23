@@ -1,4 +1,5 @@
 extends core_admin_base
+- load trans from i18n
 block title
   if programme.title
     | {{ programme.title }}
@@ -20,7 +21,7 @@ block admin_content
 
   form(method='POST', role='form').form-horizontal
     //- To catch Enter button presses
-    input.btn.btn-success.hidden(type='submit', name='save-edit', value='Tallenna ja jatka muokkaamista')
+    button.btn.btn-success.hidden(type='submit', name='action', value='save-edit') {% trans "Save and continue editing" %}
 
     .tab-content.kompassi-slight-space-above
       include programme_admin_detail_views/public_tab.jade
@@ -28,4 +29,5 @@ block admin_content
       include programme_admin_detail_views/hosts_tab.jade
       include programme_admin_detail_views/internal_tab.jade
 
-  include programme_admin_detail_views/add_host_modal.jade
+  include programme_admin_detail_views/invitation_modal.jade
+  include programme_admin_detail_views/freeform_host_modal.jade
