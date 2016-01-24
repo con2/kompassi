@@ -16,7 +16,11 @@ from ..forms import (
     ScheduleForm,
 )
 from ..helpers import programme_admin_required
-from ..models import Programme
+from ..models import (
+    Invitation,
+    Programme,
+    ProgrammeRole,
+)
 
 
 @programme_admin_required
@@ -63,6 +67,28 @@ def programme_admin_detail_view(request, vars, event, programme_id):
             else:
                 messages.error(request, _(u'Please check the form.'))
 
+        elif action.startswith('remove-host:') or action.startswith('cancel-invitation:'):
+            action, id_str = action.split(':', 1)
+
+            try:
+                id_int = int(id_str)
+            except ValueError:
+                messages.error(request, _(u'Invalid action.'))
+            else:
+                if action == 'remove-host':
+                    programme_role = get_object_or_404(ProgrammeRole, id=id_int, programme=programme)
+                    programme_role.delete()
+
+                    messages.success(request, _(u'The host was removed.'))
+                elif action == 'cancel-invitation':
+                    invitation = get_object_or_404(Invitation, id=id_int, programme=programme)
+                    invitation.delete()
+
+                    messages.success(request, _(u'The invitation was cancelled.'))
+                else:
+                    raise NotImplementedError(action)
+
+                return redirect('programme_admin_detail_view', event.slug, programme_id)
         else:
             messages.error(request, _(u'Invalid action.'))
 
@@ -85,7 +111,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
         overlapping_programmes=programme.get_overlapping_programmes(),
         previous_programme=previous_programme,
         programme=programme,
-        programme_roles=programme.organizers.all(),
+        programme_roles=ProgrammeRole.objects.filter(programme=programme),
         public_form=public_form,
         schedule_form=schedule_form,
         tabs=tabs,

@@ -10,6 +10,7 @@
         th {% trans "Nick name" %}
         th {% trans "E-mail address" %}
         th {% trans "Role" %}
+        th
       tbody
         for programme_role in programme_roles
           tr
@@ -18,6 +19,9 @@
             td= programme_role.person.nick
             td= programme_role.person.email
             td= programme_role.role
+            td
+              button.btn.btn-xs.btn-danger(type='submit', name='action', value='remove-host:{{ programme_role.id }}', title='Poista ohjelmanjärjestäjä')
+                i.fa.fa-trash
         for invitation in invitations
           tr
             td
@@ -25,6 +29,9 @@
             td
             td: em= invitation.email
             td: em= invitation.role
+            td
+              button.btn.btn-xs.btn-danger(type='submit', name='action', value='cancel-invitation:{{ invitation.id }}', title='Peru kutsu')
+                i.fa.fa-trash
     .panel-footer.clearfix
       .btn-group.pull-right
         //- button.btn.btn-default(type='button', data-toggle='modal', data-target='#programme-admin-freeform-modal')

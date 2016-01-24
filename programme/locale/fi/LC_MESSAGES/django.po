@@ -115,8 +115,16 @@ msgid "The changes were saved."
 msgstr "Muutokset tallennettiin."
 
 #: views/programme_admin_detail_view.py
+msgid "The host was removed."
+msgstr "Ohjelmanjärjestäjä poistettu."
+
+#: views/programme_admin_detail_view.py
 msgid "The host was successfully invited."
 msgstr "Kutsu lähetettiin onnistuneesti."
+
+#: views/programme_admin_detail_view.py
+msgid "The invitation was cancelled."
+msgstr "Kutsu peruutettu."
 
 #: views/admin_views.py
 msgid "The programme was created."
