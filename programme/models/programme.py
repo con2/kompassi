@@ -3,7 +3,6 @@
 import logging
 import datetime
 from datetime import timedelta
-from pkg_resources import resource_string
 
 from django.db import models
 from django.db.models.signals import pre_save
@@ -21,7 +20,6 @@ from core.utils import (
     alias_property,
     format_datetime,
     full_hours_between,
-    get_postgresql_version_num,
     get_previous_and_next,
     NONUNIQUE_SLUG_FIELD_PARAMS,
     slugify,
@@ -30,8 +28,6 @@ from core.utils import (
 
 from ..utils import window, next_full_hour
 
-
-HAVE_POSTGRESQL_TIME_RANGE_FUNCTIONS = get_postgresql_version_num() >= 90200
 
 RECORDING_PERMISSION_CHOICES = [
     (u'public', u'Ohjelmanumeroni saa videoida ja julkaista'),
@@ -162,11 +158,6 @@ class Programme(models.Model, CsvExportMixin):
     def is_active(self):
         return self.state not in ['rejected', 'cancelled']
 
-    class Meta:
-        verbose_name = u'ohjelmanumero'
-        verbose_name_plural = u'ohjelmanumerot'
-        ordering = ['start_time', 'room']
-
     @classmethod
     def get_or_create_dummy(cls, title=u'Dummy program'):
         from .category import Category
@@ -250,29 +241,7 @@ class Programme(models.Model, CsvExportMixin):
 
         return super(Programme, self).save(*args, **kwargs)
 
-    def get_overlapping_programmes(self):
-        if any((
-            self.id is None,
-            self.room is None,
-            self.start_time is None,
-            self.length is None,
-        )):
-            return Programme.objects.none()
-        elif HAVE_POSTGRESQL_TIME_RANGE_FUNCTIONS:
-            return Programme.objects.raw(
-                resource_string(__name__, 'sql/overlapping_programmes.sql'),
-                (
-                    self.category.event.id,
-                    self.id,
-                    self.room.id,
-                    self.start_time,
-                    self.end_time,
-                )
-            )
-        else:
-            logger.warn('DB engine not PostgreSQL >= 9.2. Cannot detect overlapping programmes.')
-            return Programme.objects.none()
-
-    def get_previous_and_next_programme(self):
-        queryset = Programme.objects.filter(category__event=self.category.event).order_by('title')
-        return get_previous_and_next(queryset, self)
+    class Meta:
+        verbose_name = u'ohjelmanumero'
+        verbose_name_plural = u'ohjelmanumerot'
+        ordering = ['start_time', 'room']

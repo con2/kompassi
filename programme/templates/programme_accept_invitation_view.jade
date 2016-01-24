@@ -45,12 +45,12 @@ block content
       .text-muted {% trans "Please check your contact information and update your profile if necessary." %}
 
   form.form-horizontal(method='POST')
-  .panel.panel-default
-    .panel-heading: strong {% trans "Programme information" %}
-    .panel-body {% crispy form %}
-    .panel-footer.clearfix
-      .btn-group.pull-right
-        button.btn.btn-success(type='submit')
-          i.fa.fa-check.kompassi-icon-space-right
-          | {% trans "Accept invitation" %}
-      .text-muted {% trans "You can change these details later by visiting your profile." %}
+    .panel.panel-default
+      .panel-heading: strong {% trans "Programme information" %}
+      .panel-body {% crispy form %}
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          button.btn.btn-success(type='submit')
+            i.fa.fa-check.kompassi-icon-space-right
+            | {% trans "Accept invitation" %}
+        .text-muted {% trans "You can change these details later by visiting your profile." %}

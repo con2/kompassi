@@ -18,15 +18,15 @@ from ..forms import (
 from ..helpers import programme_admin_required
 from ..models import (
     Invitation,
-    Programme,
     ProgrammeRole,
 )
+from ..proxies.programme.management import ProgrammeManagementProxy
 
 
 @programme_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def programme_admin_detail_view(request, vars, event, programme_id):
-    programme = get_object_or_404(Programme, category__event=event, pk=int(programme_id))
+    programme = get_object_or_404(ProgrammeManagementProxy, category__event=event, pk=int(programme_id))
 
     public_form = initialize_form(ProgrammePublicForm, request, instance=programme, event=event, prefix='public')
     needs_form = initialize_form(ProgrammeNeedsForm, request, instance=programme, event=event, prefix='needs')

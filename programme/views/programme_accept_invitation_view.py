@@ -9,13 +9,18 @@ from core.utils import initialize_form
 
 from ..forms import ProgrammeSelfServiceForm
 from ..helpers import programme_event_required
-from ..models.hosts import Invitation
+from ..models import Invitation
 
 
 @programme_event_required
 @person_required
 def programme_accept_invitation_view(request, event, code):
     invitation = get_object_or_404(Invitation, programme__category__event=event, code=code)
+
+    if not invitation.state == 'valid':
+        messages.error(request, _(u'The invitation is no longer valid.'))
+        return redirect('core_event_view', event.slug)
+
     programme = invitation.programme
 
     form = initialize_form(ProgrammeSelfServiceForm, request,
