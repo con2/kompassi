@@ -3,9 +3,8 @@ msgid "Abandon changes and return to list"
 msgstr "Hylkää muutokset ja palaa luetteloon"
 
 #: templates/programme_accept_invitation_view.jade
-#, fuzzy
 msgid "Accept invitation"
-msgstr "Lähetä kutsu"
+msgstr "Hyväksy kutsu"
 
 #: templates/programme_admin_detail_views/freeform_host_modal.jade
 msgid "Add free-form host"
@@ -20,9 +19,8 @@ msgid "Cancel"
 msgstr "Peruuta"
 
 #: templates/programme_accept_invitation_view.jade
-#, fuzzy
 msgid "Contact information"
-msgstr "Sisäiset tiedot"
+msgstr "Yhteystiedot"
 
 #: models/programme.py templates/programme_admin_detail_views/internal_tab.jade
 msgid "Created at"
@@ -53,8 +51,8 @@ msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
 msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
 
 #: templates/programme_accept_invitation_view.jade
-msgid "If your name is publicly displayed as the event host, this is how your name will be published. You can change the name display style in your profile."
-msgstr ""
+msgid "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile."
+msgstr "Jos nimesi näytetään julkisesti tämän ohjelman järjestäjänä, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
 
 #: templates/programme_admin_detail_views/internal_tab.jade views/programme_admin_detail_view.py
 msgid "Internal information"
@@ -66,7 +64,7 @@ msgstr "Kelvoton toiminto."
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Invitation to organize programme"
-msgstr ""
+msgstr "Kutsu ohjelmanjärjestäjäksi"
 
 #: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Invite host"
@@ -75,6 +73,10 @@ msgstr "Kutsu ohjelmanjärjestäjä"
 #: models/programme.py
 msgid "Make up a concise title for your programme. We reserve the right to edit the title."
 msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
+
+#: templates/programme_accept_invitation_view.jade
+msgid "Name as displayed"
+msgstr "Nimen esittäminen"
 
 #: templates/programme_admin_create_view.jade
 msgid "New programme"
@@ -94,7 +96,7 @@ msgstr "Ole hyvä ja tarkasta lomake."
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Please check your contact information and update your profile if necessary."
-msgstr ""
+msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi."
 
 #: models/hosts.py
 msgid "Programme"
@@ -105,7 +107,6 @@ msgid "Programme hosts"
 msgstr "Ohjelmanjärjestäjät"
 
 #: templates/programme_accept_invitation_view.jade
-#, fuzzy
 msgid "Programme information"
 msgstr "Ohjelmakarttatiedot"
 
@@ -157,6 +158,10 @@ msgstr "Kutsu lähetettiin onnistuneesti."
 msgid "The invitation was cancelled."
 msgstr "Kutsu peruutettu."
 
+#: templates/programme_accept_invitation_view.jade
+msgid "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details."
+msgstr "Ohjelmavastaava on kutsunut sinut järjestämään ohjelmanumeron, joka on yksilöity alla. Saadaksesi ohjelmanjärjestäjän edut sinun tulee hyväksyä tämä kutsu ja täyttää pyydetyt lisätiedot."
+
 #: views/admin_views.py
 msgid "The programme was created."
 msgstr "Ohjelmanumero luotiin."
@@ -170,8 +175,8 @@ msgid "Title"
 msgstr "Otsikko"
 
 #: templates/programme_accept_invitation_view.jade
-msgid "Update profile"
-msgstr ""
+msgid "Update profile..."
+msgstr "Päivitä profiilia..."
 
 #: models/programme.py templates/programme_admin_detail_views/internal_tab.jade
 msgid "Updated at"
@@ -179,7 +184,7 @@ msgstr "Päivitysaika"
 
 #: templates/programme_accept_invitation_view.jade
 msgid "You can change these details later by visiting your profile."
-msgstr ""
+msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
 
 #: models/category.py
 msgid "categories"
