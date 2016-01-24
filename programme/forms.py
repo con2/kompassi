@@ -15,6 +15,7 @@ from core.utils import (
 )
 
 from .models import (
+    AllRoomsPseudoView,
     Category,
     Invitation,
     Programme,
@@ -22,6 +23,7 @@ from .models import (
     Room,
     Tag,
 )
+from .models.programme import START_TIME_LABEL
 
 
 class ProgrammePublicForm(forms.ModelForm):
@@ -43,6 +45,10 @@ class ProgrammePublicForm(forms.ModelForm):
             'description',
             'category',
             'tags',
+        )
+
+        widgets = dict(
+            tags=forms.CheckboxSelectMultiple,
         )
 
 
@@ -83,6 +89,8 @@ class ProgrammeInternalForm(forms.ModelForm):
 
 
 class ScheduleForm(forms.ModelForm):
+    start_time = forms.ChoiceField(choices=[], label=START_TIME_LABEL, required=False)
+
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
@@ -91,8 +99,23 @@ class ScheduleForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
+        self.fields['length'].widget.attrs['min'] = 0
         self.fields['room'].queryset = Room.objects.filter(venue=event.venue)
-        # XXX start_time.queryset
+
+        self.fields['start_time'].choices = [('', u'---------')] + [
+            (
+                start_time,
+                format_datetime(start_time)
+            ) for start_time in AllRoomsPseudoView(event).start_times()
+        ]
+
+    def clean_start_time(self):
+        start_time = self.cleaned_data.get('start_time')
+
+        if start_time == '':
+            start_time = None
+
+        return start_time
 
     class Meta:
         model = Programme
