@@ -47,6 +47,7 @@ block content
   form.form-horizontal(method='POST')
   .panel.panel-default
     .panel-heading: strong {% trans "Programme information" %}
+    .panel-body {% crispy form %}
     .panel-footer.clearfix
       .btn-group.pull-right
         button.btn.btn-success(type='submit')

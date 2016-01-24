@@ -108,7 +108,7 @@ msgstr "Ohjelmanjärjestäjät"
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Programme information"
-msgstr "Ohjelmakarttatiedot"
+msgstr "Ohjelmanumeron tiedot"
 
 #: templates/programme_admin_detail_views/public_tab.jade views/programme_admin_detail_view.py
 msgid "Public information"

@@ -34,6 +34,7 @@ class ProgrammeRole(models.Model):
     person = models.ForeignKey('core.Person')
     programme = models.ForeignKey('programme.Programme')
     role = models.ForeignKey('programme.Role')
+    invitation = models.ForeignKey('programme.Invitation', null=True, blank=True)
 
     def clean(self):
         if self.role.require_contact_info and not (self.person.email or self.person.phone):
@@ -74,8 +75,14 @@ class Invitation(OneTimeCodeLite):
     programme = models.ForeignKey('programme.Programme',
         verbose_name=_(u'Programme'),
     )
+
     role = models.ForeignKey('programme.Role',
         verbose_name=_(u'Role'),
+    )
+
+    created_by = models.ForeignKey('auth.User',
+        null=True,
+        blank=True,
     )
 
     def __unicode__(self):
@@ -101,6 +108,18 @@ class Invitation(OneTimeCodeLite):
         )
 
         return render_to_string('programme_invitation_message.eml', vars, request=request)
+
+    def accept(self, person):
+        self.mark_used()
+
+        programme_role = ProgrammeRole(
+            programme=self.programme,
+            role=self.role,
+            person=person,
+            invitation=self,
+        )
+        programme_role.save()
+        return programme_role
 
     class Meta:
         verbose_name = _(u'invitation')

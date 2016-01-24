@@ -59,6 +59,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
             if invitation_form.is_valid():
                 invitation = invitation_form.save(commit=False)
                 invitation.programme = programme
+                invitation.created_by = request.user
                 invitation.save()
 
                 invitation.send(request)

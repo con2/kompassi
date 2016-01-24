@@ -52,6 +52,37 @@ class ProgrammePublicForm(forms.ModelForm):
         )
 
 
+class ProgrammeSelfServiceForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(ProgrammeSelfServiceForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        for field_name in [
+            'title',
+            'description',
+            'room_requirements',
+            'tech_requirements',
+            'requested_time_slot',
+        ]:
+            self.fields[field_name].required = True
+
+    class Meta:
+        model = Programme
+        fields = (
+            'title',
+            'description',
+            'room_requirements',
+            'tech_requirements',
+            'requested_time_slot',
+            'notes_from_host',
+            'video_permission',
+        )
+
+
 class ProgrammeNeedsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
