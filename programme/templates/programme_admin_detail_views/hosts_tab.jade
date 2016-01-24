@@ -8,6 +8,7 @@
         th {% trans "Surname" %}
         th {% trans "First name" %}
         th {% trans "Nick name" %}
+        th {% trans "Phone number" %}
         th {% trans "E-mail address" %}
         th {% trans "Role" %}
         th
@@ -17,6 +18,7 @@
             td= programme_role.person.surname
             td= programme_role.person.first_name
             td= programme_role.person.nick
+            td= programme_role.person.phone
             td= programme_role.person.email
             td= programme_role.role
             td
@@ -24,6 +26,7 @@
                 i.fa.fa-trash
         for invitation in invitations
           tr
+            td
             td
             td
             td
