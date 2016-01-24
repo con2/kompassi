@@ -7,63 +7,90 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset
 
 from core.models import Person
-from core.utils import horizontal_form_helper, format_datetime, indented_without_label, make_horizontal_form_helper
+from core.utils import (
+    format_datetime,
+    horizontal_form_helper,
+    indented_without_label,
+    make_horizontal_form_helper,
+)
 
-from .models import Programme, Role, Category, Room, Tag, AllRoomsPseudoView, START_TIME_LABEL
+from .models import (
+    AllRoomsPseudoView,
+    Category,
+    Invitation,
+    Programme,
+    Role,
+    Room,
+    Tag,
+)
+from .models.programme import START_TIME_LABEL
 
 
-class ProgrammeForm(forms.ModelForm):
+class ProgrammePublicForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        if 'self_service' in kwargs:
-            self_service = kwargs.pop('self_service')
-        else:
-            self_service = False
+        event = kwargs.pop('event')
 
-        super(ProgrammeForm, self).__init__(*args, **kwargs)
+        super(ProgrammePublicForm, self).__init__(*args, **kwargs)
+
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
-        self.helper.layout = Layout(
-            Fieldset(u'Ohjelmanumeron julkiset tiedot',
-                'title',
-                'description',
-            ),
-        )
+
+        self.fields['category'].queryset = Category.objects.filter(event=event)
+        self.fields['tags'].queryset = Tag.objects.filter(event=event)
 
     class Meta:
         model = Programme
         fields = (
             'title',
             'description',
+            'category',
+            'tags',
+        )
+
+        widgets = dict(
+            tags=forms.CheckboxSelectMultiple,
         )
 
 
-class ProgrammeExtraForm(forms.ModelForm):
+class ProgrammeSelfServiceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        if 'self_service' in kwargs:
-            self_service = kwargs.pop('self_service')
-        else:
-            self_service = False
+        event = kwargs.pop('event')
 
-        super(ProgrammeExtraForm, self).__init__(*args, **kwargs)
+        super(ProgrammeSelfServiceForm, self).__init__(*args, **kwargs)
+
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
-        self.helper.layout = Layout(
-            Fieldset(u'Järjestäjien tarvitsemat lisätiedot',
-                'room_requirements',
-                'tech_requirements',
-                'requested_time_slot',
-                'video_permission',
-                'notes_from_host',
-            ),
+
+        for field_name in [
+            'title',
+            'description',
+            'room_requirements',
+            'tech_requirements',
+            'requested_time_slot',
+        ]:
+            self.fields[field_name].required = True
+
+    class Meta:
+        model = Programme
+        fields = (
+            'title',
+            'description',
+            'room_requirements',
+            'tech_requirements',
+            'requested_time_slot',
+            'notes_from_host',
+            'video_permission',
         )
 
-        if self_service:
-            for field_name in [
-                'room_requirements',
-                'tech_requirements',
-                'requested_time_slot',
-            ]:
-                self.fields[field_name].required = True
+
+class ProgrammeNeedsForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(ProgrammeNeedsForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
 
     class Meta:
         model = Programme
@@ -71,98 +98,41 @@ class ProgrammeExtraForm(forms.ModelForm):
             'room_requirements',
             'tech_requirements',
             'requested_time_slot',
-            'video_permission',
             'notes_from_host',
+            'video_permission',
         )
 
 
-class ProgrammePersonFormHelper(FormHelper):
+class ProgrammeInternalForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ProgrammePersonFormHelper, self).__init__(*args, **kwargs)
-        make_horizontal_form_helper(self)
-        self.form_tag = False
-        self.layout = Layout(
-            'first_name',
-            'surname',
-            'nick',
-            'preferred_name_display_style',
-            'phone',
-            'email',
-            indented_without_label('may_send_info'),
-        )
+        event = kwargs.pop('event')
 
+        super(ProgrammeInternalForm, self).__init__(*args, **kwargs)
 
-class ProgrammePersonForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(ProgrammePersonForm, self).__init__(*args, **kwargs)
-        self.helper = ProgrammePersonFormHelper()
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
 
     class Meta:
-        model = Person
-        fields = [
-            'email',
-            'first_name',
-            'may_send_info',
-            'nick',
-            'phone',
-            'preferred_name_display_style',
-            'surname',
-        ]
+        model = Programme
+        fields = (
+            'notes',
+        )
 
 
-class SelfServiceProgrammePersonForm(ProgrammePersonForm):
-    def __init__(self, *args, **kwargs):
-        super(SelfServiceProgrammePersonForm, self).__init__(*args, **kwargs)
-
-        for field_name in [
-            'email',
-            'phone'
-        ]:
-            self.fields[field_name].required = True
-
-
-AdminProgrammePersonFormSet = modelformset_factory(Person,
-    form=ProgrammePersonForm,
-    can_delete=True,
-    can_order=False,
-    extra=1
-)
-
-SelfServiceProgrammePersonFormSet = modelformset_factory(Person,
-    form=SelfServiceProgrammePersonForm,
-    can_delete=False,
-    can_order=False,
-    extra=0
-)
-
-class ProgrammeAdminForm(forms.ModelForm):
-    # XXX
+class ScheduleForm(forms.ModelForm):
     start_time = forms.ChoiceField(choices=[], label=START_TIME_LABEL, required=False)
 
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
-        super(ProgrammeAdminForm, self).__init__(*args, **kwargs)
+        super(ScheduleForm, self).__init__(*args, **kwargs)
+
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
-        self.helper.layout = Layout(
-            Fieldset(u'Ohjelmavastaavan merkinnät (eivät näy ohjelmanjärjestäjälle)',
-                'state',
-                'category',
-                'room',
-                'start_time',
-                'length',
-                'tags',
-                'notes',
-            ),
-        )
 
         self.fields['length'].widget.attrs['min'] = 0
-        self.fields['category'].queryset = Category.objects.filter(event=event)
         self.fields['room'].queryset = Room.objects.filter(venue=event.venue)
-        self.fields['tags'].queryset = Tag.objects.filter(event=event)
 
-        # XXX
         self.fields['start_time'].choices = [('', u'---------')] + [
             (
                 start_time,
@@ -181,15 +151,23 @@ class ProgrammeAdminForm(forms.ModelForm):
     class Meta:
         model = Programme
         fields = (
-            'category',
-            'length',
-            'notes',
+            'state',
             'room',
             'start_time',
-            'state',
-            'tags',
+            'length',
         )
 
-        widgets = dict(
-            tags=forms.CheckboxSelectMultiple,
+
+class InvitationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(InvitationForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = Invitation
+        fields = (
+            'email',
+            'role',
         )

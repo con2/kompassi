@@ -27,7 +27,7 @@ class Setup(object):
         self.setup_badges()
         # self.setup_tickets()
         # self.setup_payments()
-        # self.setup_programme()
+        self.setup_programme()
         self.setup_access()
         self.setup_sms()
 

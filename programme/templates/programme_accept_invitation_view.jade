@@ -1,0 +1,56 @@
+extends base
+- load trans from i18n
+- load crispy from crispy_forms_tags
+block title
+  {% trans "Invitation to organize programme" %}
+block content
+  h2 {% trans "Invitation to organize programme" %}
+  p {% trans "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details." %}
+
+  .panel.panel-default
+    .panel-heading: strong {% trans "Contact information" %}
+    .panel-body
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Surname" %}
+          .col-md-10= request.user.person.surname
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "First name" %}
+          .col-md-10= request.user.person.first_name
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Nick name" %}
+          .col-md-10= request.user.person.nick
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Name as displayed" %}
+          .col-md-10
+            div= request.user.person.display_name
+            .help-block {% trans "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile." %}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Phone number" %}
+          .col-md-10= request.user.person.phone
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "E-mail address" %}
+          .col-md-10= request.user.person.email
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        a.btn.btn-default(target='_blank', href='{% url "core_profile_view" %}')
+          i.fa.fa-edit.kompassi-icon-space-right
+          | {% trans "Update profile..." %}
+
+      .text-muted {% trans "Please check your contact information and update your profile if necessary." %}
+
+  form.form-horizontal(method='POST')
+    .panel.panel-default
+      .panel-heading: strong {% trans "Programme information" %}
+      .panel-body {% crispy form %}
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          button.btn.btn-success(type='submit')
+            i.fa.fa-check.kompassi-icon-space-right
+            | {% trans "Accept invitation" %}
+        .text-muted {% trans "You can change these details later by visiting your profile." %}

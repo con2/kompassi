@@ -75,3 +75,23 @@ def get_postgresql_version_num():
     with connection.cursor() as cursor:
         cursor.execute('SHOW server_version_num')
         return int(cursor.fetchone()[0])
+
+
+def get_previous_and_next(queryset, current):
+      if not current.pk:
+          return None, None
+
+      # TODO inefficient, done using a list
+      signups = list(queryset)
+
+      previous_item = None
+      candidate = None
+
+      for next_item in signups + [None]:
+          if candidate and candidate.pk == current.pk:
+              return previous_item, next_item
+
+          previous_item = candidate
+          candidate = next_item
+
+      return None, None

@@ -13,6 +13,7 @@ from .models import (
     TimeBlock,
     View,
 )
+from .proxies.invitation.admin import InvitationAdminProxy
 
 
 class InlineProgrammeEventMetaAdmin(admin.StackedInline):
@@ -70,6 +71,12 @@ class TagAdmin(admin.ModelAdmin):
     list_filter = ('event',)
 
 
+class InvitationAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_event', 'admin_get_title', 'email', 'state', 'created_by')
+    list_filter = ('programme__category__event', 'state')
+    ordering = ('programme__category__event', 'programme__title', 'email')
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Role)
@@ -78,3 +85,4 @@ admin.site.register(Programme, ProgrammeAdmin)
 admin.site.register(View, ViewAdmin)
 admin.site.register(TimeBlock, TimeBlockAdmin)
 admin.site.register(SpecialStartTime, SpecialStartTimeAdmin)
+admin.site.register(InvitationAdminProxy, InvitationAdmin)
