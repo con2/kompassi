@@ -46,11 +46,11 @@ class ProgrammePublicForm(forms.ModelForm):
         )
 
 
-class ProgrammeInternalForm(forms.ModelForm):
+class ProgrammeNeedsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
-        super(ProgrammeInternalForm, self).__init__(*args, **kwargs)
+        super(ProgrammeNeedsForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -66,11 +66,11 @@ class ProgrammeInternalForm(forms.ModelForm):
         )
 
 
-class ProgrammeAdditionalForm(forms.ModelForm):
+class ProgrammeInternalForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
-        super(ProgrammeAdditionalForm, self).__init__(*args, **kwargs)
+        super(ProgrammeInternalForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False

@@ -10,8 +10,8 @@ from core.tabs import Tab
 
 from ..forms import (
     InvitationForm,
-    ProgrammeAdditionalForm,
     ProgrammeInternalForm,
+    ProgrammeNeedsForm,
     ProgrammePublicForm,
     ScheduleForm,
 )
@@ -25,10 +25,10 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     programme = get_object_or_404(Programme, category__event=event, pk=int(programme_id))
 
     public_form = initialize_form(ProgrammePublicForm, request, instance=programme, event=event, prefix='public')
+    needs_form = initialize_form(ProgrammeNeedsForm, request, instance=programme, event=event, prefix='needs')
     internal_form = initialize_form(ProgrammeInternalForm, request, instance=programme, event=event, prefix='internal')
-    additional_form = initialize_form(ProgrammeAdditionalForm, request, instance=programme, event=event, prefix='additional')
     schedule_form = initialize_form(ScheduleForm, request, instance=programme, event=event, prefix='schedule')
-    forms = [public_form, internal_form, schedule_form, additional_form]
+    forms = [public_form, needs_form, schedule_form, internal_form]
 
     invitation_form = initialize_form(InvitationForm, request, prefix='invitation')
 
@@ -69,16 +69,16 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     tabs = [
         Tab('programme-admin-programme-public-tab', _(u'Public information'), active=True),
         Tab('programme-admin-programme-schedule-tab', _(u'Schedule information')),
+        Tab('programme-admin-programme-needs-tab', _(u'Host needs')),
         Tab('programme-admin-programme-internal-tab', _(u'Internal information')),
-        Tab('programme-admin-programme-additional-tab', _(u'Additional information')),
         Tab('programme-admin-programme-hosts-tab', _(u'Programme hosts')),
     ]
 
     previous_programme, next_programme = programme.get_previous_and_next_programme()
 
     vars.update(
-        additional_form=additional_form,
         internal_form=internal_form,
+        needs_form=needs_form,
         invitation_form=invitation_form,
         invitations=programme.invitation_set.all(),
         next_programme=next_programme,

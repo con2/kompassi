@@ -2,7 +2,7 @@
 msgid "Abandon changes and return to list"
 msgstr "Hylkää muutokset ja palaa luetteloon"
 
-#: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_admin_detail_views/freeform_host_modal.jade
 msgid "Add free-form host"
 msgstr "Lisää vapaamuotoinen järjestäjä"
 
@@ -13,6 +13,10 @@ msgstr "Lisää ohjelmanjärjestäjä"
 #: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Cancel"
 msgstr "Peruuta"
+
+#: models/programme.py templates/programme_admin_detail_views/internal_tab.jade
+msgid "Created at"
+msgstr "Luontiaika"
 
 #: models/programme.py
 msgid "Description"
@@ -30,6 +34,10 @@ msgstr "Sähköpostiosoite"
 msgid "First name"
 msgstr "Etunimi"
 
+#: templates/programme_admin_detail_views/needs_tab.jade views/programme_admin_detail_view.py
+msgid "Host needs"
+msgstr "Ohjelmanjärjestäjän tarpeet"
+
 #: templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
 msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
@@ -37,6 +45,10 @@ msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet
 #: templates/programme_admin_detail_views/internal_tab.jade views/programme_admin_detail_view.py
 msgid "Internal information"
 msgstr "Sisäiset tiedot"
+
+#: views/programme_admin_detail_view.py
+msgid "Invalid action."
+msgstr "Kelvoton toiminto."
 
 #: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Invite host"
@@ -117,6 +129,10 @@ msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelm
 #: models/programme.py
 msgid "Title"
 msgstr "Otsikko"
+
+#: models/programme.py templates/programme_admin_detail_views/internal_tab.jade
+msgid "Updated at"
+msgstr "Päivitysaika"
 
 #: models/category.py
 msgid "categories"
