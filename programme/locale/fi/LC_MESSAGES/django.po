@@ -38,6 +38,10 @@ msgstr "Hylkää muutokset ja palaa luetteloon"
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
+#: proxies/invitation/admin.py
+msgid "Event"
+msgstr "Tapahtuma"
+
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "First name"
 msgstr "Etunimi"
@@ -90,15 +94,15 @@ msgstr "Nick"
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
-#: views/admin_views.py views/programme_admin_detail_view.py
+#: views/admin_views.py views/programme_accept_invitation_view.py views/programme_admin_detail_view.py
 msgid "Please check the form."
-msgstr "Ole hyvä ja tarkasta lomake."
+msgstr "Ole hyvä ja tarkista lomake."
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Please check your contact information and update your profile if necessary."
 msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi."
 
-#: models/hosts.py
+#: models/invitation.py
 msgid "Programme"
 msgstr "Ohjelma"
 
@@ -114,7 +118,7 @@ msgstr "Ohjelmanumeron tiedot"
 msgid "Public information"
 msgstr "Julkiset tiedot"
 
-#: models/hosts.py templates/programme_admin_detail_views/hosts_tab.jade
+#: models/invitation.py templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Role"
 msgstr "Rooli"
 
@@ -142,6 +146,10 @@ msgstr "Lähetä kutsu"
 msgid "Surname"
 msgstr "Sukunimi"
 
+#: views/programme_accept_invitation_view.py
+msgid "Thank you for accepting the invitation. You can change the information later from your profile."
+msgstr "Kiitos kutsun hyväksymisestä. Voit muuttaa tietoja myöhemmin profiilisi kautta."
+
 #: views/programme_admin_detail_view.py
 msgid "The changes were saved."
 msgstr "Muutokset tallennettiin."
@@ -153,6 +161,10 @@ msgstr "Ohjelmanjärjestäjä poistettu."
 #: views/programme_admin_detail_view.py
 msgid "The host was successfully invited."
 msgstr "Kutsu lähetettiin onnistuneesti."
+
+#: views/programme_accept_invitation_view.py
+msgid "The invitation is no longer valid."
+msgstr "Kutsu ei ole enää voimassa."
 
 #: views/programme_admin_detail_view.py
 msgid "The invitation was cancelled."
@@ -170,7 +182,7 @@ msgstr "Ohjelmanumero luotiin."
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
 msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta."
 
-#: models/programme.py
+#: models/programme.py proxies/invitation/admin.py
 msgid "Title"
 msgstr "Otsikko"
 
@@ -194,19 +206,19 @@ msgstr "ohjelmaluokat"
 msgid "category"
 msgstr "ohjelmaluokka"
 
-#: models/hosts.py
+#: models/invitation.py proxies/invitation/admin.py
 msgid "invitation"
 msgstr "kutsu"
 
-#: models/hosts.py
+#: models/invitation.py proxies/invitation/admin.py
 msgid "invitations"
 msgstr "kutsut"
 
-#: models/hosts.py
+#: models/role.py
 msgid "role"
 msgstr "rooli"
 
-#: models/hosts.py
+#: models/role.py
 msgid "roles"
 msgstr "roolit"
 
