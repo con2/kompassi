@@ -623,10 +623,12 @@ class Signup(models.Model, CsvExportMixin):
 
     @property
     def formatted_job_categories_accepted(self):
+        from .job_category import format_job_categories
         return format_job_categories(self.job_categories_accepted.all())
 
     @property
     def formatted_job_categories(self):
+        from .job_category import format_job_categories
         return format_job_categories(self.job_categories.all())
 
     @property
