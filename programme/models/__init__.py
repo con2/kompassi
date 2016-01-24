@@ -5,7 +5,6 @@ from .category import Category
 from .room import Room
 from .hosts import (
     Invitation,
-    ProgrammeEditToken,
     ProgrammeRole,
     Role,
 )

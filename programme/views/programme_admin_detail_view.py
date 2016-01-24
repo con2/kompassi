@@ -61,6 +61,8 @@ def programme_admin_detail_view(request, vars, event, programme_id):
                 invitation.programme = programme
                 invitation.save()
 
+                invitation.send(request)
+
                 messages.success(request, _(u'The host was successfully invited.'))
 
                 return redirect('programme_admin_detail_view', event.slug, programme_id)
@@ -81,8 +83,9 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
                     messages.success(request, _(u'The host was removed.'))
                 elif action == 'cancel-invitation':
-                    invitation = get_object_or_404(Invitation, id=id_int, programme=programme)
-                    invitation.delete()
+                    invitation = get_object_or_404(Invitation, id=id_int, programme=programme, state='valid')
+                    invitation.state = 'revoked'
+                    invitation.save()
 
                     messages.success(request, _(u'The invitation was cancelled.'))
                 else:
@@ -106,7 +109,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
         internal_form=internal_form,
         needs_form=needs_form,
         invitation_form=invitation_form,
-        invitations=programme.invitation_set.all(),
+        invitations=programme.invitation_set.filter(state='valid'),
         next_programme=next_programme,
         overlapping_programmes=programme.get_overlapping_programmes(),
         previous_programme=previous_programme,

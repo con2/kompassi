@@ -2,13 +2,15 @@
 
 import logging
 from datetime import date, datetime, timedelta
-from django.core.exceptions import ValidationError
+from random import choice
 
+from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.dateformat import format as format_date
+from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 from .utils import (
@@ -696,36 +698,20 @@ class EventMetaBase(models.Model, GroupManagementMixin):
 
 ONE_TIME_CODE_LENGTH = 40
 ONE_TIME_CODE_ALPHABET = '0123456789abcdef'
+ONE_TIME_CODE_STATE_CHOICES = [
+    ('valid', _(u'Valid')),
+    ('used', _(u'Used')),
+    ('revoked', _(u'Revoked')),
+]
 
 
-class OneTimeCode(models.Model):
-    code = models.CharField(max_length=63, unique=True)
-    person = models.ForeignKey(Person)
-    created_at = models.DateTimeField(auto_now_add=True)
-    used_at = models.DateTimeField(null=True, blank=True)
-    state = models.CharField(
-        max_length=8,
-        default='valid',
-        choices=[
-            ('valid', u'Kelvollinen'),
-            ('used', u'Käytetty'),
-            ('revoked', u'Mitätöity'),
-        ]
-    )
-
+class OneTimeCodeMixin(object):
     @property
     def is_used(self):
         return self.used_at is not None
 
     def __unicode__(self):
         return self.code
-
-    def save(self, *args, **kwargs):
-        if not self.code:
-            from random import choice
-            self.code = "".join(choice(ONE_TIME_CODE_ALPHABET) for _ in range(ONE_TIME_CODE_LENGTH))
-
-        return super(OneTimeCode, self).save(*args, **kwargs)
 
     def revoke(self):
         assert self.state == 'valid'
@@ -746,7 +732,7 @@ class OneTimeCode(models.Model):
         opts = dict(
             subject=subject,
             body=body,
-            to=(self.person.name_and_email,),
+            to=(self.name_and_email,),
         )
 
         opts.update(kwargs)
@@ -769,10 +755,72 @@ class OneTimeCode(models.Model):
         self.state = 'used'
         self.save()
 
+    @classmethod
+    def generate_code(cls):
+        return "".join(choice(ONE_TIME_CODE_ALPHABET) for _ in range(ONE_TIME_CODE_LENGTH))
+
+
+class OneTimeCode(models.Model, OneTimeCodeMixin):
+    code = models.CharField(max_length=63, unique=True)
+    person = models.ForeignKey(Person)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used_at = models.DateTimeField(null=True, blank=True)
+    state = models.CharField(
+        max_length=8,
+        default='valid',
+        choices=ONE_TIME_CODE_STATE_CHOICES,
+    )
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = "".join(choice(ONE_TIME_CODE_ALPHABET) for _ in range(ONE_TIME_CODE_LENGTH))
+
+        return super(OneTimeCode, self).save(*args, **kwargs)
+
+    @property
+    def name_and_email(self):
+        return self.person.name_and_email
+
     class Meta:
         abstract = True
         index_together = [
             ('person', 'state'),
+        ]
+
+
+class OneTimeCodeLite(models.Model, OneTimeCodeMixin):
+    """
+    An OneTimeCode that is not tied to a Person.
+    """
+
+    code = models.CharField(max_length=63, unique=True)
+    email = models.EmailField(
+        blank=True,
+        max_length=EMAIL_LENGTH,
+        verbose_name=_(u'E-mail address'),
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    used_at = models.DateTimeField(null=True, blank=True)
+    state = models.CharField(
+        max_length=8,
+        default='valid',
+        choices=ONE_TIME_CODE_STATE_CHOICES,
+    )
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.generate_code()
+
+        return super(OneTimeCodeLite, self).save(*args, **kwargs)
+
+    @property
+    def name_and_email(self):
+        return self.email
+
+    class Meta:
+        abstract = True
+        index_together = [
+            ('email', 'state'),
         ]
 
 

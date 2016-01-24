@@ -19,7 +19,6 @@ from core.utils import initialize_form, initialize_form_set, url
 from ..models import (
     Category,
     Programme,
-    ProgrammeEditToken,
     ProgrammeRole,
     Role,
     Room,
@@ -27,7 +26,6 @@ from ..models import (
 )
 from ..helpers import programme_admin_required, group_programmes_by_start_time
 from ..forms import ProgrammePublicForm
-from .programme_admin_detail_view import programme_admin_detail_view
 
 
 EXPORT_FORMATS = EXPORT_FORMATS + [

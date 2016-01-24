@@ -26,7 +26,6 @@ from ..models import (
     Category,
     Tag,
     Programme,
-    ProgrammeEditToken,
 )
 from ..helpers import programme_event_required, public_programme_required, group_programmes_by_start_time
 

@@ -26,7 +26,7 @@ msgstr "Yhteystiedot"
 msgid "Create a Kompassi account"
 msgstr "Luo Kompassi-tunnus"
 
-#: forms.py
+#: forms.py models.py
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -120,6 +120,10 @@ msgstr "Omat tiedot"
 msgid "Recruiting volunteers"
 msgstr "Työvoimahaku avoinna"
 
+#: models.py
+msgid "Revoked"
+msgstr ""
+
 #: forms.py
 msgid "Save"
 msgstr "Tallenna"
@@ -193,6 +197,10 @@ msgstr "Lipunmyynti"
 msgid "Upcoming events"
 msgstr "Tulevat tapahtumat"
 
+#: models.py
+msgid "Used"
+msgstr ""
+
 #: forms.py
 msgid "User name"
 msgstr "Käyttäjänimi"
@@ -204,6 +212,10 @@ msgstr "Käyttäjänimi ja salasana"
 #: forms.py
 msgid "User name or e-mail address"
 msgstr "Käyttäjänimi tai sähköpostiosoite"
+
+#: models.py
+msgid "Valid"
+msgstr ""
 
 #: templates/core_event_box.jade
 msgid "Volunteers"

@@ -162,18 +162,6 @@ class Programme(models.Model, CsvExportMixin):
     def is_active(self):
         return self.state not in ['rejected', 'cancelled']
 
-    def send_edit_codes(self, request):
-        for person in self.organizers.all():
-            if not person.email:
-                continue
-
-            code, created = ProgrammeEditToken.objects.get_or_create(
-                person=person,
-                programme=self,
-            )
-
-            code.send(request)
-
     class Meta:
         verbose_name = u'ohjelmanumero'
         verbose_name_plural = u'ohjelmanumerot'
