@@ -13,6 +13,11 @@ class Role(models.Model):
     title = models.CharField(max_length=1023)
     require_contact_info = models.BooleanField(default=True)
     is_default = models.BooleanField(default=False)
+    is_public = models.BooleanField(
+        default=True,
+        verbose_name=_(u'Public'),
+        help_text=_(u'Only hosts who are assigned public roles will be shown publicly in the programme schedule.'),
+    )
 
     def __unicode__(self):
         return self.title

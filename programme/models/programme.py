@@ -137,7 +137,7 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def formatted_hosts(self):
-        return u', '.join(p.display_name for p in self.organizers.all())
+        return u', '.join(p.display_name for p in self.organizers.filter(role__is_public=True))
 
     @property
     def is_blank(self):
