@@ -263,9 +263,8 @@ msgid "Send invitation"
 msgstr "Lähetä kutsu"
 
 #: templates/programme_profile_detail_view.jade
-#, fuzzy
 msgid "Someone has been invited, but they have not yet accepted their invitation."
-msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
+msgstr "Joku on kutsuttu, mutta hän ei ole vielä hyväksynyt kutsuaan."
 
 #: models/programme.py
 msgid "Starting time"
