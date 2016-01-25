@@ -20,3 +20,26 @@ block profile_content
               span {% trans "Save and return to list" %}
         if not programme.host_can_edit
           .text-danger= programme.host_cannot_edit_explanation
+
+  .panel.panel-default
+    .panel-heading: strong {% trans "Programme hosts" %}
+    table.table.table-striped
+      thead
+        th {% trans "Surname" %}
+        th {% trans "First name" %}
+        th {% trans "Nick name" %}
+        th {% trans "Role" %}
+      tbody
+        for programme_role in programme_roles
+          tr
+            td= programme_role.person.surname
+            td= programme_role.person.first_name
+            td= programme_role.person.nick
+            td= programme_role.role
+        for invitation in invitations
+          tr
+            td(colspan="3"): em {% trans "Someone has been invited, but they have not yet accepted their invitation." %}
+            td: em= invitation.role
+    if programme.host_can_edit
+      .panel-footer.clearfix
+        .text-muted {% trans "Hosts can only be invited by the programme manager. If you have agreed with the programme manager to include people who are not listed here, please contact the programme manager. In order to receive speaker benefits, all hosts of the programme must be listed here." %}

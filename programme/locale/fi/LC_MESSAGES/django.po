@@ -78,13 +78,17 @@ msgstr "Loppumisaika"
 msgid "Event"
 msgstr "Tapahtuma"
 
-#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "First name"
 msgstr "Etunimi"
 
 #: templates/programme_admin_detail_views/needs_tab.jade views/programme_admin_detail_view.py
 msgid "Host needs"
 msgstr "Ohjelmanjärjestäjän tarpeet"
+
+#: templates/programme_profile_detail_view.jade
+msgid "Hosts can only be invited by the programme manager. If you have agreed with the programme manager to include people who are not listed here, please contact the programme manager. In order to receive speaker benefits, all hosts of the programme must be listed here."
+msgstr "Vain ohjelmavastaava voi kutsua ohjelmanjärjestäjiä. Mikäli olet sopinut ohjelmavastaavan kanssa useammasta järjestäjästä ohjelmaasi eikä heitä ole listattu tähän, ole hyvä ja ota yhteyttä ohjelmavastaavaan. Saadakseen ohjelmanjärjestäjän edut kaikkien ohjelmanjärjestäjien tulee olla listattu tässä."
 
 #: templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
@@ -158,7 +162,7 @@ msgstr "Nimen esittäminen"
 msgid "New programme"
 msgstr "Uusi ohjelmanumero"
 
-#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "Nick name"
 msgstr "Nick"
 
@@ -186,7 +190,7 @@ msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliis
 msgid "Programme"
 msgstr "Ohjelma"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade views/programme_admin_detail_view.py
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade views/programme_admin_detail_view.py
 msgid "Programme hosts"
 msgstr "Ohjelmanjärjestäjät"
 
@@ -230,7 +234,7 @@ msgstr "Aikatoiveet"
 msgid "Requirements for the room"
 msgstr "Tilatarpeet"
 
-#: models/invitation.py templates/programme_admin_detail_views/hosts_tab.jade
+#: models/invitation.py templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "Role"
 msgstr "Rooli"
 
@@ -258,6 +262,11 @@ msgstr "Ohjelmakarttatiedot"
 msgid "Send invitation"
 msgstr "Lähetä kutsu"
 
+#: templates/programme_profile_detail_view.jade
+#, fuzzy
+msgid "Someone has been invited, but they have not yet accepted their invitation."
+msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
+
 #: models/programme.py
 msgid "Starting time"
 msgstr "Alkamisaika"
@@ -266,7 +275,7 @@ msgstr "Alkamisaika"
 msgid "State"
 msgstr "Tila"
 
-#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "Surname"
 msgstr "Sukunimi"
 

@@ -6,8 +6,9 @@ from django.contrib import messages
 from core.helpers import person_required
 from core.utils import initialize_form
 
-from ..proxies.programme.profile import ProgrammeProfileProxy
 from ..forms import ProgrammeSelfServiceForm
+from ..models import ProgrammeRole, Invitation
+from ..proxies.programme.profile import ProgrammeProfileProxy
 
 
 @person_required
@@ -39,6 +40,8 @@ def programme_profile_detail_view(request, programme_id):
         event=event,
         form=form,
         programme=programme,
+        programme_roles=ProgrammeRole.objects.filter(programme=programme),
+        invitations=Invitation.objects.filter(programme=programme, state='valid'),
     )
 
     return render(request, 'programme_profile_detail_view.jade', vars)
