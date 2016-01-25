@@ -14,6 +14,14 @@ msgstr "Lisää vapaamuotoinen järjestäjä"
 msgid "Add host"
 msgstr "Lisää ohjelmanjärjestäjä"
 
+#: models/programme.py
+msgid "Anything else?"
+msgstr "Vapaamuotoiset terveiset"
+
+#: models/programme.py
+msgid "At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?"
+msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko tiedossasi muita ohjelmanumeroita, joiden kanssa et haluaisi ohjelmasi olevan samaan aikaan?"
+
 #: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Cancel"
 msgstr "Peruuta"
@@ -38,6 +46,10 @@ msgstr "Kuvaus"
 msgid "Discard changes and return to the list"
 msgstr "Hylkää muutokset ja palaa luetteloon"
 
+#: models/programme.py
+msgid "Do you need, for example, any of the following: computer, data projector, voice amplification, music playback capabilities, whiteboard, flipboard, chalkboard? The use of your own computer is only possible if agreed in advance."
+msgstr "Tarvitsetko esimerkiksi jotain seuraavista: tietokone, videotykki, luentoäänentoisto, musiikkiäänentoisto, tussi-, fläppi- tai liitutaulu? Oman tietokoneen käyttö on mahdollista vain etukäteen sovittuna."
+
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
@@ -45,6 +57,10 @@ msgstr "Sähköpostiosoite"
 #: templates/programme_profile_box.jade templates/programme_profile_detail_view.jade
 msgid "Edit programme"
 msgstr "Muokkaa ohjelmanumeroa"
+
+#: models/programme.py
+msgid "Ending time"
+msgstr "Loppumisaika"
 
 #: proxies/invitation/admin.py
 msgid "Event"
@@ -62,13 +78,25 @@ msgstr "Ohjelmanjärjestäjän tarpeet"
 msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
 msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
 
+#: models/programme.py
+msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
+msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+
 #: templates/programme_accept_invitation_view.jade
 msgid "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile."
 msgstr "Jos nimesi näytetään julkisesti tämän ohjelman järjestäjänä, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
 
+#: models/programme.py
+msgid "In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room."
+msgstr "Jotta ohjelmanumero näkyisi ohjelmakartassa, sillä tulee olla alkuaika sekä pituus ja sen tulee olla sijoitettu johonkin saliin."
+
 #: templates/programme_admin_detail_views/internal_tab.jade views/programme_admin_detail_view.py
 msgid "Internal information"
 msgstr "Sisäiset tiedot"
+
+#: models/programme.py
+msgid "Internal notes"
+msgstr "Sisäiset muistiinpanot"
 
 #: views/programme_admin_detail_view.py
 msgid "Invalid action."
@@ -83,8 +111,16 @@ msgid "Invite host"
 msgstr "Kutsu ohjelmanjärjestäjä"
 
 #: models/programme.py
+msgid "Length (minutes)"
+msgstr "Pituus (minuuttia)"
+
+#: models/programme.py
 msgid "Make up a concise title for your programme. We reserve the right to edit the title."
 msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
+
+#: models/programme.py
+msgid "May your programme be recorded and published in the Internet?"
+msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Name as displayed"
@@ -142,9 +178,25 @@ msgstr "Julkiset tiedot"
 msgid "Published programmes"
 msgstr "Julkaistut ohjelmanumerot"
 
+#: models/programme.py
+msgid "Recording permission"
+msgstr "Videointilupa"
+
+#: models/programme.py
+msgid "Requested time slot"
+msgstr "Aikatoiveet"
+
+#: models/programme.py
+msgid "Requirements for the room"
+msgstr "Tilatarpeet"
+
 #: models/invitation.py templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Role"
 msgstr "Rooli"
+
+#: models/programme.py
+msgid "Room"
+msgstr "Sali"
 
 #: templates/programme_admin_create_view.jade
 msgid "Save and continue"
@@ -166,9 +218,21 @@ msgstr "Ohjelmakarttatiedot"
 msgid "Send invitation"
 msgstr "Lähetä kutsu"
 
+#: models/programme.py
+msgid "State"
+msgstr "Tila"
+
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Surname"
 msgstr "Sukunimi"
+
+#: models/programme.py
+msgid "Tags"
+msgstr "tägit"
+
+#: models/programme.py
+msgid "Tech requirements"
+msgstr "Tekniikkatarpeet"
 
 #: views/programme_accept_invitation_view.py
 msgid "Thank you for accepting the invitation. You can change the information later from your profile."
@@ -203,8 +267,16 @@ msgid "The programme was created."
 msgstr "Ohjelmanumero luotiin."
 
 #: models/programme.py
+msgid "The programmes in the state \"Published\" will be visible to the general public, if the schedule has already been published."
+msgstr "Tilassa ”Julkaistu” olevat ohjelmanumerot näkyvät yleisölle, mikäli ohjelmakartta on julkaistu."
+
+#: models/programme.py
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
 msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta."
+
+#: models/programme.py
+msgid "This field is normally only visible to the programme managers. However, should the programme host request a record of their own personal details, this field will be included in that record."
+msgstr "Tämän kentän sisältö näkyy normaalisti vain ohjelmavastaaville. Se on kuitenkin sisällytettävä rekisteriotteeseen, mikäli ohjelmanjärjestäjä pyytää sellaista."
 
 #: templates/programme_cannot_edit_explanation.jade
 msgid "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager."
@@ -253,6 +325,14 @@ msgstr "kutsu"
 #: models/invitation.py proxies/invitation/admin.py
 msgid "invitations"
 msgstr "kutsut"
+
+#: models/programme.py
+msgid "programme"
+msgstr "Ohjelmanumero"
+
+#: models/programme.py
+msgid "programmes"
+msgstr "Ohjelmanumerot"
 
 #: models/role.py
 msgid "role"

@@ -73,60 +73,60 @@ class Programme(models.Model, CsvExportMixin):
     )
     room_requirements = models.TextField(
         blank=True,
-        verbose_name=u'Tilatarpeet',
-        help_text=u'Kuinka paljon odotat ohjelmanumerosi vetävän yleisöä? Minkälaista salia toivot ohjelmanumerosi käyttöön?',
+        verbose_name=_(u'Requirements for the room'),
+        help_text=u'How large an audience do you expect for your programme? What kind of a room do you wish for your programme?',
     )
     tech_requirements = models.TextField(
         blank=True,
-        verbose_name=u'Tekniikkatarpeet',
-        help_text=u'Tarvitsetko ohjelmasi pitämiseen esimerkiksi tietokonetta, videotykkiä, luentoäänentoistoa, musiikkiäänentoistoa, tussi-, fläppi- tai liitutaulua tai muita erityisvälineitä? Oman tietokoneen käyttö on mahdollista vain, jos siitä on sovittu etukäteen.',
+        verbose_name=_(u'Tech requirements'),
+        help_text=_(u'Do you need, for example, any of the following: computer, data projector, voice amplification, music playback capabilities, whiteboard, flipboard, chalkboard? The use of your own computer is only possible if agreed in advance.')
     )
     requested_time_slot = models.TextField(
         blank=True,
-        verbose_name=u'Aikatoiveet',
-        help_text=u'Mihin aikaan haluaisit pitää ohjelmanumerosi? Minkä ohjelmanumeroiden kanssa et halua olla päällekäin?'
+        verbose_name=_(u'Requested time slot'),
+        help_text=_(u'At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?'),
     )
     video_permission = models.CharField(
         max_length=15,
         choices=RECORDING_PERMISSION_CHOICES,
         default=RECORDING_PERMISSION_CHOICES[0][0],
-        verbose_name=u'Videointilupa',
-        help_text=u'Saako luentosi videoida ja julkaista Internetissä?',
+        verbose_name=_(u'Recording permission'),
+        help_text=_(u'May your programme be recorded and published in the Internet?'),
     )
     notes_from_host = models.TextField(
         blank=True,
-        verbose_name=u'Vapaamuotoiset terveiset ohjelmavastaaville',
-        help_text=u'Jos haluat sanoa ohjelmanumeroosi liittyen jotain, mikä ei sovi mihinkään yllä olevista kentistä, käytä tätä kenttää.',
+        verbose_name=_(u'Anything else?'),
+        help_text=_(u'If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here.'),
     )
 
     state = models.CharField(
         max_length=15,
         choices=STATE_CHOICES,
         default='accepted',
-        verbose_name=u'Ohjelmanumeron tila',
-        help_text=u'Tilassa "Julkaistu" olevat ohjelmat näkyvät ohjelmakartassa, jos ohjelmakartta on julkinen.',
+        verbose_name=_(u'State'),
+        help_text=_(u'The programmes in the state "Published" will be visible to the general public, if the schedule has already been published.'),
     )
+
     start_time = models.DateTimeField(blank=True, null=True, verbose_name=START_TIME_LABEL)
 
     # denormalized
-    end_time = models.DateTimeField(blank=True, null=True, verbose_name=u'Päättymisaika')
+    end_time = models.DateTimeField(blank=True, null=True, verbose_name=_(u'Ending time'))
 
     length = models.IntegerField(
         blank=True,
         null=True,
-        verbose_name=u'Kesto (minuuttia)',
-        help_text=u'Ohjelmalla tulee olla tila, alkuaika ja kesto, jotta se näkyisi ohjelmakartassa.'
+        verbose_name=_(u'Length (minutes)'),
+        help_text=_(u'In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room.'),
     )
 
     notes = models.TextField(
         blank=True,
-        verbose_name=u'Ohjelmavastaavan muistiinpanot',
-        help_text=u'Tämä kenttä ei normaalisti näy ohjelman järjestäjälle, mutta jos henkilö '
-            u'pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.'
+        verbose_name=_(u'Internal notes'),
+        help_text=_(u'This field is normally only visible to the programme managers. However, should the programme host request a record of their own personal details, this field will be included in that record.'),
     )
-    room = models.ForeignKey('programme.Room', blank=True, null=True, verbose_name=u'Tila')
+    room = models.ForeignKey('programme.Room', blank=True, null=True, verbose_name=_(u'Room'))
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
-    tags = models.ManyToManyField('programme.Tag', blank=True, verbose_name=u'Tägit')
+    tags = models.ManyToManyField('programme.Tag', blank=True, verbose_name=_(u'Tags'))
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_(u'Created at'))
     updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name=_(u'Updated at'))
@@ -254,6 +254,6 @@ class Programme(models.Model, CsvExportMixin):
         return super(Programme, self).save(*args, **kwargs)
 
     class Meta:
-        verbose_name = u'ohjelmanumero'
-        verbose_name_plural = u'ohjelmanumerot'
+        verbose_name = _(u'programme')
+        verbose_name_plural = _(u'programmes')
         ordering = ['start_time', 'room']
