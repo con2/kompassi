@@ -1,4 +1,5 @@
 from pkg_resources import resource_string
+import logging
 
 from core.utils import (
     get_postgresql_version_num,
@@ -9,6 +10,7 @@ from ...models import Programme
 
 
 HAVE_POSTGRESQL_TIME_RANGE_FUNCTIONS = get_postgresql_version_num() >= 90200
+logger = logging.getLogger('kompassi')
 
 
 class ProgrammeManagementProxy(Programme):
