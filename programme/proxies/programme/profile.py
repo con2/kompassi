@@ -35,5 +35,19 @@ class ProgrammeProfileProxy(Programme):
     def host_can_edit(self):
         return self.state in PROGRAMME_STATES_HOST_CAN_EDIT
 
+    @property
+    def host_cannot_edit_explanation(self):
+        assert not self.host_can_edit
+
+        if self.state == 'published':
+            return _(u'This programme has been published. You can no longer edit it yourself. '
+                'If you need edits to be made, please contact the programme manager.')
+        elif self.state == 'cancelled':
+            return _(u'You have cancelled this programme.')
+        elif self.state == 'rejected':
+            return _(u'This programme has been rejected by the programme manager.')
+        else:
+            raise NotImplementedError(self.state)
+
     class Meta:
         proxy = True

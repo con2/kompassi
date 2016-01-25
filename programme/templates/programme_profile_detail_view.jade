@@ -19,5 +19,4 @@ block profile_content
               i.fa.fa-check.kompassi-icon-space-right
               span {% trans "Save and return to list" %}
         if not programme.host_can_edit
-          .text-danger
-            include programme_cannot_edit_explanation.jade
+          .text-danger= programme.host_cannot_edit_explanation

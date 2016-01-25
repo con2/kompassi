@@ -1,7 +1,0 @@
-- load trans from i18n
-if programme.is_published
-  | {% trans "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager." %}
-if programme.is_cancelled
-  | {% trans "You have cancelled this programme." %}
-if programme.is_rejected
-  | {% trans "This programme has been rejected by the programme manager." %}
