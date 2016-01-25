@@ -38,6 +38,10 @@ msgstr "Hylkää muutokset ja palaa luetteloon"
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
+#: templates/programme_profile_view.jade
+msgid "Edit programme"
+msgstr "Muokkaa ohjelmanumeroa"
+
 #: proxies/invitation/admin.py
 msgid "Event"
 msgstr "Tapahtuma"
@@ -114,6 +118,10 @@ msgstr "Ohjelmanjärjestäjät"
 msgid "Programme information"
 msgstr "Ohjelmanumeron tiedot"
 
+#: templates/programme_profile_view.jade views/public_views.py
+msgid "Programmes"
+msgstr "Ohjelmanumerot"
+
 #: templates/programme_admin_detail_views/public_tab.jade views/programme_admin_detail_view.py
 msgid "Public information"
 msgstr "Julkiset tiedot"
@@ -182,6 +190,14 @@ msgstr "Ohjelmanumero luotiin."
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
 msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta."
 
+#: templates/programme_profile_view.jade
+msgid "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager."
+msgstr ""
+
+#: templates/programme_profile_view.jade
+msgid "This programme has been rejected by the programme manager."
+msgstr ""
+
 #: models/programme.py proxies/invitation/admin.py
 msgid "Title"
 msgstr "Otsikko"
@@ -197,6 +213,10 @@ msgstr "Päivitysaika"
 #: templates/programme_accept_invitation_view.jade
 msgid "You can change these details later by visiting your profile."
 msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
+
+#: templates/programme_profile_view.jade
+msgid "You have cancelled this programme."
+msgstr ""
 
 #: models/category.py
 msgid "categories"

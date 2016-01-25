@@ -13,6 +13,7 @@ from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.http import require_http_methods, require_safe
 
@@ -198,7 +199,13 @@ def programme_json_view(request, event, format='default'):
 
 
 def programme_profile_menu_items(request):
-    return []
+    programme_url = url('programme_profile_view')
+    programme_active = request.path.startswith(programme_url)
+    programme_text = _(u'Programmes')
+
+    return [
+        (programme_active, programme_url, programme_text)
+    ]
 
 
 def programme_event_box_context(request, event):

@@ -158,6 +158,18 @@ class Programme(models.Model, CsvExportMixin):
     def is_active(self):
         return self.state not in ['rejected', 'cancelled']
 
+    @property
+    def is_rejected(self):
+        return self.state == 'rejected'
+
+    @property
+    def is_cancelled(self):
+        return self.state == 'cancelled'
+
+    @property
+    def is_published(self):
+        return self.state == 'published'
+
     @classmethod
     def get_or_create_dummy(cls, title=u'Dummy program'):
         from .category import Category

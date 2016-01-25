@@ -21,3 +21,5 @@ from .admin_views import (
 
 from .programme_accept_invitation_view import programme_accept_invitation_view
 from .programme_admin_detail_view import programme_admin_detail_view
+from .programme_profile_detail_view import programme_profile_detail_view
+from .programme_profile_view import programme_profile_view
