@@ -4,6 +4,7 @@ from django.contrib import admin
 
 from .models import (
     Category,
+    FreeformOrganizer,
     Programme,
     ProgrammeEventMeta,
     Role,
@@ -13,8 +14,8 @@ from .models import (
     TimeBlock,
     View,
 )
+from .proxies.freeform_organizer.admin import FreeformOrganizerAdminProxy
 from .proxies.invitation.admin import InvitationAdminProxy
-
 
 class InlineProgrammeEventMetaAdmin(admin.StackedInline):
     model = ProgrammeEventMeta
@@ -75,6 +76,13 @@ class InvitationAdmin(admin.ModelAdmin):
     list_display = ('admin_get_event', 'admin_get_title', 'email', 'state', 'created_by')
     list_filter = ('programme__category__event', 'state')
     ordering = ('programme__category__event', 'programme__title', 'email')
+    raw_id_fields = ('programme',)
+
+
+class FreeformOrganizerAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_event', 'admin_get_title', 'text')
+    list_filter = ('programme__category__event',)
+    raw_id_fields = ('programme',)
 
 
 admin.site.register(Category, CategoryAdmin)
@@ -86,3 +94,4 @@ admin.site.register(View, ViewAdmin)
 admin.site.register(TimeBlock, TimeBlockAdmin)
 admin.site.register(SpecialStartTime, SpecialStartTimeAdmin)
 admin.site.register(InvitationAdminProxy, InvitationAdmin)
+admin.site.register(FreeformOrganizerAdminProxy, FreeformOrganizerAdmin)

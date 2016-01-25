@@ -40,6 +40,10 @@ block profile_content
           tr
             td(colspan="3"): em {% trans "Someone has been invited, but they have not yet accepted their invitation." %}
             td: em= invitation.role
+        for freeform_organizer in freeform_organizers
+          tr
+            td(colspan="3")= freeform_organizer.text
+            td: {% trans "Free-form organizer" %}
     if programme.host_can_edit
       .panel-footer.clearfix
         .text-muted {% trans "Hosts can only be invited by the programme manager. If you have agreed with the programme manager to include people who are not listed here, please contact the programme manager. In order to receive speaker benefits, all hosts of the programme must be listed here." %}

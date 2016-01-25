@@ -10,13 +10,9 @@ msgstr "Hyväksy kutsu"
 msgid "Accepted"
 msgstr "Hyväksytty"
 
-#: templates/programme_admin_detail_views/freeform_host_modal.jade
-msgid "Add free-form host"
-msgstr "Lisää vapaamuotoinen järjestäjä"
-
-#: templates/programme_admin_detail_views/freeform_host_modal.jade
-msgid "Add host"
-msgstr "Lisää ohjelmanjärjestäjä"
+#: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Add free-form organizer"
+msgstr "Lisää vapaamuotoinen ohjelmanjärjestäjä"
 
 #: models/programme.py
 msgid "Anything else?"
@@ -33,6 +29,10 @@ msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko
 #: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Cancel"
 msgstr "Peruuta"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Cancel invitation"
+msgstr "Peruuta kutsu"
 
 #: models/programme.py
 msgid "Cancelled"
@@ -74,13 +74,17 @@ msgstr "Muokkaa ohjelmanumeroa"
 msgid "Ending time"
 msgstr "Loppumisaika"
 
-#: proxies/invitation/admin.py
+#: proxies/helpers.py
 msgid "Event"
 msgstr "Tapahtuma"
 
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "First name"
 msgstr "Etunimi"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Free-form organizer"
+msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 
 #: templates/programme_admin_detail_views/needs_tab.jade views/programme_admin_detail_view.py
 msgid "Host needs"
@@ -190,7 +194,7 @@ msgstr "Ole hyvä ja tarkista lomake."
 msgid "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number."
 msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman ohjelmavastaaville. Mikäli ohjelmanumerollasi on muitakin järjestäjiä, he näkevät nimesi mutteivät sähköpostiosoitettasi tai puhelinnumeroasi."
 
-#: models/invitation.py
+#: models/freeform_organizer.py models/invitation.py
 msgid "Programme"
 msgstr "Ohjelma"
 
@@ -233,6 +237,14 @@ msgstr "Videointilupa"
 #: models/programme.py
 msgid "Rejected"
 msgstr "Hylätty"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Remove free-form host"
+msgstr "Poista vapaamuotoinen ohjelmanjärjestäjä"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Remove host"
+msgstr "Poista ohjelmanjärjestäjä"
 
 #: models/programme.py
 msgid "Requested time slot"
@@ -294,6 +306,10 @@ msgstr "tägit"
 msgid "Tech requirements"
 msgstr "Tekniikkatarpeet"
 
+#: models/freeform_organizer.py
+msgid "Text"
+msgstr "Teksti"
+
 #: views/programme_accept_invitation_view.py
 msgid "Thank you for accepting the invitation. You can change the information later from your profile."
 msgstr "Kiitos kutsun hyväksymisestä. Voit muuttaa tietoja myöhemmin profiilisi kautta."
@@ -301,6 +317,10 @@ msgstr "Kiitos kutsun hyväksymisestä. Voit muuttaa tietoja myöhemmin profiili
 #: views/programme_admin_detail_view.py
 msgid "The changes were saved."
 msgstr "Muutokset tallennettiin."
+
+#: views/programme_admin_detail_view.py
+msgid "The freeform organizer was successfully added."
+msgstr "Vapaamuotoinen ohjelmanjärjestäjä lisätty."
 
 #: views/programme_admin_detail_view.py
 msgid "The host was removed."
@@ -346,7 +366,11 @@ msgstr "Ohjelmanumero on julkaistu, joten et voi enää muokata sitä itse. Jos 
 msgid "This programme has been rejected by the programme manager."
 msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
 
-#: models/programme.py proxies/invitation/admin.py
+#: models/freeform_organizer.py
+msgid "This text will be shown as-is in the schedule"
+msgstr "Tämä teksti näytetään ohjelmakartassa sellaisenaan."
+
+#: models/programme.py proxies/helpers.py
 msgid "Title"
 msgstr "Otsikko"
 
@@ -377,6 +401,14 @@ msgstr "ohjelmaluokat"
 #: models/category.py models/programme.py
 msgid "category"
 msgstr "ohjelmaluokka"
+
+#: models/freeform_organizer.py proxies/freeform_organizer/admin.py
+msgid "freeform organizer"
+msgstr "vapaamuotoinen ohjelmanjärjestäjä"
+
+#: models/freeform_organizer.py proxies/freeform_organizer/admin.py
+msgid "freeform organizers"
+msgstr "vapaamuotoiset ohjelmanjärjestäjät"
 
 #: models/invitation.py proxies/invitation/admin.py
 msgid "invitation"

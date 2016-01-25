@@ -9,6 +9,7 @@ from core.utils import initialize_form
 from core.tabs import Tab
 
 from ..forms import (
+    FreeformOrganizerForm,
     InvitationForm,
     ProgrammeInternalForm,
     ProgrammeNeedsForm,
@@ -17,6 +18,7 @@ from ..forms import (
 )
 from ..helpers import programme_admin_required
 from ..models import (
+    FreeformOrganizer,
     Invitation,
     ProgrammeRole,
 )
@@ -35,6 +37,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     forms = [public_form, needs_form, schedule_form, internal_form]
 
     invitation_form = initialize_form(InvitationForm, request, prefix='invitation')
+    freeform_organizer_form = initialize_form(FreeformOrganizerForm, request, prefix='freeform')
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -70,7 +73,23 @@ def programme_admin_detail_view(request, vars, event, programme_id):
             else:
                 messages.error(request, _(u'Please check the form.'))
 
-        elif action.startswith('remove-host:') or action.startswith('cancel-invitation:'):
+        elif action == 'add-freeform-host':
+            if freeform_organizer_form.is_valid():
+                freeform_organizer_form = freeform_organizer_form.save(commit=False)
+                freeform_organizer_form.programme = programme
+                freeform_organizer_form.save()
+
+                messages.success(request, _(u'The freeform organizer was successfully added.'))
+
+                return redirect('programme_admin_detail_view', event.slug, programme_id)
+            else:
+                messages.error(request, _(u'Please check the form.'))
+
+        elif (
+            action.startswith('remove-host:') or
+            action.startswith('remove-freeform-host:') or
+            action.startswith('cancel-invitation:')
+        ):
             action, id_str = action.split(':', 1)
 
             try:
@@ -89,6 +108,11 @@ def programme_admin_detail_view(request, vars, event, programme_id):
                     invitation.save()
 
                     messages.success(request, _(u'The invitation was cancelled.'))
+                elif action == 'remove-freeform-host':
+                    freeform_organizer = get_object_or_404(FreeformOrganizer, id=id_int, programme=programme)
+                    freeform_organizer.delete()
+
+                    messages.success(request, _(u'The host was removed.'))
                 else:
                     raise NotImplementedError(action)
 
@@ -107,10 +131,12 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     previous_programme, next_programme = programme.get_previous_and_next_programme()
 
     vars.update(
+        freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
+        freeform_organizer_form=freeform_organizer_form,
         internal_form=internal_form,
-        needs_form=needs_form,
         invitation_form=invitation_form,
         invitations=programme.invitation_set.filter(state='valid'),
+        needs_form=needs_form,
         next_programme=next_programme,
         overlapping_programmes=programme.get_overlapping_programmes(),
         previous_programme=previous_programme,

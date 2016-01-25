@@ -5,6 +5,7 @@ from .category import Category
 from .room import Room
 from .role import Role
 from .programme_role import ProgrammeRole
+from .freeform_organizer import FreeformOrganizer
 from .invitation import Invitation
 from .tag import Tag
 from .programme import Programme, STATE_CHOICES, START_TIME_LABEL
