@@ -1,4 +1,4 @@
-#: templates/programme_admin_detail_views/buttons.jade
+#: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
 msgid "Abandon changes and return to list"
 msgstr "Hylkää muutokset ja palaa luetteloon"
 
@@ -17,6 +17,10 @@ msgstr "Lisää ohjelmanjärjestäjä"
 #: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Cancel"
 msgstr "Peruuta"
+
+#: templates/programme_profile_view.jade
+msgid "Cancelled and rejected programmes"
+msgstr "Peruutetut ja hylätyt ohjelmanumerot"
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Contact information"
@@ -38,7 +42,7 @@ msgstr "Hylkää muutokset ja palaa luetteloon"
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
-#: templates/programme_profile_view.jade
+#: templates/programme_profile_box.jade templates/programme_profile_detail_view.jade
 msgid "Edit programme"
 msgstr "Muokkaa ohjelmanumeroa"
 
@@ -94,6 +98,10 @@ msgstr "Uusi ohjelmanumero"
 msgid "Nick name"
 msgstr "Nick"
 
+#: templates/programme_profile_view.jade
+msgid "No programmes"
+msgstr "Ei ohjelmanumeroita"
+
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Phone number"
 msgstr "Puhelinnumero"
@@ -122,9 +130,17 @@ msgstr "Ohjelmanumeron tiedot"
 msgid "Programmes"
 msgstr "Ohjelmanumerot"
 
+#: templates/programme_profile_view.jade
+msgid "Programmes you can edit"
+msgstr "Ohjelmanumerot, joita voit muokata"
+
 #: templates/programme_admin_detail_views/public_tab.jade views/programme_admin_detail_view.py
 msgid "Public information"
 msgstr "Julkiset tiedot"
+
+#: templates/programme_profile_view.jade
+msgid "Published programmes"
+msgstr "Julkaistut ohjelmanumerot"
 
 #: models/invitation.py templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Role"
@@ -138,7 +154,7 @@ msgstr "Tallenna ja jatka"
 msgid "Save and continue editing"
 msgstr "Tallenna ja jatka"
 
-#: templates/programme_admin_detail_views/buttons.jade
+#: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
 msgid "Save and return to list"
 msgstr "Tallenna ja palaa luetteloon"
 
@@ -190,13 +206,13 @@ msgstr "Ohjelmanumero luotiin."
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
 msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta."
 
-#: templates/programme_profile_view.jade
+#: templates/programme_cannot_edit_explanation.jade
 msgid "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager."
-msgstr ""
+msgstr "Ohjelmanumero on julkaistu, joten et voi enää muokata sitä itse. Jos tarvitset ohjelmanumeron tietoihin muutoksia, ole hyvä ja ota yhteyttä ohjelmavastaavaan."
 
-#: templates/programme_profile_view.jade
+#: templates/programme_cannot_edit_explanation.jade
 msgid "This programme has been rejected by the programme manager."
-msgstr ""
+msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
 
 #: models/programme.py proxies/invitation/admin.py
 msgid "Title"
@@ -214,9 +230,13 @@ msgstr "Päivitysaika"
 msgid "You can change these details later by visiting your profile."
 msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
 
-#: templates/programme_profile_view.jade
+#: templates/programme_cannot_edit_explanation.jade
 msgid "You have cancelled this programme."
-msgstr ""
+msgstr "Olet peruuttanut tämän ohjelmanumeron."
+
+#: templates/programme_profile_view.jade
+msgid "You have not organized any programme in events that use this site."
+msgstr "Et ole järjestänyt ohjelmaa tapahtumissa, jotka käyttävät tätä sivustoa."
 
 #: models/category.py
 msgid "categories"

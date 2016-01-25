@@ -3,27 +3,18 @@ extends core_profile_base
 block title
   | {% trans "Programmes" %}
 block profile_content
-  h3 {% trans "Programmes" %}
-  if programmes.exists
-    for programme in programmes
-      .panel.panel-default
-        .panel-heading
-          .pull-right
-            .label(class='{{ programme.state_css }}')= programme.get_state_display
-          strong.kompassi-space-after= programme.category.event.name
-          small.text-muted= programme.category.event.headline
-        .panel-body
-          include programme_info_fragment.jade
-        if programme.host_can_edit
-          .panel-footer.clearfix
-            .btn-group.pull-right
-              a.btn.btn-primary(href='{% url "programme_profile_detail_view" programme.id %}')
-                i.fa.fa-pencil-square-o
-                | {% trans "Edit programme" %}
-        else
-          if programme.is_published
-            .text-muted {% trans "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager." %}
-          if programme.is_cancelled
-            .text-muted {% trans "You have cancelled this programme." %}
-          if programme.is_rejected
-            .text-muted {% trans "This programme has been rejected by the programme manager." %}
+  if editable_programmes.exists
+    h3 {% trans "Programmes you can edit" %}
+    for programme in editable_programmes
+      include programme_profile_box.jade
+  if published_programmes.exists
+    h3 {% trans "Published programmes" %}
+    for programme in published_programmes
+      include programme_profile_box.jade
+  if rejected_programmes.exists
+    h3 {% trans "Cancelled and rejected programmes" %}
+    for programme in rejected_programmes
+      include programme_profile_box.jade
+  if no_programmes
+    h3 {% trans "No programmes" %}
+    p {% trans "You have not organized any programme in events that use this site." %}

@@ -1,0 +1,23 @@
+extends core_profile_base
+- load trans from i18n
+- load crispy from crispy_forms_tags
+block title
+  {% trans "Edit programme" %}
+block profile_content
+  form(method='POST').form-horizontal
+    .panel.panel-default
+      .panel-heading: strong {% trans "Edit programme" %}
+      .panel-body
+        - crispy form
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-default(href='{% url "programme_profile_view" %}')
+            i.fa.fa-undo.kompassi-icon-space-right
+            span {% trans "Abandon changes and return to list" %}
+          if programme.host_can_edit
+            button.btn.btn-success(type='submit')
+              i.fa.fa-check.kompassi-icon-space-right
+              span {% trans "Save and return to list" %}
+        if not programme.host_can_edit
+          .text-danger
+            include programme_cannot_edit_explanation.jade
