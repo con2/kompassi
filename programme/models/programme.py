@@ -30,21 +30,21 @@ from ..utils import window, next_full_hour
 
 
 RECORDING_PERMISSION_CHOICES = [
-    (u'public', u'Ohjelmanumeroni saa videoida ja julkaista'),
-    (u'private', u'Kiellän ohjelmanumeroni julkaisun, mutta sen saa videoida arkistokäyttöön'),
-    (u'forbidden', u'Kiellän ohjelmanumeroni videoinnin'),
+    (u'public', _(u'My programme may be recorded and published')),
+    (u'private', _(u'I forbid publishing my programme, but it may be recorded for archiving purposes')),
+    (u'forbidden', _(u'I forbid recording my programme altogether')),
 ]
-START_TIME_LABEL = u'Alkuaika'
+START_TIME_LABEL = _(u'Starting time')
 
 STATE_CHOICES = [
-    (u'idea', u'Ideoitu sisäisesti'),
-    (u'asked', u'Kysytty ohjelmanjärjestäjältä'),
-    (u'offered', u'Ohjelmatarjous vastaanotettu'),
-    (u'accepted', u'Hyväksytty'),
-    (u'published', u'Julkaistu'),
+    (u'idea', _(u'Internal programme idea')),
+    (u'asked', _(u'Asked from the host')),
+    (u'offered', _(u'Offer received')),
+    (u'accepted', _(u'Accepted')),
+    (u'published', _(u'Published')),
 
-    (u'cancelled', u'Peruutettu'),
-    (u'rejected', u'Hylätty'),
+    (u'cancelled', _(u'Cancelled')),
+    (u'rejected', _(u'Rejected')),
 ]
 
 STATE_CSS = dict(

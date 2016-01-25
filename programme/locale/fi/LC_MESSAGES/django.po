@@ -6,6 +6,10 @@ msgstr "Hylkää muutokset ja palaa luetteloon"
 msgid "Accept invitation"
 msgstr "Hyväksy kutsu"
 
+#: models/programme.py
+msgid "Accepted"
+msgstr "Hyväksytty"
+
 #: templates/programme_admin_detail_views/freeform_host_modal.jade
 msgid "Add free-form host"
 msgstr "Lisää vapaamuotoinen järjestäjä"
@@ -19,12 +23,20 @@ msgid "Anything else?"
 msgstr "Vapaamuotoiset terveiset"
 
 #: models/programme.py
+msgid "Asked from the host"
+msgstr "Kysytty ohjelmanjärjestäjältä"
+
+#: models/programme.py
 msgid "At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?"
 msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko tiedossasi muita ohjelmanumeroita, joiden kanssa et haluaisi ohjelmasi olevan samaan aikaan?"
 
 #: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Cancel"
 msgstr "Peruuta"
+
+#: models/programme.py
+msgid "Cancelled"
+msgstr "Peruutettu"
 
 #: templates/programme_profile_view.jade
 msgid "Cancelled and rejected programmes"
@@ -79,6 +91,14 @@ msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
 msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
 
 #: models/programme.py
+msgid "I forbid publishing my programme, but it may be recorded for archiving purposes"
+msgstr "Kiellän ohjelmani julkaisemisen, mutta sen saa videoida arkistokäyttöön"
+
+#: models/programme.py
+msgid "I forbid recording my programme altogether"
+msgstr "Kiellän ohjelmani videoinnin kokonaan"
+
+#: models/programme.py
 msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
 msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
 
@@ -97,6 +117,10 @@ msgstr "Sisäiset tiedot"
 #: models/programme.py
 msgid "Internal notes"
 msgstr "Sisäiset muistiinpanot"
+
+#: models/programme.py
+msgid "Internal programme idea"
+msgstr "Ideoitu sisäisesti"
 
 #: views/programme_admin_detail_view.py
 msgid "Invalid action."
@@ -122,6 +146,10 @@ msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata ot
 msgid "May your programme be recorded and published in the Internet?"
 msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
 
+#: models/programme.py
+msgid "My programme may be recorded and published"
+msgstr "Ohjelmanumeroni saa videoida ja julkaista"
+
 #: templates/programme_accept_invitation_view.jade
 msgid "Name as displayed"
 msgstr "Nimen esittäminen"
@@ -137,6 +165,10 @@ msgstr "Nick"
 #: templates/programme_profile_view.jade
 msgid "No programmes"
 msgstr "Ei ohjelmanumeroita"
+
+#: models/programme.py
+msgid "Offer received"
+msgstr "Ohjelmatarjous vastaanotettu"
 
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Phone number"
@@ -174,6 +206,10 @@ msgstr "Ohjelmanumerot, joita voit muokata"
 msgid "Public information"
 msgstr "Julkiset tiedot"
 
+#: models/programme.py
+msgid "Published"
+msgstr "Julkaistu"
+
 #: templates/programme_profile_view.jade
 msgid "Published programmes"
 msgstr "Julkaistut ohjelmanumerot"
@@ -181,6 +217,10 @@ msgstr "Julkaistut ohjelmanumerot"
 #: models/programme.py
 msgid "Recording permission"
 msgstr "Videointilupa"
+
+#: models/programme.py
+msgid "Rejected"
+msgstr "Hylätty"
 
 #: models/programme.py
 msgid "Requested time slot"
@@ -217,6 +257,10 @@ msgstr "Ohjelmakarttatiedot"
 #: templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Send invitation"
 msgstr "Lähetä kutsu"
+
+#: models/programme.py
+msgid "Starting time"
+msgstr "Alkamisaika"
 
 #: models/programme.py
 msgid "State"
