@@ -353,6 +353,7 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
 
 @labour_admin_required
 def labour_admin_shirts_view(request, vars, event):
+    # TODO half assumes and half doesn't that the shirt size field is named "shirt_size"
     meta = event.labour_event_meta
     SignupExtra = meta.signup_extra_model
     shirt_size_field = SignupExtra.get_shirt_size_field()
@@ -394,7 +395,7 @@ def labour_admin_shirts_view(request, vars, event):
     shirt_type_totals = [shirt_type_totals[shirt_type_slug] for (shirt_type_slug, shirt_type_name) in shirt_types]
 
     num_shirts = sum(shirt_type_totals)
-    assert SignupExtra.objects.filter(**base_criteria).count() == num_shirts, "Lost some shirts"
+    assert SignupExtra.objects.filter(shirt_size__isnull=False, **base_criteria).count() == num_shirts, "Lost some shirts"
 
     vars.update(
         num_shirts=num_shirts,
