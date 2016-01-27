@@ -322,7 +322,7 @@ if 'lippukala' in INSTALLED_APPS:
 
     # NOTE these will be overridden by the respective fields in TicketsEventMeta
     # however, they need to be defined in settings or lippukala will barf.
-    LIPPUKALA_PRINT_LOGO_PATH = mkpath('events', 'popcult2015', 'static', 'images', 'popcult.png')
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath('events', 'popcult2016', 'static', 'images', 'popcult.png')
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 
