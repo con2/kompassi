@@ -11,21 +11,22 @@ from core.utils import validate_slug
 SHIRT_SIZES = [
     (u'NO_SHIRT', u'Ei paitaa'),
 
-    (u'XS', u'XS Unisex'),
-    (u'S', u'S Unisex'),
-    (u'M', u'M Unisex'),
-    (u'L', u'L Unisex'),
-    (u'XL', u'XL Unisex'),
-    (u'XXL', u'XXL Unisex'),
-    (u'3XL', u'3XL Unisex'),
-    (u'4XL', u'4XL Unisex'),
-    (u'5XL', u'5XL Unisex'),
+    (u'XS', u'XS'),
+    (u'S', u'S'),
+    (u'M', u'M'),
+    (u'L', u'L'),
+    (u'XL', u'XL'),
+    (u'XXL', u'XXL'),
 
-    (u'LF_XS', u'XS Ladyfit'),
-    (u'LF_S', u'S Ladyfit'),
-    (u'LF_M', u'M Ladyfit'),
-    (u'LF_L', u'L Ladyfit'),
-    (u'LF_XL', u'XL Ladyfit'),
+    # (u'3XL', u'3XL'),
+    # (u'4XL', u'4XL'),
+    # (u'5XL', u'5XL'),
+
+    # (u'LF_XS', u'XS Ladyfit'),
+    # (u'LF_S', u'S Ladyfit'),
+    # (u'LF_M', u'M Ladyfit'),
+    # (u'LF_L', u'L Ladyfit'),
+    # (u'LF_XL', u'XL Ladyfit'),
 ]
 
 
@@ -37,6 +38,10 @@ class SimpleChoice(models.Model):
 
     class Meta:
         abstract = True
+
+
+class Night(SimpleChoice):
+    pass
 
 
 class SpecialDiet(SimpleChoice):
@@ -66,6 +71,13 @@ class SignupExtra(SignupExtraBase):
         help_text=u'Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
             u'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
             u'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+    )
+
+    needs_lodging = models.ManyToManyField(
+        Night,
+        blank=True,
+        verbose_name=u'Majoitustarve lattiamajoituksessa',
+        help_text=u'Vänkärinä saat tarvittaessa maksuttoman majoituksen lattiamajoituksessa. Merkitse tähän, minä öinä tarvitset lattiamajoitusta.',
     )
 
     prior_experience = models.TextField(

@@ -61,7 +61,7 @@ class Setup(object):
             Qualification,
             WorkPeriod,
         )
-        from ...models import SpecialDiet, SignupExtra
+        from ...models import SpecialDiet, SignupExtra, Night
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -119,20 +119,20 @@ class Setup(object):
         for jc_data in [
             (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen', [conitea]),
 
-            (u'Siisteys & Somistus', u'TODO KUVAUS', [tyovoima]),
-            (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista.', [tyovoima]),
-            (u'Majoitus', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan.', [tyovoima]),
+            (u'Siisteys & Somistus', u'Conin siistinä pitäminen, vesipisteiden täyttäminen ja conipaikan koristelu. Tehtävä ei vaadi erityisosaamista. Tämä tehtävä sopii hyvin ensikertalaisvänkäreille.', [tyovoima]),
+            (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. Tehtäviä on perjantaina ja sunnuntai-iltana. Edellyttää B-ajokorttia. Jos sinulla on oma auto ja olet valmis käyttämään sitä conissa, mainitse siitä Vapaa alue-kentässä.', [tyovoima]),
+            (u'Majoitus', u'Majoitusvänkärit huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan.', [tyovoima]),
             (u'Järjestyksenvalvonta', u'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [tyovoima]),
             (u'Ensiapu', u'Ensiapupäivystys tapahtumapaikalla. Edellyttää voimassa olevaa ensiapukorttia (vähintään EA1).', [tyovoima]),
-            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Edellyttää hygieniapassia.', [tyovoima]),
-            (u'Keittiö & kahvio', u'TODO KUVAUS', [tyovoima]),
-            (u'Info', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima]),
-            (u'Narikka', u'Narikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [tyovoima]),
-            (u'Lipunmyynti', u'Pääsylippujen myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä.', [tyovoima]),
-            (u'Markkinointi', u'TODO KUVAUS', [tyovoima]),
-            (u'Meido', u'TODO KUVAUS', [tyovoima]),
-            (u'Ohjelma', u'TODO KUVAUS', [tyovoima]),
+            (u'Green room', u'Työvoiman taukohuoneen hoitaminen ja kahvin keitto green roomissa. Hygieniapassin omistaminen on suositeltavaa, mutta ei välttämätöntä.', [tyovoima]),
+            (u'Keittiö & kahvio', u'Ruuan valmistus keittiössä, sekä asiakaspalvelu kahviossa. Hygieniapassin omistaminen on suositeltavaa, mutta voit ilmoittautua kahvioon ilmankin.', [tyovoima]),
+            (u'Info ja narikka', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman aikana. Narikka toimii infon yhteydessä. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima]),
+            (u'Lipunmyynti', u'Pääsylippujen myyntiä. Myyjiltä edellytetään asiakaspalveluhenkeä, päässälaskutaitoa ja huolellisuutta rahankäsittelyssä.', [tyovoima]),
+            (u'Meido', u'Meidokahvilassa työskentely. Asiakkaille tarjoileminen, sekä asiakkaille seuran pitäminen. Ilmoittaudu tähän tehtävään vain jos meidovastaava on hyväksynyt sinuterillishaussa. Meidohaku löytyy <a href="http://www.kawacon.info" target="_blank">Kawaconin kotisivuilta</a>.', [tyovoima]),
+            (u'Ohjelma', u'Tähän vänkäriryhmään tulevat salivänkärit, ohjelma-avustajat ja Kawaplayn lautapelivuokraamon vänkärit. Tehtävät eivät edellytä erikoisosaamista. Jos sinulla on kokemusta salitekniikasta, voit mainita tästä Vapaa alue-kentässä.', [tyovoima]),
             (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima]),
+            (u'Rakennus ja purku', u'Conipaikan rakennus, pöytien järjestely ja raskaiden esineiden kantaminen. Tehtävät ajoittuvat perjantaille ja sunnuntai-illalle.', [tyovoima]),
+            (u'Kuvaus', 'Valokuvaus ja coniviikonlopun ikuistaminen. Tehtävä edellyttää kameraa ja mahdollisuutta kuvien jälkikäsittelyyn. Kerro Vapaa alue-kentässä millaisen kameran omistat ja aiemmasta kuvauskokemuksestasi.', [tyovoima]),
 
             (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
@@ -173,7 +173,7 @@ class Setup(object):
 
         for jc_name, qualification_name in [
             (u'Järjestyksenvalvonta', u'JV-kortti'),
-            (u'Green room', u'Hygieniapassi'),
+            # (u'Green room', u'Hygieniapassi'),
             (u'Ensiapu', u'Ensiapukoulutus EA1'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
@@ -190,6 +190,13 @@ class Setup(object):
             # u'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
+
+        for night in [
+            u'Perjantain ja lauantain välinen yö',
+            u'Lauantain ja sunnuntain välinen yö',
+            u'Sunnuntain ja maanantain välinen yö',
+        ]:
+            Night.objects.get_or_create(name=night)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
