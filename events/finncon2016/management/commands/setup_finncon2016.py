@@ -151,8 +151,8 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'conitea']:
-            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+        for slug in [u'conitea']:
+            JobCategory.objects.filter(event=self.event, slug=slug).update(public=False)
 
         for jc_name, qualification_name in [
             (u'Järjestyksenvalvoja', u'JV-kortti'),
