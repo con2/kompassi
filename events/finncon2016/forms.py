@@ -21,6 +21,8 @@ class SignupExtraForm(forms.ModelForm):
             'total_work',
 
             Fieldset(u'Lisätiedot',
+                'dead_dog',
+                'shirt_size',
                 'special_diet',
                 'special_diet_other',
                 'prior_experience',
@@ -32,6 +34,8 @@ class SignupExtraForm(forms.ModelForm):
     class Meta:
         model = SignupExtra
         fields = (
+            'shirt_size',
+            'dead_dog',
             'shift_type',
             'total_work',
             'special_diet',
