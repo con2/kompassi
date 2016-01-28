@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django import forms
+from django.db.models import Q
 
 from crispy_forms.layout import Layout, Fieldset
 
@@ -92,6 +93,8 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             Fieldset(
                 u'Lisätiedot',
                 'shirt_size',
+                'special_diet',
+                'special_diet_other',
             ),
         )
 
@@ -99,6 +102,12 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         model = SignupExtra
         fields = (
             'shirt_size',
+            'special_diet',
+            'special_diet_other',
+        )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
@@ -109,9 +118,11 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
 
-class LatecomerSignupForm(SignupForm, AlternativeFormMixin):
-    def get_extra_job_categories(self):
-        return JobCategory.objects.filter(event__slug='desucon2016', slug__in=[
+class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
+    def get_job_categories_query(self, event, admin=False):
+        assert not admin
+
+        return Q(event__slug='desucon2016', slug__in=[
             'pelisali',
             'kahvila',
             'sidosryhmat',
@@ -128,5 +139,5 @@ class LatecomerSignupForm(SignupForm, AlternativeFormMixin):
         )
 
 
-class LatecomerSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
+class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
     pass

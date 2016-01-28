@@ -109,11 +109,13 @@ class AlternativeFormMixin(object):
     of AlternativeSignupForm in `labour.models`.
     """
 
-    def get_extra_job_categories(self):
+    def get_job_categories(self, event, admin=False):
         """
-        These job categories will be available for applications on this alternative form even if
-        they are not public.
+        We assume alternative forms do not usually present a job categories field to the user.
+        If this is not the case, override get_job_categories to return the job categories that
+        can be applied to. For a default implementation, consult SignupForm.
         """
+        from .job_category import JobCategory
         return JobCategory.objects.none()
 
     def get_excluded_field_defaults(self):

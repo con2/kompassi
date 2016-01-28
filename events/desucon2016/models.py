@@ -81,9 +81,9 @@ class SignupExtra(SignupExtraBase):
         blank=True,
         verbose_name=u'Vapaa alue',
         help_text=u'Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
-                  u'omaa kenttää yllä, käytä tätä kenttää.'
+                  u'omaa kenttää yllä, käytä tätä kenttää. '
                   u'Jos haet valokuvaajaksi, kerro lisäksi millaista kuvauskalustoa sinulla on käytettävissäsi ja listaa'
-                  u'muutamia gallerialinkkejä, joista pääsemme ihailemaan ottamiasi kuvia.'
+                  u'muutamia gallerialinkkejä, joista pääsemme ihailemaan ottamiasi kuvia. '
     )
 
     special_diet = models.ManyToManyField(

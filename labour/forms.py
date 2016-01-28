@@ -3,6 +3,7 @@
 from datetime import date, datetime
 
 from django import forms
+from django.db.models import Q
 from django.utils.timezone import now
 
 from crispy_forms.layout import Layout, Fieldset
@@ -65,24 +66,34 @@ class AdminPersonForm(PersonForm):
         )
 
 
-class SignupForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
-        admin = kwargs.pop('admin')
-
-        super(SignupForm, self).__init__(*args, **kwargs)
-
-        from django.db.models import Q
+class SignupFormMixin(object):
+    def get_job_categories_query(self, event, admin=False):
         q = Q(event=event, personnel_classes__app_label='labour')
+
         if not admin:
+            # For non-admin usage, restrict to public JCs only.
             q = q & Q(public=True)
 
             if self.instance.pk is not None:
                 # Also include those the user is signed up to whether or not they are public.
                 q = q | Q(signup_set=self.instance)
 
-        self.fields['job_categories'].queryset = JobCategory.objects.filter(q).distinct().order_by('id')
+        return q
 
+    def get_job_categories(self, event, admin=False):
+        from .models import JobCategory
+        job_categories_query = self.get_job_categories_query(event, admin)
+        return JobCategory.objects.filter(job_categories_query).distinct().order_by('id')
+
+
+class SignupForm(forms.ModelForm, SignupFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+        admin = kwargs.pop('admin')
+
+        super(SignupForm, self).__init__(*args, **kwargs)
+
+        self.fields['job_categories'].queryset = self.get_job_categories(event, admin)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
