@@ -7,7 +7,7 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs
 
 
 def format_job_categories(job_categories):
-    return u"\n".join(u'* {jc.name}'.format(jc=jc) for jc in job_categories)
+    return u", ".join(jc.name for jc in job_categories)
 
 
 class JobCategory(models.Model):

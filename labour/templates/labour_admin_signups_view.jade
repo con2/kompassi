@@ -1,4 +1,5 @@
 extends core_admin_base
+- load trans from i18n
 block title
   | Tapahtumaan ilmoittautuneet henkilöt
 block admin_content
@@ -87,6 +88,9 @@ block admin_content
               li: a(href='{% url "labour_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
                 i.fa.fa-cloud-download.kompassi-icon-space-right
                 |{{ export_format.name }}
+            li: a(href='{% url "labour_admin_export_view" event.slug "html" %}?{{ request.META.QUERY_STRING }}')
+              i.fa.fa-print.kompassi-icon-space-right
+              {% trans "Print work certificates" %}
 
       p.text-muted {{ num_signups }} henkilö{{ num_signups|pluralize:"ä" }} (yhteensä {{ num_all_signups }}).
 

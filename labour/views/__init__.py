@@ -17,10 +17,11 @@ from .admin_views import (
     labour_admin_menu_items,
     labour_admin_roster_view,
     labour_admin_signup_view,
-    labour_admin_signups_view,
     labour_admin_shirts_view,
     labour_onboarding_view
 )
+
+from .labour_admin_signups_view import labour_admin_signups_view
 
 from .query_views import (
     query_index,

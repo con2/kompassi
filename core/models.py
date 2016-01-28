@@ -417,6 +417,10 @@ class Person(models.Model):
         return NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
 
     @property
+    def firstname_surname(self):
+        return NAME_DISPLAY_STYLE_FORMATS['firstname_surname'].format(self=self)
+
+    @property
     def official_name(self):
         if self.official_first_names:
             first_name = self.official_first_names

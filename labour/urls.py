@@ -68,7 +68,7 @@ urlpatterns = [
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups\.(?P<format>xlsx|csv|tsv)$',
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups\.(?P<format>xlsx|csv|tsv|html)$',
         labour_admin_signups_view,
         name='labour_admin_export_view'
     ),

@@ -57,6 +57,15 @@ class LabourEventMeta(EventMetaBase):
             u'erikoistehtäville.',
     )
 
+    work_certificate_signer = models.TextField(
+        null=True,
+        blank=True,
+        default=u'',
+        verbose_name=u'Työtodistuksen allekirjoittaja',
+        help_text=u'Tämän kentän sisältö näkyy työtodistuksen allekirjoittajan nimenselvennyksenä. '
+            u'On suositeltavaa sisällyttää tähän omalle rivilleen allekirjoittajan tehtävänimike.'
+    )
+
     class Meta:
         verbose_name = _(u'labour event meta')
         verbose_name_plural = _(u'labour event metas')
