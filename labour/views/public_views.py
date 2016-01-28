@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.timezone import now
@@ -212,7 +213,15 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
             messages.error(request, _(u'Please check the form.'))
 
     all_job_cats = JobCategory.objects.filter(event=event)
-    job_cats = JobCategory.objects.filter(event=event, public=True)
+    job_cats_q = Q(event=event, public=True)
+
+    if alternative_signup_form:
+        extra_job_categories = signup_form.get_extra_job_categories()
+        print extra_job_categories
+
+        job_cats_q = job_cats_q | Q(id__in=extra_job_categories)
+
+    job_cats = JobCategory.objects.filter(job_cats_q)
 
     # FIXME use id and data attr instead of category name
     non_qualified_category_names = [

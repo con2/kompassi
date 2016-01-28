@@ -110,6 +110,18 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
 
 class LatecomerSignupForm(SignupForm, AlternativeFormMixin):
+    def get_extra_job_categories(self):
+        return JobCategory.objects.filter(event__slug='desucon2016', slug__in=[
+            'pelisali',
+            'kahvila',
+            'sidosryhmat',
+            'av-tekniikka',
+            'logistiikka',
+            'desutv',
+            'tulkki',
+            'valokuvaaja',
+        ])
+
     def get_excluded_field_defaults(self):
         return dict(
             notes=u'Syötetty käyttäen jälki-ilmoittautumislomaketta',
