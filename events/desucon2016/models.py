@@ -42,18 +42,11 @@ SHIRT_TYPES = [
 ]
 
 
-class SimpleChoice(models.Model):
+class SpecialDiet(models.Model):
     name = models.CharField(max_length=63)
 
     def __unicode__(self):
         return self.name
-
-    class Meta:
-        abstract = True
-
-
-class SpecialDiet(SimpleChoice):
-    pass
 
 
 class SignupExtra(SignupExtraBase):
