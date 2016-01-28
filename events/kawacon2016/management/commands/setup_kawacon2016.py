@@ -215,11 +215,11 @@ class Setup(object):
 
         room_order = 0
         for room_name in [
-            u'Auditorio',
-            u'Pääsali',
-            u'E-rakennus, luokat',
-            u'Kawaplay, G-rakennus',
-            u'Elokuvateatteri Tapio',
+            # u'Auditorio',
+            # u'Pääsali',
+            # u'E-rakennus, luokat',
+            # u'Kawaplay, G-rakennus',
+            # u'Elokuvateatteri Tapio',
         ]:
             room_order += 100
             Room.objects.get_or_create(
