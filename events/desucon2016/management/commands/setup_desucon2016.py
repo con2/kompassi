@@ -203,7 +203,7 @@ class Setup(object):
                 signup_extra_form_class_path='events.desucon2016.forms:SpecialistSignupExtraForm',
                 active_from=datetime(2016, 1, 28, 0, 0, 0, tzinfo=self.tz),
                 active_until=self.event.start_time,
-                signup_message=u'Yleinen työvoimahaku Desucon Frostbiteen ei ole enää auki. Täytä tämä lomake vain, '
+                signup_message=u'Yleinen työvoimahaku Desuconiin ei ole enää auki. Täytä tämä lomake vain, '
                     u'jos joku Desuconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella. ',
             ),
         )
