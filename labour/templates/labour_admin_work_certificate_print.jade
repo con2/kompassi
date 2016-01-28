@@ -4,9 +4,11 @@ html
   head
     title {{ event.name }}: Työtodistukset – {{ settings.KOMPASSI_APPLICATION_NAME }}
     style.
-      html {
+      body {
         font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
         font-size: 12pt;
+        padding-left: 2em;
+        padding-top: 1em;
       }
       table, tbody, tr, td {
         margin: 0;
@@ -25,7 +27,10 @@ html
       }
       address, .signature {
         font-style: normal;
-        margin-bottom: 3em;
+        margin-bottom: 2em;
+      }
+      .sender-address {
+        width: 60%;
       }
       header {
         margin-bottom: 5em;
