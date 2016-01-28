@@ -18,12 +18,13 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             'shift_type',
-            'shirt_size',
+            indented_without_label('night_work'),
 
-            Fieldset(
-                u'Lisätiedot',
+            Fieldset(u'Lisätiedot',
+                'shirt_size',
+                'special_diet',
+                'special_diet_other',
                 'desu_amount',
-                indented_without_label('night_work'),
                 'prior_experience',
                 'free_text',
             )
@@ -34,10 +35,16 @@ class SignupExtraForm(forms.ModelForm):
         fields = (
             'shift_type',
             'shirt_size',
+            'special_diet',
+            'special_diet_other',
             'desu_amount',
             'night_work',
             'prior_experience',
             'free_text',
+        )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
         )
 
 
@@ -67,6 +74,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
         widgets = dict(
             job_categories=forms.CheckboxSelectMultiple,
+            special_diet=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_m2m_field_defaults(self):

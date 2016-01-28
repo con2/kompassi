@@ -9,7 +9,6 @@ from django.utils.timezone import now
 from dateutil.tz import tzlocal
 
 from core.utils import slugify
-from pytz import timezone
 
 
 class Setup(object):
@@ -41,8 +40,8 @@ class Setup(object):
             homepage_url='https://desucon.fi/desucon2016/',
             organization_name='Kehittyvien conien Suomi ry',
             organization_url='https://desucon.fi/kcs/',
-            start_time=datetime(2016, 6, 10, 17, 0, 0, tzinfo=timezone('Europe/Helsinki')),
-            end_time=datetime(2016, 6, 12, 17, 0, 0, tzinfo=timezone('Europe/Helsinki')),
+            start_time=datetime(2016, 6, 10, 17, 0, 0, tzinfo=self.tz),
+            end_time=datetime(2016, 6, 12, 17, 0, 0, tzinfo=self.tz),
             venue=self.venue,
         ))
 
@@ -59,7 +58,7 @@ class Setup(object):
             Qualification,
             WorkPeriod,
         )
-        from ...models import SignupExtra
+        from ...models import SignupExtra, SpecialDiet
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -76,9 +75,9 @@ class Setup(object):
             work_begins=datetime(2016, 6, 10, 8, 0, tzinfo=self.tz),
             work_ends=datetime(2016, 6, 12, 21, 0, tzinfo=self.tz),
             registration_opens=datetime(2016, 1, 31, 18, 0, tzinfo=self.tz),
-            registration_closes=datetime(2016, 1, 4, 23, 59, 59, tzinfo=self.tz),
+            registration_closes=datetime(2016, 2, 28, 23, 59, 59, tzinfo=self.tz),
             admin_group=labour_admin_group,
-            contact_email='2016 -työvoimavastaava <tyovoima@desucon.fi>',
+            contact_email='Desuconin työvoimavastaava <tyovoima@desucon.fi>',
         )
 
         if self.test:
@@ -125,7 +124,7 @@ class Setup(object):
             (u'AV-tekniikka', u'', [tyovoima, vuorovastaava]),
             (u'DesuTV', u'', [tyovoima, vuorovastaava]),
             (u'Tulkki', u'', [tyovoima, vuorovastaava]),
-            (u'Muu sidosryhmä', u'', [tyovoima, vuorovastaava]),
+            (u'Sidosryhmät', u'', [tyovoima, vuorovastaava]),
 
             (u'Narikka', u'Narikkakuutit ovat vastuussa tapahtuman narikoiden pyörittämisestä. Työ itsessään on yksinkertaista, mutta tekemistä sen sijaan on varmasti riittävästi. Narikka on henkilömäärältään suurin työvoimaryhmä.', [tyovoima, vuorovastaava]),
             (u'Siivous', u'Siivouskuutit ovat vastuussa tapahtuman yleisestä siisteydestä. He kulkevat ympäriinsä tehtävänään roskakorien tyhjennys, vesipisteiden täyttö, vessoihin papereiden lisääminen ja monet muut pienet askareet. Työ tehdään pääsääntöisesti kuuttipareittain.', [tyovoima, vuorovastaava]),
@@ -138,7 +137,7 @@ class Setup(object):
             (u'Lipunmyynti', u'Lipunmyynnin tehtävänä on lukea kävijöiden lippuvarmenteita ja antaa heille rannekkeita. Tässä pestissä ei välttämättä tule minimi työvaatimus täyteen, joten lipunmyyntikuutti saattaa löytää itsensä tekemästä jännittäviä yllätystehtäviä.', [tyovoima, vuorovastaava]),
             (u'Tekniikka', u'Tekniikkakuutit huolehtivat tapahtuman aikana teknologian toimivuudesta. Työtehtävät ovat hyvin monipuolisia verkon rakentamisesta ohjelmansalien äänentoistosta huolehtimiseen, joten tietotekniikan laaja perustuntemus on valinnan edellytyksenä.', [tyovoima, vuorovastaava]),
             (u'Cosplay', u'Cosplaykuuttein tehtävänä on huolehtia etupäässä cosplaykisaajain avustamisesta harjoitusten ja kilpailujen aikana takahuoneessa ja kulisseissa. Työ jakautuu kaikille conipäiville ja sisältää moninaista puuhaa kisaajien ohjaamisesta paikkalippujen jakamiseen ja lavasteiden kuljettamiseen.', [tyovoima, vuorovastaava]),
-            (u'Majoitus', u'Majoituskuuttein tehtävä on vastata majoittujien turvallisuudesta. Vänkärit ottavat majoittujat vastaan, ja pitävät huolta siitä, että ketään ylimääräistä ei päästetä majoitustiloihin. Vänkärit myös kiertelevät majoitustiloja ympäri valvomassa järjestystä. Työ tehdään lattiamajoitusalueella.', [tyovoima, vuorovastaava]),
+            (u'Majoitus', u'Majoituskuuttein tehtävä on vastata majoittujien turvallisuudesta. Kuutit ottavat majoittujat vastaan, ja pitävät huolta siitä, että ketään ylimääräistä ei päästetä majoitustiloihin. Kuutit myös kiertelevät majoitustiloja ympäri valvomassa järjestystä. Työ tehdään lattiamajoitusalueella.', [tyovoima, vuorovastaava]),
 
             (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
@@ -157,8 +156,8 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        # for name in [u'Vastaava', u'Pelisali', u'Meido', u'Sidosryhmät', u'AV-tekniikka', u'DesuTV', u'Tulkki', ]:
-        #     JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+        for name in [u'Vastaava', u'Pelisali', u'Kahvila', u'Sidosryhmät', u'AV-tekniikka', u'DesuTV', u'Tulkki', ]:
+            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
             (u'Järjestyksenvalvoja', u'JV-kortti'),
@@ -184,6 +183,15 @@ class Setup(object):
         if organizer_form.active_until is None:
             organizer_form.active_until = self.event.start_time
             organizer_form.save()
+
+        for diet_name in [
+            u'Gluteeniton',
+            u'Laktoositon',
+            u'Maidoton',
+            u'Vegaaninen',
+            u'Lakto-ovo-vegetaristinen',
+        ]:
+            SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,

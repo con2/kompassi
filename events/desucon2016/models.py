@@ -42,6 +42,20 @@ SHIRT_TYPES = [
 ]
 
 
+class SimpleChoice(models.Model):
+    name = models.CharField(max_length=63)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        abstract = True
+
+
+class SpecialDiet(SimpleChoice):
+    pass
+
+
 class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(
         max_length=15,
@@ -52,7 +66,7 @@ class SignupExtra(SignupExtraBase):
 
     desu_amount = models.PositiveIntegerField(
         verbose_name=u'Desumäärä',
-        help_text=u'Kuinka monessa Desuconissa olet ollut vänkärinä?',
+        help_text=u'Kuinka monessa Desuconissa olet työskennellyt?',
     )
 
     prior_experience = models.TextField(
@@ -72,12 +86,26 @@ class SignupExtra(SignupExtraBase):
                   u'muutamia gallerialinkkejä, joista pääsemme ihailemaan ottamiasi kuvia.'
     )
 
+    special_diet = models.ManyToManyField(
+        SpecialDiet,
+        blank=True,
+        verbose_name=u'Erikoisruokavalio'
+    )
+
+    special_diet_other = models.TextField(
+        blank=True,
+        verbose_name=u'Muu erikoisruokavalio',
+        help_text=u'Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
+            u'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
+            u'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+    )
+
     shirt_size = models.CharField(
         max_length=8,
         choices=SHIRT_SIZES,
         # default=u'NO_SHIRT',
         verbose_name=u'Paidan koko',
-        help_text=u'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. '
+        help_text=u'Ajoissa ilmoittautuneet saavat maksuttoman työvoimapaidan. '
                   u'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
                   u'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
                   u'target="_blank">ladyfit-paita</a>',
