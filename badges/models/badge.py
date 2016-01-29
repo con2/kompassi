@@ -72,6 +72,8 @@ class Badge(models.Model, CsvExportMixin):
 
     @classmethod
     def get_csv_fields(cls, event):
+        from labour.models import PersonnelClass
+
         meta = event.badges_event_meta
         if meta.badge_layout == 'trad':
             # Chief Technology Officer
@@ -103,6 +105,7 @@ class Badge(models.Model, CsvExportMixin):
 
     def get_csv_related(self):
         from core.models import Person
+        from labour.models import PersonnelClass
 
         return {
             PersonnelClass: self.personnel_class,
