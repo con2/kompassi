@@ -76,7 +76,6 @@ msgid "New password"
 msgstr "Uusi salasana"
 
 #: forms.py
-#, fuzzy
 msgid "New password (again)"
 msgstr "Uusi salasana (uudestaan)"
 
@@ -185,9 +184,8 @@ msgid "Submit"
 msgstr "Lähetä"
 
 #: models.py
-#, fuzzy
 msgid "Surname"
-msgstr "Käyttäjänimi"
+msgstr "Sukunimi"
 
 #: forms.py
 #, python-format
@@ -216,7 +214,7 @@ msgstr "Tulevat tapahtumat"
 
 #: models.py
 msgid "Used"
-msgstr ""
+msgstr "Käytetty"
 
 #: forms.py
 msgid "User name"
@@ -232,7 +230,7 @@ msgstr "Käyttäjänimi tai sähköpostiosoite"
 
 #: models.py
 msgid "Valid"
-msgstr ""
+msgstr "Kelvollinen"
 
 #: templates/core_event_box.jade
 msgid "Volunteers"
