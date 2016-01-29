@@ -40,6 +40,26 @@ class JobCategory(models.Model):
         verbose_name=u'Henkilöstöluokat'
     )
 
+    @classmethod
+    def get_or_create_dummy(cls):
+        from core.models import Event
+        from .labour_event_meta import LabourEventMeta
+        from .personnel_class import PersonnelClass
+
+        meta, unused = LabourEventMeta.get_or_create_dummy()
+        event = meta.event
+
+        job_category, created = cls.objects.get_or_create(
+            event=event,
+            name=u'Courier',
+        )
+
+        if created:
+            personnel_class, unused = PersonnelClass.get_or_create_dummy()
+            job_category.personnel_classes.add(personnel_class)
+
+        return job_category, created
+
     def is_person_qualified(self, person):
         if not self.required_qualifications.exists():
             return True

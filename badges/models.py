@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils.html import escape
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
@@ -138,6 +139,18 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         help_text=u'Perinteinen: tehtävänimike, etunimi sukunimi, nick. Nickiä korostava: nick tai etunimi, sukunimi tai koko nimi, tehtävänimike.',
     )
 
+    real_name_must_be_visible = models.BooleanField(
+        default=False,
+        verbose_name=_(u'Require real name to be visible'),
+        help_text=_(
+            u'In most events, it is up to the person carrying the badge to decide whether or not '
+            u'their real name is displayed in their badge. Some choose to go by their first name or nick '
+            u'name only. Some events have, however, decided to restrict this and require the first name and '
+            u'surname to be visible in all badges. If this option is selected, only the name display styles '
+            u'<em>Firstname Surname</em> and <em>Firstname "Nick" Surname</em> are effectively allowed.'
+        )
+    )
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
@@ -250,7 +263,7 @@ class Badge(models.Model):
         # Factory should be invoked anyway, and badge "upgraded" (revoke old, create new).
 
         try:
-            return False, cls.objects.get(personnel_class__event=event, person=person)
+            return cls.objects.get(personnel_class__event=event, person=person), False
         except cls.DoesNotExist:
             factory = event.badges_event_meta.badge_factory
 
@@ -260,7 +273,7 @@ class Badge(models.Model):
             badge = cls(**badge_opts)
             badge.save()
 
-            return True, badge
+            return badge, True
 
     @classmethod
     def get_csv_fields(cls, event):
@@ -303,14 +316,22 @@ class Badge(models.Model):
 
     def get_name_fields(self):
         return [
-            (self.person.surname.strip(), self.person.is_surname_visible),
-            (self.person.first_name.strip(), self.person.is_first_name_visible),
-            (self.person.nick.strip(), self.person.is_nick_visible),
+            (self.person.surname.strip(), self.is_surname_visible),
+            (self.person.first_name.strip(), self.is_first_name_visible),
+            (self.person.nick.strip(), self.is_nick_visible),
         ]
 
     @property
     def personnel_class_name(self):
         return self.personnel_class.name if self.personnel_class else u''
+
+    @property
+    def event(self):
+        return self.personnel_class.event
+
+    @property
+    def meta(self):
+        return self.event.badges_event_meta
 
     @property
     def event_name(self):
@@ -322,16 +343,20 @@ class Badge(models.Model):
 
     @property
     def first_name(self):
-        return self.person.first_name.strip() if self.person.is_first_name_visible else u''
+        return self.person.first_name.strip() if self.is_first_name_visible else u''
+
+    @property
+    def is_first_name_visible(self):
+        return self.meta.real_name_must_be_visible or self.person.is_first_name_visible
 
     @property
     def nick_or_first_name(self):
-        if self.person.is_nick_visible:
+        if self.is_nick_visible:
             # JAPSU <- this
             # Santtu Pajukanta
             # Chief Technology Officer
             return self.person.nick
-        elif self.person.is_first_name_visible:
+        elif self.is_first_name_visible:
             # SANTTU <- this
             # Pajukanta
             # Chief Technology Officer
@@ -342,16 +367,20 @@ class Badge(models.Model):
 
     @property
     def surname(self):
-        return self.person.surname.strip() if self.person.is_surname_visible else u''
+        return self.person.surname.strip() if self.is_surname_visible else u''
+
+    @property
+    def is_surname_visible(self):
+        return self.meta.real_name_must_be_visible or self.person.is_surname_visible
 
     @property
     def surname_or_full_name(self):
-        if self.person.is_nick_visible:
+        if self.is_nick_visible:
             # JAPSU
             # Santtu Pajukanta <- this
             # Chief Technology Officer
-            if self.person.is_surname_visible:
-                if self.person.is_first_name_visible:
+            if self.is_surname_visible:
+                if self.is_first_name_visible:
                     return u"{first_name} {surname}".format(
                         first_name=self.person.first_name,
                         surname=self.person.surname,
@@ -365,14 +394,18 @@ class Badge(models.Model):
             # SANTTU
             # Pajukanta <- this
             # Chief Technology Officer
-            if self.person.is_surname_visible:
+            if self.is_surname_visible:
                 return self.person.surname
             else:
                 return u''
 
     @property
     def nick(self):
-        return self.person.nick.strip() if self.person.is_nick_visible else u''
+        return self.person.nick.strip() if self.is_nick_visible else u''
+
+    @property
+    def is_nick_visible(self):
+        return self.person.is_nick_visible
 
     def to_html_print(self):
         def format_name_field(value, is_visible):
@@ -382,9 +415,9 @@ class Badge(models.Model):
                 return escape(value)
 
         vars = dict(
-            surname=format_name_field(self.person.surname.strip(), self.person.is_surname_visible),
-            first_name=format_name_field(self.person.first_name.strip(), self.person.is_first_name_visible),
-            nick=format_name_field(self.person.nick.strip(), self.person.is_nick_visible),
+            surname=format_name_field(self.person.surname.strip(), self.is_surname_visible),
+            first_name=format_name_field(self.person.first_name.strip(), self.is_first_name_visible),
+            nick=format_name_field(self.person.nick.strip(), self.is_nick_visible),
         )
 
         if self.person.nick:

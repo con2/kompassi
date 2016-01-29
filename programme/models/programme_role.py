@@ -26,6 +26,7 @@ class ProgrammeRole(models.Model):
     def get_or_create_dummy(cls, programme=None):
         from core.models import Person
         from .role import Role
+        from .programme import Programme
 
         person, unused = Person.get_or_create_dummy()
         role, unused = Role.get_or_create_dummy()
@@ -33,7 +34,7 @@ class ProgrammeRole(models.Model):
         if programme is None:
             programme, unused = Programme.get_or_create_dummy()
 
-        ProgrammeRole.objects.get_or_create(
+        return ProgrammeRole.objects.get_or_create(
             person=person,
             programme=programme,
             role=role,

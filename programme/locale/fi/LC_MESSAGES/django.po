@@ -82,7 +82,7 @@ msgstr "Tapahtuma"
 msgid "First name"
 msgstr "Etunimi"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "Free-form organizer"
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 

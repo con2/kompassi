@@ -301,12 +301,15 @@ class Signup(models.Model, CsvExportMixin):
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Person, Event
+        from .job_category import JobCategory
 
         person, unused = Person.get_or_create_dummy()
         event, unused = Event.get_or_create_dummy()
+        job_category, unused = JobCategory.get_or_create_dummy()
 
         signup, created = Signup.objects.get_or_create(person=person, event=event)
         extra = signup.signup_extra
+        signup.job_categories = [job_category]
         extra.save()
 
         return signup, created
