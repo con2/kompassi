@@ -9,28 +9,76 @@ from core.utils import time_bool_property
 
 
 class Badge(models.Model, CsvExportMixin):
-    person = models.ForeignKey('core.Person', null=True, blank=True, verbose_name=_(u'Person'))
+    person = models.ForeignKey('core.Person',
+        null=True,
+        blank=True,
+        verbose_name=_(u'Person'),
+    )
 
-    personnel_class = models.ForeignKey('labour.PersonnelClass', null=True, blank=True, verbose_name=_(u'Personnel class'))
+    personnel_class = models.ForeignKey('labour.PersonnelClass',
+        verbose_name=_(u'Personnel class'),
+    )
 
-    printed_separately_at = models.DateTimeField(null=True, blank=True, verbose_name=_(u'Printed separately at'))
-    revoked_at = models.DateTimeField(null=True, blank=True, verbose_name=_(u'Revoked at'))
+    printed_separately_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_(u'Printed separately at'),
+    )
 
-    first_name = models.CharField(max_length=1023, verbose_name=_(u'First name'))
-    is_first_name_visible = models.BooleanField(verbose_name=_(u'Is first_name visible'), default=True)
+    revoked_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_(u'Revoked at'),
+    )
 
-    surname = models.CharField(max_length=1023, verbose_name=_(u'Surname'))
-    is_surname_visible = models.BooleanField(verbose_name=_(u'Is surname visible'), default=True)
+    first_name = models.CharField(
+        max_length=1023,
+        verbose_name=_(u'First name'),
+    )
+    is_first_name_visible = models.BooleanField(
+        default=True,
+        verbose_name=_(u'Is first_name visible'),
+    )
 
-    nick = models.CharField(blank=True, max_length=1023, help_text=_(u'Nick name'))
-    is_nick_visible = models.BooleanField(verbose_name=_(u'Is nick visible'), default=True)
+    surname = models.CharField(
+        max_length=1023,
+        verbose_name=_(u'Surname'),
+    )
+    is_surname_visible = models.BooleanField(
+        default=True,
+        verbose_name=_(u'Is surname visible'),
+    )
 
-    job_title = models.CharField(max_length=63, blank=True, default=u'', verbose_name=_(u'Job title'))
+    nick = models.CharField(
+        blank=True,
+        max_length=1023,
+        help_text=_(u'Nick name'),
+    )
+    is_nick_visible = models.BooleanField(
+        default=True,
+        verbose_name=_(u'Is nick visible'),
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_(u'Created at'))
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=_(u'Updated at'))
+    job_title = models.CharField(max_length=63,
+        blank=True,
+        default=u'',
+        verbose_name=_(u'Job title'))
 
-    batch = models.ForeignKey('badges.Batch', null=True, blank=True, db_index=True, verbose_name=_(u'Printing batch'))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_(u'Created at'),
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_(u'Updated at'),
+    )
+
+    batch = models.ForeignKey('badges.Batch',
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name=_(u'Printing batch'),
+    )
 
     is_revoked = time_bool_property('revoked_at')
     is_printed = time_bool_property('printed_at')
@@ -66,6 +114,8 @@ class Badge(models.Model, CsvExportMixin):
         # FIXME If someone first does programme and then labour, they should still get labour badge.
         # Factory should be invoked anyway, and badge "upgraded" (revoke old, create new).
         # https://jira.tracon.fi/browse/CONDB-422
+
+        assert person is not None
 
         try:
             return cls.objects.get(
