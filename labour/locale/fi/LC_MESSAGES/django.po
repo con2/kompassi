@@ -22,6 +22,10 @@ msgstr "Saapuneeksi kirjaaminen"
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
+#: templates/labour_admin_signups_view.jade
+msgid "Print work certificates"
+msgstr ""
+
 #: views/public_views.py
 msgid "Qualifications"
 msgstr "Pätevyydet"

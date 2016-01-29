@@ -122,15 +122,6 @@ class CountBadgesMixin(object):
 
 
 class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
-    badge_factory_code = models.CharField(
-        max_length=255,
-        default='badges.utils:default_badge_factory',
-        verbose_name=u'Badgetehdas',
-        help_text=u'Funktio, joka selvittää, minkä tyyppinen badge henkilölle pitäisi luoda. '
-            u'Oletusarvo toimii lähes kaikille tapahtumille.'
-    )
-
-    badge_factory = code_property('badge_factory_code')
     badge_layout = models.CharField(
         max_length=4,
         default='trad',
@@ -265,9 +256,9 @@ class Badge(models.Model):
         try:
             return cls.objects.get(personnel_class__event=event, person=person), False
         except cls.DoesNotExist:
-            factory = event.badges_event_meta.badge_factory
+            from badges.utils import default_badge_factory
 
-            badge_opts = factory(event=event, person=person)
+            badge_opts = default_badge_factory(event=event, person=person)
             badge_opts = dict(badge_opts, person=person)
 
             badge = cls(**badge_opts)

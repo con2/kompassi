@@ -1,0 +1,8 @@
+#: models.py
+msgid "In most events, it is up to the person carrying the badge to decide whether or not their real name is displayed in their badge. Some choose to go by their first name or nick name only. Some events have, however, decided to restrict this and require the first name and surname to be visible in all badges. If this option is selected, only the name display styles <em>Firstname Surname</em> and <em>Firstname \"Nick\" Surname</em> are effectively allowed."
+msgstr ""
+
+#: models.py
+msgid "Require real name to be visible"
+msgstr ""
+
