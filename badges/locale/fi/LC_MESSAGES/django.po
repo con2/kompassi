@@ -51,7 +51,6 @@ msgid "Revoked at"
 msgstr "Mitätöintiaika"
 
 #: models.py
-#, fuzzy
 msgid "This controls how fields are grouped in the badge. Traditional: job title, firstname surname, nick. Emphasize nick name: first name or nick, surname or full name, job title."
 msgstr "Tämä kontrolloi sitä, miten kentät niputetaan badgessa. Perinteinen: tehtävänimike, etunimi sukunimi, nick. Korosta nickiä: etunimi tai nick, sukunimi tai koko nimi, tehtävänimike."
 
