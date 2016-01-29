@@ -1,68 +1,200 @@
-#: models.py
+#: templates/badges_admin_create_view.jade
+msgid "Abandon changes and return to list"
+msgstr "Hylkää muutokset ja palaa listaan"
+
+#: templates/badges_admin_create_view.jade
+msgid "Add badge"
+msgstr "Lisää badge"
+
+#: templates/badges_admin_badges_view.jade
+msgid "Admission list"
+msgstr "Nimilista"
+
+#: forms.py
+msgid "At least one of first name, surname and nick must be provided."
+msgstr "Ainakin yksi seuraavista on annettava: etunimi, sukunimi, nick."
+
+#: models/count_badges_mixin.py
 msgid "Awaiting allocation into batch"
 msgstr "Odottaa tulostuserää"
 
-#: models.py
+#: models/batch.py
+#, python-format
+msgid "Batch %(batch_number)s"
+msgstr "Erä %(batch_number)s"
+
+#: models/badge.py models/batch.py
 msgid "Created at"
 msgstr "Luontiaika"
 
-#: models.py
+#: models/badge.py
+msgid "Created by"
+msgstr "Luonut"
+
+#: models/badges_event_meta.py
 msgid "Emphasize nick name"
 msgstr "Korosta nickiä"
 
-#: models.py
+#: templates/badges_admin_badges_view.jade
+msgid "Export"
+msgstr "Vie"
+
+#: templates/badges_admin_badges_view.jade
+msgid "Filter by personnel type"
+msgstr "Suodata henkilöstöluokan mukaan"
+
+#: models/badge.py templates/badges_admin_badges_view.jade
+msgid "First name"
+msgstr "Etunimi"
+
+#: forms.py
+msgid "If you leave this field blank, you will receive a batch with mixed badge types."
+msgstr "Jos jätät tämän kentän tyhjäksi, saat erän jossa on sekaisin eri badgetyyppejä."
+
+#: models/badge.py
+msgid "If you only have a single piece of information to print on the badge, use this field."
+msgstr "Jos sinulla on vain yksi rivi tekstiä badgeen tulostettavaksi, syötä se tähän kenttään."
+
+#: models/badges_event_meta.py
 msgid "In most events, it is up to the person carrying the badge to decide whether or not their real name is displayed in their badge. Some choose to go by their first name or nick name only. Some events have, however, decided to restrict this and require the first name and surname to be visible in all badges. If this option is selected, only the name display styles <em>Firstname Surname</em> and <em>Firstname \"Nick\" Surname</em> are effectively allowed."
 msgstr "Useimmissa tapahtumissa badgen haltija saa päättää, näytetäänkö hänen oikea nimensä badgessa. Jotkut haluavat badgeensa ainoastaan etunimen tai nickin. Tietyt tapahtumat ovat päättäneet rajoittaa tätä. Mikäli tämä asetus on valittu, badgessa näkyy aina haltijansa etunimi ja sukunimi."
 
-#: models.py
+#: models/badge.py
+msgid "Is first name visible"
+msgstr "Etunimi näkyvissä"
+
+#: models/badge.py
+msgid "Is nick visible"
+msgstr "Nick näkyvissä"
+
+#: models/badge.py
+msgid "Is surname visible"
+msgstr "Sukunimi näkyvissä"
+
+#: models/badge.py templates/badges_admin_badges_view.jade
 msgid "Job title"
 msgstr "Tehtävänimike"
 
-#: models.py
+#: templates/badges_admin_create_view.jade
+msgid "Manual badge creation"
+msgstr "Badgen lisääminen käsin"
+
+#: templates/badges_admin_badges_view.jade
+msgid "Manually add a badge"
+msgstr "Lisää badge käsin"
+
+#: models/badge.py
+msgid "Name"
+msgstr "Nimi"
+
+#: models/badge.py templates/badges_admin_badges_view.jade
+msgid "Nick name"
+msgstr "Nick"
+
+#: templates/badges_admin_badges_view.jade
+#, python-format
+msgid "One badge."
+msgid_plural "%(num_badges)s badges."
+msgstr[0] "Yksi badge."
+msgstr[1] "%(num_badges)s badgea."
+
+#: models/badge.py
 msgid "Person"
 msgstr "Henkilö"
 
-#: models.py
+#: forms.py models/badge.py templates/badges_admin_badges_view.jade
 msgid "Personnel class"
 msgstr "Henkilöstöluokka"
 
-#: models.py
+#: views/badges_admin_create_view.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkista lomake."
+
+#: models/badge.py
+msgid "Please stay civil with the job title field."
+msgstr "Käytäthän tehtävänimike-kenttää sivistyneesti!"
+
+#: templates/badges_admin_badges_view.jade
+msgid "Printable version"
+msgstr "Tulostettava versio"
+
+#: models/count_badges_mixin.py
 msgid "Printed"
 msgstr "Tulostettu"
 
-#: models.py
+#: models/badge.py
 msgid "Printed separately at"
 msgstr "Erillistulostusaika"
 
-#: models.py
+#: models/badge.py
 msgid "Printing batch"
 msgstr "Tulostuserä"
 
-#: models.py
+#: models/badges_event_meta.py
 msgid "Require real name to be visible"
 msgstr "Vaadi koko nimi näkyviin"
 
-#: models.py
+#: models/count_badges_mixin.py templates/badges_admin_badges_view.jade
 msgid "Revoked"
 msgstr "Mitätöity"
 
-#: models.py
+#: models/badge.py
 msgid "Revoked at"
 msgstr "Mitätöintiaika"
 
-#: models.py
+#: models/badge.py
+msgid "Revoked by"
+msgstr "Mitätöinyt"
+
+#: templates/badges_admin_badges_view.jade
+msgid "Separately"
+msgstr "Erikseen"
+
+#: templates/badges_admin_badges_view.jade
+msgid "Status"
+msgstr "Tila"
+
+#: models/badge.py templates/badges_admin_badges_view.jade
+msgid "Surname"
+msgstr "Sukunimi"
+
+#: views/admin_views.py
+msgid "The badge had already been revoked."
+msgstr "Badge on jo mitätöity."
+
+#: views/badges_admin_create_view.py
+msgid "The badge has been added."
+msgstr "Badge lisättiin."
+
+#: views/admin_views.py
+msgid "The badge has been restored."
+msgstr "Badge palautettiin."
+
+#: views/admin_views.py
+msgid "The badge has now been revoked."
+msgstr "Badge on nyt mitätöity."
+
+#: views/admin_views.py
+msgid "The badge was already valid."
+msgstr "Badge oli jo voimassa."
+
+#: models/badges_event_meta.py
 msgid "This controls how fields are grouped in the badge. Traditional: job title, firstname surname, nick. Emphasize nick name: first name or nick, surname or full name, job title."
 msgstr "Tämä kontrolloi sitä, miten kentät niputetaan badgessa. Perinteinen: tehtävänimike, etunimi sukunimi, nick. Korosta nickiä: etunimi tai nick, sukunimi tai koko nimi, tehtävänimike."
 
-#: models.py
+#: models/badges_event_meta.py
 msgid "Traditional"
 msgstr "Perinteinen"
 
-#: models.py
+#: models/badge.py models/batch.py
 msgid "Updated at"
 msgstr "Päivitysaika"
 
-#: models.py
+#: templates/badges_admin_badges_view.jade
+msgid "Waiting"
+msgstr "Odottaa"
+
+#: models/count_badges_mixin.py
 msgid "Waiting in batch"
 msgstr "Odottaa erässä"
 

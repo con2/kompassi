@@ -100,5 +100,7 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.job_title == jc2.name
 
-    def test_condb_137(self):
-        p_role, unused = ProgrammeRole.get_or_create_dummy()
+    def test_mixed_badges(self):
+        """
+        Badge printing must work with a mixed case of Person and non-Person badges.
+        """

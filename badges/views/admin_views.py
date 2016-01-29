@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_safe
 
 from core.batches_view import batches_view
@@ -14,9 +15,9 @@ from core.utils import url, initialize_form, groupby_strict
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS
 from labour.models import PersonnelClass
 
-from .forms import CreateBatchForm, BadgeForm, HiddenBadgeCrouchingForm
-from .models import Badge, Batch, CountBadgesMixin
-from .helpers import badges_admin_required
+from ..forms import CreateBatchForm, BadgeForm, HiddenBadgeCrouchingForm
+from ..models import Badge, Batch, CountBadgesMixin
+from ..helpers import badges_admin_required
 
 
 BADGE_ORDER = ('personnel_class', 'person__surname', 'person__first_name')
@@ -207,42 +208,6 @@ def badges_admin_export_view(request, vars, event, batch_id, format='csv'):
     )
 
     return csv_response(event, Badge, badges, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
-
-
-@badges_admin_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
-def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
-    # XXX move this to core
-    from programme.forms import ProgrammePersonForm
-
-    initial = dict()
-
-    if personnel_class_slug is not None:
-        personnel_class = get_object_or_404(PersonnelClass, event=event, slug=personnel_class_slug)
-        initial.update(personnel_class=personnel_class)
-
-    badge_form = initialize_form(BadgeForm, request, prefix='badge_type', event=event, initial=initial)
-    person_form = initialize_form(ProgrammePersonForm, request, prefix='person')
-
-    if request.method == 'POST':
-        if badge_form.is_valid() and person_form.is_valid():
-            person = person_form.save()
-            badge = badge_form.save(commit=False)
-
-            badge.person = person
-            badge.save()
-
-            messages.success(request, u'Henkilö on lisätty onnistuneesti.')
-            return redirect('badges_admin_dashboard_view', event.slug)
-        else:
-            messages.error(request, u'Ole hyvä ja tarkista lomake.')
-
-    vars.update(
-        badge_form=badge_form,
-        person_form=person_form,
-    )
-
-    return render(request, 'badges_admin_create_view.jade', vars)
 
 
 def badges_admin_menu_items(request, event):

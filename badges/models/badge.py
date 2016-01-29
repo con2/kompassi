@@ -1,11 +1,14 @@
 # encoding: utf-8
 
+from django.conf import settings
 from django.db import models
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
 from core.csv_export import CsvExportMixin
 from core.utils import time_bool_property
+
+from ..proxies.badge.privacy import BadgePrivacyAdapter
 
 
 class Badge(models.Model, CsvExportMixin):
@@ -25,6 +28,12 @@ class Badge(models.Model, CsvExportMixin):
         verbose_name=_(u'Printed separately at'),
     )
 
+    revoked_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        related_name='badges_revoked',
+        verbose_name=_(u'Revoked by'),
+    )
     revoked_at = models.DateTimeField(
         null=True,
         blank=True,
@@ -32,15 +41,17 @@ class Badge(models.Model, CsvExportMixin):
     )
 
     first_name = models.CharField(
+        blank=True,
         max_length=1023,
         verbose_name=_(u'First name'),
     )
     is_first_name_visible = models.BooleanField(
         default=True,
-        verbose_name=_(u'Is first_name visible'),
+        verbose_name=_(u'Is first name visible'),
     )
 
     surname = models.CharField(
+        blank=True,
         max_length=1023,
         verbose_name=_(u'Surname'),
     )
@@ -52,7 +63,8 @@ class Badge(models.Model, CsvExportMixin):
     nick = models.CharField(
         blank=True,
         max_length=1023,
-        help_text=_(u'Nick name'),
+        verbose_name=_(u'Nick name'),
+        help_text=_(u'If you only have a single piece of information to print on the badge, use this field.'),
     )
     is_nick_visible = models.BooleanField(
         default=True,
@@ -62,8 +74,16 @@ class Badge(models.Model, CsvExportMixin):
     job_title = models.CharField(max_length=63,
         blank=True,
         default=u'',
-        verbose_name=_(u'Job title'))
+        verbose_name=_(u'Job title'),
+        help_text=_(u'Please stay civil with the job title field.'),
+    )
 
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        related_name='badges_created',
+        verbose_name=_(u'Created by'),
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_(u'Created at'),
@@ -86,10 +106,12 @@ class Badge(models.Model, CsvExportMixin):
 
     @property
     def printed_at(self):
-        if self.batch:
+        if self.printed_separately_at:
+            return self.printed_separately_at
+        elif self.batch:
             return self.batch.printed_at
         else:
-            return self.printed_separately_at
+            return None
 
     @property
     def formatted_printed_at(self):
@@ -145,9 +167,9 @@ class Badge(models.Model, CsvExportMixin):
             # Japsu
             return [
                 (cls, 'personnel_class_name'),
-                (BadgePrivacyProxy, 'surname'),
-                (BadgePrivacyProxy, 'first_name'),
-                (BadgePrivacyProxy, 'nick'),
+                (BadgePrivacyAdapter, 'surname'),
+                (BadgePrivacyAdapter, 'first_name'),
+                (BadgePrivacyAdapter, 'nick'),
                 (cls, 'job_title'),
             ]
         elif meta.badge_layout == 'nick':
@@ -160,8 +182,8 @@ class Badge(models.Model, CsvExportMixin):
             # Chief Technology Officer
             return [
                 (cls, 'personnel_class_name')
-                (BadgePrivacyProxy, 'nick_or_first_name'),
-                (BadgePrivacyProxy, 'surname_or_full_name'),
+                (BadgePrivacyAdapter, 'nick_or_first_name'),
+                (BadgePrivacyAdapter, 'surname_or_full_name'),
                 (cls, 'job_title'),
             ]
         else:
@@ -171,14 +193,14 @@ class Badge(models.Model, CsvExportMixin):
         from core.models import Person
 
         return {
-            BadgePrivacyProxy: BadgePrivacyProxy(self),
+            BadgePrivacyAdapter: BadgePrivacyAdapter(self),
         }
 
     def get_name_fields(self):
         return [
-            (self.person.surname.strip(), self.is_surname_visible),
-            (self.person.first_name.strip(), self.is_first_name_visible),
-            (self.person.nick.strip(), self.is_nick_visible),
+            (self.surname.strip(), self.is_surname_visible),
+            (self.first_name.strip(), self.is_first_name_visible),
+            (self.nick.strip(), self.is_nick_visible),
         ]
 
     @property
@@ -205,12 +227,12 @@ class Badge(models.Model, CsvExportMixin):
                 return escape(value)
 
         vars = dict(
-            surname=format_name_field(self.person.surname.strip(), self.is_surname_visible),
-            first_name=format_name_field(self.person.first_name.strip(), self.is_first_name_visible),
-            nick=format_name_field(self.person.nick.strip(), self.is_nick_visible),
+            surname=format_name_field(self.surname.strip(), self.is_surname_visible),
+            first_name=format_name_field(self.first_name.strip(), self.is_first_name_visible),
+            nick=format_name_field(self.nick.strip(), self.is_nick_visible),
         )
 
-        if self.person.nick:
+        if self.nick:
             return u"{surname}, {first_name}, {nick}".format(**vars)
         else:
             return u"{surname}, {first_name}".format(**vars)

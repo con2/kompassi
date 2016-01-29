@@ -38,6 +38,10 @@ msgstr "Sähköpostiosoitteen vahvistaminen"
 msgid "Events currently in progress"
 msgstr "Parhaillaan käynnissä olevat tapahtumat"
 
+#: models.py
+msgid "First name"
+msgstr "Etunimi"
+
 #: templates/core_login_view.jade
 msgid "For some of the services of this site you will need a user account which you can easily create here."
 msgstr "Osaan tämän sivuston palveluista tarvitset Kompassi-tunnuksen, jonka voit helposti luoda tästä."
@@ -75,6 +79,14 @@ msgstr "Uusi salasana"
 #, fuzzy
 msgid "New password (again)"
 msgstr "Uusi salasana (uudestaan)"
+
+#: models.py
+msgid "Nick name"
+msgstr "Nick"
+
+#: models.py
+msgid "Official first names"
+msgstr "Viralliset etunimet"
 
 #: forms.py
 msgid "Old password"
@@ -122,7 +134,7 @@ msgstr "Työvoimahaku avoinna"
 
 #: models.py
 msgid "Revoked"
-msgstr ""
+msgstr "Mitätöity"
 
 #: forms.py
 msgid "Save"
@@ -171,6 +183,11 @@ msgstr "Sivuston ylläpito"
 #: forms.py
 msgid "Submit"
 msgstr "Lähetä"
+
+#: models.py
+#, fuzzy
+msgid "Surname"
+msgstr "Käyttäjänimi"
 
 #: forms.py
 #, python-format
