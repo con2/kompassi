@@ -22,11 +22,7 @@ def default_badge_factory(event, person):
             job_title = u'Ohjelmanjärjestäjä'
             personnel_class = PersonnelClass.objects.get(event=event, slug='ohjelma')
         else:
-            if signup.job_title:
-                job_title = signup.job_title
-            elif signup.job_categories_accepted.exists():
-                job_title = signup.job_categories_accepted.first().name
-
+            job_title = signup.some_job_title
             personnel_class = signup.personnel_classes.order_by('priority').first()
 
     return dict(

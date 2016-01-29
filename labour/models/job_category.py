@@ -41,7 +41,7 @@ class JobCategory(models.Model):
     )
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, name=u'Courier'):
         from core.models import Event
         from .labour_event_meta import LabourEventMeta
         from .personnel_class import PersonnelClass
@@ -51,7 +51,7 @@ class JobCategory(models.Model):
 
         job_category, created = cls.objects.get_or_create(
             event=event,
-            name=u'Courier',
+            name=name,
         )
 
         if created:

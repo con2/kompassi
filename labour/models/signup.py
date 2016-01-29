@@ -274,7 +274,7 @@ class Signup(models.Model, CsvExportMixin):
         elif self.job_categories_accepted.exists():
             return self.job_categories_accepted.first().name
         else:
-            return u'Vänkäri'
+            return u'Työvoima'
 
     @property
     def granted_privileges(self):
@@ -456,9 +456,9 @@ class Signup(models.Model, CsvExportMixin):
             and badge.batch is None
 
             # Finally, check if the job title needs update
-            and badge.job_title != signup.job_title
+            and badge.job_title != self.some_job_title
         ):
-            badge.job_title = signup.job_title
+            badge.job_title = self.some_job_title
             badge.save()
 
     def get_previous_and_next_signup(self):

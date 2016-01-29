@@ -5,7 +5,7 @@ import logging
 from django.test import TestCase
 
 from core.models import Person
-from labour.models import LabourEventMeta, Signup
+from labour.models import LabourEventMeta, Signup, JobCategory
 from programme.models import ProgrammeEventMeta, Programme, ProgrammeRole
 
 from .models import BadgesEventMeta, Badge
@@ -50,6 +50,52 @@ class BadgesTestCase(TestCase):
 
         assert badge.is_first_name_visible
         assert badge.is_surname_visible
+
+    def test_condb_424(self):
+        """
+        If the job title of the worker changes while the badge has not been printed yet, the change
+        should be reflected in the badge.
+        """
+
+        signup, unused = Signup.get_or_create_dummy(accepted=True)
+
+        # No explicit job title
+        signup.job_title = u''
+        signup.save()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
+
+        jc1 = signup.job_categories_accepted.first()
+        assert badge.job_title == jc1.name
+
+        jc2, unused = JobCategory.get_or_create_dummy(name=u'Hitman')
+        signup.job_categories_accepted = [jc2]
+        signup.save()
+        signup.apply_state()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
+        assert badge.job_title == jc2.name
+
+        # Explicit job title should override
+        title = u'Chief Hitman Commander to the Queen'
+        signup.job_title = title
+        signup.save()
+        signup.apply_state()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
+        assert badge.job_title == title
+
+        # Removing explicit job title should reset to job category based title
+        signup.job_title = u''
+        signup.save()
+        signup.apply_state()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
+        assert badge.job_title == jc2.name
 
     def test_condb_137(self):
         p_role, unused = ProgrammeRole.get_or_create_dummy()
