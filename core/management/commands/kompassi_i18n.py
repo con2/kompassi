@@ -22,6 +22,7 @@ def extract_template(fileobj, keywords, comment_tags, options):
         src = process(src, compiler=Compiler)
     src = templatize(src, "")
     if "gettext" in src:
+        src = re.sub(r"\n\s+", "\n", src)  # Remove indentation
         return extract_python(StringIO.StringIO(src.encode("utf8")), keywords, comment_tags, options)
     return ()
 
