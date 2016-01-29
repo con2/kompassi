@@ -86,14 +86,18 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
             badge = get_object_or_404(Badge, pk=form.cleaned_data['badge_id'])
 
             if 'revoke-badge' in request.POST:
-                badge.is_revoked = True
-                badge.save()
-                messages.success(request, u'Badge on mitätöity.')
+                if badge.is_revoked:
+                    messages.warning(request, _(u'The badge had already been revoked.'))
+                else:
+                    badge.revoke(user=request.user)
+                    messages.success(request, _(u'The badge has now been revoked.'))
 
             elif 'clear-revoked' in request.POST:
-                badge.is_revoked = False
-                badge.save()
-                messages.success(request, u'Badge on palautettu.')
+                if not badge.is_revoked:
+                    message.warning(request, _(u'The badge was already valid.'))
+                else:
+                    badge.unrevoke()
+                    messages.success(request, _(u'The badge has been restored.'))
 
             elif 'mark-printed' in request.POST:
                 badge.is_printed_separately = True
@@ -106,7 +110,7 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
                 messages.success(request, u'Badgesta on pyyhitty erikseen tulostettu -merkintä.')
 
             else:
-                messages.error(request, u'Tuntematon pyyntö.')
+                messages.error(request, u'Kelvoton pyyntö.')
 
             return redirect(request.path)
 

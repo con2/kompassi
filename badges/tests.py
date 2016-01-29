@@ -27,6 +27,8 @@ class BadgesTestCase(TestCase):
         """
         Even though a worker has requested to only show their nick or first name on their badge,
         some events have decided that the real name must always be visible.
+
+        We assume this setting is not changed midway. If it is, all badges must be revoked.
         """
         self.person.preferred_name_display_style = 'nick'
         self.person.save()
@@ -38,16 +40,17 @@ class BadgesTestCase(TestCase):
 
         badge, created = Badge.get_or_create(person=self.person, event=self.event)
         assert not created
-
-        self.meta.real_name_must_be_visible = False
-        self.meta.save()
-
         assert not badge.is_first_name_visible
         assert not badge.is_surname_visible
 
         self.meta.real_name_must_be_visible = True
         self.meta.save()
 
+        badge.revoke()
+        signup.apply_state()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
         assert badge.is_first_name_visible
         assert badge.is_surname_visible
 

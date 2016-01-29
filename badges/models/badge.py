@@ -15,6 +15,16 @@ class Badge(models.Model, CsvExportMixin):
 
     printed_separately_at = models.DateTimeField(null=True, blank=True, verbose_name=_(u'Printed separately at'))
     revoked_at = models.DateTimeField(null=True, blank=True, verbose_name=_(u'Revoked at'))
+
+    first_name = models.CharField(max_length=1023, verbose_name=_(u'First name'))
+    is_first_name_visible = models.BooleanField(verbose_name=_(u'Is first_name visible'), default=True)
+
+    surname = models.CharField(max_length=1023, verbose_name=_(u'Surname'))
+    is_surname_visible = models.BooleanField(verbose_name=_(u'Is surname visible'), default=True)
+
+    nick = models.CharField(blank=True, max_length=1023, help_text=_(u'Nick name'))
+    is_nick_visible = models.BooleanField(verbose_name=_(u'Is nick visible'), default=True)
+
     job_title = models.CharField(max_length=63, blank=True, default=u'', verbose_name=_(u'Job title'))
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_(u'Created at'))
@@ -58,7 +68,11 @@ class Badge(models.Model, CsvExportMixin):
         # https://jira.tracon.fi/browse/CONDB-422
 
         try:
-            return cls.objects.get(personnel_class__event=event, person=person), False
+            return cls.objects.get(
+                personnel_class__event=event,
+                person=person,
+                revoked_at__isnull=True,
+            ), False
         except cls.DoesNotExist:
             from badges.utils import default_badge_factory
 
@@ -80,10 +94,10 @@ class Badge(models.Model, CsvExportMixin):
             # Santtu Pajukanta
             # Japsu
             return [
-                (PersonnelClass, 'slug'),
-                (cls, 'surname'),
-                (cls, 'first_name'),
-                (cls, 'nick'),
+                (cls, 'personnel_class_name'),
+                (BadgePrivacyProxy, 'surname'),
+                (BadgePrivacyProxy, 'first_name'),
+                (BadgePrivacyProxy, 'nick'),
                 (cls, 'job_title'),
             ]
         elif meta.badge_layout == 'nick':
@@ -95,9 +109,9 @@ class Badge(models.Model, CsvExportMixin):
             # Pajukanta
             # Chief Technology Officer
             return [
-                (cls, 'personnel_class_name'),
-                (cls, 'nick_or_first_name'),
-                (cls, 'surname_or_full_name'),
+                (cls, 'personnel_class_name')
+                (BadgePrivacyProxy, 'nick_or_first_name'),
+                (BadgePrivacyProxy, 'surname_or_full_name'),
                 (cls, 'job_title'),
             ]
         else:
@@ -105,11 +119,9 @@ class Badge(models.Model, CsvExportMixin):
 
     def get_csv_related(self):
         from core.models import Person
-        from labour.models import PersonnelClass
 
         return {
-            PersonnelClass: self.personnel_class,
-            Person: self.person,
+            BadgePrivacyProxy: BadgePrivacyProxy(self),
         }
 
     def get_name_fields(self):
@@ -135,76 +147,6 @@ class Badge(models.Model, CsvExportMixin):
     def event_name(self):
         return self.personnel_class.event.name if self.personnel_class else u''
 
-    @property
-    def person_full_name(self):
-        return self.person.full_name if self.person else u''
-
-    @property
-    def first_name(self):
-        return self.person.first_name.strip() if self.is_first_name_visible else u''
-
-    @property
-    def is_first_name_visible(self):
-        return self.meta.real_name_must_be_visible or self.person.is_first_name_visible
-
-    @property
-    def nick_or_first_name(self):
-        if self.is_nick_visible:
-            # JAPSU <- this
-            # Santtu Pajukanta
-            # Chief Technology Officer
-            return self.person.nick
-        elif self.is_first_name_visible:
-            # SANTTU <- this
-            # Pajukanta
-            # Chief Technology Officer
-            return self.person.first_name
-        else:
-            # NOTE we do not offer a choice of showing the surname but not the first name
-            raise NotImplementedError(self.person.name_display_style)
-
-    @property
-    def surname(self):
-        return self.person.surname.strip() if self.is_surname_visible else u''
-
-    @property
-    def is_surname_visible(self):
-        return self.meta.real_name_must_be_visible or self.person.is_surname_visible
-
-    @property
-    def surname_or_full_name(self):
-        if self.is_nick_visible:
-            # JAPSU
-            # Santtu Pajukanta <- this
-            # Chief Technology Officer
-            if self.is_surname_visible:
-                if self.is_first_name_visible:
-                    return u"{first_name} {surname}".format(
-                        first_name=self.person.first_name,
-                        surname=self.person.surname,
-                    )
-                else:
-                    # NOTE we do not offer a choice of showing the surname but not the first name
-                    raise NotImplementedError(self.person.name_display_style)
-            else:
-                return u''
-        else:
-            # SANTTU
-            # Pajukanta <- this
-            # Chief Technology Officer
-            if self.is_surname_visible:
-                return self.person.surname
-            else:
-                return u''
-
-    @property
-    def nick(self):
-        return self.person.nick.strip() if self.is_nick_visible else u''
-
-    @property
-    def is_nick_visible(self):
-        return self.person.is_nick_visible
-
     def to_html_print(self):
         def format_name_field(value, is_visible):
             if is_visible:
@@ -223,9 +165,31 @@ class Badge(models.Model, CsvExportMixin):
         else:
             return u"{surname}, {first_name}".format(**vars)
 
+    def revoke(self, user=None):
+        assert not self.is_revoked
+        self.is_revoked = True
+        self.revoked_by = user
+        self.save()
+        return self
+
+    def unrevoke(self):
+        assert self.is_revoked
+        self.is_revoked = False
+        self.revoked_by = None
+        self.save()
+        return self
+
+    def admin_get_full_name(self):
+        if self.nick:
+            return u'{self.first_name} "{self.nick}" {self.surname}'.format(self=self)
+        else:
+            return u'{self.first_name} {self.surname}'.format(self=self)
+    admin_get_full_name.short_description = _(u'Name')
+    admin_get_full_name.admin_order_field = ('surname', 'first_name', 'nick')
+
     def __unicode__(self):
         return u"{person_name} ({personnel_class_name}, {event_name})".format(
-            person_name=self.person_full_name,
+            person_name=self.admin_get_full_name(),
             personnel_class_name=self.personnel_class_name,
             event_name=self.event_name,
         )

@@ -25,7 +25,15 @@ def default_badge_factory(event, person):
             job_title = signup.some_job_title
             personnel_class = signup.personnel_classes.order_by('priority').first()
 
+    meta = event.badges_event_meta
+
     return dict(
+        first_name=person.first_name,
+        is_first_name_visible=meta.real_name_must_be_visible or person.is_first_name_visible,
+        surname=person.surname,
+        is_surname_visible=meta.real_name_must_be_visible or person.is_surname_visible,
+        nick=person.nick,
+        is_nick_visible=person.is_nick_visible,
         personnel_class=personnel_class,
         job_title=job_title,
     )

@@ -62,4 +62,4 @@ class Batch(models.Model):
         return self.printed_at is not None
 
     def __unicode__(self):
-        return _(u"Batch %(batch_number)") % dict(batch_number=self.pk)
+        return _(u"Batch %(batch_number)s") % dict(batch_number=self.pk)

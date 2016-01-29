@@ -330,14 +330,14 @@ def birth_date_validator(value):
 
 
 class Person(models.Model):
-    first_name = models.CharField(max_length=1023, verbose_name=u'Etunimi')
+    first_name = models.CharField(max_length=1023, verbose_name=_(u'First name'))
     official_first_names = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=u'Viralliset etunimet',
+        verbose_name=_(u'Official first names'),
     )
-    surname = models.CharField(max_length=1023, verbose_name=u'Sukunimi')
-    nick = models.CharField(blank=True, max_length=1023, help_text='Lempi- tai kutsumanimi')
+    surname = models.CharField(max_length=1023, verbose_name=_(u'Surname'))
+    nick = models.CharField(blank=True, max_length=1023, help_text=_(u'Nick name'))
     birth_date = models.DateField(
         null=True,
         blank=True,
