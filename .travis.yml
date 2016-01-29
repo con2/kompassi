@@ -14,4 +14,5 @@ install:
   - pip install -r requirements.txt -r requirements-dev.txt
 script:
   - npm run build
+  - python manage.py setup
   - python manage.py test
