@@ -34,13 +34,10 @@ class BadgesTestCase(TestCase):
         assert self.person.first_name not in self.person.display_name
         assert self.person.surname not in self.person.display_name
 
-        signup, unused = Signup.get_or_create_dummy()
-        signup.job_categories_accepted = signup.job_categories.all()
-        signup.personnel_classes.add(signup.job_categories.first().personnel_classes.first())
-        signup.state = 'accepted'
-        signup.save()
+        signup, unused = Signup.get_or_create_dummy(accepted=True)
 
-        badge, unused = Badge.get_or_create(event=self.event, person=self.person)
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
 
         self.meta.real_name_must_be_visible = False
         self.meta.save()

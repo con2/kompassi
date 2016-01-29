@@ -58,6 +58,8 @@ class JobCategory(models.Model):
             personnel_class, unused = PersonnelClass.get_or_create_dummy()
             job_category.personnel_classes.add(personnel_class)
 
+        meta.create_groups()
+
         return job_category, created
 
     def is_person_qualified(self, person):
@@ -105,7 +107,7 @@ class JobCategory(models.Model):
         return JobRequirement.requirements_as_integer_array(self.event, requirements)
 
     def save(self, *args, **kwargs):
-        if self.slug is None and self.name is not None:
+        if self.name and not self.slug:
             self.slug = slugify(self.name)
 
         return super(JobCategory, self).save(*args, **kwargs)

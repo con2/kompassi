@@ -299,7 +299,7 @@ class Signup(models.Model, CsvExportMixin):
         return Privilege.get_potential_privileges(person=self.person, group_privileges__event=self.event)
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, accepted=False):
         from core.models import Person, Event
         from .job_category import JobCategory
 
@@ -311,6 +311,13 @@ class Signup(models.Model, CsvExportMixin):
         extra = signup.signup_extra
         signup.job_categories = [job_category]
         extra.save()
+
+        if accepted:
+            signup.job_categories_accepted = signup.job_categories.all()
+            signup.personnel_classes.add(signup.job_categories.first().personnel_classes.first())
+            signup.state = 'accepted'
+            signup.save()
+            signup.apply_state()
 
         return signup, created
 
