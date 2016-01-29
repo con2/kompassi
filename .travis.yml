@@ -1,0 +1,17 @@
+sudo: false
+language: python
+cache:
+  directories:
+    - "$HOME/.cache/pip"
+    - "$HOME/.npm"
+python: 2.7
+install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
+  - npm install
+  - pip install -U pip
+  - pip install -r requirements.txt -r requirements-dev.txt
+script:
+  - npm run build
+  - python manage.py test
