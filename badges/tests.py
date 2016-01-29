@@ -42,6 +42,9 @@ class BadgesTestCase(TestCase):
 
         badge, unused = Badge.get_or_create(event=self.event, person=self.person)
 
+        self.meta.real_name_must_be_visible = False
+        self.meta.save()
+
         assert not badge.is_first_name_visible
         assert not badge.is_surname_visible
 
