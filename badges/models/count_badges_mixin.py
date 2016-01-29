@@ -5,6 +5,8 @@ from itertools import cycle
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
+from .constants import BADGE_ELIGIBLE_FOR_BATCHING, PROGRESS_ELEMENT_MIN_WIDTH
+
 
 class Progress(object):
     __slots__ = [
