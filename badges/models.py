@@ -73,10 +73,10 @@ class CountBadgesMixin(object):
         percentace_consumed_for_inflation = 0
 
         for pb_class, pb_text, pb_value in [
-            ('progress-bar-success', u'Tulostettu', self.count_printed_badges()),
-            ('progress-bar-danger', u'Mitätöity', self.count_revoked_badges()),
-            ('progress-bar-info', u'Odottaa erässä', self.count_badges_waiting_in_batch()),
-            ('progress-bar-grey', u'Odottaa erää', self.count_badges_awaiting_batch()),
+            ('progress-bar-success', _(u'Printed'), self.count_printed_badges()),
+            ('progress-bar-danger', _(u'Revoked'), self.count_revoked_badges()),
+            ('progress-bar-info', _(u'Waiting in batch'), self.count_badges_waiting_in_batch()),
+            ('progress-bar-grey', _(u'Awaiting allocation into batch'), self.count_badges_awaiting_batch()),
         ]:
 
             if pb_value > 0:
@@ -125,9 +125,12 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     badge_layout = models.CharField(
         max_length=4,
         default='trad',
-        choices=(('trad', u'Perinteinen'), ('nick', u'Nickiä korostava')),
+        choices=(('trad', _(u'Traditional')), ('nick', _(u'Emphasize nick name'))),
         verbose_name=u'Badgen asettelu',
-        help_text=u'Perinteinen: tehtävänimike, etunimi sukunimi, nick. Nickiä korostava: nick tai etunimi, sukunimi tai koko nimi, tehtävänimike.',
+        help_text=_(
+            u'This controls how fields are grouped in the badge. Traditional: job title, firstname surname, '
+            u'nick. Emphasize nick name: first name or nick, surname or full name, job title.'
+        ),
     )
 
     real_name_must_be_visible = models.BooleanField(
@@ -160,8 +163,8 @@ class Batch(models.Model, CsvExportMixin):
 
     personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
 
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_(u'Created at'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_(u'Updated at'))
     printed_at = models.DateTimeField(null=True, blank=True)
 
     is_printed = time_bool_property('printed_at')
@@ -209,18 +212,18 @@ class Batch(models.Model, CsvExportMixin):
 
 
 class Badge(models.Model):
-    person = models.ForeignKey('core.Person', null=True, blank=True)
+    person = models.ForeignKey('core.Person', null=True, blank=True, verbose_name=_(u'Person'))
 
-    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True, verbose_name=u'Henkilöstöluokka')
+    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True, verbose_name=_(u'Personnel class'))
 
-    printed_separately_at = models.DateTimeField(null=True, blank=True)
-    revoked_at = models.DateTimeField(null=True, blank=True)
-    job_title = models.CharField(max_length=63, blank=True, default=u'', verbose_name=u'Tehtävänimike')
+    printed_separately_at = models.DateTimeField(null=True, blank=True, verbose_name=_(u'Printed separately at'))
+    revoked_at = models.DateTimeField(null=True, blank=True, verbose_name=_(u'Revoked at'))
+    job_title = models.CharField(max_length=63, blank=True, default=u'', verbose_name=_(u'Job title'))
 
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_(u'Created at'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_(u'Updated at'))
 
-    batch = models.ForeignKey(Batch, null=True, blank=True, db_index=True)
+    batch = models.ForeignKey(Batch, null=True, blank=True, db_index=True, verbose_name=_(u'Printing batch'))
 
     is_revoked = time_bool_property('revoked_at')
     is_printed = time_bool_property('printed_at')
@@ -252,6 +255,7 @@ class Badge(models.Model):
     def get_or_create(cls, event, person):
         # FIXME If someone first does programme and then labour, they should still get labour badge.
         # Factory should be invoked anyway, and badge "upgraded" (revoke old, create new).
+        # https://jira.tracon.fi/browse/CONDB-422
 
         try:
             return cls.objects.get(personnel_class__event=event, person=person), False

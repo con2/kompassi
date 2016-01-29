@@ -1,8 +1,69 @@
 #: models.py
+msgid "Awaiting allocation into batch"
+msgstr "Odottaa tulostuserää"
+
+#: models.py
+msgid "Created at"
+msgstr "Luontiaika"
+
+#: models.py
+msgid "Emphasize nick name"
+msgstr "Korosta nickiä"
+
+#: models.py
 msgid "In most events, it is up to the person carrying the badge to decide whether or not their real name is displayed in their badge. Some choose to go by their first name or nick name only. Some events have, however, decided to restrict this and require the first name and surname to be visible in all badges. If this option is selected, only the name display styles <em>Firstname Surname</em> and <em>Firstname \"Nick\" Surname</em> are effectively allowed."
-msgstr ""
+msgstr "Useimmissa tapahtumissa badgen haltija saa päättää, näytetäänkö hänen oikea nimensä badgessa. Jotkut haluavat badgeensa ainoastaan etunimen tai nickin. Tietyt tapahtumat ovat päättäneet rajoittaa tätä. Mikäli tämä asetus on valittu, badgessa näkyy aina haltijansa etunimi ja sukunimi."
+
+#: models.py
+msgid "Job title"
+msgstr "Tehtävänimike"
+
+#: models.py
+msgid "Person"
+msgstr "Henkilö"
+
+#: models.py
+msgid "Personnel class"
+msgstr "Henkilöstöluokka"
+
+#: models.py
+msgid "Printed"
+msgstr "Tulostettu"
+
+#: models.py
+msgid "Printed separately at"
+msgstr "Erillistulostusaika"
+
+#: models.py
+msgid "Printing batch"
+msgstr "Tulostuserä"
 
 #: models.py
 msgid "Require real name to be visible"
-msgstr ""
+msgstr "Vaadi koko nimi näkyviin"
+
+#: models.py
+msgid "Revoked"
+msgstr "Mitätöity"
+
+#: models.py
+msgid "Revoked at"
+msgstr "Mitätöintiaika"
+
+#: models.py
+#, fuzzy
+msgid "This controls how fields are grouped in the badge. Traditional: job title, firstname surname, nick. Emphasize nick name: first name or nick, surname or full name, job title."
+msgstr "Tämä kontrolloi sitä, miten kentät niputetaan badgessa. Perinteinen: tehtävänimike, etunimi sukunimi, nick. Korosta nickiä: etunimi tai nick, sukunimi tai koko nimi, tehtävänimike."
+
+#: models.py
+msgid "Traditional"
+msgstr "Perinteinen"
+
+#: models.py
+msgid "Updated at"
+msgstr "Päivitysaika"
+
+#: models.py
+msgid "Waiting in batch"
+msgstr "Odottaa erässä"
 
