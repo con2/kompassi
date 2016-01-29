@@ -525,7 +525,6 @@ class Command(BaseCommand):
         BadgesEventMeta.objects.get_or_create(
             event=event,
             defaults=dict(
-                badge_factory_code='tracon9.badges:badge_factory',
                 admin_group=badge_admin_group,
             )
         )
