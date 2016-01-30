@@ -369,12 +369,12 @@ class Signup(models.Model, CsvExportMixin):
     def apply_state_sync(self):
         self.apply_state_ensure_job_categories_accepted_is_set()
         self.apply_state_ensure_personnel_class_is_set()
+        self.apply_state_create_badges()
+        self.apply_state_email_aliases()
 
     def _apply_state(self):
         self.apply_state_group_membership()
         self.apply_state_send_messages()
-        self.apply_state_create_badges()
-        self.apply_state_email_aliases()
 
     def apply_state_group_membership(self):
         from .job_category import JobCategory
