@@ -26,7 +26,7 @@ def populate_denormalized_fields(apps, schema_editor):
                 name_display_style = 'firstname_surname'
 
         badge.first_name = badge.person.first_name
-        badge.is_first_name_visible = 'first_name' in name_display_style
+        badge.is_first_name_visible = 'firstname' in name_display_style
         badge.surname = badge.person.surname
         badge.is_surname_visible = 'surname' in name_display_style
         badge.nick = badge.person.nick
