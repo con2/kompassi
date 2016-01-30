@@ -29,16 +29,17 @@ class PersonnelClass(models.Model):
         ordering = ('event', 'priority')
 
     @classmethod
-    def get_or_create_dummy(cls, app_label='labour'):
+    def get_or_create_dummy(cls, app_label='labour', name='Smallfolk', priority=0):
         from core.models import Event
         event, unused = Event.get_or_create_dummy()
 
         return PersonnelClass.objects.get_or_create(
             event=event,
-            slug=app_label,
+            slug=slugify(name),
             app_label=app_label,
             defaults=dict(
                 name=app_label,
+                priority=priority,
             )
         )
 

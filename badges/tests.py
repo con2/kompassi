@@ -1,11 +1,12 @@
 # encoding: utf-8
 
 import logging
+from unittest import skip
 
 from django.test import TestCase
 
 from core.models import Person
-from labour.models import LabourEventMeta, Signup, JobCategory
+from labour.models import LabourEventMeta, Signup, JobCategory, PersonnelClass
 from programme.models import ProgrammeEventMeta, Programme, ProgrammeRole
 
 from .models import BadgesEventMeta, Badge
@@ -100,7 +101,24 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.job_title == jc2.name
 
-    def test_mixed_badges(self):
+    @skip("https://jira.tracon.fi/browse/CONDB-137")
+    def test_condb_137(self):
         """
-        Badge printing must work with a mixed case of Person and non-Person badges.
+        If the personnel class of the worker changes, the badge shall be revoked and a new one issued.
         """
+
+        pc2, unused = PersonnelClass.get_or_create_dummy(name='Sehr Wichtig Fellow', priority=-10)
+
+        signup, unused = Signup.get_or_create_dummy(accepted=True)
+        pc1 = signup.personnel_classes.get()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
+        assert badge.personnel_class == pc1
+
+        signup.personnel_classes.add(pc2)
+        signup.apply_state()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
+        assert badge.personnel_class == pc2
