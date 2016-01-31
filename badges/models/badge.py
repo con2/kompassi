@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
@@ -133,23 +133,38 @@ class Badge(models.Model, CsvExportMixin):
 
     @classmethod
     def get_or_create(cls, event, person):
-        # FIXME If someone first does programme and then labour, they should still get labour badge.
-        # Factory should be invoked anyway, and badge "upgraded" (revoke old, create new).
-        # https://jira.tracon.fi/browse/CONDB-422
+        """
+        Makes sure the person has a badge of the correct class and up-to-date information for a given event.
+        """
+
+        from badges.utils import default_badge_factory
 
         assert person is not None
 
-        try:
-            return cls.objects.get(
-                personnel_class__event=event,
-                person=person,
-                revoked_at__isnull=True,
-            ), False
-        except cls.DoesNotExist:
-            from badges.utils import default_badge_factory
+        with transaction.atomic():
+            try:
+                existing_badge = cls.objects.get(
+                    personnel_class__event=event,
+                    person=person,
+                    revoked_at__isnull=True,
+                )
+            except cls.DoesNotExist:
+                existing_badge = None
 
-            badge_opts = default_badge_factory(event=event, person=person)
-            badge_opts = dict(badge_opts, person=person)
+            expected_badge_opts = default_badge_factory(event=event, person=person)
+
+            if existing_badge:
+                # There is an existing un-revoked badge. Check that its information is correct.
+                if any(getattr(existing_badge, key) != value for key, value in expected_badge_opts.iteritems()):
+                    existing_badge.revoke()
+                else:
+                    return existing_badge, False
+
+            if expected_badge_opts.get('personnel_class') is None:
+                # They should not have a badge.
+                return None, False
+
+            badge_opts = dict(expected_badge_opts, person=person)
 
             badge = cls(**badge_opts)
             badge.save()

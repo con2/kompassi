@@ -142,10 +142,6 @@ class BadgesTestCase(TestCase):
         assert created
         assert not badge.is_revoked
 
-
-
-
-    @skip("https://jira.tracon.fi/browse/CONDB-137")
     def test_condb_137(self):
         """
         If the personnel class of the worker changes, the badge shall be revoked and a new one issued.

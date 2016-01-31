@@ -3,27 +3,51 @@
 from labour.models import PersonnelClass
 
 
+def get_priority(pair):
+    personnel_class, job_title = pair
+    return personnel_class.priority
+
+
 def default_badge_factory(event, person):
     """
     Specifies badge options, such as badge template and job title, given an event and a person.
 
     Returns a dictionary that can be fed into the constructor of badges.models:Badge.
+
+    If the key `personnel_class` in that dictionary is None, that person should not have a badge.
     """
 
-    job_title = u''
+    personnel_classes = []
 
     if event.labour_event_meta is not None:
         from labour.models import Signup
 
         try:
-            signup = Signup.objects.get(event=event, person=person)
+            signup = Signup.objects.get(event=event, person=person, is_active=True)
         except Signup.DoesNotExist:
-            # XXX blatantly assuming it's a programme person
-            job_title = u'Ohjelmanjärjestäjä'
-            personnel_class = PersonnelClass.objects.get(event=event, slug='ohjelma')
+            pass
         else:
             job_title = signup.some_job_title
-            personnel_class = signup.personnel_classes.order_by('priority').first()
+            personnel_classes.extend((pc, job_title) for pc in signup.personnel_classes.all())
+
+    if event.programme_event_meta is not None:
+        from programme.models import ProgrammeRole
+
+        for programme_role in ProgrammeRole.objects.filter(
+            person=person,
+            programme__category__event=event,
+            role__personnel_class__isnull=False,
+        ).order_by('role__priority'):
+            job_title = programme_role.role.title
+            personnel_class = programme_role.role.personnel_class
+            personnel_classes.extend((personnel_class, job_title))
+
+    if personnel_classes:
+        personnel_classes.sort(key=get_priority)
+        personnel_class, job_title = personnel_classes[0]
+    else:
+        personnel_class = None
+        job_title = u'EI BADGEA' # This should never get printed.
 
     meta = event.badges_event_meta
 

@@ -19,13 +19,25 @@ class Role(models.Model):
         help_text=_(u'Only hosts who are assigned public roles will be shown publicly in the programme schedule.'),
     )
 
+    priority = models.IntegerField(
+        default=0,
+        verbose_name=_(u'Priority'),
+        help_text=_(u'If a host is involved in multiple Programmes in a single event, to determine their entitlement to a badge and other perks, lowest priority number wins.')
+    )
+    personnel_class = models.ForeignKey('labour.PersonnelClass',
+        null=True,
+        blank=True,
+        verbose_name=_(u'Personnel class'),
+        help_text=_(u'If the members of this programme role should have a badge, please point this field to their personnel class.'),
+    )
+
     def __unicode__(self):
         return self.title
 
     class Meta:
         verbose_name = _(u'role')
         verbose_name_plural = _(u'roles')
-        ordering = ['title']
+        ordering = ('priority', 'title')
 
     @classmethod
     def get_or_create_dummy(cls):
