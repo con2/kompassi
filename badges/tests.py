@@ -201,3 +201,44 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.personnel_class == programme_role.role.personnel_class
 
+    def test_condb_428_labour(self):
+        """
+        If someone is first accepted as a worker, but then cancels their participation or they are fired,
+        their badge should get revoked.
+        """
+        signup, created = Signup.get_or_create_dummy(accepted=True)
+
+        badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert not created
+        assert badge.personnel_class == signup.personnel_classes.get()
+
+        # Now cancel the worker signup and make sure they go back to having a programme badge
+        signup.personnel_classes = []
+        signup.job_categories_accepted = []
+        signup.state = 'cancelled'
+        signup.save()
+        signup.apply_state()
+
+        badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert not created
+        assert badge is None
+
+    def test_condb_428_programme(self):
+        """
+        If someone is first accepted as a speaker, but then cancels their programme or they are fired,
+        their badge should get revoked.
+        """
+        programme_role, unused = ProgrammeRole.get_or_create_dummy()
+        programme = programme_role.programme
+
+        badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert not created
+        assert badge.personnel_class == programme_role.role.personnel_class
+
+        programme.state = 'rejected'
+        programme.save()
+        programme.apply_state()
+
+        badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert not created
+        assert badge is None

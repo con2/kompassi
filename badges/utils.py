@@ -35,7 +35,11 @@ def default_badge_factory(event, person):
 
         personnel_classes.extend(
             (programme_role.role.personnel_class, programme_role.role.title)
-            for programme_role in ProgrammeRole.objects.filter(person=person, programme__category__event=event)
+            for programme_role in ProgrammeRole.objects.filter(
+                person=person,
+                programme__category__event=event,
+                programme__state__in=['accepted', 'published']
+            )
         )
 
     if personnel_classes:
@@ -43,7 +47,7 @@ def default_badge_factory(event, person):
         personnel_class, job_title = personnel_classes[0]
     else:
         personnel_class = None
-        job_title = u'EI BADGEA' # This should never get printed.
+        job_title = u'THIS BADGE SHOULD NOT PRINT' # This should never get printed.
 
     meta = event.badges_event_meta
 
