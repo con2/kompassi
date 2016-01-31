@@ -9,7 +9,7 @@ from core.models import Person
 from labour.models import LabourEventMeta, Signup, JobCategory, PersonnelClass
 from programme.models import ProgrammeEventMeta, Programme, ProgrammeRole
 
-from .models import BadgesEventMeta, Badge
+from .models import BadgesEventMeta, Badge, Batch
 
 
 logger = logging.getLogger('kompassi')
@@ -100,6 +100,38 @@ class BadgesTestCase(TestCase):
         badge, created = Badge.get_or_create(person=self.person, event=self.event)
         assert not created
         assert badge.job_title == jc2.name
+
+    def test_condb_429(self):
+        signup, unused = Signup.get_or_create_dummy(accepted=True)
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+
+        assert not created
+        assert not badge.is_printed
+        badge = badge.revoke()
+
+        assert badge is None
+        assert not Badge.objects.filter(person=self.person, personnel_class__event=self.event).exists()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert created
+
+        batch = Batch.create(event=self.event)
+        batch.confirm()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
+        assert badge.batch == batch
+        assert badge.is_printed
+
+        badge = badge.revoke()
+        assert badge is not None
+        assert badge.is_revoked
+
+        badge = Badge.objects.get(person=self.person, personnel_class__event=self.event)
+
+        assert not created
+        assert badge.is_revoked
+
 
     @skip("https://jira.tracon.fi/browse/CONDB-137")
     def test_condb_137(self):

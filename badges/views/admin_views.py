@@ -126,7 +126,7 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
             if personnel_class_slug == 'yoink':
                 viewing_yoink_list = True
                 active_filter = badges_to_yoink_fake_personnel_class
-                badge_criteria.update(batch__isnull=False, revoked_at__isnull=False)
+                badge_criteria.update(revoked_at__isnull=False)
                 template_subtype = 'yoink'
             else:
                 active_filter = get_object_or_404(PersonnelClass, event=event, slug=personnel_class_slug)

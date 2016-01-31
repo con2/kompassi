@@ -239,10 +239,15 @@ class Badge(models.Model, CsvExportMixin):
 
     def revoke(self, user=None):
         assert not self.is_revoked
-        self.is_revoked = True
-        self.revoked_by = user
-        self.save()
-        return self
+
+        if self.is_printed:
+            self.is_revoked = True
+            self.revoked_by = user
+            self.save()
+            return self
+        else:
+            self.delete()
+            return None
 
     def unrevoke(self):
         assert self.is_revoked
