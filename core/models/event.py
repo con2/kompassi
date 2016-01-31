@@ -97,6 +97,8 @@ class Event(models.Model):
         # Avoid having to manually transform 20 or so event setup scripts with organization_name and organization_url
         # in get_or_create.defaults
         if 'organization_name' in kwargs:
+            from .organization import Organization
+
             organization_name = kwargs.pop('organization_name')
             organization_url = kwargs.pop('organization_url', u'')
 
