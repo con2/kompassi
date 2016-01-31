@@ -18,7 +18,7 @@ class Command(BaseCommand):
             for programme in Programme.objects.filter(category__event=event).exclude(state__in=['rejected', 'cancelled']):
                 for person in programme.organizers.all():
                     try:
-                        Badge.get_or_create(event=event, person=person)
+                        Badge.ensure(event=event, person=person)
                         print person
                     except Badge.MultipleObjectsReturned:
                         print u'WARNING: Multiple badges for', person

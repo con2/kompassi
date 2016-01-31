@@ -436,30 +436,9 @@ class Signup(models.Model, CsvExportMixin):
         if self.event.badges_event_meta is None:
             return
 
-        if not self.is_accepted:
-            return
-
-        # TODO revoke badge if one exists but shouldn't
-
         from badges.models import Badge
-        badge, created = Badge.get_or_create(event=self.event, person=self.person)
 
-        # Update job title if it is not too late
-        if (
-            # Just a short-circuit optimization – the job title cannot change if the badge was just created
-            not created
-
-            # Don't touch badges of other apps (for example, programme)
-            and badge.personnel_class.app_label == 'labour'
-
-            # Don't touch badges that are already printed (XXX should revoke and re-create)
-            and badge.batch is None
-
-            # Finally, check if the job title needs update
-            and badge.job_title != self.some_job_title
-        ):
-            badge.job_title = self.some_job_title
-            badge.save()
+        Badge.ensure(event=self.event, person=self.person)
 
     def get_previous_and_next_signup(self):
         queryset = self.event.signup_set.order_by('person__surname', 'person__first_name', 'id').all()

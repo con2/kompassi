@@ -132,7 +132,7 @@ class Badge(models.Model, CsvExportMixin):
         )
 
     @classmethod
-    def get_or_create(cls, event, person):
+    def ensure(cls, event, person):
         """
         Makes sure the person has a badge of the correct class and up-to-date information for a given event.
         """

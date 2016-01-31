@@ -279,10 +279,10 @@ class Programme(models.Model, CsvExportMixin):
         from badges.models import Badge
 
         for person in self.organizers.all():
-            Badge.get_or_create(event=self.event, person=person)
+            Badge.ensure(event=self.event, person=person)
 
         for deleted_programme_role in deleted_programme_roles:
-            Badge.get_or_create(event=self.event, person=deleted_programme_role.person)
+            Badge.ensure(event=self.event, person=deleted_programme_role.person)
 
     class Meta:
         verbose_name = _(u'programme')

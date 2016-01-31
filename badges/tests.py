@@ -39,7 +39,7 @@ class BadgesTestCase(TestCase):
 
         signup, unused = Signup.get_or_create_dummy(accepted=True)
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert not badge.is_first_name_visible
         assert not badge.is_surname_visible
@@ -50,7 +50,7 @@ class BadgesTestCase(TestCase):
         badge.revoke()
         signup.apply_state()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.is_first_name_visible
         assert badge.is_surname_visible
@@ -67,7 +67,7 @@ class BadgesTestCase(TestCase):
         signup.job_title = u''
         signup.save()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
 
         jc1 = signup.job_categories_accepted.first()
@@ -78,7 +78,7 @@ class BadgesTestCase(TestCase):
         signup.save()
         signup.apply_state()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.job_title == jc2.name
 
@@ -88,7 +88,7 @@ class BadgesTestCase(TestCase):
         signup.save()
         signup.apply_state()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.job_title == title
 
@@ -97,7 +97,7 @@ class BadgesTestCase(TestCase):
         signup.save()
         signup.apply_state()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.job_title == jc2.name
 
@@ -107,10 +107,10 @@ class BadgesTestCase(TestCase):
         leave it around revoked, it can be removed altogether.
 
         In this test, we arbitrarily revoke the badge of a worker who is still signed up to the event.
-        Thus calling Badge.get_or_create again will re-create (or un-revoke) their badge.
+        Thus calling Badge.ensure again will re-create (or un-revoke) their badge.
         """
         signup, unused = Signup.get_or_create_dummy(accepted=True)
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
 
         assert not created
         assert not badge.is_printed
@@ -119,12 +119,12 @@ class BadgesTestCase(TestCase):
         assert badge is None
         assert not Badge.objects.filter(person=self.person, personnel_class__event=self.event).exists()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert created
 
         batch = Batch.create(event=self.event)
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.batch == batch
         assert not badge.is_printed
@@ -138,7 +138,7 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.is_revoked
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert created
         assert not badge.is_revoked
 
@@ -150,7 +150,7 @@ class BadgesTestCase(TestCase):
         signup, unused = Signup.get_or_create_dummy(accepted=True)
         pc1 = signup.personnel_classes.get()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.personnel_class == pc1
 
@@ -163,7 +163,7 @@ class BadgesTestCase(TestCase):
         signup.personnel_classes.add(pc2)
         signup.apply_state()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.personnel_class == pc2
 
@@ -180,13 +180,13 @@ class BadgesTestCase(TestCase):
         """
         programme_role, unused = ProgrammeRole.get_or_create_dummy()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.personnel_class == programme_role.role.personnel_class
 
         signup, created = Signup.get_or_create_dummy(accepted=True)
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.personnel_class == signup.personnel_classes.get()
 
@@ -197,7 +197,7 @@ class BadgesTestCase(TestCase):
         signup.save()
         signup.apply_state()
 
-        badge, created = Badge.get_or_create(person=self.person, event=self.event)
-        assert created
+        badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert not created
         assert badge.personnel_class == programme_role.role.personnel_class
 
