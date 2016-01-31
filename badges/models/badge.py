@@ -238,9 +238,22 @@ class Badge(models.Model, CsvExportMixin):
             return u"{surname}, {first_name}".format(**vars)
 
     def revoke(self, user=None):
+        """
+        Revoke the badge.
+
+        When a badge that is not yet assigned to a batch or printed separately is revoked, it is
+        removed altogether.
+
+        When a badge that is already assigned to a batch or printed separately is revoked, it will be
+        marked as such but not removed, because it needs to be manually removed from distribution.
+
+        Note that the batch does not need to be marked as printed yet for a badge to stay around revoked,
+        because a batch that is already created but not yet printed may have been downloaded as Excel
+        already. A Batch should never change after being created.
+        """
         assert not self.is_revoked
 
-        if self.is_printed:
+        if self.is_printed_separately or self.batch:
             self.is_revoked = True
             self.revoked_by = user
             self.save()

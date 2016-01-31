@@ -102,6 +102,13 @@ class BadgesTestCase(TestCase):
         assert badge.job_title == jc2.name
 
     def test_condb_429(self):
+        """
+        If a badge is revoked before it is printed or assigned into a batch, there is no need to
+        leave it around revoked, it can be removed altogether.
+
+        In this test, we arbitrarily revoke the badge of a worker who is still signed up to the event.
+        Thus calling Badge.get_or_create again will re-create (or un-revoke) their badge.
+        """
         signup, unused = Signup.get_or_create_dummy(accepted=True)
         badge, created = Badge.get_or_create(person=self.person, event=self.event)
 
@@ -116,12 +123,11 @@ class BadgesTestCase(TestCase):
         assert created
 
         batch = Batch.create(event=self.event)
-        batch.confirm()
 
         badge, created = Badge.get_or_create(person=self.person, event=self.event)
         assert not created
         assert badge.batch == batch
-        assert badge.is_printed
+        assert not badge.is_printed
 
         badge = badge.revoke()
         assert badge is not None
@@ -131,6 +137,12 @@ class BadgesTestCase(TestCase):
 
         assert not created
         assert badge.is_revoked
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert created
+        assert not badge.is_revoked
+
+
 
 
     @skip("https://jira.tracon.fi/browse/CONDB-137")
