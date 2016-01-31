@@ -36,7 +36,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     schedule_form = initialize_form(ScheduleForm, request, instance=programme, event=event, prefix='schedule')
     forms = [public_form, needs_form, schedule_form, internal_form]
 
-    invitation_form = initialize_form(InvitationForm, request, prefix='invitation')
+    invitation_form = initialize_form(InvitationForm, request, event=event, prefix='invitation')
     freeform_organizer_form = initialize_form(FreeformOrganizerForm, request, prefix='freeform')
 
     if request.method == 'POST':

@@ -36,8 +36,7 @@ def default_badge_factory(event, person):
         for programme_role in ProgrammeRole.objects.filter(
             person=person,
             programme__category__event=event,
-            role__personnel_class__isnull=False,
-        ).order_by('role__priority'):
+        ):
             job_title = programme_role.role.title
             personnel_class = programme_role.role.personnel_class
             personnel_classes.extend((personnel_class, job_title))

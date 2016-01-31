@@ -52,6 +52,11 @@ class RoomAdmin(admin.ModelAdmin):
     list_filter = ('venue',)
 
 
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_event', 'title', 'personnel_class')
+    list_filter = ('personnel_class__event',)
+
+
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('event', 'title', 'public')
     list_filter = ('event',)
@@ -87,7 +92,7 @@ class FreeformOrganizerAdmin(admin.ModelAdmin):
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Room, RoomAdmin)
-admin.site.register(Role)
+admin.site.register(Role, RoleAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Programme, ProgrammeAdmin)
 admin.site.register(View, ViewAdmin)

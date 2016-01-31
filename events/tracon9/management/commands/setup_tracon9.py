@@ -20,6 +20,7 @@ from labour.models import (
     LabourEventMeta,
     Qualification,
     WorkPeriod,
+    PersonnelClass,
 )
 from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role, TimeBlock, SpecialStartTime, View, Tag
 from tickets.models import TicketsEventMeta, LimitGroup, Product
@@ -31,7 +32,7 @@ class Command(BaseCommand):
     args = ''
     help = 'Setup tracon9 specific stuff'
 
-    def handle(*args, **options):
+    def handle(self, *args, **options):
         if settings.DEBUG:
             print 'Setting up tracon9 in test mode'
         else:
@@ -249,7 +250,15 @@ class Command(BaseCommand):
             programme_event_meta.contact_email = 'ohjelma@tracon.fi'
             programme_event_meta.save()
 
+        personnel_class, unused = PersonnelClass.objects.get_or_create(
+            event=event,
+            slug='ohjelma', defaults=dict(
+                app_label='programme',
+                name=u'Ohjelmanjärjestäjä',
+            )
+        )
         role, unused = Role.objects.get_or_create(
+            personnel_class=personnel_class,
             title=u'Ohjelmanjärjestäjä',
             defaults=dict(
                 is_default=True,

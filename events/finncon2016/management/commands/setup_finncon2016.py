@@ -219,6 +219,7 @@ class Setup(object):
             )
 
     def setup_programme(self):
+        from labour.models import PersonnelClass
         from programme.models import (
             Category,
             Programme,
@@ -237,7 +238,9 @@ class Setup(object):
             contact_email='Finncon 2016 -ohjelmatiimi <ohjelma@2016.finncon.org>',
         ))
 
+        personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
         role, unused = Role.objects.get_or_create(
+            personnel_class=personnel_class,
             title=u'Ohjelmanjärjestäjä',
             defaults=dict(
                 is_default=True,

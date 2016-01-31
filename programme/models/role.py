@@ -10,6 +10,13 @@ from core.models import OneTimeCode, OneTimeCodeLite
 
 
 class Role(models.Model):
+    personnel_class = models.ForeignKey('labour.PersonnelClass',
+        null=True,
+        blank=True,
+        verbose_name=_(u'Personnel class'),
+        help_text=_(u'The personnel class for the programme hosts that have this role.'),
+    )
+
     title = models.CharField(max_length=1023)
     require_contact_info = models.BooleanField(default=True)
     is_default = models.BooleanField(default=False)
@@ -19,25 +26,13 @@ class Role(models.Model):
         help_text=_(u'Only hosts who are assigned public roles will be shown publicly in the programme schedule.'),
     )
 
-    priority = models.IntegerField(
-        default=0,
-        verbose_name=_(u'Priority'),
-        help_text=_(u'If a host is involved in multiple Programmes in a single event, to determine their entitlement to a badge and other perks, lowest priority number wins.')
-    )
-    personnel_class = models.ForeignKey('labour.PersonnelClass',
-        null=True,
-        blank=True,
-        verbose_name=_(u'Personnel class'),
-        help_text=_(u'If the members of this programme role should have a badge, please point this field to their personnel class.'),
-    )
-
     def __unicode__(self):
         return self.title
 
     class Meta:
         verbose_name = _(u'role')
         verbose_name_plural = _(u'roles')
-        ordering = ('priority', 'title')
+        ordering = ('personnel_class__event', 'title')
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -46,7 +41,7 @@ class Role(models.Model):
             require_contact_info=False
         )
 
-
-
-
-
+    def admin_get_event(self):
+        return self.personnel_class.event if self.personnel_class else None
+    admin_get_event.short_description = _(u'Event')
+    admin_get_event.admin_order_field = 'personnel_class__event'

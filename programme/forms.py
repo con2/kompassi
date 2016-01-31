@@ -161,10 +161,14 @@ class ScheduleForm(forms.ModelForm):
 
 class InvitationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
         super(InvitationForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
+
+        self.fields['role'].queryset = Role.objects.filter(personnel_class__event=event)
 
     class Meta:
         model = Invitation
