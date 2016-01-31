@@ -11,8 +11,6 @@ from core.models import OneTimeCode, OneTimeCodeLite
 
 class Role(models.Model):
     personnel_class = models.ForeignKey('labour.PersonnelClass',
-        null=True,
-        blank=True,
         verbose_name=_(u'Personnel class'),
         help_text=_(u'The personnel class for the programme hosts that have this role.'),
     )
@@ -36,7 +34,16 @@ class Role(models.Model):
 
     @classmethod
     def get_or_create_dummy(cls):
+        from labour.models import PersonnelClass
+
+        personnel_class, unused = PersonnelClass.get_or_create_dummy(
+            app_label='programme',
+            name='Entertainer',
+            priority=40,
+        )
+
         return cls.objects.get_or_create(
+            personnel_class=personnel_class,
             title=u'Overbaron',
             require_contact_info=False
         )

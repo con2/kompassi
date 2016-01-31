@@ -183,7 +183,7 @@ class Programme(models.Model, CsvExportMixin):
         return self.state == 'published'
 
     @classmethod
-    def get_or_create_dummy(cls, title=u'Dummy program'):
+    def get_or_create_dummy(cls, title=u'Dummy program', state='published'):
         from .category import Category
         from .room import Room
 
@@ -195,6 +195,7 @@ class Programme(models.Model, CsvExportMixin):
             defaults=dict(
                 category=category,
                 room=room,
+                state=state,
             )
         )
 
@@ -264,6 +265,24 @@ class Programme(models.Model, CsvExportMixin):
             self.end_time = self.start_time + timedelta(minutes=self.length)
 
         return super(Programme, self).save(*args, **kwargs)
+
+    def apply_state(self):
+        self.apply_state_create_badges()
+
+    def apply_state_create_badges(self, deleted_programme_roles=[]):
+        if 'badges' not in settings.INSTALLED_APPS:
+            return
+
+        if self.event.badges_event_meta is None:
+            return
+
+        from badges.models import Badge
+
+        for person in self.organizers.all():
+            Badge.get_or_create(event=self.event, person=person)
+
+        for deleted_programme_role in deleted_programme_roles:
+            Badge.get_or_create(event=self.event, person=deleted_programme_role.person)
 
     class Meta:
         verbose_name = _(u'programme')

@@ -47,6 +47,8 @@ def programme_admin_detail_view(request, vars, event, programme_id):
                 for form in forms:
                     form.save()
 
+                programme.apply_state()
+
                 messages.success(request, _(u'The changes were saved.'))
 
                 if action == 'save-edit':
@@ -101,16 +103,22 @@ def programme_admin_detail_view(request, vars, event, programme_id):
                     programme_role = get_object_or_404(ProgrammeRole, id=id_int, programme=programme)
                     programme_role.delete()
 
+                    programme.apply_state(deleted_programme_roles=programme_role)
+
                     messages.success(request, _(u'The host was removed.'))
                 elif action == 'cancel-invitation':
                     invitation = get_object_or_404(Invitation, id=id_int, programme=programme, state='valid')
                     invitation.state = 'revoked'
                     invitation.save()
 
+                    programme.apply_state()
+
                     messages.success(request, _(u'The invitation was cancelled.'))
                 elif action == 'remove-freeform-host':
                     freeform_organizer = get_object_or_404(FreeformOrganizer, id=id_int, programme=programme)
                     freeform_organizer.delete()
+
+                    programme.apply_state()
 
                     messages.success(request, _(u'The host was removed.'))
                 else:

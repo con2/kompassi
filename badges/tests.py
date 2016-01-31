@@ -142,12 +142,10 @@ class BadgesTestCase(TestCase):
         assert created
         assert not badge.is_revoked
 
-    def test_condb_137(self):
+    def test_condb_137_intra_labour(self):
         """
         If the personnel class of the worker changes, the badge shall be revoked and a new one issued.
         """
-
-        pc2, unused = PersonnelClass.get_or_create_dummy(name='Sehr Wichtig Fellow', priority=-10)
 
         signup, unused = Signup.get_or_create_dummy(accepted=True)
         pc1 = signup.personnel_classes.get()
@@ -156,9 +154,50 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.personnel_class == pc1
 
+        # Create another personnel class that is guaranteed to be higher in priority than the current one.
+        pc2, unused = PersonnelClass.get_or_create_dummy(
+            name='Sehr Wichtig Fellow',
+            priority=pc1.priority - 10
+        )
+
         signup.personnel_classes.add(pc2)
         signup.apply_state()
 
         badge, created = Badge.get_or_create(person=self.person, event=self.event)
         assert not created
         assert badge.personnel_class == pc2
+
+    def test_condb_137_programme_to_labour(self):
+        """
+        Most conventions assign a higher priority (lower priority number) to volunteer workers than
+        speakers and other programme hosts. This is to say, if the same person is both volunteering and
+        speaking, they are supposed to get a worker badge, not a speaker badge. This is, of course,
+        configurable on a per-event basis, but this is how it is in our test data.
+
+        We model a case in which the same person is first accepted as a speaker and thus gets a speaker
+        badge, and is then accepted as a volunteer worker, "promoting" them to worker status and earning
+        them a worker badge.
+        """
+        programme_role, unused = ProgrammeRole.get_or_create_dummy()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
+        assert badge.personnel_class == programme_role.role.personnel_class
+
+        signup, created = Signup.get_or_create_dummy(accepted=True)
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert not created
+        assert badge.personnel_class == signup.personnel_classes.get()
+
+        # Now cancel the worker signup and make sure they go back to having a programme badge
+        signup.personnel_classes = []
+        signup.job_categories_accepted = []
+        signup.state = 'cancelled'
+        signup.save()
+        signup.apply_state()
+
+        badge, created = Badge.get_or_create(person=self.person, event=self.event)
+        assert created
+        assert badge.personnel_class == programme_role.role.personnel_class
+

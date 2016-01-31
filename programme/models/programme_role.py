@@ -34,8 +34,12 @@ class ProgrammeRole(models.Model):
         if programme is None:
             programme, unused = Programme.get_or_create_dummy()
 
-        return ProgrammeRole.objects.get_or_create(
+        programme_role, created = ProgrammeRole.objects.get_or_create(
             person=person,
             programme=programme,
             role=role,
         )
+
+        programme.apply_state()
+
+        return programme_role, created

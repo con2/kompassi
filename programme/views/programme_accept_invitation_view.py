@@ -34,6 +34,8 @@ def programme_accept_invitation_view(request, event, code):
             invitation.accept(request.user.person)
             form.save()
 
+            programme.apply_state()
+
             messages.success(request, _(u'Thank you for accepting the invitation. You can change the information later from your profile.'))
 
             # TODO once there is programme_profile_programme_view, go there instead

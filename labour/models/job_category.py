@@ -55,7 +55,7 @@ class JobCategory(models.Model):
         )
 
         if created:
-            personnel_class, unused = PersonnelClass.get_or_create_dummy()
+            personnel_class, unused = PersonnelClass.get_or_create_dummy(app_label='labour')
             job_category.personnel_classes.add(personnel_class)
 
         meta.create_groups()

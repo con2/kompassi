@@ -8,7 +8,7 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 class PersonnelClass(models.Model):
     event = models.ForeignKey('core.Event')
-    app_label = models.CharField(max_length=63, blank=True, default="")
+    app_label = models.CharField(max_length=63, blank=True, default='labour')
     name = models.CharField(max_length=63)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     perks = models.ManyToManyField('labour.Perk', blank=True)

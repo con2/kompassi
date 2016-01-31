@@ -33,13 +33,10 @@ def default_badge_factory(event, person):
     if event.programme_event_meta is not None:
         from programme.models import ProgrammeRole
 
-        for programme_role in ProgrammeRole.objects.filter(
-            person=person,
-            programme__category__event=event,
-        ):
-            job_title = programme_role.role.title
-            personnel_class = programme_role.role.personnel_class
-            personnel_classes.extend((personnel_class, job_title))
+        personnel_classes.extend(
+            (programme_role.role.personnel_class, programme_role.role.title)
+            for programme_role in ProgrammeRole.objects.filter(person=person, programme__category__event=event)
+        )
 
     if personnel_classes:
         personnel_classes.sort(key=get_priority)
