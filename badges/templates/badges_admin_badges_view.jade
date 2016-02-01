@@ -129,8 +129,9 @@ block admin_content
           li: a.btn.btn-link(href='?format=print', target='_blank')
             i.fa.fa-print.kompassi-icon-space-right
             | {% trans "Printable version" %}
-        a.btn.btn-success(href='{{ request.path }}/new')
-          i.fa.fa-plus.kompassi-icon-space-right
-          {% trans "Manually add a badge" %}
+        if can_manually_add_badge
+          a.btn.btn-success(href='{{ request.path }}/new')
+            i.fa.fa-plus.kompassi-icon-space-right
+            {% trans "Manually add a badge" %}
       p.text-muted
         {% blocktrans count num_badges=badges.count %}One badge.{% plural %}{{ num_badges }} badges.{% endblocktrans %}

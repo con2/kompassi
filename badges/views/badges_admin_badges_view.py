@@ -140,6 +140,7 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
                 now=timezone.now(),
                 title=title,
                 should_display_personnel_class=not active_filter or personnel_class_slug == 'yoink',
+                can_manually_add_badge=personnel_class_slug != 'yoink',
             )
 
             if personnel_class_slug == 'yoink' and format == 'print':
