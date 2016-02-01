@@ -8,7 +8,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from core.sort_and_filter import Sorter, Filter
-from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS
+from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, csv_response
 
 from ..helpers import labour_admin_required
 from ..filters import SignupStateFilter
@@ -116,12 +116,12 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
     elif format in CSV_EXPORT_FORMATS:
         filename = "{event.slug}_signups_{timestamp}.{format}".format(
             event=event,
-            timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
+            timestamp=now().strftime('%Y%m%d%H%M%S'),
             format=format,
         )
 
         return csv_response(event, SignupClass, signups,
-            dialect='xlsx',
+            dialect=CSV_EXPORT_FORMATS[format],
             filename=filename,
             m2m_mode='separate_columns',
         )
