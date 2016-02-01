@@ -242,3 +242,23 @@ class BadgesTestCase(TestCase):
         badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge is None
+
+    def test_condb_261(self):
+        """
+        If someone changes their name while they have outstanding badges, those badges should get revoked
+        and re-created.
+        """
+        programme_role, unused = ProgrammeRole.get_or_create_dummy()
+        programme = programme_role.programme
+
+        badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert not created
+        assert badge.first_name == self.person.first_name
+
+        self.person.first_name = u'Matilda'
+        self.person.save()
+        self.person.apply_state()
+
+        badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert not created
+        assert badge.first_name == self.person.first_name

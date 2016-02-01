@@ -57,6 +57,8 @@ def core_profile_view(request):
         if form.is_valid():
             person = form.save()
 
+            person.apply_state()
+
             if form.cleaned_data['email'] != old_email:
                 person.setup_email_verification(request)
                 messages.info(request,

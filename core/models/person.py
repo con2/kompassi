@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.dateformat import format as format_date
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import now
 from django.utils import timezone
 
 from ..utils import pick_attrs
@@ -361,3 +362,24 @@ class Person(models.Model):
             return False
         else:
             return Person.objects.filter(user=user).exists()
+
+    def apply_state(self):
+        """
+        While there's no "state" field to apply, this method is similar in purpose and equally bad as
+        labour.models.signup:Signup.apply_state and programme.models.Programme:Programme.apply_state.
+        It updates certain other models based on the changes in this model.
+
+        In this instance, we check the Badges of the person for all future events in case the user has
+        changed their name.
+        """
+        self.apply_state_update_badges()
+
+    def apply_state_update_badges(self):
+        if 'badges' not in settings.INSTALLED_APPS:
+            return
+
+        from badges.models import Badge
+
+        # Only touch badges for events in the future
+        for badge in self.badge_set.filter(personnel_class__event__start_time__gte=now()):
+            Badge.ensure(person=self, event=badge.personnel_class.event)
