@@ -74,7 +74,7 @@ msgstr "Muokkaa ohjelmanumeroa"
 msgid "Ending time"
 msgstr "Loppumisaika"
 
-#: proxies/helpers.py
+#: models/role.py proxies/helpers.py
 msgid "Event"
 msgstr "Tapahtuma"
 
@@ -181,6 +181,10 @@ msgstr "Ohjelmatarjous vastaanotettu"
 #: models/role.py
 msgid "Only hosts who are assigned public roles will be shown publicly in the programme schedule."
 msgstr "Ohjelmakartassa näytetään ainoastaan ne ohjelmanjärjestäjät, jotka ovat julkisessa roolissa."
+
+#: models/role.py
+msgid "Personnel class"
+msgstr ""
 
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Phone number"
@@ -337,6 +341,10 @@ msgstr "Kutsu ei ole enää voimassa."
 #: views/programme_admin_detail_view.py
 msgid "The invitation was cancelled."
 msgstr "Kutsu peruutettu."
+
+#: models/role.py
+msgid "The personnel class for the programme hosts that have this role."
+msgstr ""
 
 #: templates/programme_accept_invitation_view.jade
 msgid "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details."

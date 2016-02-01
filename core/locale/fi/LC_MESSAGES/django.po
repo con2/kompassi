@@ -26,7 +26,7 @@ msgstr "Yhteystiedot"
 msgid "Create a Kompassi account"
 msgstr "Luo Kompassi-tunnus"
 
-#: forms.py models.py
+#: forms.py models/one_time_code.py
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -38,9 +38,22 @@ msgstr "Sähköpostiosoitteen vahvistaminen"
 msgid "Events currently in progress"
 msgstr "Parhaillaan käynnissä olevat tapahtumat"
 
-#: models.py
+#: models/person.py
 msgid "First name"
 msgstr "Etunimi"
+
+#: models/constants.py
+#, fuzzy
+msgid "Firstname"
+msgstr "Etunimi"
+
+#: models/constants.py
+msgid "Firstname \"Nickname\" Surname"
+msgstr ""
+
+#: models/constants.py
+msgid "Firstname Surname"
+msgstr ""
 
 #: templates/core_login_view.jade
 msgid "For some of the services of this site you will need a user account which you can easily create here."
@@ -79,11 +92,16 @@ msgstr "Uusi salasana"
 msgid "New password (again)"
 msgstr "Uusi salasana (uudestaan)"
 
-#: models.py
+#: models/person.py
 msgid "Nick name"
 msgstr "Nick"
 
-#: models.py
+#: models/constants.py
+#, fuzzy
+msgid "Nickname"
+msgstr "Nick"
+
+#: models/person.py
 msgid "Official first names"
 msgstr "Viralliset etunimet"
 
@@ -131,7 +149,7 @@ msgstr "Omat tiedot"
 msgid "Recruiting volunteers"
 msgstr "Työvoimahaku avoinna"
 
-#: models.py
+#: models/one_time_code.py
 msgid "Revoked"
 msgstr "Mitätöity"
 
@@ -183,7 +201,7 @@ msgstr "Sivuston ylläpito"
 msgid "Submit"
 msgstr "Lähetä"
 
-#: models.py
+#: models/person.py
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -212,7 +230,7 @@ msgstr "Lipunmyynti"
 msgid "Upcoming events"
 msgstr "Tulevat tapahtumat"
 
-#: models.py
+#: models/one_time_code.py
 msgid "Used"
 msgstr "Käytetty"
 
@@ -228,7 +246,7 @@ msgstr "Käyttäjänimi ja salasana"
 msgid "User name or e-mail address"
 msgstr "Käyttäjänimi tai sähköpostiosoite"
 
-#: models.py
+#: models/one_time_code.py
 msgid "Valid"
 msgstr "Kelvollinen"
 

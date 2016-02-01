@@ -41,7 +41,7 @@ block admin_content
 
             td
               if badge.is_revoked
-                span.label.label-danger {% trans "Revoked" %}
+                span.label.label-danger {% trans "Revoked" %} {% if badge.batch %}({{ badge.batch }}){% endif %}
               else
                 if badge.is_printed
                   if badge.is_printed_separately
@@ -66,11 +66,52 @@ block admin_content
                     else
                       button.btn.btn-default(type='submit', name='clear-printed', value='clear-printed', title='Nollaa erikseen tulostettu -merkintä')
                         i.fa.fa-1.fa-undo
-                    button.btn.btn-danger(type='submit', name='revoke-badge', value='revoke-badge', title='Mitätöi badge')
-                      i.fa.fa-1.fa-trash
+                    if badge.can_revoke
+                      button.btn.btn-danger(
+                        type='submit',
+                        name='revoke-badge',
+                        value='revoke-badge',
+                        title='{% trans "Revoke badge" %}',
+                      )
+                        i.fa.fa-1.fa-trash
+                    else
+                      button.btn.btn-danger(
+                        type='submit',
+                        title='{% trans "This badge cannot be revoked here because it is managed by either the labour or the programme management system." %}',
+                        disabled,
+                      )
+                        i.fa.fa-1.fa-trash
+
                   else
-                    button.btn.btn-primary(type='submit', name='clear-revoked', value='clear-revoked', title='Peru mitätöinti')
-                      i.fa.fa-1.fa-undo
+                    if not badge.is_printed_separately
+                      button.btn.btn-success(
+                        type='button',
+                        title='{% trans "This badge cannot be marked separately printed because it is revoked." %}',
+                        disabled,
+                      )
+                        i.fa.fa-1.fa-print
+                    else
+                      button.btn.btn-default(
+                        type='button',
+                        title='{% trans "This badge cannot be un-marked separately printed because it is revoked." %}',
+                        disabled,
+                      )
+                        i.fa.fa-1.fa-undo
+                    if badge.can_unrevoke
+                      button.btn.btn-primary(
+                        type='submit',
+                        name='clear-revoked',
+                        value='clear-revoked',
+                        title='{% trans "Un-revoke badge" %}',
+                      )
+                        i.fa.fa-1.fa-undo
+                    else
+                      button.btn.btn-primary(
+                        type='button',
+                        title='{% trans "This revoked badge cannot be un-revoked here because it is managed by either the labour or the programme management system." %}',
+                        disabled,
+                      )
+                        i.fa.fa-1.fa-undo
 
     .panel-footer.clearfix
       .btn-group.pull-right

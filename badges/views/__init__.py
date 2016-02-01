@@ -1,6 +1,5 @@
 from .admin_views import (
     badges_admin_dashboard_view,
-    badges_admin_badges_view,
     badges_admin_batches_view,
     badges_admin_export_view,
     badges_admin_menu_items,
@@ -8,3 +7,4 @@ from .admin_views import (
 )
 
 from .badges_admin_create_view import badges_admin_create_view
+from .badges_admin_badges_view import badges_admin_badges_view

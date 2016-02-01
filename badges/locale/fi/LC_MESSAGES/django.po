@@ -134,6 +134,10 @@ msgstr "Tulostuserä"
 msgid "Require real name to be visible"
 msgstr "Vaadi koko nimi näkyviin"
 
+#: templates/badges_admin_badges_view.jade
+msgid "Revoke badge"
+msgstr "Mitätöi badge"
+
 #: models/count_badges_mixin.py templates/badges_admin_badges_view.jade
 msgid "Revoked"
 msgstr "Mitätöity"
@@ -158,7 +162,7 @@ msgstr "Tila"
 msgid "Surname"
 msgstr "Sukunimi"
 
-#: views/admin_views.py
+#: views/badges_admin_badges_view.py
 msgid "The badge had already been revoked."
 msgstr "Badge on jo mitätöity."
 
@@ -166,25 +170,45 @@ msgstr "Badge on jo mitätöity."
 msgid "The badge has been added."
 msgstr "Badge lisättiin."
 
-#: views/admin_views.py
+#: views/badges_admin_badges_view.py
 msgid "The badge has been restored."
 msgstr "Badge palautettiin."
 
-#: views/admin_views.py
+#: views/badges_admin_badges_view.py
 msgid "The badge has now been revoked."
 msgstr "Badge on nyt mitätöity."
 
-#: views/admin_views.py
+#: views/badges_admin_badges_view.py
 msgid "The badge was already valid."
 msgstr "Badge oli jo voimassa."
+
+#: templates/badges_admin_badges_view.jade
+msgid "This badge cannot be marked separately printed because it is revoked."
+msgstr "Tätä badgea ei voi merkitä erikseen tulostetuksi, koska badge on mitätöity."
+
+#: templates/badges_admin_badges_view.jade views/badges_admin_badges_view.py
+msgid "This badge cannot be revoked here because it is managed by either the labour or the programme management system."
+msgstr "Tätä badgea ei voi mitätöidä tässä, koska se on luotu työvoiman- tai ohjelmanhallintajärjestelmän kautta."
+
+#: templates/badges_admin_badges_view.jade
+msgid "This badge cannot be un-marked separately printed because it is revoked."
+msgstr "Tästä badgesta ei voi pyyhkiä erikseen tulostettu -merkintää, koska badge on mitätöity."
 
 #: models/badges_event_meta.py
 msgid "This controls how fields are grouped in the badge. Traditional: job title, firstname surname, nick. Emphasize nick name: first name or nick, surname or full name, job title."
 msgstr "Tämä kontrolloi sitä, miten kentät niputetaan badgessa. Perinteinen: tehtävänimike, etunimi sukunimi, nick. Korosta nickiä: etunimi tai nick, sukunimi tai koko nimi, tehtävänimike."
 
+#: templates/badges_admin_badges_view.jade views/badges_admin_badges_view.py
+msgid "This revoked badge cannot be un-revoked here because it is managed by either the labour or the programme management system."
+msgstr "Tätä mitätöityä badgea ei voi palauttaa tässä, koska se on luotu työvoiman- tai ohjelmanhallintajärjestelmän kautta."
+
 #: models/badges_event_meta.py
 msgid "Traditional"
 msgstr "Perinteinen"
+
+#: templates/badges_admin_badges_view.jade
+msgid "Un-revoke badge"
+msgstr "Palauta badge."
 
 #: models/badge.py models/batch.py
 msgid "Updated at"
