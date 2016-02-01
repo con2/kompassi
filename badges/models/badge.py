@@ -196,7 +196,7 @@ class Badge(models.Model, CsvExportMixin):
             # Pajukanta
             # Chief Technology Officer
             return [
-                (cls, 'personnel_class_name')
+                (cls, 'personnel_class_name'),
                 (BadgePrivacyAdapter, 'nick_or_first_name'),
                 (BadgePrivacyAdapter, 'surname_or_full_name'),
                 (cls, 'job_title'),
