@@ -14,16 +14,19 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib import messages
 from django.utils.timezone import now
+from django.views.decorators.http import require_POST
 
-from jsonschema import ValidationError as JSONSchemaValidationError
+from jsonschema import validate, ValidationError as JSONSchemaValidationError
 from requests_oauthlib import OAuth2Session
 
+from api.utils import api_view, api_login_required
 from core.forms import valid_username
 from core.models import Person
 from core.views.login_views import do_login
 from core.utils import create_temporary_password, get_next
+from programme.helpers import programme_event_required
 
-from .models import Connection, ConfirmationCode, Desuprofile
+from .models import Connection, ConfirmationCode, Desuprofile, Desuprogramme
 
 
 logger = logging.getLogger('kompassi')
@@ -260,3 +263,21 @@ class ConfirmationView(View):
 
         messages.success(request, u'Desuprofiilisi on liitetty Kompassi-tunnukseesi ja sinut on kirjattu sisään. Jatkossa voit kirjautua sisään Kompassiin käyttäen Desuprofiiliasi.')
         return respond_with_connection(request, code.next_url, connection)
+
+
+@api_view
+@api_login_required
+@programme_event_required
+@require_POST
+def desuprogramme_import_view(request, event):
+    """
+    Processes a programme import from Desusite.
+    """
+    from .utils import import_programme
+
+    payload = json.loads(request.body)
+    validate(payload, {'type': 'array', 'items': Desuprogramme.schema})
+
+    import_programme(event, payload)
+
+    return HttpResponse('', status=202)

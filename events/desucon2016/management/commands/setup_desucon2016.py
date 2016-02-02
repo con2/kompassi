@@ -26,6 +26,7 @@ class Setup(object):
         self.setup_labour()
         self.setup_access()
         self.setup_badges()
+        self.setup_programme()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -229,6 +230,44 @@ class Setup(object):
                 real_name_must_be_visible=True,
             )
         )
+
+    def setup_programme(self):
+        from django.contrib.auth.models import Group
+        from labour.models import PersonnelClass, LabourEventMeta
+        from programme.models import (
+            Category,
+            Programme,
+            ProgrammeEventMeta,
+            Role,
+        )
+
+        programme_admin_group = Group.objects.get(name=LabourEventMeta.make_group_name(self.event, 'vastaava'))
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Desuconin ohjelmavastaava <ohjelma@desucon.fi>',
+        ))
+
+        personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
+
+        role_priority = 0
+        for role_title in [
+            'Ohjelmanjärjestäjä',
+            'Panelisti',
+            'Työpajanpitäjä',
+            'Keskustelupiirin vetäjä',
+        ]:
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=True,
+                    require_contact_info=True,
+                    priority=role_priority,
+                )
+            )
+            role_priority += 10
+
 
 class Command(BaseCommand):
     args = ''

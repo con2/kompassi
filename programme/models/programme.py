@@ -60,6 +60,7 @@ STATE_CSS = dict(
 
 class Programme(models.Model, CsvExportMixin):
     category = models.ForeignKey('programme.Category', verbose_name=_(u'category'))
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
     title = models.CharField(
         max_length=1023,
@@ -264,6 +265,9 @@ class Programme(models.Model, CsvExportMixin):
         if self.start_time and self.length:
             self.end_time = self.start_time + timedelta(minutes=self.length)
 
+        if self.title and not self.slug:
+            self.slug = slugify(self.title)
+
         return super(Programme, self).save(*args, **kwargs)
 
     def apply_state(self):
@@ -288,3 +292,4 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name = _(u'programme')
         verbose_name_plural = _(u'programmes')
         ordering = ['start_time', 'room']
+        # unique_together = [('category', 'slug')]

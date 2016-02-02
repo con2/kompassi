@@ -5,7 +5,12 @@ from django.test import TestCase
 
 from jsonschema import ValidationError
 
+from core.models import Person
+from badges.models import BadgesEventMeta
+from programme.models import ProgrammeEventMeta, Programme
+
 from .models import Desuprofile
+from .utils import import_programme
 
 
 class DesuprofileValidationTestCase(TestCase):
@@ -95,3 +100,56 @@ class DesuprofileValidationTestCase(TestCase):
         )
 
         Desuprofile.from_dict(null_birth_date)
+
+
+
+class DesuprogrammeImportTestCase(TestCase):
+    def setUp(self):
+        self.meta, unused = BadgesEventMeta.get_or_create_dummy()
+        ProgrammeEventMeta.get_or_create_dummy()
+
+        self.event = self.meta.event
+        self.person, unused = Person.get_or_create_dummy()
+
+    def test_programme_import(self):
+        payload = [
+            dict(
+                identifier='katsot-animea-vaarin',
+                title=u'Katsot animea väärin',
+                description=u'Niidel vertaa syksyn 2011 DesuTalksissa Helsingin Glorialla animeharrastusta parisuhteeseen, osoittaa kriittisimmät virheet juuri sinun.',
+            ),
+            dict(
+                identifier='todellisuusopas-komeroille',
+                title=u'Todellisuusopas komeroille',
+                description=u'Oletko kyllästynyt valittamaan laudoilla kuinka haluaisit vain paijata? Olisiko vihdoinkin aika tulla ulos komerosta? Tämä itsensäkehittämisluento yrittää auttaa juuri sinua joka olet suunnittelemassa todellisuudelle avautumista. Opit mitä sinun tulisi tietää todellisuudesta ja saat vinkkejä sinne siirtymiseen. Tai jos olet vielä epävarma ulostautumisestasi, saat tietää mitä todellisuudella on tarjota ja syitä vaivautumiseen. Todellisuusopas painottuu parisuhteisiin, ja antaa sinulle konkreettisen kaavan jolla nörtti saa tyttö-/poikaystävän. Luentoa värittävät havainnot animen ja todellisuuden eroavaisuuksista ja mahdollisista yhtäläisyyksistä. Kaikki nämä elintärkeät tiedonjyvät esitetään nautinnollisen helpostisulatettavalla, humoristisella tavalla.',
+            ),
+        ]
+
+        assert Programme.objects.all().count() == 0
+
+        import_programme(self.event, payload)
+
+        assert Programme.objects.all().count() == 2
+        assert Programme.objects.filter(state='accepted').count() == 2
+
+        # Now cancel the latter
+        import_programme(self.event, payload[:1])
+
+        assert Programme.objects.all().count() == 2
+        assert Programme.objects.filter(state='accepted').count() == 1
+        assert Programme.objects.filter(state='cancelled').count() == 1
+
+        # Reinstate it
+        import_programme(self.event, payload)
+
+        assert Programme.objects.all().count() == 2
+        assert Programme.objects.filter(state='accepted').count() == 2
+        assert Programme.objects.filter(state='cancelled').count() == 0
+
+        # Change something
+        programme = Programme.objects.get(slug='todellisuusopas-komeroille')
+        assert programme.title == u'Todellisuusopas komeroille'
+        payload[1]['title'] = u'Todellisuusopas komeroille 2.0'
+        import_programme(self.event, payload)
+        programme = Programme.objects.get(slug='todellisuusopas-komeroille')
+        assert programme.title == u'Todellisuusopas komeroille 2.0'

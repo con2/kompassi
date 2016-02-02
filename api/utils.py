@@ -11,6 +11,7 @@ from jsonschema import (
 from django.conf import settings
 from django.forms import ValidationError as DjangoValidationError
 from django.http import JsonResponse, HttpResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
 
 
 logger = logging.getLogger('kompassi')
@@ -48,7 +49,7 @@ def handle_api_errors(view_func):
     def _decorator(request, *args, **kwargs):
         try:
             return view_func(request, *args, **kwargs)
-        except (JSONValidationError, DjangoValidationError, BadRequest) as e:
+        except (ValueError, JSONValidationError, DjangoValidationError, BadRequest) as e:
             logger.exception('Bad Request at %s', request.path)
             return JsonResponse(
                 dict(error='Bad Request'),
@@ -80,12 +81,15 @@ def handle_api_errors(view_func):
 
 def api_view(view_func):
     @wraps(view_func)
+    @csrf_exempt
     @handle_api_errors
     def _decorator(request, *args, **kwargs):
         result = view_func(request, *args, **kwargs)
 
         if result is None:
             return HttpResponse('', status=204)
+        elif isinstance(result, HttpResponse):
+            return result
         else:
             return JsonResponse(result, safe=False)
 

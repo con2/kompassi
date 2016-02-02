@@ -56,3 +56,6 @@ from .view_utils import (
     next_redirect,
     url,
 )
+
+
+from .log_utils import log_get_or_create

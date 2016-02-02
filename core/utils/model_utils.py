@@ -36,7 +36,7 @@ validate_slug = RegexValidator(
 
 
 SLUG_FIELD_PARAMS = dict(
-    max_length=63,
+    max_length=255,
     unique=True,
     validators=[validate_slug],
     verbose_name=u'Tekninen nimi',
