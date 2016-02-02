@@ -67,7 +67,6 @@ def labour_admin_signup_view(request, vars, event, person_id):
     person_form = initialize_form(AdminPersonForm, request,
         instance=signup.person,
         prefix='person',
-        submit_button=False,
         readonly=True,
         event=event,
     )
