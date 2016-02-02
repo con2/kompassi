@@ -44,7 +44,12 @@ class Person(models.Model):
         verbose_name=_(u'Official first names'),
     )
     surname = models.CharField(max_length=1023, verbose_name=_(u'Surname'))
-    nick = models.CharField(blank=True, max_length=1023, help_text=_(u'Nick name'))
+    nick = models.CharField(
+        blank=True,
+        max_length=1023,
+        verbose_name=_(u'Nick name'),
+        help_text=_(u'If you go by a nick name or handle that you want printed in your badge and programme details, enter it here.')
+    )
     birth_date = models.DateField(
         null=True,
         blank=True,

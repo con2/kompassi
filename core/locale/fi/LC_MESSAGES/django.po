@@ -62,6 +62,10 @@ msgstr "Salasana unohtunut"
 msgid "I hereby authorize the use of my personal information as outlined in the privacy policy. See site footer for a link to the privacy policy. <em>(mandatory)</em>"
 msgstr "Annan luvan henkilötietojeni käyttöön rekisteriselosteen mukaisesti. Linkki rekisteriselosteeseen löytyy sivuston alatunnisteesta. <i>(pakollinen)</i>"
 
+#: models/person.py
+msgid "If you go by a nick name or handle that you want printed in your badge and programme details, enter it here."
+msgstr "Vakiintunut lempinimi tai Internet-nick."
+
 #: forms.py
 msgid "Invalid user name"
 msgstr "Käyttäjänimi ei kelpaa"
