@@ -13,10 +13,6 @@ from .models import Membership
 
 class MemberForm(PersonForm):
     def __init__(self, *args, **kwargs):
-        kwargs.update(
-            submit_button=False,
-        )
-
         super(MemberForm, self).__init__(*args, **kwargs)
 
         self.helper.form_tag = False

@@ -1,9 +1,10 @@
 extends core_profile_base
 - load crispy_forms_tags
+- load trans from i18n
 block title
   | Omat tiedot
 block profile_content
-  .form-horizontal
+  form(method='POST').form-horizontal
     fieldset
       legend Käyttäjänimi
       .form-group
@@ -22,4 +23,11 @@ block profile_content
                 p(style='font-weight: normal; font-style: italic') Desuprofiilin käyttäjänimi puuttuu. Se tallennetaan, kun seuraavan kerran kirjaudut sisään Desuprofiilillasi.
               p.help-block Olet yhdistänyt Desuprofiilisi Kompassi-tunnukseen. Mikäli haluat irrottaa Desuprofiilisi Kompassi-tunnuksestasi, ota yhteyttä ylläpitoon.
 
-  - crispy form
+    - crispy form
+    .col-md-9.col-md-offset-3
+      button.btn.btn-success(type='submit')
+        i.fa.fa-check.kompassi-icon-space-right
+        {% trans "Save changes" %}
+
+    //- XXX todo why is this needed
+    p &nbsp;

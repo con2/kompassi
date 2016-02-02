@@ -28,6 +28,7 @@ from ..forms import (
     PasswordResetRequestForm,
     PersonForm,
     RegistrationForm,
+    TermsAndConditionsForm,
 )
 from ..utils import (
     get_next,
@@ -51,11 +52,11 @@ def core_registration_view(request):
         return redirect(next)
 
     person_form = initialize_form(PersonForm, request, prefix='person')
-    person_form.helper.form_tag = False
     registration_form = initialize_form(RegistrationForm, request, prefix='registration')
+    terms_and_conditions_form = initialize_form(TermsAndConditionsForm, request, prefix='terms')
 
     if request.method == 'POST':
-        if person_form.is_valid() and registration_form.is_valid():
+        if person_form.is_valid() and registration_form.is_valid() and terms_and_conditions_form.is_valid():
             username = registration_form.cleaned_data['username']
             password = registration_form.cleaned_data['password']
 
@@ -93,6 +94,7 @@ def core_registration_view(request):
         next=next,
         person_form=person_form,
         registration_form=registration_form,
+        terms_and_conditions_form=terms_and_conditions_form,
         login_page=True
     )
 

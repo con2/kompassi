@@ -54,11 +54,6 @@ class PersonForm(forms.ModelForm):
     birth_date = DateField(required=True, label=_(u'Birth date'), help_text=BIRTH_DATE_HELP_TEXT)
 
     def __init__(self, *args, **kwargs):
-        if 'submit_button' in kwargs:
-            submit_button = kwargs.pop('submit_button')
-        else:
-            submit_button = True
-
         super(PersonForm, self).__init__(*args, **kwargs)
 
         for field_name in [
@@ -68,11 +63,7 @@ class PersonForm(forms.ModelForm):
             self.fields[field_name].required = True
 
         self.helper = horizontal_form_helper()
-
-        if self.instance.pk is None:
-            save_button_text = _(u'Sign up')
-        else:
-            save_button_text = _(u'Save')
+        self.helper.form_tag = False
 
         layout_parts = [
             Fieldset(_(u'Basic information'),
@@ -95,11 +86,6 @@ class PersonForm(forms.ModelForm):
                 'allow_work_history_sharing',
             )
         ]
-
-        if submit_button:
-            layout_parts.append(
-                indented_without_label(Submit('submit', save_button_text, css_class='btn-success'))
-            )
 
         self.helper.layout = Layout(*layout_parts)
 
@@ -189,14 +175,6 @@ class RegistrationForm(forms.Form):
         help_text=PASSWORD_HELP_TEXT,
     )
 
-    accept_terms_and_conditions = forms.BooleanField(
-        required=True,
-        label=_(
-            u'I hereby authorize the use of my personal information as outlined in the '
-            u'<a href="%(privacy_policy_url)s" target="_blank">privacy policy</a> <i>(mandatory)</i>.'
-        ) % dict(privacy_policy_url=settings.KOMPASSI_PRIVACY_POLICY_URL)
-    )
-
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -206,9 +184,6 @@ class RegistrationForm(forms.Form):
                 'username',
                 'password',
                 'password_again'
-            ),
-            Fieldset(_(u'Acceptance of the privacy policy'),
-                'accept_terms_and_conditions'
             ),
         )
 
@@ -229,6 +204,22 @@ class RegistrationForm(forms.Form):
             raise forms.ValidationError(_(u'Passwords do not match.'))
 
         return password_again
+
+
+class TermsAndConditionsForm(forms.Form):
+    accept_terms_and_conditions = forms.BooleanField(
+        required=True,
+        label=_(
+            u'I hereby authorize the use of my personal information as outlined in the '
+            u'<a href="%(privacy_policy_url)s" target="_blank">privacy policy</a> <i>(mandatory)</i>.'
+        ) % dict(privacy_policy_url=settings.KOMPASSI_PRIVACY_POLICY_URL)
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(TermsAndConditionsForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
 
 
 class PasswordForm(forms.Form):

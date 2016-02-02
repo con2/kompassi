@@ -1,7 +1,3 @@
-#: forms.py
-msgid "Acceptance of the privacy policy"
-msgstr "Rekisteriselosteen hyväksyminen"
-
 #: templates/core_organization_boxen.jade
 msgid "Accepting applications"
 msgstr "Ottaa vastaan hakemuksia"
@@ -97,7 +93,6 @@ msgid "Nick name"
 msgstr "Nick"
 
 #: models/constants.py
-#, fuzzy
 msgid "Nickname"
 msgstr "Nick"
 
@@ -131,7 +126,7 @@ msgstr "Menneet tapahtumat"
 
 #: forms.py
 msgid "Please choose a user name. The user name must consist of 4 to 30 characters. The following characters are allowed: <b>small</b> letters <i>a&ndash;z</i>, numbers <i>0&ndash;9</i> and underscore </i>_</i>. You can use either this user name or your e-mail address to sign in."
-msgstr "Valitse itsellesi 4–30 merkin pituinen käyttäjänimi. Seuraavat merkit ovat sallittuja: <b>pienet kirjaimet <i>a–z</i>, numerot <i>0–9</i> sekä alaviiva <i>_</i>. Voit käyttää sisäänkirjautumiseen tätä käyttäjänimeä tai sähköpostiosoitettasi."
+msgstr "Valitse itsellesi 4–30 merkin pituinen käyttäjänimi. Seuraavat merkit ovat sallittuja: <b>pienet</b> kirjaimet <i>a–z</i>, numerot <i>0–9</i> sekä alaviiva <i>_</i>. Voit käyttää sisäänkirjautumiseen tätä käyttäjänimeä tai sähköpostiosoitettasi."
 
 #: forms.py
 msgid "Privacy"
@@ -153,9 +148,9 @@ msgstr "Työvoimahaku avoinna"
 msgid "Revoked"
 msgstr "Mitätöity"
 
-#: forms.py
-msgid "Save"
-msgstr "Tallenna"
+#: templates/core_profile_view.jade
+msgid "Save changes"
+msgstr "Tallenna muutokset"
 
 #: templates/core_event_box.jade
 msgid "Schedule"
@@ -181,7 +176,7 @@ msgstr "Luo tunnus tai kirjaudu sisään..."
 msgid "Sign in using your Kompassi account"
 msgstr "Kirjaudu sisään Kompassi-tunnuksellasi"
 
-#: forms.py templates/core_login_view.jade
+#: templates/core_login_view.jade templates/core_registration_view.jade
 msgid "Sign up"
 msgstr "Luo tunnus"
 
@@ -257,4 +252,10 @@ msgstr "Työvoima"
 #: forms.py
 msgid "Wrong password."
 msgstr "Salasana väärin."
+
+#~ msgid "Acceptance of the privacy policy"
+#~ msgstr "Rekisteriselosteen hyväksyminen"
+
+#~ msgid "Save"
+#~ msgstr "Tallenna"
 
