@@ -23,13 +23,15 @@ class ProgrammeRole(models.Model):
         verbose_name_plural = u'ohjelmanpitäjien roolit'
 
     @classmethod
-    def get_or_create_dummy(cls, programme=None):
+    def get_or_create_dummy(cls, programme=None, role=None):
         from core.models import Person
         from .role import Role
         from .programme import Programme
 
         person, unused = Person.get_or_create_dummy()
-        role, unused = Role.get_or_create_dummy()
+
+        if role is None:
+            role, unused = Role.get_or_create_dummy()
 
         if programme is None:
             programme, unused = Programme.get_or_create_dummy()
@@ -37,7 +39,9 @@ class ProgrammeRole(models.Model):
         programme_role, created = ProgrammeRole.objects.get_or_create(
             person=person,
             programme=programme,
-            role=role,
+            defaults=dict(
+                role=role,
+            )
         )
 
         programme.apply_state()

@@ -7,7 +7,7 @@ from django.test import TestCase
 
 from core.models import Person
 from labour.models import LabourEventMeta, Signup, JobCategory, PersonnelClass
-from programme.models import ProgrammeEventMeta, Programme, ProgrammeRole
+from programme.models import ProgrammeEventMeta, Programme, ProgrammeRole, Role
 
 from .models import BadgesEventMeta, Badge, Batch
 
@@ -262,3 +262,32 @@ class BadgesTestCase(TestCase):
         badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.first_name == self.person.first_name
+
+
+    def test_programme_roles(self):
+        """
+        If someone has multiple programmes, they should get the job title of the highest-priority (lowest
+        priority number) Role.
+        """
+        programme_role, unused = ProgrammeRole.get_or_create_dummy()
+        role = programme_role.role
+        personnel_class = role.personnel_class
+        programme = programme_role.programme
+
+        badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert not created
+        assert badge.job_title == role.title
+
+        programme2, unused = Programme.get_or_create_dummy(title='Cosplay-deitti')
+        role2, unused = Role.get_or_create_dummy(
+            personnel_class=personnel_class,
+            priority=role.priority - 10,
+            title='More Importanter Programme Person',
+        )
+        programme_Role2, unused = ProgrammeRole.get_or_create_dummy(programme=programme2, role=role2)
+
+        programme2.apply_state()
+
+        badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert not created
+        assert badge.job_title == role2.title

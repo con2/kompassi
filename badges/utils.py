@@ -33,13 +33,14 @@ def default_badge_factory(event, person):
     if event.programme_event_meta is not None:
         from programme.models import ProgrammeRole
 
+        # Insertion order matters (most privileged first). list.sort is guaranteed to be stable.
         personnel_classes.extend(
             (programme_role.role.personnel_class, programme_role.role.title)
             for programme_role in ProgrammeRole.objects.filter(
                 person=person,
                 programme__category__event=event,
                 programme__state__in=['accepted', 'published']
-            )
+            ).order_by('role__priority')
         )
 
     if personnel_classes:

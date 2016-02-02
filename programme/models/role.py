@@ -24,28 +24,38 @@ class Role(models.Model):
         help_text=_(u'Only hosts who are assigned public roles will be shown publicly in the programme schedule.'),
     )
 
+    priority = models.IntegerField(
+        default=0,
+        verbose_name=_(u'Priority'),
+        help_text=_(u'Some events have speaker roles that convey different privileges within the same personnel class. This priority field will put the speakers in their place.'),
+    )
+
     def __unicode__(self):
         return self.title
 
     class Meta:
         verbose_name = _(u'role')
         verbose_name_plural = _(u'roles')
-        ordering = ('personnel_class__event', 'title')
+        ordering = ('personnel_class__event', 'personnel_class__priority', 'priority')
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, personnel_class=None, priority=0, title=u'Overbaron'):
         from labour.models import PersonnelClass
 
-        personnel_class, unused = PersonnelClass.get_or_create_dummy(
-            app_label='programme',
-            name='Entertainer',
-            priority=40,
-        )
+        if personnel_class is None:
+            personnel_class, unused = PersonnelClass.get_or_create_dummy(
+                app_label='programme',
+                name='Entertainer',
+                priority=40,
+            )
 
         return cls.objects.get_or_create(
             personnel_class=personnel_class,
-            title=u'Overbaron',
-            require_contact_info=False
+            title=title,
+            defaults=dict(
+                priority=priority,
+                require_contact_info=False,
+            )
         )
 
     def admin_get_event(self):
