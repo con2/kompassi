@@ -39,17 +39,16 @@ msgid "First name"
 msgstr "Etunimi"
 
 #: models/constants.py
-#, fuzzy
 msgid "Firstname"
 msgstr "Etunimi"
 
 #: models/constants.py
 msgid "Firstname \"Nickname\" Surname"
-msgstr ""
+msgstr "Etunimi \"Nick\" Sukunimi"
 
 #: models/constants.py
 msgid "Firstname Surname"
-msgstr ""
+msgstr "Etunimi Sukunimi"
 
 #: templates/core_login_view.jade
 msgid "For some of the services of this site you will need a user account which you can easily create here."
@@ -60,9 +59,8 @@ msgid "Forgot password"
 msgstr "Salasana unohtunut"
 
 #: forms.py
-#, python-format
-msgid "I hereby authorize the use of my personal information as outlined in the <a href=\"%(privacy_policy_url)s\" target=\"_blank\">privacy policy</a> <i>(mandatory)</i>."
-msgstr "Annan luvan henkilötietojeni käyttöön <a href=\"%(privacy_policy_url)s\" target=\"_blank\">rekisteriselosteen</a> mukaisesti <i>(pakollinen)</i>."
+msgid "I hereby authorize the use of my personal information as outlined in the privacy policy. See site footer for a link to the privacy policy. <em>(mandatory)</em>"
+msgstr "Annan luvan henkilötietojeni käyttöön rekisteriselosteen mukaisesti. Linkki rekisteriselosteeseen löytyy sivuston alatunnisteesta. <i>(pakollinen)</i>"
 
 #: forms.py
 msgid "Invalid user name"

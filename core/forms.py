@@ -210,9 +210,9 @@ class TermsAndConditionsForm(forms.Form):
     accept_terms_and_conditions = forms.BooleanField(
         required=True,
         label=_(
-            u'I hereby authorize the use of my personal information as outlined in the '
-            u'<a href="%(privacy_policy_url)s" target="_blank">privacy policy</a> <i>(mandatory)</i>.'
-        ) % dict(privacy_policy_url=settings.KOMPASSI_PRIVACY_POLICY_URL)
+            u'I hereby authorize the use of my personal information as outlined in the privacy policy. '
+            u'See site footer for a link to the privacy policy. <em>(mandatory)</em>'
+        ),
     )
 
     def __init__(self, *args, **kwargs):
