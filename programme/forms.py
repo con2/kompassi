@@ -65,9 +65,6 @@ class ProgrammeSelfServiceForm(forms.ModelForm):
         for field_name in [
             'title',
             'description',
-            'room_requirements',
-            'tech_requirements',
-            'requested_time_slot',
         ]:
             self.fields[field_name].required = True
 
@@ -77,10 +74,16 @@ class ProgrammeSelfServiceForm(forms.ModelForm):
             'title',
             'description',
             'room_requirements',
+            'computer',
+            'use_audio',
+            'use_video',
+            'number_of_microphones',
             'tech_requirements',
             'requested_time_slot',
             'notes_from_host',
             'video_permission',
+            'encumbered_content',
+            'photography',
         )
 
 
@@ -96,11 +99,19 @@ class ProgrammeNeedsForm(forms.ModelForm):
     class Meta:
         model = Programme
         fields = (
-            'room_requirements',
+            'title',
+            'description',
+            'computer',
+            'use_audio',
+            'use_video',
+            'number_of_microphones',
             'tech_requirements',
+            'video_permission',
+            'encumbered_content',
+            'photography',
+            'room_requirements',
             'requested_time_slot',
             'notes_from_host',
-            'video_permission',
         )
 
 

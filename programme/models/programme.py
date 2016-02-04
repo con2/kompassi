@@ -57,6 +57,36 @@ STATE_CSS = dict(
     rejected='label-danger',
 )
 
+COMPUTER_CHOICES = [
+    (u'con', _(u'Laptop provided by the event')),
+    (u'pc', _(u'Own laptop – PC')),
+    (u'mac', _(u'Own laptop – Mac')),
+    (u'none', _(u'No computer required')),
+]
+
+TRISTATE_CHOICES = [
+    ('yes', _(u'Yes')),
+    ('no', _(u'No')),
+    ('notsure', _(u'Not sure')),
+]
+
+TRISTATE_FIELD_PARAMS = dict(
+    choices=TRISTATE_CHOICES,
+    max_length=max(len(key) for (key, label) in TRISTATE_CHOICES),
+)
+
+ENCUMBERED_CONTENT_CHOICES = [
+    ('yes', _(u'My programme contains copyright-encumbered audio or video')),
+    ('no', _(u'My programme does not contain copyright-encumbered audio or video')),
+    ('notsure', _(u'I\'m not sure whether my programme contains copyright-encumbered content or not')),
+]
+
+PHOTOGRAPHY_CHOICES = [
+    ('please', _(u'Please photograph my programme')),
+    ('okay', _(u'It\'s OK to photograph my programme')),
+    ('nope', _(u'Please do not photograph my programme')),
+]
+
 
 class Programme(models.Model, CsvExportMixin):
     category = models.ForeignKey('programme.Category', verbose_name=_(u'category'))
@@ -67,26 +97,68 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name=_(u'Title'),
         help_text=_(u'Make up a concise title for your programme. We reserve the right to edit the title.'),
     )
+
     description = models.TextField(
         blank=True,
         verbose_name=_(u'Description'),
         help_text=_(u'This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description.'),
     )
-    room_requirements = models.TextField(
-        blank=True,
-        verbose_name=_(u'Requirements for the room'),
-        help_text=u'How large an audience do you expect for your programme? What kind of a room do you wish for your programme?',
+
+    use_audio = models.CharField(
+        default='no',
+        verbose_name=_(u'Audio playback'),
+        help_text=_(u'Will you play audio in your programme?'),
+        **TRISTATE_FIELD_PARAMS
     )
+
+    use_video = models.CharField(
+        default='no',
+        verbose_name=_(u'Video playback'),
+        help_text=_(u'Will you play video in your programme?'),
+        **TRISTATE_FIELD_PARAMS
+    )
+
+    number_of_microphones = models.IntegerField(
+        default=1,
+        verbose_name=_(u'Microphones'),
+        help_text=_(u'How many microphones do you require?'),
+        choices=[
+            (0, '0'),
+            (1, '1'),
+            (2, '2'),
+            (3, '3'),
+            (4, '4'),
+            (5, '5'),
+            (99, _(u'More than five – Please elaborate on your needs in the "Other tech requirements" field.')),
+        ],
+    )
+
+    computer = models.CharField(
+        default='con',
+        choices=COMPUTER_CHOICES,
+        max_length=max(len(key) for (key, label) in COMPUTER_CHOICES),
+        verbose_name=_(u'Computer use'),
+        help_text=_(u'What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance.'),
+    )
+
     tech_requirements = models.TextField(
         blank=True,
-        verbose_name=_(u'Tech requirements'),
-        help_text=_(u'Do you need, for example, any of the following: computer, data projector, voice amplification, music playback capabilities, whiteboard, flipboard, chalkboard? The use of your own computer is only possible if agreed in advance.')
+        verbose_name=_(u'Other tech requirements'),
+        help_text=_(u'Do you have tech requirements that are not covered by the previous questions?')
     )
+
+    room_requirements = models.TextField(
+        blank=True,
+        verbose_name=_(u'Room requirements'),
+        help_text=u'How large an audience do you expect for your programme? What kind of a room do you wish for your programme?',
+    )
+
     requested_time_slot = models.TextField(
         blank=True,
         verbose_name=_(u'Requested time slot'),
         help_text=_(u'At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?'),
     )
+
     video_permission = models.CharField(
         max_length=15,
         choices=RECORDING_PERMISSION_CHOICES,
@@ -94,6 +166,23 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name=_(u'Recording permission'),
         help_text=_(u'May your programme be recorded and published in the Internet?'),
     )
+
+    encumbered_content = models.CharField(
+        default='no',
+        max_length=max(len(key) for (key, label) in ENCUMBERED_CONTENT_CHOICES),
+        choices=ENCUMBERED_CONTENT_CHOICES,
+        verbose_name=_(u'Encumbered content'),
+        help_text=_(u'Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings.'),
+    )
+
+    photography = models.CharField(
+        default='okay',
+        max_length=max(len(key) for (key, label) in PHOTOGRAPHY_CHOICES),
+        choices=PHOTOGRAPHY_CHOICES,
+        verbose_name=_(u'Photography of your prorgmme'),
+        help_text=_(u'Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed.'),
+    )
+
     notes_from_host = models.TextField(
         blank=True,
         verbose_name=_(u'Anything else?'),
@@ -292,4 +381,5 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name = _(u'programme')
         verbose_name_plural = _(u'programmes')
         ordering = ['start_time', 'room']
+        index_together = [('category', 'state')]
         # unique_together = [('category', 'slug')]

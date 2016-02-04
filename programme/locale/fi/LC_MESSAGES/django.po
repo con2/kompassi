@@ -26,6 +26,10 @@ msgstr "Kysytty ohjelmanjärjestäjältä"
 msgid "At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?"
 msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko tiedossasi muita ohjelmanumeroita, joiden kanssa et haluaisi ohjelmasi olevan samaan aikaan?"
 
+#: models/programme.py
+msgid "Audio playback"
+msgstr "Äänen toistaminen"
+
 #: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Cancel"
 msgstr "Peruuta"
@@ -41,6 +45,10 @@ msgstr "Peruutettu"
 #: templates/programme_profile_view.jade
 msgid "Cancelled and rejected programmes"
 msgstr "Peruutetut ja hylätyt ohjelmanumerot"
+
+#: models/programme.py
+msgid "Computer use"
+msgstr "Tietokoneen käyttö"
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Contact information"
@@ -59,8 +67,8 @@ msgid "Discard changes and return to the list"
 msgstr "Hylkää muutokset ja palaa luetteloon"
 
 #: models/programme.py
-msgid "Do you need, for example, any of the following: computer, data projector, voice amplification, music playback capabilities, whiteboard, flipboard, chalkboard? The use of your own computer is only possible if agreed in advance."
-msgstr "Tarvitsetko esimerkiksi jotain seuraavista: tietokone, videotykki, luentoäänentoisto, musiikkiäänentoisto, tussi-, fläppi- tai liitutaulu? Oman tietokoneen käyttö on mahdollista vain etukäteen sovittuna."
+msgid "Do you have tech requirements that are not covered by the previous questions?"
+msgstr "Onko ohjelmallasi tekniikkatarpeita joita edeltävät kysymykset eivät kata?"
 
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "E-mail address"
@@ -69,6 +77,14 @@ msgstr "Sähköpostiosoite"
 #: templates/programme_profile_box.jade templates/programme_profile_detail_view.jade
 msgid "Edit programme"
 msgstr "Muokkaa ohjelmanumeroa"
+
+#: models/programme.py
+msgid "Encumbered content"
+msgstr "Suojattu sisältö"
+
+#: models/programme.py
+msgid "Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings."
+msgstr "Sisältääkö ohjelmasi tekijänoikeudella suojattua sisältöä? YouTubessa julkaistavat videotallenteet eivät voi sisältää kolmansien osapuolten tekijänoikeudella suojattua videota tai ääntä. Suojattu sisältö editoidaan pois videotallenteista."
 
 #: models/programme.py
 msgid "Ending time"
@@ -99,12 +115,20 @@ msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
 msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
 
 #: models/programme.py
+msgid "How many microphones do you require?"
+msgstr "Montako mikrofonia tarvitset?"
+
+#: models/programme.py
 msgid "I forbid publishing my programme, but it may be recorded for archiving purposes"
 msgstr "Kiellän ohjelmani julkaisemisen, mutta sen saa videoida arkistokäyttöön"
 
 #: models/programme.py
 msgid "I forbid recording my programme altogether"
 msgstr "Kiellän ohjelmani videoinnin kokonaan"
+
+#: models/programme.py
+msgid "I'm not sure whether my programme contains copyright-encumbered content or not"
+msgstr "En ole varma, sisältääkö ohjelmani tekijänoikeudella suojattua sisältöä"
 
 #: models/programme.py
 msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
@@ -143,6 +167,14 @@ msgid "Invite host"
 msgstr "Kutsu ohjelmanjärjestäjä"
 
 #: models/programme.py
+msgid "It's OK to photograph my programme"
+msgstr "Ohjelmanumeroani saa valokuvata"
+
+#: models/programme.py
+msgid "Laptop provided by the event"
+msgstr "Tapahtuman toimittama kannettava tietokone"
+
+#: models/programme.py
 msgid "Length (minutes)"
 msgstr "Pituus (minuuttia)"
 
@@ -153,6 +185,22 @@ msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata ot
 #: models/programme.py
 msgid "May your programme be recorded and published in the Internet?"
 msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
+
+#: models/programme.py
+msgid "Microphones"
+msgstr "Mikrofonit"
+
+#: models/programme.py
+msgid "More than five – Please elaborate on your needs in the \"Other tech requirements\" field."
+msgstr "Enemmän kuin viisi – Ole hyvä ja selitä tarpeesi Muut tekniikkatarpeet -kentässä."
+
+#: models/programme.py
+msgid "My programme contains copyright-encumbered audio or video"
+msgstr "Ohjelmanumeroni sisältää tekijänoikeudella suojattua ääntä tai videota."
+
+#: models/programme.py
+msgid "My programme does not contain copyright-encumbered audio or video"
+msgstr "Ohjelmanumeroni ei sisällä tekijänoikeudella suojattua ääntä tai videota."
 
 #: models/programme.py
 msgid "My programme may be recorded and published"
@@ -170,9 +218,21 @@ msgstr "Uusi ohjelmanumero"
 msgid "Nick name"
 msgstr "Nick"
 
+#: models/programme.py
+msgid "No"
+msgstr "Ei"
+
+#: models/programme.py
+msgid "No computer required"
+msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
+
 #: templates/programme_profile_view.jade
 msgid "No programmes"
 msgstr "Ei ohjelmanumeroita"
+
+#: models/programme.py
+msgid "Not sure"
+msgstr "En ole varma"
 
 #: models/programme.py
 msgid "Offer received"
@@ -182,13 +242,33 @@ msgstr "Ohjelmatarjous vastaanotettu"
 msgid "Only hosts who are assigned public roles will be shown publicly in the programme schedule."
 msgstr "Ohjelmakartassa näytetään ainoastaan ne ohjelmanjärjestäjät, jotka ovat julkisessa roolissa."
 
+#: models/programme.py
+msgid "Other tech requirements"
+msgstr "Muut tekniikkatarpeet"
+
+#: models/programme.py
+msgid "Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed."
+msgstr "Tapahtuman viralliset valokuvaajat pyrkivät ottamaan valokuvia kaikista ohjelmanumeroista joista niitä on pyydetty."
+
+#: models/programme.py
+msgid "Own laptop – PC"
+msgstr "Oma PC-kannettava"
+
+#: models/programme.py
+msgid "Own laptop – Mac"
+msgstr "Oma Mac-kannettava"
+
 #: models/role.py
 msgid "Personnel class"
-msgstr ""
+msgstr "Henkilöstöluokka"
 
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Phone number"
 msgstr "Puhelinnumero"
+
+#: models/programme.py
+msgid "Photography of your prorgmme"
+msgstr "Ohjelman valokuvaus"
 
 #: views/admin_views.py views/programme_accept_invitation_view.py views/programme_admin_detail_view.py
 msgid "Please check the form."
@@ -197,6 +277,18 @@ msgstr "Ole hyvä ja tarkista lomake."
 #: templates/programme_accept_invitation_view.jade
 msgid "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number."
 msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman ohjelmavastaaville. Mikäli ohjelmanumerollasi on muitakin järjestäjiä, he näkevät nimesi mutteivät sähköpostiosoitettasi tai puhelinnumeroasi."
+
+#: models/programme.py
+msgid "Please do not photograph my programme"
+msgstr "Pyydän, ettei ohjelmanumeroani valokuvata"
+
+#: models/programme.py
+msgid "Please photograph my programme"
+msgstr "Pyydän, että ohjelmastani otetaan valokuvia"
+
+#: models/role.py
+msgid "Priority"
+msgstr "Järjestys"
 
 #: models/freeform_organizer.py models/invitation.py
 msgid "Programme"
@@ -254,10 +346,6 @@ msgstr "Poista ohjelmanjärjestäjä"
 msgid "Requested time slot"
 msgstr "Aikatoiveet"
 
-#: models/programme.py
-msgid "Requirements for the room"
-msgstr "Tilatarpeet"
-
 #: models/invitation.py templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "Role"
 msgstr "Rooli"
@@ -265,6 +353,10 @@ msgstr "Rooli"
 #: models/programme.py
 msgid "Room"
 msgstr "Sali"
+
+#: models/programme.py
+msgid "Room requirements"
+msgstr "Tilatarpeet"
 
 #: templates/programme_admin_create_view.jade
 msgid "Save and continue"
@@ -286,6 +378,10 @@ msgstr "Ohjelmakarttatiedot"
 msgid "Send invitation"
 msgstr "Lähetä kutsu"
 
+#: models/role.py
+msgid "Some events have speaker roles that convey different privileges within the same personnel class. This priority field will put the speakers in their place."
+msgstr "Jotkin tapahtumat määrittelevät useita ohjelmanjärjestäjärooleja, jotka antavat eritasoiset edut. Tätä prioriteettikenttää käytetään korkeimmat edut antavan tason valitsemiseen."
+
 #: templates/programme_profile_detail_view.jade
 msgid "Someone has been invited, but they have not yet accepted their invitation."
 msgstr "Joku on kutsuttu, mutta hän ei ole vielä hyväksynyt kutsuaan."
@@ -305,10 +401,6 @@ msgstr "Sukunimi"
 #: models/programme.py
 msgid "Tags"
 msgstr "tägit"
-
-#: models/programme.py
-msgid "Tech requirements"
-msgstr "Tekniikkatarpeet"
 
 #: models/freeform_organizer.py
 msgid "Text"
@@ -389,6 +481,26 @@ msgstr "Päivitä profiilia..."
 #: models/programme.py templates/programme_admin_detail_views/internal_tab.jade
 msgid "Updated at"
 msgstr "Päivitysaika"
+
+#: models/programme.py
+msgid "Video playback"
+msgstr "Videon toistaminen"
+
+#: models/programme.py
+msgid "What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance."
+msgstr "Minkälaista tietokonetta haluat käyttää? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
+
+#: models/programme.py
+msgid "Will you play audio in your programme?"
+msgstr "Soitatko äänileikkeitä (esim. musiikkia) osana ohjelmaasi?"
+
+#: models/programme.py
+msgid "Will you play video in your programme?"
+msgstr "Näytätkö videopätkiä osana ohjelmaasi?"
+
+#: models/programme.py
+msgid "Yes"
+msgstr "Kyllä"
 
 #: templates/programme_accept_invitation_view.jade
 msgid "You can change these details later by visiting your profile."
