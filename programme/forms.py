@@ -99,8 +99,6 @@ class ProgrammeNeedsForm(forms.ModelForm):
     class Meta:
         model = Programme
         fields = (
-            'title',
-            'description',
             'computer',
             'use_audio',
             'use_video',
