@@ -73,17 +73,17 @@ class ProgrammeSelfServiceForm(forms.ModelForm):
         fields = (
             'title',
             'description',
-            'room_requirements',
             'computer',
             'use_audio',
             'use_video',
             'number_of_microphones',
             'tech_requirements',
-            'requested_time_slot',
-            'notes_from_host',
             'video_permission',
             'encumbered_content',
             'photography',
+            'room_requirements',
+            'requested_time_slot',
+            'notes_from_host',
         )
 
 
