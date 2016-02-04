@@ -115,6 +115,10 @@ msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
 msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
 
 #: models/programme.py
+msgid "How large an audience do you expect for your programme? What kind of a room do you wish for your programme?"
+msgstr "Miten suurta yleisöä odotat ohjelmallesi? Minkä tyyppistä tilaa toivot ohjelmallesi?"
+
+#: models/programme.py
 msgid "How many microphones do you require?"
 msgstr "Montako mikrofonia tarvitset?"
 

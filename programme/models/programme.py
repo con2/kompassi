@@ -150,7 +150,7 @@ class Programme(models.Model, CsvExportMixin):
     room_requirements = models.TextField(
         blank=True,
         verbose_name=_(u'Room requirements'),
-        help_text=u'How large an audience do you expect for your programme? What kind of a room do you wish for your programme?',
+        help_text=_(u'How large an audience do you expect for your programme? What kind of a room do you wish for your programme?'),
     )
 
     requested_time_slot = models.TextField(
