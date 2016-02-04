@@ -55,6 +55,7 @@ class RoomAdmin(admin.ModelAdmin):
 class RoleAdmin(admin.ModelAdmin):
     list_display = ('admin_get_event', 'title', 'personnel_class')
     list_filter = ('personnel_class__event',)
+    raw_id_fields = ('personnel_class',)
 
 
 class CategoryAdmin(admin.ModelAdmin):
