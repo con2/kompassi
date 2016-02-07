@@ -3,6 +3,8 @@ from django.views.generic.base import RedirectView
 
 from .views import (
     labour_admin_dashboard_view,
+    labour_admin_jobcategories_view,
+    labour_admin_jobcategory_view,
     labour_admin_mail_editor_view,
     labour_admin_mail_view,
     labour_admin_roster_view,
@@ -79,6 +81,24 @@ urlpatterns = [
         name='labour_admin_signup_view'
     ),
 
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/jobcategories/?$',
+        labour_admin_jobcategories_view,
+        name='labour_admin_jobcategories_view',
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/jobcategories/new/?$',
+        labour_admin_jobcategory_view,
+        dict(job_category_slug=None),
+        name='labour_admin_create_jobcategory_view',
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/jobcategories/(?P<job_category_slug>[a-z0-9-]+)/?$',
+        labour_admin_jobcategory_view,
+        name='labour_admin_jobcategory_view',
+    ),
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/roster(/.*)?$',

@@ -164,6 +164,8 @@ class Setup(object):
         for name in [u'Vastaava', u'Pelisali', u'Kahvila', u'Sidosryhmät', u'AV-tekniikka', u'Logistiikka', u'DesuTV', u'Tulkki', u'Valokuvaaja']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
+        JobCategory.objects.filter(event=self.event, name=u'Ohjelmanpitäjä').update(app_label='programme')
+
         for jc_name, qualification_name in [
             (u'Järjestyksenvalvoja', u'JV-kortti'),
         ]:

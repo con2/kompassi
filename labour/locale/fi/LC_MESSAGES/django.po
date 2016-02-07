@@ -1,3 +1,15 @@
+#: templates/labour_admin_jobcategory_view.jade
+msgid "Abandon changes and return"
+msgstr "Hylkää muutokset ja palaa"
+
+#: templates/labour_admin_jobcategories_view.jade templates/labour_admin_jobcategory_view.jade
+msgid "Add job category"
+msgstr "Lisää tehtäväalue"
+
+#: views/labour_admin_menu_items.py
+msgid "Applications"
+msgstr "Hakemukset"
+
 #: views/public_views.py
 msgid "Apply for volunteer work"
 msgstr "Hae vapaaehtoistyöhön"
@@ -6,37 +18,113 @@ msgstr "Hae vapaaehtoistyöhön"
 msgid "Complete contact information"
 msgstr "Täydennä yhteystiedot"
 
+#: views/labour_admin_menu_items.py
+msgid "Dashboard"
+msgstr "Kojelauta"
+
+#: models/job_category.py
+msgid "Description"
+msgstr "Kuvaus"
+
+#: templates/labour_admin_jobcategories_view.jade views/labour_admin_menu_items.py
+msgid "Edit job categories"
+msgstr "Muokkaa tehtäväalueita"
+
+#: templates/labour_admin_jobcategory_view.jade
+msgid "Edit job category"
+msgstr "Muokkaa tehtäväaluetta"
+
+#: models/job_category.py
+msgid "For most job categories, you should select the 'worker' and 'underofficer' classes here, if applicable."
+msgstr "Useimpien tehtäväalueiden kohdalla tässä tulisi valita työvoima- ja vuorovastaavaluokat, mikäli sellaiset ovat tapahtuman käytössä."
+
+#: views/labour_admin_jobcategories_view.py views/labour_admin_jobcategory_view.py
+msgid "Invalid request."
+msgstr "Kelvoton pyyntö."
+
+#: models/job_category.py
+msgid "Job categories that are not accepting applications are not shown on the signup form. However, they may still be applied to using alternative signup forms."
+msgstr "Tehtäväalueisiin, jotka eivät ole julkisessa haussa, ei voi hakea tavallisen hakemuslomakkeen kautta. Niihin voi kuitenkin ilmoittautua vaihtoehtoisilla ilmoittautumislomakkeilla, jos sellaisia on määritelty."
+
+#: templates/labour_admin_jobcategories_view.jade
+msgid "Job category"
+msgstr "Tehtäväalue"
+
 #: templates/labour_admin_onboarding_view.jade
 msgid "Job title"
 msgstr "Tehtävänimike"
 
-#: templates/labour_admin_onboarding_view.jade
+#: views/labour_admin_menu_items.py
+msgid "Mass messages"
+msgstr "Työvoimaviestit"
+
+#: models/job_category.py templates/labour_admin_onboarding_view.jade
 msgid "Name"
 msgstr "Nimi"
 
-#: views/admin_views.py
+#: templates/labour_admin_jobcategories_view.jade
+msgid "No"
+msgstr "Ei"
+
+#: views/labour_admin_menu_items.py
 msgid "Onboarding"
 msgstr "Saapuneeksi kirjaaminen"
 
-#: views/public_views.py
+#: models/job_category.py
+msgid "Personnel classes"
+msgstr "Henkilöstöluokat"
+
+#: views/labour_admin_jobcategory_view.py views/public_views.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
 #: templates/labour_admin_signups_view.jade
 msgid "Print work certificates"
-msgstr ""
+msgstr "Tulosta työtodistukset"
+
+#: models/job_category.py templates/labour_admin_jobcategories_view.jade
+msgid "Publicly accepting applications"
+msgstr "Avoimessa haussa"
 
 #: views/public_views.py
 msgid "Qualifications"
 msgstr "Pätevyydet"
 
+#: templates/labour_admin_jobcategories_view.jade
+msgid "Remove"
+msgstr "Poista"
+
+#: templates/labour_admin_jobcategory_view.jade
+msgid "Remove job category"
+msgstr "Poista tehtäväalue"
+
+#: models/job_category.py
+msgid "Required qualifications"
+msgstr "Vaaditut pätevyydet"
+
 #: views/public_views.py
 msgid "Revise qualifications"
-msgstr "Ilmoita pätevyytesi"
+msgstr "Tarkista pätevyydet"
+
+#: templates/labour_admin_jobcategory_view.jade
+msgid "Save and continue"
+msgstr "Tallenna ja jatka"
+
+#: templates/labour_admin_jobcategory_view.jade
+msgid "Save and return"
+msgstr "Tallenna ja palaa"
+
+#: views/labour_admin_menu_items.py
+msgid "Shift planning"
+msgstr "Työvuorojen suunnittelu"
 
 #: templates/labour_admin_onboarding_view.jade
 msgid "Shirt size"
 msgstr "Paitakoko"
+
+#: views/labour_admin_menu_items.py
+msgid "Shirt sizes"
+msgstr "Paitakoot"
 
 #: templates/labour_admin_onboarding_view.jade
 msgid "Shirt type"
@@ -54,6 +142,14 @@ msgstr "Lähetä hakemus"
 msgid "Thank you for your application!"
 msgstr "Kiitos hakemuksestasi!"
 
+#: views/labour_admin_jobcategories_view.py views/labour_admin_jobcategory_view.py
+msgid "The job category was removed."
+msgstr "Tehtäväalue poistettiin."
+
+#: views/labour_admin_jobcategory_view.py
+msgid "The job category was saved."
+msgstr "Tehtäväalue tallennettiin."
+
 #: views/public_views.py
 msgid "The qualification has been added."
 msgstr "Pätevyys on lisätty."
@@ -70,9 +166,21 @@ msgstr "Pätevyys on päivitetty."
 msgid "The signup form you have requested is not currently active."
 msgstr "Pyytämäsi ilmoittautumislomake ei ole tällä hetkellä käytössä."
 
+#: forms.py
+msgid "The slug that would be derived from this name is already taken. Please choose another name."
+msgstr "Tästä nimestä johdettava tekninen nimi on jo käytössä. Ole hyvä ja valitse toinen nimi."
+
+#: models/job_category.py
+msgid "This descriptions will be shown to the applicants on the signup form. If there are specific requirements to this job category, please mention them here."
+msgstr "Tämä kuvaus näytetään hakijoille hakemuslomakkeella. Mikäli tällä tehtäväalueella on erityisiä vaatimuksia hakijoiden suhteen, mainitse niistä tässä."
+
 #: views/public_views.py
 msgid "This event is not currently accepting applications."
 msgstr "Tämä tapahtuma ei ota tällä hetkellä vastaan hakemuksia."
+
+#: templates/labour_admin_jobcategories_view.jade templates/labour_admin_jobcategory_view.jade
+msgid "This job category cannot be removed because applications have already been made to it."
+msgstr "Tätä tehtäväaluetta ei voi poistaa, koska sille on jo tehty hakemuksia."
 
 #: views/public_views.py
 msgid "Update application"
@@ -89,6 +197,10 @@ msgstr "Vapaaehtoistyöhakemukset"
 #: templates/labour_admin_onboarding_view.jade
 msgid "Volunteer worker onboarding"
 msgstr "Työvoiman kirjaaminen saapuneeksi"
+
+#: templates/labour_admin_jobcategories_view.jade
+msgid "Yes"
+msgstr "Kyllä"
 
 #: views/public_views.py
 msgid "Your application does not currently need to be confirmed."
@@ -117,6 +229,10 @@ msgstr "vaihtoehtoinen ilmoittautumislomake"
 #: models/alternative_signup_forms.py
 msgid "alternative signup forms"
 msgstr "vaihtoehtoiset ilmoittautumislomakkeet"
+
+#: models/job_category.py
+msgid "event"
+msgstr "tapahtuma"
 
 #: models/info_link.py
 msgid "info link"

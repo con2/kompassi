@@ -1,6 +1,6 @@
 #: templates/badges_admin_create_view.jade
-msgid "Abandon changes and return to list"
-msgstr "Hylkää muutokset ja palaa listaan"
+msgid "Abandon changes and return"
+msgstr "Hylkää muutokset ja palaa"
 
 #: templates/badges_admin_create_view.jade
 msgid "Add badge"

@@ -5,12 +5,13 @@ from datetime import date, datetime
 from django import forms
 from django.db.models import Q
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
 from core.forms import PersonForm
 from core.models import Person
-from core.utils import horizontal_form_helper, indented_without_label
+from core.utils import horizontal_form_helper, indented_without_label, slugify
 
 from .models import AlternativeFormMixin, Signup, JobCategory, EmptySignupExtra, PersonnelClass, WorkPeriod
 
@@ -175,3 +176,44 @@ class SignupAdminForm(forms.ModelForm):
             raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään Henkilöstöluokka ei saa olla valittuna.')
 
         return personnel_classes
+
+
+class RemoveJobCategoryForm(forms.Form):
+    remove = forms.IntegerField(required=True)
+
+
+class JobCategoryForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(JobCategoryForm, self).__init__(*args, **kwargs)
+
+        self.fields['personnel_classes'].queryset = PersonnelClass.objects.filter(event=event).order_by('priority')
+        self.fields['personnel_classes'].required = True
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = JobCategory
+        fields = (
+            'name',
+            'description',
+            'public',
+            'required_qualifications',
+            'personnel_classes',
+        )
+        widgets = dict(
+            required_qualifications=forms.CheckboxSelectMultiple,
+            personnel_classes=forms.CheckboxSelectMultiple,
+        )
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+
+        if name and not self.instance.pk:
+            slug = slugify(name)
+            if JobCategory.objects.filter(event=self.instance.event, slug=slug).exists():
+                raise forms.ValidationError(_('The slug that would be derived from this name is already taken. Please choose another name.'))
+
+        return name

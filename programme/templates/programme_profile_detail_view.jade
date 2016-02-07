@@ -13,11 +13,11 @@ block profile_content
         .btn-group.pull-right
           a.btn.btn-default(href='{% url "programme_profile_view" %}')
             i.fa.fa-undo.kompassi-icon-space-right
-            span {% trans "Abandon changes and return to list" %}
+            span {% trans "Abandon changes and return" %}
           if programme.host_can_edit
             button.btn.btn-success(type='submit')
               i.fa.fa-check.kompassi-icon-space-right
-              span {% trans "Save and return to list" %}
+              span {% trans "Save and return" %}
         if not programme.host_can_edit
           .text-danger= programme.host_cannot_edit_explanation
 

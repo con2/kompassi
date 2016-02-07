@@ -21,7 +21,7 @@ block admin_content
 
   form(method='POST', role='form').form-horizontal
     //- To catch Enter button presses
-    button.btn.btn-success.hidden(type='submit', name='action', value='save-edit') {% trans "Save and continue editing" %}
+    button.btn.btn-success.hidden(type='submit', name='action', value='save-edit') {% trans "Save and continue" %}
 
     .tab-content.kompassi-slight-space-above
       include programme_admin_detail_views/public_tab.jade

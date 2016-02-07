@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -11,33 +13,34 @@ def format_job_categories(job_categories):
 
 
 class JobCategory(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name=u'tapahtuma')
+    event = models.ForeignKey('core.Event', verbose_name=_("event"))
     app_label = models.CharField(max_length=63, blank=True, default='labour')
 
     # TODO rename this to "title"
-    name = models.CharField(max_length=63, verbose_name=u'tehtäväalueen nimi')
+    name = models.CharField(max_length=63, verbose_name=_("Name"))
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
     description = models.TextField(
-        verbose_name=u'tehtäväalueen kuvaus',
-        help_text=u'Kuvaus näkyy hakijoille hakulomakkeella. Kerro ainakin, mikäli tehtävään tarvitaan erityisiä tietoja tai taitoja.',
+        verbose_name=_("Description"),
+        help_text=_("This descriptions will be shown to the applicants on the signup form. If there are specific requirements to this job category, please mention them here."),
         blank=True
     )
 
     public = models.BooleanField(
         default=True,
-        verbose_name=u'avoimessa haussa',
-        help_text=u'Tehtäviin, jotka eivät ole avoimessa haussa, voi hakea vain työvoimavastaavan lähettämällä hakulinkillä.'
+        verbose_name=_("Publicly accepting applications"),
+        help_text=_("Job categories that are not accepting applications are not shown on the signup form. However, they may still be applied to using alternative signup forms."),
     )
 
     required_qualifications = models.ManyToManyField('labour.Qualification',
         blank=True,
-        verbose_name=u'vaaditut pätevyydet'
+        verbose_name=_("Required qualifications"),
     )
 
     personnel_classes = models.ManyToManyField('labour.PersonnelClass',
         blank=True,
-        verbose_name=u'Henkilöstöluokat'
+        verbose_name=_("Personnel classes"),
+        help_text=_("For most job categories, you should select the 'worker' and 'underofficer' classes here, if applicable."),
     )
 
     @classmethod
@@ -71,8 +74,9 @@ class JobCategory(models.Model):
             return all(qual in quals for qual in self.required_qualifications.all())
 
     class Meta:
-        verbose_name = _(u'job category')
-        verbose_name_plural = _(u'job categories')
+        verbose_name = _("job category")
+        verbose_name_plural = _("job categories")
+        ordering = ('event', 'name')
 
         unique_together = [
             ('event', 'slug'),
@@ -92,8 +96,8 @@ class JobCategory(models.Model):
     def get_or_create_dummies(cls):
         from core.models import Event
         event, unused = Event.get_or_create_dummy()
-        jc1, unused = cls.objects.get_or_create(event=event, name='Dummy 1', slug='dummy-1')
-        jc2, unused = cls.objects.get_or_create(event=event, name='Dummy 2', slug='dummy-2')
+        jc1, unused = cls.objects.get_or_create(event=event, name="Dummy 1", slug='dummy-1')
+        jc2, unused = cls.objects.get_or_create(event=event, name="Dummy 2", slug='dummy-2')
 
         return [jc1, jc2]
 

@@ -1,6 +1,6 @@
 #: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
-msgid "Abandon changes and return to list"
-msgstr "Hylkää muutokset ja palaa luetteloon"
+msgid "Abandon changes and return"
+msgstr "Hylkää muutokset ja palaa"
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Accept invitation"
@@ -64,7 +64,7 @@ msgstr "Kuvaus"
 
 #: templates/programme_admin_create_view.jade
 msgid "Discard changes and return to the list"
-msgstr "Hylkää muutokset ja palaa luetteloon"
+msgstr "Hylkää muutokset ja palaa"
 
 #: models/programme.py
 msgid "Do you have tech requirements that are not covered by the previous questions?"
@@ -362,17 +362,13 @@ msgstr "Sali"
 msgid "Room requirements"
 msgstr "Tilatarpeet"
 
-#: templates/programme_admin_create_view.jade
+#: templates/programme_admin_create_view.jade templates/programme_admin_detail_view.jade templates/programme_admin_detail_views/buttons.jade
 msgid "Save and continue"
 msgstr "Tallenna ja jatka"
 
-#: templates/programme_admin_detail_view.jade templates/programme_admin_detail_views/buttons.jade
-msgid "Save and continue editing"
-msgstr "Tallenna ja jatka"
-
 #: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
-msgid "Save and return to list"
-msgstr "Tallenna ja palaa luetteloon"
+msgid "Save and return"
+msgstr "Tallenna ja palaa"
 
 #: templates/programme_admin_detail_views/schedule_tab.jade views/programme_admin_detail_view.py
 msgid "Schedule information"

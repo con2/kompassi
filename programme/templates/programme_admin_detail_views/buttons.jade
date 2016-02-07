@@ -2,10 +2,10 @@
 .btn-group.pull-right
   a.btn.btn-default(href='{% url "programme_admin_view" event.slug %}')
     i.fa.fa-undo.kompassi-icon-space-right
-    {% trans "Abandon changes and return to list" %}
+    {% trans "Abandon changes and return" %}
   button.btn.btn-primary(type='submit', name='action', value='save-return')
     i.fa.fa-plus.kompassi-icon-space-right
-    {% trans "Save and return to list" %}
+    {% trans "Save and return" %}
   button.btn.btn-success(type='submit', name='action', value='save-edit')
     i.fa.fa-plus.kompassi-icon-space-right
-    {% trans "Save and continue editing" %}
+    {% trans "Save and continue" %}
