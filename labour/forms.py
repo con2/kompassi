@@ -13,8 +13,15 @@ from core.forms import PersonForm
 from core.models import Person
 from core.utils import horizontal_form_helper, indented_without_label, slugify
 
-from .models import AlternativeFormMixin, Signup, JobCategory, EmptySignupExtra, PersonnelClass, WorkPeriod
-
+from .models import (
+    AlternativeFormMixin,
+    Signup,
+    JobCategory,
+    EmptySignupExtra,
+    LabourEventMeta,
+    PersonnelClass,
+    WorkPeriod,
+)
 
 
 # http://stackoverflow.com/a/9754466
@@ -217,3 +224,38 @@ class JobCategoryForm(forms.ModelForm):
                 raise forms.ValidationError(_('The slug that would be derived from this name is already taken. Please choose another name.'))
 
         return name
+
+
+class StartStopForm(forms.ModelForm):
+    # XXX get a date picker
+    registration_opens = forms.DateTimeField(
+        required=False,
+        label=_("Registration opens"),
+    )
+    registration_closes = forms.DateTimeField(
+        required=False,
+        label=_("Registration closes"),
+        help_text=_("Format: YYYY-MM-DD HH:MM:SS"),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(StartStopForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    def clean_registration_closes(self):
+        registration_opens = self.cleaned_data.get('registration_opens')
+        registration_closes = self.cleaned_data.get('registration_closes')
+
+        if registration_opens and registration_closes and registration_opens >= registration_closes:
+            raise forms.ValidationError(_("The registration closing time must be after the registration opening time."))
+
+        return registration_closes
+
+    class Meta:
+        model = LabourEventMeta
+        fields = (
+            'registration_opens',
+            'registration_closes',
+        )

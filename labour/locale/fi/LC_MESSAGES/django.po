@@ -6,6 +6,14 @@ msgstr "Hylkää muutokset ja palaa"
 msgid "Add job category"
 msgstr "Lisää tehtäväalue"
 
+#: templates/labour_admin_startstop_view.jade views/labour_admin_menu_items.py
+msgid "Application period"
+msgstr "Työvoimahaun alkamis- ja päättymisajat"
+
+#: views/labour_admin_startstop_view.py
+msgid "Application period start and end times were saved."
+msgstr "Työvoimahaun alkamis- ja päättymisajat tallennettiin."
+
 #: views/labour_admin_menu_items.py
 msgid "Applications"
 msgstr "Hakemukset"
@@ -34,11 +42,27 @@ msgstr "Muokkaa tehtäväalueita"
 msgid "Edit job category"
 msgstr "Muokkaa tehtäväaluetta"
 
+#: templates/labour_admin_startstop_view.jade
+msgid "End now"
+msgstr "Sulje työvoimahaku välittömästi"
+
 #: models/job_category.py
 msgid "For most job categories, you should select the 'worker' and 'underofficer' classes here, if applicable."
 msgstr "Useimpien tehtäväalueiden kohdalla tässä tulisi valita työvoima- ja vuorovastaavaluokat, mikäli sellaiset ovat tapahtuman käytössä."
 
-#: views/labour_admin_jobcategories_view.py views/labour_admin_jobcategory_view.py
+#: forms.py
+msgid "Format: YYYY-MM-DD HH:MM:SS"
+msgstr "Muoto: PP.KK.VVVV HH.MM.SS"
+
+#: templates/labour_admin_startstop_view.jade
+msgid "Here you can set the starting and ending times for the application period. The signup form will automatically open at the beginning and close at the end of the application period."
+msgstr "Tässä voit asettaa työvoimahaun alkamis- ja päättymisajat. Työvoimahaku aukeaa automaattisesti kun alkamisaika on ohitettu ja sulkeutuu automaattisesti kun päättymisaika on ohitettu."
+
+#: templates/labour_admin_startstop_view.jade
+msgid "If the <em>Registration starts</em> field is empty, the signup form will stay closed. If the <em>Registration starts</em> is set but the <em>Registration closes</em> field is empty, the signup form will stay open once the beginning of the application period has been reached."
+msgstr "Mikäli alkamisaikaa ei ole asetettu, työvoimahaku pysyy suljettuna. Mikäli alkamisaika on asetettu mutta päättymisaikaa ei ole asetettu, työvoimahaku pysyy avauduttuaan avoimena."
+
+#: views/labour_admin_jobcategories_view.py views/labour_admin_jobcategory_view.py views/labour_admin_startstop_view.py
 msgid "Invalid request."
 msgstr "Kelvoton pyyntö."
 
@@ -74,7 +98,7 @@ msgstr "Saapuneeksi kirjaaminen"
 msgid "Personnel classes"
 msgstr "Henkilöstöluokat"
 
-#: views/labour_admin_jobcategory_view.py views/public_views.py
+#: views/labour_admin_jobcategory_view.py views/labour_admin_startstop_view.py views/public_views.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
@@ -89,6 +113,14 @@ msgstr "Avoimessa haussa"
 #: views/public_views.py
 msgid "Qualifications"
 msgstr "Pätevyydet"
+
+#: forms.py models/labour_event_meta.py
+msgid "Registration closes"
+msgstr "Työvoimahaku päättyy"
+
+#: forms.py models/labour_event_meta.py
+msgid "Registration opens"
+msgstr "Työvoimahaku alkaa"
 
 #: templates/labour_admin_jobcategories_view.jade
 msgid "Remove"
@@ -110,9 +142,13 @@ msgstr "Tarkista pätevyydet"
 msgid "Save and continue"
 msgstr "Tallenna ja jatka"
 
-#: templates/labour_admin_jobcategory_view.jade
+#: templates/labour_admin_jobcategory_view.jade templates/labour_admin_startstop_view.jade
 msgid "Save and return"
 msgstr "Tallenna ja palaa"
+
+#: templates/labour_admin_startstop_view.jade
+msgid "Save changes"
+msgstr "Tallenna muutokset"
 
 #: views/labour_admin_menu_items.py
 msgid "Shift planning"
@@ -134,6 +170,10 @@ msgstr "Paitatyyppi"
 msgid "Sign up or sign in..."
 msgstr "Rekisteröidy tai kirjaudu sisään..."
 
+#: templates/labour_admin_startstop_view.jade
+msgid "Start now"
+msgstr "Avaa työvoimahaku välittömästi"
+
 #: views/public_views.py
 msgid "Submit application"
 msgstr "Lähetä hakemus"
@@ -141,6 +181,30 @@ msgstr "Lähetä hakemus"
 #: views/public_views.py
 msgid "Thank you for your application!"
 msgstr "Kiitos hakemuksestasi!"
+
+#: views/labour_admin_startstop_view.py
+msgid "The application period is already underway."
+msgstr "Työvoimahaku on jo käynnissä."
+
+#: templates/labour_admin_startstop_view.jade
+msgid "The application period is currently underway."
+msgstr "Työvoimahaku on parhaillaan käynnissä."
+
+#: templates/labour_admin_startstop_view.jade views/labour_admin_startstop_view.py
+msgid "The application period is not currently underway."
+msgstr "Työvoimahaku ei ole juuri nyt käynnissä."
+
+#: views/labour_admin_startstop_view.py
+msgid "The application period was ended."
+msgstr "Työvoimahaku suljettiin."
+
+#: views/labour_admin_startstop_view.py
+msgid "The application period was started."
+msgstr "Työvoimahaku avattiin."
+
+#: views/labour_admin_startstop_view.py
+msgid "The end of the application period was in the past and has now been cleared. If you have an ending date for the application period, please set it below."
+msgstr "Työvoimahaun päättymisaika oli menneisyydessä, ja se on nyt tyhjennetty. Mikäli sinulla on työvoimahaulle päättymisaika, ole hyvä ja aseta se."
 
 #: views/labour_admin_jobcategories_view.py views/labour_admin_jobcategory_view.py
 msgid "The job category was removed."
@@ -161,6 +225,10 @@ msgstr "Pätevyys on poistettu."
 #: views/public_views.py
 msgid "The qualification has been updated."
 msgstr "Pätevyys on päivitetty."
+
+#: forms.py
+msgid "The registration closing time must be after the registration opening time."
+msgstr "Työvoimahaun päättymisajan tulee olla työvoimahaun alkamisajan jälkeen."
 
 #: views/public_views.py
 msgid "The signup form you have requested is not currently active."
@@ -201,6 +269,10 @@ msgstr "Työvoiman kirjaaminen saapuneeksi"
 #: templates/labour_admin_jobcategories_view.jade
 msgid "Yes"
 msgstr "Kyllä"
+
+#: templates/labour_admin_startstop_view.jade
+msgid "You can also start or stop the application period immediately."
+msgstr "Työvoimahaun voi myös avata tai sulkea välittömästi."
 
 #: views/public_views.py
 msgid "Your application does not currently need to be confirmed."
@@ -321,4 +393,7 @@ msgstr "aikajae"
 #: models/roster.py
 msgid "work periods"
 msgstr "aikajakeet"
+
+#~ msgid "Save"
+#~ msgstr "Tallenna"
 

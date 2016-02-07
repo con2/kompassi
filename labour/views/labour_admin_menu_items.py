@@ -33,6 +33,10 @@ def labour_admin_menu_items(request, event):
     jobcategories_active = request.path.startswith(jobcategories_url)
     jobcategories_text = _("Edit job categories")
 
+    startstop_url = url('labour_admin_startstop_view', event.slug)
+    startstop_active = request.path == startstop_url
+    startstop_text = _("Application period")
+
     menu_items = [
         (dashboard_active, dashboard_url, dashboard_text),
         (signups_active, signups_url, signups_text),
@@ -40,6 +44,7 @@ def labour_admin_menu_items(request, event):
         (roster_active, roster_url, roster_text),
         (onboarding_active, onboarding_url, onboarding_text),
         (jobcategories_active, jobcategories_url, jobcategories_text),
+        (startstop_active, startstop_url, startstop_text),
     ]
 
     if event.labour_event_meta.signup_extra_model.get_shirt_size_field():

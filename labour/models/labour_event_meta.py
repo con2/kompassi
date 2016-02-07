@@ -19,13 +19,13 @@ class LabourEventMeta(EventMetaBase):
     registration_opens = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'työvoimahaku alkaa'
+        verbose_name=_("Registration opens"),
     )
 
     registration_closes = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'työvoimahaku päättyy'
+        verbose_name=_("Registration closes"),
     )
 
     work_begins = models.DateTimeField(verbose_name=u'Ensimmäiset työvuorot alkavat')
