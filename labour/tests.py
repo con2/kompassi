@@ -1,6 +1,5 @@
 from django.test import TestCase
 
-
 from core.models import Event, Person
 
 from .models import LabourEventMeta, Qualification, JobCategory, Signup
@@ -53,3 +52,23 @@ class SignupTest(TestCase):
         self.assertTrue(params['is_active'])
         self.assertFalse(params['time_accepted__isnull'])
         self.assertTrue(params['time_finished__isnull'])
+
+
+class JobCategoryTestCase(TestCase):
+    def test_group(self):
+        jc, unused = JobCategory.get_or_create_dummy()
+        assert jc.group
+
+    def test_recipient_group(self):
+        from mailings.models import RecipientGroup
+
+        jc, unused = JobCategory.get_or_create_dummy()
+
+        rg = RecipientGroup.objects.get(job_category=jc)
+        assert rg.verbose_name == jc.name
+
+        jc.name = "Let's change this"
+        jc.save()
+
+        rg = RecipientGroup.objects.get(job_category=jc)
+        assert rg.verbose_name == jc.name

@@ -17,6 +17,8 @@ from ..forms import JobCategoryForm
 @labour_admin_required
 @require_http_methods(["GET", "HEAD", "POST"])
 def labour_admin_jobcategory_view(request, vars, event, job_category_slug=None):
+    meta = event.labour_event_meta
+
     if job_category_slug is not None:
         # Edit existing
         job_category = get_object_or_404(JobCategoryManagementProxy, event=event, slug=job_category_slug)
@@ -31,6 +33,7 @@ def labour_admin_jobcategory_view(request, vars, event, job_category_slug=None):
         if action in ('save-return', 'save-edit'):
             if form.is_valid():
                 job_category = form.save()
+                meta.create_groups_async()
                 messages.success(request, _("The job category was saved."))
 
                 if action == 'save-return':

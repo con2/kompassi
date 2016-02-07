@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -65,6 +66,11 @@ class JobCategory(models.Model):
 
         return job_category, created
 
+    @property
+    def group(self):
+        from django.contrib.auth.models import Group
+        return Group.objects.get(name=self.event.labour_event_meta.make_group_name(self.event, self.slug))
+
     def is_person_qualified(self, person):
         if not self.required_qualifications.exists():
             return True
@@ -114,7 +120,15 @@ class JobCategory(models.Model):
         if self.name and not self.slug:
             self.slug = slugify(self.name)
 
-        return super(JobCategory, self).save(*args, **kwargs)
+        created = not self.pk
+
+        ret_val = super(JobCategory, self).save(*args, **kwargs)
+
+        if not created and 'mailings' in settings.INSTALLED_APPS:
+            from mailings.models import RecipientGroup
+            RecipientGroup.update_for_job_category(self)
+
+        return ret_val
 
     def as_dict(self, include_jobs=False, include_requirements=False):
         doc = pick_attrs(self,
