@@ -24,7 +24,7 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
     Copyright © 2012-2015 Meeri Panula
     Copyright © 2013 Esa Ollitervo
     Copyright © 2014 Pekka Wallendahl
-    Copyright © 2014-2015 Jyrki Launonen
+    Copyright © 2014-2016 Jyrki Launonen
     Copyright © 2015 Miika Ojamo, Santeri Hiltunen
     Copyright © 2015-2016 Aarni Koskela
 
