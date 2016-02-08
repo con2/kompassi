@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 
 class BadgePrivacyAdapter(object):
     """
@@ -38,42 +40,40 @@ class BadgePrivacyAdapter(object):
 
     @property
     def nick_or_first_name(self):
-        if self.is_nick_visible:
+        if self.badge.is_nick_visible:
             # JAPSU <- this
             # Santtu Pajukanta
             # Chief Technology Officer
-            return self.person.nick
-        elif self.is_first_name_visible:
+            return self.badge.nick
+        elif self.badge.is_first_name_visible:
             # SANTTU <- this
             # Pajukanta
             # Chief Technology Officer
-            return self.person.first_name
+            return self.badge.first_name
         else:
-            # NOTE we do not offer a choice of showing the surname but not the first name
-            raise NotImplementedError(self.person.name_display_style)
+            return ""
 
     @property
     def surname_or_full_name(self):
-        if self.is_nick_visible:
+        if self.badge.is_nick_visible:
             # JAPSU
             # Santtu Pajukanta <- this
             # Chief Technology Officer
-            if self.is_surname_visible:
-                if self.is_first_name_visible:
-                    return u"{first_name} {surname}".format(
-                        first_name=self.person.first_name,
-                        surname=self.person.surname,
+            if self.badge.is_surname_visible:
+                if self.badge.is_first_name_visible:
+                    return "{first_name} {surname}".format(
+                        first_name=self.badge.first_name,
+                        surname=self.badge.surname,
                     )
                 else:
-                    # NOTE we do not offer a choice of showing the surname but not the first name
-                    raise NotImplementedError(self.person.name_display_style)
+                    return self.badge.surname
             else:
-                return u''
+                return ""
         else:
             # SANTTU
             # Pajukanta <- this
             # Chief Technology Officer
-            if self.is_surname_visible:
-                return self.person.surname
+            if self.badge.is_surname_visible:
+                return self.badge.surname
             else:
-                return u''
+                return ""
