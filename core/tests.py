@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from datetime import datetime, timedelta
 
 from django.forms import ValidationError
@@ -7,7 +9,7 @@ from django.test import TestCase
 
 from dateutil.tz import tzlocal
 
-from .utils import check_password_strength, full_hours_between
+from .utils import check_password_strength, full_hours_between, slugify
 
 
 class UtilsTestCase(TestCase):
@@ -105,3 +107,6 @@ class UtilsTestCase(TestCase):
                 datetime(2013, 8, 16, 3,  0, 0, tzinfo=tz)
             ]
         )
+
+    def test_slugify(self):
+        assert slugify('Matti Lundén') == 'matti-lunden'
