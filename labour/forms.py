@@ -145,6 +145,7 @@ class SignupAdminForm(forms.ModelForm):
         super(SignupAdminForm, self).__init__(*args, **kwargs)
 
         self.fields['job_categories_accepted'].queryset = JobCategory.objects.filter(event=event)
+        self.fields['job_categories_rejected'].queryset = self.fields['job_categories_accepted'].queryset
         self.fields['personnel_classes'].queryset = PersonnelClass.objects.filter(event=event).order_by('priority')
 
         self.helper = horizontal_form_helper()
@@ -156,12 +157,14 @@ class SignupAdminForm(forms.ModelForm):
             'job_title',
             'personnel_classes',
             'job_categories_accepted',
+            'job_categories_rejected',
             'xxx_interim_shifts',
             'notes',
         )
         widgets = dict(
             personnel_classes=forms.CheckboxSelectMultiple,
             job_categories_accepted=forms.CheckboxSelectMultiple,
+            job_categories_rejected=forms.CheckboxSelectMultiple,
         )
 
     def clean_job_categories_accepted(self):

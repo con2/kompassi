@@ -81,6 +81,16 @@ class Signup(models.Model, CsvExportMixin):
             u'Harmaalla merkityt tehtäväalueet ovat niitä, joihin hakija ei ole itse hakenut.'
     )
 
+    job_categories_rejected = models.ManyToManyField('labour.JobCategory',
+        blank=True,
+        related_name='+',
+        verbose_name=_('Rejected job categories'),
+        help_text=_(u'The workforce manager may use this field to inform other workforce managers that '
+            u'this applicant will not be accepted to a certain job category. This field is not visible '
+            u'to the applicant, but should they request a record of their own information, this field will '
+            u'be included.')
+    )
+
     xxx_interim_shifts = models.TextField(
         blank=True,
         null=True,

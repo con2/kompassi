@@ -122,6 +122,10 @@ msgstr "Työvoimahaku päättyy"
 msgid "Registration opens"
 msgstr "Työvoimahaku alkaa"
 
+#: models/signup.py
+msgid "Rejected job categories"
+msgstr "Hylätyt tehtäväalueet"
+
 #: templates/labour_admin_jobcategories_view.jade
 msgid "Remove"
 msgstr "Poista"
@@ -237,6 +241,10 @@ msgstr "Pyytämäsi ilmoittautumislomake ei ole tällä hetkellä käytössä."
 #: forms.py
 msgid "The slug that would be derived from this name is already taken. Please choose another name."
 msgstr "Tästä nimestä johdettava tekninen nimi on jo käytössä. Ole hyvä ja valitse toinen nimi."
+
+#: models/signup.py
+msgid "The workforce manager may use this field to inform other workforce managers that this applicant will not be accepted to a certain job category. This field is not visible to the applicant, but should they request a record of their own information, this field will be included."
+msgstr "Tätä kenttää voi käyttää tiedottamaan muille työvoimavastaaville, että tätä henkilöä ei oteta töihin ainakaan näille tehtäväalueille. Kentän merkitys on puhtaasti informatiivinen, eikä sillä ole vaikutusta mihinkään automaattiseen käsittelyyn."
 
 #: models/job_category.py
 msgid "This descriptions will be shown to the applicants on the signup form. If there are specific requirements to this job category, please mention them here."
