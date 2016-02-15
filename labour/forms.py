@@ -24,11 +24,6 @@ from .models import (
 )
 
 
-# http://stackoverflow.com/a/9754466
-def calculate_age(born, today):
-    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-
-
 class AdminPersonForm(PersonForm):
     age_now = forms.IntegerField(required=False, label=u'Ikä nyt')
     age_event_start = forms.IntegerField(required=False, label=u'Ikä tapahtuman alkaessa')
@@ -40,9 +35,9 @@ class AdminPersonForm(PersonForm):
         self.fields['age_now'].widget.attrs['readonly'] = True
         self.fields['age_event_start'].widget.attrs['readonly'] = True
         if self.instance.birth_date is not None:
-            self.fields['age_now'].initial = calculate_age(self.instance.birth_date, date.today())
+            self.fields['age_now'].initial = self.instance.age_now
             if event.start_time is not None:
-                self.fields['age_event_start'].initial = calculate_age(self.instance.birth_date, event.start_time.date())
+                self.fields['age_event_start'].initial = self.instance.get_age_at(event.start_time)
 
         # XXX copypasta
         self.helper.layout = Layout(

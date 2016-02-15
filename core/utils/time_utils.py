@@ -97,3 +97,8 @@ def format_date(date):
 def format_datetime(datetime):
     tz = tzlocal()
     return defaultfilters.date(datetime.astimezone(tz), "SHORT_DATETIME_FORMAT")
+
+
+# http://stackoverflow.com/a/9754466
+def calculate_age(born, today):
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))

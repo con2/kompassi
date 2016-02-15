@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import logging
-from datetime import date
+from datetime import date, datetime
 
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.utils import timezone
 
-from ..utils import pick_attrs
+from ..utils import pick_attrs, calculate_age
 from .constants import (
     EMAIL_LENGTH,
     PHONE_NUMBER_LENGTH,
@@ -341,6 +341,19 @@ class Person(models.Model):
             'firstname_nick_surname',
             'nick',
         ]
+
+    @property
+    def age_now(self):
+        return self.get_age_at(date.today())
+
+    def get_age_at(self, the_date):
+        if self.birth_date is None:
+            return None
+
+        if isinstance(the_date, datetime):
+            the_date = the_date.date()
+
+        return calculate_age(self.birth_date, the_date)
 
     def as_dict(self):
         return dict(
