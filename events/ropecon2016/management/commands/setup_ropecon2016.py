@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 import os
 from datetime import datetime, timedelta
 
@@ -44,7 +46,7 @@ class Setup(object):
         ))
 
     def setup_tickets(self):
-        from tickets.models import TicketsEventMeta, LimitGroup, Product
+        from tickets.models import TicketsEventMeta, LimitGroup, Product, ShirtType, ShirtSize
 
         tickets_admin_group, = TicketsEventMeta.get_or_create_groups(self.event, ['admins'])
 
@@ -55,9 +57,9 @@ class Setup(object):
             reference_number_template="2016{:05d}",
             contact_email='Ropeconin lipunmyynti <rahat@ropecon.fi>',
             plain_contact_email='rahat@ropecon.fi',
-            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Ropeconiin!</h2>"
-                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä. Liput lähetetään sähköpostitse e-lippuina, jotka vaihdetaan rannekkeiksi saapuessasi tapahtumaan.</p>"
-                u"<p>Lue lisää tapahtumasta <a href='http://ropecon.fi'>Ropeconin kotisivuilta</a>.</p>",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Ropeconiin!</h2>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä. Liput lähetetään sähköpostitse e-lippuina, jotka vaihdetaan rannekkeiksi saapuessasi tapahtumaan.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://ropecon.fi'>Ropeconin kotisivuilta</a>.</p>",
         )
 
         if self.test:
@@ -91,8 +93,8 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name=u'Ropecon 2016 viikonloppulippu pe-su',
-                description=u'Ropecon 2016 tapahtuman pääsylippu oikeuttaen kolmen päivän sisäänpääsyrannekkeeseen.',
+                name='Ropecon 2016 viikonloppulippu pe-su',
+                description='Ropecon 2016 tapahtuman pääsylippu oikeuttaen kolmen päivän sisäänpääsyrannekkeeseen.',
                 limit_groups=[
                     limit_group('Pääsyliput perjantai', 10000),
                     limit_group('Pääsyliput lauantai', 10000),
@@ -105,8 +107,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Ropecon 2016 päivälippu perjantai',
-                description=u'Ropecon 2016 tapahtuman pääsylippu oikeuttaen yhden päivän sisäänpääsyrannekkeeseen.',
+                name='Ropecon 2016 päivälippu perjantai',
+                description='Ropecon 2016 tapahtuman pääsylippu oikeuttaen yhden päivän sisäänpääsyrannekkeeseen.',
                 limit_groups=[
                     limit_group('Pääsyliput perjantai', 10000),
                 ],
@@ -117,8 +119,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Ropecon 2016 päivälippu lauantai',
-                description=u'Ropecon 2016 tapahtuman pääsylippu oikeuttaen yhden päivän sisäänpääsyrannekkeeseen.',
+                name='Ropecon 2016 päivälippu lauantai',
+                description='Ropecon 2016 tapahtuman pääsylippu oikeuttaen yhden päivän sisäänpääsyrannekkeeseen.',
                 limit_groups=[
                     limit_group('Pääsyliput lauantai', 10000),
                 ],
@@ -128,15 +130,28 @@ class Setup(object):
                 available=True,
                 ordering=ordering(),
             ),
-          dict(
-                name=u'Ropecon 2016 päivälippu sunnuntai',
-                description=u'Ropecon 2016 tapahtuman pääsylippu oikeuttaen yhden päivän sisäänpääsyrannekkeeseen.',
+            dict(
+                name='Ropecon 2016 päivälippu sunnuntai',
+                description='Ropecon 2016 tapahtuman pääsylippu oikeuttaen yhden päivän sisäänpääsyrannekkeeseen.',
                 limit_groups=[
                     limit_group('Pääsyliput sunnuntai', 10000),
                 ],
                 price_cents=1500,
                 requires_shipping=False,
                 electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
+            dict(
+                name='Ropecon 2016 -t-paita',
+                description='T-paidat maksetaan ennakkoon ja noudetaan tapahtumasta. Paitakoot valitaan seuraavassa vaiheessa.',
+                limit_groups=[
+                    limit_group('T-paidat', 10000),
+                ],
+                price_cents=1900,
+                requires_shipping=False,
+                electronic_ticket=True,
+                requires_shirt_size=True,
                 available=True,
                 ordering=ordering(),
             ),
@@ -153,6 +168,30 @@ class Setup(object):
             if not product.limit_groups.exists():
                 product.limit_groups = limit_groups
                 product.save()
+
+        for shirt_type_name, shirt_size_names in [
+            ('Unisex-T-paita', ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL']),
+            ('Naisten muotoonleikattu paita', ['XS', 'S', 'M', 'L', 'XL', 'XXL']),
+            ('Miesten muotoonleikattu paita', ['S', 'M', 'L', 'XL', 'XXL']),
+        ]:
+            for shirt_color in [
+                'Musta',
+                'Kaaoksenpunainen',
+                'Harmoninen sininen',
+            ]:
+                shirt_type, created = ShirtType.objects.get_or_create(
+                    event=self.event,
+                    name='{shirt_type_name} – {shirt_color}'.format(
+                        shirt_type_name=shirt_type_name,
+                        shirt_color=shirt_color,
+                    ),
+                )
+
+                for shirt_size_name in shirt_size_names:
+                    ShirtSize.objects.get_or_create(
+                        type=shirt_type,
+                        name=shirt_size_name,
+                    )
 
     def setup_payments(self):
         from payments.models import PaymentsEventMeta

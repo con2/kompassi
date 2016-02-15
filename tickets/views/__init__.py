@@ -9,6 +9,7 @@ from .public_views import (
     tickets_tickets_view,
     tickets_welcome_view,
     tickets_event_box_context,
+    tickets_shirts_view,
 )
 
 from .admin_views import (

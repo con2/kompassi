@@ -13,21 +13,11 @@ from django.utils import timezone
 from dateutil.tz import tzlocal
 
 from core.models import EventMetaBase
-from core.utils import url, code_property
+from core.utils import url, code_property, slugify, NONUNIQUE_SLUG_FIELD_PARAMS
 from payments.utils import compute_payment_request_mac
 
 from .utils import format_date, format_price
 from .receipt import render_receipt
-
-
-__all__ = [
-    "TicketsEventMeta",
-    "Batch",
-    "Product",
-    "Customer",
-    "Order",
-    "OrderProduct",
-]
 
 
 LOW_AVAILABILITY_THRESHOLD = 10
@@ -344,6 +334,38 @@ class LimitGroup(models.Model):
         return [limit_saturday, limit_sunday]
 
 
+class ShirtType(models.Model):
+    event = models.ForeignKey('core.event')
+    name = models.CharField(max_length=255)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    available = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        return super(ShirtType, self).save(*args, **kwargs)
+
+    class Meta:
+        unique_together = [('event', 'slug')]
+
+
+class ShirtSize(models.Model):
+    type = models.ForeignKey(ShirtType)
+    name = models.CharField(max_length=255)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    available = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        return super(ShirtSize, self).save(*args, **kwargs)
+
+    class Meta:
+        unique_together = [('type', 'slug')]
+
+
 class Product(models.Model):
     event = models.ForeignKey('core.Event')
 
@@ -355,6 +377,7 @@ class Product(models.Model):
     price_cents = models.IntegerField()
     requires_shipping = models.BooleanField(default=True)
     requires_accommodation_information = models.BooleanField(default=False)
+    requires_shirt_size = models.BooleanField(default=False)
     electronic_ticket = models.BooleanField(default=False)
     available = models.BooleanField(default=True)
     notify_email = models.CharField(max_length=100, null=True, blank=True)
@@ -611,6 +634,12 @@ class Order(models.Model):
                 return "Confirmed; payment due %s" % self.formatted_due_date
         else:
             return "Unconfirmed"
+
+    @property
+    def t_shirts(self):
+        # TODO use db aggregate
+        queryset = self.order_product_set.filter(count__gt=0, product__requires_shirt_size=True)
+        return queryset.aggregate(models.Sum('count'))['count__sum']
 
     @property
     def reference_number_base(self):
@@ -1054,3 +1083,13 @@ class AccommodationInformation(models.Model):
     class Meta:
         verbose_name = u'majoittujan tiedot'
         verbose_name_plural = u'majoittujan tiedot'
+
+
+class ShirtOrder(models.Model):
+    order = models.ForeignKey(Order)
+    size = models.ForeignKey(ShirtSize)
+    count = models.PositiveIntegerField(default=0)
+
+    @property
+    def target(self):
+        return self.size
