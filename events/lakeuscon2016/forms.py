@@ -91,6 +91,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(u'Lisätiedot',
+                'shirt_size',
                 'special_diet',
                 'special_diet_other',
             ),
@@ -100,6 +101,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
+            'shirt_size',
             'special_diet',
             'special_diet_other',
         )
