@@ -17,12 +17,20 @@ def mkpath(*parts):
 
 
 class Setup(object):
+    def __init__(self):
+        self._ordering = 0
+
+    def get_ordering_number(self):
+        self._ordering += 10
+        return self._ordering
+
     def setup(self, test=False):
         self.test = test
         self.tz = tzlocal()
         self.setup_core()
         self.setup_tickets()
         self.setup_payments()
+        self.setup_labour()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -53,8 +61,8 @@ class Setup(object):
             due_days=14,
             shipping_and_handling_cents=0,
             reference_number_template="2016{:05d}",
-            contact_email='Lakeuscon NY <lakeusconny@lakeuscon.fi>',
-            plain_contact_email='lakeusconny@lakeuscon.fi',
+            contact_email='Lakeuscon NY <lakeusconny@lakeusconny.fi>',
+            plain_contact_email='lakeusconny@lakeusconny.fi',
             ticket_free_text=u"Tämä on sähköinen lippusi Lakeusconiin. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
@@ -121,6 +129,145 @@ class Setup(object):
     def setup_payments(self):
         from payments.models import PaymentsEventMeta
         PaymentsEventMeta.get_or_create_dummy(event=self.event)
+
+    def setup_labour(self):
+        from core.models import Person
+        from labour.models import (
+            AlternativeSignupForm,
+            InfoLink,
+            Job,
+            JobCategory,
+            LabourEventMeta,
+            Perk,
+            PersonnelClass,
+            Qualification,
+            WorkPeriod,
+        )
+        from ...models import SignupExtra, SpecialDiet
+        from django.contrib.contenttypes.models import ContentType
+
+        labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
+
+        if self.test:
+            from core.models import Person
+            person, unused = Person.get_or_create_dummy()
+            labour_admin_group.user_set.add(person.user)
+
+        content_type = ContentType.objects.get_for_model(SignupExtra)
+
+        labour_event_meta_defaults = dict(
+            signup_extra_content_type=content_type,
+            work_begins=datetime(2016, 5, 6, 18, 0, tzinfo=self.tz),
+            work_ends=datetime(2016, 5, 7, 22, 0, tzinfo=self.tz),
+            admin_group=labour_admin_group,
+            contact_email='Lakeuscon NY <lakeusconny@lakeusconny.fi>',
+        )
+
+        if self.test:
+            t = now()
+            labour_event_meta_defaults.update(
+                registration_opens=t - timedelta(days=60),
+                registration_closes=t + timedelta(days=60),
+            )
+        else:
+            # labour_event_meta_defaults.update(
+            #     registration_opens=datetime(2015, 1, 22, 0, 0, tzinfo=self.tz),
+            #     registration_closes=datetime(2015, 3, 14, 0, 0, tzinfo=self.tz),
+            # )
+            pass
+
+        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=labour_event_meta_defaults,
+        )
+
+        for pc_name, pc_slug, pc_app_label in [
+            (u'Conitea', 'conitea', 'labour'),
+            (u'Työvoima', 'tyovoima', 'labour'),
+            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            (u'Media', 'media', 'badges'),
+            (u'Myyjä', 'myyja', 'badges'),
+            (u'Vieras', 'vieras', 'badges'),
+        ]:
+            personnel_class, created = PersonnelClass.objects.get_or_create(
+                event=self.event,
+                slug=pc_slug,
+                defaults=dict(
+                    name=pc_name,
+                    app_label=pc_app_label,
+                    priority=self.get_ordering_number(),
+                ),
+            )
+
+        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
+        conitea = PersonnelClass.objects.get(event=self.event, slug='conitea')
+        ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
+
+        for name, description, pcs in [
+            (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli Conitean jäsen', [conitea]),
+            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima]),
+
+            # (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
+        ]:
+            job_category, created = JobCategory.objects.get_or_create(
+                event=self.event,
+                name=name,
+                defaults=dict(
+                    description=description,
+                    slug=slugify(name),
+                )
+            )
+
+            if created:
+                job_category.personnel_classes = pcs
+                job_category.save()
+
+        labour_event_meta.create_groups()
+
+        for slug in [u'conitea']:
+            JobCategory.objects.filter(event=self.event, slug=slug).update(public=False)
+
+        for jc_name, qualification_name in [
+            (u'Järjestyksenvalvoja', u'JV-kortti'),
+        ]:
+            jc = JobCategory.objects.get(event=self.event, name=jc_name)
+            qual = Qualification.objects.get(name=qualification_name)
+
+            jc.required_qualifications = [qual]
+            jc.save()
+
+        for diet_name in [
+            u'Gluteeniton',
+            u'Laktoositon',
+            u'Maidoton',
+            u'Vegaaninen',
+            u'Lakto-ovo-vegetaristinen',
+        ]:
+            SpecialDiet.objects.get_or_create(name=diet_name)
+
+        AlternativeSignupForm.objects.get_or_create(
+            event=self.event,
+            slug=u'conitea',
+            defaults=dict(
+                title=u'Conitean ilmoittautumislomake',
+                signup_form_class_path='events.lakeuscon2016.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='events.lakeuscon2016.forms:OrganizerSignupExtraForm',
+                active_from=datetime(2015, 8, 18, 0, 0, 0, tzinfo=self.tz),
+                active_until=None,
+            ),
+        )
+
+        for wiki_space, link_title, link_group in [
+            # ('LAKEUSWORK', 'Työvoimawiki', 'accepted'),
+        ]:
+            InfoLink.objects.get_or_create(
+                event=self.event,
+                title=link_title,
+                defaults=dict(
+                    url='https://confluence.tracon.fi/display/{wiki_space}'.format(wiki_space=wiki_space),
+                    group=labour_event_meta.get_group(link_group),
+                )
+            )
 
 
 class Command(BaseCommand):
