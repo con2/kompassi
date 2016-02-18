@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 import logging
 from pkg_resources import resource_string
 
@@ -29,7 +31,7 @@ from ..forms import ProgrammePublicForm
 
 
 EXPORT_FORMATS = EXPORT_FORMATS + [
-    ExportFormat(u'Tulostettava versio', 'html', 'html'),
+    ExportFormat('Tulostettava versio', 'html', 'html'),
 ]
 logger = logging.getLogger('kompassi')
 
@@ -84,11 +86,11 @@ def programme_admin_view(request, vars, event, format='screen'):
 
         if room_filters.selected_slug != None:
             room = Room.objects.get(slug=room_filters.selected_slug)
-            title += u' – {room.name}'.format(room=room)
+            title += ' – {room.name}'.format(room=room)
 
         if state_filters.selected_slug != None:
             state_name = next(name for (slug, name) in STATE_CHOICES if slug == state_filters.selected_slug)
-            title += u' ({state_name})'.format(state_name=state_name)
+            title += ' ({state_name})'.format(state_name=state_name)
 
         programmes_by_start_time = group_programmes_by_start_time(programmes)
 
@@ -112,10 +114,10 @@ def programme_admin_create_view(request, vars, event):
     if request.method == 'POST':
         if form.is_valid():
             programme = form.save()
-            messages.success(request, _(u'The programme was created.'))
+            messages.success(request, _('The programme was created.'))
             return redirect('programme_admin_detail_view', event.slug, programme.pk)
         else:
-            messages.error(request, _(u'Please check the form.'))
+            messages.error(request, _('Please check the form.'))
 
     vars.update(
         form=form,
@@ -149,30 +151,6 @@ def programme_admin_special_view(request, vars, event):
         template='programme_admin_special_view.jade',
         vars=vars,
     )
-
-
-def programme_admin_menu_items(request, event):
-    timetable_url = url('programme_admin_timetable_view', event.slug)
-    timetable_active = request.path == timetable_url
-    timetable_text = u'Ohjelmakartan esikatselu'
-
-    special_url = url('programme_admin_special_view', event.slug)
-    special_active = request.path == special_url
-    special_text = u'Ohjelmakartan ulkopuolisten esikatselu'
-
-    index_url = url('programme_admin_view', event.slug)
-    index_active = request.path.startswith(index_url) and not any((
-        timetable_active,
-        special_active,
-    ))
-    index_text = u'Ohjelmaluettelo'
-
-
-    return [
-        (index_active, index_url, index_text),
-        (timetable_active, timetable_url, timetable_text),
-        (special_active, special_url, special_text),
-    ]
 
 
 @programme_admin_required

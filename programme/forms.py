@@ -199,3 +199,7 @@ class FreeformOrganizerForm(forms.ModelForm):
         fields = (
             'text',
         )
+
+
+class IdForm(forms.Form):
+    id = forms.IntegerField()

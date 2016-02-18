@@ -5,6 +5,7 @@ from django.views.generic import RedirectView
 from .views import (
     programme_accept_invitation_view,
     programme_admin_create_view,
+    programme_admin_invitations_view,
     programme_admin_detail_view,
     programme_admin_email_list_view,
     programme_admin_special_view,
@@ -101,6 +102,12 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d{1,4})/?$',
         programme_admin_detail_view,
         name='programme_admin_detail_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/invitations/?$',
+        programme_admin_invitations_view,
+        name='programme_admin_invitations_view',
     ),
 
     url(

@@ -34,7 +34,7 @@ msgstr "Äänen toistaminen"
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade
 msgid "Cancel invitation"
 msgstr "Peruuta kutsu"
 
@@ -70,7 +70,7 @@ msgstr "Hylkää muutokset ja palaa"
 msgid "Do you have tech requirements that are not covered by the previous questions?"
 msgstr "Onko ohjelmallasi tekniikkatarpeita joita edeltävät kysymykset eivät kata?"
 
-#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -162,6 +162,10 @@ msgstr "Ideoitu sisäisesti"
 msgid "Invalid action."
 msgstr "Kelvoton toiminto."
 
+#: views/programme_admin_invitations_view.py
+msgid "Invalid request."
+msgstr ""
+
 #: templates/programme_accept_invitation_view.jade
 msgid "Invitation to organize programme"
 msgstr "Kutsu ohjelmanjärjestäjäksi"
@@ -169,6 +173,14 @@ msgstr "Kutsu ohjelmanjärjestäjäksi"
 #: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Invite host"
 msgstr "Kutsu ohjelmanjärjestäjä"
+
+#: templates/programme_admin_invitations_view.jade
+msgid "Invited at"
+msgstr "Kutsun luontiaika"
+
+#: templates/programme_admin_invitations_view.jade
+msgid "Invited by"
+msgstr "Kutsuja"
 
 #: models/programme.py
 msgid "It's OK to photograph my programme"
@@ -246,6 +258,10 @@ msgstr "Ohjelmatarjous vastaanotettu"
 msgid "Only hosts who are assigned public roles will be shown publicly in the programme schedule."
 msgstr "Ohjelmakartassa näytetään ainoastaan ne ohjelmanjärjestäjät, jotka ovat julkisessa roolissa."
 
+#: templates/programme_admin_invitations_view.jade views/programme_admin_menu_items.py
+msgid "Open invitations"
+msgstr "Avoimet kutsut"
+
 #: models/programme.py
 msgid "Other tech requirements"
 msgstr "Muut tekniikkatarpeet"
@@ -294,7 +310,7 @@ msgstr "Pyydän, että ohjelmastani otetaan valokuvia"
 msgid "Priority"
 msgstr "Järjestys"
 
-#: models/freeform_organizer.py models/invitation.py
+#: models/freeform_organizer.py models/invitation.py templates/programme_admin_invitations_view.jade
 msgid "Programme"
 msgstr "Ohjelma"
 
@@ -430,7 +446,7 @@ msgstr "Kutsu lähetettiin onnistuneesti."
 msgid "The invitation is no longer valid."
 msgstr "Kutsu ei ole enää voimassa."
 
-#: views/programme_admin_detail_view.py
+#: views/programme_admin_detail_view.py views/programme_admin_invitations_view.py
 msgid "The invitation was cancelled."
 msgstr "Kutsu peruutettu."
 
