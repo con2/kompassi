@@ -188,6 +188,7 @@ INSTALLED_APPS = (
     'events.mimicon2016',
     'events.desucon2016',
     'events.lakeuscon2016',
+    'events.animecon2016',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',

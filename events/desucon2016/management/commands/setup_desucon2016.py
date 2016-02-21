@@ -148,10 +148,10 @@ class Setup(object):
         ]:
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
-                name=name,
+                slug=slugify(name),
                 defaults=dict(
                     description=description,
-                    slug=slugify(name),
+                    name=name,
                 )
             )
 
