@@ -14,6 +14,7 @@ class Room(models.Model):
     order = models.IntegerField()
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    active = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.name
