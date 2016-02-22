@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from .models import (
     Category,
@@ -16,6 +17,17 @@ from .models import (
 )
 from .proxies.freeform_organizer.admin import FreeformOrganizerAdminProxy
 from .proxies.invitation.admin import InvitationAdminProxy
+
+
+def deactivate_selected_items(modeladmin, request, queryset):
+    queryset.update(active=False)
+deactivate_selected_items.short_description = _('Deactivate selected items')
+
+
+def activate_selected_items(modeladmin, request, queryset):
+    queryset.update(active=False)
+activate_selected_items.short_description = _('Activate selected items')
+
 
 class InlineProgrammeEventMetaAdmin(admin.StackedInline):
     model = ProgrammeEventMeta
@@ -48,8 +60,9 @@ class ViewAdmin(admin.ModelAdmin):
 
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('venue', 'name',)
-    list_filter = ('venue',)
+    list_display = ('venue', 'name', 'active')
+    list_filter = ('venue', 'active')
+    actions = (activate_selected_items, deactivate_selected_items)
 
 
 class RoleAdmin(admin.ModelAdmin):

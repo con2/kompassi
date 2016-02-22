@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
@@ -52,6 +53,11 @@ class Room(models.Model):
                 order=0,
             )
         )
+
+    @classmethod
+    def get_rooms_for_event(cls, event):
+        rooms_q = Q(venue=event.venue) & (Q(active=True) | Q(programme__category__event=event))
+        return cls.objects.filter(rooms_q).distinct()
 
 
 @receiver(pre_save, sender=Room)

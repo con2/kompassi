@@ -6,6 +6,7 @@ import logging
 from pkg_resources import resource_string
 
 from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
@@ -44,7 +45,7 @@ def programme_admin_view(request, vars, event, format='screen'):
     category_filters = Filter(request, 'category').add_objects('category__slug', categories)
     programmes = category_filters.filter_queryset(programmes)
 
-    rooms = Room.objects.filter(venue=event.venue)
+    rooms = Room.get_rooms_for_event(event)
     room_filters = Filter(request, 'room').add_objects('room__slug', rooms)
     programmes = room_filters.filter_queryset(programmes)
 

@@ -141,7 +141,7 @@ class ScheduleForm(forms.ModelForm):
         self.helper.form_tag = False
 
         self.fields['length'].widget.attrs['min'] = 0
-        self.fields['room'].queryset = Room.objects.filter(venue=event.venue, active=True)
+        self.fields['room'].queryset = Room.get_rooms_for_event(event)
 
         self.fields['start_time'].choices = [('', u'---------')] + [
             (
