@@ -129,12 +129,12 @@ class Setup(object):
             (u'Info ja narikka', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman aikana. Narikka toimii infon yhteydessä. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima]),
             (u'Lipunmyynti', u'Pääsylippujen myyntiä. Myyjiltä edellytetään asiakaspalveluhenkeä, päässälaskutaitoa ja huolellisuutta rahankäsittelyssä.', [tyovoima]),
             (u'Meido', u'Meidokahvilassa työskentely. Asiakkaille tarjoileminen, sekä asiakkaille seuran pitäminen. Ilmoittaudu tähän tehtävään vain jos meidovastaava on hyväksynyt sinuterillishaussa. Meidohaku löytyy <a href="http://www.kawacon.info" target="_blank">Kawaconin kotisivuilta</a>.', [tyovoima]),
-            (u'Ohjelma', u'Tähän vänkäriryhmään tulevat salivänkärit, ohjelma-avustajat ja Kawaplayn lautapelivuokraamon vänkärit. Tehtävät eivät edellytä erikoisosaamista. Jos sinulla on kokemusta salitekniikasta, voit mainita tästä Vapaa alue-kentässä.', [tyovoima]),
+            (u'Ohjelmavänkäri', u'Tähän vänkäriryhmään tulevat salivänkärit, ohjelma-avustajat ja Kawaplayn lautapelivuokraamon vänkärit. Tehtävät eivät edellytä erikoisosaamista. Jos sinulla on kokemusta salitekniikasta, voit mainita tästä Vapaa alue-kentässä.', [tyovoima]),
             (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima]),
             (u'Rakennus ja purku', u'Conipaikan rakennus, pöytien järjestely ja raskaiden esineiden kantaminen. Tehtävät ajoittuvat perjantaille ja sunnuntai-illalle.', [tyovoima]),
             (u'Kuvaus', 'Valokuvaus ja coniviikonlopun ikuistaminen. Tehtävä edellyttää kameraa ja mahdollisuutta kuvien jälkikäsittelyyn. Kerro Vapaa alue-kentässä millaisen kameran omistat ja aiemmasta kuvauskokemuksestasi.', [tyovoima]),
 
-            (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
+            # (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
             if len(jc_data) == 3:
                 name, description, pcs = jc_data
