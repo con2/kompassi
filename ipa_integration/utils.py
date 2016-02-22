@@ -1,7 +1,10 @@
 # encoding: utf-8
 
 import re
+from collections import namedtuple
+
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.forms import ValidationError
 
@@ -10,7 +13,16 @@ from access.utils import generate_machine_password
 from .ipa import IPASession, IPAError
 
 
+JustEnoughUser = namedtuple('JustEnoughUser', 'username first_name last_name email')
+JustEnoughUser.__doc__ = """
+    JustEnoughUser can be passed to most IPA functions instead of an actual User if one is not available at
+    the time of the call of create_user.
+"""
+
+
 def create_user(user, password):
+    assert isinstance(user, get_user_model()) or isinstance(user, JustEnoughUser)
+
     temporary_password = generate_machine_password()
 
     with IPASession.get_admin_session() as admin_session:
@@ -18,6 +30,7 @@ def create_user(user, password):
             username=user.username,
             first_name=user.first_name,
             surname=user.last_name,
+            email=user.email,
             password=temporary_password,
         )
 
@@ -26,6 +39,17 @@ def create_user(user, password):
 
     with IPASession(user.username, temporary_password, login=False) as user_session:
         user_session.change_own_password(password)
+
+
+def update_user(user, password):
+    assert isinstance(user, get_user_model()) or isinstance(user, JustEnoughUser)
+
+    with IPASession.get_admin_session() as admin_session:
+        admin_session.update_user(user.username,
+            first_name=user.first_name,
+            surname=user.last_name,
+            email=user.email,
+        )
 
 
 def change_user_password(user, old_password, new_password):

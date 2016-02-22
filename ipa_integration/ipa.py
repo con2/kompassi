@@ -73,11 +73,19 @@ class IPASession(object):
     def remove_user_from_group(self, username, groupname):
         return self._json_rpc('group_remove_member', groupname, user=[username])
 
-    def create_user(self, username, first_name, surname, password):
+    def create_user(self, username, first_name, surname, password, email=None):
         return self._json_rpc('user_add', username,
             givenname=first_name,
             sn=surname,
             userpassword=password,
+            mail=email,
+        )
+
+    def update_user(self, username, first_name, surname, email):
+        return self._json_rpc('user_mod', username,
+            givenname=first_name,
+            sn=surname,
+            mail=email,
         )
 
     def create_group(self, group_name):

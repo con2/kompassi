@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
@@ -59,25 +60,39 @@ def core_registration_view(request):
         if person_form.is_valid() and registration_form.is_valid() and terms_and_conditions_form.is_valid():
             username = registration_form.cleaned_data['username']
             password = registration_form.cleaned_data['password']
-
-            person = person_form.save(commit=False)
-            user = User(
-                username=username,
-                is_active=True,
-                is_staff=False,
-                is_superuser=False,
-            )
-
-            user.set_password(password)
-            user.save()
-
-            person.user = user
-            person.save()
-            person.setup_email_verification(request)
+            first_name = person_form.cleaned_data['first_name']
+            surname = person_form.cleaned_data['surname']
+            email = person_Form.cleaned_data['email']
 
             if 'ipa_integration' in settings.INSTALLED_APPS:
-                from ipa_integration.utils import create_user
-                create_user(user, password)
+                from ipa_integration.utils import create_user, JustEnoughUser
+
+                just_enough_user = JustEnoughUser(
+                    username=username,
+                    password=password,
+                    first_name=first_name,
+                    last_name=surname,
+                    email=email,
+                )
+
+                create_user(just_enough_user, password)
+
+            with transaction.atomic():
+                person = person_form.save(commit=False)
+                user = User(
+                    username=username,
+                    is_active=True,
+                    is_staff=False,
+                    is_superuser=False,
+                )
+
+                user.set_password(password)
+                user.save()
+
+                person.user = user
+                person.save()
+
+            person.setup_email_verification(request)
 
             user = authenticate(username=username, password=password)
 

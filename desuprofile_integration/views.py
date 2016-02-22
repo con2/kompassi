@@ -138,6 +138,13 @@ class CallbackView(View):
             return self.respond_with_existing_user(request, next_url, desuprofile, user)
 
     def respond_with_new_user(self, request, next_url, desuprofile):
+        """
+        This implements the following case:
+
+        2. No Kompassi account is linked to this Desuprofile, and no Kompassi account matches the Desuprofile by email address.
+           A new Kompassi account is created and logged in.
+        """
+
         User = get_user_model()
         password = create_temporary_password()
 
@@ -147,8 +154,7 @@ class CallbackView(View):
             valid_username(username)
         except DjangoValidationError:
             username = None
-
-        with transaction.atomic():
+        else:
             try:
                 User.objects.get(username=username)
             except User.DoesNotExist:
@@ -158,9 +164,21 @@ class CallbackView(View):
                 # Username clash with an existing account, use safe username
                 username = None
 
-            if username is None:
-                username = "desuprofile_{id}".format(id=desuprofile.id)
+        if username is None:
+            username = "desuprofile_{id}".format(id=desuprofile.id)
 
+        if 'ipa_integration' in settings.INSTALLED_APPS:
+            from ipa_integration.utils import create_user, JustEnoughUser
+
+            just_enough_user = JustEnoughUser(
+                first_name=desuprofile.first_name,
+                last_name=desuprofile.last_name,
+                username=username,
+                email=desuprofile.email,
+            )
+            create_user(user, password)
+
+        with transaction.atomic():
             user = User(
                 username=username,
                 is_active=True,
@@ -192,11 +210,6 @@ class CallbackView(View):
             connection.save()
 
         person.setup_email_verification(request)
-
-        if 'ipa_integration' in settings.INSTALLED_APPS:
-            from ipa_integration.utils import create_user
-            create_user(user, password)
-
         messages.success(request, u'Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!')
 
         return respond_with_connection(request, next_url, connection)

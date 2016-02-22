@@ -66,6 +66,10 @@ def core_profile_view(request):
                     u'vahvistaa sähköpostiosoitteesi uudelleen. Tarkista postilaatikkosi ja '
                     u'noudata vahvistusviestissä olevia ohjeita.'
                 )
+
+            if 'ipa_integration' in settings.INSTALLED_APPS:
+                from ipa_integration.utils import update_user
+                update_user(person.user)
             else:
                 messages.success(request, u'Tietosi on tallennettu.')
         else:
