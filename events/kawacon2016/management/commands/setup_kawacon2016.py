@@ -245,11 +245,11 @@ class Setup(object):
             view.save()
 
         for category_name, category_style in [
-            (u'Luento', u'anime'),
-            (u'Non-stop', u'miitti'),
+            # (u'Luento', u'anime'),
+            # (u'Non-stop', u'miitti'),
             (u'Työpaja', u'rope'),
             (u'Muu ohjelma', u'muu'),
-            (u'Show', u'cosplay'),
+            # (u'Show', u'cosplay'),
         ]:
             Category.objects.get_or_create(
                 event=self.event,
