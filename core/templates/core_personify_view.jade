@@ -8,3 +8,7 @@ block content
     form(action='{% url "core_personify_view" %}', method='POST', role='form').form.form-horizontal
       input(type='hidden', name='next', value='{{ next }}')
       - crispy person_form
+      .col-md-9.col-md-offset-3
+        button.btn.btn-success(type='submit')
+          i.fa.fa-check.kompassi-icon-space-right
+          {% trans "Save changes" %}
