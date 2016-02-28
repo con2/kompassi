@@ -48,7 +48,7 @@ def update_user(user, password):
 
 
 def change_user_password(user, old_password, new_password):
-    with IPASession(user.username, old_password) as user_session:
+    with IPASession(user.username, old_password, login=False) as user_session:
         user_session.change_own_password(new_password)
 
 
