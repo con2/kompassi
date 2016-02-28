@@ -176,7 +176,7 @@ class CallbackView(View):
                 username=username,
                 email=desuprofile.email,
             )
-            create_user(user, password)
+            create_user(just_enough_user, password)
 
         with transaction.atomic():
             user = User(
