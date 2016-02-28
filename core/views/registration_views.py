@@ -62,7 +62,7 @@ def core_registration_view(request):
             password = registration_form.cleaned_data['password']
             first_name = person_form.cleaned_data['first_name']
             surname = person_form.cleaned_data['surname']
-            email = person_Form.cleaned_data['email']
+            email = person_form.cleaned_data['email']
 
             if 'ipa_integration' in settings.INSTALLED_APPS:
                 from ipa_integration.utils import create_user, JustEnoughUser
