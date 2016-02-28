@@ -71,7 +71,7 @@ def reset_user_password(user, new_password):
     with IPASession.get_admin_session() as admin_session:
         admin_session.change_password_for_another_user(user.username, temporary_password)
 
-    with IPASession(user.username, temporary_password) as user_session:
+    with IPASession(user.username, temporary_password, login=False) as user_session:
         user_session.change_own_password(new_password)
 
 

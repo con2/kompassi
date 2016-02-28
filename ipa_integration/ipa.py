@@ -52,6 +52,8 @@ class IPASession(object):
         >>> with IPASession(username, old_password, login=False) as session:
         ...     session.change_own_password(new_password)
         """
+        assert not self.login_on_enter
+
         return self._send_form(IPA_CHANGE_PASSWORD_URL,
             user=self.username,
             old_password=self.password,
