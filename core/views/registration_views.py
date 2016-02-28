@@ -69,7 +69,6 @@ def core_registration_view(request):
 
                 just_enough_user = JustEnoughUser(
                     username=username,
-                    password=password,
                     first_name=first_name,
                     last_name=surname,
                     email=email,
