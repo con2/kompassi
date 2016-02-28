@@ -43,7 +43,7 @@ from ..helpers import person_required
 from .login_views import do_login
 
 
-@sensitive_post_parameters('password', 'password_again')
+@sensitive_post_parameters('registration-password', 'registration-password_again')
 @require_http_methods(['GET','POST'])
 def core_registration_view(request):
     vars = page_wizard_vars(request)
