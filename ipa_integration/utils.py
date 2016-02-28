@@ -13,11 +13,13 @@ from access.utils import generate_machine_password
 from .ipa import IPASession, IPAError
 
 
-JustEnoughUser = namedtuple('JustEnoughUser', 'username first_name last_name email')
-JustEnoughUser.__doc__ = """
-    JustEnoughUser can be passed to most IPA functions instead of an actual User if one is not available at
-    the time of the call of create_user.
-"""
+BaseJustEnoughUser = namedtuple('JustEnoughUser', 'username first_name last_name email')
+class JustEnoughUser(BaseJustEnoughUser):
+    """
+        JustEnoughUser can be passed to most IPA functions instead of an actual User if one is not available at
+        the time of the call of create_user.
+    """
+    pass
 
 
 def create_user(user, password):
