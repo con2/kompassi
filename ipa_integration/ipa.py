@@ -79,7 +79,11 @@ class IPASession(object):
             sn=user.last_name,
             userpassword=password,
             mail=user.email,
-            noprivate=True, # do not create user-specific group
+
+            # Need to have a POSIX default group or explicit gid=
+            # https://fedorahosted.org/freeipa/ticket/3949
+            # noprivate=True, # do not create user-specific group
+
             krbprincipalname="{username}@{domain}".format(
                 username=user.username,
                 domain=settings.KOMPASSI_IPA_DOMAIN,
