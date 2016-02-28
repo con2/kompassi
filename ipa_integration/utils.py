@@ -27,10 +27,7 @@ def create_user(user, password):
 
     with IPASession.get_admin_session() as admin_session:
         admin_session.create_user(
-            username=user.username,
-            first_name=user.first_name,
-            surname=user.last_name,
-            email=user.email,
+            user=user,
             password=temporary_password,
         )
 
@@ -45,11 +42,7 @@ def update_user(user, password):
     assert isinstance(user, get_user_model()) or isinstance(user, JustEnoughUser)
 
     with IPASession.get_admin_session() as admin_session:
-        admin_session.update_user(user.username,
-            first_name=user.first_name,
-            surname=user.last_name,
-            email=user.email,
-        )
+        admin_session.update_user(user)
 
 
 def change_user_password(user, old_password, new_password):

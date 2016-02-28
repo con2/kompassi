@@ -73,19 +73,24 @@ class IPASession(object):
     def remove_user_from_group(self, username, groupname):
         return self._json_rpc('group_remove_member', groupname, user=[username])
 
-    def create_user(self, username, first_name, surname, password, email=None):
-        return self._json_rpc('user_add', username,
-            givenname=first_name,
-            sn=surname,
+    def create_user(self, user, password):
+        return self._json_rpc('user_add', user.username,
+            givenname=user.first_name,
+            sn=user.last_name,
             userpassword=password,
-            mail=email,
+            mail=user.email,
+            noprivate=True, # do not create user-specific group
+            krbprincipalname="{username}@{domain}".format(
+                username=user.username,
+                domain=settings.KOMPASSI_IPA_DOMAIN,
+            ),
         )
 
-    def update_user(self, username, first_name, surname, email):
-        return self._json_rpc('user_mod', username,
-            givenname=first_name,
-            sn=surname,
-            mail=email,
+    def update_user(self, user):
+        return self._json_rpc('user_mod', user.username,
+            givenname=user.first_name,
+            sn=user.last_name,
+            mail=user.email,
         )
 
     def create_group(self, group_name):

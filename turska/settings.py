@@ -291,11 +291,12 @@ if 'ipa_integration' in INSTALLED_APPS:
         'ipa_integration.backends.KompassiIPABackend',
     ) + AUTHENTICATION_BACKENDS
 
-    KOMPASSI_IPA = 'https://moukari.tracon.fi/ipa'
+    KOMPASSI_IPA = 'https://jousi.tracon.fi/ipa'
     KOMPASSI_IPA_JSONRPC = '{KOMPASSI_IPA}/json'.format(**locals())
     KOMPASSI_IPA_CACERT_PATH = mkpath('tmp', 'ca.crt')
-    KOMPASSI_IPA_ADMIN_USERNAME = 'turskasync'
+    KOMPASSI_IPA_ADMIN_USERNAME = 'admin'
     KOMPASSI_IPA_ADMIN_PASSWORD = 'secret'
+    KOMPASSI_IPA_DOMAIN = 'TRACON.FI'
 
     KOMPASSI_USERS_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-users".format(**locals())
     KOMPASSI_STAFF_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-staff".format(**locals())
