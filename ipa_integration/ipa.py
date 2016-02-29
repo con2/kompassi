@@ -17,6 +17,7 @@ IPA_CHANGE_PASSWORD_URL = '{ipa}/session/change_password'.format(ipa=settings.KO
 IPA_JSONRPC_URL = '{ipa}/session/json'.format(ipa=settings.KOMPASSI_IPA)
 IPA_OTHER_USER_PASSWORD_MAGICK = 'CHANGING_PASSWORD_FOR_ANOTHER_USER'
 IPA_GROUP_ADD_ERROR_ALREADY_EXISTS = 4002
+IPA_USER_MOD_EMPTY_CHANGE_LIST = 4202
 IPA_HEADERS = {
     'Connection': 'keep-alive',
     'Referer': settings.KOMPASSI_IPA,
@@ -93,11 +94,26 @@ class IPASession(object):
         )
 
     def update_user(self, user):
-        return self._json_rpc('user_mod', user.username,
-            givenname=user.first_name,
-            sn=user.last_name,
-            mail=user.email,
-        )
+        try:
+            return self._json_rpc('user_mod', user.username,
+                givenname=user.first_name,
+                sn=user.last_name,
+                mail=user.email,
+            )
+        except IPAError as e:
+            try:
+                error, = e.args
+                code = error['code']
+            except (KeyError, IndexError):
+                raise e
+            else:
+                if code == IPA_USER_MOD_EMPTY_CHANGE_LIST:
+                    # no changes
+                    # we are under "make it so" semantics so this is kosher
+                    return None
+                else:
+                    # some other error
+                    raise e
 
     def create_group(self, group_name):
         try:
