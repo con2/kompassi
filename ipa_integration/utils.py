@@ -40,7 +40,7 @@ def create_user(user, password):
         user_session.change_own_password(password)
 
 
-def update_user(user, password):
+def update_user(user):
     assert isinstance(user, get_user_model()) or isinstance(user, JustEnoughUser)
 
     with IPASession.get_admin_session() as admin_session:
