@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django import forms
+from django.forms import ValidationError
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
@@ -48,6 +49,14 @@ class LoginForm(forms.Form):
             'username',
             'password',
         )
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+        if username and get_user_model().objects.filter(username=username).exists():
+            raise ValidationError(_('The username is already taken.'))
+
+        return username
 
 
 class PersonForm(forms.ModelForm):
