@@ -75,6 +75,7 @@ def core_profile_view(request):
                 update_user(person.user)
 
             messages.success(request, _("The changes were saved."))
+            return redirect('core_profile_view')
         else:
             messages.error(request, _("Please check the form."))
 
