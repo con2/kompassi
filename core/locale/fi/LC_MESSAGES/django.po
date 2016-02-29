@@ -2,6 +2,10 @@
 msgid "Accepting applications"
 msgstr "Ottaa vastaan hakemuksia"
 
+#: views/profile_views.py
+msgid "As you changed your e-mail address, you need to verify your e-mail address again. Please check your e-mail and proceed with the instructions you will find there. Please note that you may experience reduced functionality until you have confirmed your e-mail address again. We apologize for the inconvenience."
+msgstr "Koska muutit sähköpostiosoitettasi, sinun tarvitsee vahvistaa sähköpostiosoitteesi uudelleen. Ole hyvä ja tarkista sähköpostisi, ja noudata sähköpostiisi lähetettyjä ohjeita. Huomaathan, että et välttämättä pysty käyttämään joitain Kompassin toimintoja ennen kuin olet jälleen vahvistanut sähköpostiosoitteesi. Pahoittelemme tästä aiheutuvaa hankaluutta."
+
 #: forms.py
 msgid "Basic information"
 msgstr "Perustiedot"
@@ -126,6 +130,10 @@ msgstr "Salasanat eivät täsmää."
 msgid "Past events"
 msgstr "Menneet tapahtumat"
 
+#: views/profile_views.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkista lomake."
+
 #: forms.py
 msgid "Please choose a user name. The user name must consist of 4 to 30 characters. The following characters are allowed: <b>small</b> letters <i>a&ndash;z</i>, numbers <i>0&ndash;9</i> and underscore </i>_</i>. You can use either this user name or your e-mail address to sign in."
 msgstr "Valitse itsellesi 4–30 merkin pituinen käyttäjänimi. Seuraavat merkit ovat sallittuja: <b>pienet</b> kirjaimet <i>a–z</i>, numerot <i>0–9</i> sekä alaviiva <i>_</i>. Voit käyttää sisäänkirjautumiseen tätä käyttäjänimeä tai sähköpostiosoitettasi."
@@ -150,7 +158,7 @@ msgstr "Työvoimahaku avoinna"
 msgid "Revoked"
 msgstr "Mitätöity"
 
-#: templates/core_profile_view.jade
+#: templates/core_personify_view.jade templates/core_profile_view.jade
 msgid "Save changes"
 msgstr "Tallenna muutokset"
 
@@ -201,6 +209,10 @@ msgstr "Lähetä"
 #: models/person.py
 msgid "Surname"
 msgstr "Sukunimi"
+
+#: views/profile_views.py
+msgid "The changes were saved."
+msgstr "Muutokset tallennettiin."
 
 #: forms.py
 #, python-format
@@ -254,10 +266,4 @@ msgstr "Työvoima"
 #: forms.py
 msgid "Wrong password."
 msgstr "Salasana väärin."
-
-#~ msgid "Acceptance of the privacy policy"
-#~ msgstr "Rekisteriselosteen hyväksyminen"
-
-#~ msgid "Save"
-#~ msgstr "Tallenna"
 
