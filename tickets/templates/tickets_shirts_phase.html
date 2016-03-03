@@ -5,6 +5,11 @@
 <p>Olet valinnut tilaukseesi paitoja. Syötä tässä, minkä kokoisia paitoja haluat.</p>
 {% endblock body_text %}
 {% block form_content %}
+{% if "num_tshirts" in errors %}
+<div class="alert alert-danger">Paitojen määrä ei täsmää.</div>
+{% endif %}
+<!-- XXX Ropecon specific -->
+<p><a href="http://2016.ropecon.fi/fi/ropecon-paidat" target="_blank">Lue lisää paitamalleista ja katso kokotaulukot</a></p>
 <table class="table">
   <tr>
     <th class="count">Paitoja yhteensä</th>

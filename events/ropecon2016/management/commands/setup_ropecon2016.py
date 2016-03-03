@@ -144,7 +144,7 @@ class Setup(object):
             ),
             dict(
                 name='Ropecon 2016 -t-paita',
-                description='T-paidat maksetaan ennakkoon ja noudetaan tapahtumasta. Paitakoot valitaan seuraavassa vaiheessa.',
+                description='T-paidat maksetaan ennakkoon ja noudetaan tapahtumasta. Paitakoot valitaan seuraavassa vaiheessa. <a href="http://2016.ropecon.fi/fi/ropecon-paidat" target="_blank">Lue lisää paitamalleista ja katso kokotaulukot</a>',
                 limit_groups=[
                     limit_group('T-paidat', 10000),
                 ],
