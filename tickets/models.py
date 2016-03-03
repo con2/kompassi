@@ -1115,8 +1115,8 @@ class AccommodationInformation(models.Model):
         verbose_name = 'majoittujan tiedot'
         verbose_name_plural = 'majoittujan tiedot'
 
-@python_2_unicode_compatible
 
+@python_2_unicode_compatible
 class ShirtOrder(models.Model):
     order = models.ForeignKey(Order, related_name='shirt_order_set')
     size = models.ForeignKey(ShirtSize)
