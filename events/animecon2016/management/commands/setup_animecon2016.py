@@ -333,11 +333,11 @@ class Setup(object):
                 product.save()
 
         # v5
-        if not meta.print_logo_path:
-            meta.print_logo_path = mkpath('static', 'images', 'animecon.png')
-            meta.print_logo_width_mm = 30
-            meta.print_logo_height_mm = 30
-            meta.save()
+        # if not meta.print_logo_path:
+        #     meta.print_logo_path = mkpath('static', 'images', 'animecon.png')
+        #     meta.print_logo_width_mm = 30
+        #     meta.print_logo_height_mm = 30
+        #     meta.save()
 
     def setup_payments(self):
         from payments.models import PaymentsEventMeta
