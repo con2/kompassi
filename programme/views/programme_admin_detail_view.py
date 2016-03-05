@@ -119,7 +119,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
                     programme_role = get_object_or_404(ProgrammeRole, id=id_int, programme=programme)
                     programme_role.delete()
 
-                    programme.apply_state(deleted_programme_roles=programme_role)
+                    programme.apply_state(deleted_programme_roles=[programme_role])
 
                     messages.success(request, _('The host was removed.'))
                 elif action == 'cancel-invitation':
