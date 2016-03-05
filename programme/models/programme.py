@@ -362,8 +362,8 @@ class Programme(models.Model, CsvExportMixin):
 
         return super(Programme, self).save(*args, **kwargs)
 
-    def apply_state(self):
-        self.apply_state_create_badges()
+    def apply_state(self, deleted_programme_roles=[]):
+        self.apply_state_create_badges(deleted_programme_roles)
 
     def apply_state_create_badges(self, deleted_programme_roles=[]):
         if 'badges' not in settings.INSTALLED_APPS:
