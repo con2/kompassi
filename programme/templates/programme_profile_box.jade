@@ -13,3 +13,9 @@
           a.btn.btn-primary(href='{% url "programme_profile_detail_view" programme.id %}')
             i.fa.fa-pencil-square-o
             | {% trans "Edit programme" %}
+  else
+    .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-default(href='{% url "programme_profile_detail_view" programme.id %}')
+            i.fa.fa-pencil-square-o
+            | {% trans "View programme details" %}

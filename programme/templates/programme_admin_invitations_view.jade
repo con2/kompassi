@@ -75,3 +75,11 @@ block admin_content
                 input(type='hidden', name='id', value='{{ invitation.id }}')
                 button.btn.btn-xs.btn-danger(type='submit', name='action', value='cancel-invitation', title='{% trans "Cancel invitation" %}')
                   i.fa.fa-trash
+    .panel-footer.clearfix
+      form(method='POST')
+        {% csrf_token %}
+        .btn-group.pull-right
+          button.btn.btn-danger(type='submit', name='action', value='cancel-all-invitations')
+            i.fa.fa-trash.kompassi-icon-space-right
+            {% trans "Revoke all open invitations" %}
+

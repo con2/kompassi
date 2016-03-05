@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from core.helpers import person_required
 from core.utils import initialize_form, initialize_form_set
 
-from ..forms import ProgrammeSelfServiceForm, SiredInvitationForm
+from ..forms import ProgrammeSelfServiceForm, get_sired_invitation_formset
 from ..helpers import programme_event_required
 from ..models import Invitation, ProgrammeRole, FreeformOrganizer
 
@@ -22,10 +22,15 @@ def programme_accept_invitation_view(request, event, code):
     invitation = get_object_or_404(Invitation, programme__category__event=event, code=code)
     programme = invitation.programme
 
-    if not (invitation.state == 'valid' and programme.host_can_edit):
-        # TODO redirect to programme_profile_detail_view
+    if invitation.state == 'used' and programme.host_can_edit:
+        messages.warning(request, _('You have already accepted this invitation. You can edit the programme below.'))
+        return redirect('programme_profile_detail_view', programme.pk)
+    elif invitation.state == 'used' and not programme.host_can_edit:
+        messages.error(request, _('You have already accepted this invitation. You can no longer edit the programme.'))
+        return redirect('programme_profile_view')
+    elif not (invitation.state == 'valid' and programme.host_can_edit):
         messages.error(request, _('The invitation is no longer valid.'))
-        return redirect('core_event_view', event.slug)
+        return redirect('programme_profile_view')
 
     form = initialize_form(ProgrammeSelfServiceForm, request,
         instance=programme,
@@ -33,24 +38,15 @@ def programme_accept_invitation_view(request, event, code):
         prefix='needs',
     )
 
-    SiredInvitationFormset = modelformset_factory(Invitation,
-        form=SiredInvitationForm,
-        validate_max=True,
-        extra=invitation.extra_invites,
-        max_num=invitation.extra_invites,
-    )
-
-    invite_formset = initialize_form_set(SiredInvitationFormset, request,
-        queryset=Invitation.objects.none(),
-    )
+    sired_invitation_formset = get_sired_invitation_formset(request, invitation)
 
     if request.method == 'POST':
-        if form.is_valid() and invite_formset.is_valid():
+        if form.is_valid() and sired_invitation_formset.is_valid():
             with transaction.atomic():
                 programme_role = invitation.accept(request.user.person)
-                form.save()
+                programme = form.save()
 
-                for extra_invite in invite_formset.save(commit=False):
+                for extra_invite in sired_invitation_formset.save(commit=False):
                     extra_invite.programme = programme
                     extra_invite.created_by = request.user
                     extra_invite.role = invitation.role
@@ -58,17 +54,14 @@ def programme_accept_invitation_view(request, event, code):
                     extra_invite.save()
                     extra_invite.send(request)
 
-                programme.apply_state()
+            programme.apply_state()
 
             messages.success(request, _(
                 'Thank you for accepting the invitation. You can change the '
                 'information later from your profile.'
             ))
 
-            # TODO process invite_formset
-
-            # TODO once there is programme_profile_programme_view, go there instead
-            return redirect('core_event_view', event.slug)
+            return redirect('programme_profile_detail_view', programme.pk)
         else:
             messages.error(request, _('Please check the form.'))
 
@@ -78,7 +71,7 @@ def programme_accept_invitation_view(request, event, code):
         host_can_invite_more=invitation.extra_invites > 0,
         invitation=invitation,
         invitations=Invitation.objects.filter(programme=programme, state='valid').exclude(pk=invitation.pk),
-        invite_formset=invite_formset,
+        sired_invitation_formset=sired_invitation_formset,
         programme_roles=ProgrammeRole.objects.filter(programme=programme),
     )
 

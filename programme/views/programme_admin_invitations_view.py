@@ -18,7 +18,9 @@ def programme_admin_invitations_view(request, vars, event):
     pending_invitations = Invitation.objects.filter(programme__category__event=event, state='valid')
 
     if request.method == 'POST':
-        if request.POST.get('action') == 'cancel-invitation':
+        action = request.POST.get('action')
+
+        if action == 'cancel-invitation':
             form = initialize_form(IdForm, request)
 
             if form.is_valid():
@@ -31,6 +33,11 @@ def programme_admin_invitations_view(request, vars, event):
 
                 messages.success(request, _('The invitation was cancelled.'))
                 return redirect('programme_admin_invitations_view', event.slug)
+
+        elif action == 'cancel-all-invitations':
+            pending_invitations.update(state='revoked')
+            messages.success(request, _('All pending invitations were cancelled.'))
+            return redirect('programme_admin_invitations_view', event.slug)
 
         messages.error(request, _('Invalid request.'))
 

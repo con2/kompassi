@@ -15,6 +15,7 @@ from core.utils import (
     horizontal_form_helper,
     indented_without_label,
     make_horizontal_form_helper,
+    initialize_form_set,
 )
 
 from .models import (
@@ -207,6 +208,19 @@ class SiredInvitationForm(forms.ModelForm):
         fields = (
             'email',
         )
+
+
+def get_sired_invitation_formset(request, invitation_or_programme_role):
+    SiredInvitationFormset = modelformset_factory(Invitation,
+        form=SiredInvitationForm,
+        validate_max=True,
+        extra=invitation_or_programme_role.extra_invites_left,
+        max_num=invitation_or_programme_role.extra_invites_left,
+    )
+
+    return initialize_form_set(SiredInvitationFormset, request,
+        queryset=Invitation.objects.none(),
+    )
 
 
 class FreeformOrganizerForm(forms.ModelForm):

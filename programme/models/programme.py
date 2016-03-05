@@ -384,6 +384,7 @@ class Programme(models.Model, CsvExportMixin):
     def _get_in_states(cls, person, states):
         return (
             cls.objects.filter(state__in=states, organizers=person)
+                .distinct()
                 .order_by('category__event__start_time', 'start_time', 'title')
         )
 

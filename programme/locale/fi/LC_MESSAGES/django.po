@@ -18,6 +18,10 @@ msgstr "Aktivoi valitut kohteet"
 msgid "Add free-form organizer"
 msgstr "Lisää vapaamuotoinen ohjelmanjärjestäjä"
 
+#: views/programme_admin_invitations_view.py
+msgid "All pending invitations were cancelled."
+msgstr "Kaikki avoimet kutsut on peruutettu."
+
 #: models/programme.py
 msgid "Anything else?"
 msgstr "Vapaamuotoiset terveiset"
@@ -114,11 +118,15 @@ msgstr "Loppumisaika"
 msgid "Event"
 msgstr "Tapahtuma"
 
+#: models/invitation.py models/programme_role.py
+msgid "Extra invites"
+msgstr "Lisäkutsut"
+
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "First name"
 msgstr "Etunimi"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "Free-form organizer"
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 
@@ -201,6 +209,10 @@ msgstr "Kutsun luontiaika"
 #: templates/programme_admin_invitations_view.jade
 msgid "Invited by"
 msgstr "Kutsuja"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Invites"
+msgstr "Kutsut"
 
 #: models/programme.py
 msgid "It's OK to photograph my programme"
@@ -326,6 +338,10 @@ msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliis
 msgid "Please do not photograph my programme"
 msgstr "Pyydän, ettei ohjelmanumeroani valokuvata"
 
+#: forms.py
+msgid "Please enter an e-mail address to invite another host"
+msgstr "Ole hyvä ja syötä sähköpostiosoite kutsuaksesi toisen ohjelmanjärjestäjän"
+
 #: models/programme.py
 msgid "Please photograph my programme"
 msgstr "Pyydän, että ohjelmastani otetaan valokuvia"
@@ -338,7 +354,11 @@ msgstr "Järjestys"
 msgid "Programme"
 msgstr "Ohjelma"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade views/programme_admin_detail_view.py
+#: models/programme_role.py
+msgid "Programme host"
+msgstr "Ohjelmanjärjestäjä"
+
+#: models/programme_role.py templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade views/programme_admin_detail_view.py
 msgid "Programme hosts"
 msgstr "Ohjelmanjärjestäjät"
 
@@ -390,7 +410,11 @@ msgstr "Poista ohjelmanjärjestäjä"
 msgid "Requested time slot"
 msgstr "Aikatoiveet"
 
-#: models/invitation.py templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_invitations_view.jade
+msgid "Revoke all open invitations"
+msgstr "Peru kaikki avoimet kutsut"
+
+#: models/invitation.py templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade templates/programme_profile_detail_view.jade
 msgid "Role"
 msgstr "Rooli"
 
@@ -410,6 +434,10 @@ msgstr "Tallenna ja jatka"
 msgid "Save and return"
 msgstr "Tallenna ja palaa"
 
+#: templates/programme_profile_detail_view.jade
+msgid "Save changes"
+msgstr "Tallenna muutokset"
+
 #: templates/programme_admin_detail_views/schedule_tab.jade views/programme_admin_detail_view.py
 msgid "Schedule information"
 msgstr "Ohjelmakarttatiedot"
@@ -418,11 +446,15 @@ msgstr "Ohjelmakarttatiedot"
 msgid "Send invitation"
 msgstr "Lähetä kutsu"
 
+#: models/invitation.py
+msgid "Sire"
+msgstr "Isäntä"
+
 #: models/role.py
 msgid "Some events have speaker roles that convey different privileges within the same personnel class. This priority field will put the speakers in their place."
 msgstr "Jotkin tapahtumat määrittelevät useita ohjelmanjärjestäjärooleja, jotka antavat eritasoiset edut. Tätä prioriteettikenttää käytetään korkeimmat edut antavan tason valitsemiseen."
 
-#: templates/programme_profile_detail_view.jade
+#: templates/programme_accept_invitation_view.jade templates/programme_profile_detail_view.jade
 msgid "Someone has been invited, but they have not yet accepted their invitation."
 msgstr "Joku on kutsuttu, mutta hän ei ole vielä hyväksynyt kutsuaan."
 
@@ -458,6 +490,14 @@ msgstr "Muutokset tallennettiin."
 msgid "The freeform organizer was successfully added."
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä lisätty."
 
+#: models/invitation.py models/programme_role.py
+msgid "The host may send this many extra invites to other hosts of the programme."
+msgstr "Ohjelmanjärjestäjä voi lähettää näin monta kutsua ohjelmansa muille järjestäjille."
+
+#: models/invitation.py
+msgid "The host that spawned this invitation. Sired invitations consume the extra invite quota of the sire."
+msgstr "Ohjelmanjärjestäjä joka tämän kutsun loi. Ohjelmanjärjestäjän lähettämät lisäkutsut kuluttavat lisäkutsujen kiintiötä."
+
 #: views/programme_admin_detail_view.py
 msgid "The host was removed."
 msgstr "Ohjelmanjärjestäjä poistettu."
@@ -476,7 +516,21 @@ msgstr "Kutsu peruutettu."
 
 #: models/role.py
 msgid "The personnel class for the programme hosts that have this role."
-msgstr ""
+msgstr "Henkilöstöluokka ohjelmanjärjestäjille, joilla on tämä rooli."
+
+#: templates/programme_accept_invitation_view.jade
+#, python-format
+msgid "The programme manager has allowed you to invite one more host to this programme. You may do so now by entering their e-mail address in the field above, or later via your profile."
+msgid_plural "The programme manager has allowed you to invite up to %(num_invites)s hosts to this programme. You may do so now by entering their e-mail addresses in the fields above, or later via your profile."
+msgstr[0] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi yhden muun ohjelmanjärjestäjän. Voit tehdä niin nyt syöttämällä hänen sähköpostiosoitteensa yllä olevaan kenttään tai myöhemmin profiilisi kautta."
+msgstr[1] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi %(num_invite)s muuta ohjelmanjärjestäjää. Voit tehdä niin nyt syöttämällä heidän sähköpostiosoitteensa yllä oleviin kenttiin tai myöhemmin profiilisi kautta."
+
+#: templates/programme_profile_detail_view.jade
+#, python-format
+msgid "The programme manager has allowed you to invite one more host to this programme. You may do so now or later by entering their e-mail address in the field above."
+msgid_plural "The programme manager has allowed you to invite up to %(num_invites)s more hosts to this programme. You may do so now or later by entering their e-mail addresses in the fields above."
+msgstr[0] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi yhden muun ohjelmanjärjestäjän. Voit tehdä niin nyt tai myöhemmin syöttämällä hänen sähköpostiosoitteensa yllä olevaan kenttään."
+msgstr[1] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi %(num_invite)s muuta ohjelmanjärjestäjää. Voit tehdä niin nyt tai myöhemmin syöttämällä heidän sähköpostiosoitteensa yllä oleviin kenttiin."
 
 #: templates/programme_accept_invitation_view.jade
 msgid "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details."
@@ -502,11 +556,11 @@ msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelm
 msgid "This field is normally only visible to the programme managers. However, should the programme host request a record of their own personal details, this field will be included in that record."
 msgstr "Tämän kentän sisältö näkyy normaalisti vain ohjelmavastaaville. Se on kuitenkin sisällytettävä rekisteriotteeseen, mikäli ohjelmanjärjestäjä pyytää sellaista."
 
-#: proxies/programme/profile.py
+#: models/programme.py
 msgid "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager."
 msgstr "Ohjelmanumero on julkaistu, joten et voi enää muokata sitä itse. Jos tarvitset ohjelmanumeron tietoihin muutoksia, ole hyvä ja ota yhteyttä ohjelmavastaavaan."
 
-#: proxies/programme/profile.py
+#: models/programme.py
 msgid "This programme has been rejected by the programme manager."
 msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
 
@@ -530,6 +584,10 @@ msgstr "Päivitysaika"
 msgid "Video playback"
 msgstr "Videon toistaminen"
 
+#: templates/programme_profile_box.jade
+msgid "View programme details"
+msgstr "Tarkastele ohjelmanumeron tietoja"
+
 #: models/programme.py
 msgid "What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance."
 msgstr "Minkälaista tietokonetta haluat käyttää? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
@@ -550,7 +608,19 @@ msgstr "Kyllä"
 msgid "You can change these details later by visiting your profile."
 msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
 
-#: proxies/programme/profile.py
+#: templates/programme_profile_detail_view.jade
+msgid "You can edit the details of this programme until it is published in the schedule."
+msgstr "Voit muokata tämän ohjelmanumeron tietoja kunnes se on julkaistu ohjelmakarttaan."
+
+#: views/programme_accept_invitation_view.py
+msgid "You have already accepted this invitation. You can edit the programme below."
+msgstr "Olet jo ottanut tämän kutsun vastaan. Voit muokata ohjelmanumeron tietoja alla."
+
+#: views/programme_accept_invitation_view.py
+msgid "You have already accepted this invitation. You can no longer edit the programme."
+msgstr "Olet jo ottanut tämän kutsun vastaan. Et voi enää muokata ohjelmanumeron tietoja."
+
+#: models/programme.py
 msgid "You have cancelled this programme."
 msgstr "Olet peruuttanut tämän ohjelmanumeron."
 

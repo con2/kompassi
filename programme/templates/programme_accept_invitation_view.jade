@@ -45,7 +45,7 @@ block content
       .text-muted {% trans "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number." %}
 
   form.form-horizontal(method='POST')
-    {{ invite_formset.management_form }}
+    {{ sired_invitation_formset.management_form }}
     .panel.panel-default
       .panel-heading: strong {% trans "Programme information" %}
       .panel-body {% crispy form %}
@@ -69,7 +69,7 @@ block content
             tr
               td(colspan="3"): em {% trans "Someone has been invited, but they have not yet accepted their invitation." %}
               td: em= other_invitation.role
-          for invite_form in invite_formset
+          for invite_form in sired_invitation_formset
             tr
               td(colspan="3") {{ invite_form.email }}
               td: em= invitation.role
@@ -90,11 +90,3 @@ block content
           button.btn.btn-success(type='submit')
             i.fa.fa-check.kompassi-icon-space-right
             | {% trans "Accept invitation" %}
-
-    style.
-      .programme-host-table input {
-        width: 100%;
-        border: 1px solid #CCC;
-        border-radius: 4px;
-        padding: 6px 12px;
-      }

@@ -85,6 +85,10 @@ class Invitation(OneTimeCodeLite):
 
         return programme_role
 
+    @property
+    def extra_invites_left(self):
+        return self.extra_invites
+
     class Meta:
         verbose_name = _('invitation')
         verbose_name_plural = _('invitations')
