@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 from core.helpers import person_required
 
-from ..proxies.programme.profile import Programme
+from ..models import Programme
 
 
 @person_required
