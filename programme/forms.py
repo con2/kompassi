@@ -185,6 +185,7 @@ class InvitationForm(forms.ModelForm):
         fields = (
             'email',
             'role',
+            'extra_invites',
         )
 
 
@@ -221,6 +222,7 @@ class ChangeHostRoleForm(forms.ModelForm):
         model = ProgrammeRole
         fields = (
             'role',
+            'extra_invites',
         )
 
 
@@ -239,4 +241,5 @@ class ChangeInvitationRoleForm(forms.ModelForm):
         model = Invitation
         fields = (
             'role',
+            'extra_invites',
         )

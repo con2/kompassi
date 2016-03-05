@@ -1,6 +1,8 @@
 # encoding: utf-8
 
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
@@ -18,11 +20,11 @@ class Invitation(OneTimeCodeLite):
     """
 
     programme = models.ForeignKey('programme.Programme',
-        verbose_name=_(u'Programme'),
+        verbose_name=_('Programme'),
     )
 
     role = models.ForeignKey('programme.Role',
-        verbose_name=_(u'Role'),
+        verbose_name=_('Role'),
     )
 
     created_by = models.ForeignKey('auth.User',
@@ -30,15 +32,30 @@ class Invitation(OneTimeCodeLite):
         blank=True,
     )
 
+    extra_invites = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_('Extra invites'),
+        help_text=_('The host may send this many extra invites to other hosts of the programme.'),
+    )
+
+    sire = models.ForeignKey('programme.ProgrammeRole',
+        null=True,
+        blank=True,
+        verbose_name=_('Sire'),
+        help_text=_('The host that spawned this invitation. Sired invitations consume the extra invite quota of the sire.'),
+        db_index=True,
+        related_name='sired_invitation_set',
+    )
+
     def __str__(self):
-        return u'{email} ({programme})'.format(email=self.email, programme=self.programme)
+        return '{email} ({programme})'.format(email=self.email, programme=self.programme)
 
     @property
     def event(self):
         return self.programme.category.event if self.programme else None
 
     def render_message_subject(self, request):
-        return u'{event_name}: Kutsu ohjelmanjärjestäjäksi'.format(
+        return '{event_name}: Kutsu ohjelmanjärjestäjäksi'.format(
             event_name=self.event.name,
         )
 
@@ -54,20 +71,20 @@ class Invitation(OneTimeCodeLite):
 
         return render_to_string('programme_invitation_message.eml', vars, request=request)
 
-    def accept(self, person):
+    def accept(self, person, sire=None):
         from .programme_role import ProgrammeRole
 
-        self.mark_used()
+        with transaction.atomic():
+            if sire and not sire.invitations_left:
+                raise NoInvitesLeft(sire)
 
-        programme_role = ProgrammeRole(
-            programme=self.programme,
-            role=self.role,
-            person=person,
-            invitation=self,
-        )
-        programme_role.save()
+            self.mark_used()
+
+            programme_role = ProgrammeRole.from_invitation(self, person)
+            programme_role.save()
+
         return programme_role
 
     class Meta:
-        verbose_name = _(u'invitation')
-        verbose_name_plural = _(u'invitations')
+        verbose_name = _('invitation')
+        verbose_name_plural = _('invitations')
