@@ -25,8 +25,6 @@ def core_frontpage_view(request):
 
     past_events_rows_by_year = [(year, list(groups_of_n(year_events, 4))) for (year, year_events) in groupby_strict(past_events, get_year)]
 
-    print past_events_rows_by_year
-
     vars = dict(
         future_events_rows=list(groups_of_n(future_events, 4)),
         current_events_rows=list(groups_of_n(current_events, 4)),
