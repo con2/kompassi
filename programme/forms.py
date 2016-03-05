@@ -1,7 +1,10 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django import forms
 from django.forms.models import modelformset_factory
+from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset
@@ -144,7 +147,7 @@ class ScheduleForm(forms.ModelForm):
         self.fields['length'].widget.attrs['min'] = 0
         self.fields['room'].queryset = Room.get_rooms_for_event(event)
 
-        self.fields['start_time'].choices = [('', u'---------')] + [
+        self.fields['start_time'].choices = [('', '---------')] + [
             (
                 start_time,
                 format_datetime(start_time)
@@ -186,6 +189,23 @@ class InvitationForm(forms.ModelForm):
             'email',
             'role',
             'extra_invites',
+        )
+
+
+class SiredInvitationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SiredInvitationForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.fields['email'].widget.attrs['placeholder'] = _('Please enter an e-mail address to invite another host')
+        self.fields['email'].label = False
+
+    class Meta:
+        model = Invitation
+        fields = (
+            'email',
         )
 
 

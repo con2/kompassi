@@ -4,16 +4,16 @@ from django.shortcuts import render
 
 from core.helpers import person_required
 
-from ..proxies.programme.profile import ProgrammeProfileProxy
+from ..proxies.programme.profile import Programme
 
 
 @person_required
 def programme_profile_view(request):
     person = request.user.person
 
-    editable_programmes = ProgrammeProfileProxy.get_editable_programmes(person)
-    published_programmes = ProgrammeProfileProxy.get_published_programmes(person)
-    rejected_programmes = ProgrammeProfileProxy.get_rejected_programmes(person)
+    editable_programmes = Programme.get_editable_programmes(person)
+    published_programmes = Programme.get_published_programmes(person)
+    rejected_programmes = Programme.get_rejected_programmes(person)
 
     no_programmes = not any(i.exists() for i in (
         editable_programmes,

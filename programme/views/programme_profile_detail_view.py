@@ -7,13 +7,13 @@ from core.helpers import person_required
 from core.utils import initialize_form
 
 from ..forms import ProgrammeSelfServiceForm
-from ..models import ProgrammeRole, Invitation, FreeformOrganizer
-from ..proxies.programme.profile import ProgrammeProfileProxy
+from ..models import Programme, ProgrammeRole, Invitation, FreeformOrganizer
 
 
 @person_required
 def programme_profile_detail_view(request, programme_id):
-    programme = get_object_or_404(ProgrammeProfileProxy, id=int(programme_id), organizers=request.user.person)
+    queryset = Programme.objects.filter(id=int(programme_id), organizers=request.user.person).distinct()
+    programme = get_object_or_404(queryset)
     event = programme.category.event
 
     form = initialize_form(ProgrammeSelfServiceForm, request,
