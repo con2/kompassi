@@ -20,7 +20,10 @@
             td= programme_role.person.nick
             td= programme_role.person.phone
             td= programme_role.person.email
-            td= programme_role.role
+            td
+              a(href="", data-toggle="modal", data-target="#programme-admin-change-host-role-modal-{{ programme_role.pk }}")
+                |{{programme_role.role}}
+                i.fa.fa-pencil-square-o.kompassi-icon-space-left
             td
               button.btn.btn-xs.btn-danger(type='submit', name='action', value='remove-host:{{ programme_role.id }}', title='{% trans "Remove host" %}')
                 i.fa.fa-trash
@@ -31,7 +34,10 @@
             td
             td
             td: em= invitation.email
-            td: em= invitation.role
+            td
+              a(href="", data-toggle="modal", data-target="#programme-admin-change-invitation-role-modal-{{ invitation.pk }}")
+                em= invitation.role
+                i.fa.fa-pencil-square-o.kompassi-icon-space-left
             td
               button.btn.btn-xs.btn-danger(type='submit', name='action', value='cancel-invitation:{{ invitation.id }}', title='{% trans "Cancel invitation" %}')
                 i.fa.fa-trash

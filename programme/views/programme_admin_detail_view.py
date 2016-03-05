@@ -1,9 +1,11 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.translation import ugettext_lazy as _
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 
 from core.utils import initialize_form
 from core.tabs import Tab
@@ -15,6 +17,8 @@ from ..forms import (
     ProgrammeNeedsForm,
     ProgrammePublicForm,
     ScheduleForm,
+    ChangeHostRoleForm,
+    ChangeInvitationRoleForm,
 )
 from ..helpers import programme_admin_required
 from ..models import (
@@ -25,6 +29,7 @@ from ..models import (
 from ..proxies.programme.management import ProgrammeManagementProxy
 
 
+# TODO Split this into multiple views or at refactor it into a CBV
 @programme_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def programme_admin_detail_view(request, vars, event, programme_id):
@@ -39,6 +44,17 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     invitation_form = initialize_form(InvitationForm, request, event=event, prefix='invitation')
     freeform_organizer_form = initialize_form(FreeformOrganizerForm, request, prefix='freeform')
 
+    programme_roles = ProgrammeRole.objects.filter(programme=programme)
+    change_host_role_forms = [
+        initialize_form(ChangeHostRoleForm, request, prefix='chr', instance=host, event=event)
+        for host in programme_roles
+    ]
+
+    change_invitation_role_forms = [
+        initialize_form(ChangeInvitationRoleForm, request, prefix='cir', instance=invitation, event=event)
+        for invitation in programme.invitation_set.all()
+    ]
+
     if request.method == 'POST':
         action = request.POST.get('action')
 
@@ -49,7 +65,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
                 programme.apply_state()
 
-                messages.success(request, _(u'The changes were saved.'))
+                messages.success(request, _('The changes were saved.'))
 
                 if action == 'save-edit':
                     return redirect('programme_admin_detail_view', event.slug, programme_id)
@@ -58,7 +74,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
                 else:
                     raise NotImplementedError(action)
             else:
-                messages.error(request, _(u'Please check the form.'))
+                messages.error(request, _('Please check the form.'))
 
         elif action == 'invite-host':
             if invitation_form.is_valid():
@@ -69,11 +85,11 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
                 invitation.send(request)
 
-                messages.success(request, _(u'The host was successfully invited.'))
+                messages.success(request, _('The host was successfully invited.'))
 
                 return redirect('programme_admin_detail_view', event.slug, programme_id)
             else:
-                messages.error(request, _(u'Please check the form.'))
+                messages.error(request, _('Please check the form.'))
 
         elif action == 'add-freeform-host':
             if freeform_organizer_form.is_valid():
@@ -81,11 +97,11 @@ def programme_admin_detail_view(request, vars, event, programme_id):
                 freeform_organizer_form.programme = programme
                 freeform_organizer_form.save()
 
-                messages.success(request, _(u'The freeform organizer was successfully added.'))
+                messages.success(request, _('The freeform organizer was successfully added.'))
 
                 return redirect('programme_admin_detail_view', event.slug, programme_id)
             else:
-                messages.error(request, _(u'Please check the form.'))
+                messages.error(request, _('Please check the form.'))
 
         elif (
             action.startswith('remove-host:') or
@@ -97,7 +113,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
             try:
                 id_int = int(id_str)
             except ValueError:
-                messages.error(request, _(u'Invalid action.'))
+                messages.error(request, _('Invalid action.'))
             else:
                 if action == 'remove-host':
                     programme_role = get_object_or_404(ProgrammeRole, id=id_int, programme=programme)
@@ -105,7 +121,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
                     programme.apply_state(deleted_programme_roles=programme_role)
 
-                    messages.success(request, _(u'The host was removed.'))
+                    messages.success(request, _('The host was removed.'))
                 elif action == 'cancel-invitation':
                     invitation = get_object_or_404(Invitation, id=id_int, programme=programme, state='valid')
                     invitation.state = 'revoked'
@@ -113,34 +129,36 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
                     programme.apply_state()
 
-                    messages.success(request, _(u'The invitation was cancelled.'))
+                    messages.success(request, _('The invitation was cancelled.'))
                 elif action == 'remove-freeform-host':
                     freeform_organizer = get_object_or_404(FreeformOrganizer, id=id_int, programme=programme)
                     freeform_organizer.delete()
 
                     programme.apply_state()
 
-                    messages.success(request, _(u'The host was removed.'))
+                    messages.success(request, _('The host was removed.'))
                 else:
                     raise NotImplementedError(action)
 
                 return redirect('programme_admin_detail_view', event.slug, programme_id)
         else:
-            messages.error(request, _(u'Invalid action.'))
+            messages.error(request, _('Invalid action.'))
 
     tabs = [
-        Tab('programme-admin-programme-public-tab', _(u'Public information'), active=True),
-        Tab('programme-admin-programme-schedule-tab', _(u'Schedule information')),
-        Tab('programme-admin-programme-needs-tab', _(u'Host needs')),
-        Tab('programme-admin-programme-internal-tab', _(u'Internal information')),
-        Tab('programme-admin-programme-hosts-tab', _(u'Programme hosts')),
+        Tab('programme-admin-programme-public-tab', _('Public information'), active=True),
+        Tab('programme-admin-programme-schedule-tab', _('Schedule information')),
+        Tab('programme-admin-programme-needs-tab', _('Host needs')),
+        Tab('programme-admin-programme-internal-tab', _('Internal information')),
+        Tab('programme-admin-programme-hosts-tab', _('Programme hosts')),
     ]
 
     previous_programme, next_programme = programme.get_previous_and_next_programme()
 
     vars.update(
-        freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
+        change_host_role_forms=change_host_role_forms,
+        change_invitation_role_forms=change_invitation_role_forms,
         freeform_organizer_form=freeform_organizer_form,
+        freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
         internal_form=internal_form,
         invitation_form=invitation_form,
         invitations=programme.invitation_set.filter(state='valid'),
@@ -149,10 +167,42 @@ def programme_admin_detail_view(request, vars, event, programme_id):
         overlapping_programmes=programme.get_overlapping_programmes(),
         previous_programme=previous_programme,
         programme=programme,
-        programme_roles=ProgrammeRole.objects.filter(programme=programme),
+        programme_roles=programme_roles,
         public_form=public_form,
         schedule_form=schedule_form,
         tabs=tabs,
     )
 
     return render(request, 'programme_admin_detail_view.jade', vars)
+
+
+@programme_admin_required
+@require_POST
+def programme_admin_change_host_role_view(request, vars, event, programme_id, programme_role_id):
+    programme = get_object_or_404(ProgrammeManagementProxy, id=int(programme_id), category__event=event)
+    programme_role = ProgrammeRole.objects.get(id=int(programme_role_id), programme=programme)
+    change_role_form = initialize_form(ChangeHostRoleForm, request, prefix='chr', event=event, instance=programme_role)
+    return actual_change_role_view(request, change_role_form)
+
+
+@programme_admin_required
+@require_POST
+def programme_admin_change_invitation_role_view(request, vars, event, programme_id, invitation_id):
+    programme = get_object_or_404(ProgrammeManagementProxy, id=int(programme_id), category__event=event)
+    invitation = Invitation.objects.get(id=int(invitation_id), programme=programme)
+    change_role_form = initialize_form(ChangeInvitationRoleForm, request, prefix='cir', event=event, instance=invitation)
+    return actual_change_role_view(request, change_role_form)
+
+
+def actual_change_role_view(request, change_role_form):
+    if change_role_form.is_valid():
+        instance = change_role_form.save()
+        instance.programme.apply_state()
+        messages.success(request, _('The role was changed.'))
+    else:
+        messages.error(request, _("Please check the form."))
+
+    programme = change_role_form.instance.programme
+
+    return redirect('programme_admin_detail_view', programme.event.slug, programme.pk)
+

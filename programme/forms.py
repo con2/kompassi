@@ -20,6 +20,7 @@ from .models import (
     FreeformOrganizer,
     Invitation,
     Programme,
+    ProgrammeRole,
     Role,
     Room,
     Tag,
@@ -203,3 +204,39 @@ class FreeformOrganizerForm(forms.ModelForm):
 
 class IdForm(forms.Form):
     id = forms.IntegerField()
+
+
+class ChangeHostRoleForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(ChangeHostRoleForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.fields['role'].queryset = Role.objects.filter(personnel_class__event=event)
+
+    class Meta:
+        model = ProgrammeRole
+        fields = (
+            'role',
+        )
+
+
+class ChangeInvitationRoleForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(ChangeInvitationRoleForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.fields['role'].queryset = Role.objects.filter(personnel_class__event=event)
+
+    class Meta:
+        model = Invitation
+        fields = (
+            'role',
+        )

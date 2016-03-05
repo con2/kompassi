@@ -34,7 +34,7 @@ msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko
 msgid "Audio playback"
 msgstr "Äänen toistaminen"
 
-#: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
+#: templates/programme_admin_detail_views/change_host_role_modals.jade templates/programme_admin_detail_views/change_invitation_role_modals.jade templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Cancel"
 msgstr "Peruuta"
 
@@ -49,6 +49,18 @@ msgstr "Peruutettu"
 #: templates/programme_profile_view.jade
 msgid "Cancelled and rejected programmes"
 msgstr "Peruutetut ja hylätyt ohjelmanumerot"
+
+#: templates/programme_admin_detail_views/change_host_role_modals.jade templates/programme_admin_detail_views/change_invitation_role_modals.jade
+msgid "Change role"
+msgstr "Vaihda roolia"
+
+#: templates/programme_admin_detail_views/change_host_role_modals.jade
+msgid "Change role of accepted host"
+msgstr "Vaihda ohjelmanjärjestäjän roolia"
+
+#: templates/programme_admin_detail_views/change_invitation_role_modals.jade
+msgid "Change role of invited host"
+msgstr "Vaihda ohjelmanjärjestäjäkutsun roolia"
 
 #: models/programme.py
 msgid "Computer use"
@@ -78,7 +90,7 @@ msgstr "Hylkää muutokset ja palaa"
 msgid "Do you have tech requirements that are not covered by the previous questions?"
 msgstr "Onko ohjelmallasi tekniikkatarpeita joita edeltävät kysymykset eivät kata?"
 
-#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/change_invitation_role_modals.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -172,7 +184,7 @@ msgstr "Kelvoton toiminto."
 
 #: views/programme_admin_invitations_view.py
 msgid "Invalid request."
-msgstr ""
+msgstr "Kelvoton pyyntö."
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Invitation to organize programme"
@@ -229,6 +241,10 @@ msgstr "Ohjelmanumeroni ei sisällä tekijänoikeudella suojattua ääntä tai v
 #: models/programme.py
 msgid "My programme may be recorded and published"
 msgstr "Ohjelmanumeroni saa videoida ja julkaista"
+
+#: templates/programme_admin_detail_views/change_host_role_modals.jade
+msgid "Name"
+msgstr "Nimi"
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Name as displayed"
@@ -473,6 +489,10 @@ msgstr "Ohjelmanumero luotiin."
 #: models/programme.py
 msgid "The programmes in the state \"Published\" will be visible to the general public, if the schedule has already been published."
 msgstr "Tilassa ”Julkaistu” olevat ohjelmanumerot näkyvät yleisölle, mikäli ohjelmakartta on julkaistu."
+
+#: views/programme_admin_detail_view.py
+msgid "The role was changed."
+msgstr "Rooli vaihdettiin."
 
 #: models/programme.py
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."

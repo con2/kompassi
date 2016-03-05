@@ -4,10 +4,12 @@ from django.views.generic import RedirectView
 
 from .views import (
     programme_accept_invitation_view,
+    programme_admin_change_host_role_view,
+    programme_admin_change_invitation_role_view,
     programme_admin_create_view,
-    programme_admin_invitations_view,
     programme_admin_detail_view,
     programme_admin_email_list_view,
+    programme_admin_invitations_view,
     programme_admin_special_view,
     programme_admin_timetable_view,
     programme_admin_view,
@@ -99,9 +101,21 @@ urlpatterns = [
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d{1,4})/?$',
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/?$',
         programme_admin_detail_view,
         name='programme_admin_detail_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/invitations/(?P<invitation_id>\d+)/?$',
+        programme_admin_change_invitation_role_view,
+        name='programme_admin_change_invitation_role_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/hosts/(?P<programme_role_id>\d+)/?$',
+        programme_admin_change_host_role_view,
+        name='programme_admin_change_host_role_view'
     ),
 
     url(

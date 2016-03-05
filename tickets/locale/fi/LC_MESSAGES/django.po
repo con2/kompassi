@@ -1,0 +1,8 @@
+#: admin.py
+msgid "Event"
+msgstr ""
+
+#: admin.py
+msgid "Type"
+msgstr ""
+

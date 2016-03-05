@@ -2,12 +2,14 @@
 
 from django.db import models
 from django.template.loader import render_to_string
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import url
 from core.models import OneTimeCodeLite
 
 
+@python_2_unicode_compatible
 class Invitation(OneTimeCodeLite):
     """
     In order to add a Host to a Programme, the Programme Manager sends an invitation to the e-mail address of the
@@ -28,7 +30,7 @@ class Invitation(OneTimeCodeLite):
         blank=True,
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{email} ({programme})'.format(email=self.email, programme=self.programme)
 
     @property
