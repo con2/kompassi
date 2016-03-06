@@ -10,7 +10,7 @@ from django.forms import ValidationError
 
 from access.utils import generate_machine_password
 
-from .ipa import IPASession, IPAError
+from .ipa import IPASession, IPAError, UsernameTaken
 
 
 BaseJustEnoughUser = namedtuple('JustEnoughUser', 'username first_name last_name email')

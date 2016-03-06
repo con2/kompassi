@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -64,8 +66,10 @@ def core_registration_view(request):
             surname = person_form.cleaned_data['surname']
             email = person_form.cleaned_data['email']
 
+            failed = False
+
             if 'ipa_integration' in settings.INSTALLED_APPS:
-                from ipa_integration.utils import create_user, JustEnoughUser
+                from ipa_integration.utils import create_user, JustEnoughUser, UsernameTaken
 
                 just_enough_user = JustEnoughUser(
                     username=username,
@@ -74,35 +78,40 @@ def core_registration_view(request):
                     email=email,
                 )
 
-                create_user(just_enough_user, password)
+                try:
+                    create_user(just_enough_user, password)
+                except UsernameTaken:
+                    messages.error(request, _('The username is already taken.'))
+                    failed = True
 
-            with transaction.atomic():
-                person = person_form.save(commit=False)
-                user = User(
-                    username=username,
-                    is_active=True,
-                    is_staff=False,
-                    is_superuser=False,
+            if not failed:
+                with transaction.atomic():
+                    person = person_form.save(commit=False)
+                    user = User(
+                        username=username,
+                        is_active=True,
+                        is_staff=False,
+                        is_superuser=False,
+                    )
+
+                    user.set_password(password)
+                    user.save()
+
+                    person.user = user
+                    person.save()
+
+                person.setup_email_verification(request)
+
+                user = authenticate(username=username, password=password)
+
+                response = do_login(request, user=user, password=password, next=next)
+                messages.success(request,
+                    'Käyttäjätunnuksesi on luotu. Tervetuloa {kompassiin}!'
+                    .format(kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE)
                 )
-
-                user.set_password(password)
-                user.save()
-
-                person.user = user
-                person.save()
-
-            person.setup_email_verification(request)
-
-            user = authenticate(username=username, password=password)
-
-            response = do_login(request, user=user, password=password, next=next)
-            messages.success(request,
-                u'Käyttäjätunnuksesi on luotu. Tervetuloa {kompassiin}!'
-                .format(kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE)
-            )
-            return response
+                return response
         else:
-            messages.error(request, u'Ole hyvä ja tarkista lomake.')
+            messages.error(request, 'Ole hyvä ja tarkista lomake.')
 
     vars.update(
         next=next,
@@ -141,14 +150,14 @@ def core_personify_view(request):
             person.save()
             person.setup_email_verification(request)
             messages.success(request,
-                u'Tietosi on tallennettu. Ole hyvä ja vahvista sähköpostiosoitteesi. Tarkista '
-                u'postilaatikkosi ja noudata vahvistusviestissä olevia ohjeita.'
+                'Tietosi on tallennettu. Ole hyvä ja vahvista sähköpostiosoitteesi. Tarkista '
+                'postilaatikkosi ja noudata vahvistusviestissä olevia ohjeita.'
             )
             return redirect(next)
         else:
-            messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
+            messages.error(request, 'Ole hyvä ja korjaa virheelliset kentät.')
     else:
-        messages.info(request, u'Tämän toiminnon käyttäminen edellyttää, että täytät yhteystietosi.')
+        messages.info(request, 'Tämän toiminnon käyttäminen edellyttää, että täytät yhteystietosi.')
 
     vars = dict(
         person_form=form,

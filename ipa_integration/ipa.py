@@ -17,6 +17,7 @@ IPA_CHANGE_PASSWORD_URL = '{ipa}/session/change_password'.format(ipa=settings.KO
 IPA_JSONRPC_URL = '{ipa}/session/json'.format(ipa=settings.KOMPASSI_IPA)
 IPA_OTHER_USER_PASSWORD_MAGICK = 'CHANGING_PASSWORD_FOR_ANOTHER_USER'
 IPA_GROUP_ADD_ERROR_ALREADY_EXISTS = 4002
+IPA_USER_ADD_DUPLICATE_ENTRY = 4002
 IPA_USER_MOD_EMPTY_CHANGE_LIST = 4202
 IPA_HEADERS = {
     'Connection': 'keep-alive',
@@ -25,6 +26,10 @@ IPA_HEADERS = {
 
 
 class IPAError(RuntimeError):
+    pass
+
+
+class UsernameTaken(IPAError):
     pass
 
 
@@ -77,21 +82,34 @@ class IPASession(object):
         return self._json_rpc('group_remove_member', groupname, user=[username])
 
     def create_user(self, user, password):
-        return self._json_rpc('user_add', user.username,
-            givenname=user.first_name,
-            sn=user.last_name,
-            userpassword=password,
-            mail=user.email,
+        try:
+            return self._json_rpc('user_add', user.username,
+                givenname=user.first_name,
+                sn=user.last_name,
+                userpassword=password,
+                mail=user.email,
 
-            # Need to have a POSIX default group or explicit gid=
-            # https://fedorahosted.org/freeipa/ticket/3949
-            # noprivate=True, # do not create user-specific group
+                # Need to have a POSIX default group or explicit gid=
+                # https://fedorahosted.org/freeipa/ticket/3949
+                # noprivate=True, # do not create user-specific group
 
-            krbprincipalname="{username}@{domain}".format(
-                username=user.username,
-                domain=settings.KOMPASSI_IPA_DOMAIN,
-            ),
-        )
+                krbprincipalname="{username}@{domain}".format(
+                    username=user.username,
+                    domain=settings.KOMPASSI_IPA_DOMAIN,
+                ),
+            )
+        except IPAError as e:
+            try:
+                error, = e.args
+                code = error['code']
+            except (KeyError, IndexError):
+                raise e
+            else:
+                if code == IPA_USER_ADD_DUPLICATE_ENTRY:
+                    raise UsernameTaken(user.username)
+                else:
+                    # some other error
+                    raise e
 
     def update_user(self, user):
         try:

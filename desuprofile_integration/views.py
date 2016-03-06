@@ -168,15 +168,26 @@ class CallbackView(View):
             username = "desuprofile_{id}".format(id=desuprofile.id)
 
         if 'ipa_integration' in settings.INSTALLED_APPS:
-            from ipa_integration.utils import create_user, JustEnoughUser
+            from ipa_integration.utils import create_user, JustEnoughUser, UsernameTaken
 
-            just_enough_user = JustEnoughUser(
-                first_name=desuprofile.first_name,
-                last_name=desuprofile.last_name,
-                username=username,
-                email=desuprofile.email,
-            )
-            create_user(just_enough_user, password)
+            try:
+                just_enough_user = JustEnoughUser(
+                    first_name=desuprofile.first_name,
+                    last_name=desuprofile.last_name,
+                    username=username,
+                    email=desuprofile.email,
+                )
+                create_user(just_enough_user, password)
+            except UsernameTaken:
+                # retry with generic username
+                username = "desuprofile_{id}".format(id=desuprofile.id)
+                just_enough_user = JustEnoughUser(
+                    first_name=desuprofile.first_name,
+                    last_name=desuprofile.last_name,
+                    username=username,
+                    email=desuprofile.email,
+                )
+                create_user(just_enough_user, password)
 
         with transaction.atomic():
             user = User(
