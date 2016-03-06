@@ -302,13 +302,7 @@ if 'ipa_integration' in INSTALLED_APPS:
     KOMPASSI_STAFF_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-staff".format(**locals())
     KOMPASSI_SUPERUSERS_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-admins".format(**locals())
 
-    KOMPASSI_NEW_USER_INITIAL_GROUPS = set([
-        "{KOMPASSI_INSTALLATION_SLUG}-users".format(**locals()),
-
-        # to make sure users created via turskadev.tracon.fi can also access the
-        # actual installation
-        'turska-users',
-    ])
+    KOMPASSI_NEW_USER_INITIAL_GROUPS = []
 
 
 if 'payments' in INSTALLED_APPS:
