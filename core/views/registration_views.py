@@ -82,7 +82,7 @@ def core_registration_view(request):
                 try:
                     create_user(just_enough_user, password)
                 except UsernameTaken:
-                    messages.error(request, _('The username is already taken.'))
+                    messages.error(request, _("This user name is already taken."))
                     failed = True
 
             if not failed:

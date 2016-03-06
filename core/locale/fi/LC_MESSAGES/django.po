@@ -102,6 +102,10 @@ msgstr "Nick"
 msgid "Nickname"
 msgstr "Nick"
 
+#: sort_and_filter.py
+msgid "No"
+msgstr "Ei"
+
 #: models/person.py
 msgid "Official first names"
 msgstr "Viralliset etunimet"
@@ -137,6 +141,10 @@ msgstr "Ole hyvä ja tarkista lomake."
 #: forms.py
 msgid "Please choose a user name. The user name must consist of 4 to 30 characters. The following characters are allowed: <b>small</b> letters <i>a&ndash;z</i>, numbers <i>0&ndash;9</i> and underscore </i>_</i>. You can use either this user name or your e-mail address to sign in."
 msgstr "Valitse itsellesi 4–30 merkin pituinen käyttäjänimi. Seuraavat merkit ovat sallittuja: <b>pienet</b> kirjaimet <i>a–z</i>, numerot <i>0–9</i> sekä alaviiva <i>_</i>. Voit käyttää sisäänkirjautumiseen tätä käyttäjänimeä tai sähköpostiosoitettasi."
+
+#: templates/core_registration_view.jade
+msgid "Please note that creating an account takes a while. Please press the Sign up button only once."
+msgstr "Huomaathan, että tunnuksen luonnissa kestää hetken. Painathan Luo tunnus -nappia vain kerran."
 
 #: forms.py
 msgid "Privacy"
@@ -227,7 +235,7 @@ msgstr "Salasanat eivät täsmää."
 msgid "There is already a user account associated with this e-mail address. If you have forgotten your password, please do not create another user account but rather restore your password using the Forgot password link at the sign in form."
 msgstr "Tähän sähköpostiosoitteeseen on jo liitetty käyttäjätunnus. Jos olet unohtanut salasanasi, ole hyvä ja palauta salasanasi Salasana unohtunut -toiminnolla sisäänkirjautumislomakkeelta käsin."
 
-#: forms.py
+#: forms.py views/registration_views.py
 msgid "This user name is already taken."
 msgstr "Tämä käyttäjänimi on jo viety."
 
@@ -266,4 +274,8 @@ msgstr "Työvoima"
 #: forms.py
 msgid "Wrong password."
 msgstr "Salasana väärin."
+
+#: sort_and_filter.py
+msgid "Yes"
+msgstr "Kyllä"
 
