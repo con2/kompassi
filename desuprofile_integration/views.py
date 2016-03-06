@@ -190,12 +190,12 @@ class CallbackView(View):
             user.save()
 
             person = Person(
-                first_name=desuprofile.first_name,
-                surname=desuprofile.last_name,
-                nick=desuprofile.nickname,
-                email=desuprofile.email,
-                phone=desuprofile.phone,
-                birth_date=datetime.strptime(desuprofile.birth_date, '%Y-%m-%d').date() if desuprofile.birth_date else None,
+                first_name=desuprofile.first_name.strip(),
+                surname=desuprofile.last_name.strip(),
+                nick=desuprofile.nickname.strip(),
+                email=desuprofile.email.strip(),
+                phone=desuprofile.phone.strip(),
+                birth_date=datetime.strptime(desuprofile.birth_date.strip(), '%Y-%m-%d').date() if desuprofile.birth_date else None,
                 notes=u'Luotu Desuprofiilista',
                 user=user,
             )
