@@ -12,6 +12,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_safe
 from django.views.decorators.debug import sensitive_post_parameters
 
