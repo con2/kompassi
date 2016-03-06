@@ -90,7 +90,7 @@ def set_user_attrs_from_ipa_user_info(user, user_info):
 
     user.first_name = user_info['givenname'][0]
     user.last_name = user_info['sn'][0]
-    user.is_active = settings.KOMPASSI_USERS_GROUP in groups
+    # user.is_active = settings.KOMPASSI_USERS_GROUP in groups
     user.is_staff = settings.KOMPASSI_STAFF_GROUP in groups
     user.is_superuser = settings.KOMPASSI_SUPERUSERS_GROUP in groups
     user.groups = [Group.objects.get_or_create(name=group_name)[0] for group_name in groups]
