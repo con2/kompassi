@@ -155,6 +155,9 @@ INSTALLED_APPS = (
     # Uncomment if you have IPA
     # 'ipa_integration',
 
+    # Uncomment if you have Atlassian Crowd
+    # 'crowd_integration',
+
     # Uncomment if you do PDF tickets
     'lippukala',
 
@@ -367,6 +370,13 @@ if 'branding' in INSTALLED_APPS:
     KOMPASSI_ACCOUNT_BRANDING_GENITIVE = u'Kompassi-tunnuksen (ent. Tracon-tunnuksen)'
     KOMPASSI_ACCOUNT_BRANDING_ADESSIVE = u'Kompassi-tunnuksella'
     KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = u'Kompassi-tunnuksellasi'
+
+
+if 'crowd_integration' in INSTALLED_APPS:
+    KOMPASSI_CROWD_APPLICATION_NAME = 'kompassidev'
+    KOMPASSI_CROWD_APPLICATION_PASSWORD = 'secret'
+    KOMPASSI_CROWD_HOST = 'https://crowd.tracon.fi'
+    KOMPASSI_CROWD_BASE_URL = '{host}/crowd/rest/usermanagement/1'.format(host=KOMPASSI_CROWD_HOST)
 
 
 if 'desuprofile_integration' in INSTALLED_APPS:
