@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class SignupExtraBase(models.Model):
-    signup = models.OneToOneField('labour.Signup', related_name="+", primary_key=True)
+    signup = models.OneToOneField('labour.Signup', related_name="%(app_label)s_signup_extra", primary_key=True)
 
     def __unicode__(self):
         return self.signup.__unicode__() if self.signup else 'None'
@@ -39,6 +39,13 @@ class SignupExtraBase(models.Model):
                     break
 
         return cls._shirt_type_field
+
+    @classmethod
+    def get_field(cls, field_name):
+        if not hasattr(cls, '_fields_by_name'):
+            cls._fields_by_name = dict((field.name, field) for field in cls._meta.fields)
+
+        return cls._fields_by_name.get(field_name)
 
     class Meta:
         abstract = True

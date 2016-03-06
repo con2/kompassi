@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from collections import OrderedDict, namedtuple
 
 from django.views.decorators.http import require_http_methods
@@ -32,7 +34,9 @@ class MassOperation(MassOperationBase):
 @labour_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def labour_admin_signups_view(request, vars, event, format='screen'):
+    meta = event.labour_event_meta
     SignupClass = SignupCertificateProxy if format == 'html' else Signup
+    SignupExtra = meta.signup_extra_model
     signups = SignupClass.objects.filter(event=event)
     signups = signups.select_related('person')
     signups = signups.prefetch_related('job_categories').prefetch_related('job_categories_accepted')
@@ -52,6 +56,14 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
 
     state_filter = SignupStateFilter(request, "state")
     signups = state_filter.filter_queryset(signups)
+
+    if SignupExtra.get_field('night_work'):
+        night_work_filter = Filter(request, 'night_work').add_booleans('{app_label}_signup_extra__night_work'.format(
+            app_label=SignupExtra._meta.app_label
+        ))
+        signups = night_work_filter.filter_queryset(signups)
+    else:
+        night_work_filter = None
 
     sorter = Sorter(request, "sort")
     sorter.add("name", name=u'Sukunimi, Etunimi', definition=('person__surname', 'person__first_name'))
@@ -94,6 +106,7 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
             job_category_accepted_filters=job_category_accepted_filters,
             job_category_filters=job_category_filters,
             mass_operations=mass_operations,
+            night_work_filter=night_work_filter,
             num_all_signups=num_all_signups,
             num_signups=signups.count(),
             personnel_class_filters=personnel_class_filters,

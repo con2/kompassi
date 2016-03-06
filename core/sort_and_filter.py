@@ -1,7 +1,10 @@
 # -- encoding: UTF-8 --
 from collections import OrderedDict
-from core.utils import mutate_query_params, simple_object_repr
+
+from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_text
+
+from core.utils import mutate_query_params, simple_object_repr
 
 
 class Definition(object):
@@ -145,3 +148,6 @@ class Filter(SortAndFilterBase):
         for (slug, name) in choices:
             self.add(slug=slug, name=name, definition={filter_field: slug})
         return self
+
+    def add_booleans(self, filter_field):
+        return self.add_choices(filter_field, [("1", _('Yes')), ("0", _('No'))])
