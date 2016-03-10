@@ -358,6 +358,7 @@ class Person(models.Model):
     def as_dict(self):
         return dict(
             pick_attrs(self,
+                'id',
                 'first_name',
                 'surname',
                 'nick',
