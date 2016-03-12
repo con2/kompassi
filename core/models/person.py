@@ -391,7 +391,21 @@ class Person(models.Model):
         In this instance, we check the Badges of the person for all future events in case the user has
         changed their name.
         """
+        self.apply_state_sync()
+
+        if 'crowd_integration' in settings.INSTALLED_APPS:
+            if 'background_tasks' in settings.INSTALLED_APPS:
+                from crowd_integration.tasks import update_user
+                update_user.delay(self.user.pk)
+            else:
+                from crowd_integration.utils import update_user
+                update_user(self.user)
+
+    def apply_state_sync(self):
         self.apply_state_update_badges()
+
+    def apply_state_async(self):
+        self.apply_state_update_crowd(self)
 
     def apply_state_update_badges(self):
         if 'badges' not in settings.INSTALLED_APPS:
@@ -402,3 +416,14 @@ class Person(models.Model):
         # Only touch badges for events in the future
         for badge in self.badge_set.filter(personnel_class__event__start_time__gte=now()):
             Badge.ensure(person=self, event=badge.personnel_class.event)
+
+    def apply_state_new_user(self, request, password):
+        self.setup_email_verification(request)
+
+        if 'crowd_integration' in settings.INSTALLED_APPS:
+            if 'background_tasks' in settings.INSTALLED_APPS:
+                from crowd_integration.tasks import create_user
+                create_user.delay(self.user.pk, password)
+            else:
+                from crowd_integration.utils import create_user
+                create_user(self.user, password)

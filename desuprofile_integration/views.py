@@ -167,28 +167,6 @@ class CallbackView(View):
         if username is None:
             username = "desuprofile_{id}".format(id=desuprofile.id)
 
-        if 'ipa_integration' in settings.INSTALLED_APPS:
-            from ipa_integration.utils import create_user, JustEnoughUser, UsernameTaken
-
-            try:
-                just_enough_user = JustEnoughUser(
-                    first_name=desuprofile.first_name,
-                    last_name=desuprofile.last_name,
-                    username=username,
-                    email=desuprofile.email,
-                )
-                create_user(just_enough_user, password)
-            except UsernameTaken:
-                # retry with generic username
-                username = "desuprofile_{id}".format(id=desuprofile.id)
-                just_enough_user = JustEnoughUser(
-                    first_name=desuprofile.first_name,
-                    last_name=desuprofile.last_name,
-                    username=username,
-                    email=desuprofile.email,
-                )
-                create_user(just_enough_user, password)
-
         with transaction.atomic():
             user = User(
                 username=username,
@@ -220,7 +198,7 @@ class CallbackView(View):
             )
             connection.save()
 
-        person.setup_email_verification(request)
+        person.apply_state_new_user(request, password)
         messages.success(request, u'Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!')
 
         return respond_with_connection(request, next_url, connection)
@@ -242,10 +220,6 @@ class CallbackView(View):
 def respond_with_connection(request, next_url, connection):
     user = connection.user
     user.backend = 'django.contrib.auth.backends.ModelBackend'
-
-    if 'ipa_integration' in settings.INSTALLED_APPS:
-        from ipa_integration.utils import sync_user_info
-        sync_user_info(user)
 
     return do_login(request, user, next=next_url)
 

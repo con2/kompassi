@@ -70,7 +70,7 @@ def user_to_crowd(user, password=None):
     return user_doc
 
 
-def change_password(user, password):
+def change_user_password(user, password):
     return crowd_request(
         'PUT',
         '/user/password',

@@ -70,10 +70,6 @@ def core_profile_view(request):
                     "your e-mail address again. We apologize for the inconvenience."
                 ))
 
-            if 'ipa_integration' in settings.INSTALLED_APPS:
-                from ipa_integration.utils import update_user
-                update_user(person.user)
-
             messages.success(request, _("The changes were saved."))
             return redirect('core_profile_view')
         else:

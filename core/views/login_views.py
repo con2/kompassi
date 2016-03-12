@@ -96,12 +96,6 @@ def do_login(request, user, password=None, next='core_frontpage_view'):
             )
             return redirect('core_frontpage_view')
 
-    if 'ipa_integration' in settings.INSTALLED_APPS:
-        # Also set password locally to facilitate future architecture change
-        if not user.password:
-            user.set_password(password)
-            user.save()
-
     login(request, user)
 
     remind_email_verification_if_needed(request, next)

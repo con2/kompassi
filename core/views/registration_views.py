@@ -67,50 +67,31 @@ def core_registration_view(request):
             surname = person_form.cleaned_data['surname']
             email = person_form.cleaned_data['email']
 
-            failed = False
-
-            if 'ipa_integration' in settings.INSTALLED_APPS:
-                from ipa_integration.utils import create_user, JustEnoughUser, UsernameTaken
-
-                just_enough_user = JustEnoughUser(
+            with transaction.atomic():
+                person = person_form.save(commit=False)
+                user = User(
                     username=username,
-                    first_name=first_name,
-                    last_name=surname,
-                    email=email,
+                    is_active=True,
+                    is_staff=False,
+                    is_superuser=False,
                 )
 
-                try:
-                    create_user(just_enough_user, password)
-                except UsernameTaken:
-                    messages.error(request, _("This user name is already taken."))
-                    failed = True
+                user.set_password(password)
+                user.save()
 
-            if not failed:
-                with transaction.atomic():
-                    person = person_form.save(commit=False)
-                    user = User(
-                        username=username,
-                        is_active=True,
-                        is_staff=False,
-                        is_superuser=False,
-                    )
+                person.user = user
+                person.save()
 
-                    user.set_password(password)
-                    user.save()
+            person.apply_state_new_user(request, password)
 
-                    person.user = user
-                    person.save()
+            user = authenticate(username=username, password=password)
 
-                person.setup_email_verification(request)
-
-                user = authenticate(username=username, password=password)
-
-                response = do_login(request, user=user, password=password, next=next)
-                messages.success(request,
-                    'Käyttäjätunnuksesi on luotu. Tervetuloa {kompassiin}!'
-                    .format(kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE)
-                )
-                return response
+            response = do_login(request, user=user, password=password, next=next)
+            messages.success(request,
+                'Käyttäjätunnuksesi on luotu. Tervetuloa {kompassiin}!'
+                .format(kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE)
+            )
+            return response
         else:
             messages.error(request, 'Ole hyvä ja tarkista lomake.')
 

@@ -62,17 +62,26 @@ def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
     for group in groups_to_remove:
         group.user_set.remove(user)
 
-    if 'ipa_integration' in settings.INSTALLED_APPS:
-        from ipa_integration.utils import ensure_user_group_membership as ea_ensure_user_group_membership
-        ea_ensure_user_group_membership(user, groups_to_add, groups_to_remove)
+    if 'crowd_integration' in settings.INSTALLED_APPS:
+        from crowd_integration.utils import ensure_user_group_membership as cr_ensure_user_group_membership
+
+        for group in groups_to_add:
+            cr_ensure_user_group_membership(user, group.name, True)
+
+        for group in groups_to_remove:
+            cr_ensure_user_group_membership(user, group.name, False)
 
 
 def ensure_groups_exist(group_names):
-    if 'ipa_integration' in settings.INSTALLED_APPS:
-        from ipa_integration.utils import ensure_groups_exist as ea_ensure_groups_exist
-        ea_ensure_groups_exist(group_names)
+    groups = [Group.objects.get_or_create(name=group_name)[0] for group_name in group_names]
 
-    return [Group.objects.get_or_create(name=group_name)[0] for group_name in group_names]
+    if 'crowd_integration' in settings.INSTALLED_APPS:
+        from crowd_integration.utils import ensure_group_exists
+
+        for group_name in group_names:
+            ensure_group_exists(group_name)
+
+    return groups
 
 
 class AllowPasswordChangeWithoutOldPassword(object):
@@ -80,16 +89,12 @@ class AllowPasswordChangeWithoutOldPassword(object):
 
 
 def change_user_password(user, new_password, old_password=AllowPasswordChangeWithoutOldPassword):
-    if 'ipa_integration' in settings.INSTALLED_APPS:
-        if old_password is AllowPasswordChangeWithoutOldPassword:
-            from ipa_integration.utils import reset_user_password
-            reset_user_password(user, new_password)
-        else:
-            from ipa_integration.utils import change_user_password as ea_change_user_password
-            ea_change_user_password(user, old_password=old_password, new_password=new_password)
-
     user.set_password(new_password)
     user.save()
+
+    if 'crowd_integration' in settings.INSTALLED_APPS:
+        import change_user_password as cr_change_user_password
+        cr_change_user_password(user, new_password)
 
 
 def get_code(path):
