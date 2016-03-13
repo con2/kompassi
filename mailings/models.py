@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from hashlib import sha1
 import logging
 from datetime import datetime, timedelta
 
@@ -174,13 +175,18 @@ class Message(models.Model):
 class DedupMixin(object):
     @classmethod
     def get_or_create(cls, text):
-        from hashlib import sha1
-        return cls.objects.get_or_create(
-            digest=sha1(text.encode('UTF-8')).hexdigest(),
-            defaults=dict(
-                text=text,
+        the_hash = sha1(text.encode('UTF-8')).hexdigest()
+
+        try:
+            return cls.objects.get_or_create(
+                digest=the_hash,
+                defaults=dict(
+                    text=text,
+                )
             )
-        )
+        except cls.MultipleObjectsReturned:
+            logger.warn('Multiple %s returned for hash %s', cls.__name__, the_hash)
+            return cls.objects.filter(digest=the_hash, text=text).first(), False
 
 
 class PersonMessageSubject(models.Model, DedupMixin):
