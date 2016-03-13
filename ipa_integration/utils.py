@@ -84,6 +84,7 @@ def ensure_groups_exist(groups):
 
 
 def set_user_attrs_from_ipa_user_info(user, user_info):
+    # only add groups from ipa, never remove
     groups = set()
     groups.update(user_info['memberof_group'])
     groups.update(user_info['memberofindirect_group'])
@@ -93,7 +94,8 @@ def set_user_attrs_from_ipa_user_info(user, user_info):
     # user.is_active = settings.KOMPASSI_USERS_GROUP in groups
     user.is_staff = settings.KOMPASSI_STAFF_GROUP in groups
     user.is_superuser = settings.KOMPASSI_SUPERUSERS_GROUP in groups
-    user.groups = [Group.objects.get_or_create(name=group_name)[0] for group_name in groups]
+
+    user.groups.set([Group.objects.get_or_create(name=group_name)[0] for group_name in groups], clear=False)
 
     return user
 
