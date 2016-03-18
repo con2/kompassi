@@ -28,7 +28,7 @@ class Setup(object):
         self.test = test
         self.tz = tzlocal()
         self.setup_core()
-        # self.setup_labour()
+        self.setup_labour()
         self.setup_tickets()
         self.setup_payments()
         # self.setup_programme()
@@ -91,13 +91,6 @@ class Setup(object):
                 registration_opens=t - timedelta(days=60),
                 registration_closes=t + timedelta(days=60),
             )
-        else:
-            # TODO once we know when the registration opens
-            # labour_event_meta_defaults.update(
-            #     registration_opens=datetime(2014, 3, 1, 0, 0, tzinfo=self.tz),
-            #     registration_closes=datetime(2014, 8, 1, 0, 0, tzinfo=self.tz),
-            # )
-            pass
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
             event=self.event,
