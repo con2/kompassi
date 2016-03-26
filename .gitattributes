@@ -3,3 +3,4 @@
 *.jade text eol=lf
 *.css.map -diff
 labour/static/labour/js/roster.js -diff
+core/static/kompassi.css -diff
