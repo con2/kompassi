@@ -14,3 +14,6 @@ node_modules/
 *.sql.xz
 .idea/
 /venv*
+rev-manifest.json
+labour/static/labour/css/roster-*.css
+labour/static/labour/js/roster-*.js
