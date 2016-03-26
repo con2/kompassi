@@ -93,7 +93,7 @@ def change_user_password(user, new_password, old_password=AllowPasswordChangeWit
     user.save()
 
     if 'crowd_integration' in settings.INSTALLED_APPS:
-        import change_user_password as cr_change_user_password
+        from crowd_integration.utils import change_user_password as cr_change_user_password
         cr_change_user_password(user, new_password)
 
 
