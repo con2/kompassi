@@ -6,6 +6,7 @@ from datetime import date, datetime
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.dateformat import format as format_date
 from django.utils.translation import ugettext_lazy as _
@@ -417,8 +418,13 @@ class Person(models.Model):
         for badge in self.badge_set.filter(personnel_class__event__start_time__gte=now()):
             Badge.ensure(person=self, event=badge.personnel_class.event)
 
+    def ensure_basic_groups(self):
+        for group_name in settings.KOMPASSI_NEW_USER_GROUPS:
+            self.user.groups.add(Group.objects.get(name=group_name))
+
     def apply_state_new_user(self, request, password):
         self.setup_email_verification(request)
+        self.ensure_basic_groups()
 
         if 'crowd_integration' in settings.INSTALLED_APPS:
             if 'background_tasks' in settings.INSTALLED_APPS:

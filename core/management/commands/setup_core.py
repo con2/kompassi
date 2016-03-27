@@ -1,12 +1,18 @@
 # encoding: utf-8
 
+import logging
 from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 
 from ...models import Person
+from ...utils import log_get_or_create
+
+
+logger = logging.getLogger("kompassi")
 
 
 class Command(BaseCommand):
@@ -15,7 +21,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if settings.DEBUG:
-            print "Setting up core in test mode"
-            Person.get_or_create_dummy()
+            person, created = Person.get_or_create_dummy()
+            log_get_or_create(logger, person, created)
         else:
             print "Setting up core in production mode"
+
+        for group_name in settings.KOMPASSI_NEW_USER_GROUPS:
+            group, created = Group.objects.get_or_create(name=group_name)
+            log_get_or_create(logger, group, created)

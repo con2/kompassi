@@ -271,6 +271,9 @@ KOMPASSI_INSTALLATION_NAME_PARTITIVE = u'Kompassin kehitys\u00ADinstanssia'
 KOMPASSI_INSTALLATION_SLUG = 'turskadev'
 KOMPASSI_PRIVACY_POLICY_URL = 'http://media.tracon.fi/2014/tracon9_turska_rekisteriseloste.pdf'
 
+# Confluence & co. require a group of users
+KOMPASSI_NEW_USER_GROUPS = ['users']
+
 AUTHENTICATION_BACKENDS = (
     'core.backends.KompassiImpersonationBackend',
     'django.contrib.auth.backends.ModelBackend',
