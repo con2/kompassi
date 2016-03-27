@@ -34,4 +34,4 @@ def update_user(user_pk):
 def change_user_password(user_pk, new_password):
     User = get_user_model()
     user = User.objects.get(pk=user_pk)
-    _change_user_password(user_pk, new_password)
+    _change_user_password(user, new_password)
