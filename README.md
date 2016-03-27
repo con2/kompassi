@@ -19,14 +19,15 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
 
     The MIT License (MIT)
 
-    Copyright © 2009-2016 Santtu Pajukanta, Jussi Sorjonen
+    Copyright © 2009-2016 Santtu Pajukanta
+    Copyright © 2009–2015 Jussi Sorjonen
     Copyright © 2011 Petri Haikonen
     Copyright © 2012-2015 Meeri Panula
     Copyright © 2013 Esa Ollitervo
     Copyright © 2014 Pekka Wallendahl
     Copyright © 2014-2016 Jyrki Launonen
-    Copyright © 2015 Miika Ojamo, Santeri Hiltunen
-    Copyright © 2015-2016 Aarni Koskela
+    Copyright © 2015 Miika Ojamo
+    Copyright © 2015-2016 Aarni Koskela, Santeri Hiltunen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
