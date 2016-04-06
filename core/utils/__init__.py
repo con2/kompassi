@@ -11,7 +11,7 @@ from .form_utils import (
 from .misc_utils import (
     change_user_password,
     check_password_strength,
-    classproperty,
+    class_property,
     create_temporary_password,
     ensure_groups_exist,
     ensure_user_group_membership,
@@ -22,6 +22,7 @@ from .misc_utils import (
     mutate_query_params,
     pick_attrs,
     set_attrs,
+    set_defaults,
     simple_object_init,
     simple_object_repr,
 )

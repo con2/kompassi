@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, set_defaults, set_attrs
 
 
 class AlternativeSignupForm(models.Model):
@@ -123,3 +123,17 @@ class AlternativeFormMixin(object):
 
     def get_excluded_m2m_field_defaults(self):
         return dict()
+
+    def process(self):
+        obj = self.save(commit=False)
+        print vars(obj)
+        set_defaults(obj, **self.get_excluded_field_defaults())
+        obj.save()
+
+        defaults = self.get_excluded_m2m_field_defaults()
+        for key, values in defaults:
+            manager = getattr(obj, key)
+            manager.set(values, clear=True)
+
+        return obj
+

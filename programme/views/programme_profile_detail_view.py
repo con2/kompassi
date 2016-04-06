@@ -38,14 +38,32 @@ def programme_profile_detail_view(request, programme_id):
 
     sired_invitation_formset = get_sired_invitation_formset(request, programme_role)
 
+    forms = [form, sired_invitation_formset]
+
+    SignupExtra = event.programme_event_meta.signup_extra_model
+    if SignupExtra.supports_programme:
+        SignupExtraForm = SignupExtra.get_programme_form_class()
+        signup_extra = SignupExtra.for_event_and_person(event, request.user.person)
+        signup_extra_form = initialize_form(SignupExtraForm, request,
+            instance=signup_extra,
+            prefix='extra',
+        )
+        forms.append(signup_extra_form)
+    else:
+        signup_extra = None
+        signup_extra_form = None
+
     if request.method == 'POST':
         if not programme.host_can_edit:
             messages.error(request, programme.host_cannot_edit_explanation)
             return redirect('programme_profile_detail_view', programme.id)
 
-        elif form.is_valid() and sired_invitation_formset.is_valid():
+        elif all(the_form.is_valid() for the_form in forms):
             with transaction.atomic():
                 form.save()
+
+                if signup_extra_form:
+                    signup_extra = signup_extra_form.process()
 
                 for extra_invite in sired_invitation_formset.save(commit=False):
                     extra_invite.programme = programme
@@ -64,6 +82,7 @@ def programme_profile_detail_view(request, programme_id):
     vars = dict(
         event=event,
         form=form,
+        signup_extra_form=signup_extra_form,
         freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
         host_can_invite_more=programme_role.extra_invites_left > 0,
         invitations=Invitation.objects.filter(programme=programme, state='valid'),

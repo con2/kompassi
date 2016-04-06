@@ -8,8 +8,12 @@ block profile_content
     {{ sired_invitation_formset.management_form }}
     .panel.panel-default
       .panel-heading: strong {% trans "Edit programme" %}
-      .panel-body
-        - crispy form
+      .panel-body {% crispy form %}
+
+    if signup_extra_form
+      .panel.panel-default
+        .panel-heading: strong {% trans "Information about yourself" %}
+        .panel-body {% crispy signup_extra_form %}
 
     .panel.panel-default
       .panel-heading: strong {% trans "Programme hosts" %}

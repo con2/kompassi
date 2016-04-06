@@ -115,6 +115,14 @@ def set_attrs(obj, **attrs):
     return obj
 
 
+def set_defaults(obj, **attrs):
+    for key, value in attrs.iteritems():
+        if getattr(obj, key, None) is None:
+            setattr(obj, key, value)
+
+    return obj
+
+
 def simple_object_init(self, *args, **kwargs):
     """
     Want a simple class that has a number of attributes writable via assignment or
@@ -196,7 +204,7 @@ def mutate_query_params(request, mutations):
     return new_qs.urlencode()
 
 
-class classproperty(object):
+class class_property(object):
     def __init__(self, f):
         self.f = f
     def __get__(self, obj, owner):

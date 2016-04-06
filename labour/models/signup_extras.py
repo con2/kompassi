@@ -9,6 +9,10 @@ class SignupExtraMixin(object):
     def get_form_class(cls):
         raise NotImplementedError('Remember to implement form_class in your SignupExtra class')
 
+    @classmethod
+    def get_programme_form_class(cls):
+        return cls.get_form_class()
+
     @staticmethod
     def get_query_class():
         raise NotImplementedError('Query builder not implemented for this event')
@@ -85,6 +89,13 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
     @classmethod
     def get_for_event_and_person(cls, event, person):
         return cls.objects.get(event=event, person=person)
+
+    @classmethod
+    def for_event_and_person(cls, event, person):
+        try:
+            return cls.objects.get(event=event, person=person)
+        except cls.DoesNotExist:
+            return cls(event=event, person=person)
 
     @classmethod
     def for_signup(cls, signup):

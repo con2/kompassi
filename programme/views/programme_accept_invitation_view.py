@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
 from core.helpers import person_required
-from core.utils import initialize_form, initialize_form_set
+from core.utils import initialize_form, initialize_form_set, set_defaults
 
 from ..forms import ProgrammeSelfServiceForm, get_sired_invitation_formset
 from ..helpers import programme_event_required
@@ -40,11 +40,29 @@ def programme_accept_invitation_view(request, event, code):
 
     sired_invitation_formset = get_sired_invitation_formset(request, invitation)
 
+    forms = [form, sired_invitation_formset]
+
+    SignupExtra = event.programme_event_meta.signup_extra_model
+    if SignupExtra.supports_programme:
+        SignupExtraForm = SignupExtra.get_programme_form_class()
+        signup_extra = SignupExtra.for_event_and_person(event, request.user.person)
+        signup_extra_form = initialize_form(SignupExtraForm, request,
+            instance=signup_extra,
+            prefix='extra',
+        )
+        forms.append(signup_extra_form)
+    else:
+        signup_extra = None
+        signup_extra_form = None
+
     if request.method == 'POST':
-        if form.is_valid() and sired_invitation_formset.is_valid():
+        if all(the_form.is_valid() for the_form in forms):
             with transaction.atomic():
                 programme_role = invitation.accept(request.user.person)
                 programme = form.save()
+
+                if signup_extra_form:
+                    signup_extra = signup_extra_form.process()
 
                 for extra_invite in sired_invitation_formset.save(commit=False):
                     extra_invite.programme = programme
@@ -71,8 +89,9 @@ def programme_accept_invitation_view(request, event, code):
         host_can_invite_more=invitation.extra_invites > 0,
         invitation=invitation,
         invitations=Invitation.objects.filter(programme=programme, state='valid').exclude(pk=invitation.pk),
-        sired_invitation_formset=sired_invitation_formset,
         programme_roles=ProgrammeRole.objects.filter(programme=programme),
+        signup_extra_form=signup_extra_form,
+        sired_invitation_formset=sired_invitation_formset,
     )
 
     return render(request, 'programme_accept_invitation_view.jade', vars)

@@ -50,6 +50,11 @@ block content
       .panel-heading: strong {% trans "Programme information" %}
       .panel-body {% crispy form %}
 
+    if signup_extra_form
+      .panel.panel-default
+        .panel-heading: strong {% trans "Information about yourself" %}
+        .panel-body {% crispy signup_extra_form %}
+
     .panel.panel-default
       .panel-heading: strong {% trans "Programme hosts" %}
       table.table.table-striped.programme-host-table
