@@ -47,10 +47,15 @@ def migrate_to_signupextra_v2(apps, schema_editor):
                 manager_v2 = getattr(signup_extra_v2, m2m_field_name)
                 manager_v2.set(manager.all())
 
-    signup_extra_v2_content_type = ContentType.objects.get_for_model(SignupExtraV2)
-    meta = LabourEventMeta.objects.get(event__slug='desucon2016')
-    meta.signup_extra_content_type = signup_extra_v2_content_type
-    meta.save()
+    try:
+        meta = LabourEventMeta.objects.get(event__slug='desucon2016')
+    except LabourEventMeta.DoesNotExist:
+        # Clean install
+        pass
+    else:
+        signup_extra_v2_content_type = ContentType.objects.get_for_model(SignupExtraV2)
+        meta.signup_extra_content_type = signup_extra_v2_content_type
+        meta.save()
 
 
 class Migration(migrations.Migration):

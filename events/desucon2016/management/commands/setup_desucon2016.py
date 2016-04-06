@@ -62,7 +62,7 @@ class Setup(object):
             Qualification,
             WorkPeriod,
         )
-        from ...models import SignupExtra, SpecialDiet
+        from ...models import SignupExtraV2, SpecialDiet
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -72,7 +72,7 @@ class Setup(object):
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
-        content_type = ContentType.objects.get_for_model(SignupExtra)
+        content_type = ContentType.objects.get_for_model(SignupExtraV2)
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
