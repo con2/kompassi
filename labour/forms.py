@@ -18,6 +18,7 @@ from .models import (
     Signup,
     JobCategory,
     ObsoleteEmptySignupExtraV1,
+    EmptySignupExtra,
     LabourEventMeta,
     PersonnelClass,
     WorkPeriod,
@@ -124,13 +125,24 @@ class SignupForm(forms.ModelForm, SignupFormMixin):
 
 class ObsoleteEmptySignupExtraV1Form(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SignupExtraForm, self).__init__(*args, **kwargs)
+        super(ObsoleteEmptySignupExtraV1Form, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
     class Meta:
         model = ObsoleteEmptySignupExtraV1
         exclude = ('signup',)
+
+
+class SignupExtraForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SignupExtraForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = EmptySignupExtra
+        exclude = ('event', 'person')
 
 
 class SignupAdminForm(forms.ModelForm):

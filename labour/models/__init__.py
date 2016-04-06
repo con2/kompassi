@@ -7,5 +7,5 @@ from .personnel_class import PersonnelClass
 from .job_category import JobCategory
 from .alternative_signup_forms import AlternativeFormMixin, AlternativeSignupForm
 from .signup import Signup
-from .signup_extras import ObsoleteSignupExtraBaseV1, ObsoleteEmptySignupExtraV1
+from .signup_extras import ObsoleteSignupExtraBaseV1, ObsoleteEmptySignupExtraV1, SignupExtraBase, EmptySignupExtra
 from .info_link import InfoLink

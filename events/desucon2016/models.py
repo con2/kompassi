@@ -2,7 +2,7 @@
 
 from django.db import models
 
-from labour.models import ObsoleteSignupExtraBaseV1
+from labour.models import ObsoleteSignupExtraBaseV1, SignupExtraBase
 
 from core.utils import validate_slug
 
@@ -50,6 +50,82 @@ class SpecialDiet(models.Model):
 
 
 class SignupExtra(ObsoleteSignupExtraBaseV1):
+    shift_type = models.CharField(
+        max_length=15,
+        verbose_name=u'Toivottu työvuoron pituus',
+        help_text=u'Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
+        choices=SHIFT_TYPE_CHOICES,
+    )
+
+    desu_amount = models.PositiveIntegerField(
+        verbose_name=u'Desumäärä',
+        help_text=u'Kuinka monessa Desuconissa olet työskennellyt?',
+    )
+
+    prior_experience = models.TextField(
+        blank=True,
+        verbose_name=u'Työkokemus',
+        help_text=u'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
+            u'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
+            u'hakemassasi tehtävässä.'
+    )
+
+    free_text = models.TextField(
+        blank=True,
+        verbose_name=u'Vapaa alue',
+        help_text=u'Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
+                  u'omaa kenttää yllä, käytä tätä kenttää. '
+                  u'Jos haet valokuvaajaksi, kerro lisäksi millaista kuvauskalustoa sinulla on käytettävissäsi ja listaa'
+                  u'muutamia gallerialinkkejä, joista pääsemme ihailemaan ottamiasi kuvia. '
+    )
+
+    special_diet = models.ManyToManyField(
+        SpecialDiet,
+        blank=True,
+        verbose_name=u'Erikoisruokavalio'
+    )
+
+    special_diet_other = models.TextField(
+        blank=True,
+        verbose_name=u'Muu erikoisruokavalio',
+        help_text=u'Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
+            u'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
+            u'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+    )
+
+    shirt_size = models.CharField(
+        max_length=8,
+        choices=SHIRT_SIZES,
+        # default=u'NO_SHIRT',
+        verbose_name=u'Paidan koko',
+        help_text=u'Ajoissa ilmoittautuneet saavat maksuttoman työvoimapaidan. '
+                  u'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
+                  u'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
+                  u'target="_blank">ladyfit-paita</a>',
+    )
+
+    shirt_type = models.CharField(
+        max_length=8,
+        choices=SHIRT_TYPES,
+        default=u'STAFF',
+        verbose_name=u'Paidan tyyppi',
+    )
+
+    night_work = models.BooleanField(
+        verbose_name=u'Olen valmis tekemään yötöitä',
+        default=False,
+    )
+
+    @classmethod
+    def get_form_class(cls):
+        raise NotImplementedError()
+
+    @staticmethod
+    def get_query_class():
+        raise NotImplementedError()
+
+
+class SignupExtraV2(SignupExtraBase):
     shift_type = models.CharField(
         max_length=15,
         verbose_name=u'Toivottu työvuoron pituus',

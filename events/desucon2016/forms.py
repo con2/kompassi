@@ -9,7 +9,7 @@ from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin, SignupForm
 from labour.models import Signup, JobCategory, WorkPeriod
 
-from .models import SignupExtra
+from .models import SignupExtraV2
 
 
 class SignupExtraForm(forms.ModelForm):
@@ -32,7 +32,7 @@ class SignupExtraForm(forms.ModelForm):
         )
 
     class Meta:
-        model = SignupExtra
+        model = SignupExtraV2
         fields = (
             'shift_type',
             'shirt_size',
@@ -99,7 +99,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
     class Meta:
-        model = SignupExtra
+        model = SignupExtraV2
         fields = (
             'shirt_size',
             'special_diet',

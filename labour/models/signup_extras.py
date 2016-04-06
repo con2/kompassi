@@ -7,11 +7,11 @@ from django.utils.translation import ugettext_lazy as _
 class SignupExtraMixin(object):
     @classmethod
     def get_form_class(cls):
-        raise NotImplemented('Remember to implement form_class in your SignupExtra class')
+        raise NotImplementedError('Remember to implement form_class in your SignupExtra class')
 
     @staticmethod
     def get_query_class():
-        return None
+        raise NotImplementedError('Query builder not implemented for this event')
 
     @classmethod
     def get_shirt_size_field(cls):
@@ -48,7 +48,7 @@ class SignupExtraMixin(object):
 
 class SignupExtraBase(SignupExtraMixin, models.Model):
     event = models.ForeignKey('core.Event', related_name="%(app_label)s_signup_extras")
-    person = models.OneToOneField('core.Event', related_name="%(app_label)s_signup_extra")
+    person = models.OneToOneField('core.Person', related_name="%(app_label)s_signup_extra")
 
     @classmethod
     def get_for_event_and_person(cls, event, person):
@@ -56,6 +56,14 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
 
     class Meta:
         abstract = True
+
+
+class EmptySignupExtra(SignupExtraBase):
+    @classmethod
+    def get_form_class(cls):
+        from ..forms import EmptySignupExtraForm
+        return EmptySignupExtraForm
+
 
 
 class ObsoleteSignupExtraBaseV1(models.Model):
@@ -71,7 +79,7 @@ class ObsoleteSignupExtraBaseV1(models.Model):
 
     @property
     def person(self):
-        return self.signup.person if self.person is not None else None
+        return self.signup.person if self.signup is not None else None
 
     @classmethod
     def get_for_event_and_person(cls, event, person):
