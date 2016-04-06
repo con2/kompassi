@@ -2,7 +2,7 @@
 
 from django.db import models
 
-from labour.models import SignupExtraBase
+from labour.models import ObsoleteSignupExtraBaseV1
 from labour.querybuilder import QueryBuilder, add_prefix
 
 from core.utils import validate_slug
@@ -35,7 +35,7 @@ class Night(SimpleChoice):
     pass
 
 
-class SignupExtra(SignupExtraBase):
+class SignupExtra(ObsoleteSignupExtraBaseV1):
     total_work = models.CharField(max_length=15,
         verbose_name=u'Toivottu kokonaistyömäärä',
         help_text=u'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana?',

@@ -266,6 +266,7 @@ def labour_admin_shirts_view(request, vars, event):
     else:
         shirt_types = [(u'default', u'Paita')]
 
+    # FIXME SignupExtraV2
     base_criteria = dict(
         signup__event=event,
         signup__is_active=True,

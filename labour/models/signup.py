@@ -208,9 +208,9 @@ class Signup(models.Model, CsvExportMixin):
         if not hasattr(self, '_signup_extra'):
             SignupExtra = self.signup_extra_model
             try:
-                self._signup_extra = SignupExtra.objects.get(signup=self)
+                self._signup_extra = SignupExtra.get_for_event_and_person(self.event, self.person)
             except SignupExtra.DoesNotExist:
-                self._signup_extra = SignupExtra(signup=self)
+                self._signup_extra = SignupExtra(event=self.event, person=self.person)
 
         return self._signup_extra
 

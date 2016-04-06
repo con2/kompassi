@@ -93,10 +93,10 @@ class LabourEventMeta(EventMetaBase):
     def get_or_create_dummy(cls):
         from django.contrib.contenttypes.models import ContentType
         from core.models import Event
-        from .signup_extras import EmptySignupExtra
+        from .signup_extras import ObsoleteEmptySignupExtraV1
 
         event, unused = Event.get_or_create_dummy()
-        content_type = ContentType.objects.get_for_model(EmptySignupExtra)
+        content_type = ContentType.objects.get_for_model(ObsoleteEmptySignupExtraV1)
         admin_group, = LabourEventMeta.get_or_create_groups(event, ['admins'])
 
         t = now()
