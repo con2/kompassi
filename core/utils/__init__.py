@@ -11,6 +11,7 @@ from .form_utils import (
 from .misc_utils import (
     change_user_password,
     check_password_strength,
+    classproperty,
     create_temporary_password,
     ensure_groups_exist,
     ensure_user_group_membership,

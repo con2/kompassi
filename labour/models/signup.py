@@ -207,10 +207,7 @@ class Signup(models.Model, CsvExportMixin):
     def signup_extra(self):
         if not hasattr(self, '_signup_extra'):
             SignupExtra = self.signup_extra_model
-            try:
-                self._signup_extra = SignupExtra.get_for_event_and_person(self.event, self.person)
-            except SignupExtra.DoesNotExist:
-                self._signup_extra = SignupExtra(event=self.event, person=self.person)
+            self._signup_extra = SignupExtra.for_signup(self)
 
         return self._signup_extra
 
@@ -379,6 +376,9 @@ class Signup(models.Model, CsvExportMixin):
     def apply_state_sync(self):
         self.apply_state_ensure_job_categories_accepted_is_set()
         self.apply_state_ensure_personnel_class_is_set()
+
+        self.signup_extra.apply_state()
+
         self.apply_state_create_badges()
         self.apply_state_email_aliases()
 
@@ -544,7 +544,7 @@ class Signup(models.Model, CsvExportMixin):
     def state_times(self):
         return [
             (
-                self._meta.get_field_by_name(field_name)[0].verbose_name,
+                self._meta.get_field(field_name).verbose_name,
                 getattr(self, field_name, None),
             )
             for field_name in STATE_TIME_FIELDS

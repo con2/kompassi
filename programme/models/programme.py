@@ -87,8 +87,8 @@ PHOTOGRAPHY_CHOICES = [
     ('nope', _(u'Please do not photograph my programme')),
 ]
 
-PROGRAMME_STATES_HOST_CAN_EDIT = ['idea', 'asked', 'offered', 'accepted']
-PROGRAMME_STATES_REJECTED = ['rejected', 'cancelled']
+PROGRAMME_STATES_ACTIVE = ['idea', 'asked', 'offered', 'accepted']
+PROGRAMME_STATES_INACTIVE = ['rejected', 'cancelled']
 
 
 class Programme(models.Model, CsvExportMixin):
@@ -353,6 +353,15 @@ class Programme(models.Model, CsvExportMixin):
     def state_css(self):
         return STATE_CSS[self.state]
 
+    @property
+    def signup_extras(self):
+        SignupExtra = self.event.programme_event_meta.signup_extra_model
+
+        if SignupExtra.supports_programme:
+            return SignupExtra.objects.filter(event=self.event, person__in=self.organizers.all())
+        else:
+            return SignupExtra.objects.none()
+
     def save(self, *args, **kwargs):
         if self.start_time and self.length:
             self.end_time = self.start_time + timedelta(minutes=self.length)
@@ -363,7 +372,12 @@ class Programme(models.Model, CsvExportMixin):
         return super(Programme, self).save(*args, **kwargs)
 
     def apply_state(self, deleted_programme_roles=[]):
+        self.apply_state_update_signup_extras()
         self.apply_state_create_badges(deleted_programme_roles)
+
+    def apply_state_update_signup_extras(self):
+        for signup_extra in self.signup_extras:
+            signup_extra.apply_state()
 
     def apply_state_create_badges(self, deleted_programme_roles=[]):
         if 'badges' not in settings.INSTALLED_APPS:
@@ -390,11 +404,11 @@ class Programme(models.Model, CsvExportMixin):
 
     @classmethod
     def get_editable_programmes(cls, person):
-        return cls._get_in_states(person, PROGRAMME_STATES_HOST_CAN_EDIT)
+        return cls._get_in_states(person, PROGRAMME_STATES_ACTIVE)
 
     @classmethod
     def get_rejected_programmes(cls, person):
-        return cls._get_in_states(person, PROGRAMME_STATES_REJECTED)
+        return cls._get_in_states(person, PROGRAMME_STATES_INACTIVE)
 
     @classmethod
     def get_published_programmes(cls, person):
@@ -402,7 +416,7 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def host_can_edit(self):
-        return self.state in PROGRAMME_STATES_HOST_CAN_EDIT
+        return self.state in PROGRAMME_STATES_ACTIVE
 
     @property
     def host_cannot_edit_explanation(self):

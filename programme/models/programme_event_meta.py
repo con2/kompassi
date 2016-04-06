@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
-from core.utils import alias_property
+from core.utils import alias_property, classproperty
 from core.models import EventMetaBase
 
 
@@ -54,3 +54,11 @@ class ProgrammeEventMeta(EventMetaBase):
         return self.public_from is not None and now() > self.public_from
 
     public = alias_property('is_public')
+
+    @property
+    def signup_extra_model(self):
+        if self.event.labour_event_meta is not None:
+            return self.event.labour_event_meta.signup_extra_model
+        else:
+            from labour.models import EmptySignupExtra
+            return EmptySignupExtra

@@ -194,3 +194,10 @@ def mutate_query_params(request, mutations):
         else:
             new_qs[key] = value
     return new_qs.urlencode()
+
+
+class classproperty(object):
+    def __init__(self, f):
+        self.f = f
+    def __get__(self, obj, owner):
+        return self.f(owner)
