@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 import logging
 import datetime
 from datetime import timedelta
@@ -30,21 +32,22 @@ from ..utils import window, next_full_hour
 
 
 RECORDING_PERMISSION_CHOICES = [
-    (u'public', _(u'My programme may be recorded and published')),
-    (u'private', _(u'I forbid publishing my programme, but it may be recorded for archiving purposes')),
-    (u'forbidden', _(u'I forbid recording my programme altogether')),
+    ('public', _('My programme may be recorded and published')),
+    ('private', _('I forbid publishing my programme, but it may be recorded for archiving purposes')),
+    ('forbidden', _('I forbid recording my programme altogether')),
 ]
-START_TIME_LABEL = _(u'Starting time')
+START_TIME_LABEL = _('Starting time')
 
 STATE_CHOICES = [
-    (u'idea', _(u'Internal programme idea')),
-    (u'asked', _(u'Asked from the host')),
-    (u'offered', _(u'Offer received')),
-    (u'accepted', _(u'Accepted')),
-    (u'published', _(u'Published')),
+    ('idea', _('Internal programme idea')),
+    ('asked', _('Asked from the host')),
+    ('offered', _('Offer received')),
+    ('accepted', _('Accepted')),
+    ('frozen', _('Frozen')),
+    ('published', _('Published')),
 
-    (u'cancelled', _(u'Cancelled')),
-    (u'rejected', _(u'Rejected')),
+    ('cancelled', _('Cancelled')),
+    ('rejected', _('Rejected')),
 ]
 
 STATE_CSS = dict(
@@ -58,16 +61,16 @@ STATE_CSS = dict(
 )
 
 COMPUTER_CHOICES = [
-    (u'con', _(u'Laptop provided by the event')),
-    (u'pc', _(u'Own laptop – PC')),
-    (u'mac', _(u'Own laptop – Mac')),
-    (u'none', _(u'No computer required')),
+    ('con', _('Laptop provided by the event')),
+    ('pc', _('Own laptop – PC')),
+    ('mac', _('Own laptop – Mac')),
+    ('none', _('No computer required')),
 ]
 
 TRISTATE_CHOICES = [
-    ('yes', _(u'Yes')),
-    ('no', _(u'No')),
-    ('notsure', _(u'Not sure')),
+    ('yes', _('Yes')),
+    ('no', _('No')),
+    ('notsure', _('Not sure')),
 ]
 
 TRISTATE_FIELD_PARAMS = dict(
@@ -76,55 +79,56 @@ TRISTATE_FIELD_PARAMS = dict(
 )
 
 ENCUMBERED_CONTENT_CHOICES = [
-    ('yes', _(u'My programme contains copyright-encumbered audio or video')),
-    ('no', _(u'My programme does not contain copyright-encumbered audio or video')),
-    ('notsure', _(u'I\'m not sure whether my programme contains copyright-encumbered content or not')),
+    ('yes', _('My programme contains copyright-encumbered audio or video')),
+    ('no', _('My programme does not contain copyright-encumbered audio or video')),
+    ('notsure', _('I\'m not sure whether my programme contains copyright-encumbered content or not')),
 ]
 
 PHOTOGRAPHY_CHOICES = [
-    ('please', _(u'Please photograph my programme')),
-    ('okay', _(u'It\'s OK to photograph my programme')),
-    ('nope', _(u'Please do not photograph my programme')),
+    ('please', _('Please photograph my programme')),
+    ('okay', _('It\'s OK to photograph my programme')),
+    ('nope', _('Please do not photograph my programme')),
 ]
 
-PROGRAMME_STATES_ACTIVE = ['idea', 'asked', 'offered', 'accepted']
+PROGRAMME_STATES_HOST_CAN_EDIT = ['idea', 'asked', 'offered', 'accepted']
+PROGRAMME_STATES_ACTIVE = PROGRAMME_STATES_HOST_CAN_EDIT + ['frozen', 'published']
 PROGRAMME_STATES_INACTIVE = ['rejected', 'cancelled']
 
 
 class Programme(models.Model, CsvExportMixin):
-    category = models.ForeignKey('programme.Category', verbose_name=_(u'category'))
+    category = models.ForeignKey('programme.Category', verbose_name=_('category'))
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
     title = models.CharField(
         max_length=1023,
-        verbose_name=_(u'Title'),
-        help_text=_(u'Make up a concise title for your programme. We reserve the right to edit the title.'),
+        verbose_name=_('Title'),
+        help_text=_('Make up a concise title for your programme. We reserve the right to edit the title.'),
     )
 
     description = models.TextField(
         blank=True,
-        verbose_name=_(u'Description'),
-        help_text=_(u'This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description.'),
+        verbose_name=_('Description'),
+        help_text=_('This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description.'),
     )
 
     use_audio = models.CharField(
         default='no',
-        verbose_name=_(u'Audio playback'),
-        help_text=_(u'Will you play audio in your programme?'),
+        verbose_name=_('Audio playback'),
+        help_text=_('Will you play audio in your programme?'),
         **TRISTATE_FIELD_PARAMS
     )
 
     use_video = models.CharField(
         default='no',
-        verbose_name=_(u'Video playback'),
-        help_text=_(u'Will you play video in your programme?'),
+        verbose_name=_('Video playback'),
+        help_text=_('Will you play video in your programme?'),
         **TRISTATE_FIELD_PARAMS
     )
 
     number_of_microphones = models.IntegerField(
         default=1,
-        verbose_name=_(u'Microphones'),
-        help_text=_(u'How many microphones do you require?'),
+        verbose_name=_('Microphones'),
+        help_text=_('How many microphones do you require?'),
         choices=[
             (0, '0'),
             (1, '1'),
@@ -132,7 +136,7 @@ class Programme(models.Model, CsvExportMixin):
             (3, '3'),
             (4, '4'),
             (5, '5'),
-            (99, _(u'More than five – Please elaborate on your needs in the "Other tech requirements" field.')),
+            (99, _('More than five – Please elaborate on your needs in the "Other tech requirements" field.')),
         ],
     )
 
@@ -140,89 +144,89 @@ class Programme(models.Model, CsvExportMixin):
         default='con',
         choices=COMPUTER_CHOICES,
         max_length=max(len(key) for (key, label) in COMPUTER_CHOICES),
-        verbose_name=_(u'Computer use'),
-        help_text=_(u'What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance.'),
+        verbose_name=_('Computer use'),
+        help_text=_('What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance.'),
     )
 
     tech_requirements = models.TextField(
         blank=True,
-        verbose_name=_(u'Other tech requirements'),
-        help_text=_(u'Do you have tech requirements that are not covered by the previous questions?')
+        verbose_name=_('Other tech requirements'),
+        help_text=_('Do you have tech requirements that are not covered by the previous questions?')
     )
 
     room_requirements = models.TextField(
         blank=True,
-        verbose_name=_(u'Room requirements'),
-        help_text=_(u'How large an audience do you expect for your programme? What kind of a room do you wish for your programme?'),
+        verbose_name=_('Room requirements'),
+        help_text=_('How large an audience do you expect for your programme? What kind of a room do you wish for your programme?'),
     )
 
     requested_time_slot = models.TextField(
         blank=True,
-        verbose_name=_(u'Requested time slot'),
-        help_text=_(u'At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?'),
+        verbose_name=_('Requested time slot'),
+        help_text=_('At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?'),
     )
 
     video_permission = models.CharField(
         max_length=15,
         choices=RECORDING_PERMISSION_CHOICES,
         default=RECORDING_PERMISSION_CHOICES[0][0],
-        verbose_name=_(u'Recording permission'),
-        help_text=_(u'May your programme be recorded and published in the Internet?'),
+        verbose_name=_('Recording permission'),
+        help_text=_('May your programme be recorded and published in the Internet?'),
     )
 
     encumbered_content = models.CharField(
         default='no',
         max_length=max(len(key) for (key, label) in ENCUMBERED_CONTENT_CHOICES),
         choices=ENCUMBERED_CONTENT_CHOICES,
-        verbose_name=_(u'Encumbered content'),
-        help_text=_(u'Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings.'),
+        verbose_name=_('Encumbered content'),
+        help_text=_('Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings.'),
     )
 
     photography = models.CharField(
         default='okay',
         max_length=max(len(key) for (key, label) in PHOTOGRAPHY_CHOICES),
         choices=PHOTOGRAPHY_CHOICES,
-        verbose_name=_(u'Photography of your prorgmme'),
-        help_text=_(u'Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed.'),
+        verbose_name=_('Photography of your prorgmme'),
+        help_text=_('Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed.'),
     )
 
     notes_from_host = models.TextField(
         blank=True,
-        verbose_name=_(u'Anything else?'),
-        help_text=_(u'If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here.'),
+        verbose_name=_('Anything else?'),
+        help_text=_('If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here.'),
     )
 
     state = models.CharField(
         max_length=15,
         choices=STATE_CHOICES,
         default='accepted',
-        verbose_name=_(u'State'),
-        help_text=_(u'The programmes in the state "Published" will be visible to the general public, if the schedule has already been published.'),
+        verbose_name=_('State'),
+        help_text=_('The programmes in the state "Published" will be visible to the general public, if the schedule has already been published.'),
     )
 
     start_time = models.DateTimeField(blank=True, null=True, verbose_name=START_TIME_LABEL)
 
     # denormalized
-    end_time = models.DateTimeField(blank=True, null=True, verbose_name=_(u'Ending time'))
+    end_time = models.DateTimeField(blank=True, null=True, verbose_name=_('Ending time'))
 
     length = models.IntegerField(
         blank=True,
         null=True,
-        verbose_name=_(u'Length (minutes)'),
-        help_text=_(u'In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room.'),
+        verbose_name=_('Length (minutes)'),
+        help_text=_('In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room.'),
     )
 
     notes = models.TextField(
         blank=True,
-        verbose_name=_(u'Internal notes'),
-        help_text=_(u'This field is normally only visible to the programme managers. However, should the programme host request a record of their own personal details, this field will be included in that record.'),
+        verbose_name=_('Internal notes'),
+        help_text=_('This field is normally only visible to the programme managers. However, should the programme host request a record of their own personal details, this field will be included in that record.'),
     )
-    room = models.ForeignKey('programme.Room', blank=True, null=True, verbose_name=_(u'Room'))
+    room = models.ForeignKey('programme.Room', blank=True, null=True, verbose_name=_('Room'))
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
-    tags = models.ManyToManyField('programme.Tag', blank=True, verbose_name=_(u'Tags'))
+    tags = models.ManyToManyField('programme.Tag', blank=True, verbose_name=_('Tags'))
 
-    created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_(u'Created at'))
-    updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name=_(u'Updated at'))
+    created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_('Created at'))
+    updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name=_('Updated at'))
 
     @property
     def event(self):
@@ -261,7 +265,7 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def is_active(self):
-        return self.state not in ['rejected', 'cancelled']
+        return self.state in PROGRAMME_STATES_ACTIVE
 
     @property
     def is_rejected(self):
@@ -404,7 +408,7 @@ class Programme(models.Model, CsvExportMixin):
 
     @classmethod
     def get_editable_programmes(cls, person):
-        return cls._get_in_states(person, PROGRAMME_STATES_ACTIVE)
+        return cls._get_in_states(person, PROGRAMME_STATES_HOST_CAN_EDIT)
 
     @classmethod
     def get_rejected_programmes(cls, person):
@@ -416,25 +420,27 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def host_can_edit(self):
-        return self.state in PROGRAMME_STATES_ACTIVE
+        return self.state in PROGRAMME_STATES_HOST_CAN_EDIT
 
     @property
     def host_cannot_edit_explanation(self):
         assert not self.host_can_edit
 
         if self.state == 'published':
-            return _(u'This programme has been published. You can no longer edit it yourself. '
+            return _('This programme has been published. You can no longer edit it yourself. '
                 'If you need edits to be made, please contact the programme manager.')
         elif self.state == 'cancelled':
-            return _(u'You have cancelled this programme.')
+            return _('You have cancelled this programme.')
         elif self.state == 'rejected':
-            return _(u'This programme has been rejected by the programme manager.')
+            return _('This programme has been rejected by the programme manager.')
+        elif self.state == 'frozen':
+            return _('This programme has been frozen by the programme manager.')
         else:
             raise NotImplementedError(self.state)
 
     class Meta:
-        verbose_name = _(u'programme')
-        verbose_name_plural = _(u'programmes')
+        verbose_name = _('programme')
+        verbose_name_plural = _('programmes')
         ordering = ['start_time', 'room']
         index_together = [('category', 'state')]
         # unique_together = [('category', 'slug')]

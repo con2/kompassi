@@ -70,23 +70,22 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
         # See if this SignupExtra is active due to programme roles
         from programme.models.programme_role import ProgrammeRole
         from programme.models.programme import PROGRAMME_STATES_ACTIVE
-        return ProgrammeRole.objects.filter(
+        result = ProgrammeRole.objects.filter(
             programme__category__event=self.event,
             programme__state__in=PROGRAMME_STATES_ACTIVE,
             person=self.person,
         ).exists()
 
+        return result
+
     @property
     def signup(self):
         from .signup import Signup
 
-        if not hasattr(self, '_signup'):
-            try:
-                self._signup = Signup.objects.get(event=self.event, person=self.person)
-            except Signup.DoesNotExist:
-                self._signup = None
-
-        return self._signup
+        try:
+            return Signup.objects.get(event=self.event, person=self.person)
+        except Signup.DoesNotExist:
+            return None
 
     @classmethod
     def get_for_event_and_person(cls, event, person):
