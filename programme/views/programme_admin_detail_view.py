@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+from collections import namedtuple
+
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404, render
 from django.utils.translation import ugettext_lazy as _
@@ -29,6 +31,9 @@ from ..models import (
 from ..proxies.programme.management import ProgrammeManagementProxy
 
 
+PerHostForms = namedtuple('PerHostForms', 'change_host_role_form signup_extra_form')
+
+
 # TODO Split this into multiple views or at refactor it into a CBV
 @programme_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
@@ -44,11 +49,28 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     invitation_form = initialize_form(InvitationForm, request, event=event, prefix='invitation')
     freeform_organizer_form = initialize_form(FreeformOrganizerForm, request, prefix='freeform')
 
+    SignupExtra = event.programme_event_meta.signup_extra_model
+    if SignupExtra.supports_programme:
+        SignupExtraForm = SignupExtra.get_programme_form_class()
+    else:
+        SignupExtraForm = None
+
     programme_roles = ProgrammeRole.objects.filter(programme=programme)
-    change_host_role_forms = [
-        initialize_form(ChangeHostRoleForm, request, prefix='chr', instance=host, event=event)
-        for host in programme_roles
-    ]
+    forms_per_host = []
+    for role in programme_roles:
+        change_host_role_form = initialize_form(ChangeHostRoleForm, request, prefix='chr', instance=role, event=event)
+        if SignupExtraForm is not None:
+            signup_extra_form = initialize_form(SignupExtraForm, request,
+                prefix='sex',
+                instance=SignupExtra.for_event_and_person(event, role.person)
+            )
+        else:
+            signup_extra_form = None
+
+        forms_per_host.append(PerHostForms(
+            change_host_role_form=change_host_role_form,
+            signup_extra_form=signup_extra_form,
+        ))
 
     change_invitation_role_forms = [
         initialize_form(ChangeInvitationRoleForm, request, prefix='cir', instance=invitation, event=event)
@@ -155,7 +177,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     previous_programme, next_programme = programme.get_previous_and_next_programme()
 
     vars.update(
-        change_host_role_forms=change_host_role_forms,
+        forms_per_host=forms_per_host,
         change_invitation_role_forms=change_invitation_role_forms,
         freeform_organizer_form=freeform_organizer_form,
         freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
@@ -182,7 +204,35 @@ def programme_admin_change_host_role_view(request, vars, event, programme_id, pr
     programme = get_object_or_404(ProgrammeManagementProxy, id=int(programme_id), category__event=event)
     programme_role = ProgrammeRole.objects.get(id=int(programme_role_id), programme=programme)
     change_role_form = initialize_form(ChangeHostRoleForm, request, prefix='chr', event=event, instance=programme_role)
-    return actual_change_role_view(request, change_role_form)
+    forms = [change_role_form]
+
+    SignupExtra = event.programme_event_meta.signup_extra_model
+    if SignupExtra.supports_programme:
+        SignupExtraForm = SignupExtra.get_programme_form_class()
+        signup_extra = SignupExtra.for_event_and_person(event, request.user.person)
+        signup_extra_form = initialize_form(SignupExtraForm, request,
+            prefix='sex',
+            instance=signup_extra
+        )
+        forms.append(signup_extra_form)
+    else:
+        signup_extra_form = None
+
+    if all(form.is_valid() for form in forms):
+        instance = change_role_form.save()
+
+        if signup_extra_form:
+            signup_extra = signup_extra_form.process(signup_extra)
+
+        instance.programme.apply_state()
+
+        messages.success(request, _('The role was changed.'))
+    else:
+        messages.error(request, _("Please check the form."))
+
+    programme = change_role_form.instance.programme
+
+    return redirect('programme_admin_detail_view', programme.event.slug, programme.pk)
 
 
 @programme_admin_required
@@ -191,10 +241,7 @@ def programme_admin_change_invitation_role_view(request, vars, event, programme_
     programme = get_object_or_404(ProgrammeManagementProxy, id=int(programme_id), category__event=event)
     invitation = Invitation.objects.get(id=int(invitation_id), programme=programme)
     change_role_form = initialize_form(ChangeInvitationRoleForm, request, prefix='cir', event=event, instance=invitation)
-    return actual_change_role_view(request, change_role_form)
 
-
-def actual_change_role_view(request, change_role_form):
     if change_role_form.is_valid():
         instance = change_role_form.save()
         instance.programme.apply_state()

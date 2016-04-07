@@ -124,11 +124,9 @@ class AlternativeFormMixin(object):
     def get_excluded_m2m_field_defaults(self):
         return dict()
 
-    def process(self):
-        obj = self.save(commit=False)
-        print vars(obj)
+    def process(self, obj):
         set_defaults(obj, **self.get_excluded_field_defaults())
-        obj.save()
+        obj = self.save()
 
         defaults = self.get_excluded_m2m_field_defaults()
         for key, values in defaults:

@@ -131,7 +131,7 @@ class ObsoleteEmptySignupExtraV1Form(forms.ModelForm):
 
     class Meta:
         model = ObsoleteEmptySignupExtraV1
-        exclude = ('signup',)
+        exclude = ('signup', 'is_active')
 
 
 class SignupExtraForm(forms.ModelForm):
@@ -142,7 +142,7 @@ class SignupExtraForm(forms.ModelForm):
 
     class Meta:
         model = EmptySignupExtra
-        exclude = ('event', 'person')
+        exclude = ('event', 'person', 'is_active')
 
 
 class SignupAdminForm(forms.ModelForm):

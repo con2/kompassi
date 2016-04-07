@@ -62,7 +62,7 @@ def programme_accept_invitation_view(request, event, code):
                 programme = form.save()
 
                 if signup_extra_form:
-                    signup_extra = signup_extra_form.process()
+                    signup_extra = signup_extra_form.process(signup_extra)
 
                 for extra_invite in sired_invitation_formset.save(commit=False):
                     extra_invite.programme = programme

@@ -150,7 +150,6 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
 
-
 class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
     def get_job_categories_query(self, event, admin=False):
         assert not admin
