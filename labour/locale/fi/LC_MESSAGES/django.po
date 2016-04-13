@@ -94,6 +94,10 @@ msgstr "Ei"
 msgid "Onboarding"
 msgstr "Saapuneeksi kirjaaminen"
 
+#: views/labour_admin_shirts_view.py
+msgid "Paita"
+msgstr "Shirt"
+
 #: models/job_category.py
 msgid "Personnel classes"
 msgstr "Henkilöstöluokat"
@@ -249,6 +253,10 @@ msgstr "Tätä kenttää voi käyttää tiedottamaan muille työvoimavastaaville
 #: models/job_category.py
 msgid "This descriptions will be shown to the applicants on the signup form. If there are specific requirements to this job category, please mention them here."
 msgstr "Tämä kuvaus näytetään hakijoille hakemuslomakkeella. Mikäli tällä tehtäväalueella on erityisiä vaatimuksia hakijoiden suhteen, mainitse niistä tässä."
+
+#: views/labour_admin_shirts_view.py
+msgid "This event does not record shirt sizes."
+msgstr "Tämä tapahtuma ei kerää paitakokoja."
 
 #: views/public_views.py
 msgid "This event is not currently accepting applications."

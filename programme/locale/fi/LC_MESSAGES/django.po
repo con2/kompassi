@@ -130,6 +130,10 @@ msgstr "Etunimi"
 msgid "Free-form organizer"
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 
+#: models/programme.py
+msgid "Frozen"
+msgstr "Lukittu"
+
 #: templates/programme_admin_detail_views/needs_tab.jade views/programme_admin_detail_view.py
 msgid "Host needs"
 msgstr "Ohjelmanjärjestäjän tarpeet"
@@ -173,6 +177,10 @@ msgstr "Jos nimesi näytetään julkisesti tämän ohjelman järjestäjänä, se
 #: models/programme.py
 msgid "In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room."
 msgstr "Jotta ohjelmanumero näkyisi ohjelmakartassa, sillä tulee olla alkuaika sekä pituus ja sen tulee olla sijoitettu johonkin saliin."
+
+#: templates/programme_accept_invitation_view.jade templates/programme_profile_detail_view.jade
+msgid "Information about yourself"
+msgstr "Tietoja itsestäsi"
 
 #: templates/programme_admin_detail_views/internal_tab.jade views/programme_admin_detail_view.py
 msgid "Internal information"
@@ -555,6 +563,10 @@ msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelm
 #: models/programme.py
 msgid "This field is normally only visible to the programme managers. However, should the programme host request a record of their own personal details, this field will be included in that record."
 msgstr "Tämän kentän sisältö näkyy normaalisti vain ohjelmavastaaville. Se on kuitenkin sisällytettävä rekisteriotteeseen, mikäli ohjelmanjärjestäjä pyytää sellaista."
+
+#: models/programme.py
+msgid "This programme has been frozen by the programme manager."
+msgstr "Ohjelmavastaava on lukinnut tämän ohjelmanumeron."
 
 #: models/programme.py
 msgid "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager."

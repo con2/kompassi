@@ -235,7 +235,7 @@ msgstr "Salasanat eivät täsmää."
 msgid "There is already a user account associated with this e-mail address. If you have forgotten your password, please do not create another user account but rather restore your password using the Forgot password link at the sign in form."
 msgstr "Tähän sähköpostiosoitteeseen on jo liitetty käyttäjätunnus. Jos olet unohtanut salasanasi, ole hyvä ja palauta salasanasi Salasana unohtunut -toiminnolla sisäänkirjautumislomakkeelta käsin."
 
-#: forms.py views/registration_views.py
+#: forms.py
 msgid "This user name is already taken."
 msgstr "Tämä käyttäjänimi on jo viety."
 
