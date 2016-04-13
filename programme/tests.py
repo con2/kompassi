@@ -43,6 +43,14 @@ class UtilsTestCase(TestCase):
 
 class ProgrammeSignupExtraTestCase(TestCase):
     def test_condb_164_programme_to_labour_to_nothing(self):
+        """
+        In this test a person first accepts an invitation as a speaker and enters their
+        personal data (in a SignupExtra). Then they also sign up as a worker.
+
+        However, they then cancel first their programme and then their worker signup. The
+        SignupExtra should be marked inactive only after both are cancelled.
+        """
+
         programme_role, unused = ProgrammeRole.get_or_create_dummy()
         programme = programme_role.programme
         person = programme_role.person
