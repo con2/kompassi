@@ -46,6 +46,10 @@ def compare_persons(left, right):
     if right.user is not None and left.user is None:
         return -1
 
+    # If both have users, return the one whose user was created first
+    if left.user is not None and right.user is not None:
+        return cmp(left.user.pk, right.user.pk)
+
     # If only one has phone number, it's better
     if left.phone and not right.phone:
         return 1
@@ -62,21 +66,28 @@ def compare_persons(left, right):
     return cmp(left.pk, right.pk)
 
 
+def rewrite_references(old, new):
+    assert old.__class__ is new.__class__
+    HostModel = old.__class__
+
+    for content_type in ContentType.objects.all():
+        ReferringModel = content_type.model_class()
+        for field in ReferringModel._meta.fields:
+            if field.related_model is Person:
+                filter_kwargs = {f.name: old}
+                update_kwargs = {f.name: new}
+                ReferringModel.objects.filter(**filter_kwargs).update(**update_kwargs)
+
+
 def merge_people(people_to_merge, into):
     for mergee in people_to_merge:
-        assert mergee.user is None
+        if into.user is None and mergee.user is not None:
+            into.user = mergee.user
+            mergee.user = None
+        else:
+            rewrite_references(mergee.user, into.user)
 
-        for app_label, model_name in [
-            ('badges', 'badge'),
-            ('labour', 'personqualification'),
-            ('labour', 'signup'),
-            ('mailings', 'personmessage'),
-            ('programme', 'programmerole'),
-            ('membership', 'membership'),
-        ]:
-            if app_label in settings.INSTALLED_APPS:
-                Model = ContentType.objects.get_by_natural_key(app_label, model_name).model_class()
-                Model.objects.filter(person=mergee).update(person=into)
+        rewrite_references(mergee, into)
 
         # All references are updated, so this should be safe
         mergee.delete()
