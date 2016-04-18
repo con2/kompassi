@@ -138,6 +138,8 @@ INSTALLED_APPS = (
     'oauth2_provider',
     'nexmo',
 
+    'django_graphiql',
+
     'core',
     'programme',
     'labour',

@@ -26,3 +26,4 @@ requests-oauthlib>=0.6,<0.7
 unicodecsv>=0.14,<0.15
 XlsxWriter>=0.7,<0.8
 Babel==2.2.0
+graphene~=0.8.1
