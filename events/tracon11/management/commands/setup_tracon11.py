@@ -627,12 +627,12 @@ class Setup(object):
 
         for start_time, end_time in [
             (
-                datetime(2016, 9, 5, 11, 0, 0, tzinfo=self.tz),
-                datetime(2016, 9, 6, 1 , 0, 0, tzinfo=self.tz),
+                datetime(2016, 9, 3, 11, 0, 0, tzinfo=self.tz),
+                datetime(2016, 9, 4, 1 , 0, 0, tzinfo=self.tz),
             ),
             (
-                datetime(2016, 9, 6, 9 , 0, 0, tzinfo=self.tz),
-                datetime(2016, 9, 6, 17, 0, 0, tzinfo=self.tz),
+                datetime(2016, 9, 4, 9 , 0, 0, tzinfo=self.tz),
+                datetime(2016, 9, 4, 17, 0, 0, tzinfo=self.tz),
             ),
         ]:
             TimeBlock.objects.get_or_create(
@@ -645,12 +645,12 @@ class Setup(object):
 
         SpecialStartTime.objects.get_or_create(
             event=self.event,
-            start_time=datetime(2016, 9, 5, 10, 30, 0, tzinfo=self.tz),
+            start_time=datetime(2016, 9, 3, 10, 30, 0, tzinfo=self.tz),
         )
 
         # XXX
-        have_views = False
-        # have_views = View.objects.filter(event=self.event).exists()
+        # have_views = False
+        have_views = View.objects.filter(event=self.event).exists()
         if not have_views:
             for view_name, room_names in [
                 ('Pääohjelmatilat', [
