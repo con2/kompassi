@@ -87,6 +87,15 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
         except Signup.DoesNotExist:
             return None
 
+    @signup.setter
+    def signup(self, the_signup):
+        if the_signup is not None:
+            self.event = the_signup.event
+            self.person = the_signup.person
+        else:
+            self.event = None
+            self.person = None
+
     @classmethod
     def get_for_event_and_person(cls, event, person):
         return cls.objects.get(event=event, person=person)

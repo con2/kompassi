@@ -190,6 +190,8 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
                 set_attrs(signup_extra, **signup_extra_form.get_excluded_field_defaults())
 
             signup = signup_form.save()
+
+            signup_extra.signup = signup
             signup_extra = signup_extra_form.save()
 
             if alternative_signup_form is not None:
