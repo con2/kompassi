@@ -46,6 +46,11 @@
       .modal-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-default(href='', data-bind='click: cancel') Peruuta
+          // ko if: canRemove()
+          a.btn.btn-danger(href='', data-bind='click: remove')
+            i.kompassi-icon-space-right.fa.fa-trash-o
+            | Poista
+          // /ko
           button.btn.btn-success(data-bind='click: ok')
             i.kompassi-icon-space-right.fa.fa-check
             | Tallenna

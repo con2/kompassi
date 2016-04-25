@@ -25,11 +25,14 @@
   left: 0;
   top: auto;
 }
+.roster-cell {
+  text-align: center;
+}
 .roster-lane td {
   height: 20px;
-  padding: 0 !important;
-  text-align: center;
   font-size: 13px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 .roster-slot {
   background-color: #f2dede;

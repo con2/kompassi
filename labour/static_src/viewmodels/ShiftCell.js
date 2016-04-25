@@ -1,4 +1,4 @@
-import {createShift, updateShift} from '../services/RosterService';
+import {createShift, updateShift, deleteShift} from '../services/RosterService';
 
 export class ShiftCell {
   constructor(lane, startTime) {
@@ -73,12 +73,20 @@ export class Shift extends ShiftCell {
     return `roster-shift roster-shift-${this.shift.state}`;
   }
 
+  get id() {
+    return this.shift.id;
+  }
+
   get text() {
     return this.shift.person.fullName;
   }
 
   get title() {
     return this.text;
+  }
+
+  get person() {
+    return this.shift.person;
   }
 
   click() {
@@ -88,7 +96,9 @@ export class Shift extends ShiftCell {
 
     jobCategoryViewModel.shiftModal.prompt(this).then(result => {
       if (result.result === 'ok') {
-        updateShift(jobCategory, result.request).then(jobCategory => jobCategoryViewModel.loadJobCategory(jobCategory));
+        updateShift(this.shift, result.request).then(jobCategory => jobCategoryViewModel.loadJobCategory(jobCategory));
+      } else if (result.result === 'delete') {
+        deleteShift(this.shift).then(jobCategory => jobCategoryViewModel.loadJobCategory(jobCategory));
       }
     });
   }

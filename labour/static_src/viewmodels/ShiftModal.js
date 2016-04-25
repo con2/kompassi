@@ -15,6 +15,7 @@ export default class ShiftModal {
 
     this.$el = $('#roster-shift-modal');
     this.startTime = ko.observable('');
+    this.id = ko.observable(null);
     this.hours = ko.observable(1);
     this.person = ko.observable(null);
     this.notes = ko.observable('');
@@ -35,6 +36,7 @@ export default class ShiftModal {
   prompt(shiftCell) {
     this.job(shiftCell.lane.job);
 
+    this.id(shiftCell.id);
     this.people(shiftCell.lane.job.jobCategory.people);
     this.startTime(shiftCell.startTime);
     this.hours(shiftCell.hours);
@@ -63,5 +65,18 @@ export default class ShiftModal {
         notes: this.notes(),
       },
     });
+  }
+
+  canRemove() {
+    const id = this.id();
+    return !!id;
+  }
+
+  remove() {
+    if (!this.canRemove()) { return; }
+    this.$el.modal('hide');
+    this.resolve({
+      result: 'delete',
+    })
   }
 }

@@ -4,11 +4,11 @@ import {EmptyCell, Shift, Slot} from './ShiftCell';
 
 
 export default class LaneBuilder {
-  constructor(app, job, laneNumber) {
+  constructor(app, job, laneIndex) {
     this.app = app;
     this.job = job;
     this.hours = app.config.workHours.map(() => null);
-    this.laneNumber = laneNumber;
+    this.laneIndex = laneIndex;
   }
 
   addShift(shift) {
@@ -36,7 +36,7 @@ export default class LaneBuilder {
   build() {
     const
       cells = [],
-      lane = new Lane(this.app, this.job, cells);
+      lane = new Lane(this.app, this.job, cells, this.laneIndex);
 
     let currentShift, currentShiftCell;
 
@@ -55,7 +55,7 @@ export default class LaneBuilder {
         }
       } else {
         currentShift = null;
-        if (this.laneNumber < requirementCell.required) {
+        if (this.laneIndex < requirementCell.required) {
           cells.push(new Slot(lane, workHour.startTime));
         } else {
           cells.push(new EmptyCell(lane, workHour.startTime));
@@ -68,9 +68,14 @@ export default class LaneBuilder {
 }
 
 class Lane {
-  constructor(app, job, cells) {
+  constructor(app, job, cells, laneIndex) {
     this.app = app;
     this.job = job;
     this.cells = cells;
+    this.laneIndex = laneIndex;
+  }
+
+  get text() {
+    return `${this.job.title} ${this.laneIndex + 1}`;
   }
 }

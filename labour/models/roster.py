@@ -146,6 +146,7 @@ class Shift(models.Model):
         tz = tzlocal()
 
         return dict(
+            id=self.id,
             job=self.job.id,
             startTime=self.start_time.astimezone(tz).isoformat() if self.start_time else None,
             hours=self.hours,
