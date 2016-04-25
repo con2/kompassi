@@ -318,7 +318,15 @@ msgstr "vaihtoehtoinen ilmoittautumislomake"
 msgid "alternative signup forms"
 msgstr "vaihtoehtoiset ilmoittautumislomakkeet"
 
-#: models/job_category.py
+#: models/roster.py
+msgid "description"
+msgstr "kuvaus"
+
+#: models/roster.py
+msgid "ending time"
+msgstr "päättymisaika"
+
+#: models/job_category.py models/roster.py
 msgid "event"
 msgstr "tapahtuma"
 
@@ -338,7 +346,7 @@ msgstr "tehtävä"
 msgid "job categories"
 msgstr "tehtäväalueet"
 
-#: models/job_category.py
+#: models/job_category.py models/roster.py
 msgid "job category"
 msgstr "tehtäväalue"
 
@@ -349,6 +357,10 @@ msgstr "henkilöstövaatimus"
 #: models/roster.py
 msgid "job requirements"
 msgstr "henkilöstövaatimukset"
+
+#: models/roster.py
+msgid "job title"
+msgstr "tehtävänimike"
 
 #: models/roster.py
 msgid "jobs"
@@ -369,6 +381,10 @@ msgstr "etu"
 #: models/perk.py
 msgid "perks"
 msgstr "edut"
+
+#: models/roster.py
+msgid "person"
+msgstr "henkilö"
 
 #: models/personnel_class.py
 msgid "personnel class"
@@ -394,6 +410,14 @@ msgstr "pätevyyksien haltijat"
 msgid "qualifications"
 msgstr "pätevyydet"
 
+#: models/roster.py
+msgid "shift"
+msgstr "työvuoro"
+
+#: models/roster.py
+msgid "shifts"
+msgstr "työvuorot"
+
 #: models/signup.py
 msgid "signup"
 msgstr "ilmoittautuminen"
@@ -401,6 +425,10 @@ msgstr "ilmoittautuminen"
 #: models/signup.py
 msgid "signups"
 msgstr "ilmoittautumiset"
+
+#: models/roster.py
+msgid "starting time"
+msgstr "alkamisaika"
 
 #: models/roster.py
 msgid "work period"

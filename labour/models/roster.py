@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from collections import namedtuple, defaultdict
 from datetime import timedelta
 
@@ -15,19 +17,19 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, ONE_HOUR, slugify, pick_attr
 
 
 class WorkPeriod(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
+    event = models.ForeignKey('core.Event', verbose_name=_('event'))
 
     description = models.CharField(
         max_length=63,
-        verbose_name=u'Kuvaus'
+        verbose_name=_('description'),
     )
 
-    start_time = models.DateTimeField(verbose_name=u'Alkuaika', blank=True, null=True)
-    end_time = models.DateTimeField(verbose_name=u'Loppuaika', blank=True, null=True)
+    start_time = models.DateTimeField(verbose_name=_('starting time'), blank=True, null=True)
+    end_time = models.DateTimeField(verbose_name=_('ending time'), blank=True, null=True)
 
     class Meta:
-        verbose_name = _(u'work period')
-        verbose_name_plural= _(u'work periods')
+        verbose_name = _('work period')
+        verbose_name_plural= _('work periods')
 
     def __unicode__(self):
         return self.description
@@ -35,13 +37,13 @@ class WorkPeriod(models.Model):
 
 class Job(models.Model):
     # REVERSE: shifts: Shift 0..N -> 1 Job
-    job_category = models.ForeignKey('labour.JobCategory', verbose_name=u'tehtäväalue')
+    job_category = models.ForeignKey('labour.JobCategory', verbose_name=_('job category'))
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    title = models.CharField(max_length=63, verbose_name=u'tehtävän nimi')
+    title = models.CharField(max_length=63, verbose_name=_('job title'))
 
     class Meta:
-        verbose_name = _(u'job')
-        verbose_name_plural = _(u'jobs')
+        verbose_name = _('job')
+        verbose_name_plural = _('jobs')
         unique_together = [('job_category', 'slug')]
 
     def save(self, *args, **kwargs):
@@ -55,7 +57,7 @@ class Job(models.Model):
 
     def admin_get_event(self):
         return self.job_category.event if self.job_category else None
-    admin_get_event.short_description = u'Tapahtuma'
+    admin_get_event.short_description = _('event')
     admin_get_event.admin_order_field = 'job_category__event'
 
     def _make_requirements(self):
@@ -92,16 +94,16 @@ class Job(models.Model):
 
 
 class JobRequirement(models.Model):
-    job = models.ForeignKey(Job, verbose_name=u'tehtävä', related_name='requirements')
+    job = models.ForeignKey(Job, verbose_name=_('job'), related_name='requirements')
 
     count = models.IntegerField(
-        verbose_name=u'vaadittu henkilömäärä',
+        verbose_name='vaadittu henkilömäärä',
         validators=[MinValueValidator(0)],
         default=0
     )
 
-    start_time = models.DateTimeField(verbose_name=u'vaatimuksen alkuaika')
-    end_time = models.DateTimeField(verbose_name=u'vaatimuksen päättymisaika')
+    start_time = models.DateTimeField(verbose_name=_('starting time'))
+    end_time = models.DateTimeField(verbose_name=_('ending time'))
 
     @staticmethod
     def requirements_as_integer_array(event, requirements):
@@ -131,8 +133,8 @@ class JobRequirement(models.Model):
         return super(JobRequirement, self).save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _(u'job requirement')
-        verbose_name_plural = _(u'job requirements')
+        verbose_name = _('job requirement')
+        verbose_name_plural = _('job requirements')
 
 
 class Shift(models.Model):
@@ -140,7 +142,7 @@ class Shift(models.Model):
     start_time = models.DateTimeField()
     hours = models.PositiveIntegerField()
     signup = models.ForeignKey('labour.Signup')
-    notes = models.TextField()
+    notes = models.TextField(blank=True)
 
     def as_dict(self):
         tz = tzlocal()
@@ -168,17 +170,17 @@ class Shift(models.Model):
 
     def admin_get_event(self):
         return self.job.job_category.event if self.job and self.job.job_category else None
-    admin_get_event.short_description = u'Tapahtuma'
+    admin_get_event.short_description = _('event')
     admin_get_event.admin_order_field = 'job__job_category__event'
 
     def admin_get_job_category(self):
         return self.job.job_category if self.job else None
-    admin_get_job_category.short_description = u'Tehtäväalue'
+    admin_get_job_category.short_description = _('job category')
     admin_get_job_category.admin_order_field = 'job__job_category'
 
     def admin_get_person(self):
         return self.signup.person if self.signup else None
-    admin_get_person.short_description = u'Henkilö'
+    admin_get_person.short_description = _('person')
     admin_get_person.admin_order_field = 'signup__person'
 
     def __unicode__(self):
@@ -189,8 +191,8 @@ class Shift(models.Model):
         )
 
     class Meta:
-        verbose_name = u'työvuoro'
-        verbose_name_plural = u'työvuorot'
+        verbose_name = _('shift')
+        verbose_name_plural = _('shifts')
         ordering = ('job', 'start_time')
 
 
@@ -238,7 +240,6 @@ class EditShiftRequest(EditShiftRequestBase, JSONSchemaObject):
 
         shift.job = Job.objects.get(slug=self.job, job_category=job_category)
         shift.start_time = parse_date(self.startTime)
-        print 'start_time', self.startTime, shift.start_time
         shift.hours = self.hours
         shift.signup = Signup.objects.get(person=self.person, event=job_category.event)
         shift.notes = self.notes
