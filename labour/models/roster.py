@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from dateutil.parser import parse as parse_date
 
 from api.utils import JSONSchemaObject
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs
 
 
 class WorkPeriod(models.Model):

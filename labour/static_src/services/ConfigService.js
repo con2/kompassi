@@ -13,6 +13,6 @@ config.workHours.forEach((hour, index) => {
   hour.formatted = hour.moment.format('LLL');
 });
 
-config.workHoursByStartTime = _.indexBy(config.workHours, 'startTime');
+config.workHoursByStartTime = _.keyBy(config.workHours, 'startTime');
 
 export default config;

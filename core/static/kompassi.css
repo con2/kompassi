@@ -6097,10 +6097,6 @@ footer {
   border-radius: 4px;
   padding: 6px 12px;
 }
-.labour-job-categories-legend {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
 .admin-row {
   display: -webkit-box;
   display: -webkit-flex;
@@ -6132,6 +6128,10 @@ footer {
 }
 .labour-admin-filter-heading {
   margin-top: 0;
+}
+.labour-job-categories-legend {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 @media (max-width: 991px) {
   .admin-row {
