@@ -1,15 +1,17 @@
 # encoding: utf-8
 
 from collections import namedtuple, defaultdict
+from datetime import timedelta
 
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from dateutil.parser import parse as parse_date
+from dateutil.tz import tzlocal
 
 from api.utils import JSONSchemaObject
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, ONE_HOUR, slugify, pick_attrs
 
 
 class WorkPeriod(models.Model):
@@ -32,6 +34,7 @@ class WorkPeriod(models.Model):
 
 
 class Job(models.Model):
+    # REVERSE: shifts: Shift 0..N -> 1 Job
     job_category = models.ForeignKey('labour.JobCategory', verbose_name=u'tehtäväalue')
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     title = models.CharField(max_length=63, verbose_name=u'tehtävän nimi')
@@ -57,20 +60,30 @@ class Job(models.Model):
 
     def _make_requirements(self):
         """
-        Returns an array of integers representing the sum of JobRequirements for this JobCategory
+        Returns an array of integers representing the sum of JobRequirements for this Job
         where indexes correspond to those of work_hours for this event.
         """
         return JobRequirement.requirements_as_integer_array(self.job_category.event, self.requirements.all())
 
-    def _make_shifts(self):
-        return [shift.as_dict() for shift in self.shift_set.all()]
+    def _make_allocated(self):
+        """
+        Returns an array of integers representing the number of Shifts for this Job
+        where indexes correspond to those of work_hours for this event.
+        """
+        return JobRequirement.allocated_as_integer_array(self.job_category.event, self.shifts.all())
 
-    def as_dict(self, include_shifts=False):
+    def _make_shifts(self):
+        return [shift.as_dict() for shift in self.shifts.all()]
+
+    def as_dict(self, include_requirements=True, include_shifts=False):
         doc = pick_attrs(self,
             'slug',
             'title',
-            requirements=self._make_requirements(),
         )
+
+        if include_requirements:
+            doc['requirements'] = self._make_requirements()
+            doc['allocated'] = self._make_allocated()
 
         if include_shifts:
             doc['shifts'] = self._make_shifts()
@@ -100,6 +113,17 @@ class JobRequirement(models.Model):
 
         return [sum(r.count for r in requirements_by_start_time[t]) for t in work_hours]
 
+    @staticmethod
+    def allocated_as_integer_array(event, shifts):
+        work_hours = event.labour_event_meta.work_hours
+
+        allocated_by_start_time = defaultdict(int)
+        for shift in shifts:
+            for start_time in shift.work_hours:
+                allocated_by_start_time[start_time] += 1
+
+        return [allocated_by_start_time[t] for t in work_hours]
+
     def save(self, *args, **kwargs):
         if self.start_time and not self.end_time:
             self.end_time = self.start_time + ONE_HOUR
@@ -112,20 +136,34 @@ class JobRequirement(models.Model):
 
 
 class Shift(models.Model):
-    job = models.ForeignKey(Job)
+    job = models.ForeignKey(Job, related_name='shifts')
     start_time = models.DateTimeField()
     hours = models.PositiveIntegerField()
     signup = models.ForeignKey('labour.Signup')
     notes = models.TextField()
 
     def as_dict(self):
+        tz = tzlocal()
+
         return dict(
             job=self.job.id,
-            start_time=self.start_time.isoformat() if self.start_time else None,
+            startTime=self.start_time.astimezone(tz).isoformat() if self.start_time else None,
             hours=self.hours,
             person=self.signup.person.id if self.signup and self.signup.person else None,
             notes=self.notes,
+            state='planned', # TODO
         )
+
+    @property
+    def work_hours(self):
+        cur_time = self.start_time
+        for i in xrange(self.hours):
+            yield cur_time
+            cur_time += ONE_HOUR
+
+    @property
+    def end_time(self):
+        return self.start_time + timedelta(hours=self.hours)
 
     def admin_get_event(self):
         return self.job.job_category.event if self.job and self.job.job_category else None
@@ -180,7 +218,7 @@ class EditJobRequest(EditJobRequestBase, JSONSchemaObject):
     )
 
 
-EditShiftRequestBase = namedtuple('EditShiftRequest', 'job start_time hours person notes')
+EditShiftRequestBase = namedtuple('EditShiftRequest', 'job startTime hours person notes')
 class EditShiftRequest(EditShiftRequestBase, JSONSchemaObject):
     schema = dict(
         type='object',
@@ -198,7 +236,8 @@ class EditShiftRequest(EditShiftRequestBase, JSONSchemaObject):
         from .signup import Signup
 
         shift.job = Job.objects.get(slug=self.job, job_category=job_category)
-        shift.start_time = parse_date(self.start_time)
+        shift.start_time = parse_date(self.startTime)
+        print 'start_time', self.startTime, shift.start_time
         shift.hours = self.hours
         shift.signup = Signup.objects.get(person=self.person, event=job_category.event)
         shift.notes = self.notes

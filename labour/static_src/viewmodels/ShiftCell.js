@@ -1,4 +1,4 @@
-import {createShift} from '../services/RosterService';
+import {createShift, updateShift} from '../services/RosterService';
 
 export class ShiftCell {
   constructor(lane, startTime) {
@@ -12,9 +12,18 @@ export class ShiftCell {
 export class EmptyCell extends ShiftCell {
   constructor(lane, startTime) {
     super(lane, startTime);
+  }
 
-    this.cssClass = "roster-empty-cell";
-    this.text = '';
+  get cssClass() {
+    return 'roster-empty-cell';
+  }
+
+  get text() {
+    return '';
+  }
+
+  get title() {
+    return '';
   }
 
   click() {}
@@ -24,9 +33,18 @@ export class EmptyCell extends ShiftCell {
 export class Slot extends ShiftCell {
   constructor(lane, startTime) {
     super(lane, startTime);
+  }
 
-    this.cssClass = "roster-slot";
-    this.text = '+';
+  get cssClass() {
+    return 'roster-slot';
+  }
+
+  get text() {
+    return '+';
+  }
+
+  get title() {
+    return "Lisää työvuoro";
   }
 
   click() {
@@ -47,12 +65,31 @@ export class Shift extends ShiftCell {
   constructor(lane, shift) {
     super(lane, shift.startTime);
 
-    this.state = 'planned';
-    this.cssClass = `roster-shift roster-shift-${this.state}`;
-    this.text = 'Erkki Esimerkki';
+    this.shift = shift;
+    this.hours = shift.hours;
+  }
+
+  get cssClass() {
+    return `roster-shift roster-shift-${this.shift.state}`;
+  }
+
+  get text() {
+    return this.shift.person.fullName;
+  }
+
+  get title() {
+    return this.text;
   }
 
   click() {
-    console.log('Shift', 'click!');
+    const
+      jobCategoryViewModel = this.lane.app.jobCategory,
+      jobCategory = jobCategoryViewModel.jobCategory();
+
+    jobCategoryViewModel.shiftModal.prompt(this).then(result => {
+      if (result.result === 'ok') {
+        updateShift(jobCategory, result.request).then(jobCategory => jobCategoryViewModel.loadJobCategory(jobCategory));
+      }
+    });
   }
 }

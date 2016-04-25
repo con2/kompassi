@@ -116,6 +116,11 @@ class JobCategory(models.Model):
         requirements = JobRequirement.objects.filter(job__job_category=self)
         return JobRequirement.requirements_as_integer_array(self.event, requirements)
 
+    def _make_allocated(self):
+        from .roster import JobRequirement, Shift
+        shifts = Shift.objects.filter(job__job_category=self)
+        return JobRequirement.allocated_as_integer_array(self.event, shifts)
+
     def _make_people(self):
         """
         Returns an array of accepted workers. Used by the Roster API.
@@ -149,6 +154,7 @@ class JobCategory(models.Model):
 
         if include_requirements:
             doc['requirements'] = self._make_requirements()
+            doc['allocated'] = self._make_allocated()
 
         if include_people:
             doc['people'] = self._make_people()

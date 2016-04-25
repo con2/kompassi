@@ -2,13 +2,13 @@ import _ from 'lodash';
 
 
 export default class RequirementCell {
-  constructor(app, jobCategory, job, startTime, required) {
+  constructor(app, jobCategory, job, startTime, required, allocated) {
     this.app = app;
     this.jobCategory = jobCategory;
     this.job = job; // might be null
     this.startTime = startTime;
-    this.allocated = 0;
-    this.required = required || 0;
+    this.allocated = allocated;
+    this.required = required;
   }
 
   edit() {
@@ -21,23 +21,24 @@ export default class RequirementCell {
     return {
       'text-muted': required === 0,
        danger: allocated === 0 && required > 0,
+       warning: allocated > 0 && required > 0 && required > allocated,
        success: allocated > 0 && allocated === required,
        info: allocated > required
     };
   }
 
   static forJob(app, job) {
-    return _.zip(app.config.workHours, job.requirements)
-    .map(([hour, required]) => new RequirementCell(app, job.jobCategory, job, hour.startTime, required));
+    return _.zip(app.config.workHours, job.requirements, job.allocated)
+    .map(([hour, required, allocated]) => new RequirementCell(app, job.jobCategory, job, hour.startTime, required, allocated));
   }
 
   static forJobCategory(app, jobCategory) {
-    return _.zip(app.config.workHours, jobCategory.requirements)
-    .map(([hour, required]) => new RequirementCell(app, jobCategory, null, hour.startTime, required));
+    return _.zip(app.config.workHours, jobCategory.requirements, jobCategory.allocated)
+    .map(([hour, required, allocated]) => new RequirementCell(app, jobCategory, null, hour.startTime, required, allocated));
   }
 
-  static forOverview(app, requirements) {
-    return _.zip(app.config.workHours, requirements)
-    .map(([hour, required]) => new RequirementCell(app, null, null, hour.startTime, required));
+  static forOverview(app, requirements, allocated) {
+    return _.zip(app.config.workHours, requirements, allocated)
+    .map(([hour, required, allocated]) => new RequirementCell(app, null, null, hour.startTime, required, allocated));
   }
 }

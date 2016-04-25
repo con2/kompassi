@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import config from './ConfigService';
 import {getJSON, putJSON, postJSON, deleteJSON} from '../helpers/FetchHelper';
-import {sumRequirements} from '../helpers/RequirementHelper';
+import {sumRequirements, sumAllocated} from '../helpers/RequirementHelper';
 
 
 function enrichJobCategories(jobCategories) {
@@ -19,9 +19,20 @@ function enrichJobCategory(jobCategory) {
     detail: `${config.urls.base}/${jobCategory.slug}`
   };
 
+  if(jobCategory.people) {
+    jobCategory.peopleById = _.keyBy(jobCategory.people, 'id');
+  }
+
   if(jobCategory.jobs) {
+    jobCategory.allocated = sumAllocated(jobCategory.jobs),
     jobCategory.requirements = sumRequirements(jobCategory.jobs);
-    jobCategory.jobs.forEach(job => { job.jobCategory = jobCategory; });
+    jobCategory.jobs.forEach(job => {
+      job.jobCategory = jobCategory;
+      job.shifts.forEach(shift => {
+        shift.job = job;
+        shift.person = jobCategory.peopleById[shift.person];
+      });
+    });
   }
 
   return jobCategory;

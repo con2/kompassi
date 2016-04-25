@@ -8,9 +8,9 @@ class LaneAllocator {
     this.laneBuilders = [];
   }
 
-  getFreeLaneBuilder(time) {
+  getFreeLaneBuilder(shift) {
     for (let laneBuilder of this.laneBuilders) {
-      if (laneBuilder.isFreeAt(time)) {
+      if (laneBuilder.isFreeFor(shift)) {
         return laneBuilder;
       }
     }
@@ -26,7 +26,7 @@ class LaneAllocator {
   }
 
   buildLanes() {
-    this.job.shifts.forEach(shift => this.getFreeLaneBuilder(shift.startTime).addShift(shift));
+    this.job.shifts.forEach(shift => this.getFreeLaneBuilder(shift).addShift(shift));
 
     const
       largestRequirement = _.maxBy(this.job.requirementCells, 'required'),

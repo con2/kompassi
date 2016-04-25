@@ -28,7 +28,8 @@ tbody
   tr.roster-lane
     td.kompassi-freeze-first-column
     // ko foreach: cells
-    td(data-bind="attr: {colspan: hours}, css: cssClass, text: text, click: click")
+    td(data-bind="attr: {colspan: hours}, css: cssClass, click: click")
+      div.roster-cell-content(data-bind="text: text, attr: {title: title}")
     // /ko
   // /ko
 // /ko

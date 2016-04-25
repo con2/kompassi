@@ -1,9 +1,11 @@
 .roster-editable,
-.roster-slot {
+.roster-slot,
+.roster-shift {
   cursor: pointer;
 }
 .roster-editable:hover,
-.roster-slot:hover {
+.roster-slot:hover,
+.roster-shift:hover {
   text-decoration: underline;
 }
 .roster-timeline,
@@ -40,6 +42,10 @@
 }
 .roster-shift-complained {
   background-color: #fcf8e3;
+}
+.roster-cell-content {
+  height: 18px;
+  overflow: hidden;
 }
 
 /*# sourceMappingURL=roster.css.map */

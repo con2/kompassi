@@ -12,21 +12,25 @@ export default class LaneBuilder {
   }
 
   addShift(shift) {
-    const
-      startingIndex = this.app.config.workHoursByStartTime[shift.startTime],
-      endingIndexExcl = startingIndex + shift.hours;
-
-    for(let i = startingIndex; i < endingIndexExcl; ++i) {
-      if (this.hours[i]) {
+    this.getWorkHours(shift).forEach(workingHour => {
+      if (this.hours[workingHour.index]) {
         throw new Error('Lane blocked');
       }
 
-      this.hours[i] = shift;
-    }
+      this.hours[workingHour.index] = shift;
+    });
   }
 
-  isFreeAt(startTime) {
-    return true;
+  isFreeFor(shift) {
+    return _.every(this.getWorkHours(shift), workingHour => !this.hours[workingHour.index]);
+  }
+
+  getWorkHours(shift) {
+    const
+      startingIndex = this.app.config.workHoursByStartTime[shift.startTime].index,
+      endingIndexExcl = startingIndex + shift.hours;
+
+    return this.app.config.workHours.slice(startingIndex, endingIndexExcl);
   }
 
   build() {
@@ -34,17 +38,21 @@ export default class LaneBuilder {
       cells = [],
       lane = new Lane(this.app, this.job, cells);
 
+    let currentShift, currentShiftCell;
+
     this.hours.forEach((shift, i) => {
       const
         workHour = this.app.config.workHours[i],
         requirementCell = this.job.requirementCells[i];
 
-      let currentShift;
-
       if (shift) {
-        if (shift === currentShift) return;
-        currentShift = shift;
-        cells.push(new Shift(lane, shift));
+        if (shift === currentShift) {
+          return;
+        } else {
+          currentShift = shift;
+          currentShiftCell = new Shift(lane, shift);
+          cells.push(currentShiftCell);
+        }
       } else {
         currentShift = null;
         if (this.laneNumber < requirementCell.required) {

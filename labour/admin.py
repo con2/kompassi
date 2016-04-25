@@ -82,7 +82,7 @@ class InfoLinkAdmin(admin.ModelAdmin):
 
 
 class ShiftAdmin(admin.ModelAdmin):
-    list_display = ('admin_get_event', 'admin_get_job_category', 'job', 'start_time', 'admin_get_person')
+    list_display = ('admin_get_event', 'admin_get_job_category', 'job', 'start_time', 'hours', 'admin_get_person')
     list_filter = ('job__job_category__event',)
     raw_id_fields = ('job', 'signup')
 

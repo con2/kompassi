@@ -3,7 +3,7 @@ import page from 'page';
 
 import {getJobCategories} from '../services/RosterService';
 import RequirementCell from './RequirementCell';
-import {sumRequirements} from '../helpers/RequirementHelper';
+import {sumRequirements, sumAllocated} from '../helpers/RequirementHelper';
 
 export default class Overview {
   constructor(app) {
@@ -19,7 +19,7 @@ export default class Overview {
         jobCategories.forEach(jobCategory => {
           jobCategory.requirementCells = RequirementCell.forJobCategory(this.app, jobCategory);
         });
-        this.totals(RequirementCell.forOverview(this.app, sumRequirements(jobCategories)));
+        this.totals(RequirementCell.forOverview(this.app, sumRequirements(jobCategories), sumAllocated(jobCategories)));
         this.jobCategories(jobCategories);
         this.app.activeView('Overview');
       });
