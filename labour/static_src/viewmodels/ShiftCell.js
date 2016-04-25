@@ -13,8 +13,8 @@ export class EmptyCell extends ShiftCell {
   constructor(lane, startTime) {
     super(lane, startTime);
 
-    this.cssClass = "roster-empty-cell"
-    this.text = ''
+    this.cssClass = "roster-empty-cell";
+    this.text = '';
   }
 
   click() {}
@@ -25,13 +25,14 @@ export class Slot extends ShiftCell {
   constructor(lane, startTime) {
     super(lane, startTime);
 
-    this.cssClass = "roster-slot"
-    this.text = '+'
+    this.cssClass = "roster-slot";
+    this.text = '+';
   }
 
   click() {
-    const jobCategoryViewModel = this.lane.app.jobCategory,
-          jobCategory = jobCategoryViewModel.jobCategory();
+    const
+      jobCategoryViewModel = this.lane.app.jobCategory,
+      jobCategory = jobCategoryViewModel.jobCategory();
 
     jobCategoryViewModel.shiftModal.prompt(this).then(result => {
       if (result.result === 'ok') {
@@ -44,9 +45,9 @@ export class Slot extends ShiftCell {
 
 export class Shift extends ShiftCell {
   constructor(lane, shift) {
-    super(lane, startTime);
+    super(lane, shift.startTime);
 
-    this.state = 'planned'
+    this.state = 'planned';
     this.cssClass = `roster-shift roster-shift-${this.state}`;
     this.text = 'Erkki Esimerkki';
   }

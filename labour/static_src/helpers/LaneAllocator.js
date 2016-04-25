@@ -1,3 +1,6 @@
+import LaneBuilder from '../viewmodels/Lane';
+
+
 class LaneAllocator {
   constructor(app, job) {
     this.app = app;
@@ -5,9 +8,7 @@ class LaneAllocator {
     this.laneBuilders = [];
   }
 
-  getFreeLane(time) {
-    console.log('getFreeLane', time);
-
+  getFreeLaneBuilder(time) {
     for (let laneBuilder of this.laneBuilders) {
       if (laneBuilder.isFreeAt(time)) {
         return laneBuilder;
@@ -15,18 +16,29 @@ class LaneAllocator {
     }
 
     // No free lanes, create a new one
-    const newLaneBuilder = new LaneBuilder(this.app, this.job);
+    return this.addLaneBuilder();
+  }
+
+  addLaneBuilder() {
+    const newLaneBuilder = new LaneBuilder(this.app, this.job, this.laneBuilders.length);
     this.laneBuilders.push(newLaneBuilder);
     return newLaneBuilder;
   }
 
   buildLanes() {
-    console.log('buildLanes', this);
-    this.job.shifts.forEach(shift => this.getFreeLane(shift.startTime).addShift(shift));
+    this.job.shifts.forEach(shift => this.getFreeLaneBuilder(shift.startTime).addShift(shift));
+
+    const
+      largestRequirement = _.maxBy(this.job.requirementCells, 'required'),
+      minLanes = largestRequirement ? largestRequirement.required : 0;
+
+    // Ensure minimum number of lanes
+    while (this.laneBuilders.length < minLanes) this.addLaneBuilder();
 
     return this.laneBuilders.map(laneBuilder => laneBuilder.build());
   }
 }
+
 
 export default function buildLanes(app, job) {
   const allocator = new LaneAllocator(app, job);

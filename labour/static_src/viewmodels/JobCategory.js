@@ -32,7 +32,10 @@ export default class JobCategory {
 
   loadJobCategory(jobCategory) {
     jobCategory.requirementCells = RequirementCell.forJobCategory(this.app, jobCategory);
-    jobCategory.jobs.forEach(job => job.lanes = buildLanes(this.app, job));
+    jobCategory.jobs.forEach(job => {
+      job.requirementCells = RequirementCell.forJob(this.app, job);
+      job.lanes = buildLanes(this.app, job);
+    });
 
     this.jobCategory(jobCategory);
     this.app.activeView('JobCategory');
