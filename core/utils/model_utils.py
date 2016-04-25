@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from datetime import datetime, timedelta
 from functools import wraps
 from itertools import groupby
@@ -27,44 +29,46 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
 
 
-
-
 validate_slug = RegexValidator(
     regex=r'[a-z0-9-]+',
-    message=u'Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä väliviivoja.'
+    message='Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä väliviivoja.'
 )
 
 
 SLUG_FIELD_PARAMS = dict(
-    max_length=63,
+    max_length=255,
     unique=True,
     validators=[validate_slug],
-    verbose_name=u'Tekninen nimi',
-    help_text=u'Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja '
-        u'merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi '
-        u'muuttaa luomisen jälkeen.',
+    verbose_name='Tekninen nimi',
+    help_text='Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja '
+        'merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi '
+        'muuttaa luomisen jälkeen.',
 )
 NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
 
 
 SLUGIFY_CHAR_MAP = {
-  u'ä': u'a',
-  u'å': u'a',
-  u'ö': u'o',
-  u'ü': u'u',
-  u' ': u'-',
-  u'_': u'-',
-  u'.': u'-',
+  ' ': '-',
+  '.': '-',
+  '_': '-',
+  'à': 'a',
+  'á': 'a',
+  'ä': 'a',
+  'å': 'a',
+  'è': 'e',
+  'é': 'e',
+  'ö': 'o',
+  'ü': '',
 }
-SLUGIFY_FORBANNAD_RE = re.compile(ur'[^a-z0-9-]', re.UNICODE)
-SLUGIFY_MULTIDASH_RE = re.compile(ur'-+', re.UNICODE)
+SLUGIFY_FORBANNAD_RE = re.compile(r'[^a-z0-9-]', re.UNICODE)
+SLUGIFY_MULTIDASH_RE = re.compile(r'-+', re.UNICODE)
 
 
 def slugify(ustr):
     ustr = ustr.lower()
-    ustr = u''.join(SLUGIFY_CHAR_MAP.get(c, c) for c in ustr)
-    ustr = SLUGIFY_FORBANNAD_RE.sub(u'', ustr)
-    ustr = SLUGIFY_MULTIDASH_RE.sub(u'-', ustr)
+    ustr = ''.join(SLUGIFY_CHAR_MAP.get(c, c) for c in ustr)
+    ustr = SLUGIFY_FORBANNAD_RE.sub('', ustr)
+    ustr = SLUGIFY_MULTIDASH_RE.sub('-', ustr)
     return ustr
 
 
@@ -75,3 +79,23 @@ def get_postgresql_version_num():
     with connection.cursor() as cursor:
         cursor.execute('SHOW server_version_num')
         return int(cursor.fetchone()[0])
+
+
+def get_previous_and_next(queryset, current):
+      if not current.pk:
+          return None, None
+
+      # TODO inefficient, done using a list
+      signups = list(queryset)
+
+      previous_item = None
+      candidate = None
+
+      for next_item in signups + [None]:
+          if candidate and candidate.pk == current.pk:
+              return previous_item, next_item
+
+          previous_item = candidate
+          candidate = next_item
+
+      return None, None

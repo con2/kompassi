@@ -25,7 +25,6 @@ from .profile_views import (
 
 from .public_views import (
     core_event_view,
-    core_frontpage_view,
     core_organization_view,
 )
 
@@ -33,3 +32,5 @@ from .registration_views import (
     core_registration_view,
     core_personify_view,
 )
+
+from .core_frontpage_view import core_frontpage_view

@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, set_defaults, set_attrs
 
 
 class AlternativeSignupForm(models.Model):
@@ -42,7 +42,7 @@ class AlternativeSignupForm(models.Model):
 
     signup_extra_form_class_path = models.CharField(
         max_length=63,
-        default='labour.forms:EmptySignupExtraForm',
+        default='labour.forms:ObsoleteEmptySignupExtraV1Form',
         help_text=u'Viittaus lisätietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm',
     )
 
@@ -109,8 +109,29 @@ class AlternativeFormMixin(object):
     of AlternativeSignupForm in `labour.models`.
     """
 
+    def get_job_categories(self, event, admin=False):
+        """
+        We assume alternative forms do not usually present a job categories field to the user.
+        If this is not the case, override get_job_categories to return the job categories that
+        can be applied to. For a default implementation, consult SignupForm.
+        """
+        from .job_category import JobCategory
+        return JobCategory.objects.none()
+
     def get_excluded_field_defaults(self):
         return dict()
 
     def get_excluded_m2m_field_defaults(self):
         return dict()
+
+    def process(self, obj):
+        set_defaults(obj, **self.get_excluded_field_defaults())
+        obj = self.save()
+
+        defaults = self.get_excluded_m2m_field_defaults()
+        for key, values in defaults:
+            manager = getattr(obj, key)
+            manager.set(values, clear=True)
+
+        return obj
+

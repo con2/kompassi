@@ -1,5 +1,5 @@
-git+https://github.com/kcsry/lippukala#egg=lippukala
-git+https://github.com/tracon/django-nexmo#egg=nexmo
+git+https://github.com/kcsry/lippukala@1.0.1#egg=lippukala==1.0.1
+git+https://github.com/tracon/django-nexmo#egg=django-nexmo
 git+https://github.com/syrusakbary/pyjade.git#egg=pyjade
 behave>=1.2,<1.3
 celery>=3.1,<3.2

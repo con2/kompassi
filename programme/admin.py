@@ -1,9 +1,11 @@
 import datetime
 
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from .models import (
     Category,
+    FreeformOrganizer,
     Programme,
     ProgrammeEventMeta,
     Role,
@@ -13,6 +15,18 @@ from .models import (
     TimeBlock,
     View,
 )
+from .proxies.freeform_organizer.admin import FreeformOrganizerAdminProxy
+from .proxies.invitation.admin import InvitationAdminProxy
+
+
+def deactivate_selected_items(modeladmin, request, queryset):
+    queryset.update(active=False)
+deactivate_selected_items.short_description = _('Deactivate selected items')
+
+
+def activate_selected_items(modeladmin, request, queryset):
+    queryset.update(active=False)
+activate_selected_items.short_description = _('Activate selected items')
 
 
 class InlineProgrammeEventMetaAdmin(admin.StackedInline):
@@ -46,8 +60,15 @@ class ViewAdmin(admin.ModelAdmin):
 
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('venue', 'name',)
-    list_filter = ('venue',)
+    list_display = ('venue', 'name', 'active')
+    list_filter = ('venue', 'active')
+    actions = (activate_selected_items, deactivate_selected_items)
+
+
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_event', 'title', 'personnel_class')
+    list_filter = ('personnel_class__event',)
+    raw_id_fields = ('personnel_class',)
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -70,11 +91,26 @@ class TagAdmin(admin.ModelAdmin):
     list_filter = ('event',)
 
 
+class InvitationAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_event', 'admin_get_title', 'email', 'state', 'created_by')
+    list_filter = ('programme__category__event', 'state')
+    ordering = ('programme__category__event', 'programme__title', 'email')
+    raw_id_fields = ('programme',)
+
+
+class FreeformOrganizerAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_event', 'admin_get_title', 'text')
+    list_filter = ('programme__category__event',)
+    raw_id_fields = ('programme',)
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Room, RoomAdmin)
-admin.site.register(Role)
+admin.site.register(Role, RoleAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Programme, ProgrammeAdmin)
 admin.site.register(View, ViewAdmin)
 admin.site.register(TimeBlock, TimeBlockAdmin)
 admin.site.register(SpecialStartTime, SpecialStartTimeAdmin)
+admin.site.register(InvitationAdminProxy, InvitationAdmin)
+admin.site.register(FreeformOrganizerAdminProxy, FreeformOrganizerAdmin)

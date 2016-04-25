@@ -19,13 +19,13 @@ class LabourEventMeta(EventMetaBase):
     registration_opens = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'työvoimahaku alkaa'
+        verbose_name=_("Registration opens"),
     )
 
     registration_closes = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'työvoimahaku päättyy'
+        verbose_name=_("Registration closes"),
     )
 
     work_begins = models.DateTimeField(verbose_name=u'Ensimmäiset työvuorot alkavat')
@@ -55,6 +55,15 @@ class LabourEventMeta(EventMetaBase):
         help_text=u'Tämä viesti näytetään kaikille työvoimailmoittautumisen alussa. Käytettiin '
             u'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
             u'erikoistehtäville.',
+    )
+
+    work_certificate_signer = models.TextField(
+        null=True,
+        blank=True,
+        default=u'',
+        verbose_name=u'Työtodistuksen allekirjoittaja',
+        help_text=u'Tämän kentän sisältö näkyy työtodistuksen allekirjoittajan nimenselvennyksenä. '
+            u'On suositeltavaa sisällyttää tähän omalle rivilleen allekirjoittajan tehtävänimike.'
     )
 
     class Meta:
@@ -125,8 +134,10 @@ class LabourEventMeta(EventMetaBase):
             for jc_or_suffix, group in zip(job_categories_or_suffixes, groups):
                 if isinstance(jc_or_suffix, basestring):
                     verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[jc_or_suffix]
+                    job_category = None
                 else:
                     verbose_name = jc_or_suffix.name
+                    job_category = jc_or_suffix
 
                 RecipientGroup.objects.get_or_create(
                     event=event,
@@ -134,6 +145,7 @@ class LabourEventMeta(EventMetaBase):
                     group=group,
                     defaults=dict(
                         verbose_name=verbose_name,
+                        job_category=job_category,
                     ),
                 )
 
@@ -142,6 +154,13 @@ class LabourEventMeta(EventMetaBase):
     def is_user_supervisor(self, user):
         supervisor_group, = LabourEventMeta.get_or_create_groups(self.event, ['supervisors'])
         return self.is_user_admin(user) or self.is_user_in_group(user, supervisor_group)
+
+    def create_groups_async(self):
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from ..tasks import labour_event_meta_create_groups
+            labour_event_meta_create_groups.delay(self.pk)
+        else:
+            self.create_groups()
 
     def create_groups(self):
         from .job_category import JobCategory

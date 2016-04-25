@@ -22,6 +22,7 @@ def extract_template(fileobj, keywords, comment_tags, options):
         src = process(src, compiler=Compiler)
     src = templatize(src, "")
     if "gettext" in src:
+        src = re.sub(r"\n\s+", "\n", src)  # Remove indentation
         return extract_python(StringIO.StringIO(src.encode("utf8")), keywords, comment_tags, options)
     return ()
 
@@ -37,29 +38,27 @@ def filtered_walk(root):
         yield (dirpath, dirnames, filenames)
 
 
-def _babel_has_locale_data():
-    from babel import core
+def _get_langs(langs, auto_lang):
+    langs = set(langs or ())
+    if auto_lang:
+        langs.update(set(l[0] for l in settings.LANGUAGES))
+    if "en" in langs:  # Ignore `en` (as that's the source language)
+        langs.remove("en")
+    return langs
 
-    try:
-        core.get_global(None)
-        return True
-    except RuntimeError:
-        return False
+
+def _get_pot_path(app):
+    pot_path = os.path.join(app.path, "locale", "django.pot")
+    if not os.path.isdir(os.path.dirname(pot_path)):
+        os.makedirs(os.path.dirname(pot_path))
+    return pot_path
 
 
-def _patch_babel():
-    if not _babel_has_locale_data():
-        def _get_mime_headers(self):
-            headers = []
-            headers.append(('MIME-Version', '1.0'))
-            headers.append(('Content-Type', 'text/plain; charset=%s' % self.charset))
-            headers.append(('Content-Transfer-Encoding', '8bit'))
-            return headers
-
-        Catalog.mime_headers = property(
-            _get_mime_headers,
-            Catalog._set_mime_headers
-        )
+def _get_po_path(app, language):
+    po_path = os.path.join(app.path, "locale", language, "LC_MESSAGES", "django.po")
+    if not os.path.isdir(os.path.dirname(po_path)):
+        os.makedirs(os.path.dirname(po_path))
+    return po_path
 
 
 class Command(BaseCommand):
@@ -75,21 +74,12 @@ class Command(BaseCommand):
         parser.add_argument("-c", "--compile", dest="compile", action="store_true", help="compile .po files to .mos?")
 
     def handle(self, extract, update, compile, lang=(), auto_lang=False, *args, **options):
-        _patch_babel()
         self.log = logging.getLogger("kompassi_i18n")
         if options["verbosity"] > 1:
             logging.basicConfig(level=logging.INFO)
-        langs = self._get_langs(lang, auto_lang)
+        langs = _get_langs(lang, auto_lang)
         for app in apps.get_app_configs():
             self.process_app(app, extract=extract, update=update, compile=compile, langs=langs)
-
-    def _get_langs(self, langs, auto_lang):
-        langs = set(langs or ())
-        if auto_lang:
-            langs.update(set(l[0] for l in settings.LANGUAGES))
-        if "en" in langs:  # Ignore `en` (as that's the source language)
-            langs.remove("en")
-        return langs
 
     def process_app(self, app, extract=False, update=False, compile=False, langs=()):
         """
@@ -107,18 +97,16 @@ class Command(BaseCommand):
 
     def _update(self, app, template_catalog, langs):
         if template_catalog is None:
-            with open(self._get_pot_path(app)) as infp:
+            with open(_get_pot_path(app)) as infp:
                 template_catalog = pofile.read_po(infp, charset="utf8")
 
         for lang in langs:
-            po_path = self._get_po_path(app, language=lang)
+            po_path = _get_po_path(app, language=lang)
             if os.path.isfile(po_path):
                 with open(po_path) as infp:
                     lang_catalog = pofile.read_po(infp, charset="utf8")
             else:
-                # When running on a version of Babel without proper locale data, pretend we don't even want
-                # to create a locale-bound catalog. Baka Babel.
-                lang_catalog = Catalog(locale=(lang if _babel_has_locale_data() else None), charset="utf8")
+                lang_catalog = Catalog(locale=lang, charset="utf8")
             lang_catalog.update(template_catalog)
             if len(lang_catalog):
                 with open(po_path, "w") as outf:
@@ -147,23 +135,11 @@ class Command(BaseCommand):
                 for (lineno, message, comments, context) in extract(extractor, fp, options=options):
                     catalog.add(message, locations=[(rel_filename, 0)], auto_comments=comments)
         if len(catalog):
-            pot_path = self._get_pot_path(app)
+            pot_path = _get_pot_path(app)
             with open(pot_path, "w") as outf:
                 pofile.write_po(outf, catalog, width=1000, omit_header=True, sort_output=True)
                 self.log.info("%s: %d messages in %s", app.label, len(catalog), pot_path)
         return catalog
-
-    def _get_pot_path(self, app):
-        pot_path = os.path.join(app.path, "locale", "django.pot")
-        if not os.path.isdir(os.path.dirname(pot_path)):
-            os.makedirs(os.path.dirname(pot_path))
-        return pot_path
-
-    def _get_po_path(self, app, language):
-        po_path = os.path.join(app.path, "locale", language, "LC_MESSAGES", "django.po")
-        if not os.path.isdir(os.path.dirname(po_path)):
-            os.makedirs(os.path.dirname(po_path))
-        return po_path
 
     def get_extractors(self):
         return {

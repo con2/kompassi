@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.timezone import now
@@ -211,12 +212,12 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
         else:
             messages.error(request, _(u'Please check the form.'))
 
-    all_job_cats = JobCategory.objects.filter(event=event)
-    job_cats = JobCategory.objects.filter(event=event, public=True)
+    available_job_categories = signup_form.get_job_categories(event=event)
+    all_job_categories = JobCategory.objects.filter(event=event)
 
     # FIXME use id and data attr instead of category name
     non_qualified_category_names = [
-        jc.name for jc in job_cats
+        jc.name for jc in available_job_categories
         if not jc.is_person_qualified(request.user.person)
     ]
 
@@ -228,7 +229,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
         alternative_signup_form=alternative_signup_form,
 
         # XXX HACK descriptions injected using javascript
-        job_descriptions_json=json.dumps(dict((cat.pk, cat.description) for cat in all_job_cats)),
+        job_descriptions_json=json.dumps(dict((cat.pk, cat.description) for cat in all_job_categories)),
         non_qualified_category_names_json=json.dumps(non_qualified_category_names),
     )
 

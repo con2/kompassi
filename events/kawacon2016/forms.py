@@ -19,6 +19,7 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.layout = Layout(
             Fieldset(u'Lisätiedot',
                 'shirt_size',
+                'needs_lodging',
                 'special_diet',
                 'special_diet_other',
                 'prior_experience',
@@ -31,6 +32,7 @@ class SignupExtraForm(forms.ModelForm):
         model = SignupExtra
         fields = (
             'shirt_size',
+            'needs_lodging',
             'special_diet',
             'special_diet_other',
             'prior_experience',
@@ -38,6 +40,7 @@ class SignupExtraForm(forms.ModelForm):
         )
 
         widgets = dict(
+            needs_lodging=forms.CheckboxSelectMultiple,
             special_diet=forms.CheckboxSelectMultiple,
         )
 

@@ -1,7 +1,12 @@
 # encoding: utf-8
 
+from hashlib import sha1
+import logging
 from datetime import datetime, timedelta
+
 from django.utils import timezone
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 from math import ceil
 
@@ -11,6 +16,7 @@ from django.template import Template, Context
 from django.utils import timezone
 
 
+logger = logging.getLogger('kompassi')
 APP_LABEL_CHOICES = [
     ('labour', 'Työvoima')
 ]
@@ -23,13 +29,25 @@ class RecipientGroup(models.Model):
     app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name=u'Sovellus')
     group = models.ForeignKey('auth.Group', verbose_name=u'Käyttäjäryhmä')
     verbose_name = models.CharField(max_length=63, verbose_name=u'Nimi')
+    job_category = models.ForeignKey('labour.JobCategory', null=True, blank=True)
 
     def __unicode__(self):
         return u"{self.event.name}: {self.verbose_name}".format(self=self)
 
+    @classmethod
+    def update_for_job_category(cls, job_category):
+        try:
+            recipient_group = cls.objects.get(job_category=job_category)
+        except cls.DoesNotExist:
+            logger.warn('Job category %s/%s has no recipient group', job_category.event.slug, job_category.slug)
+        else:
+            recipient_group.verbose_name = job_category.name
+            recipient_group.save()
+
     class Meta:
         verbose_name = u'vastaanottajaryhmä'
         verbose_name_plural = u'vastaanottajaryhmät'
+
 
 CHANNEL_CHOICES = [
     ('email', 'Sähköposti'),
@@ -157,13 +175,18 @@ class Message(models.Model):
 class DedupMixin(object):
     @classmethod
     def get_or_create(cls, text):
-        from hashlib import sha1
-        return cls.objects.get_or_create(
-            digest=sha1(text.encode('UTF-8')).hexdigest(),
-            defaults=dict(
-                text=text,
+        the_hash = sha1(text.encode('UTF-8')).hexdigest()
+
+        try:
+            return cls.objects.get_or_create(
+                digest=the_hash,
+                defaults=dict(
+                    text=text,
+                )
             )
-        )
+        except cls.MultipleObjectsReturned:
+            logger.warn('Multiple %s returned for hash %s', cls.__name__, the_hash)
+            return cls.objects.filter(digest=the_hash, text=text).first(), False
 
 
 class PersonMessageSubject(models.Model, DedupMixin):

@@ -2,7 +2,7 @@
 
 from django.db import models
 
-from labour.models import SignupExtraBase
+from labour.models import ObsoleteSignupExtraBaseV1
 from labour.querybuilder import QueryBuilder, add_prefix
 
 from core.utils import validate_slug
@@ -21,6 +21,27 @@ TOTAL_WORK_CHOICES = [
 ]
 
 
+SHIRT_SIZES = [
+    (u'NO_SHIRT', u'Ei paitaa'),
+
+    (u'XS', u'XS Unisex'),
+    (u'S', u'S Unisex'),
+    (u'M', u'M Unisex'),
+    (u'L', u'L Unisex'),
+    (u'XL', u'XL Unisex'),
+    (u'XXL', u'XXL Unisex'),
+    (u'3XL', u'3XL Unisex'),
+    (u'4XL', u'4XL Unisex'),
+    (u'5XL', u'5XL Unisex'),
+
+    (u'LF_XS', u'XS Ladyfit'),
+    (u'LF_S', u'S Ladyfit'),
+    (u'LF_M', u'M Ladyfit'),
+    (u'LF_L', u'L Ladyfit'),
+    (u'LF_XL', u'XL Ladyfit'),
+]
+
+
 class SpecialDiet(models.Model):
     name = models.CharField(max_length=63)
 
@@ -28,7 +49,7 @@ class SpecialDiet(models.Model):
         return self.name
 
 
-class SignupExtra(SignupExtraBase):
+class SignupExtra(ObsoleteSignupExtraBaseV1):
     shift_type = models.CharField(max_length=15,
         verbose_name=u'Toivottu työvuoron pituus',
         help_text=u'Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
@@ -39,6 +60,24 @@ class SignupExtra(SignupExtraBase):
         verbose_name=u'Toivottu kokonaistyömäärä',
         help_text=u'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
         choices=TOTAL_WORK_CHOICES,
+    )
+
+    shirt_size = models.CharField(
+        null=True,
+        blank=True,
+        max_length=8,
+        choices=SHIRT_SIZES,
+        verbose_name=u'Paidan koko',
+        help_text=u'Ajoissa ilmoittautuneet vänkärit saavat mahdollisesti maksuttoman työvoimapaidan. '
+            u'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
+            u'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
+            u'target="_blank">ladyfit-paita</a>',
+    )
+
+    dead_dog = models.BooleanField(
+        default=False,
+        verbose_name=u'Osallistun dead dogeihin',
+        help_text=u'Dead dogit ovat heti tapahtuman jälkeen järjestettävät kestit kaikille täysikäisille työvoimaan kuuluville. Dead dogit järjestetään TKL:n bussireittien tavoitettavissa olevassa paikassa. Ilmoittautuminen ei ole sitova.',
     )
 
     special_diet = models.ManyToManyField(

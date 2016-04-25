@@ -2,7 +2,7 @@
 
 from django.db import models
 
-from labour.models import SignupExtraBase
+from labour.models import ObsoleteSignupExtraBaseV1
 from labour.querybuilder import QueryBuilder, add_prefix
 
 from core.utils import validate_slug
@@ -28,7 +28,7 @@ class SpecialDiet(models.Model):
         return self.name
 
 
-class SignupExtra(SignupExtraBase):
+class SignupExtra(ObsoleteSignupExtraBaseV1):
     shift_type = models.CharField(max_length=15,
         verbose_name=u'Toivottu työvuoron pituus',
         help_text=u'Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',

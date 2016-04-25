@@ -5,8 +5,10 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 
+from labour.models import Signup
+
 from .utils import next_full_hour
-from .models import ProgrammeEventMeta
+from .models import ProgrammeEventMeta, ProgrammeRole
 
 
 class UtilsTestCase(TestCase):
@@ -37,3 +39,54 @@ class UtilsTestCase(TestCase):
 
         meta.public_from = None
         assert not meta.is_public
+
+
+class ProgrammeSignupExtraTestCase(TestCase):
+    def test_condb_164_programme_to_labour_to_nothing(self):
+        """
+        In this test a person first accepts an invitation as a speaker and enters their
+        personal data (in a SignupExtra). Then they also sign up as a worker.
+
+        However, they then cancel first their programme and then their worker signup. The
+        SignupExtra should be marked inactive only after both are cancelled.
+        """
+
+        programme_role, unused = ProgrammeRole.get_or_create_dummy()
+        programme = programme_role.programme
+        person = programme_role.person
+        event = programme.category.event
+        SignupExtra = event.programme_event_meta.signup_extra_model
+        assert SignupExtra.supports_programme
+
+        signup_extra = SignupExtra.for_event_and_person(event, person)
+        assert signup_extra.pk is None
+        signup_extra.save()
+
+        programme.apply_state()
+        signup_extra = SignupExtra.for_event_and_person(event, person)
+        assert signup_extra.pk is not None
+        signup_extra_pk = signup_extra.pk
+        assert signup_extra.is_active
+
+        signup, created = Signup.get_or_create_dummy(accepted=True)
+        signup.apply_state()
+        signup_extra = SignupExtra.for_event_and_person(event, person)
+        assert signup_extra.pk == signup_extra_pk
+        assert signup_extra.is_active
+
+        programme.state = 'rejected'
+        programme.save()
+        programme.apply_state()
+        signup_extra = SignupExtra.for_event_and_person(event, person)
+        assert signup_extra.pk == signup_extra_pk
+        assert signup_extra.is_active
+
+        signup.personnel_classes = []
+        signup.job_categories_accepted = []
+        signup.state = 'cancelled'
+        assert not signup.is_active
+        signup.save()
+        signup.apply_state()
+        signup_extra = SignupExtra.for_event_and_person(event, person)
+        assert signup_extra.pk == signup_extra_pk
+        assert not signup_extra.is_active

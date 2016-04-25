@@ -1,0 +1,20 @@
+extends core_profile_base
+- load trans from i18n
+block title
+  | {% trans "Programmes" %}
+block profile_content
+  if editable_programmes.exists
+    h3 {% trans "Programmes you can edit" %}
+    for programme in editable_programmes
+      include programme_profile_box.jade
+  if published_programmes.exists
+    h3 {% trans "Published programmes" %}
+    for programme in published_programmes
+      include programme_profile_box.jade
+  if rejected_programmes.exists
+    h3 {% trans "Cancelled and rejected programmes" %}
+    for programme in rejected_programmes
+      include programme_profile_box.jade
+  if no_programmes
+    h3 {% trans "No programmes" %}
+    p {% trans "You have not organized any programme in events that use this site." %}

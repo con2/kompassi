@@ -1,0 +1,54 @@
+{% extends "tickets_phase_base.jade" %}
+{% load crispy_forms_tags %}
+{% block body_text %}
+<h2>Syötä paitakoot</h2>
+<p>Olet valinnut tilaukseesi paitoja. Syötä tässä, minkä kokoisia paitoja haluat.</p>
+{% endblock body_text %}
+{% block form_content %}
+{% if "num_tshirts" in errors %}
+<div class="alert alert-danger">Paitojen määrä ei täsmää.</div>
+{% endif %}
+<!-- XXX Ropecon specific -->
+<p><a href="http://2016.ropecon.fi/fi/ropecon-paidat" target="_blank">Lue lisää paitamalleista ja katso kokotaulukot</a></p>
+<table class="table">
+  <tr>
+    <th class="count">Paitoja yhteensä</th>
+    <td class="count">{{ num_shirts }} kpl</td>
+  </tr>
+
+  {% for type, sizes in shirt_sizes_by_type %}
+    <tr>
+      <th rowspan="2">{{ type.name }}</th>
+      {% for iform in form %}
+        {% with iform.instance.size as size %}
+          {% ifequal size.type type %}
+            {% if size.available %}
+                <td><strong>{{ size.name }}</strong></td>
+            {% else %}
+                <td></td>
+            {% endif %}
+          {% endifequal %}
+        {% endwith %}
+      {% endfor %}
+    </tr>
+    <tr>
+      {% for iform in form %}
+        {% with iform.instance.size as size %}
+          {% ifequal size.type type %}
+            {% if size.available %}
+              <td class="input">{{ iform.count }}</td>
+            {% else %}
+              <td class="input"></td>
+            {% endif %}
+          {% endifequal %}
+        {% endwith %}
+      {% endfor %}
+    </tr>
+  {% endfor %}
+</table>
+<style>
+  table input {
+    width: 3em;
+  }
+</style>
+{% endblock form_content %}

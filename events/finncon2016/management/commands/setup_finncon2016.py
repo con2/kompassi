@@ -24,6 +24,7 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
+        self.setup_programme()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -39,8 +40,8 @@ class Setup(object):
             homepage_url='http://2016.finncon.org',
             organization_name='Finncon-yhdistys ry',
             organization_url='http://www.finncon.org',
-            start_time=None,
-            end_time=None,
+            start_time=datetime(2016, 7, 1, 12, 0, tzinfo=self.tz),
+            end_time=datetime(2016, 7, 3, 18, 0, tzinfo=self.tz),
             venue=self.venue,
         ))
 
@@ -151,8 +152,8 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'conitea']:
-            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+        for slug in [u'conitea']:
+            JobCategory.objects.filter(event=self.event, slug=slug).update(public=False)
 
         for jc_name, qualification_name in [
             (u'Järjestyksenvalvoja', u'JV-kortti'),
@@ -216,6 +217,111 @@ class Setup(object):
                     group=labour_event_meta.get_group(link_group),
                 )
             )
+
+    def setup_programme(self):
+        from labour.models import PersonnelClass
+        from programme.models import (
+            Category,
+            Programme,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            TimeBlock,
+            View,
+        )
+
+        programme_admin_group, = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins'])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Finncon 2016 -ohjelmatiimi <ohjelma@2016.finncon.org>',
+        ))
+
+        personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
+        role, unused = Role.objects.get_or_create(
+            personnel_class=personnel_class,
+            title=u'Ohjelmanjärjestäjä',
+            defaults=dict(
+                is_default=True,
+                require_contact_info=True,
+            )
+        )
+
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                (u'Puheohjelma', u'anime'),
+                (u'Akateeminen ohjelma', u'cosplay'),
+                (u'Miitti', u'miitti'),
+                (u'Työpaja', u'rope'),
+                (u'Muu ohjelma', u'muu'),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    style=style,
+                    defaults=dict(
+                        title=title,
+                    )
+                )
+
+        for start_time, end_time in [
+            (
+                datetime(2016, 7, 1, 12, 0, 0, tzinfo=self.tz),
+                datetime(2016, 7, 1, 18, 0, 0, tzinfo=self.tz),
+            ),
+            (
+                datetime(2016, 7, 2, 10, 0, 0, tzinfo=self.tz),
+                datetime(2016, 7, 2, 18, 0, 0, tzinfo=self.tz),
+            ),
+            (
+                datetime(2016, 7, 3, 10, 0, 0, tzinfo=self.tz),
+                datetime(2016, 7, 3, 18, 0, 0, tzinfo=self.tz),
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+        # SpecialStartTime.objects.get_or_create(
+        #     event=self.event,
+        #     start_time=datetime(2016, 9, 5, 10, 30, 0, tzinfo=self.tz),
+        # )
+
+        for view_name, room_names in [
+            (u'Pääohjelmatilat', [
+                u'Juhlasali',
+                u'Auditorio A1',
+                u'Luentosali A3',
+                u'Luentosali A4',
+            ]),
+            (u'Toissijaiset ohjelmatilat', [
+                u'Auditorio D10a',
+                u'Auditorio D10b',
+                u'Auditorio D11',
+                u'Luentosali A05',
+            ]),
+        ]:
+            rooms = [
+                Room.objects.get_or_create(
+                    venue=self.venue,
+                    name=room_name,
+                    defaults=dict(
+                        order=self.get_ordering_number(),
+                    )
+                )[0]
+
+                for room_name in room_names
+            ]
+
+            view, created = View.objects.get_or_create(event=self.event, name=view_name)
+            if created:
+                view.rooms = rooms
+                view.save()
 
 
 class Command(BaseCommand):

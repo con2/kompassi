@@ -1,0 +1,97 @@
+extends base
+- load i18n
+- load crispy from crispy_forms_tags
+block title
+  {% trans "Invitation to organize programme" %}
+block content
+  h2 {% trans "Invitation to organize programme" %}
+  p {% trans "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details." %}
+
+  .panel.panel-default
+    .panel-heading: strong {% trans "Contact information" %}
+    .panel-body
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Surname" %}
+          .col-md-10= request.user.person.surname
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "First name" %}
+          .col-md-10= request.user.person.first_name
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Nick name" %}
+          .col-md-10= request.user.person.nick
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Name as displayed" %}
+          .col-md-10
+            div= request.user.person.display_name
+            .help-block {% trans "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile." %}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Phone number" %}
+          .col-md-10= request.user.person.phone
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "E-mail address" %}
+          .col-md-10= request.user.person.email
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        a.btn.btn-default(target='_blank', href='{% url "core_profile_view" %}')
+          i.fa.fa-edit.kompassi-icon-space-right
+          | {% trans "Update profile..." %}
+
+      .text-muted {% trans "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number." %}
+
+  form.form-horizontal(method='POST')
+    {{ sired_invitation_formset.management_form }}
+    .panel.panel-default
+      .panel-heading: strong {% trans "Programme information" %}
+      .panel-body {% crispy form %}
+
+    if signup_extra_form
+      .panel.panel-default
+        .panel-heading: strong {% trans "Information about yourself" %}
+        .panel-body {% crispy signup_extra_form %}
+
+    .panel.panel-default
+      .panel-heading: strong {% trans "Programme hosts" %}
+      table.table.table-striped.programme-host-table
+        thead
+          th {% trans "Surname" %}
+          th {% trans "First name" %}
+          th {% trans "Nick name" %}
+          th {% trans "Role" %}
+        tbody
+          for programme_role in programme_roles
+            tr
+              td= programme_role.person.surname
+              td= programme_role.person.first_name
+              td= programme_role.person.nick
+              td= programme_role.role
+          for other_invitation in invitations
+            tr
+              td(colspan="3"): em {% trans "Someone has been invited, but they have not yet accepted their invitation." %}
+              td: em= other_invitation.role
+          for invite_form in sired_invitation_formset
+            tr
+              td(colspan="3") {{ invite_form.email }}
+              td: em= invitation.role
+          for freeform_organizer in freeform_organizers
+            tr
+              td(colspan="3")= freeform_organizer.text
+              td: {% trans "Free-form organizer" %}
+      if host_can_invite_more
+        .panel-footer
+          p.text-muted {% blocktrans count num_invites=invitation.extra_invites %}The programme manager has allowed you to invite one more host to this programme. You may do so now by entering their e-mail address in the field above, or later via your profile.{% plural %}The programme manager has allowed you to invite up to {{ num_invites }} hosts to this programme. You may do so now by entering their e-mail addresses in the fields above, or later via your profile.{% endblocktrans %}
+
+    .panel.panel-default
+      .panel-heading: strong {% trans "Accept invitation" %}
+      .panel-body
+        .help-block {% trans "You can change these details later by visiting your profile." %}
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          button.btn.btn-success(type='submit')
+            i.fa.fa-check.kompassi-icon-space-right
+            | {% trans "Accept invitation" %}

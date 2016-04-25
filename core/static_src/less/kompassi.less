@@ -36,3 +36,59 @@
 .kompassi-slight-space-above {
   margin-top: 0.2em;
 }
+
+.programme-host-table input {
+  width: 100%;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  padding: 6px 12px;
+}
+
+.admin-row {
+  display: flex;
+  margin: 0 -11px;
+}
+
+.admin-col {
+  padding: 0 11px;
+}
+
+.admin-menu {
+  flex: 2;
+}
+
+.admin-main {
+  flex: 7;
+}
+
+.admin-side-bar {
+  flex: 3;
+  margin-bottom: 40px;
+}
+
+.labour-admin-filter-heading {
+  margin-top: 0;
+}
+
+.labour-job-categories-legend {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: @screen-sm-max) {
+  .admin-row {
+    flex-direction: column;
+  }
+
+  .admin-menu {
+    order: 1;
+  }
+
+  .admin-side-bar {
+    order: 2;
+  }
+
+  .admin-main {
+    order: 3;
+  }
+}

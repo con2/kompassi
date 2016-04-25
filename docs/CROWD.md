@@ -1,5 +1,7 @@
 # Kompassi SSO for Confluence
 
+**WARNING**: This information is out of date. Current approach is to sync users directly to Crowd internal directory. SSO token management is implemented in [kompassi-atlasso](https://github.com/tracon/kompassi-atlasso).
+
 Kompassi integrates with Atlassian Crowd to provide single sign-on (SSO) using Kompassi accounts for Confluence, Jira and other Crowd-enabled applications. The main use case in Tracon is to provide seamless transitioning from Kompassi to our wiki that houses instructions for volunteer workers.
 
 Due to Crowd being a somewhat heavy closed-source application, we do not use Crowd as an authentication or authorization backend for Kompassi at Tracon. There are Django authentication backend implementations for the Crowd REST API but we do not use one. Instead, we first authenticate the user against the authentication backend configured in Django, which in our case is `django-auth-ldap` to our [FreeIPA](FREEIPA.md). Only after this authentication succeeds will we then fetch an SSO token from the Crowd REST API. This allows us to stay somewhat independent of Crowd as Crowd is only used to provide SSO to Atlassian applications.

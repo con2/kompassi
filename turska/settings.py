@@ -152,8 +152,8 @@ INSTALLED_APPS = (
     'sms',
     'membership',
 
-    # Uncomment if you have IPA
-    # 'ipa_integration',
+    # Uncomment if you have Atlassian Crowd
+    # 'crowd_integration',
 
     # Uncomment if you do PDF tickets
     'lippukala',
@@ -186,6 +186,10 @@ INSTALLED_APPS = (
     'events.ropecon2016',
     'events.kawacon2016',
     'events.mimicon2016',
+    'events.desucon2016',
+    'events.lakeuscon2016',
+    'events.animecon2016',
+    'events.hitpoint2017',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -268,6 +272,9 @@ KOMPASSI_INSTALLATION_NAME_PARTITIVE = u'Kompassin kehitys\u00ADinstanssia'
 KOMPASSI_INSTALLATION_SLUG = 'turskadev'
 KOMPASSI_PRIVACY_POLICY_URL = 'http://media.tracon.fi/2014/tracon9_turska_rekisteriseloste.pdf'
 
+# Confluence & co. require a group of users
+KOMPASSI_NEW_USER_GROUPS = ['users']
+
 AUTHENTICATION_BACKENDS = (
     'core.backends.KompassiImpersonationBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -281,30 +288,6 @@ KOMPASSI_PASSWORD_MIN_CLASSES = 3
 # Don't actually send email
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 DEFAULT_FROM_EMAIL = 'suunnistajat@kompassi.eu'
-
-
-if 'ipa_integration' in INSTALLED_APPS:
-    AUTHENTICATION_BACKENDS = (
-        'ipa_integration.backends.KompassiIPABackend',
-    ) + AUTHENTICATION_BACKENDS
-
-    KOMPASSI_IPA = 'https://moukari.tracon.fi/ipa'
-    KOMPASSI_IPA_JSONRPC = '{KOMPASSI_IPA}/json'.format(**locals())
-    KOMPASSI_IPA_CACERT_PATH = mkpath('tmp', 'ca.crt')
-    KOMPASSI_IPA_ADMIN_USERNAME = 'turskasync'
-    KOMPASSI_IPA_ADMIN_PASSWORD = 'secret'
-
-    KOMPASSI_USERS_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-users".format(**locals())
-    KOMPASSI_STAFF_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-staff".format(**locals())
-    KOMPASSI_SUPERUSERS_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-admins".format(**locals())
-
-    KOMPASSI_NEW_USER_INITIAL_GROUPS = set([
-        "{KOMPASSI_INSTALLATION_SLUG}-users".format(**locals()),
-
-        # to make sure users created via turskadev.tracon.fi can also access the
-        # actual installation
-        'turska-users',
-    ])
 
 
 if 'payments' in INSTALLED_APPS:
@@ -322,7 +305,7 @@ if 'lippukala' in INSTALLED_APPS:
 
     # NOTE these will be overridden by the respective fields in TicketsEventMeta
     # however, they need to be defined in settings or lippukala will barf.
-    LIPPUKALA_PRINT_LOGO_PATH = mkpath('events', 'popcult2015', 'static', 'images', 'popcult.png')
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath('events', 'popcult2016', 'static', 'images', 'popcult.png')
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 
@@ -369,6 +352,13 @@ if 'branding' in INSTALLED_APPS:
     KOMPASSI_ACCOUNT_BRANDING_GENITIVE = u'Kompassi-tunnuksen (ent. Tracon-tunnuksen)'
     KOMPASSI_ACCOUNT_BRANDING_ADESSIVE = u'Kompassi-tunnuksella'
     KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = u'Kompassi-tunnuksellasi'
+
+
+if 'crowd_integration' in INSTALLED_APPS:
+    KOMPASSI_CROWD_APPLICATION_NAME = 'kompassidev'
+    KOMPASSI_CROWD_APPLICATION_PASSWORD = 'secret'
+    KOMPASSI_CROWD_HOST = 'https://crowd.tracon.fi'
+    KOMPASSI_CROWD_BASE_URL = '{host}/crowd/rest/usermanagement/1'.format(host=KOMPASSI_CROWD_HOST)
 
 
 if 'desuprofile_integration' in INSTALLED_APPS:

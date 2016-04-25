@@ -1,0 +1,698 @@
+#: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
+msgid "Abandon changes and return"
+msgstr "Hylkää muutokset ja palaa"
+
+#: templates/programme_accept_invitation_view.jade
+msgid "Accept invitation"
+msgstr "Hyväksy kutsu"
+
+#: models/programme.py
+msgid "Accepted"
+msgstr "Hyväksytty"
+
+#: admin.py
+msgid "Activate selected items"
+msgstr "Aktivoi valitut kohteet"
+
+#: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Add free-form organizer"
+msgstr "Lisää vapaamuotoinen ohjelmanjärjestäjä"
+
+#: views/programme_admin_invitations_view.py
+msgid "All pending invitations were cancelled."
+msgstr "Kaikki avoimet kutsut on peruutettu."
+
+#: models/programme.py
+msgid "Anything else?"
+msgstr "Vapaamuotoiset terveiset"
+
+#: models/programme.py
+msgid "Asked from the host"
+msgstr "Kysytty ohjelmanjärjestäjältä"
+
+#: models/programme.py
+msgid "At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?"
+msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko tiedossasi muita ohjelmanumeroita, joiden kanssa et haluaisi ohjelmasi olevan samaan aikaan?"
+
+#: models/programme.py
+msgid "Audio playback"
+msgstr "Äänen toistaminen"
+
+#: templates/programme_admin_detail_views/change_host_role_modals.jade templates/programme_admin_detail_views/change_invitation_role_modals.jade templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade
+msgid "Cancel invitation"
+msgstr "Peruuta kutsu"
+
+#: models/programme.py
+msgid "Cancelled"
+msgstr "Peruutettu"
+
+#: templates/programme_profile_view.jade
+msgid "Cancelled and rejected programmes"
+msgstr "Peruutetut ja hylätyt ohjelmanumerot"
+
+#: templates/programme_admin_detail_views/change_host_role_modals.jade templates/programme_admin_detail_views/change_invitation_role_modals.jade
+msgid "Change role"
+msgstr "Vaihda roolia"
+
+#: templates/programme_admin_detail_views/change_host_role_modals.jade
+msgid "Change role of accepted host"
+msgstr "Vaihda ohjelmanjärjestäjän roolia"
+
+#: templates/programme_admin_detail_views/change_invitation_role_modals.jade
+msgid "Change role of invited host"
+msgstr "Vaihda ohjelmanjärjestäjäkutsun roolia"
+
+#: models/programme.py
+msgid "Computer use"
+msgstr "Tietokoneen käyttö"
+
+#: templates/programme_accept_invitation_view.jade
+msgid "Contact information"
+msgstr "Yhteystiedot"
+
+#: models/programme.py templates/programme_admin_detail_views/internal_tab.jade
+msgid "Created at"
+msgstr "Luontiaika"
+
+#: admin.py
+msgid "Deactivate selected items"
+msgstr "Deaktivoi valitut kohteet"
+
+#: models/programme.py
+msgid "Description"
+msgstr "Kuvaus"
+
+#: templates/programme_admin_create_view.jade
+msgid "Discard changes and return to the list"
+msgstr "Hylkää muutokset ja palaa"
+
+#: models/programme.py
+msgid "Do you have tech requirements that are not covered by the previous questions?"
+msgstr "Onko ohjelmallasi tekniikkatarpeita joita edeltävät kysymykset eivät kata?"
+
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/change_invitation_role_modals.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade
+msgid "E-mail address"
+msgstr "Sähköpostiosoite"
+
+#: templates/programme_profile_box.jade templates/programme_profile_detail_view.jade
+msgid "Edit programme"
+msgstr "Muokkaa ohjelmanumeroa"
+
+#: models/programme.py
+msgid "Encumbered content"
+msgstr "Suojattu sisältö"
+
+#: models/programme.py
+msgid "Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings."
+msgstr "Sisältääkö ohjelmasi tekijänoikeudella suojattua sisältöä? YouTubessa julkaistavat videotallenteet eivät voi sisältää kolmansien osapuolten tekijänoikeudella suojattua videota tai ääntä. Suojattu sisältö editoidaan pois videotallenteista."
+
+#: models/programme.py
+msgid "Ending time"
+msgstr "Loppumisaika"
+
+#: models/role.py proxies/helpers.py
+msgid "Event"
+msgstr "Tapahtuma"
+
+#: models/invitation.py models/programme_role.py
+msgid "Extra invites"
+msgstr "Lisäkutsut"
+
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
+msgid "First name"
+msgstr "Etunimi"
+
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
+msgid "Free-form organizer"
+msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
+
+#: models/programme.py
+msgid "Frozen"
+msgstr "Lukittu"
+
+#: templates/programme_admin_detail_views/needs_tab.jade views/programme_admin_detail_view.py
+msgid "Host needs"
+msgstr "Ohjelmanjärjestäjän tarpeet"
+
+#: templates/programme_profile_detail_view.jade
+msgid "Hosts can only be invited by the programme manager. If you have agreed with the programme manager to include people who are not listed here, please contact the programme manager. In order to receive speaker benefits, all hosts of the programme must be listed here."
+msgstr "Vain ohjelmavastaava voi kutsua ohjelmanjärjestäjiä. Mikäli olet sopinut ohjelmavastaavan kanssa useammasta järjestäjästä ohjelmaasi eikä heitä ole listattu tähän, ole hyvä ja ota yhteyttä ohjelmavastaavaan. Saadakseen ohjelmanjärjestäjän edut kaikkien ohjelmanjärjestäjien tulee olla listattu tässä."
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
+msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
+
+#: models/programme.py
+msgid "How large an audience do you expect for your programme? What kind of a room do you wish for your programme?"
+msgstr "Miten suurta yleisöä odotat ohjelmallesi? Minkä tyyppistä tilaa toivot ohjelmallesi?"
+
+#: models/programme.py
+msgid "How many microphones do you require?"
+msgstr "Montako mikrofonia tarvitset?"
+
+#: models/programme.py
+msgid "I forbid publishing my programme, but it may be recorded for archiving purposes"
+msgstr "Kiellän ohjelmani julkaisemisen, mutta sen saa videoida arkistokäyttöön"
+
+#: models/programme.py
+msgid "I forbid recording my programme altogether"
+msgstr "Kiellän ohjelmani videoinnin kokonaan"
+
+#: models/programme.py
+msgid "I'm not sure whether my programme contains copyright-encumbered content or not"
+msgstr "En ole varma, sisältääkö ohjelmani tekijänoikeudella suojattua sisältöä"
+
+#: models/programme.py
+msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
+msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+
+#: templates/programme_accept_invitation_view.jade
+msgid "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile."
+msgstr "Jos nimesi näytetään julkisesti tämän ohjelman järjestäjänä, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
+
+#: models/programme.py
+msgid "In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room."
+msgstr "Jotta ohjelmanumero näkyisi ohjelmakartassa, sillä tulee olla alkuaika sekä pituus ja sen tulee olla sijoitettu johonkin saliin."
+
+#: templates/programme_accept_invitation_view.jade templates/programme_profile_detail_view.jade
+msgid "Information about yourself"
+msgstr "Tietoja itsestäsi"
+
+#: templates/programme_admin_detail_views/internal_tab.jade views/programme_admin_detail_view.py
+msgid "Internal information"
+msgstr "Sisäiset tiedot"
+
+#: models/programme.py
+msgid "Internal notes"
+msgstr "Sisäiset muistiinpanot"
+
+#: models/programme.py
+msgid "Internal programme idea"
+msgstr "Ideoitu sisäisesti"
+
+#: views/programme_admin_detail_view.py
+msgid "Invalid action."
+msgstr "Kelvoton toiminto."
+
+#: views/programme_admin_invitations_view.py
+msgid "Invalid request."
+msgstr "Kelvoton pyyntö."
+
+#: templates/programme_accept_invitation_view.jade
+msgid "Invitation to organize programme"
+msgstr "Kutsu ohjelmanjärjestäjäksi"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_detail_views/invitation_modal.jade
+msgid "Invite host"
+msgstr "Kutsu ohjelmanjärjestäjä"
+
+#: templates/programme_admin_invitations_view.jade
+msgid "Invited at"
+msgstr "Kutsun luontiaika"
+
+#: templates/programme_admin_invitations_view.jade
+msgid "Invited by"
+msgstr "Kutsuja"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Invites"
+msgstr "Kutsut"
+
+#: models/programme.py
+msgid "It's OK to photograph my programme"
+msgstr "Ohjelmanumeroani saa valokuvata"
+
+#: models/programme.py
+msgid "Laptop provided by the event"
+msgstr "Tapahtuman toimittama kannettava tietokone"
+
+#: models/programme.py
+msgid "Length (minutes)"
+msgstr "Pituus (minuuttia)"
+
+#: models/programme.py
+msgid "Make up a concise title for your programme. We reserve the right to edit the title."
+msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
+
+#: models/programme.py
+msgid "May your programme be recorded and published in the Internet?"
+msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
+
+#: models/programme.py
+msgid "Microphones"
+msgstr "Mikrofonit"
+
+#: models/programme.py
+msgid "More than five – Please elaborate on your needs in the \"Other tech requirements\" field."
+msgstr "Enemmän kuin viisi – Ole hyvä ja selitä tarpeesi Muut tekniikkatarpeet -kentässä."
+
+#: models/programme.py
+msgid "My programme contains copyright-encumbered audio or video"
+msgstr "Ohjelmanumeroni sisältää tekijänoikeudella suojattua ääntä tai videota."
+
+#: models/programme.py
+msgid "My programme does not contain copyright-encumbered audio or video"
+msgstr "Ohjelmanumeroni ei sisällä tekijänoikeudella suojattua ääntä tai videota."
+
+#: models/programme.py
+msgid "My programme may be recorded and published"
+msgstr "Ohjelmanumeroni saa videoida ja julkaista"
+
+#: templates/programme_admin_detail_views/change_host_role_modals.jade
+msgid "Name"
+msgstr "Nimi"
+
+#: templates/programme_accept_invitation_view.jade
+msgid "Name as displayed"
+msgstr "Nimen esittäminen"
+
+#: templates/programme_admin_create_view.jade
+msgid "New programme"
+msgstr "Uusi ohjelmanumero"
+
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
+msgid "Nick name"
+msgstr "Nick"
+
+#: models/programme.py
+msgid "No"
+msgstr "Ei"
+
+#: models/programme.py
+msgid "No computer required"
+msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
+
+#: templates/programme_profile_view.jade
+msgid "No programmes"
+msgstr "Ei ohjelmanumeroita"
+
+#: models/programme.py
+msgid "Not sure"
+msgstr "En ole varma"
+
+#: models/programme.py
+msgid "Offer received"
+msgstr "Ohjelmatarjous vastaanotettu"
+
+#: models/role.py
+msgid "Only hosts who are assigned public roles will be shown publicly in the programme schedule."
+msgstr "Ohjelmakartassa näytetään ainoastaan ne ohjelmanjärjestäjät, jotka ovat julkisessa roolissa."
+
+#: templates/programme_admin_invitations_view.jade views/programme_admin_menu_items.py
+msgid "Open invitations"
+msgstr "Avoimet kutsut"
+
+#: models/programme.py
+msgid "Other tech requirements"
+msgstr "Muut tekniikkatarpeet"
+
+#: models/programme.py
+msgid "Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed."
+msgstr "Tapahtuman viralliset valokuvaajat pyrkivät ottamaan valokuvia kaikista ohjelmanumeroista joista niitä on pyydetty."
+
+#: models/programme.py
+msgid "Own laptop – PC"
+msgstr "Oma PC-kannettava"
+
+#: models/programme.py
+msgid "Own laptop – Mac"
+msgstr "Oma Mac-kannettava"
+
+#: models/role.py
+msgid "Personnel class"
+msgstr "Henkilöstöluokka"
+
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Phone number"
+msgstr "Puhelinnumero"
+
+#: models/programme.py
+msgid "Photography of your prorgmme"
+msgstr "Ohjelman valokuvaus"
+
+#: views/admin_views.py views/programme_accept_invitation_view.py views/programme_admin_detail_view.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkista lomake."
+
+#: templates/programme_accept_invitation_view.jade
+msgid "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number."
+msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman ohjelmavastaaville. Mikäli ohjelmanumerollasi on muitakin järjestäjiä, he näkevät nimesi mutteivät sähköpostiosoitettasi tai puhelinnumeroasi."
+
+#: models/programme.py
+msgid "Please do not photograph my programme"
+msgstr "Pyydän, ettei ohjelmanumeroani valokuvata"
+
+#: forms.py
+msgid "Please enter an e-mail address to invite another host"
+msgstr "Ole hyvä ja syötä sähköpostiosoite kutsuaksesi toisen ohjelmanjärjestäjän"
+
+#: models/programme.py
+msgid "Please photograph my programme"
+msgstr "Pyydän, että ohjelmastani otetaan valokuvia"
+
+#: models/role.py
+msgid "Priority"
+msgstr "Järjestys"
+
+#: models/freeform_organizer.py models/invitation.py templates/programme_admin_invitations_view.jade
+msgid "Programme"
+msgstr "Ohjelma"
+
+#: models/programme_role.py
+msgid "Programme host"
+msgstr "Ohjelmanjärjestäjä"
+
+#: models/programme_role.py templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade views/programme_admin_detail_view.py
+msgid "Programme hosts"
+msgstr "Ohjelmanjärjestäjät"
+
+#: templates/programme_accept_invitation_view.jade
+msgid "Programme information"
+msgstr "Ohjelmanumeron tiedot"
+
+#: templates/programme_profile_view.jade views/public_views.py
+msgid "Programmes"
+msgstr "Ohjelmanumerot"
+
+#: templates/programme_profile_view.jade
+msgid "Programmes you can edit"
+msgstr "Ohjelmanumerot, joita voit muokata"
+
+#: models/role.py
+msgid "Public"
+msgstr "Julkinen"
+
+#: templates/programme_admin_detail_views/public_tab.jade views/programme_admin_detail_view.py
+msgid "Public information"
+msgstr "Julkiset tiedot"
+
+#: models/programme.py
+msgid "Published"
+msgstr "Julkaistu"
+
+#: templates/programme_profile_view.jade
+msgid "Published programmes"
+msgstr "Julkaistut ohjelmanumerot"
+
+#: models/programme.py
+msgid "Recording permission"
+msgstr "Videointilupa"
+
+#: models/programme.py
+msgid "Rejected"
+msgstr "Hylätty"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Remove free-form host"
+msgstr "Poista vapaamuotoinen ohjelmanjärjestäjä"
+
+#: templates/programme_admin_detail_views/hosts_tab.jade
+msgid "Remove host"
+msgstr "Poista ohjelmanjärjestäjä"
+
+#: models/programme.py
+msgid "Requested time slot"
+msgstr "Aikatoiveet"
+
+#: templates/programme_admin_invitations_view.jade
+msgid "Revoke all open invitations"
+msgstr "Peru kaikki avoimet kutsut"
+
+#: models/invitation.py templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade templates/programme_profile_detail_view.jade
+msgid "Role"
+msgstr "Rooli"
+
+#: models/programme.py
+msgid "Room"
+msgstr "Sali"
+
+#: models/programme.py
+msgid "Room requirements"
+msgstr "Tilatarpeet"
+
+#: templates/programme_admin_create_view.jade templates/programme_admin_detail_view.jade templates/programme_admin_detail_views/buttons.jade
+msgid "Save and continue"
+msgstr "Tallenna ja jatka"
+
+#: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
+msgid "Save and return"
+msgstr "Tallenna ja palaa"
+
+#: templates/programme_profile_detail_view.jade
+msgid "Save changes"
+msgstr "Tallenna muutokset"
+
+#: templates/programme_admin_detail_views/schedule_tab.jade views/programme_admin_detail_view.py
+msgid "Schedule information"
+msgstr "Ohjelmakarttatiedot"
+
+#: templates/programme_admin_detail_views/invitation_modal.jade
+msgid "Send invitation"
+msgstr "Lähetä kutsu"
+
+#: models/invitation.py
+msgid "Sire"
+msgstr "Isäntä"
+
+#: models/role.py
+msgid "Some events have speaker roles that convey different privileges within the same personnel class. This priority field will put the speakers in their place."
+msgstr "Jotkin tapahtumat määrittelevät useita ohjelmanjärjestäjärooleja, jotka antavat eritasoiset edut. Tätä prioriteettikenttää käytetään korkeimmat edut antavan tason valitsemiseen."
+
+#: templates/programme_accept_invitation_view.jade templates/programme_profile_detail_view.jade
+msgid "Someone has been invited, but they have not yet accepted their invitation."
+msgstr "Joku on kutsuttu, mutta hän ei ole vielä hyväksynyt kutsuaan."
+
+#: models/programme.py
+msgid "Starting time"
+msgstr "Alkamisaika"
+
+#: models/programme.py
+msgid "State"
+msgstr "Tila"
+
+#: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
+msgid "Surname"
+msgstr "Sukunimi"
+
+#: models/programme.py
+msgid "Tags"
+msgstr "tägit"
+
+#: models/freeform_organizer.py
+msgid "Text"
+msgstr "Teksti"
+
+#: views/programme_accept_invitation_view.py
+msgid "Thank you for accepting the invitation. You can change the information later from your profile."
+msgstr "Kiitos kutsun hyväksymisestä. Voit muuttaa tietoja myöhemmin profiilisi kautta."
+
+#: views/programme_admin_detail_view.py
+msgid "The changes were saved."
+msgstr "Muutokset tallennettiin."
+
+#: views/programme_admin_detail_view.py
+msgid "The freeform organizer was successfully added."
+msgstr "Vapaamuotoinen ohjelmanjärjestäjä lisätty."
+
+#: models/invitation.py models/programme_role.py
+msgid "The host may send this many extra invites to other hosts of the programme."
+msgstr "Ohjelmanjärjestäjä voi lähettää näin monta kutsua ohjelmansa muille järjestäjille."
+
+#: models/invitation.py
+msgid "The host that spawned this invitation. Sired invitations consume the extra invite quota of the sire."
+msgstr "Ohjelmanjärjestäjä joka tämän kutsun loi. Ohjelmanjärjestäjän lähettämät lisäkutsut kuluttavat lisäkutsujen kiintiötä."
+
+#: views/programme_admin_detail_view.py
+msgid "The host was removed."
+msgstr "Ohjelmanjärjestäjä poistettu."
+
+#: views/programme_admin_detail_view.py
+msgid "The host was successfully invited."
+msgstr "Kutsu lähetettiin onnistuneesti."
+
+#: views/programme_accept_invitation_view.py
+msgid "The invitation is no longer valid."
+msgstr "Kutsu ei ole enää voimassa."
+
+#: views/programme_admin_detail_view.py views/programme_admin_invitations_view.py
+msgid "The invitation was cancelled."
+msgstr "Kutsu peruutettu."
+
+#: models/role.py
+msgid "The personnel class for the programme hosts that have this role."
+msgstr "Henkilöstöluokka ohjelmanjärjestäjille, joilla on tämä rooli."
+
+#: templates/programme_accept_invitation_view.jade
+#, python-format
+msgid "The programme manager has allowed you to invite one more host to this programme. You may do so now by entering their e-mail address in the field above, or later via your profile."
+msgid_plural "The programme manager has allowed you to invite up to %(num_invites)s hosts to this programme. You may do so now by entering their e-mail addresses in the fields above, or later via your profile."
+msgstr[0] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi yhden muun ohjelmanjärjestäjän. Voit tehdä niin nyt syöttämällä hänen sähköpostiosoitteensa yllä olevaan kenttään tai myöhemmin profiilisi kautta."
+msgstr[1] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi %(num_invite)s muuta ohjelmanjärjestäjää. Voit tehdä niin nyt syöttämällä heidän sähköpostiosoitteensa yllä oleviin kenttiin tai myöhemmin profiilisi kautta."
+
+#: templates/programme_profile_detail_view.jade
+#, python-format
+msgid "The programme manager has allowed you to invite one more host to this programme. You may do so now or later by entering their e-mail address in the field above."
+msgid_plural "The programme manager has allowed you to invite up to %(num_invites)s more hosts to this programme. You may do so now or later by entering their e-mail addresses in the fields above."
+msgstr[0] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi yhden muun ohjelmanjärjestäjän. Voit tehdä niin nyt tai myöhemmin syöttämällä hänen sähköpostiosoitteensa yllä olevaan kenttään."
+msgstr[1] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi %(num_invite)s muuta ohjelmanjärjestäjää. Voit tehdä niin nyt tai myöhemmin syöttämällä heidän sähköpostiosoitteensa yllä oleviin kenttiin."
+
+#: templates/programme_accept_invitation_view.jade
+msgid "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details."
+msgstr "Ohjelmavastaava on kutsunut sinut järjestämään ohjelmanumeron, joka on yksilöity alla. Saadaksesi ohjelmanjärjestäjän edut sinun tulee hyväksyä tämä kutsu ja täyttää pyydetyt lisätiedot."
+
+#: views/admin_views.py
+msgid "The programme was created."
+msgstr "Ohjelmanumero luotiin."
+
+#: models/programme.py
+msgid "The programmes in the state \"Published\" will be visible to the general public, if the schedule has already been published."
+msgstr "Tilassa ”Julkaistu” olevat ohjelmanumerot näkyvät yleisölle, mikäli ohjelmakartta on julkaistu."
+
+#: views/programme_admin_detail_view.py
+msgid "The role was changed."
+msgstr "Rooli vaihdettiin."
+
+#: models/programme.py
+msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
+msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta."
+
+#: models/programme.py
+msgid "This field is normally only visible to the programme managers. However, should the programme host request a record of their own personal details, this field will be included in that record."
+msgstr "Tämän kentän sisältö näkyy normaalisti vain ohjelmavastaaville. Se on kuitenkin sisällytettävä rekisteriotteeseen, mikäli ohjelmanjärjestäjä pyytää sellaista."
+
+#: models/programme.py
+msgid "This programme has been frozen by the programme manager."
+msgstr "Ohjelmavastaava on lukinnut tämän ohjelmanumeron."
+
+#: models/programme.py
+msgid "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager."
+msgstr "Ohjelmanumero on julkaistu, joten et voi enää muokata sitä itse. Jos tarvitset ohjelmanumeron tietoihin muutoksia, ole hyvä ja ota yhteyttä ohjelmavastaavaan."
+
+#: models/programme.py
+msgid "This programme has been rejected by the programme manager."
+msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
+
+#: models/freeform_organizer.py
+msgid "This text will be shown as-is in the schedule"
+msgstr "Tämä teksti näytetään ohjelmakartassa sellaisenaan."
+
+#: models/programme.py proxies/helpers.py
+msgid "Title"
+msgstr "Otsikko"
+
+#: templates/programme_accept_invitation_view.jade
+msgid "Update profile..."
+msgstr "Päivitä profiilia..."
+
+#: models/programme.py templates/programme_admin_detail_views/internal_tab.jade
+msgid "Updated at"
+msgstr "Päivitysaika"
+
+#: models/programme.py
+msgid "Video playback"
+msgstr "Videon toistaminen"
+
+#: templates/programme_profile_box.jade
+msgid "View programme details"
+msgstr "Tarkastele ohjelmanumeron tietoja"
+
+#: models/programme.py
+msgid "What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance."
+msgstr "Minkälaista tietokonetta haluat käyttää? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
+
+#: models/programme.py
+msgid "Will you play audio in your programme?"
+msgstr "Soitatko äänileikkeitä (esim. musiikkia) osana ohjelmaasi?"
+
+#: models/programme.py
+msgid "Will you play video in your programme?"
+msgstr "Näytätkö videopätkiä osana ohjelmaasi?"
+
+#: models/programme.py
+msgid "Yes"
+msgstr "Kyllä"
+
+#: templates/programme_accept_invitation_view.jade
+msgid "You can change these details later by visiting your profile."
+msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
+
+#: templates/programme_profile_detail_view.jade
+msgid "You can edit the details of this programme until it is published in the schedule."
+msgstr "Voit muokata tämän ohjelmanumeron tietoja kunnes se on julkaistu ohjelmakarttaan."
+
+#: views/programme_accept_invitation_view.py
+msgid "You have already accepted this invitation. You can edit the programme below."
+msgstr "Olet jo ottanut tämän kutsun vastaan. Voit muokata ohjelmanumeron tietoja alla."
+
+#: views/programme_accept_invitation_view.py
+msgid "You have already accepted this invitation. You can no longer edit the programme."
+msgstr "Olet jo ottanut tämän kutsun vastaan. Et voi enää muokata ohjelmanumeron tietoja."
+
+#: models/programme.py
+msgid "You have cancelled this programme."
+msgstr "Olet peruuttanut tämän ohjelmanumeron."
+
+#: templates/programme_profile_view.jade
+msgid "You have not organized any programme in events that use this site."
+msgstr "Et ole järjestänyt ohjelmaa tapahtumissa, jotka käyttävät tätä sivustoa."
+
+#: models/category.py
+msgid "categories"
+msgstr "ohjelmaluokat"
+
+#: models/category.py models/programme.py
+msgid "category"
+msgstr "ohjelmaluokka"
+
+#: models/freeform_organizer.py proxies/freeform_organizer/admin.py
+msgid "freeform organizer"
+msgstr "vapaamuotoinen ohjelmanjärjestäjä"
+
+#: models/freeform_organizer.py proxies/freeform_organizer/admin.py
+msgid "freeform organizers"
+msgstr "vapaamuotoiset ohjelmanjärjestäjät"
+
+#: models/invitation.py proxies/invitation/admin.py
+msgid "invitation"
+msgstr "kutsu"
+
+#: models/invitation.py proxies/invitation/admin.py
+msgid "invitations"
+msgstr "kutsut"
+
+#: models/programme.py
+msgid "programme"
+msgstr "Ohjelmanumero"
+
+#: models/programme.py
+msgid "programmes"
+msgstr "Ohjelmanumerot"
+
+#: models/role.py
+msgid "role"
+msgstr "rooli"
+
+#: models/role.py
+msgid "roles"
+msgstr "roolit"
+
+#: models/schedule.py
+msgid "schedule view"
+msgstr "ohjelmakarttanäkymä"
+
+#: models/schedule.py
+msgid "schedule views"
+msgstr "ohjelmakarttanäkymät"
+
+#: models/tag.py
+msgid "tag"
+msgstr "tägi"
+
+#: models/tag.py
+msgid "tags"
+msgstr "tägit"
+

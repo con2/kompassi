@@ -14,16 +14,19 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib import messages
 from django.utils.timezone import now
+from django.views.decorators.http import require_POST
 
-from jsonschema import ValidationError as JSONSchemaValidationError
+from jsonschema import validate, ValidationError as JSONSchemaValidationError
 from requests_oauthlib import OAuth2Session
 
+from api.utils import api_view, api_login_required
 from core.forms import valid_username
 from core.models import Person
 from core.views.login_views import do_login
 from core.utils import create_temporary_password, get_next
+from programme.helpers import programme_event_required
 
-from .models import Connection, ConfirmationCode, Desuprofile
+from .models import Connection, ConfirmationCode, Desuprofile, Desuprogramme
 
 
 logger = logging.getLogger('kompassi')
@@ -135,6 +138,13 @@ class CallbackView(View):
             return self.respond_with_existing_user(request, next_url, desuprofile, user)
 
     def respond_with_new_user(self, request, next_url, desuprofile):
+        """
+        This implements the following case:
+
+        2. No Kompassi account is linked to this Desuprofile, and no Kompassi account matches the Desuprofile by email address.
+           A new Kompassi account is created and logged in.
+        """
+
         User = get_user_model()
         password = create_temporary_password()
 
@@ -144,8 +154,7 @@ class CallbackView(View):
             valid_username(username)
         except DjangoValidationError:
             username = None
-
-        with transaction.atomic():
+        else:
             try:
                 User.objects.get(username=username)
             except User.DoesNotExist:
@@ -155,9 +164,10 @@ class CallbackView(View):
                 # Username clash with an existing account, use safe username
                 username = None
 
-            if username is None:
-                username = "desuprofile_{id}".format(id=desuprofile.id)
+        if username is None:
+            username = "desuprofile_{id}".format(id=desuprofile.id)
 
+        with transaction.atomic():
             user = User(
                 username=username,
                 is_active=True,
@@ -169,12 +179,12 @@ class CallbackView(View):
             user.save()
 
             person = Person(
-                first_name=desuprofile.first_name,
-                surname=desuprofile.last_name,
-                nick=desuprofile.nickname,
-                email=desuprofile.email,
-                phone=desuprofile.phone,
-                birth_date=datetime.strptime(desuprofile.birth_date, '%Y-%m-%d').date() if desuprofile.birth_date else None,
+                first_name=desuprofile.first_name.strip(),
+                surname=desuprofile.last_name.strip(),
+                nick=desuprofile.nickname.strip(),
+                email=desuprofile.email.strip(),
+                phone=desuprofile.phone.strip(),
+                birth_date=datetime.strptime(desuprofile.birth_date.strip(), '%Y-%m-%d').date() if desuprofile.birth_date else None,
                 notes=u'Luotu Desuprofiilista',
                 user=user,
             )
@@ -188,12 +198,7 @@ class CallbackView(View):
             )
             connection.save()
 
-        person.setup_email_verification(request)
-
-        if 'ipa_integration' in settings.INSTALLED_APPS:
-            from ipa_integration.utils import create_user
-            create_user(user, password)
-
+        person.apply_state_new_user(request, password)
         messages.success(request, u'Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!')
 
         return respond_with_connection(request, next_url, connection)
@@ -215,10 +220,6 @@ class CallbackView(View):
 def respond_with_connection(request, next_url, connection):
     user = connection.user
     user.backend = 'django.contrib.auth.backends.ModelBackend'
-
-    if 'ipa_integration' in settings.INSTALLED_APPS:
-        from ipa_integration.utils import sync_user_info
-        sync_user_info(user)
 
     return do_login(request, user, next=next_url)
 
@@ -260,3 +261,21 @@ class ConfirmationView(View):
 
         messages.success(request, u'Desuprofiilisi on liitetty Kompassi-tunnukseesi ja sinut on kirjattu sisään. Jatkossa voit kirjautua sisään Kompassiin käyttäen Desuprofiiliasi.')
         return respond_with_connection(request, code.next_url, connection)
+
+
+@api_view
+@api_login_required
+@programme_event_required
+@require_POST
+def desuprogramme_import_view(request, event):
+    """
+    Processes a programme import from Desusite.
+    """
+    from .utils import import_programme
+
+    payload = json.loads(request.body)
+    validate(payload, {'type': 'array', 'items': Desuprogramme.schema})
+
+    import_programme(event, payload)
+
+    return HttpResponse('', status=202)

@@ -1,21 +1,19 @@
 extends core_admin_base.jade
+- load trans from i18n
 - load crispy_forms_tags
 block title
   | Lisää henkilö
 block admin_content
-  .panel.panel-warning
-    .panel-heading: strong Huomautus!
-    .panel-body: p
-      | Tämä lomake on tarkoitettu henkilön lisäämiseen nimi- ja badgelistoihin käsin automaattisen menettelyn ohi.
-      | Traconissa työvoiman ja ohjelman badget on tarkoitus hoitaa ensi&shy;sijaisesti automaattisella menettelyllä
-      | ja vain erikoistapauksissa tällä lomakkeella. Muut badget, kuten media- ja vierasbadget, syötetään tällä lomakkeella.
   form(method='POST').form.form-horizontal
     .panel.panel-default
-      .panel-heading: strong Lisää henkilö
+      .panel-heading: strong {% trans "Manual badge creation" %}
       .panel-body
-        - crispy badge_form
-        - crispy person_form
+        - crispy form
       .panel-footer.clearfix
         .btn-group.pull-right
-          a.btn.btn-danger(href='{% url "badges_admin_badges_view" event.slug %}') Hylkää muutokset ja palaa nimilistaan
-          input.btn.btn-success(type='submit', name='submit', value='Lisää badge')
+          a.btn.btn-default(href='{% url "badges_admin_badges_view" event.slug %}')
+            i.fa.fa-undo.kompassi-icon-space-right
+            {% trans "Abandon changes and return" %}
+          button.btn.btn-success(type='submit')
+            i.fa.fa-check.kompassi-icon-space-right
+            {% trans "Add badge" %}

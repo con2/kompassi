@@ -1,5 +1,9 @@
-for item_active, item_url, item_text in admin_menu_items
-  if item_active
-    li.active: a(href='{{ item_url }}') {{ item_text }}
+for admin_menu_item in admin_menu_items
+  if admin_menu_item.is_admin_menu_item
+    li(class='{% if admin_menu_item.is_active %}active{% endif %}')
+      a(href='{{ admin_menu_item.href }}')
+        |{{ admin_menu_item.text }}
+        if admin_menu_item.notifications
+          span.badge.badge-default= admin_menu_item.notifications
   else
-    li: a(href='{{ item_url }}') {{ item_text }}
+    li(class='{% if admin_menu_item.0 %}active{% endif %}'): a(href='{{ admin_menu_item.1 }}') {{ admin_menu_item.2 }}

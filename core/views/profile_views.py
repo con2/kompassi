@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -57,17 +59,21 @@ def core_profile_view(request):
         if form.is_valid():
             person = form.save()
 
+            person.apply_state()
+
             if form.cleaned_data['email'] != old_email:
                 person.setup_email_verification(request)
-                messages.info(request,
-                    u'Tietosi on tallennettu. Koska muutit sähköpostiosoitettasi, sinun täytyy '
-                    u'vahvistaa sähköpostiosoitteesi uudelleen. Tarkista postilaatikkosi ja '
-                    u'noudata vahvistusviestissä olevia ohjeita.'
-                )
-            else:
-                messages.success(request, u'Tietosi on tallennettu.')
+                messages.info(request, _(
+                    "As you changed your e-mail address, you need to verify your e-mail address again. "
+                    "Please check your e-mail and proceed with the instructions you will find there. "
+                    "Please note that you may experience reduced functionality until you have confirmed "
+                    "your e-mail address again. We apologize for the inconvenience."
+                ))
+
+            messages.success(request, _("The changes were saved."))
+            return redirect('core_profile_view')
         else:
-            messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
+            messages.error(request, _("Please check the form."))
 
     vars = dict(
         form=form
@@ -91,13 +97,13 @@ def core_password_view(request):
                 change_user_password(request.user, old_password=old_password, new_password=new_password)
             except RuntimeError:
                 logger.exception('Failed to change password')
-                messages.error(request, u'Salasanan vaihto epäonnistui. Ole hyvä ja yritä myöhemmin uudelleen.')
+                messages.error(request, 'Salasanan vaihto epäonnistui. Ole hyvä ja yritä myöhemmin uudelleen.')
                 return redirect('core_password_view')
             else:
-                messages.success(request, u'Salasanasi on vaihdettu. Voit nyt kirjautua uudestaan sisään uudella salasanallasi.')
+                messages.success(request, 'Salasanasi on vaihdettu. Voit nyt kirjautua uudestaan sisään uudella salasanallasi.')
                 return redirect('core_frontpage_view')
         else:
-            messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
+            messages.error(request, 'Ole hyvä ja korjaa virheelliset kentät.')
 
     vars = dict(
         form=form,
@@ -114,13 +120,13 @@ def core_profile_menu_items(request):
 
     profile_url = reverse('core_profile_view')
     profile_active = request.path == profile_url
-    profile_text = _(u'Profile')
+    profile_text = _('Profile')
 
     items.append((profile_active, profile_url, profile_text))
 
     password_url = reverse('core_password_view')
     password_active = request.path == password_url
-    password_text = _(u'Change password')
+    password_text = _('Change password')
 
     items.append((password_active, password_url, password_text))
 
@@ -132,7 +138,7 @@ def core_profile_menu_items(request):
         if not person.is_email_verified:
             email_verification_url = reverse('core_email_verification_request_view')
             email_verification_active = request.path == email_verification_url
-            email_verification_text = _(u'E-mail address verification')
+            email_verification_text = _('E-mail address verification')
             items.append((email_verification_active, email_verification_url, email_verification_text))
 
     if 'labour' in settings.INSTALLED_APPS:
@@ -154,7 +160,7 @@ def core_profile_menu_items(request):
     if 'django.contrib.admin' in settings.INSTALLED_APPS and request.user.is_staff:
         admin_url = '/admin/' # XXX hardcoded
         admin_active = False
-        admin_text = _(u'Site administration')
+        admin_text = _('Site administration')
         items.append((admin_active, admin_url, admin_text))
 
     return items

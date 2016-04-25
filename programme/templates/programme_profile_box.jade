@@ -1,0 +1,21 @@
+- load trans from i18n
+.panel.panel-default
+  .panel-heading
+    .pull-right
+      .label(class='{{ programme.state_css }}')= programme.get_state_display
+    strong.kompassi-space-after= programme.category.event.name
+    small.text-muted= programme.category.event.headline
+  .panel-body
+    include programme_info_fragment.jade
+  if programme.host_can_edit
+    .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-primary(href='{% url "programme_profile_detail_view" programme.id %}')
+            i.fa.fa-pencil-square-o
+            | {% trans "Edit programme" %}
+  else
+    .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-default(href='{% url "programme_profile_detail_view" programme.id %}')
+            i.fa.fa-pencil-square-o
+            | {% trans "View programme details" %}

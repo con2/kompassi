@@ -1,0 +1,15 @@
+Hyvä vastaanottaja,
+
+{{ event.name_genitive }} ohjelmavastaava on kutsunut sinut järjestämään tapahtumaan ohjelmanumeron, jonka työnimi on ”{{ programme.title }}”.
+
+Hyväksy kutsu vierailemalla selaimella tässä osoitteessa ja täyttämällä sieltä löytyvä lomake:
+
+{{ link }}
+
+Kutsun hyväksymiseksi tarvitset Kompassi-tunnuksen. Mikäli sinulla ei vielä ole Kompassi-tunnusta, voit rekisteröidä itsellesi sellaisen.
+
+Huomaathan, että tämän kutsun hyväksyminen on välttämätöntä ohjelmanjärjestäjän etujen saamiseksi.
+
+Ystävällisin terveisin
+--
+{{ meta.contact_email|safe }}

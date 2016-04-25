@@ -13,6 +13,7 @@ from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.http import require_http_methods, require_safe
 
@@ -26,7 +27,6 @@ from ..models import (
     Category,
     Tag,
     Programme,
-    ProgrammeEditToken,
 )
 from ..helpers import programme_event_required, public_programme_required, group_programmes_by_start_time
 
@@ -179,33 +179,6 @@ def programme_internal_adobe_taggedtext_view(request, event):
 
 
 @programme_event_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
-def programme_self_service_view(request, event, programme_edit_code):
-    token = get_object_or_404(ProgrammeEditToken,
-        programme__category__event=event,
-        code=programme_edit_code
-    )
-
-    token.used_at = now()
-    token.save()
-
-    programme = token.programme
-
-    from .admin_views import actual_detail_view
-
-    vars = dict(
-        event=event,
-        login_page=True, # XXX
-    )
-
-    return actual_detail_view(request, vars, event, programme,
-        template='programme_self_service_view.jade',
-        self_service=True,
-        redirect_success=lambda ev, unused: redirect('programme_self_service_view', ev.slug, token.code),
-    )
-
-
-@programme_event_required
 @require_safe
 @api_view
 def programme_json_view(request, event, format='default'):
@@ -226,7 +199,13 @@ def programme_json_view(request, event, format='default'):
 
 
 def programme_profile_menu_items(request):
-    return []
+    programme_url = url('programme_profile_view')
+    programme_active = request.path.startswith(programme_url)
+    programme_text = _(u'Programmes')
+
+    return [
+        (programme_active, programme_url, programme_text)
+    ]
 
 
 def programme_event_box_context(request, event):

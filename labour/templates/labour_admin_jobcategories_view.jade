@@ -1,0 +1,41 @@
+extends core_admin_base
+- load trans from i18n
+- load crispy from crispy_forms_tags
+block title
+  {% trans "Edit job categories" %}
+block admin_content
+  form(role='form', method='POST').form-horizontal
+    {% csrf_token %}
+    .panel.panel-default
+      .panel-heading: strong {% trans "Edit job categories" %}
+      table.table.table-striped
+        thead
+          tr
+            th {% trans "Job category" %}
+            th {% trans "Publicly accepting applications" %}
+            th
+        tbody
+          for job_category in job_categories
+            tr
+              td
+                a(href='{% url "labour_admin_jobcategory_view" event.slug job_category.slug %}')= job_category.name
+              td
+                if job_category.public
+                  .label.label-success {% trans "Yes" %}
+                else
+                  .label.label-default {% trans "No" %}
+              td
+                .btn-group
+                  if job_category.can_remove
+                    button.btn.btn-xs.btn-danger(type='submit', name='remove', value='{{ job_category.id }}', title='{% trans "Remove" %}')
+                      i.fa.fa-1.fa-trash
+                  else
+                    button.btn.btn-xs.btn-danger(type='button', disabled, title='{% trans "This job category cannot be removed because applications have already been made to it." %}')
+                      i.fa.fa-1.fa-trash
+
+
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-success(href='{% url "labour_admin_create_jobcategory_view" event.slug %}')
+            i.fa.fa-plus.kompassi-icon-space-right
+            {% trans "Add job category" %}

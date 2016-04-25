@@ -86,7 +86,7 @@ def core_password_reset_request_view(request):
         if form.is_valid():
             try:
                 person = Person.objects.get(
-                    email=form.cleaned_data['email'],
+                    email__iexact=form.cleaned_data['email'].strip(),
                     user__isnull=False,
                 )
             except Person.DoesNotExist:

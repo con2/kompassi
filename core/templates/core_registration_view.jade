@@ -10,3 +10,11 @@ block content
       input(type='hidden', name='next', value='{{ next }}')
       - crispy registration_form
       - crispy person_form
+      - crispy terms_and_conditions_form
+      .col-md-9.col-md-offset-3
+        button.btn.btn-success(type='submit')
+          i.fa.fa-check.kompassi-icon-space-right
+          {% trans "Sign up" %}
+        span.text-muted(style='padding-left: 1em') {% trans "Please note that creating an account takes a while. Please press the Sign up button only once." %}
+  //- XXX why is this required
+  p &nbsp;

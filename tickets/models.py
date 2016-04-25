@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
 from time import time, mktime
@@ -9,50 +11,42 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.utils import timezone
+from django.utils.encoding import python_2_unicode_compatible
 
 from dateutil.tz import tzlocal
 
 from core.models import EventMetaBase
-from core.utils import url, code_property
+from core.utils import url, code_property, slugify, NONUNIQUE_SLUG_FIELD_PARAMS
 from payments.utils import compute_payment_request_mac
 
 from .utils import format_date, format_price
 from .receipt import render_receipt
 
 
-__all__ = [
-    "TicketsEventMeta",
-    "Batch",
-    "Product",
-    "Customer",
-    "Order",
-    "OrderProduct",
-]
-
-
 LOW_AVAILABILITY_THRESHOLD = 10
 UNPAID_CANCEL_DAYS = 1
 
 
+@python_2_unicode_compatible
 class TicketsEventMeta(EventMetaBase):
     shipping_and_handling_cents = models.IntegerField(
-        verbose_name=u'Toimituskulut (senttejä)',
+        verbose_name='Toimituskulut (senttejä)',
         default=0,
     )
 
     due_days = models.IntegerField(
-        verbose_name=u'Maksuaika (päiviä)',
+        verbose_name='Maksuaika (päiviä)',
         default=14,
     )
 
     ticket_sales_starts = models.DateTimeField(
-        verbose_name=u'Lipunmyynnin alkuaika',
+        verbose_name='Lipunmyynnin alkuaika',
         null=True,
         blank=True,
     )
 
     ticket_sales_ends = models.DateTimeField(
-        verbose_name=u'Lipunmyynnin päättymisaika',
+        verbose_name='Lipunmyynnin päättymisaika',
         null=True,
         blank=True,
     )
@@ -60,8 +54,8 @@ class TicketsEventMeta(EventMetaBase):
     reference_number_template = models.CharField(
         max_length=31,
         default="{:04d}",
-        verbose_name=u'Viitenumeron formaatti',
-        help_text=u'Paikkamerkin {} kohdalle sijoitetaan tilauksen numero. Nollilla täyttäminen esim. {:04d} (4 merkin leveydeltä).',
+        verbose_name='Viitenumeron formaatti',
+        help_text='Paikkamerkin {} kohdalle sijoitetaan tilauksen numero. Nollilla täyttäminen esim. {:04d} (4 merkin leveydeltä).',
     )
 
     contact_email = models.CharField(
@@ -81,57 +75,59 @@ class TicketsEventMeta(EventMetaBase):
     ticket_spam_email = models.CharField(
         max_length=255,
         blank=True,
-        verbose_name=u'Tarkkailusähköposti',
-        help_text=u'Kaikki järjestelmän lähettämät sähköpostiviestit lähetetään myös tähän osoitteeseen.',
+        verbose_name='Tarkkailusähköposti',
+        help_text='Kaikki järjestelmän lähettämät sähköpostiviestit lähetetään myös tähän osoitteeseen.',
     )
 
     reservation_seconds = models.IntegerField(
-        verbose_name=u'Varausaika (sekuntia)',
-        help_text=u'Käyttäjällä on tämän verran aikaa siirtyä maksamaan ja maksaa tilauksensa tai tilaus perutaan.',
+        verbose_name='Varausaika (sekuntia)',
+        help_text='Käyttäjällä on tämän verran aikaa siirtyä maksamaan ja maksaa tilauksensa tai tilaus perutaan.',
         default=1800,
     )
 
     ticket_free_text = models.TextField(
         blank=True,
-        verbose_name=u'E-lipun teksti',
-        help_text=u'Tämä teksti tulostetaan E-lippuun.',
+        verbose_name='E-lipun teksti',
+        help_text='Tämä teksti tulostetaan E-lippuun.',
     )
 
     front_page_text = models.TextField(
         blank=True,
-        default=u'',
-        verbose_name=u'Etusivun teksti',
-        help_text=u'Tämä teksti näytetään lippukaupan ensimmäisellä vaiheella.',
+        default='',
+        verbose_name='Etusivun teksti',
+        help_text='Tämä teksti näytetään lippukaupan ensimmäisellä vaiheella.',
     )
 
     print_logo_path = models.CharField(
         max_length=255,
         blank=True,
-        default=u'',
-        verbose_name=u'Logon polku',
-        help_text=u'Tämä logo printataan e-lippuun.',
+        default='',
+        verbose_name='Logon polku',
+        help_text='Tämä logo printataan e-lippuun.',
     )
 
     print_logo_width_mm = models.IntegerField(
         default=0,
-        verbose_name=u'Logon leveys (mm)',
-        help_text=u'E-lippuun printattavan logon leveys millimetreinä. Suositellaan noin 40 millimetriä leveää logoa.',
+        verbose_name='Logon leveys (mm)',
+        help_text='E-lippuun printattavan logon leveys millimetreinä. Suositellaan noin 40 millimetriä leveää logoa.',
     )
 
     print_logo_height_mm = models.IntegerField(
         default=0,
-        verbose_name=u'Logon korkeus (mm)',
-        help_text=u'E-lippuun printattavan logon korkeus millimetreinä. Suositellaan noin 20 millimetriä korkeaa logoa.',
+        verbose_name='Logon korkeus (mm)',
+        help_text='E-lippuun printattavan logon korkeus millimetreinä. Suositellaan noin 20 millimetriä korkeaa logoa.',
     )
 
     receipt_footer = models.CharField(
         blank=True,
-        default=u'',
+        default='',
         max_length=1023,
-        verbose_name=u'Pakkauslistan alatunniste',
-        help_text=u'Tämä teksti tulostetaan postitettavien tilausten pakkauslistan alatunnisteeseen. Tässä on hyvä mainita mm. järjestävän tahon yhteystiedot.',
+        verbose_name='Pakkauslistan alatunniste',
+        help_text='Tämä teksti tulostetaan postitettavien tilausten pakkauslistan alatunnisteeseen. Tässä on hyvä mainita mm. järjestävän tahon yhteystiedot.',
     )
 
+    def __str__(self):
+        return self.event.name
 
     @property
     def print_logo_size_cm(self):
@@ -166,10 +162,11 @@ class TicketsEventMeta(EventMetaBase):
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
     class Meta:
-        verbose_name = u'tapahtuman lipunmyyntiasetukset'
-        verbose_name_plural = u'tapahtuman lipunmyyntiasetukset'
+        verbose_name = 'tapahtuman lipunmyyntiasetukset'
+        verbose_name_plural = 'tapahtuman lipunmyyntiasetukset'
 
 
+@python_2_unicode_compatible
 class Batch(models.Model):
     event = models.ForeignKey('core.Event')
 
@@ -187,9 +184,9 @@ class Batch(models.Model):
     @property
     def readable_state(self):
         if self.is_delivered:
-            return u"Delivered at %s" % format_date(self.delivery_time)
+            return "Delivered at %s" % format_date(self.delivery_time)
         else:
-            return u"Awaiting delivery"
+            return "Awaiting delivery"
 
     @classmethod
     def create(cls, event, max_items=100, product=None):
@@ -277,30 +274,31 @@ class Batch(models.Model):
         for order in self.order_set.all():
             order.send_confirmation_message("delivery_confirmation")
 
-    def __unicode__(self):
-        return u"#%d (%s)" % (
+    def __str__(self):
+        return "#%d (%s)" % (
             self.pk,
             self.readable_state
         )
 
     class Meta:
-        verbose_name = u'toimituserä'
-        verbose_name_plural = u'toimituserät'
+        verbose_name = 'toimituserä'
+        verbose_name_plural = 'toimituserät'
 
 
+@python_2_unicode_compatible
 class LimitGroup(models.Model):
     # REVERSE: product_set = ManyToMany(Product)
 
-    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
-    description = models.CharField(max_length=255, verbose_name=u'Kuvaus')
-    limit = models.IntegerField(verbose_name=u'Enimmäismäärä')
+    event = models.ForeignKey('core.Event', verbose_name='Tapahtuma')
+    description = models.CharField(max_length=255, verbose_name='Kuvaus')
+    limit = models.IntegerField(verbose_name='Enimmäismäärä')
 
-    def __unicode__(self):
-        return u"{self.description} ({self.amount_available}/{self.limit})".format(self=self)
+    def __str__(self):
+        return "{self.description} ({self.amount_available}/{self.limit})".format(self=self)
 
     class Meta:
-        verbose_name = u'loppuunmyyntiryhmä'
-        verbose_name_plural = u'loppuunmyyntiryhmät'
+        verbose_name = 'loppuunmyyntiryhmä'
+        verbose_name_plural = 'loppuunmyyntiryhmät'
 
     @property
     def amount_sold(self):
@@ -344,6 +342,47 @@ class LimitGroup(models.Model):
         return [limit_saturday, limit_sunday]
 
 
+@python_2_unicode_compatible
+class ShirtType(models.Model):
+    event = models.ForeignKey('core.event')
+    name = models.CharField(max_length=255)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    available = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        return super(ShirtType, self).save(*args, **kwargs)
+
+    class Meta:
+        unique_together = [('event', 'slug')]
+
+
+@python_2_unicode_compatible
+class ShirtSize(models.Model):
+    type = models.ForeignKey(ShirtType)
+    name = models.CharField(max_length=255)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    available = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        return super(ShirtSize, self).save(*args, **kwargs)
+
+    class Meta:
+        unique_together = [('type', 'slug')]
+
+
+@python_2_unicode_compatible
 class Product(models.Model):
     event = models.ForeignKey('core.Event')
 
@@ -355,6 +394,7 @@ class Product(models.Model):
     price_cents = models.IntegerField()
     requires_shipping = models.BooleanField(default=True)
     requires_accommodation_information = models.BooleanField(default=False)
+    requires_shirt_size = models.BooleanField(default=False)
     electronic_ticket = models.BooleanField(default=False)
     available = models.BooleanField(default=True)
     notify_email = models.CharField(max_length=100, null=True, blank=True)
@@ -396,12 +436,12 @@ class Product(models.Model):
         sm = cnt['count__sum']
         return sm if sm is not None else 0
 
-    def __unicode__(self):
-        return u"%s (%s)" % (self.name, self.formatted_price)
+    def __str__(self):
+        return "%s (%s)" % (self.name, self.formatted_price)
 
     class Meta:
-        verbose_name = u'tuote'
-        verbose_name_plural = u'tuotteet'
+        verbose_name = 'tuote'
+        verbose_name_plural = 'tuotteet'
 
     @classmethod
     def get_or_create_dummy(cls, name='Dummy product', limit_groups=[]):
@@ -411,7 +451,7 @@ class Product(models.Model):
             event=meta.event,
             name=name,
             defaults=dict(
-                description=u'Dummy product for testing',
+                description='Dummy product for testing',
                 price_cents=1800,
                 requires_shipping=True,
                 available=True,
@@ -437,6 +477,7 @@ class Product(models.Model):
 
 
 # TODO mayhaps combine with Person someday soon?
+@python_2_unicode_compatible
 class Customer(models.Model):
     # REVERSE: order = OneToOne(Order)
 
@@ -448,7 +489,7 @@ class Customer(models.Model):
 
     email = models.EmailField(
         verbose_name=u"Sähköpostiosoite",
-        help_text=u'Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus sekä mahdolliset sähköiset liput '
+        help_text='Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus sekä mahdolliset sähköiset liput '
             u'lähetetään tähän sähköpostiosoitteeseen. HUOM! Hotmail-osoitteiden kanssa on välillä ollut '
             u'viestien perillemeno-ongelmia. Suosittelemme käyttämään jotain muuta sähköpostiosoitetta kuin Hotmailia.',
     )
@@ -461,40 +502,41 @@ class Customer(models.Model):
 
     phone_number = models.CharField(max_length=30, null=True, blank=True, verbose_name="Puhelinnumero")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = u'asiakas'
-        verbose_name_plural = u'asiakkaat'
+        verbose_name = 'asiakas'
+        verbose_name_plural = 'asiakkaat'
 
     @property
     def name(self):
-        return u"%s %s" % (self.first_name, self.last_name)
+        return "%s %s" % (self.first_name, self.last_name)
 
     @property
     def sanitized_name(self):
-        return u"".join(i for i in self.name if i.isalpha() or i in
+        return "".join(i for i in self.name if i.isalpha() or i in
             (u'ä', u'Ä', u'ö', u'Ö', u'å', u'Å', u'-', u"'", u" "))
 
     @property
     def name_and_email(self):
-        return u"%s <%s>" % (self.sanitized_name, self.email)
+        return "%s <%s>" % (self.sanitized_name, self.email)
 
     @classmethod
     def get_or_create_dummy(cls):
         return cls.objects.get_or_create(
-            first_name=u'Dummy',
-            last_name=u'Testinen',
+            first_name='Dummy',
+            last_name='Testinen',
             defaults=dict(
-                email=u'dummy@example.com',
-                address=u'Testikuja 5 A 19',
-                zip_code=u'12354',
-                city=u'Testilä',
+                email='dummy@example.com',
+                address='Testikuja 5 A 19',
+                zip_code='12354',
+                city='Testilä',
             )
         )
 
 
+@python_2_unicode_compatible
 class Order(models.Model):
     # REVERSE: order_product_set = ForeignKeyFrom(OrderProduct)
 
@@ -506,38 +548,38 @@ class Order(models.Model):
     confirm_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Tilausaika',
+        verbose_name='Tilausaika',
     )
 
     ip_address = models.CharField(
         max_length=15,
         null=True,
         blank=True,
-        verbose_name=u'Tilaajan IP-osoite'
+        verbose_name='Tilaajan IP-osoite'
     )
 
     payment_date = models.DateField(
         null=True,
         blank=True,
-        verbose_name=u'Maksupäivä',
+        verbose_name='Maksupäivä',
     )
 
     cancellation_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Peruutusaika',
+        verbose_name='Peruutusaika',
     )
 
     batch = models.ForeignKey(Batch,
         null=True,
         blank=True,
-        verbose_name=u'Toimituserä',
+        verbose_name='Toimituserä',
     )
 
     reference_number = models.CharField(
         max_length=31,
         blank=True,
-        verbose_name=u'Viitenumero',
+        verbose_name='Viitenumero',
     )
 
     @property
@@ -613,6 +655,12 @@ class Order(models.Model):
             return "Unconfirmed"
 
     @property
+    def t_shirts(self):
+        # TODO use db aggregate
+        queryset = self.order_product_set.filter(count__gt=0, product__requires_shirt_size=True)
+        return queryset.aggregate(models.Sum('count'))['count__sum']
+
+    @property
     def reference_number_base(self):
         return self.event.tickets_event_meta.reference_number_template.format(self.pk)
 
@@ -631,11 +679,15 @@ class Order(models.Model):
     def clean_up_order_products(self):
         self.order_product_set.filter(count__lte=0).delete()
 
+    def clean_up_shirt_orders(self):
+        self.shirt_order_set.filter(count__lte=0).delete()
+
     def confirm_order(self):
         assert self.customer is not None
         assert not self.is_confirmed
 
         self.clean_up_order_products()
+        self.clean_up_shirt_orders()
 
         self.reference_number = self._make_reference_number()
         self.confirm_time = timezone.now()
@@ -726,7 +778,7 @@ class Order(models.Model):
 
     @property
     def formatted_address(self):
-        return u"{self.customer.name}\n{self.customer.address}\n{self.customer.zip_code} {self.customer.city}".format(self=self)
+        return "{self.customer.name}\n{self.customer.address}\n{self.customer.zip_code} {self.customer.city}".format(self=self)
 
     @property
     def checkout_stamp(self):
@@ -916,16 +968,16 @@ class Order(models.Model):
     def render(self, c):
         render_receipt(self, c)
 
-    def __unicode__(self):
-        return u"#%s %s (%s)" % (
+    def __str__(self):
+        return "#%s %s (%s)" % (
             self.pk,
             self.formatted_price,
             self.readable_state
         )
 
     class Meta:
-        verbose_name = u'tilaus'
-        verbose_name_plural = u'tilaukset'
+        verbose_name = 'tilaus'
+        verbose_name_plural = 'tilaukset'
 
     @classmethod
     def get_or_create_dummy(cls, event=None):
@@ -964,6 +1016,7 @@ class Order(models.Model):
         return count
 
 
+@python_2_unicode_compatible
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, related_name="order_product_set")
     product = models.ForeignKey(Product, related_name="order_product_set")
@@ -983,19 +1036,20 @@ class OrderProduct(models.Model):
 
     @property
     def description(self):
-        return u"%dx %s" % (
+        return "%dx %s" % (
             self.count,
             self.product.name if self.product is not None else None
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
     class Meta:
-        verbose_name = u'tilausrivi'
-        verbose_name_plural = u'tilausrivit'
+        verbose_name = 'tilausrivi'
+        verbose_name_plural = 'tilausrivit'
 
 
+@python_2_unicode_compatible
 class AccommodationInformation(models.Model):
     order_product = models.ForeignKey(OrderProduct, blank=True, null=True, related_name="accommodation_information_set")
 
@@ -1003,10 +1057,10 @@ class AccommodationInformation(models.Model):
     limit_groups = models.ManyToManyField(LimitGroup, blank=True, related_name="accommodation_information_set")
 
     # allow blank because these are pre-created
-    first_name = models.CharField(max_length=100, blank=True, default=u'', verbose_name="Etunimi")
-    last_name = models.CharField(max_length=100, blank=True, default=u'', verbose_name="Sukunimi")
-    phone_number = models.CharField(max_length=30,blank=True, default=u'', verbose_name="Puhelinnumero")
-    email = models.EmailField(blank=True, default=u'', verbose_name='Sähköpostiosoite')
+    first_name = models.CharField(max_length=100, blank=True, default='', verbose_name="Etunimi")
+    last_name = models.CharField(max_length=100, blank=True, default='', verbose_name="Sukunimi")
+    phone_number = models.CharField(max_length=30,blank=True, default='', verbose_name="Puhelinnumero")
+    email = models.EmailField(blank=True, default='', verbose_name='Sähköpostiosoite')
 
     @classmethod
     def get_for_order(cls, order):
@@ -1051,6 +1105,29 @@ class AccommodationInformation(models.Model):
     def get_csv_related(self):
         return {}
 
+    def __str__(self):
+        return '{first_name} {last_name}'.format(
+            first_name=self.first_name,
+            last_name=self.last_name,
+        )
+
     class Meta:
-        verbose_name = u'majoittujan tiedot'
-        verbose_name_plural = u'majoittujan tiedot'
+        verbose_name = 'majoittujan tiedot'
+        verbose_name_plural = 'majoittujan tiedot'
+
+
+@python_2_unicode_compatible
+class ShirtOrder(models.Model):
+    order = models.ForeignKey(Order, related_name='shirt_order_set')
+    size = models.ForeignKey(ShirtSize)
+    count = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return "{count}x{size}".format(
+            count=self.count,
+            size=self.size.name if self.size else None,
+        )
+
+    @property
+    def target(self):
+        return self.size

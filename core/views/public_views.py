@@ -38,24 +38,6 @@ from ..utils import (
 from ..helpers import person_required, public_organization_required
 
 
-def core_frontpage_view(request):
-    t = now()
-
-    past_events = Event.objects.filter(public=True, end_time__lte=t).order_by('-start_time')
-    current_events = Event.objects.filter(public=True, start_time__lte=t, end_time__gt=t).order_by('-start_time')
-    future_events = Event.objects.filter((Q(start_time__gt=t) | Q(start_time__isnull=True)) & Q(public=True)).order_by('start_time')
-    organizations = Organization.objects.filter(public=True)
-
-    vars = dict(
-        past_events_rows=list(groups_of_n(past_events, 4)),
-        current_events_rows=list(groups_of_n(current_events, 4)),
-        future_events_rows=list(groups_of_n(future_events, 4)),
-        organizations_rows = list(groups_of_n(organizations, 4)),
-    )
-
-    return render(request, 'core_frontpage_view.jade', vars)
-
-
 @public_organization_required
 def core_organization_view(request, organization):
     t = now()

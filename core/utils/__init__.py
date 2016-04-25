@@ -11,6 +11,7 @@ from .form_utils import (
 from .misc_utils import (
     change_user_password,
     check_password_strength,
+    class_property,
     create_temporary_password,
     ensure_groups_exist,
     ensure_user_group_membership,
@@ -21,6 +22,7 @@ from .misc_utils import (
     mutate_query_params,
     pick_attrs,
     set_attrs,
+    set_defaults,
     simple_object_init,
     simple_object_repr,
 )
@@ -33,6 +35,7 @@ from .properties import (
 )
 
 from .time_utils import (
+    calculate_age,
     format_date,
     format_date_range,
     format_datetime,
@@ -42,11 +45,12 @@ from .time_utils import (
 )
 
 from .model_utils import (
+    get_postgresql_version_num,
+    get_previous_and_next,
     NONUNIQUE_SLUG_FIELD_PARAMS,
     SLUG_FIELD_PARAMS,
     slugify,
     validate_slug,
-    get_postgresql_version_num,
 )
 
 from .view_utils import (
@@ -55,3 +59,6 @@ from .view_utils import (
     next_redirect,
     url,
 )
+
+
+from .log_utils import log_get_or_create

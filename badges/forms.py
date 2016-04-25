@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 from django import forms
+from django.forms import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 from core.utils import horizontal_form_helper
 from labour.models import PersonnelClass
@@ -13,8 +15,8 @@ class CreateBatchForm(forms.Form):
     personnel_class = forms.ModelChoiceField(
         queryset=PersonnelClass.objects.all(),
         required=False,
-        label=u"Badgetyyppi",
-        help_text=u"Jos jätät tämän kentän tyhjäksi, saat erän joka sisältää sekaisin eri badgetyyppejä.",
+        label=_(u"Personnel class"),
+        help_text=_(u"If you leave this field blank, you will receive a batch with mixed badge types."),
     )
 
     def __init__(self, *args, **kwargs):
@@ -35,10 +37,21 @@ class BadgeForm(forms.ModelForm):
         self.helper.form_tag = False
         self.fields['personnel_class'].queryset = PersonnelClass.objects.filter(event=event)
 
+    def clean(self):
+        cleaned_data = super(BadgeForm, self).clean()
+
+        if not any(cleaned_data.get(key) for key in ('first_name', 'surname', 'nick')):
+            raise ValidationError(_(u'At least one of first name, surname and nick must be provided.'))
+
+        return cleaned_data
+
     class Meta:
         model = Badge
         fields = [
             'personnel_class',
+            'first_name',
+            'surname',
+            'nick',
             'job_title',
         ]
 

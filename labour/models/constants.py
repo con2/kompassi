@@ -22,7 +22,7 @@ SIGNUP_STATE_NAMES = dict(
     beyond_logic=u'Perätilassa',
 )
 
-NUM_FIRST_CATEGORIES = 5
+NUM_FIRST_CATEGORIES = 8
 
 SIGNUP_STATE_CLASSES = dict(
     new=u'default',

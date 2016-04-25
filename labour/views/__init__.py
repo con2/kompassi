@@ -14,13 +14,17 @@ from .admin_views import (
     labour_admin_dashboard_view,
     labour_admin_mail_editor_view,
     labour_admin_mail_view,
-    labour_admin_menu_items,
     labour_admin_roster_view,
     labour_admin_signup_view,
-    labour_admin_signups_view,
-    labour_admin_shirts_view,
     labour_onboarding_view
 )
+
+from .labour_admin_menu_items import labour_admin_menu_items
+from .labour_admin_jobcategories_view import labour_admin_jobcategories_view
+from .labour_admin_jobcategory_view import labour_admin_jobcategory_view
+from .labour_admin_signups_view import labour_admin_signups_view
+from .labour_admin_shirts_view import labour_admin_shirts_view
+from .labour_admin_startstop_view import labour_admin_startstop_view
 
 from .query_views import (
     query_index,

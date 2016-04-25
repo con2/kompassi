@@ -8,18 +8,14 @@ from crispy_forms.layout import Fieldset, Submit
 
 from core.utils import horizontal_form_helper, indented_without_label, initialize_form
 
-from .models import Order, OrderProduct, Customer, Product, AccommodationInformation
-
-__all__ = [
-    "AccommodationInformationForm",
-    "ConfirmSinglePaymentForm",
-    "CreateBatchForm",
-    "CustomerForm",
-    "NullForm",
-    "OrderProductForm",
-    "SearchForm",
-    "SinglePaymentForm",
-]
+from .models import (
+    AccommodationInformation,
+    Customer,
+    Order,
+    OrderProduct,
+    Product,
+    ShirtOrder,
+)
 
 
 class NullForm(forms.Form):
@@ -193,3 +189,9 @@ class CreateBatchForm(forms.Form):
         super(CreateBatchForm, self).__init__(*args, **kwargs)
 
         self.fields['product'].queryset = Product.objects.filter(event=event)
+
+
+class ShirtOrderForm(forms.ModelForm):
+    class Meta:
+        model = ShirtOrder
+        fields = ('count',)

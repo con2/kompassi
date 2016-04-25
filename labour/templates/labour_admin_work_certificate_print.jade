@@ -1,0 +1,86 @@
+doctype html
+- load static from staticfiles
+html
+  head
+    title {{ event.name }}: Työtodistukset – {{ settings.KOMPASSI_APPLICATION_NAME }}
+    style.
+      body {
+        font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+        font-size: 12pt;
+        padding-left: 2em;
+        padding-top: 1em;
+      }
+      table, tbody, tr, td {
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-collapse: collapse;
+        vertical-align: top;
+      }
+      table {
+        width: 100%;
+      }
+      section {
+      }
+      article {
+        margin-left: 8em;
+      }
+      address {
+        font-style: normal;
+        margin-bottom: 1.5em;
+      }
+      .signature {
+        margin-bottom: 4em;
+      }
+      .sender-address {
+        width: 60%;
+      }
+      .help-text {
+        margin-bottom: 8em;
+        color: navy;
+      }
+      header {
+        margin-bottom: 5em;
+      }
+      @media print {
+        .help-text {
+          display: none;
+        }
+        hr {
+          visibility: hidden;
+          page-break-after: always;
+        }
+      }
+  body
+    .help-text
+      h2 Työtodistusten tulostusohje
+      p Tulosta tämä sivu selaimen tulostustoiminnolla. Työtodistukset tulostuvat omille sivuilleen.
+      p Suositeltavat tulostusasetukset (Chrome):
+      dl
+        dt <em>Margins</em>
+        dd <em>Default</em>
+        dt <em>Headers and footers</em>
+        dd Pois päältä
+      p Tämä ohje ei tulostu.
+    for signup in signups
+      if signup.is_active
+        if signup.signup_extra.certificate_delivery_address
+          section
+            header
+              table
+                tbody
+                  tr
+                    td.sender-address
+                      address {{ signup.event.organization.name }}<br>{{ signup.event.organization.muncipality }}
+                    td.document-metadata TYÖTODISTUS<br>{{ now|date:"SHORT_DATE_FORMAT" }}
+              address {{ signup.printable_certificate_delivery_address|linebreaks }}
+            article
+              heading: h3 Todistus vapaaehtoistyöstä {{ event.name_inessive }}
+              p Pyynnöstä todistan, että <strong>{{ signup.person.firstname_surname }}</strong> on tehnyt vapaaehtoistyötä {{ event.organization.name_genitive }} järjestämässä tapahtumassa:
+              p
+                |<strong>{{ event.name }}</strong><br>
+                |<em>{{ event.headline }}</em><br>
+                |{{ signup.formatted_job_categories_accepted }}
+              p.signature {{ event.organization.muncipality }} {{ now|date:"SHORT_DATE_FORMAT" }}
+              p.signature {{ event.labour_event_meta.work_certificate_signer|linebreaks }}
+            hr

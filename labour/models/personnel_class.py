@@ -8,7 +8,7 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 class PersonnelClass(models.Model):
     event = models.ForeignKey('core.Event')
-    app_label = models.CharField(max_length=63, blank=True, default="")
+    app_label = models.CharField(max_length=63, blank=True, default='labour')
     name = models.CharField(max_length=63)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     perks = models.ManyToManyField('labour.Perk', blank=True)
@@ -27,6 +27,22 @@ class PersonnelClass(models.Model):
         ]
 
         ordering = ('event', 'priority')
+
+    @classmethod
+    def get_or_create_dummy(cls, app_label='labour', name='Smallfolk', priority=0):
+        from core.models import Event
+        event, unused = Event.get_or_create_dummy()
+
+        return PersonnelClass.objects.get_or_create(
+            event=event,
+            slug=slugify(name),
+            app_label=app_label,
+            defaults=dict(
+                name=app_label,
+                priority=priority,
+            )
+        )
+
 
     def __unicode__(self):
         return self.name

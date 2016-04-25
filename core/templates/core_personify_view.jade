@@ -1,10 +1,15 @@
 extends base
+- load i18n
 - load crispy_forms_tags
 block title
   | Ole hyvä ja täytä yhteystietosi
 block content
   .core-personify-view
     h2 Ole hyvä ja täytä yhteystietosi
-    form(action='{% url "core_personify_view" %}', method='POST', role='form').form.form-horizontal
+    form(method='POST', role='form').form.form-horizontal
       input(type='hidden', name='next', value='{{ next }}')
       - crispy person_form
+      .col-md-9.col-md-offset-3
+        button.btn.btn-success(type='submit')
+          i.fa.fa-check.kompassi-icon-space-right
+          {% trans "Save changes" %}

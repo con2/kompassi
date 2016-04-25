@@ -5,6 +5,7 @@ from .views import (
     CallbackView,
     LoginView,
     ConfirmationView,
+    desuprogramme_import_view,
 )
 
 
@@ -33,4 +34,10 @@ urlpatterns = [
         ConfirmationView.as_view(),
         name='desuprofile_integration_confirmation_view',
     ),
+
+    url(
+        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/(?:desu)+/?',
+        desuprogramme_import_view,
+        name='desuprogramme_import_view',
+    )
 ]

@@ -1,10 +1,10 @@
-#: forms.py
-msgid "Acceptance of the privacy policy"
-msgstr "Rekisteriselosteen hyväksyminen"
-
 #: templates/core_organization_boxen.jade
 msgid "Accepting applications"
 msgstr "Ottaa vastaan hakemuksia"
+
+#: views/profile_views.py
+msgid "As you changed your e-mail address, you need to verify your e-mail address again. Please check your e-mail and proceed with the instructions you will find there. Please note that you may experience reduced functionality until you have confirmed your e-mail address again. We apologize for the inconvenience."
+msgstr "Koska muutit sähköpostiosoitettasi, sinun tarvitsee vahvistaa sähköpostiosoitteesi uudelleen. Ole hyvä ja tarkista sähköpostisi, ja noudata sähköpostiisi lähetettyjä ohjeita. Huomaathan, että et välttämättä pysty käyttämään joitain Kompassin toimintoja ennen kuin olet jälleen vahvistanut sähköpostiosoitteesi. Pahoittelemme tästä aiheutuvaa hankaluutta."
 
 #: forms.py
 msgid "Basic information"
@@ -26,7 +26,7 @@ msgstr "Yhteystiedot"
 msgid "Create a Kompassi account"
 msgstr "Luo Kompassi-tunnus"
 
-#: forms.py
+#: forms.py models/one_time_code.py
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -38,6 +38,22 @@ msgstr "Sähköpostiosoitteen vahvistaminen"
 msgid "Events currently in progress"
 msgstr "Parhaillaan käynnissä olevat tapahtumat"
 
+#: models/person.py
+msgid "First name"
+msgstr "Etunimi"
+
+#: models/constants.py
+msgid "Firstname"
+msgstr "Etunimi"
+
+#: models/constants.py
+msgid "Firstname \"Nickname\" Surname"
+msgstr "Etunimi \"Nick\" Sukunimi"
+
+#: models/constants.py
+msgid "Firstname Surname"
+msgstr "Etunimi Sukunimi"
+
 #: templates/core_login_view.jade
 msgid "For some of the services of this site you will need a user account which you can easily create here."
 msgstr "Osaan tämän sivuston palveluista tarvitset Kompassi-tunnuksen, jonka voit helposti luoda tästä."
@@ -47,9 +63,12 @@ msgid "Forgot password"
 msgstr "Salasana unohtunut"
 
 #: forms.py
-#, python-format
-msgid "I hereby authorize the use of my personal information as outlined in the <a href=\"%(privacy_policy_url)s\" target=\"_blank\">privacy policy</a> <i>(mandatory)</i>."
-msgstr "Annan luvan henkilötietojeni käyttöön <a href=\"%(privacy_policy_url)s\" target=\"_blank\">rekisteriselosteen</a> mukaisesti <i>(pakollinen)</i>."
+msgid "I hereby authorize the use of my personal information as outlined in the privacy policy. See site footer for a link to the privacy policy. <em>(mandatory)</em>"
+msgstr "Annan luvan henkilötietojeni käyttöön rekisteriselosteen mukaisesti. Linkki rekisteriselosteeseen löytyy sivuston alatunnisteesta. <i>(pakollinen)</i>"
+
+#: models/person.py
+msgid "If you go by a nick name or handle that you want printed in your badge and programme details, enter it here."
+msgstr "Vakiintunut lempinimi tai Internet-nick."
 
 #: forms.py
 msgid "Invalid user name"
@@ -72,9 +91,24 @@ msgid "New password"
 msgstr "Uusi salasana"
 
 #: forms.py
-#, fuzzy
 msgid "New password (again)"
 msgstr "Uusi salasana (uudestaan)"
+
+#: models/person.py
+msgid "Nick name"
+msgstr "Nick"
+
+#: models/constants.py
+msgid "Nickname"
+msgstr "Nick"
+
+#: sort_and_filter.py
+msgid "No"
+msgstr "Ei"
+
+#: models/person.py
+msgid "Official first names"
+msgstr "Viralliset etunimet"
 
 #: forms.py
 msgid "Old password"
@@ -100,9 +134,17 @@ msgstr "Salasanat eivät täsmää."
 msgid "Past events"
 msgstr "Menneet tapahtumat"
 
+#: views/profile_views.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkista lomake."
+
 #: forms.py
 msgid "Please choose a user name. The user name must consist of 4 to 30 characters. The following characters are allowed: <b>small</b> letters <i>a&ndash;z</i>, numbers <i>0&ndash;9</i> and underscore </i>_</i>. You can use either this user name or your e-mail address to sign in."
-msgstr "Valitse itsellesi 4–30 merkin pituinen käyttäjänimi. Seuraavat merkit ovat sallittuja: <b>pienet kirjaimet <i>a–z</i>, numerot <i>0–9</i> sekä alaviiva <i>_</i>. Voit käyttää sisäänkirjautumiseen tätä käyttäjänimeä tai sähköpostiosoitettasi."
+msgstr "Valitse itsellesi 4–30 merkin pituinen käyttäjänimi. Seuraavat merkit ovat sallittuja: <b>pienet</b> kirjaimet <i>a–z</i>, numerot <i>0–9</i> sekä alaviiva <i>_</i>. Voit käyttää sisäänkirjautumiseen tätä käyttäjänimeä tai sähköpostiosoitettasi."
+
+#: templates/core_registration_view.jade
+msgid "Please note that creating an account takes a while. Please press the Sign up button only once."
+msgstr "Huomaathan, että tunnuksen luonnissa kestää hetken. Painathan Luo tunnus -nappia vain kerran."
 
 #: forms.py
 msgid "Privacy"
@@ -120,9 +162,13 @@ msgstr "Omat tiedot"
 msgid "Recruiting volunteers"
 msgstr "Työvoimahaku avoinna"
 
-#: forms.py
-msgid "Save"
-msgstr "Tallenna"
+#: models/one_time_code.py
+msgid "Revoked"
+msgstr "Mitätöity"
+
+#: templates/core_personify_view.jade templates/core_profile_view.jade
+msgid "Save changes"
+msgstr "Tallenna muutokset"
 
 #: templates/core_event_box.jade
 msgid "Schedule"
@@ -148,7 +194,7 @@ msgstr "Luo tunnus tai kirjaudu sisään..."
 msgid "Sign in using your Kompassi account"
 msgstr "Kirjaudu sisään Kompassi-tunnuksellasi"
 
-#: forms.py templates/core_login_view.jade
+#: templates/core_login_view.jade templates/core_registration_view.jade
 msgid "Sign up"
 msgstr "Luo tunnus"
 
@@ -167,6 +213,14 @@ msgstr "Sivuston ylläpito"
 #: forms.py
 msgid "Submit"
 msgstr "Lähetä"
+
+#: models/person.py
+msgid "Surname"
+msgstr "Sukunimi"
+
+#: views/profile_views.py
+msgid "The changes were saved."
+msgstr "Muutokset tallennettiin."
 
 #: forms.py
 #, python-format
@@ -193,6 +247,10 @@ msgstr "Lipunmyynti"
 msgid "Upcoming events"
 msgstr "Tulevat tapahtumat"
 
+#: models/one_time_code.py
+msgid "Used"
+msgstr "Käytetty"
+
 #: forms.py
 msgid "User name"
 msgstr "Käyttäjänimi"
@@ -205,6 +263,10 @@ msgstr "Käyttäjänimi ja salasana"
 msgid "User name or e-mail address"
 msgstr "Käyttäjänimi tai sähköpostiosoite"
 
+#: models/one_time_code.py
+msgid "Valid"
+msgstr "Kelvollinen"
+
 #: templates/core_event_box.jade
 msgid "Volunteers"
 msgstr "Työvoima"
@@ -212,4 +274,8 @@ msgstr "Työvoima"
 #: forms.py
 msgid "Wrong password."
 msgstr "Salasana väärin."
+
+#: sort_and_filter.py
+msgid "Yes"
+msgstr "Kyllä"
 

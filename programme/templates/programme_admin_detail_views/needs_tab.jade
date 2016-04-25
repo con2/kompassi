@@ -1,0 +1,8 @@
+- load crispy from crispy_forms_tags
+- load trans from i18n
+.tab-pane#programme-admin-programme-needs-tab
+  .panel.panel-default
+    .panel-heading: strong {% trans "Host needs" %}
+    .panel-body: {% crispy needs_form %}
+    .panel-footer.clearfix
+      include programme_admin_detail_views/buttons.jade

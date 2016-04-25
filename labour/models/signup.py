@@ -16,6 +16,7 @@ from core.utils import (
     alias_property,
     ensure_user_group_membership,
     full_hours_between,
+    get_previous_and_next,
     is_within_period,
     NONUNIQUE_SLUG_FIELD_PARAMS,
     ONE_HOUR,
@@ -78,6 +79,16 @@ class Signup(models.Model, CsvExportMixin):
         help_text=u'Tehtäväalueet, joilla hyväksytty vapaaehtoistyöntekijä tulee työskentelemään. '
             u'Tämän perusteella henkilölle mm. lähetetään oman tehtäväalueensa työvoimaohjeet. '
             u'Harmaalla merkityt tehtäväalueet ovat niitä, joihin hakija ei ole itse hakenut.'
+    )
+
+    job_categories_rejected = models.ManyToManyField('labour.JobCategory',
+        blank=True,
+        related_name='+',
+        verbose_name=_('Rejected job categories'),
+        help_text=_(u'The workforce manager may use this field to inform other workforce managers that '
+            u'this applicant will not be accepted to a certain job category. This field is not visible '
+            u'to the applicant, but should they request a record of their own information, this field will '
+            u'be included.')
     )
 
     xxx_interim_shifts = models.TextField(
@@ -196,10 +207,7 @@ class Signup(models.Model, CsvExportMixin):
     def signup_extra(self):
         if not hasattr(self, '_signup_extra'):
             SignupExtra = self.signup_extra_model
-            try:
-                self._signup_extra = SignupExtra.objects.get(signup=self)
-            except SignupExtra.DoesNotExist:
-                self._signup_extra = SignupExtra(signup=self)
+            self._signup_extra = SignupExtra.for_signup(self)
 
         return self._signup_extra
 
@@ -273,7 +281,7 @@ class Signup(models.Model, CsvExportMixin):
         elif self.job_categories_accepted.exists():
             return self.job_categories_accepted.first().name
         else:
-            return u'Vänkäri'
+            return u'Työvoima'
 
     @property
     def granted_privileges(self):
@@ -298,15 +306,25 @@ class Signup(models.Model, CsvExportMixin):
         return Privilege.get_potential_privileges(person=self.person, group_privileges__event=self.event)
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, accepted=False):
         from core.models import Person, Event
+        from .job_category import JobCategory
 
         person, unused = Person.get_or_create_dummy()
         event, unused = Event.get_or_create_dummy()
+        job_category, unused = JobCategory.get_or_create_dummy()
 
         signup, created = Signup.objects.get_or_create(person=person, event=event)
         extra = signup.signup_extra
+        signup.job_categories = [job_category]
         extra.save()
+
+        if accepted:
+            signup.job_categories_accepted = signup.job_categories.all()
+            signup.personnel_classes.add(signup.job_categories.first().personnel_classes.first())
+            signup.state = 'accepted'
+            signup.save()
+            signup.apply_state()
 
         return signup, created
 
@@ -359,11 +377,14 @@ class Signup(models.Model, CsvExportMixin):
         self.apply_state_ensure_job_categories_accepted_is_set()
         self.apply_state_ensure_personnel_class_is_set()
 
+        self.signup_extra.apply_state()
+
+        self.apply_state_create_badges()
+        self.apply_state_email_aliases()
+
     def _apply_state(self):
         self.apply_state_group_membership()
         self.apply_state_send_messages()
-        self.apply_state_create_badges()
-        self.apply_state_email_aliases()
 
     def apply_state_group_membership(self):
         from .job_category import JobCategory
@@ -425,49 +446,13 @@ class Signup(models.Model, CsvExportMixin):
         if self.event.badges_event_meta is None:
             return
 
-        if not self.is_accepted:
-            return
-
-        # TODO revoke badge if one exists but shouldn't
-
         from badges.models import Badge
-        badge, created = Badge.get_or_create(event=self.event, person=self.person)
 
-        # Update job title if it is not too late
-        if (
-            # Just a short-circuit optimization – the job title cannot change if the badge was just created
-            not created
-
-            # Don't touch badges of other apps (for example, programme)
-            and badge.personnel_class.app_label == 'labour'
-
-            # Don't touch badges that are already printed (XXX should revoke and re-create)
-            and badge.batch is None
-
-            # Finally, check if the job title needs update
-            and badge.job_title != signup.job_title
-        ):
-            badge.job_title = signup.job_title
-            badge.save()
+        Badge.ensure(event=self.event, person=self.person)
 
     def get_previous_and_next_signup(self):
-        if not self.pk:
-            return None, None
-
-        # TODO inefficient, done using a list
-        signups = list(self.event.signup_set.order_by('person__surname', 'person__first_name', 'id').all())
-
-        previous_signup = None
-        current_signup = None
-
-        for next_signup in signups + [None]:
-            if current_signup and current_signup.pk == self.pk:
-                return previous_signup, next_signup
-
-            previous_signup = current_signup
-            current_signup = next_signup
-
-        return None, None
+        queryset = self.event.signup_set.order_by('person__surname', 'person__first_name', 'id').all()
+        return get_previous_and_next(queryset, self)
 
     @property
     def _state_flags(self):
@@ -559,7 +544,7 @@ class Signup(models.Model, CsvExportMixin):
     def state_times(self):
         return [
             (
-                self._meta.get_field_by_name(field_name)[0].verbose_name,
+                self._meta.get_field(field_name).verbose_name,
                 getattr(self, field_name, None),
             )
             for field_name in STATE_TIME_FIELDS
@@ -623,10 +608,12 @@ class Signup(models.Model, CsvExportMixin):
 
     @property
     def formatted_job_categories_accepted(self):
+        from .job_category import format_job_categories
         return format_job_categories(self.job_categories_accepted.all())
 
     @property
     def formatted_job_categories(self):
+        from .job_category import format_job_categories
         return format_job_categories(self.job_categories.all())
 
     @property
