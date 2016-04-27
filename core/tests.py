@@ -7,9 +7,10 @@ from datetime import datetime, timedelta
 from django.forms import ValidationError
 from django.test import TestCase
 
+from babel import Locale
 from dateutil.tz import tzlocal
 
-from .utils import check_password_strength, full_hours_between, slugify
+from .utils import check_password_strength, full_hours_between, slugify, format_interval
 
 
 class UtilsTestCase(TestCase):
@@ -110,3 +111,21 @@ class UtilsTestCase(TestCase):
 
     def test_slugify(self):
         assert slugify('Matti Lundén') == 'matti-lunden'
+
+    def test_format_interval(self):
+        tz = tzlocal()
+        locale = Locale('fi')
+
+        d0 = datetime(2016, 4, 27, 21, 0, 0, tzinfo=tz)
+        d1 = datetime(2016, 4, 27, 23, 0, 0, tzinfo=tz)
+        d2 = datetime(2016, 4, 28, 1, 0, 0, tzinfo=tz)
+
+        self.assertEqual(
+            format_interval(d0, d1, locale=locale),
+            'ke 27.4. klo 21.00–23.00'
+        )
+
+        self.assertEqual(
+            format_interval(d0, d2, locale=locale),
+            'ke 27.4. klo 21.00 – to 28.4. klo 1.00'
+        )

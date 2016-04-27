@@ -39,6 +39,7 @@ from .time_utils import (
     format_date,
     format_date_range,
     format_datetime,
+    format_interval,
     full_hours_between,
     is_within_period,
     ONE_HOUR,
@@ -58,6 +59,11 @@ from .view_utils import (
     login_redirect,
     next_redirect,
     url,
+)
+
+
+from .locale_utils import (
+    get_current_locale,
 )
 
 
