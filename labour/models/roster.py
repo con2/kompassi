@@ -8,12 +8,13 @@ from datetime import timedelta
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import python_2_unicode_compatible
 
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzlocal
 
 from api.utils import JSONSchemaObject
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, ONE_HOUR, slugify, pick_attrs
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, ONE_HOUR, slugify, pick_attrs, format_datetime, format_interval
 
 
 class WorkPeriod(models.Model):
@@ -137,11 +138,12 @@ class JobRequirement(models.Model):
         verbose_name_plural = _('job requirements')
 
 
+@python_2_unicode_compatible
 class Shift(models.Model):
     job = models.ForeignKey(Job, related_name='shifts')
     start_time = models.DateTimeField()
     hours = models.PositiveIntegerField()
-    signup = models.ForeignKey('labour.Signup')
+    signup = models.ForeignKey('labour.Signup', related_name='shifts')
     notes = models.TextField(blank=True)
 
     def as_dict(self):
@@ -168,6 +170,10 @@ class Shift(models.Model):
     def end_time(self):
         return self.start_time + timedelta(hours=self.hours)
 
+    @property
+    def formatted_duration(self):
+        return "{hours} h".format(hours=self.hours)
+
     def admin_get_event(self):
         return self.job.job_category.event if self.job and self.job.job_category else None
     admin_get_event.short_description = _('event')
@@ -183,11 +189,12 @@ class Shift(models.Model):
     admin_get_person.short_description = _('person')
     admin_get_person.admin_order_field = 'signup__person'
 
-    def __unicode__(self):
-        return u'{signup} {job} {start_time}'.format(
-            signup=self.signup,
-            job=self.job,
-            start_time=self.start_time,
+    def __str__(self):
+        return '{interval} ({hours} h): {job_category_name} ({job_name})'.format(
+            interval=format_interval(self.start_time, self.end_time),
+            hours=self.hours,
+            job_category_name=self.job.job_category.title if self.job and self.job.job_category else None,
+            job_name=self.job.title if self.job else None,
         )
 
     class Meta:

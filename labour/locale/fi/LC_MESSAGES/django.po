@@ -34,6 +34,14 @@ msgstr "Kojelauta"
 msgid "Description"
 msgstr "Kuvaus"
 
+#: templates/labour_admin_signup_views/shifts_tab.jade
+msgid "Duration"
+msgstr "Kesto"
+
+#: templates/labour_admin_signup_views/shifts_tab.jade
+msgid "Edit"
+msgstr "Muokkaa"
+
 #: templates/labour_admin_jobcategories_view.jade views/labour_admin_menu_items.py
 msgid "Edit job categories"
 msgstr "Muokkaa tehtäväalueita"
@@ -45,6 +53,10 @@ msgstr "Muokkaa tehtäväaluetta"
 #: templates/labour_admin_startstop_view.jade
 msgid "End now"
 msgstr "Sulje työvoimahaku välittömästi"
+
+#: templates/labour_admin_signup_views/shifts_tab.jade
+msgid "Ending time"
+msgstr "Päättymisaika"
 
 #: models/job_category.py
 msgid "For most job categories, you should select the 'worker' and 'underofficer' classes here, if applicable."
@@ -66,11 +78,15 @@ msgstr "Mikäli alkamisaikaa ei ole asetettu, työvoimahaku pysyy suljettuna. Mi
 msgid "Invalid request."
 msgstr "Kelvoton pyyntö."
 
+#: templates/labour_admin_signup_views/shifts_tab.jade
+msgid "Job"
+msgstr "Tehtävä"
+
 #: models/job_category.py
 msgid "Job categories that are not accepting applications are not shown on the signup form. However, they may still be applied to using alternative signup forms."
 msgstr "Tehtäväalueisiin, jotka eivät ole julkisessa haussa, ei voi hakea tavallisen hakemuslomakkeen kautta. Niihin voi kuitenkin ilmoittautua vaihtoehtoisilla ilmoittautumislomakkeilla, jos sellaisia on määritelty."
 
-#: templates/labour_admin_jobcategories_view.jade
+#: templates/labour_admin_jobcategories_view.jade templates/labour_admin_signup_views/shifts_tab.jade
 msgid "Job category"
 msgstr "Tehtäväalue"
 
@@ -90,9 +106,20 @@ msgstr "Nimi"
 msgid "No"
 msgstr "Ei"
 
+#: templates/labour_admin_signup_views/shifts_tab.jade
+msgid "No shifts."
+msgstr "Ei työvuoroja."
+
 #: views/labour_admin_menu_items.py
 msgid "Onboarding"
 msgstr "Saapuneeksi kirjaaminen"
+
+#: templates/labour_admin_signup_views/shifts_tab.jade
+#, python-format
+msgid "One shift, %(total_hours)s h."
+msgid_plural "%(num_shifts)s shifts, total %(total_hours)s h."
+msgstr[0] "Yksi vuoro, %(total_hours)s h."
+msgstr[1] "%(num_shifts)s vuoroa, yhteensä %(total_hours)s h."
 
 #: views/labour_admin_shirts_view.py
 msgid "Paita"
@@ -162,6 +189,10 @@ msgstr "Tallenna muutokset"
 msgid "Shift planning"
 msgstr "Työvuorojen suunnittelu"
 
+#: templates/labour_admin_signup_views/shifts_tab.jade
+msgid "Shifts"
+msgstr "Työvuorot"
+
 #: templates/labour_admin_onboarding_view.jade
 msgid "Shirt size"
 msgstr "Paitakoko"
@@ -181,6 +212,10 @@ msgstr "Rekisteröidy tai kirjaudu sisään..."
 #: templates/labour_admin_startstop_view.jade
 msgid "Start now"
 msgstr "Avaa työvoimahaku välittömästi"
+
+#: templates/labour_admin_signup_views/shifts_tab.jade
+msgid "Starting time"
+msgstr "Alkamisaika"
 
 #: views/public_views.py
 msgid "Submit application"
@@ -437,6 +472,9 @@ msgstr "aikajae"
 #: models/roster.py
 msgid "work periods"
 msgstr "aikajakeet"
+
+#~ msgid "Delete"
+#~ msgstr "Poista"
 
 #~ msgid "Save"
 #~ msgstr "Tallenna"

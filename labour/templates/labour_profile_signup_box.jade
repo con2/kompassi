@@ -9,7 +9,7 @@
       p.help-block {{ signup.state_description }}
       .row
         .col-md-3: label Hakemus lähetetty
-        .col-md-9: {{ signup.created_at }}
+        .col-md-9: {{ signup.created_at|date:"SHORT_DATETIME_FORMAT" }}
       .row
         .col-md-3: label {{ signup.job_categories_label }}:
         .col-md-9: include labour_profile_job_category_labels.jade

@@ -51,8 +51,16 @@ DATABASES = {
 ALLOWED_HOSTS = []
 
 TIME_ZONE = 'Europe/Helsinki'
-DATETIME_FORMAT = SHORT_DATETIME_FORMAT = 'd.m.Y H:i'
-LANGUAGE_CODE = 'en'
+
+DATE_FORMAT = 'j.n.Y'
+SHORT_DATE_FORMAT = DATE_FORMAT
+DATE_FORMAT_STRFTIME = '%d.%m.%Y'
+
+DATETIME_FORMAT = 'j.n.Y G:i:s'
+SHORT_DATETIME_FORMAT = DATETIME_FORMAT
+DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
+
+LANGUAGE_CODE = 'fi'
 LANGUAGES = (
     ('fi', _('Finnish')),
     ('en', _('English')),
@@ -90,6 +98,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'core.middleware.PageWizardMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django_babel.middleware.LocaleMiddleware',
 )
 
 ROOT_URLCONF = 'turska.urls'
@@ -137,6 +146,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'oauth2_provider',
     'nexmo',
+    'django_babel',
 
     'core',
     'programme',
@@ -256,12 +266,6 @@ from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
-
-DATE_FORMAT = 'j.n.Y'
-DATE_FORMAT_STRFTIME = '%d.%m.%Y'
-
-DATETIME_FORMAT = 'j.n.Y G:i:s'
-DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 
 
 KOMPASSI_APPLICATION_NAME = u'Kompassi'

@@ -103,9 +103,15 @@ urlpatterns = [
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/roster(/.*)?$',
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/roster/?$',
         labour_admin_roster_view,
         name='labour_admin_roster_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/roster/(?P<job_category_slug>[a-z0-9-]+)/?$',
+        labour_admin_roster_view,
+        name='labour_admin_roster_job_category_view'
     ),
 
     url(

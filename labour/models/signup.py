@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from collections import defaultdict, namedtuple, OrderedDict
 from datetime import date, datetime, timedelta
 
@@ -9,6 +11,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 import jsonschema
+from six import text_type
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase
@@ -48,129 +51,129 @@ class Signup(models.Model, CsvExportMixin):
 
     personnel_classes = models.ManyToManyField('labour.PersonnelClass',
         blank=True,
-        verbose_name=u'Henkilöstöluokat',
-        help_text=u'Mihin henkilöstöryhmiin tämä henkilö kuuluu? Henkilö saa valituista ryhmistä '
-            u'ylimmän mukaisen badgen.',
+        verbose_name='Henkilöstöluokat',
+        help_text='Mihin henkilöstöryhmiin tämä henkilö kuuluu? Henkilö saa valituista ryhmistä '
+            'ylimmän mukaisen badgen.',
     )
 
     job_categories = models.ManyToManyField('labour.JobCategory',
-        verbose_name=u'Haettavat tehtävät',
-        help_text=u'Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään '
-            u'tapahtumassa. Huomaathan, että sinulle tarjottavia tehtäviä voi rajoittaa se, '
-            u'mitä pätevyyksiä olet ilmoittanut sinulla olevan. Esimerkiksi järjestyksenvalvojaksi '
-            u'voivat ilmoittautua ainoastaan JV-kortilliset.',
+        verbose_name='Haettavat tehtävät',
+        help_text='Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään '
+            'tapahtumassa. Huomaathan, että sinulle tarjottavia tehtäviä voi rajoittaa se, '
+            'mitä pätevyyksiä olet ilmoittanut sinulla olevan. Esimerkiksi järjestyksenvalvojaksi '
+            'voivat ilmoittautua ainoastaan JV-kortilliset.',
         related_name='signup_set'
     )
 
     notes = models.TextField(
         blank=True,
-        verbose_name=u'Käsittelijän merkinnät',
-        help_text=u'Tämä kenttä ei normaalisti näy henkilölle itselleen, mutta jos tämä '
-            u'pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.'
+        verbose_name='Käsittelijän merkinnät',
+        help_text='Tämä kenttä ei normaalisti näy henkilölle itselleen, mutta jos tämä '
+            'pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.'
     )
 
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=u'Luotu')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=u'Päivitetty')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Luotu')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Päivitetty')
 
     job_categories_accepted = models.ManyToManyField('labour.JobCategory',
         blank=True,
         related_name='accepted_signup_set',
-        verbose_name=u'Hyväksytyt tehtäväalueet',
-        help_text=u'Tehtäväalueet, joilla hyväksytty vapaaehtoistyöntekijä tulee työskentelemään. '
-            u'Tämän perusteella henkilölle mm. lähetetään oman tehtäväalueensa työvoimaohjeet. '
-            u'Harmaalla merkityt tehtäväalueet ovat niitä, joihin hakija ei ole itse hakenut.'
+        verbose_name='Hyväksytyt tehtäväalueet',
+        help_text='Tehtäväalueet, joilla hyväksytty vapaaehtoistyöntekijä tulee työskentelemään. '
+            'Tämän perusteella henkilölle mm. lähetetään oman tehtäväalueensa työvoimaohjeet. '
+            'Harmaalla merkityt tehtäväalueet ovat niitä, joihin hakija ei ole itse hakenut.'
     )
 
     job_categories_rejected = models.ManyToManyField('labour.JobCategory',
         blank=True,
         related_name='+',
         verbose_name=_('Rejected job categories'),
-        help_text=_(u'The workforce manager may use this field to inform other workforce managers that '
-            u'this applicant will not be accepted to a certain job category. This field is not visible '
-            u'to the applicant, but should they request a record of their own information, this field will '
-            u'be included.')
+        help_text=_('The workforce manager may use this field to inform other workforce managers that '
+            'this applicant will not be accepted to a certain job category. This field is not visible '
+            'to the applicant, but should they request a record of their own information, this field will '
+            'be included.')
     )
 
     xxx_interim_shifts = models.TextField(
         blank=True,
         null=True,
-        default=u"",
-        verbose_name=u"Työvuorot",
-        help_text=u"Tämä tekstikenttä on väliaikaisratkaisu, jolla vänkärin työvuorot voidaan "
-            u"merkitä Kompassiin ja lähettää vänkärille työvoimaviestissä jo ennen kuin "
-            u"lopullinen työvuorotyökalu on käyttökunnossa."
+        default="",
+        verbose_name="Työvuorot",
+        help_text="Tämä tekstikenttä on väliaikaisratkaisu, jolla vänkärin työvuorot voidaan "
+            "merkitä Kompassiin ja lähettää vänkärille työvoimaviestissä jo ennen kuin "
+            "lopullinen työvuorotyökalu on käyttökunnossa."
     )
 
     alternative_signup_form_used = models.ForeignKey('labour.AlternativeSignupForm',
         blank=True,
         null=True,
-        verbose_name=u"Ilmoittautumislomake",
-        help_text=u"Tämä kenttä ilmaisee, mitä ilmoittautumislomaketta hakemuksen täyttämiseen käytettiin. "
-            u"Jos kenttä on tyhjä, käytettiin oletuslomaketta.",
+        verbose_name="Ilmoittautumislomake",
+        help_text="Tämä kenttä ilmaisee, mitä ilmoittautumislomaketta hakemuksen täyttämiseen käytettiin. "
+            "Jos kenttä on tyhjä, käytettiin oletuslomaketta.",
     )
 
     job_title = models.CharField(
         max_length=63,
         blank=True,
-        default=u'',
-        verbose_name=u"Tehtävänimike",
-        help_text=u"Printataan badgeen ym. Asetetaan automaattisesti hyväksyttyjen tehtäväalueiden perusteella, mikäli kenttä jätetään tyhjäksi.",
+        default='',
+        verbose_name="Tehtävänimike",
+        help_text="Printataan badgeen ym. Asetetaan automaattisesti hyväksyttyjen tehtäväalueiden perusteella, mikäli kenttä jätetään tyhjäksi.",
     )
 
-    is_active = models.BooleanField(verbose_name=u'Aktiivinen', default=True)
+    is_active = models.BooleanField(verbose_name='Aktiivinen', default=True)
 
     time_accepted = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Hyväksytty',
+        verbose_name='Hyväksytty',
     )
 
     time_confirmation_requested = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Vahvistusta vaadittu',
+        verbose_name='Vahvistusta vaadittu',
     )
 
     time_finished = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Vuorot valmiit',
+        verbose_name='Vuorot valmiit',
     )
 
     time_complained = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Vuoroista reklamoitu',
+        verbose_name='Vuoroista reklamoitu',
     )
 
     time_cancelled = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Peruutettu',
+        verbose_name='Peruutettu',
     )
 
     time_rejected = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Hylätty',
+        verbose_name='Hylätty',
     )
 
     time_arrived = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Saapunut tapahtumaan',
+        verbose_name='Saapunut tapahtumaan',
     )
 
     time_work_accepted = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Työpanos hyväksytty',
+        verbose_name='Työpanos hyväksytty',
     )
 
     time_reprimanded = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Työpanoksesta esitetty moite',
+        verbose_name='Työpanoksesta esitetty moite',
     )
 
     is_accepted = time_bool_property('time_accepted')
@@ -190,8 +193,8 @@ class Signup(models.Model, CsvExportMixin):
     is_processed = property(lambda self: self.state != 'new')
 
     class Meta:
-        verbose_name = _(u'signup')
-        verbose_name_plural = _(u'signups')
+        verbose_name = _('signup')
+        verbose_name_plural = _('signups')
 
     def __unicode__(self):
         p = self.person.full_name if self.person else 'None'
@@ -238,16 +241,16 @@ class Signup(models.Model, CsvExportMixin):
             labels = [(label_class, label_text, None) for label_text in label_texts]
 
             if self.is_more_categories:
-                labels.append((label_class, u'...', self.get_redacted_category_names()))
+                labels.append((label_class, '...', self.get_redacted_category_names()))
 
         elif state == 'cancelled':
-            labels = [(label_class, u'Peruutettu', None)]
+            labels = [(label_class, 'Peruutettu', None)]
 
         elif state == 'rejected':
-            labels = [(label_class, u'Hylätty', None)]
+            labels = [(label_class, 'Hylätty', None)]
 
         elif state == 'beyond_logic':
-            labels = [(label_class, u'Perätilassa', None)]
+            labels = [(label_class, 'Perätilassa', None)]
 
         elif self.is_accepted:
             label_texts = [cat.name for cat in self.job_categories_accepted.all()]
@@ -618,7 +621,10 @@ class Signup(models.Model, CsvExportMixin):
 
     @property
     def formatted_shifts(self):
-        return self.xxx_interim_shifts if self.xxx_interim_shifts is not None else u""
+        parts = [text_type(shift) for shift in self.shifts.all()]
+        parts.append(self.xxx_interim_shifts)
+
+        return "\n".join(part for part in parts if part)
 
     # for admin
     @property

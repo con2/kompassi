@@ -53,101 +53,13 @@ def labour_admin_dashboard_view(request, vars, event):
 
 
 @labour_admin_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
-def labour_admin_signup_view(request, vars, event, person_id):
-    person = get_object_or_404(Person, pk=int(person_id))
-    signup = get_object_or_404(Signup, person=person, event=event)
+def labour_admin_roster_view(request, vars, event, job_category_slug=None):
+    if job_category_slug is not None:
+        get_object_or_404(JobCategory, event=event, slug=job_category_slug)
 
-    old_state_flags = signup._state_flags
-
-    signup_form, signup_extra_form, signup_admin_form = initialize_signup_forms(
-        request, event, signup,
-        admin=True
-    )
-    person_form = initialize_form(AdminPersonForm, request,
-        instance=signup.person,
-        prefix='person',
-        readonly=True,
-        event=event,
-    )
-
-    if request.method == 'POST':
-        # XXX Need to update state before validation to catch accepting people without accepted job categories
-        for state_name in signup.next_states:
-            command_name = 'set-state-{state_name}'.format(state_name=state_name)
-            if command_name in request.POST:
-                old_state_flags = signup._state_flags
-                signup.state = state_name
-                break
-
-        if signup_form.is_valid() and signup_extra_form.is_valid() and signup_admin_form.is_valid():
-            signup_form.save()
-            signup_extra_form.save()
-            signup_admin_form.save()
-
-            signup.apply_state()
-            messages.success(request, u'Tiedot tallennettiin.')
-
-            if 'save-return' in request.POST:
-                return redirect('labour_admin_signups_view', event.slug)
-            else:
-                return redirect('labour_admin_signup_view', event.slug, person.pk)
-        else:
-            # XXX Restore state just for shows, suboptimal but
-            signup._state_flags = old_state_flags
-
-            messages.error(request, u'Ole hyvä ja tarkista lomake.')
-
-    non_qualified_category_names = [
-        jc.name for jc in JobCategory.objects.filter(event=event)
-        if not jc.is_person_qualified(signup.person)
-    ]
-
-    non_applied_categories = list(JobCategory.objects.filter(event=event))
-    for applied_category in signup.job_categories.all():
-        non_applied_categories.remove(applied_category)
-    non_applied_category_names = [cat.name for cat in non_applied_categories]
-
-    previous_signup, next_signup = signup.get_previous_and_next_signup()
-
-    historic_signups = Signup.objects.filter(person=signup.person).exclude(event=event).order_by('-event__start_time')
-    if not person.allow_work_history_sharing:
-        # The user has elected to not share their full work history between organizations.
-        # Only show work history for the current organization.
-        historic_signups = historic_signups.filter(event__organization=event.organization)
-
-    tabs = [
-        Tab('labour-admin-signup-state-tab', u'Hakemuksen tila', active=True),
-        Tab('labour-admin-signup-person-tab', u'Hakijan tiedot'),
-        Tab('labour-admin-signup-application-tab', u'Hakemuksen tiedot'),
-        Tab('labour-admin-signup-messages-tab', u'Työvoimaviestit', notifications=signup.person_messages.count()),
-        Tab('labour-admin-signup-history-tab', u'Työskentelyhistoria', notifications=historic_signups.count()),
-    ]
-
-    vars.update(
-        historic_signups=historic_signups,
-        next_signup=next_signup,
-        person_form=person_form,
-        previous_signup=previous_signup,
-        signup=signup,
-        signup_admin_form=signup_admin_form,
-        signup_extra_form=signup_extra_form,
-        signup_form=signup_form,
-        tabs=tabs,
-
-        # XXX hack: widget customization is very difficult, so apply styles via JS
-        non_applied_category_names_json=json.dumps(non_applied_category_names),
-        non_qualified_category_names_json=json.dumps(non_qualified_category_names),
-    )
-
-    return render(request, 'labour_admin_signup_view.jade', vars)
-
-
-@labour_admin_required
-def labour_admin_roster_view(request, vars, event):
-    # use javaScriptCase because this gets directly embedded in <script> as json
     tz = tzlocal()
 
+    # use javaScriptCase because this gets directly embedded in <script> as json
     config = dict(
         event=event.as_dict(),
         workHours=[
