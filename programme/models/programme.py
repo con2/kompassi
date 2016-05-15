@@ -55,6 +55,7 @@ STATE_CSS = dict(
     asked='label-default',
     offered='label-default',
     accepted='label-primary',
+    frozen='label-primary',
     published='label-success',
     cancelled='label-danger',
     rejected='label-danger',
