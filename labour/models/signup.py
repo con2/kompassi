@@ -383,10 +383,10 @@ class Signup(models.Model, CsvExportMixin):
         self.signup_extra.apply_state()
 
         self.apply_state_create_badges()
-        self.apply_state_email_aliases()
 
     def _apply_state(self):
         self.apply_state_group_membership()
+        self.apply_state_email_aliases()
         self.apply_state_send_messages()
 
     def apply_state_group_membership(self):

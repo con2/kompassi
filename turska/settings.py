@@ -174,6 +174,11 @@ INSTALLED_APPS = (
     'branding',
     'desuprofile_integration',
 
+    'organizations.tracon_ry',
+    'organizations.aicon_ry',
+    'organizations.yukitea_ry',
+    'organizations.luutakomero_ry',
+
     'events.tracon8',
     'events.tracon9',
     'events.kawacon2014',
@@ -200,10 +205,7 @@ INSTALLED_APPS = (
     'events.lakeuscon2016',
     'events.animecon2016',
     'events.hitpoint2017',
-
-    'organizations.tracon_ry',
-    'organizations.aicon_ry',
-    'organizations.yukitea_ry',
+    'events.tylycon2017',
 )
 
 LOGGING = {
