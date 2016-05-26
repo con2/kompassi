@@ -11,6 +11,7 @@ from .views import (
     labour_admin_shirts_view,
     labour_admin_signup_view,
     labour_admin_signups_view,
+    labour_admin_special_diets_view,
     labour_admin_startstop_view,
     labour_api_job_categories_view,
     labour_api_job_category_view,
@@ -142,6 +143,12 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/shirts/?$',
         labour_admin_shirts_view,
         name='labour_admin_shirts_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/specialdiets/?$',
+        labour_admin_special_diets_view,
+        name='labour_admin_special_diets_view'
     ),
 
     url(

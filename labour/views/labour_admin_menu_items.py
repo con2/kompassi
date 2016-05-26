@@ -54,4 +54,14 @@ def labour_admin_menu_items(request, event):
 
         menu_items.append((shirts_active, shirts_url, shirts_text))
 
+    if (
+        event.labour_event_meta.signup_extra_model.get_special_diet_field() or
+        event.labour_event_meta.signup_extra_model.get_special_diet_other_field()
+    ):
+        special_diets_url = url('labour_admin_special_diets_view', event.slug)
+        special_diets_active = request.path == special_diets_url
+        special_diets_text = _("Special diets")
+
+        menu_items.append((special_diets_active, special_diets_url, special_diets_text))
+
     return menu_items

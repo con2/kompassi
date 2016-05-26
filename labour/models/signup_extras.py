@@ -19,32 +19,45 @@ class SignupExtraMixin(object):
 
     @classmethod
     def get_shirt_size_field(cls):
-        if not hasattr(cls, '_shirt_size_field'):
-            cls._shirt_size_field = None
-            for field in cls._meta.fields:
-                if field.name == 'shirt_size':
-                    cls._shirt_size_field = field
-                    break
-
-        return cls._shirt_size_field
+        return cls.get_field('shirt_size', None)
 
     @classmethod
     def get_shirt_type_field(cls):
-        if not hasattr(cls, '_shirt_type_field'):
-            cls._shirt_type_field = None
-            for field in cls._meta.fields:
-                if field.name == 'shirt_type':
-                    cls._shirt_type_field = field
-                    break
-
-        return cls._shirt_type_field
+        return cls.get_field('shirt_type', None)
 
     @classmethod
-    def get_field(cls, field_name):
+    def get_special_diet_field(cls):
+        return cls.get_m2m_field('special_diet', None)
+
+    @classmethod
+    def get_special_diet_model(cls):
+        special_diet_field = cls.get_special_diet_field()
+        return special_diet_field.related_model if special_diet_field else None
+
+    @property
+    def formatted_special_diet(self):
+        if not self.__class__.get_special_diet_field():
+            return ''
+
+        return ', '.join(sd.name for sd in self.special_diet.all())
+
+    @classmethod
+    def get_special_diet_other_field(cls):
+        return cls.get_field('special_diet_other', None)
+
+    @classmethod
+    def get_field(cls, field_name, default=None):
         if not hasattr(cls, '_fields_by_name'):
             cls._fields_by_name = dict((field.name, field) for field in cls._meta.fields)
 
-        return cls._fields_by_name.get(field_name)
+        return cls._fields_by_name.get(field_name, default)
+
+    @classmethod
+    def get_m2m_field(cls, field_name, default=None):
+        if not hasattr(cls, '_m2m_fields_by_name'):
+            cls._m2m_fields_by_name = dict((field.name, field) for field in cls._meta.many_to_many)
+
+        return cls._m2m_fields_by_name.get(field_name, default)
 
     def apply_state(self):
         self.is_active = self.determine_is_active()

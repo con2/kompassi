@@ -26,6 +26,10 @@ msgstr "Hae vapaaehtoistyöhön"
 msgid "Complete contact information"
 msgstr "Täydennä yhteystiedot"
 
+#: templates/labour_admin_special_diets_view.jade
+msgid "Count"
+msgstr "Lukumäärä"
+
 #: views/labour_admin_menu_items.py
 msgid "Dashboard"
 msgstr "Kojelauta"
@@ -121,6 +125,14 @@ msgid_plural "%(num_shifts)s shifts, total %(total_hours)s h."
 msgstr[0] "Yksi vuoro, %(total_hours)s h."
 msgstr[1] "%(num_shifts)s vuoroa, yhteensä %(total_hours)s h."
 
+#: templates/labour_admin_special_diets_view.jade
+msgid "Other special diet"
+msgstr "Muu erikoisruokavalio"
+
+#: templates/labour_admin_special_diets_view.jade
+msgid "Other special diets"
+msgstr "Muut erikoisruokavaliot"
+
 #: views/labour_admin_shirts_view.py
 msgid "Paita"
 msgstr "Shirt"
@@ -209,6 +221,22 @@ msgstr "Paitatyyppi"
 msgid "Sign up or sign in..."
 msgstr "Rekisteröidy tai kirjaudu sisään..."
 
+#: templates/labour_admin_special_diets_view.jade
+msgid "Special diet"
+msgstr "Erikoisruokavalio"
+
+#: views/labour_admin_menu_items.py
+msgid "Special diets"
+msgstr "Erikoisruokavaliot"
+
+#: templates/labour_admin_special_diets_view.jade
+msgid "Standard special diet"
+msgstr "Tyypillinen erikoisruokavalio"
+
+#: templates/labour_admin_special_diets_view.jade
+msgid "Standard special diets"
+msgstr "Tyypilliset erikoisruokavaliot"
+
 #: templates/labour_admin_startstop_view.jade
 msgid "Start now"
 msgstr "Avaa työvoimahaku välittömästi"
@@ -292,6 +320,10 @@ msgstr "Tämä kuvaus näytetään hakijoille hakemuslomakkeella. Mikäli täll�
 #: views/labour_admin_shirts_view.py
 msgid "This event does not record shirt sizes."
 msgstr "Tämä tapahtuma ei kerää paitakokoja."
+
+#: views/labour_admin_special_diets_view.py
+msgid "This event does not record special diets."
+msgstr "Tämä tapahtuma ei kerää erikoisruokavalioita."
 
 #: views/public_views.py
 msgid "This event is not currently accepting applications."

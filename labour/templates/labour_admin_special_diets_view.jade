@@ -1,0 +1,35 @@
+extends core_admin_base
+- load crispy_forms_tags
+- load i18n
+block title
+  | Paitakoot
+block admin_content
+  if special_diet_field
+    .panel.panel-default
+      .panel-heading: strong {% trans "Standard special diets" %}
+      table.table.table-striped
+        thead
+          tr
+            th {% trans "Special diet" %}
+            th {% trans "Count" %}
+        tbody
+          for special_diet in special_diets
+            tr
+              td= special_diet.name
+              td= special_diet.count
+
+  if special_diet_other_field
+    .panel.panel-default
+      .panel-heading: strong {% trans "Other special diets" %}
+      table.table.table-striped
+        thead
+          tr
+            if special_diet_field
+              th {% trans "Standard special diet" %}
+            th {% trans "Other special diet" %}
+        tbody
+          for signup_extra in signup_extras_with_other_special_diets
+            tr
+              if special_diet_field
+                td= signup_extra.formatted_special_diet
+              td= signup_extra.special_diet_other
