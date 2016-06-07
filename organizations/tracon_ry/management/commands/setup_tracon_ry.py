@@ -106,6 +106,14 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
                 )
             )
 
+        internals_domain, created = EmailAliasDomain.objects.get_or_create(
+            domain_name='kompassi.eu',
+            defaults=dict(
+                organization=self.organization,
+                has_internal_aliases=True,
+            )
+        )
+
 
 class Command(BaseCommand):
     args = ''

@@ -8,6 +8,7 @@ from .models import (
     GrantedPrivilege,
     GroupEmailAliasGrant,
     GroupPrivilege,
+    InternalEmailAlias,
     Privilege,
     SlackAccess,
     SMTPPassword,
@@ -62,6 +63,13 @@ class EmailAliasAdmin(admin.ModelAdmin):
     raw_id_fields = ('person', 'group_grant')
 
 
+class InternalEmailAliasAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_organization', 'email_address', 'target_emails')
+    list_filter = ('domain__organization', 'domain')
+    search_fields = ('domain__organization__name', 'email_address', 'target_emails')
+    readonly_fields = ('email_address',)
+
+
 class GroupEmailAliasGrantAdmin(admin.ModelAdmin):
     list_display = ('admin_get_organization', 'type', 'group')
     list_filter = ('type__domain__organization', 'type__domain__domain_name', 'type__metavar', 'group__name')
@@ -78,13 +86,14 @@ class SMTPPasswordAdmin(admin.ModelAdmin):
     raw_id_fields = ('person',)
 
 
-admin.site.register(Privilege, PrivilegeAdmin)
-admin.site.register(GroupPrivilege, GroupPrivilegeAdmin)
-admin.site.register(GrantedPrivilege, GrantedPrivilegeAdmin)
-admin.site.register(SlackAccess, SlackAccessAdmin)
+admin.site.register(EmailAlias, EmailAliasAdmin)
 admin.site.register(EmailAliasDomain, EmailAliasDomainAdmin)
 admin.site.register(EmailAliasType, EmailAliasTypeAdmin)
-admin.site.register(EmailAlias, EmailAliasAdmin)
+admin.site.register(GrantedPrivilege, GrantedPrivilegeAdmin)
 admin.site.register(GroupEmailAliasGrant, GroupEmailAliasGrantAdmin)
-admin.site.register(SMTPServer, SMTPServerAdmin)
+admin.site.register(GroupPrivilege, GroupPrivilegeAdmin)
+admin.site.register(InternalEmailAlias, InternalEmailAliasAdmin)
+admin.site.register(Privilege, PrivilegeAdmin)
+admin.site.register(SlackAccess, SlackAccessAdmin)
 admin.site.register(SMTPPassword, SMTPPasswordAdmin)
+admin.site.register(SMTPServer, SMTPServerAdmin)

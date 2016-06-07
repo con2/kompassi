@@ -8,12 +8,16 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import python_2_unicode_compatible
+
+from .email_alias_mixin import EmailAliasMixin
 
 
 logger = logging.getLogger('kompassi')
 
 
-class EmailAlias(models.Model):
+@python_2_unicode_compatible
+class EmailAlias(EmailAliasMixin, models.Model):
     type = models.ForeignKey('access.EmailAliasType', verbose_name=_('type'), related_name='email_aliases')
     person = models.ForeignKey('core.Person', verbose_name=_('person'), related_name='email_aliases')
 
@@ -46,11 +50,8 @@ class EmailAlias(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('created at'))
     modified_at = models.DateTimeField(auto_now=True, verbose_name=_('updated at'))
 
-    def _make_email_address(self):
-        return '{account_name}@{domain}'.format(
-            account_name=self.account_name,
-            domain=self.domain.domain_name,
-        ) if self.account_name and self.domain else None
+    def __str__(self):
+        return self.email_address
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -63,14 +64,6 @@ class EmailAlias(models.Model):
             type=alias_type,
             person=person,
         )
-
-    def admin_get_organization(self):
-        return self.type.domain.organization if self.type else None
-    admin_get_organization.short_description = _('organization')
-    admin_get_organization.admin_order_field = 'type__domain__organization'
-
-    def __unicode__(self):
-        return self.email_address
 
     class Meta:
         verbose_name = _('e-mail alias')

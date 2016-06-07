@@ -5,10 +5,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
 from core.utils import alias_property
-from core.models import EventMetaBase
+from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
 
 
-class ProgrammeEventMeta(EventMetaBase):
+class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     public_from = models.DateTimeField(
         null=True,
         blank=True,
@@ -19,6 +19,7 @@ class ProgrammeEventMeta(EventMetaBase):
     contact_email = models.CharField(
         max_length=255,
         blank=True,
+        validators=[contact_email_validator,],
         verbose_name=u'yhteysosoite',
         help_text=u'Kaikki ohjelmajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
             u'osoitteesta, ja tämä osoite näytetään ohjelmanjärjestäjälle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',

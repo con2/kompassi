@@ -14,6 +14,7 @@ class EmailAliasDomain(models.Model):
         help_text=_('eg. example.com'),
     )
     organization = models.ForeignKey('core.Organization', verbose_name=_('organization'))
+    has_internal_aliases = models.BooleanField(default=False)
 
     @classmethod
     def get_or_create_dummy(cls, domain_name='example.com'):

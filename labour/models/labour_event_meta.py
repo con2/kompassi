@@ -1,5 +1,8 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
+import re
 from datetime import datetime, timedelta
 
 from django.conf import settings
@@ -7,13 +10,13 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
-from core.models import EventMetaBase
+from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
 from core.utils import full_hours_between, is_within_period
 
 from .constants import GROUP_VERBOSE_NAMES_BY_SUFFIX, SIGNUP_STATE_GROUPS
 
 
-class LabourEventMeta(EventMetaBase):
+class LabourEventMeta(ContactEmailMixin, EventMetaBase):
     signup_extra_content_type = models.ForeignKey('contenttypes.ContentType')
 
     registration_opens = models.DateTimeField(
@@ -28,47 +31,48 @@ class LabourEventMeta(EventMetaBase):
         verbose_name=_("Registration closes"),
     )
 
-    work_begins = models.DateTimeField(verbose_name=u'Ensimmäiset työvuorot alkavat')
-    work_ends = models.DateTimeField(verbose_name=u'Viimeiset työvuorot päättyvät')
+    work_begins = models.DateTimeField(verbose_name='Ensimmäiset työvuorot alkavat')
+    work_ends = models.DateTimeField(verbose_name='Viimeiset työvuorot päättyvät')
 
     monitor_email = models.CharField(
         max_length=255,
         blank=True,
-        verbose_name=u'tarkkailusähköposti',
-        help_text=u'Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään myös '
-            u'tähän osoitteeseen.',
+        verbose_name='tarkkailusähköposti',
+        help_text='Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään myös '
+            'tähän osoitteeseen.',
     )
 
     contact_email = models.CharField(
         max_length=255,
         blank=True,
-        verbose_name=u'yhteysosoite',
-        help_text=u'Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
-            u'osoitteesta, ja tämä osoite näytetään työvoimalle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
+        validators=[contact_email_validator,],
+        verbose_name='yhteysosoite',
+        help_text='Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
+            'osoitteesta, ja tämä osoite näytetään työvoimalle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
     )
 
     signup_message = models.TextField(
         null=True,
         blank=True,
-        default=u'',
-        verbose_name=u'Ilmoittautumisen huomautusviesti',
-        help_text=u'Tämä viesti näytetään kaikille työvoimailmoittautumisen alussa. Käytettiin '
-            u'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
-            u'erikoistehtäville.',
+        default='',
+        verbose_name='Ilmoittautumisen huomautusviesti',
+        help_text='Tämä viesti näytetään kaikille työvoimailmoittautumisen alussa. Käytettiin '
+            'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
+            'erikoistehtäville.',
     )
 
     work_certificate_signer = models.TextField(
         null=True,
         blank=True,
-        default=u'',
-        verbose_name=u'Työtodistuksen allekirjoittaja',
-        help_text=u'Tämän kentän sisältö näkyy työtodistuksen allekirjoittajan nimenselvennyksenä. '
-            u'On suositeltavaa sisällyttää tähän omalle rivilleen allekirjoittajan tehtävänimike.'
+        default='',
+        verbose_name='Työtodistuksen allekirjoittaja',
+        help_text='Tämän kentän sisältö näkyy työtodistuksen allekirjoittajan nimenselvennyksenä. '
+            'On suositeltavaa sisällyttää tähän omalle rivilleen allekirjoittajan tehtävänimike.'
     )
 
     class Meta:
-        verbose_name = _(u'labour event meta')
-        verbose_name_plural = _(u'labour event metas')
+        verbose_name = _('labour event meta')
+        verbose_name_plural = _('labour event metas')
 
     def __unicode__(self):
         return self.event.name if self.event else 'None'

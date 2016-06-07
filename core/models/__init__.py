@@ -16,3 +16,4 @@ from .person import Person, birth_date_validator
 from .one_time_code import OneTimeCodeMixin, OneTimeCode, OneTimeCodeLite
 from .password_reset_token import PasswordResetToken, PasswordResetError
 from .email_verification_token import EmailVerificationToken, EmailVerificationError
+from .contact_email_mixin import contact_email_validator, ContactEmailMixin

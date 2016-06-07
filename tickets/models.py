@@ -15,7 +15,7 @@ from django.utils.encoding import python_2_unicode_compatible
 
 from dateutil.tz import tzlocal
 
-from core.models import EventMetaBase
+from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
 from core.utils import url, code_property, slugify, NONUNIQUE_SLUG_FIELD_PARAMS
 from payments.utils import compute_payment_request_mac
 
@@ -28,7 +28,7 @@ UNPAID_CANCEL_DAYS = 1
 
 
 @python_2_unicode_compatible
-class TicketsEventMeta(EventMetaBase):
+class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
     shipping_and_handling_cents = models.IntegerField(
         verbose_name='Toimituskulut (senttejä)',
         default=0,
@@ -60,15 +60,9 @@ class TicketsEventMeta(EventMetaBase):
 
     contact_email = models.CharField(
         max_length=255,
+        validators=[contact_email_validator,],
         verbose_name=u"Asiakaspalvelun sähköpostiosoite selitteineen",
         help_text=u"Ongelmatilanteissa käyttäjää kehotetaan ottamaan yhteyttä tähän osoitteeseen. Muoto: Tracon 9 -lipunmyynti &lt;liput@tracon.fi&gt;",
-        blank=True,
-    )
-
-    plain_contact_email = models.CharField(
-        max_length=255,
-        verbose_name=u"Asiakaspalvelun sähköpostiosoite ilman selitettä",
-        help_text=u"Ongelmatilanteissa käyttäjää kehotetaan ottamaan yhteyttä tähän osoitteeseen. Muoto: liput@tracon.fi",
         blank=True,
     )
 

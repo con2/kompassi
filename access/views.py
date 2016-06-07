@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+import logging
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import Group
@@ -13,8 +15,18 @@ from core.helpers import person_required
 from core.models import Person
 from core.utils import groupby_strict, url
 
-from .models import Privilege, EmailAliasDomain, EmailAlias, SMTPServer, SMTPPassword
+from .models import (
+    EmailAlias,
+    EmailAliasDomain,
+    InternalEmailAlias,
+    Privilege,
+    SMTPPassword,
+    SMTPServer,
+)
 from .helpers import access_admin_required
+
+
+logger = logging.getLogger('kompassi')
 
 
 @person_required
@@ -121,6 +133,7 @@ def access_admin_aliases_api(request, domain_name):
 
     lines = []
 
+    # Personal aliases
     for person in Person.objects.filter(email_aliases__domain=domain).distinct():
         lines.append(u'# {name}'.format(name=person.full_name))
 
@@ -131,6 +144,13 @@ def access_admin_aliases_api(request, domain_name):
             ))
 
         lines.append('')
+
+    # Technical aliases
+    for alias in InternalEmailAlias.objects.filter(domain=domain):
+        if alias.normalized_target_emails:
+            lines.append(u'{alias.account_name}: {alias.normalized_target_emails}'.format(alias=alias))
+        else:
+            logger.warn('Internal alias %s does not have target emails', alias)
 
     return HttpResponse('\n'.join(lines), content_type='text/plain; charset=UTF-8')
 
