@@ -21,6 +21,8 @@ class Privilege(models.Model):
     grant_code = models.CharField(max_length=256)
 
     def grant(self, person):
+        from .granted_privilege import GrantedPrivilege
+
         gp, created = GrantedPrivilege.objects.get_or_create(
             privilege=self,
             person=person,
@@ -39,6 +41,8 @@ class Privilege(models.Model):
             self._grant(person)
 
     def _grant(self, person):
+        from .granted_privilege import GrantedPrivilege
+
         gp = GrantedPrivilege.objects.get(privilege=self, person=person, state='approved')
 
         grant_function = get_code(self.grant_code)
