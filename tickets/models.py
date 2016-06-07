@@ -949,7 +949,7 @@ class Order(models.Model):
         message = EmailMessage(
             subject=msgsubject,
             body=msgbody,
-            from_email=self.event.tickets_event_meta.contact_email,
+            from_email=self.event.tickets_event_meta.cloaked_contact_email,
             to=(self.customer.name_and_email,),
             bcc=msgbcc
         )

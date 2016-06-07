@@ -263,7 +263,7 @@ class PersonMessage(models.Model):
         EmailMessage(
             subject=self.subject.text,
             body=self.body.text,
-            from_email=meta.contact_email,
+            from_email=meta.cloaked_contact_email,
             to=(self.person.name_and_email,),
             bcc=msgbcc
         ).send(fail_silently=True)
