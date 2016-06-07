@@ -28,6 +28,10 @@ class OneTimeCodeMixin(object):
     def is_used(self):
         return self.used_at is not None
 
+    @property
+    def from_email(self):
+        return settings.DEFAULT_FROM_EMAIL
+
     def __unicode__(self):
         return self.code
 
@@ -50,6 +54,7 @@ class OneTimeCodeMixin(object):
         opts = dict(
             subject=subject,
             body=body,
+            from_email=self.from_email,
             to=(self.name_and_email,),
         )
 

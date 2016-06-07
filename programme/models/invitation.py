@@ -51,6 +51,10 @@ class Invitation(OneTimeCodeLite):
         return '{email} ({programme})'.format(email=self.email, programme=self.programme)
 
     @property
+    def from_email(self):
+        return self.programme.event.programme_event_meta.cloaked_contact_email
+
+    @property
     def event(self):
         return self.programme.category.event if self.programme else None
 
