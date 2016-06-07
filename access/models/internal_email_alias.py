@@ -87,7 +87,9 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
         alias, created = cls.objects.get_or_create(
             domain=domain,
             app_label='core',
-            target_emails="\n".join(email for (name, email) in settings.ADMINS),
+            defaults=dict(
+                target_emails="\n".join(email for (name, email) in settings.ADMINS),
+            )
         )
 
         log_get_or_create(logger, alias, created)
@@ -105,9 +107,11 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
 
                 alias, created = cls.objects.get_or_create(
                     domain=domain,
-                    event=event,
                     app_label=app_label,
-                    target_emails=meta.plain_contact_email,
+                    event=event,
+                    defaults=dict(
+                        target_emails=meta.plain_contact_email,
+                    ),
                 )
                 log_get_or_create(logger, alias, created)
 
