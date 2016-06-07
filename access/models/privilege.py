@@ -35,7 +35,7 @@ class Privilege(models.Model):
             return
 
         if 'background_tasks' in settings.INSTALLED_APPS:
-            from .tasks import grant_privilege
+            from ..tasks import grant_privilege
             grant_privilege.delay(self.pk, person.pk)
         else:
             self._grant(person)
