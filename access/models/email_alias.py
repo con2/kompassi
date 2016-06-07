@@ -1,0 +1,91 @@
+# encoding: utf-8
+
+from __future__ import unicode_literals
+
+import logging
+
+from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
+
+
+logger = logging.getLogger('kompassi')
+
+
+class EmailAlias(models.Model):
+    type = models.ForeignKey('access.EmailAliasType', verbose_name=_('type'), related_name='email_aliases')
+    person = models.ForeignKey('core.Person', verbose_name=_('person'), related_name='email_aliases')
+
+    account_name = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=_('account name'),
+        help_text='Ennen @-merkkiä tuleva osa sähköpostiosoitetta. Muodostetaan automaattisesti jos tyhjä.',
+    )
+
+    # denormalized to facilitate searching etc
+    email_address = models.CharField(
+        max_length=511,
+        verbose_name=_('e-mail address'),
+        help_text='Muodostetaan automaattisesti',
+    )
+
+    # to facilitate easy pruning of old addresses
+    group_grant = models.ForeignKey('access.GroupEmailAliasGrant',
+        blank=True,
+        null=True,
+        help_text='Myöntämiskanava antaa kaikille tietyn ryhmän jäsenille tietyntyyppisen sähköpostialiaksen. '
+            'Jos aliakselle on asetettu myöntämiskanava, alias on myönnetty tämän myöntämiskanavan perusteella, '
+            'ja kun myöntämiskanava vanhenee, kaikki sen perusteella myönnetyt aliakset voidaan poistaa kerralla.'
+    )
+
+    # denormalized, for unique_together and easy queries
+    domain = models.ForeignKey('access.EmailAliasDomain', verbose_name=_('domain'))
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('created at'))
+    modified_at = models.DateTimeField(auto_now=True, verbose_name=_('updated at'))
+
+    def _make_email_address(self):
+        return '{account_name}@{domain}'.format(
+            account_name=self.account_name,
+            domain=self.domain.domain_name,
+        ) if self.account_name and self.domain else None
+
+    @classmethod
+    def get_or_create_dummy(cls):
+        from .email_alias_type import EmailAliasType
+        from core.models import Person
+        alias_type, unused = EmailAliasType.get_or_create_dummy()
+        person, unused = Person.get_or_create_dummy()
+
+        return cls.objects.get_or_create(
+            type=alias_type,
+            person=person,
+        )
+
+    def admin_get_organization(self):
+        return self.type.domain.organization if self.type else None
+    admin_get_organization.short_description = _('organization')
+    admin_get_organization.admin_order_field = 'type__domain__organization'
+
+    def __unicode__(self):
+        return self.email_address
+
+    class Meta:
+        verbose_name = _('e-mail alias')
+        verbose_name_plural = _('e-mail aliases')
+
+        unique_together = [('domain', 'account_name')]
+
+
+@receiver(pre_save, sender=EmailAlias)
+def populate_email_alias_computed_fields(sender, instance, **kwargs):
+    if instance.type:
+        instance.domain = instance.type.domain
+
+        if instance.person and not instance.account_name:
+            instance.account_name = instance.type._make_account_name_for_person(instance.person)
+
+        if instance.account_name:
+            instance.email_address = instance._make_email_address()

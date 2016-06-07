@@ -610,6 +610,11 @@ class Signup(models.Model, CsvExportMixin):
             not self.is_arrived
 
     @property
+    def formatted_personnel_classes(self):
+        from .job_category import format_job_categories
+        return format_job_categories(self.personnel_classes.all(()))
+
+    @property
     def formatted_job_categories_accepted(self):
         from .job_category import format_job_categories
         return format_job_categories(self.job_categories_accepted.all())
