@@ -377,12 +377,54 @@ class Programme(models.Model, CsvExportMixin):
         return super(Programme, self).save(*args, **kwargs)
 
     def apply_state(self, deleted_programme_roles=[]):
+        self.apply_state_sync(deleted_programme_roles)
+        self.apply_state_async()
+
+    def apply_state_sync(self, deleted_programme_roles):
         self.apply_state_update_signup_extras()
         self.apply_state_create_badges(deleted_programme_roles)
+
+    def apply_state_async(self):
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from ..tasks import programme_apply_state_async
+            programme_apply_state_async.delay(self.pk)
+        else:
+            self._apply_state_async()
+
+    def _apply_state_async(self):
+        self.apply_state_group_membership()
 
     def apply_state_update_signup_extras(self):
         for signup_extra in self.signup_extras:
             signup_extra.apply_state()
+
+    def apply_state_group_membership(self):
+        from .programme_role import ProgrammeRole
+        from core.utils import ensure_user_group_membership
+
+        group = self.event.programme_event_meta.get_group('hosts')
+
+        for person in self.organizers.all():
+            assert person.user
+
+            if ProgrammeRole.objects.filter(
+                programme__category__event=self.event,
+                programme__state__in=PROGRAMME_STATES_ACTIVE,
+                person=person,
+            ).exists():
+                # active programmist
+                groups_to_add = [group]
+                groups_to_remove = []
+            else:
+                # inactive programmist
+                groups_to_add = []
+                groups_to_remove = [group]
+
+            ensure_user_group_membership(person.user,
+                groups_to_add=groups_to_add,
+                groups_to_remove=groups_to_remove
+            )
+
 
     def apply_state_create_badges(self, deleted_programme_roles=[]):
         if 'badges' not in settings.INSTALLED_APPS:

@@ -22,6 +22,19 @@ class SlackAccess(models.Model):
     team_name = models.CharField(max_length=255, verbose_name='Slack-yhteisön nimi')
     api_token = models.CharField(max_length=255, default='test', verbose_name='API-koodi')
 
+    @classmethod
+    def get_or_create_dummy(cls):
+        from .privilege import Privilege
+        privilege, unused = Privilege.get_or_create_dummy('slack')
+
+        return cls.objects.get_or_create(
+            privilege=privilege,
+            defaults=dict(
+                team_name='test',
+                api_token='x',
+            ),
+        )
+
     @property
     def invite_url(self):
         return 'https://{team_name}.slack.com/api/users.admin.invite'.format(team_name=self.team_name)

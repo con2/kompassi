@@ -40,7 +40,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         from core.models import Event
 
         event, unused = Event.get_or_create_dummy()
-        admin_group, = cls.get_or_create_groups(event, ['admins'])
+        admin_group, hosts_group = cls.get_or_create_groups(event, ['admins', 'hosts'])
 
         return cls.objects.get_or_create(
             event=event,

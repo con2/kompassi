@@ -230,7 +230,7 @@ class Setup(object):
                 )
             )
 
-        admin_group, = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins'])
+        admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
             admin_group=admin_group,
         ))

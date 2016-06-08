@@ -214,14 +214,6 @@ class Setup(object):
             ),
         )
 
-    def setup_access(self):
-        from access.models import Privilege, GroupPrivilege
-
-        # Grant accepted workers access to Desucon Slack
-        group = self.event.labour_event_meta.get_group('accepted')
-        privilege = Privilege.objects.get(slug='desuslack')
-        GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
-
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
@@ -245,6 +237,7 @@ class Setup(object):
             Role,
         )
 
+        ProgrammeEventMeta.get_or_create_groups(self.event, ['hosts'])
         programme_admin_group = Group.objects.get(name=LabourEventMeta.make_group_name(self.event, 'vastaava'))
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
             public=False,
@@ -271,6 +264,18 @@ class Setup(object):
                 )
             )
             role_priority += 10
+
+    def setup_access(self):
+        from access.models import Privilege, GroupPrivilege
+
+        # Grant accepted workers and programme hosts access to Desucon Slack
+        privilege = Privilege.objects.get(slug='desuslack')
+        for group in [
+            self.event.labour_event_meta.get_group('accepted'),
+            self.event.programme_event_meta.get_group('hosts'),
+        ]:
+            GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+
 
 
 class Command(BaseCommand):

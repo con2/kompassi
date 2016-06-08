@@ -20,6 +20,21 @@ class Privilege(models.Model):
 
     grant_code = models.CharField(max_length=256)
 
+    @classmethod
+    def get_or_create_dummy(cls, slug='test-privilege'):
+        GRANT_CODES = dict(
+            test='access.privileges:add_to_group',
+            slack='access.privileges:invite_to_slack',
+        )
+
+        return cls.objects.get_or_create(
+            slug=slug,
+            defaults=dict(
+                title='Check this privilege',
+                grant_code=GRANT_CODES[slug],
+            )
+        )
+
     def grant(self, person):
         from .granted_privilege import GrantedPrivilege
 

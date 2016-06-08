@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 
+from access.models import SlackAccess, GroupPrivilege, Privilege
 from labour.models import Signup
 
 from .utils import next_full_hour
@@ -90,3 +91,32 @@ class ProgrammeSignupExtraTestCase(TestCase):
         signup_extra = SignupExtra.for_event_and_person(event, person)
         assert signup_extra.pk == signup_extra_pk
         assert not signup_extra.is_active
+
+
+class ProgrammeSlackAccessTestCase(TestCase):
+    def test_condb_434_programme_slack_access(self):
+        programme_role, unused = ProgrammeRole.get_or_create_dummy()
+        programme = programme_role.programme
+        person = programme_role.person
+        event = programme.category.event
+        meta = event.programme_event_meta
+        group = meta.get_group('hosts')
+
+        slack_access, unused = SlackAccess.get_or_create_dummy()
+        privilege = slack_access.privilege
+        group_privilege, unused = GroupPrivilege.objects.get_or_create(
+            privilege=privilege,
+            group=group,
+            event=event,
+        )
+
+        assert person.user in group.user_set.all()
+        assert privilege in Privilege.get_potential_privileges(person)
+
+        programme.state = 'rejected'
+        programme.save()
+        programme.apply_state()
+
+        group = meta.get_group('hosts')
+        assert person.user not in group.user_set.all()
+        assert privilege not in Privilege.get_potential_privileges(person)
