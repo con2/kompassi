@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.messages import add_message, INFO, WARNING, ERROR
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, F, Case, When, Value, IntegerField
 from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import RequestContext
@@ -42,6 +42,9 @@ from ..models import (
     Batch,
     LimitGroup,
     Order,
+    ShirtOrder,
+    ShirtSize,
+    ShirtType,
     UNPAID_CANCEL_DAYS,
 )
 
@@ -409,6 +412,39 @@ def tickets_admin_accommodation_create_view(request, vars, event, limit_group_id
     return render(request, 'tickets_admin_accommodation_create_view.jade', vars)
 
 
+@tickets_admin_required
+@require_safe
+def tickets_admin_shirts_view(request, vars, event):
+    shirt_sizes = ShirtSize.objects.filter(type__event=event).annotate(count=Sum(
+        Case(
+            When(
+                shirt_orders__order__confirm_time__isnull=False,
+                shirt_orders__order__payment_date__isnull=False,
+                shirt_orders__order__cancellation_time__isnull=True,
+                then='shirt_orders__count'
+            ),
+            default=0,
+            output_field=IntegerField(),
+        ),
+    )).filter(count__gt=0).order_by('type__id', 'id')
+
+    shirt_orders = ShirtOrder.objects.filter(
+        order__event=event,
+        order__confirm_time__isnull=False,
+        order__payment_date__isnull=False,
+        order__cancellation_time__isnull=True,
+    ).order_by('order__customer__last_name', 'order__customer__first_name', 'size__type__id', 'size__id')
+
+    vars.update(
+        shirt_sizes=shirt_sizes,
+        shirt_sizes_total=shirt_sizes.aggregate(Sum('count'))['count__sum'] or 0,
+        shirt_orders=shirt_orders,
+        shirt_orders_total=shirt_orders.aggregate(Sum('count'))['count__sum'] or 0,
+    )
+
+    return render(request, 'tickets_admin_shirts_view.jade', vars)
+
+
 if 'lippukala' in settings.INSTALLED_APPS:
     from lippukala.views import POSView
     lippukala_pos_view = POSView.as_view()
@@ -444,12 +480,17 @@ def tickets_admin_menu_items(request, event):
     tools_active = request.path.startswith(tools_url)
     tools_text = u"Työkalut"
 
+    shirts_url = url('tickets_admin_shirts_view', event.slug)
+    shirts_active = request.path.startswith(shirts_url)
+    shirts_text = u'Paidat'
+
     items = [
         (stats_active, stats_url, stats_text),
         (orders_active, orders_url, orders_text),
         (batches_active, batches_url, batches_text),
         (accommodation_active, accommodation_url, accommodation_text),
         (tools_active, tools_url, tools_text),
+        (shirts_active, shirts_url, shirts_text),
     ]
 
     if 'lippukala' in settings.INSTALLED_APPS:

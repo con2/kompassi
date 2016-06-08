@@ -21,6 +21,7 @@ from .admin_views import (
     tickets_admin_menu_items,
     tickets_admin_order_view,
     tickets_admin_orders_view,
+    tickets_admin_shirts_view,
     tickets_admin_stats_by_date_view,
     tickets_admin_stats_view,
     tickets_admin_tools_view,

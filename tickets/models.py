@@ -358,7 +358,7 @@ class ShirtType(models.Model):
 
 @python_2_unicode_compatible
 class ShirtSize(models.Model):
-    type = models.ForeignKey(ShirtType)
+    type = models.ForeignKey(ShirtType, related_name='shirt_sizes')
     name = models.CharField(max_length=255)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     available = models.BooleanField(default=True)
@@ -674,7 +674,7 @@ class Order(models.Model):
         self.order_product_set.filter(count__lte=0).delete()
 
     def clean_up_shirt_orders(self):
-        self.shirt_order_set.filter(count__lte=0).delete()
+        self.shirt_orders.filter(count__lte=0).delete()
 
     def confirm_order(self):
         assert self.customer is not None
@@ -1112,8 +1112,8 @@ class AccommodationInformation(models.Model):
 
 @python_2_unicode_compatible
 class ShirtOrder(models.Model):
-    order = models.ForeignKey(Order, related_name='shirt_order_set')
-    size = models.ForeignKey(ShirtSize)
+    order = models.ForeignKey(Order, related_name='shirt_orders')
+    size = models.ForeignKey(ShirtSize, related_name='shirt_orders')
     count = models.PositiveIntegerField(default=0)
 
     def __str__(self):

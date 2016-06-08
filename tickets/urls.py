@@ -14,6 +14,7 @@ from .views import (
     tickets_admin_etickets_view,
     tickets_admin_order_view,
     tickets_admin_orders_view,
+    tickets_admin_shirts_view,
     tickets_admin_stats_by_date_view,
     tickets_admin_stats_view,
     tickets_admin_tools_view,
@@ -46,6 +47,9 @@ urlpatterns = [
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/accommodation/?$', tickets_admin_accommodation_view, name="tickets_admin_accommodation_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/accommodation/(?P<limit_group_id>\d+)/?$', tickets_admin_accommodation_view, name="tickets_admin_accommodation_filtered_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/accommodation/(?P<limit_group_id>\d+)/new/?$', tickets_admin_accommodation_create_view, name="tickets_admin_accommodation_create_view"),
+
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/shirts/?$', tickets_admin_shirts_view, name="tickets_admin_shirts_view"),
+
 
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/tools$', tickets_admin_tools_view, name="tickets_admin_tools_view"),
 ]

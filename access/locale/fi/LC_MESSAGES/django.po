@@ -1,0 +1,164 @@
+#: models/internal_email_alias.py
+msgid "E-mail to this alias will be directed to these e-mail addresses (separated by whitespace)"
+msgstr ""
+
+#: models/smtp_password.py
+msgid "SMTP password"
+msgstr ""
+
+#: models/smtp_password.py
+msgid "SMTP passwords"
+msgstr ""
+
+#: models/smtp_password.py models/smtp_server.py
+msgid "SMTP server"
+msgstr ""
+
+#: models/smtp_server.py
+msgid "SMTP servers"
+msgstr ""
+
+#: models/slack_access.py
+msgid "Slack invite automation"
+msgstr ""
+
+#: models/slack_access.py
+msgid "Slack invite automations"
+msgstr ""
+
+#: models/access_organization_meta.py
+msgid "access management settings"
+msgstr ""
+
+#: models/email_alias.py models/internal_email_alias.py
+msgid "account name"
+msgstr ""
+
+#: models/access_organization_meta.py
+msgid "administrator group"
+msgstr ""
+
+#: models/email_alias.py models/internal_email_alias.py models/smtp_password.py
+msgid "created at"
+msgstr ""
+
+#: models/email_alias.py models/email_alias_domain.py models/email_alias_type.py models/internal_email_alias.py
+msgid "domain"
+msgstr ""
+
+#: models/smtp_server.py
+msgid "domains"
+msgstr ""
+
+#: models/email_alias.py models/internal_email_alias.py
+msgid "e-mail address"
+msgstr ""
+
+#: models/email_alias.py
+msgid "e-mail alias"
+msgstr ""
+
+#: models/email_alias_domain.py
+msgid "e-mail alias domain"
+msgstr ""
+
+#: models/email_alias_domain.py
+msgid "e-mail alias domains"
+msgstr ""
+
+#: models/email_alias_type.py
+msgid "e-mail alias type"
+msgstr ""
+
+#: models/email_alias_type.py
+msgid "e-mail alias types"
+msgstr ""
+
+#: models/email_alias.py
+msgid "e-mail aliases"
+msgstr ""
+
+#: models/email_alias_domain.py
+msgid "eg. example.com"
+msgstr ""
+
+#: models/email_alias_type.py
+msgid "eg. firstname.lastname"
+msgstr ""
+
+#: models/smtp_server.py
+msgid "encryption"
+msgstr ""
+
+#: models/email_alias_type.py
+msgid "firstname.lastname"
+msgstr ""
+
+#: models/granted_privilege.py
+msgid "granted privilege"
+msgstr ""
+
+#: models/granted_privilege.py
+msgid "granted privileges"
+msgstr ""
+
+#: models/group_email_alias_grant.py
+msgid "group e-mail alias grant"
+msgstr ""
+
+#: models/group_privilege.py
+msgid "group privilege"
+msgstr ""
+
+#: models/group_privilege.py
+msgid "group privileges"
+msgstr ""
+
+#: models/internal_email_alias.py
+msgid "internal e-mail alias"
+msgstr ""
+
+#: models/internal_email_alias.py
+msgid "internal e-mail aliases"
+msgstr ""
+
+#: models/email_alias_type.py
+msgid "metavar"
+msgstr ""
+
+#: models/access_organization_meta.py models/email_alias_domain.py models/email_alias_mixin.py models/email_alias_type.py models/group_email_alias_grant.py
+msgid "organization"
+msgstr ""
+
+#: models/smtp_password.py
+msgid "password hash"
+msgstr ""
+
+#: models/email_alias.py models/smtp_password.py
+msgid "person"
+msgstr ""
+
+#: models/smtp_server.py
+msgid "port number"
+msgstr ""
+
+#: models/privilege.py
+msgid "privilege"
+msgstr ""
+
+#: models/privilege.py
+msgid "privileges"
+msgstr ""
+
+#: models/internal_email_alias.py
+msgid "target e-mail address"
+msgstr ""
+
+#: models/email_alias.py
+msgid "type"
+msgstr ""
+
+#: models/email_alias.py models/internal_email_alias.py
+msgid "updated at"
+msgstr ""
+

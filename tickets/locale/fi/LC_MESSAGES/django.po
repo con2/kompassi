@@ -1,8 +1,47 @@
+#: templates/tickets_admin_shirts_view.jade
+msgid "Count"
+msgstr "Lukumäärä"
+
 #: admin.py
 msgid "Event"
-msgstr ""
+msgstr "Tapahtuma"
+
+#: templates/tickets_admin_shirts_view.jade
+msgid "First name"
+msgstr "Etunimi"
+
+#: templates/tickets_admin_shirts_view.jade
+#, python-format
+msgid "One shirt."
+msgid_plural "%(num_shirts)s shirts."
+msgstr[0] "Yksi paita."
+msgstr[1] "%(num_shirts)s paitaa."
+
+#: templates/tickets_admin_shirts_view.jade
+msgid "Shirt list"
+msgstr "Paitalista"
+
+#: templates/tickets_admin_shirts_view.jade
+msgid "Shirt orders"
+msgstr "Paitatilaukset"
+
+#: templates/tickets_admin_shirts_view.jade
+msgid "Shirt size"
+msgstr "Paitakoko"
+
+#: templates/tickets_admin_shirts_view.jade
+msgid "Shirt size summary"
+msgstr "Paitakokojen yhteenveto"
+
+#: templates/tickets_admin_shirts_view.jade
+msgid "Shirt type"
+msgstr "Paitatyyppi"
+
+#: templates/tickets_admin_shirts_view.jade
+msgid "Surname"
+msgstr "Sukunimi"
 
 #: admin.py
 msgid "Type"
-msgstr ""
+msgstr "Tyyppi"
 
