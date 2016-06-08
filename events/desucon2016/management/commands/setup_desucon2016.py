@@ -26,9 +26,9 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
+        self.setup_programme()
         self.setup_access()
         self.setup_badges()
-        self.setup_programme()
 
     def setup_core(self):
         from core.models import Venue, Event
