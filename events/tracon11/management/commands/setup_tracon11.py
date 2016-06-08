@@ -396,7 +396,7 @@ class Setup(object):
                 requires_shipping=False,
                 requires_accommodation_information=True,
                 electronic_ticket=False,
-                available=self.test,
+                available=True,
                 ordering=ordering(),
             ),
             dict(
@@ -409,7 +409,7 @@ class Setup(object):
                 requires_shipping=False,
                 requires_accommodation_information=True,
                 electronic_ticket=False,
-                available=self.test,
+                available=True,
                 ordering=ordering(),
             ),
             dict(
@@ -422,7 +422,7 @@ class Setup(object):
                 requires_shipping=False,
                 requires_accommodation_information=True,
                 electronic_ticket=False,
-                available=self.test,
+                available=True,
                 ordering=ordering(),
             ),
             dict(
@@ -435,7 +435,7 @@ class Setup(object):
                 requires_shipping=False,
                 requires_accommodation_information=True,
                 electronic_ticket=False,
-                available=self.test,
+                available=True,
                 ordering=ordering(),
             ),
         ]:

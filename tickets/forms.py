@@ -68,7 +68,7 @@ class OrderProductForm(forms.ModelForm):
 
         return [
             cls.get_for_order_and_product(request, order, product, admin=admin)
-            for product in Product.objects.filter(**product_criteria)
+            for product in Product.objects.filter(**product_criteria).order_by('ordering')
         ]
 
     @classmethod
