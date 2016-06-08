@@ -27,8 +27,8 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
-        # self.setup_tickets()
-        # self.setup_payments()
+        self.setup_tickets()
+        self.setup_payments()
         self.setup_programme()
         self.setup_access()
         self.setup_sms()
@@ -338,40 +338,11 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name='Joulupaketti - 2 kpl viikonloppulippu ja 1 kpl kalenteri',
-                description='Paketti sisältää kaksi viikonloppulippua ja yhden Tracon 2016 -seinäkalenterin. Tuotteet toimitetaan antamaasi osoitteeseen postitse, ja postikulut sisältyvät hintaan.',
-                internal_description='HUOM! Järjestelmä ei tue lippukiintiöiden kuluttamista kahdella per myyty paketti, joten lippukiintiöt täytyy korjata käsin kun joulupaketit on myyty.',
-                limit_groups=[
-                    # limit_group('Lauantain liput', 5000, 2),
-                    # limit_group('Sunnuntain liput', 5000, 2),
-                    limit_group('Joulupaketti A', 80),
-                ],
-                price_cents=6000,
-                requires_shipping=True,
-                electronic_ticket=False,
-                available=False,
-                ordering=ordering(),
-            ),
-            dict(
-                name='Joulupaketti - 1 kpl viikonloppulippu ja 1 kpl kalenteri',
-                description='Paketti sisältää yhden viikonloppulipun ja yhden Tracon 2016 -seinäkalenterin. Tuotteet toimitetaan antamaasi osoitteeseen postitse, ja postikulut sisältyvät hintaan.',
-                limit_groups=[
-                    limit_group('Lauantain liput', 3525),
-                    limit_group('Sunnuntain liput', 3525),
-                    limit_group('Joulupaketti B', 80),
-                ],
-                price_cents=3500,
-                requires_shipping=True,
-                electronic_ticket=False,
-                available=False,
-                ordering=ordering(),
-            ),
-            dict(
                 name='Viikonloppulippu',
-                description='Viikonloppulippu Tracon 2016 -tapahtumaan. Voimassa koko viikonlopun ajan la klo 10 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                description='Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
                 limit_groups=[
-                    limit_group('Lauantain liput', 3525),
-                    limit_group('Sunnuntain liput', 3525),
+                    limit_group('Lauantain liput', 2900),
+                    limit_group('Sunnuntain liput', 2900),
                 ],
                 price_cents=2500,
                 requires_shipping=False,
@@ -381,9 +352,9 @@ class Setup(object):
             ),
             dict(
                 name='Lauantailippu',
-                description='Lauantailippu Tracon 2016 -tapahtumaan. Voimassa koko lauantaipäivän ajan la klo 10 – su klo 08. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                description='   Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan sähköpostitse PDF-tiedostona.',
                 limit_groups=[
-                    limit_group('Lauantain liput', 3525),
+                    limit_group('Lauantain liput', 2900),
                 ],
                 price_cents=1800,
                 requires_shipping=False,
@@ -393,9 +364,9 @@ class Setup(object):
             ),
             dict(
                 name='Sunnuntailippu',
-                description='Lauantailippu Tracon 2016 -tapahtumaan. Voimassa koko sunnuntaipäivän ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                description='   Voimassa koko sunnuntaipäivän ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
                 limit_groups=[
-                    limit_group('Sunnuntain liput', 3525),
+                    limit_group('Sunnuntain liput', 2900),
                 ],
                 price_cents=1500,
                 requires_shipping=False,
@@ -404,42 +375,12 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name='Konserttipaketti Traconin kävijälle',
-                description='Sisältää liput The Super Sound of Videogames 2 -konserttiin sekä Traconin iltabileisiin.</p><p>'
-                    'The Super Sound of Videogames 2 -konsertti perjantaina 4. syyskuuta klo 19 Tampere-talossa. Esiintymässä QUINSONITUS ja TAKOMO PERCUSSION. Lisätietoja <a href="http://www.tampere-talo.fi/supersound" target="_blank">Tampere-talon sivuilta</a> (avautuu uuteen ikkunaan).</p><p>'
-                    'Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2016 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
-                    'HUOM! Tämä lippu oikeuttaa pääsyyn tilaisuuksiin vain yhdessä Tracon-rannekkeen kanssa (lauantai, sunnuntai tai koko viikonloppu).',
+                name='Iltabilelippu',
+                description='Traconin iltabileet Pakkahuoneella lauantaina 3. syyskuuta 2016 kello 19–01. Esiintyjät julkistetaan lähempänä tapahtumaa. Ei edellytä pääsylippua Traconiin.',
                 limit_groups=[
-                    limit_group('Iltabileliput', 1200),
-                    limit_group('The Super Sound of Videogames 2', 500),
+                    limit_group('Iltabileliput', 1300),
                 ],
-                price_cents=3000,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=True,
-                ordering=ordering(),
-            ),
-            dict(
-                name='Iltabilelippu Traconin kävijälle',
-                description='Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2016 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
-                    'HUOM! Tämä lippu oikeuttaa pääsyyn Traconin iltabileisiin vain yhdessä Tracon-rannekkeen kanssa (lauantai, sunnuntai tai koko viikonloppu).',
-                limit_groups=[
-                    limit_group('Iltabileliput', 1200),
-                ],
-                price_cents=1000,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=True,
-                ordering=ordering(),
-            ),
-            dict(
-                name='Iltabilelippu ei-kävijälle',
-                description='Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2016 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
-                    'Tämä lippu oikeuttaa pääsyyn Traconin iltabileisiin ilman Tracon-ranneketta.',
-                limit_groups=[
-                    limit_group('Iltabileliput', 1200),
-                ],
-                price_cents=2000,
+                price_cents=500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -449,7 +390,7 @@ class Setup(object):
                 name='Lattiamajoitus 1 yö pe-la - Aleksanterin koulu (sis. makuualusta)',
                 description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
                 limit_groups=[
-                    limit_group('Majoitus Aleksanteri pe-la', 80),
+                    limit_group('Majoitus Aleksanteri pe-la', 130),
                 ],
                 price_cents=1300,
                 requires_shipping=False,
@@ -473,7 +414,7 @@ class Setup(object):
             ),
             dict(
                 name='Lattiamajoitus 1 yö pe-la - Pyynikin koulu (ei sis. makuualustaa)',
-                description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
                 limit_groups=[
                     limit_group('Majoitus Pyynikki pe-la', 120),
                 ],
