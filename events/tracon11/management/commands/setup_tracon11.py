@@ -662,8 +662,8 @@ class Setup(object):
                 ]),
                 ('Toissijaiset ohjelmatilat', [
                     'Maestro',
-                    'Riffi',
-                    'Puistolava',
+                    # 'Riffi',
+                    # 'Puistolava',
                     'Puisto - Iso miittiteltta',
                     'Puisto - Pieni miittiteltta',
                 ]),
@@ -679,9 +679,12 @@ class Setup(object):
         from access.models import Privilege, GroupPrivilege, EmailAliasType, GroupEmailAliasGrant
 
         # Grant accepted workers access to Tracon Slack
-        group = self.event.labour_event_meta.get_group('accepted')
         privilege = Privilege.objects.get(slug='tracon-slack')
-        GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+        for group in [
+            self.event.labour_event_meta.get_group('accepted'),
+            self.event.programme_event_meta.get_group('hosts'),
+        ]:
+            GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
         cc_group = self.event.labour_event_meta.get_group('conitea')
 
