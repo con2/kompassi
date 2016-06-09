@@ -8,3 +8,4 @@ from .admin_views import (
 
 from .badges_admin_create_view import badges_admin_create_view
 from .badges_admin_badges_view import badges_admin_badges_view
+from .badges_admin_onboarding_view import badges_admin_onboarding_view

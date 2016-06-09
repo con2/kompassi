@@ -7,6 +7,7 @@ from .views import (
     badges_admin_create_view,
     badges_admin_dashboard_view,
     badges_admin_export_view,
+    badges_admin_onboarding_view,
 )
 
 
@@ -52,4 +53,11 @@ urlpatterns = [
         badges_admin_export_view,
         name='badges_admin_export_view',
     ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/onboarding/?$',
+        badges_admin_onboarding_view,
+        name='badges_admin_onboarding_view',
+    ),
+
 ]

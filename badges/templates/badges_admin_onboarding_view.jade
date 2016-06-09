@@ -1,0 +1,97 @@
+extends core_admin_base
+- load trans from i18n
+block title
+  {% trans "Onboarding" %}
+
+block admin_content
+  .row
+    .col-xs-12
+      h1 {% trans "Onboarding" %}
+  .row
+    .col-xs-12
+      .form-group
+        label(for='onboarding_search') {% trans "Search" %}
+        input#onboarding_search.form-control(type='search')
+  table.table.table-striped.onboarding__table
+    thead
+      tr
+        th
+        th {% trans "Name" %}
+        th {% trans "Personnel class" %}
+        th {% trans "Job title" %}
+        if event.labour_event_meta.signup_extra_model.get_shirt_type_field
+          th {% trans "Shirt type" %}
+        if event.labour_event_meta.signup_extra_model.get_shirt_size_field
+          th {% trans "Shirt size" %}
+    tbody
+      for badge in badges
+        tr.a_badge(data-id=badge.id, class='{% if badge.is_arrived %}badge--arrived success{% endif %}')
+          td.loading
+            i.fa.fa-spinner.fa-spin
+          td.name= badge.admin_get_full_name
+          td.personnel_class= badge.personnel_class
+          td.title= badge.job_title
+          if event.labour_event_meta.signup_extra_model.get_shirt_type_field
+            if badge.signup_extra
+              td.shirt_type= badge.signup_extra.get_shirt_type_display
+            else
+              td.shirt_type
+          if event.labour_event_meta.signup_extra_model.get_shirt_size_field
+            if badge.signup_extra
+              td.shirt= badge.signup_extra.get_shirt_size_display
+            else
+              td.shirt
+
+
+block extra_head
+  style.
+    .a_badge {
+      cursor: pointer;
+    }
+    .a_badge .loading {
+      width: 1.5em;
+    }
+    .a_badge .loading .fa {
+      visibility: hidden;
+    }
+    .badge--loading .loading .fa {
+      visibility: visible;
+    }
+
+block extra_scripts
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js')
+  script.
+    var $search = $('#onboarding_search')
+    var $badges = $('.onboarding__table .a_badge')
+
+    $search.on('input', _.throttle(function (evt) {
+      var searchText = evt.target.value
+      var matcher = new RegExp(searchText, 'i')
+
+      $badges.each(function () {
+        var $this = $(this)
+        var name = $this.children('.name').text()
+        var match = matcher.test(name)
+        $this.toggleClass('hidden', !match)
+      })
+    }, 100))
+
+    $badges.on('click', function () {
+      var $this = $(this)
+      if ($this.hasClass('badge--loading')) return
+      var id = $this.data('id')
+      var arrived = $this.hasClass('badge--arrived')
+      var newArrivedState = !arrived
+      var data = { id: id, arrived: newArrivedState, csrfmiddlewaretoken: '{{ csrf_token }}' }
+      $this.addClass('badge--loading')
+      $.post('{% url "badges_admin_onboarding_view" event.slug %}', data)
+        .done(function () {
+          $this.toggleClass('badge--arrived success', newArrivedState)
+        })
+        .fail(function (xhr, status, errorText) {
+          alert(errorText)
+        })
+        .always(function () {
+          $this.removeClass('badge--loading')
+        })
+    })

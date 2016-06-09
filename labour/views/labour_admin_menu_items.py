@@ -25,10 +25,6 @@ def labour_admin_menu_items(request, event):
     roster_active = request.path.startswith(roster_url)
     roster_text = _("Shift planning")
 
-    onboarding_url = url('labour_onboarding_view', event.slug)
-    onboarding_active = request.path == onboarding_url
-    onboarding_text = _("Onboarding")
-
     jobcategories_url = url('labour_admin_jobcategories_view', event.slug)
     jobcategories_active = request.path.startswith(jobcategories_url)
     jobcategories_text = _("Edit job categories")
@@ -42,7 +38,6 @@ def labour_admin_menu_items(request, event):
         (signups_active, signups_url, signups_text),
         (mail_active, mail_url, mail_text),
         (roster_active, roster_url, roster_text),
-        (onboarding_active, onboarding_url, onboarding_text),
         (jobcategories_active, jobcategories_url, jobcategories_text),
         (startstop_active, startstop_url, startstop_text),
     ]

@@ -15,7 +15,6 @@ from .admin_views import (
     labour_admin_mail_editor_view,
     labour_admin_mail_view,
     labour_admin_roster_view,
-    labour_onboarding_view
 )
 
 from .labour_admin_menu_items import labour_admin_menu_items

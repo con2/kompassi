@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.db import models, transaction
 from django.utils.html import escape
@@ -15,94 +17,101 @@ class Badge(models.Model, CsvExportMixin):
     person = models.ForeignKey('core.Person',
         null=True,
         blank=True,
-        verbose_name=_(u'Person'),
+        verbose_name=_('Person'),
     )
 
     personnel_class = models.ForeignKey('labour.PersonnelClass',
-        verbose_name=_(u'Personnel class'),
+        verbose_name=_('Personnel class'),
     )
 
     printed_separately_at = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_(u'Printed separately at'),
+        verbose_name=_('Printed separately at'),
     )
 
     revoked_by = models.ForeignKey(settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
         related_name='badges_revoked',
-        verbose_name=_(u'Revoked by'),
+        verbose_name=_('Revoked by'),
     )
     revoked_at = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_(u'Revoked at'),
+        verbose_name=_('Revoked at'),
+    )
+
+    arrived_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('Arrived at'),
     )
 
     first_name = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_(u'First name'),
+        verbose_name=_('First name'),
     )
     is_first_name_visible = models.BooleanField(
         default=True,
-        verbose_name=_(u'Is first name visible'),
+        verbose_name=_('Is first name visible'),
     )
 
     surname = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_(u'Surname'),
+        verbose_name=_('Surname'),
     )
     is_surname_visible = models.BooleanField(
         default=True,
-        verbose_name=_(u'Is surname visible'),
+        verbose_name=_('Is surname visible'),
     )
 
     nick = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_(u'Nick name'),
-        help_text=_(u'If you only have a single piece of information to print on the badge, use this field.'),
+        verbose_name=_('Nick name'),
+        help_text=_('If you only have a single piece of information to print on the badge, use this field.'),
     )
     is_nick_visible = models.BooleanField(
         default=True,
-        verbose_name=_(u'Is nick visible'),
+        verbose_name=_('Is nick visible'),
     )
 
     job_title = models.CharField(max_length=63,
         blank=True,
         default=u'',
-        verbose_name=_(u'Job title'),
-        help_text=_(u'Please stay civil with the job title field.'),
+        verbose_name=_('Job title'),
+        help_text=_('Please stay civil with the job title field.'),
     )
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
         related_name='badges_created',
-        verbose_name=_(u'Created by'),
+        verbose_name=_('Created by'),
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
-        verbose_name=_(u'Created at'),
+        verbose_name=_('Created at'),
     )
     updated_at = models.DateTimeField(
         auto_now=True,
-        verbose_name=_(u'Updated at'),
+        verbose_name=_('Updated at'),
     )
 
     batch = models.ForeignKey('badges.Batch',
         null=True,
         blank=True,
         db_index=True,
-        verbose_name=_(u'Printing batch'),
+        verbose_name=_('Printing batch'),
     )
 
     is_revoked = time_bool_property('revoked_at')
     is_printed = time_bool_property('printed_at')
     is_printed_separately = time_bool_property('printed_separately_at')
+    is_arrived = time_bool_property('arrived_at')
 
     @property
     def printed_at(self):
@@ -116,7 +125,7 @@ class Badge(models.Model, CsvExportMixin):
     @property
     def formatted_printed_at(self):
         # XXX not really "formatted"
-        return self.printed_at if self.printed_at is not None else u''
+        return self.printed_at if self.printed_at is not None else ''
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -231,6 +240,15 @@ class Badge(models.Model, CsvExportMixin):
         return self.event.badges_event_meta
 
     @property
+    def signup(self):
+        from labour.models import Signup
+        return Signup.objects.filter(event=self.event, person=self.person).first()
+
+    @property
+    def signup_extra(self):
+        return self.signup.signup_extra if self.signup else None
+
+    @property
     def event_name(self):
         return self.personnel_class.event.name if self.personnel_class else u''
 
@@ -289,7 +307,7 @@ class Badge(models.Model, CsvExportMixin):
             return u'{self.first_name} "{self.nick}" {self.surname}'.format(self=self)
         else:
             return u'{self.first_name} {self.surname}'.format(self=self)
-    admin_get_full_name.short_description = _(u'Name')
+    admin_get_full_name.short_description = _('Name')
     admin_get_full_name.admin_order_field = ('surname', 'first_name', 'nick')
 
     def __unicode__(self):

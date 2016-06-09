@@ -158,27 +158,3 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
 
     return render(request, 'labour_admin_mail_editor_view.jade', vars)
 
-
-@labour_supervisor_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
-def labour_onboarding_view(request, event):
-    if request.method in ('GET', 'HEAD'):
-        signups = event.signup_set.filter(is_active=True)
-
-        vars = dict(
-            event=event,
-            signups=signups,
-        )
-
-        return render(request, 'labour_admin_onboarding_view.jade', vars)
-    elif request.method == 'POST':
-        signup_id = request.POST['id']
-        is_arrived = request.POST['arrived'] == 'true'
-
-        signup = get_object_or_404(SignupOnboardingProxy, id=int(signup_id), is_active=True)
-        signup.mark_arrived(is_arrived)
-
-        return HttpResponse()
-    else:
-        raise NotImplementedError(request.method)
-

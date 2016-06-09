@@ -1,7 +1,6 @@
 # encoding: utf-8
 
-from __future__ import print_function
-
+from __future__ import print_function, unicode_literals
 
 from django.contrib import messages
 from django.db.models import Q
@@ -86,20 +85,25 @@ def badges_admin_export_view(request, vars, event, batch_id, format='csv'):
 def badges_admin_menu_items(request, event):
     dashboard_url = url('badges_admin_dashboard_view', event.slug)
     dashboard_active = request.path == dashboard_url
-    dashboard_text = u'Kojelauta'
+    dashboard_text = _('Dashboard')
 
     batches_url = url('badges_admin_batches_view', event.slug)
     batches_active = request.path.startswith(batches_url)
-    batches_text = u'Tulostuserät'
+    batches_text = _('Batches')
 
     badges_url = url('badges_admin_badges_view', event.slug)
     badges_active = request.path.startswith(badges_url)
-    badges_text = u'Nimilistat'
+    badges_text = _('Entrance lists')
+
+    onboarding_url = url('badges_admin_onboarding_view', event.slug)
+    onboarding_active = request.path.startswith(onboarding_url)
+    onboarding_text = _('Onboarding')
 
     return [
         (dashboard_active, dashboard_url, dashboard_text),
         (badges_active, badges_url, badges_text),
         (batches_active, batches_url, batches_text),
+        (onboarding_active, onboarding_url, onboarding_text),
     ]
 
 
