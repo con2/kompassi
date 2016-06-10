@@ -242,11 +242,23 @@ class Badge(models.Model, CsvExportMixin):
     @property
     def signup(self):
         from labour.models import Signup
+
+        if self.person is None:
+            return None
+
         return Signup.objects.filter(event=self.event, person=self.person).first()
 
     @property
     def signup_extra(self):
-        return self.signup.signup_extra if self.signup else None
+        if self.person is None:
+            return None
+
+        SignupExtra = self.event.labour_event_meta.signup_extra_model
+
+        try:
+            return SignupExtra.get_for_event_and_person(self.event, self.person)
+        except SignupExtra.DoesNotExist:
+            return None
 
     @property
     def event_name(self):
