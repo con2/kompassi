@@ -4,43 +4,41 @@ block title
   {% trans "Onboarding" %}
 
 block admin_content
-  .row
-    .col-xs-12
-      h1 {% trans "Onboarding" %}
-  .row
-    .col-xs-12
+  .panel.panel-default
+    .panel-heading: strong {% trans "Onboarding" %}
+    .panel-body
       .form-group
         label(for='onboarding_search') {% trans "Search" %}
         input#onboarding_search.form-control(type='search')
-  table.table.table-striped.onboarding__table
-    thead
-      tr
-        th
-        th {% trans "Name" %}
-        th {% trans "Personnel class" %}
-        th {% trans "Job title" %}
-        if event.labour_event_meta.signup_extra_model.get_shirt_type_field
-          th {% trans "Shirt type" %}
-        if event.labour_event_meta.signup_extra_model.get_shirt_size_field
-          th {% trans "Shirt size" %}
-    tbody
-      for badge in badges
-        tr.a_badge(data-id=badge.id, class='{% if badge.is_arrived %}badge--arrived success{% endif %}')
-          td.loading
-            i.fa.fa-spinner.fa-spin
-          td.name= badge.admin_get_full_name
-          td.personnel_class= badge.personnel_class
-          td.title= badge.job_title
+    table.table.table-striped.onboarding__table
+      thead
+        tr
+          th
+          th {% trans "Name" %}
+          th {% trans "Personnel class" %}
+          th {% trans "Job title" %}
           if event.labour_event_meta.signup_extra_model.get_shirt_type_field
-            if badge.signup_extra
-              td.shirt_type= badge.signup_extra.get_shirt_type_display
-            else
-              td.shirt_type
+            th {% trans "Shirt type" %}
           if event.labour_event_meta.signup_extra_model.get_shirt_size_field
-            if badge.signup_extra
-              td.shirt= badge.signup_extra.get_shirt_size_display
-            else
-              td.shirt
+            th {% trans "Shirt size" %}
+      tbody
+        for badge in badges
+          tr.a_badge(data-id=badge.id, class='{% if badge.is_arrived %}badge--arrived success{% endif %}')
+            td.loading
+              i.fa.fa-spinner.fa-spin
+            td.name= badge.admin_get_full_name
+            td.personnel_class= badge.personnel_class
+            td.title= badge.job_title
+            if event.labour_event_meta.signup_extra_model.get_shirt_type_field
+              if badge.signup_extra
+                td.shirt_type= badge.signup_extra.get_shirt_type_display
+              else
+                td.shirt_type
+            if event.labour_event_meta.signup_extra_model.get_shirt_size_field
+              if badge.signup_extra
+                td.shirt= badge.signup_extra.get_shirt_size_display
+              else
+                td.shirt
 
 
 block extra_head
