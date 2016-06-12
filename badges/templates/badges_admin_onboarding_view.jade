@@ -81,7 +81,7 @@ block extra_scripts
       })
     }, 100))
 
-    $badges.on('click', function () {
+    $badges.on('click', _.throttle(function () {
       var $this = $(this)
       if ($this.hasClass('badge--loading')) return
       var id = $this.data('id')
@@ -99,4 +99,4 @@ block extra_scripts
         .always(function () {
           $this.removeClass('badge--loading')
         })
-    })
+    }, 500, { trailing: false }))
