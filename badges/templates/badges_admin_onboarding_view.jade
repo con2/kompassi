@@ -24,8 +24,9 @@ block admin_content
       tbody
         for badge in badges
           tr.a_badge(data-id=badge.id, class='{% if badge.is_arrived %}badge--arrived success{% endif %}')
-            td.loading
-              i.fa.fa-spinner.fa-spin
+            td.status.fa-fw
+              i.fa.fa-spinner.fa-pulse.status__loading
+              i.fa.fa-check.status__success
             td.name= badge.admin_get_full_name
             td.personnel_class= badge.personnel_class
             td.title= badge.job_title
@@ -46,14 +47,20 @@ block extra_head
     .a_badge {
       cursor: pointer;
     }
-    .a_badge .loading {
-      width: 1.5em;
+    .status {
+      box-sizing: content-box;
     }
-    .a_badge .loading .fa {
-      visibility: hidden;
+    .status .fa {
+      display: none;
     }
-    .badge--loading .loading .fa {
-      visibility: visible;
+    .badge--loading .status__loading {
+      display: inline;
+    }
+    .badge--arrived .status__success {
+      display: inline;
+    }
+    .badge--loading .status__success {
+      display: none;
     }
 
 block extra_scripts
