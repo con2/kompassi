@@ -17,9 +17,9 @@ block admin_content
           th {% trans "Name" %}
           th {% trans "Personnel class" %}
           th {% trans "Job title" %}
-          if event.labour_event_meta.signup_extra_model.get_shirt_type_field
+          if shirt_type_field
             th {% trans "Shirt type" %}
-          if event.labour_event_meta.signup_extra_model.get_shirt_size_field
+          if shirt_size_field
             th {% trans "Shirt size" %}
       tbody
         for badge in badges
@@ -29,12 +29,12 @@ block admin_content
             td.name= badge.admin_get_full_name
             td.personnel_class= badge.personnel_class
             td.title= badge.job_title
-            if event.labour_event_meta.signup_extra_model.get_shirt_type_field
+            if shirt_type_field
               if badge.signup_extra
                 td.shirt_type= badge.signup_extra.get_shirt_type_display
               else
                 td.shirt_type
-            if event.labour_event_meta.signup_extra_model.get_shirt_size_field
+            if shirt_size_field
               if badge.signup_extra
                 td.shirt= badge.signup_extra.get_shirt_size_display
               else

@@ -250,15 +250,18 @@ class Badge(models.Model, CsvExportMixin):
 
     @property
     def signup_extra(self):
-        if self.person is None:
-            return None
+        if not hasattr(self, '_signup_extra'):
+            if self.person_id is None or self.event.labour_event_meta is None:
+                self._signup_extra = None
+            else:
+                SignupExtra = self.event.labour_event_meta.signup_extra_model
 
-        SignupExtra = self.event.labour_event_meta.signup_extra_model
+                try:
+                    self._signup_extra = SignupExtra.get_for_event_and_person(self.event, self.person)
+                except SignupExtra.DoesNotExist:
+                    self._signup_extra = None
 
-        try:
-            return SignupExtra.get_for_event_and_person(self.event, self.person)
-        except SignupExtra.DoesNotExist:
-            return None
+        return self._signup_extra
 
     @property
     def event_name(self):

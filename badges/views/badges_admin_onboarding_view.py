@@ -19,10 +19,34 @@ def badges_admin_onboarding_view(request, vars, event):
         badges = Badge.objects.filter(
             personnel_class__event=event,
             revoked_at__isnull=True,
-        ).order_by('surname', 'first_name')
+        ).select_related('personnel_class').order_by('surname', 'first_name')
+
+        shirt_type_field = None
+        shirt_size_field = None
+
+
+        lem = event.labour_event_meta
+        if lem:
+            SignupExtra = event.labour_event_meta.signup_extra_model
+
+            shirt_type_field = SignupExtra.get_shirt_type_field()
+            shirt_size_field = SignupExtra.get_shirt_size_field()
+
+            # Accessing badge.signup_extra for each badge causes one extra query per badge
+            # So cache them.
+            if SignupExtra.schema_version >= 2:
+                people = [badge.person_id for badge in badges if badge.person]
+                signup_extras = SignupExtra.objects.filter(event=event, person_id__in=people)
+                signup_extras_by_person_id = dict((sx.person_id, sx) for sx in signup_extras)
+
+                badges = list(badges)
+                for badge in badges:
+                    badge._signup_extra = signup_extras_by_person_id.get(badge.person_id)
 
         vars.update(
             badges=badges,
+            shirt_type_field=shirt_type_field,
+            shirt_size_field=shirt_size_field,
         )
 
         return render(request, 'badges_admin_onboarding_view.jade', vars)

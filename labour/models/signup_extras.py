@@ -74,6 +74,7 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
     is_active = models.BooleanField(default=True)
 
     supports_programme = True
+    schema_version = 2
 
     def determine_is_active(self):
         # See if this SignupExtra is active due to participation in volunteer work
@@ -147,6 +148,7 @@ class ObsoleteSignupExtraBaseV1(SignupExtraMixin, models.Model):
     is_active = models.BooleanField(default=True)
 
     supports_programme = False
+    schema_version = 1
 
     def determine_is_active(self):
         return self.signup.is_active
