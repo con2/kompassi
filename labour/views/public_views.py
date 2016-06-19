@@ -11,7 +11,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST, require_safe
 
 from core.helpers import person_required
 from core.models import Event, Person
@@ -260,7 +260,7 @@ def labour_profile_signups_view(request):
 
 @person_required
 @labour_event_required
-@require_http_methods(['POST'])
+@require_POST
 def labour_confirm_view(request, event):
     signup = get_object_or_404(Signup, event=event, person=request.user.person)
 
@@ -275,6 +275,7 @@ def labour_confirm_view(request, event):
 
 
 @person_required
+@require_safe
 def labour_qualifications_view(request):
     vars = page_wizard_vars(request)
 
