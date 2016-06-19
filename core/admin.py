@@ -1,7 +1,10 @@
 # encoding: utf-8
 
-from django.contrib import admin
+from django import forms
 from django.conf import settings
+from django.contrib import admin
+from django.contrib.auth.admin import GroupAdmin
+from django.contrib.auth.models import User, Group
 
 from .models import Organization, Event, Person, Venue
 
@@ -103,7 +106,47 @@ class EventAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 
+# http://stackoverflow.com/a/19932127
+class GroupForm(forms.ModelForm):
+    users = forms.ModelMultipleChoiceField(
+        label='Users',
+        queryset=User.objects.all().order_by('username'),
+        required=False,
+        widget=admin.widgets.FilteredSelectMultiple(
+            "users", is_stacked=False))
+
+    class Meta:
+        model = Group
+        exclude = ()
+        widgets = {
+            'permissions': admin.widgets.FilteredSelectMultiple(
+                "permissions", is_stacked=False),
+        }
+
+
+# http://stackoverflow.com/a/19932127
+class MyGroupAdmin(GroupAdmin):
+    form = GroupForm
+
+    def save_model(self, request, obj, form, change):
+        # save first to obtain id
+        super(GroupAdmin, self).save_model(request, obj, form, change)
+        obj.user_set.set(form.cleaned_data['users'], clear=True)
+
+    def get_form(self, request, obj=None, **kwargs):
+        if obj:
+            self.form.base_fields['users'].initial = [o.pk for o in obj.user_set.all()]
+        else:
+            self.form.base_fields['users'].initial = []
+        return GroupForm
+
+
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Venue)
+
+
+# override GroupAdmin for users of group support in admin
+admin.site.unregister(Group)
+admin.site.register(Group, MyGroupAdmin)
