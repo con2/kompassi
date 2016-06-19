@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 import os
 from datetime import datetime, timedelta
 
@@ -31,7 +33,8 @@ class Setup(object):
         self.setup_labour()
         self.setup_tickets()
         self.setup_payments()
-        # self.setup_programme()
+        self.setup_programme()
+        self.setup_badges()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -98,14 +101,14 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            (u'Conitea', 'conitea', 'labour'),
-            (u'Työvoima', 'tyovoima', 'labour'),
-            (u'Järjestyksenvalvoja', 'jv', 'labour'),
-            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            (u'Kunniavieras', 'goh', 'programme'), # tervetullut muttei kutsuta automaattiviestillä
-            (u'Tulkki', 'tulkki', 'labour'),
-            (u'Media', 'media', 'badges'),
-            (u'Myyjä', 'myyja', 'badges'),
+            ('Conitea', 'conitea', 'labour'),
+            ('Työvoima', 'tyovoima', 'labour'),
+            ('Järjestyksenvalvoja', 'jv', 'labour'),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            ('Kunniavieras', 'goh', 'programme'), # tervetullut muttei kutsuta automaattiviestillä
+            ('Tulkki', 'tulkki', 'labour'),
+            ('Media', 'media', 'badges'),
+            ('Myyjä', 'myyja', 'badges'),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -123,24 +126,24 @@ class Setup(object):
         ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
         for name, description, pcs in [
-            (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen', [conitea]),
+            ('Conitea', 'Tapahtuman järjestelytoimikunnan eli conitean jäsen', [conitea]),
 
-            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [tyovoima]),
-            (u'Info', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima]),
-            (u'Siivous', u'Tapahtumapaikan siistinä pitäminen tapahtuman aikana.', [tyovoima]),
-            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima]),
-            (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima]),
-            (u'Myynti', u'Pääsylippujen myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima]),
-            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Hygieniapassi suositeltava.', [tyovoima]),
-            (u'Kirjasto', u'Mangakirjaston virkailijana toimimista.', [tyovoima]),
-            (u'Ohjelma-avustaja', u'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.', [tyovoima]),
-            (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima]),
-            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [jv]),
-            (u'Kortiton järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. HUOM! Tähän tehtävään hakeminen edellyttää henkilötunnuksen syöttämistä sille varattuun kenttään.', [jv]),
+            ('Narikka', 'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [tyovoima]),
+            ('Info', 'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima]),
+            ('Siivous', 'Tapahtumapaikan siistinä pitäminen tapahtuman aikana.', [tyovoima]),
+            ('Yleisvänkäri', 'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima]),
+            ('Majoitusvalvoja', 'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima]),
+            ('Myynti', 'Pääsylippujen myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima]),
+            ('Green room', 'Työvoiman ruokahuolto green roomissa. Hygieniapassi suositeltava.', [tyovoima]),
+            ('Kirjasto', 'Mangakirjaston virkailijana toimimista.', [tyovoima]),
+            ('Ohjelma-avustaja', 'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.', [tyovoima]),
+            ('Kasaus ja purku', 'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima]),
+            ('Järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [jv]),
+            ('Kortiton järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. HUOM! Tähän tehtävään hakeminen edellyttää henkilötunnuksen syöttämistä sille varattuun kenttään.', [jv]),
 
-            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima]),
+            ('Erikoistehtävä', 'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima]),
 
-            (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
+            ('Ohjelmanpitäjä', 'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
@@ -161,32 +164,32 @@ class Setup(object):
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            (u'Järjestyksenvalvoja', u'JV-kortti'),
-            # (u'Green room', u'Hygieniapassi'),
+            ('Järjestyksenvalvoja', 'JV-kortti'),
+            # ('Green room', 'Hygieniapassi'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         for night in [
-            u'Perjantain ja lauantain välinen yö',
-            u'Lauantain ja sunnuntain välinen yö',
+            'Perjantain ja lauantain välinen yö',
+            'Lauantain ja sunnuntain välinen yö',
         ]:
             Night.objects.get_or_create(name=night)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'conitea',
+            slug='conitea',
             defaults=dict(
-                title=u'Conitean ilmoittautumislomake',
+                title='Conitean ilmoittautumislomake',
                 signup_form_class_path='events.animecon2016.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.animecon2016.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2016, 2, 21, 18, 0, 0, tzinfo=self.tz),
@@ -218,17 +221,17 @@ class Setup(object):
             reference_number_template="2016{:05d}",
             contact_email='Animecon 2016 <liput@animecon.fi>',
             plain_contact_email='liput@animecon.fi',
-            ticket_free_text=u"Tämä on sähköinen lippusi Animecon 2016 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
-                u"lipunvaihtopisteessä.\n\n"
-                u"Tervetuloa Animecon 2016 -tapahtumaan!",
-            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Animecon 2016 -tapahtumaan!</h2>"
-                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                u"<p>Lue lisää tapahtumasta <a href='http://2016.animecon.fi'>Animecon 2016 -tapahtuman kotisivuilta</a>.</p>"
-                u"<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
-                u"toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>liput@animecon.fi</em>"
+            ticket_free_text="Tämä on sähköinen lippusi Animecon 2016 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
+                "lipunvaihtopisteessä.\n\n"
+                "Tervetuloa Animecon 2016 -tapahtumaan!",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Animecon 2016 -tapahtumaan!</h2>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://2016.animecon.fi'>Animecon 2016 -tapahtuman kotisivuilta</a>.</p>"
+                "<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
+                "toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>liput@animecon.fi</em>"
         )
 
         if self.test:
@@ -251,8 +254,8 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name=u'Animecon 2016 -pääsylippu',
-                description=u'Viikonloppuranneke Kuopiossa järjestettävään Animecon-tapahtumaan. Huom. myynnissä vain viikonloppurannekkeita. Lippu on PDF-muotoinen e-lippu, joka vaihdetaan rannekkeeseen tapahtumaan saavuttaessa.',
+                name='Animecon 2016 -pääsylippu',
+                description='Viikonloppuranneke Kuopiossa järjestettävään Animecon-tapahtumaan. Huom. myynnissä vain viikonloppurannekkeita. Lippu on PDF-muotoinen e-lippu, joka vaihdetaan rannekkeeseen tapahtumaan saavuttaessa.',
                 limit_groups=[
                     limit_group('Pääsyliput', 3300),
                 ],
@@ -263,8 +266,8 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name=u'Lattiamajoitus Viitaniemen koululla pe-la-yöksi',
-                description=u'Lattiamajoituspaikka 8.-9.7.2016 välisenä yönä Viitaniemen koululla. Luethan ohjeet majoittumiseen Animeconin nettisivuilta. Jos maksat muitakin henkilöitä kuin itsesi, niin ilmoitathan kaikkien majoittujien yhteystiedot (nimi, puhelinnumero, sähköposti) lisätiedoissa. Emme lähetä lattiamajoituksesta erillistä lippua.',
+                name='Lattiamajoitus Viitaniemen koululla pe-la-yöksi',
+                description='Lattiamajoituspaikka 8.-9.7.2016 välisenä yönä Viitaniemen koululla. Luethan ohjeet majoittumiseen Animeconin nettisivuilta. Jos maksat muitakin henkilöitä kuin itsesi, niin ilmoitathan kaikkien majoittujien yhteystiedot (nimi, puhelinnumero, sähköposti) lisätiedoissa. Emme lähetä lattiamajoituksesta erillistä lippua.',
                 limit_groups=[
                     limit_group('Majoitus Viitaniemi pe-la', 200),
                 ],
@@ -276,8 +279,8 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name=u'Lattiamajoitus Viitaniemen koululla la-su-yöksi',
-                description=u'Lattiamajoituspaikka 9.-10.7.2016 välisenä yönä Viitaniemen koululla. Luethan ohjeet majoittumiseen Animeconin nettisivuilta. Jos maksat muitakin majoittujia kuin itsesi, niin ilmoitathan kaikkien majoittujien yhteystiedot (nimi, puhelinnumero, sähköposti) lisätiedoissa. Emme lähetä lattiamajoituksesta erillistä lippua.',
+                name='Lattiamajoitus Viitaniemen koululla la-su-yöksi',
+                description='Lattiamajoituspaikka 9.-10.7.2016 välisenä yönä Viitaniemen koululla. Luethan ohjeet majoittumiseen Animeconin nettisivuilta. Jos maksat muitakin majoittujia kuin itsesi, niin ilmoitathan kaikkien majoittujien yhteystiedot (nimi, puhelinnumero, sähköposti) lisätiedoissa. Emme lähetä lattiamajoituksesta erillistä lippua.',
                 limit_groups=[
                     limit_group('Majoitus Viitaniemi la-su', 200),
                 ],
@@ -289,8 +292,8 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name=u'Aamupala Viitaniemen koululla lauantaiaamuna',
-                description=u'Aamupala Viitaniemen koululla lauantaiaamuna 9.7.2016. Ilmoitathan erityisruokavalioista ja allergioista etukäteen. Jos olet varannut aamiaisen myös muille kuin itsellesi, niin ilmoitathan henkilöiden nimet lisätiedoissa.',
+                name='Aamupala Viitaniemen koululla lauantaiaamuna',
+                description='Aamupala Viitaniemen koululla lauantaiaamuna 9.7.2016. Ilmoitathan erityisruokavalioista ja allergioista etukäteen. Jos olet varannut aamiaisen myös muille kuin itsellesi, niin ilmoitathan henkilöiden nimet lisätiedoissa.',
                 limit_groups=[
                     limit_group('Aamupala Viitaniemi la', 200),
                 ],
@@ -302,8 +305,8 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name=u'Aamupala Viitaniemen koululla sunnuntaiaamuna',
-                description=u'Aamupala Viitaniemen koululla sunnuntai-aamuna 10.7.2016. Ilmoitathan erityisruokavalioista ja allergioista etukäteen. Jos olet varannut aamiaisen myös muille kuin itsellesi, niin ilmoitathan henkilöiden nimet lisätiedoissa.',
+                name='Aamupala Viitaniemen koululla sunnuntaiaamuna',
+                description='Aamupala Viitaniemen koululla sunnuntai-aamuna 10.7.2016. Ilmoitathan erityisruokavalioista ja allergioista etukäteen. Jos olet varannut aamiaisen myös muille kuin itsellesi, niin ilmoitathan henkilöiden nimet lisätiedoissa.',
                 limit_groups=[
                     limit_group('Aamupala Viitaniemi su', 200),
                 ],
@@ -315,8 +318,8 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name=u'Lattiamajoituspaikka Jyväskylän Tanssiopistolla perjantai-lauantai-yöksi',
-                description=u'Lattiamajoituspaikka 8.-9.7.2016 välisenä yönä Jyväskylän Tanssiopistolla. Luethan ohjeet majoittumiseen Animeconin nettisivuilta. Jos maksat muitakin majoittujia kuin itsesi, niin ilmoitathan kaikkien majoittujien yhteystiedot (nimi, puhelinnumero, sähköposti) lisätiedoissa. Emme lähetä lattiamajoituksesta erillistä lippua',
+                name='Lattiamajoituspaikka Jyväskylän Tanssiopistolla perjantai-lauantai-yöksi',
+                description='Lattiamajoituspaikka 8.-9.7.2016 välisenä yönä Jyväskylän Tanssiopistolla. Luethan ohjeet majoittumiseen Animeconin nettisivuilta. Jos maksat muitakin majoittujia kuin itsesi, niin ilmoitathan kaikkien majoittujien yhteystiedot (nimi, puhelinnumero, sähköposti) lisätiedoissa. Emme lähetä lattiamajoituksesta erillistä lippua',
                 limit_groups=[
                     limit_group('Majoitus Tanssiopisto pe-la', 118),
                 ],
@@ -328,8 +331,8 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name=u'Lattiamajoituspaikka Jyväskylän Tanssiopistolla lauantai-sunnuntai-yöksi',
-                description=u'Lattiamajoituspaikka 9.-10.7.2016 välisenä yönä Jyväskylän Tanssiopistolla. Luethan ohjeet majoittumiseen Animeconin nettisivuilta. Jos maksat muitakin majoittujia kuin itsesi, niin ilmoitathan kaikkien majoittujien yhteystiedot (nimi, puhelinnumero, sähköposti) lisätiedoissa. Emme lähetä lattiamajoituksesta erillistä lippua',
+                name='Lattiamajoituspaikka Jyväskylän Tanssiopistolla lauantai-sunnuntai-yöksi',
+                description='Lattiamajoituspaikka 9.-10.7.2016 välisenä yönä Jyväskylän Tanssiopistolla. Luethan ohjeet majoittumiseen Animeconin nettisivuilta. Jos maksat muitakin majoittujia kuin itsesi, niin ilmoitathan kaikkien majoittujien yhteystiedot (nimi, puhelinnumero, sähköposti) lisätiedoissa. Emme lähetä lattiamajoituksesta erillistä lippua',
                 limit_groups=[
                     limit_group('Majoitus Tanssiopisto la-su', 118),
                 ],
@@ -386,11 +389,13 @@ class Setup(object):
         ))
 
         for room_name in [
-            u'Konserttisali',
-            u'Kamarimusiikkisali',
-            u'Auditorio',
-            u'Jousisto',
-            u'Luokka 210',
+            'Auditorio',
+            'Kabinetti',
+            'Alvar',
+            'Anton',
+            'Elsi',
+            'Felix',
+            # 'Minna',
         ]:
             Room.objects.get_or_create(
                 venue=self.venue,
@@ -404,7 +409,7 @@ class Setup(object):
 
         role, unused = Role.objects.get_or_create(
             personnel_class=personnel_class,
-            title=u'Ohjelmanjärjestäjä',
+            title='Ohjelmanjärjestäjä',
             defaults=dict(
                 is_default=True,
                 require_contact_info=True,
@@ -414,11 +419,11 @@ class Setup(object):
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
             for title, style in [
-                (u'Anime ja manga', u'anime'),
-                (u'Cosplay', u'cosplay'),
-                (u'Paja', u'miitti'),
-                (u'Muu ohjelma', u'muu'),
-                (u'Kunniavieras', u'rope'),
+                ('Anime ja manga', 'anime'),
+                ('Cosplay', 'cosplay'),
+                ('Paja', 'miitti'),
+                ('Muu ohjelma', 'muu'),
+                ('Kunniavieras', 'rope'),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
@@ -462,12 +467,14 @@ class Setup(object):
         )
 
         for view_name, room_names in [
-            (u'Pääohjelmatilat', [
-                u'Konserttisali',
-                u'Kamarimusiikkisali',
-                u'Auditorio',
-                u'Jousisto',
-                u'Luokka 210',
+            ('Pääohjelmatilat', [
+                'Auditorio',
+                'Kabinetti',
+                'Alvar',
+                'Anton',
+                'Elsi',
+                'Felix',
+                # 'Minna',
             ]),
         ]:
             rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
@@ -478,6 +485,18 @@ class Setup(object):
             if created:
                 view.rooms = rooms
                 view.save()
+
+    def setup_badges(self):
+        from badges.models import BadgesEventMeta
+
+        badge_admin_group, = BadgesEventMeta.get_or_create_groups(self.event, ['admins'])
+        meta, unused = BadgesEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=badge_admin_group,
+                badge_layout='nick',
+            )
+        )
 
 
 class Command(BaseCommand):
