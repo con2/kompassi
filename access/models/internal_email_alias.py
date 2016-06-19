@@ -6,6 +6,7 @@ import logging
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
@@ -94,8 +95,11 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
 
         log_get_or_create(logger, alias, created)
 
+        # Null start times are interpreted to mean "sometime in the future"
         t = now()
-        for event in Event.objects.filter(start_time__gte=t):
+        query = Q(start_time__gte=t) | Q(start_time__isnull=True)
+
+        for event in Event.objects.filter(query):
             for app_label in [
                 'labour',
                 'programme',
