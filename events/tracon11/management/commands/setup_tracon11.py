@@ -600,13 +600,7 @@ class Setup(object):
                     'Sonaatti 1',
                     'Sonaatti 2',
                     'Duetto 2',
-                ]),
-                ('Toissijaiset ohjelmatilat', [
                     'Maestro',
-                    # 'Riffi',
-                    # 'Puistolava',
-                    'Puisto - Iso miittiteltta',
-                    'Puisto - Pieni miittiteltta',
                 ]),
             ]:
                 rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
