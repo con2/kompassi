@@ -43,6 +43,13 @@ urlpatterns = [
     ),
 
     url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/special/fragment/?$',
+        programme_special_view,
+        dict(template='programme_list.jade'),
+        name='programme_special_fragment_view'
+    ),
+
+    url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/fragment?$',
         programme_timetable_view,
         dict(template='programme_timetable_fragment.jade'),

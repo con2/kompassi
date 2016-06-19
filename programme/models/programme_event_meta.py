@@ -25,12 +25,12 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
             u'osoitteesta, ja tämä osoite näytetään ohjelmanjärjestäjälle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
     )
 
-    def get_special_programmes(self, include_unpublished=False):
+    def get_special_programmes(self, include_unpublished=False, **extra_criteria):
         from .room import Room
         from .programme import Programme
 
         schedule_rooms = Room.objects.filter(view__event=self.event).only('id')
-        criteria = dict(category__event=self.event)
+        criteria = dict(category__event=self.event, **extra_criteria)
         if not include_unpublished:
             criteria.update(state='published')
         return Programme.objects.filter(**criteria).exclude(room__in=schedule_rooms)

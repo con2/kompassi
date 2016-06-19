@@ -110,20 +110,24 @@ def actual_timetable_view(
 
 @public_programme_required
 @require_safe
-def programme_special_view(request, event):
-    return actual_special_view(request, event)
+def programme_special_view(request, event, template='programme_list.jade'):
+    return actual_special_view(request, event, template=template)
 
 
 def actual_special_view(
-        request,
-        event,
-        include_unpublished=False,
-        template='programme_special_view.jade',
-        vars=None
-    ):
-    programmes = event.programme_event_meta.get_special_programmes(
-        include_unpublished=include_unpublished
-    ).order_by('start_time')
+    request,
+    event,
+    include_unpublished=False,
+    template='programme_special_view.jade',
+    vars=None
+):
+    criteria = dict(include_unpublished=include_unpublished)
+
+    category_slug = request.GET.get('category')
+    if category_slug:
+        criteria.update(category__slug=category_slug)
+
+    programmes = event.programme_event_meta.get_special_programmes(**criteria).order_by('start_time')
 
     programmes_by_start_time = group_programmes_by_start_time(programmes)
 
