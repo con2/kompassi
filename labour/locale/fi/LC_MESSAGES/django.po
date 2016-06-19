@@ -94,15 +94,11 @@ msgstr "Tehtäväalueisiin, jotka eivät ole julkisessa haussa, ei voi hakea tav
 msgid "Job category"
 msgstr "Tehtäväalue"
 
-#: templates/labour_admin_onboarding_view.jade
-msgid "Job title"
-msgstr "Tehtävänimike"
-
 #: views/labour_admin_menu_items.py
 msgid "Mass messages"
 msgstr "Työvoimaviestit"
 
-#: models/job_category.py templates/labour_admin_onboarding_view.jade
+#: models/job_category.py
 msgid "Name"
 msgstr "Nimi"
 
@@ -113,10 +109,6 @@ msgstr "Ei"
 #: templates/labour_admin_signup_views/shifts_tab.jade
 msgid "No shifts."
 msgstr "Ei työvuoroja."
-
-#: views/labour_admin_menu_items.py
-msgid "Onboarding"
-msgstr "Saapuneeksi kirjaaminen"
 
 #: templates/labour_admin_signup_views/shifts_tab.jade
 #, python-format
@@ -205,17 +197,9 @@ msgstr "Työvuorojen suunnittelu"
 msgid "Shifts"
 msgstr "Työvuorot"
 
-#: templates/labour_admin_onboarding_view.jade
-msgid "Shirt size"
-msgstr "Paitakoko"
-
 #: views/labour_admin_menu_items.py
 msgid "Shirt sizes"
 msgstr "Paitakoot"
-
-#: templates/labour_admin_onboarding_view.jade
-msgid "Shirt type"
-msgstr "Paitatyyppi"
 
 #: views/public_views.py
 msgid "Sign up or sign in..."
@@ -344,10 +328,6 @@ msgstr "Vapaaehtoistyövoiman hallinta"
 #: views/public_views.py
 msgid "Volunteer work applications"
 msgstr "Vapaaehtoistyöhakemukset"
-
-#: templates/labour_admin_onboarding_view.jade
-msgid "Volunteer worker onboarding"
-msgstr "Työvoiman kirjaaminen saapuneeksi"
 
 #: templates/labour_admin_jobcategories_view.jade
 msgid "Yes"
@@ -508,6 +488,21 @@ msgstr "aikajakeet"
 #~ msgid "Delete"
 #~ msgstr "Poista"
 
+#~ msgid "Job title"
+#~ msgstr "Tehtävänimike"
+
+#~ msgid "Onboarding"
+#~ msgstr "Saapuneeksi kirjaaminen"
+
 #~ msgid "Save"
 #~ msgstr "Tallenna"
+
+#~ msgid "Shirt size"
+#~ msgstr "Paitakoko"
+
+#~ msgid "Shirt type"
+#~ msgstr "Paitatyyppi"
+
+#~ msgid "Volunteer worker onboarding"
+#~ msgstr "Työvoiman kirjaaminen saapuneeksi"
 

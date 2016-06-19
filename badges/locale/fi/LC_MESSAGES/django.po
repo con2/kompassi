@@ -10,6 +10,10 @@ msgstr "Lisää badge"
 msgid "Admission list"
 msgstr "Nimilista"
 
+#: models/badge.py
+msgid "Arrived at"
+msgstr "Saapumisaika"
+
 #: forms.py
 msgid "At least one of first name, surname and nick must be provided."
 msgstr "Ainakin yksi seuraavista on annettava: etunimi, sukunimi, nick."
@@ -23,6 +27,10 @@ msgstr "Odottaa tulostuserää"
 msgid "Batch %(batch_number)s"
 msgstr "Erä %(batch_number)s"
 
+#: views/admin_views.py
+msgid "Batches"
+msgstr "Tulostuserät"
+
 #: models/badge.py models/batch.py
 msgid "Created at"
 msgstr "Luontiaika"
@@ -31,9 +39,17 @@ msgstr "Luontiaika"
 msgid "Created by"
 msgstr "Luonut"
 
+#: views/admin_views.py
+msgid "Dashboard"
+msgstr "Kojelauta"
+
 #: models/badges_event_meta.py
 msgid "Emphasize nick name"
 msgstr "Korosta nickiä"
+
+#: views/admin_views.py
+msgid "Entrance lists"
+msgstr "Nimilistat"
 
 #: templates/badges_admin_badges_view.jade
 msgid "Export"
@@ -71,7 +87,7 @@ msgstr "Nick näkyvissä"
 msgid "Is surname visible"
 msgstr "Sukunimi näkyvissä"
 
-#: models/badge.py templates/badges_admin_badges_view.jade
+#: models/badge.py templates/badges_admin_badges_view.jade templates/badges_admin_onboarding_view.jade
 msgid "Job title"
 msgstr "Tehtävänimike"
 
@@ -83,13 +99,17 @@ msgstr "Badgen lisääminen käsin"
 msgid "Manually add a badge"
 msgstr "Lisää badge käsin"
 
-#: models/badge.py
+#: models/badge.py templates/badges_admin_onboarding_view.jade
 msgid "Name"
 msgstr "Nimi"
 
 #: models/badge.py templates/badges_admin_badges_view.jade
 msgid "Nick name"
 msgstr "Nick"
+
+#: templates/badges_admin_onboarding_view.jade views/admin_views.py
+msgid "Onboarding"
+msgstr "Saapuneeksi kirjaaminen"
 
 #: templates/badges_admin_badges_view.jade
 #, python-format
@@ -102,7 +122,7 @@ msgstr[1] "%(num_badges)s badgea."
 msgid "Person"
 msgstr "Henkilö"
 
-#: forms.py models/badge.py templates/badges_admin_badges_view.jade
+#: forms.py models/badge.py templates/badges_admin_badges_view.jade templates/badges_admin_onboarding_view.jade
 msgid "Personnel class"
 msgstr "Henkilöstöluokka"
 
@@ -150,9 +170,21 @@ msgstr "Mitätöintiaika"
 msgid "Revoked by"
 msgstr "Mitätöinyt"
 
+#: templates/badges_admin_onboarding_view.jade
+msgid "Search"
+msgstr "Haku"
+
 #: templates/badges_admin_badges_view.jade
 msgid "Separately"
 msgstr "Erikseen"
+
+#: templates/badges_admin_onboarding_view.jade
+msgid "Shirt size"
+msgstr "Paitakoko"
+
+#: templates/badges_admin_onboarding_view.jade
+msgid "Shirt type"
+msgstr "Paitatyyppi"
 
 #: templates/badges_admin_badges_view.jade
 msgid "Status"
