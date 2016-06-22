@@ -144,11 +144,12 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Vastaava']:
+        for name in ['Vastaava']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
             ('Järjestyksenvalvoja', 'JV-kortti'),
+            ('Ensiapu', 'Ensiapukoulutus EA1')
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
@@ -157,19 +158,19 @@ class Setup(object):
             jc.save()
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'vastaava',
+            slug='vastaava',
             defaults=dict(
-                title=u'Vastaavan ilmoittautumislomake',
+                title='Vastaavan ilmoittautumislomake',
                 signup_form_class_path='events.shippocon2016.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.shippocon2016.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2016, 6, 23, 0, 0, 0, tzinfo=self.tz),
