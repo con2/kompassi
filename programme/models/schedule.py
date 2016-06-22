@@ -1,10 +1,15 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
+import logging
 from datetime import timedelta
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+
+logger = logging.getLogger('kompassi')
 
 ONE_HOUR = timedelta(hours=1)
 
@@ -54,7 +59,7 @@ class ViewMethodsMixin(object):
                             self.event.programme_event_meta.is_user_admin(request.user)
                         ):
                             messages.warning(request,
-                                u'Tilassa {room} on päällekkäisiä ohjelmanumeroita kello {start_time}'.format(
+                                'Tilassa {room} on päällekkäisiä ohjelmanumeroita kello {start_time}'.format(
                                     room=room,
                                     start_time=format_datetime(start_time.astimezone(tzlocal())),
                                 )
@@ -99,8 +104,8 @@ class View(models.Model, ViewMethodsMixin):
         return self.name
 
     class Meta:
-        verbose_name = _(u'schedule view')
-        verbose_name_plural = _(u'schedule views')
+        verbose_name = _('schedule view')
+        verbose_name_plural = _('schedule views')
         ordering = ['event', 'order']
 
 
@@ -108,7 +113,7 @@ class AllRoomsPseudoView(ViewMethodsMixin):
     def __init__(self, event):
         from .room import Room
 
-        self.name = 'All rooms'
+        self.name = _('All rooms')
         self.public = True
         self.order = 0
         self.rooms = Room.objects.filter(venue=event.venue, view__event=event)
@@ -122,16 +127,16 @@ class TimeBlock(models.Model):
 
 
 class SpecialStartTime(models.Model):
-    event = models.ForeignKey('core.event', verbose_name=u'tapahtuma')
-    start_time = models.DateTimeField(verbose_name=u'alkuaika')
+    event = models.ForeignKey('core.event', verbose_name=_('event'))
+    start_time = models.DateTimeField(verbose_name=_('starting time'))
 
     def __unicode__(self):
         from core.utils import format_datetime
-        return format_datetime(self.start_time) if self.start_time else u'None'
+        return format_datetime(self.start_time) if self.start_time else 'None'
 
     class Meta:
-        verbose_name = u'poikkeava alkuaika'
-        verbose_name_plural = u'poikkeavat alkuajat'
+        verbose_name = _('special start time')
+        verbose_name_plural = _('special start times')
         ordering = ['event', 'start_time']
         unique_together = [
             ('event', 'start_time'),
