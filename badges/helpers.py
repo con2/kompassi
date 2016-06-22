@@ -3,7 +3,7 @@
 from functools import wraps
 
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
 
 def badges_admin_required(view_func):
