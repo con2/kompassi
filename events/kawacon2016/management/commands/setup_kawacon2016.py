@@ -211,7 +211,8 @@ class Setup(object):
         )
 
     def setup_programme(self):
-        from programme.models import Room, ProgrammeEventMeta, Category, TimeBlock, View
+        from programme.models import Room, ProgrammeEventMeta, Category, TimeBlock, View, SpecialStartTime
+        from core.utils import full_hours_between
 
         room_order = 0
         for room_name in [
@@ -241,7 +242,7 @@ class Setup(object):
         )
 
         if not view.rooms.exists():
-            view.rooms = Room.objects.filter(venue=self.venue)
+            view.rooms = Room.objects.filter(venue=self.venue, active=True)
             view.save()
 
         for category_name, category_style in [
@@ -276,6 +277,14 @@ class Setup(object):
                     end_time=end_time
                 )
             )
+
+            # <Kharnis> Lisäksi, saapiko ohjelmakartan toimimaan 30 min tarkkuudella?
+            # [:-1] – discard 18:30
+            for hour_start_time in full_hours_between(start_time, end_time)[:-1]:
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30)
+                )
 
 
 class Command(BaseCommand):
