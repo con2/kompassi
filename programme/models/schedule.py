@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import logging
 from datetime import timedelta
 
+from django.contrib import messages
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
