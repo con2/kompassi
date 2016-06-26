@@ -24,6 +24,7 @@ from .models import (
     FreeformOrganizer,
     Invitation,
     Programme,
+    ProgrammeEventMeta,
     ProgrammeRole,
     Role,
     Room,
@@ -276,4 +277,38 @@ class ChangeInvitationRoleForm(forms.ModelForm):
         fields = (
             'role',
             'extra_invites',
+        )
+
+
+class PublishForm(forms.ModelForm):
+    # XXX get a date picker
+    public_from = forms.DateTimeField(
+        required=False,
+        label=_("Public from"),
+    )
+    # public_until = forms.DateTimeField(
+    #     required=False,
+    #     label=_("Public until"),
+    #     help_text=_("Format: YYYY-MM-DD HH:MM:SS"),
+    # )
+
+    def __init__(self, *args, **kwargs):
+        super(PublishForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    # def clean_registration_closes(self):
+    #     registration_opens = self.cleaned_data.get('registration_opens')
+    #     registration_closes = self.cleaned_data.get('registration_closes')
+
+    #     if registration_opens and registration_closes and registration_opens >= registration_closes:
+    #         raise forms.ValidationError(_("The registration closing time must be after the registration opening time."))
+
+    #     return registration_closes
+
+    class Meta:
+        model = ProgrammeEventMeta
+        fields = (
+            'public_from',
         )

@@ -54,6 +54,14 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     def is_public(self):
         return self.public_from is not None and now() > self.public_from
 
+    def publish(self):
+        self.public_from = now()
+        self.save()
+
+    def unpublish(self):
+        self.public_from = None
+        self.save()
+
     public = alias_property('is_public')
 
     @property

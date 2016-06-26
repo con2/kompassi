@@ -138,6 +138,10 @@ msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 msgid "Frozen"
 msgstr "Lukittu"
 
+#: templates/programme_admin_publish_view.jade
+msgid "Here you can set a time for the programme schedule to be automatically published. You can also publish or un-publish the schedule right away."
+msgstr "Tässä voit asettaa ajan, jona ohjelmakartta julkaistaan automaattisesti. Voit myös julkaista ohjelmakartan tai palauttaa sen ei-julkaistuksi välittömästi."
+
 #: templates/programme_admin_detail_views/needs_tab.jade views/programme_admin_detail_view.py
 msgid "Host needs"
 msgstr "Ohjelmanjärjestäjän tarpeet"
@@ -342,6 +346,10 @@ msgstr "Puhelinnumero"
 msgid "Photography of your prorgmme"
 msgstr "Ohjelman valokuvaus"
 
+#: templates/programme_admin_publish_view.jade
+msgid "Please bear in mind that only programmes that are in the \"Published\" state are shown in the schedule."
+msgstr "Muistathan, että ohjelmakartassa näytetään vain ohjelmanumerot jotka ovat Julkaistu-tilassa."
+
 #: views/admin_views.py views/programme_accept_invitation_view.py views/programme_admin_detail_view.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
@@ -394,9 +402,21 @@ msgstr "Ohjelmanumerot, joita voit muokata"
 msgid "Public"
 msgstr "Julkinen"
 
+#: forms.py
+msgid "Public from"
+msgstr "Julkaisuaika"
+
 #: templates/programme_admin_detail_views/public_tab.jade views/programme_admin_detail_view.py
 msgid "Public information"
 msgstr "Julkiset tiedot"
+
+#: templates/programme_admin_publish_view.jade
+msgid "Publish now"
+msgstr "Julkaise heti"
+
+#: templates/programme_admin_publish_view.jade views/programme_admin_menu_items.py
+msgid "Publish schedule"
+msgstr "Ohjelmakartan julkaiseminen"
 
 #: models/programme.py
 msgid "Published"
@@ -446,11 +466,11 @@ msgstr "Tilatarpeet"
 msgid "Save and continue"
 msgstr "Tallenna ja jatka"
 
-#: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/buttons.jade templates/programme_admin_publish_view.jade templates/programme_profile_detail_view.jade
 msgid "Save and return"
 msgstr "Tallenna ja palaa"
 
-#: templates/programme_profile_detail_view.jade
+#: templates/programme_admin_publish_view.jade templates/programme_profile_detail_view.jade
 msgid "Save changes"
 msgstr "Tallenna muutokset"
 
@@ -560,9 +580,33 @@ msgstr "Ohjelmanumero luotiin."
 msgid "The programmes in the state \"Published\" will be visible to the general public, if the schedule has already been published."
 msgstr "Tilassa ”Julkaistu” olevat ohjelmanumerot näkyvät yleisölle, mikäli ohjelmakartta on julkaistu."
 
+#: views/programme_admin_publish_view.py
+msgid "The publication time was saved."
+msgstr "Julkaisuaika tallennettiin."
+
 #: views/programme_admin_detail_view.py
 msgid "The role was changed."
 msgstr "Rooli vaihdettiin."
+
+#: templates/programme_admin_publish_view.jade
+msgid "The schedule is currently published."
+msgstr "Ohjelmakartta on tällä hetkellä julkinen."
+
+#: templates/programme_admin_publish_view.jade
+msgid "The schedule is not currently published."
+msgstr "Ohjelmakartta ei ole tällä hetkellä julkinen."
+
+#: views/programme_admin_publish_view.py
+msgid "The schedule was already public."
+msgstr "Ohjelmakartta oli jo julkinen."
+
+#: views/programme_admin_publish_view.py
+msgid "The schedule was published."
+msgstr "Ohjelmakartta julkaistiin."
+
+#: views/programme_admin_publish_view.py
+msgid "The schedule was un-published."
+msgstr "Ohjelmakartta palautettiin ei-julkaistuksi."
 
 #: models/programme.py
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
@@ -591,6 +635,10 @@ msgstr "Tämä teksti näytetään ohjelmakartassa sellaisenaan."
 #: models/programme.py proxies/helpers.py
 msgid "Title"
 msgstr "Otsikko"
+
+#: templates/programme_admin_publish_view.jade
+msgid "Un-publish now"
+msgstr "Palauta ei-julkaistuksi"
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Update profile..."

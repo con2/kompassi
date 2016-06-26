@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
-from core.utils import full_hours_between, is_within_period
+from core.utils import full_hours_between, is_within_period, alias_property
 
 from .constants import GROUP_VERBOSE_NAMES_BY_SUFFIX, SIGNUP_STATE_GROUPS
 
@@ -24,12 +24,14 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         blank=True,
         verbose_name=_("Registration opens"),
     )
+    public_from = alias_property('registration_opens')
 
     registration_closes = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name=_("Registration closes"),
     )
+    public_until = alias_property('registration_closes')
 
     work_begins = models.DateTimeField(verbose_name='Ensimmäiset työvuorot alkavat')
     work_ends = models.DateTimeField(verbose_name='Viimeiset työvuorot päättyvät')
@@ -177,6 +179,32 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
     @property
     def is_registration_open(self):
         return is_within_period(self.registration_opens, self.registration_closes)
+
+    is_public = alias_property('is_registration_open')
+
+    def publish(self):
+        """
+        Used by the start/stop signup period view to start the signup period. Returns True
+        if the user needs to be warned about a certain corner case where information was lost.
+        """
+        warn = False
+
+        if self.public_until and self.public_until <= now():
+            self.public_until = None
+            warn = True
+
+        self.public_from = now()
+        self.save()
+
+        return warn
+
+    def unpublish(self):
+        """
+        Used by the start/stop signup period view to end the signup period. We prefer setting
+        public_until to clearing public_from because this causes less information loss.
+        """
+        self.public_until = now()
+        self.save()
 
     def is_person_signed_up(self, person):
         return self.event.signup_set.filter(person=person).exists()

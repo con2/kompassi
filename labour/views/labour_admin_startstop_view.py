@@ -15,48 +15,66 @@ from ..forms import StartStopForm
 
 
 @labour_admin_required
-@require_http_methods(["GET", "HEAD", "POST"])
 def labour_admin_startstop_view(request, vars, event):
     meta = event.labour_event_meta
-    form = initialize_form(StartStopForm, request, instance=meta)
+    return generic_publish_unpublish_view(
+        request, vars, event,
+        meta=event.labour_event_meta,
+        template='labour_admin_startstop_view.jade',
+        FormClass=StartStopForm,
+    )
+
+
+# TODO move under core
+@require_http_methods(["GET", "HEAD", "POST"])
+def generic_publish_unpublish_view(
+    request,
+    vars,
+    event,
+    meta,
+    template,
+    FormClass,
+    save_success_message=_("Application period start and end times were saved."),
+    end_time_clear_message=_(
+        "The end of the application period was in the past and has now been cleared. "
+        "If you have an ending date for the application period, please set it below."
+    ),
+    start_now_success_message=_("The application period was started."),
+    already_public_message=_("The application period is already underway."),
+    stop_now_success_message=_("The application period was ended."),
+    not_public_message=_("The application period is not currently underway."),
+):
+    form = initialize_form(FormClass, request, instance=meta)
 
     if request.method == 'POST':
         action = request.POST.get('action')
         if action == 'save':
             if form.is_valid():
                 form.save()
-                messages.success(request, _("Application period start and end times were saved."))
-                return redirect("labour_admin_startstop_view", event.slug)
+                messages.success(request, save_success_message)
+                return redirect(request.path)
             else:
                 messages.error(request, _("Please check the form."))
 
         elif action == 'start-now':
-            if not meta.is_registration_open:
-                meta.registration_opens = now()
+            if not meta.is_public:
+                if meta.publish():
+                    messages.warning(request, end_time_clear_message)
 
-                if meta.registration_closes <= meta.registration_closes:
-                    messages.warning(request, _(
-                        "The end of the application period was in the past and has now been cleared. "
-                        "If you have an ending date for the application period, please set it below."
-                    ))
-                    meta.registration_closes = None
-
-                meta.save()
-                messages.success(request, _("The application period was started."))
+                messages.success(request, start_now_success_message)
             else:
-                messages.error(request, _("The application period is already underway."))
+                messages.error(request, already_public_message)
 
-            return redirect("labour_admin_startstop_view", event.slug)
+            return redirect(request.path)
 
         elif action == 'stop-now':
-            if meta.is_registration_open:
-                meta.registration_closes = now()
-                meta.save()
-                messages.success(request, _("The application period was ended."))
+            if meta.is_public:
+                meta.unpublish()
+                messages.success(request, stop_now_success_message)
             else:
-                messages.error(request, _("The application period is not currently underway."))
+                messages.error(request, not_public_message)
 
-            return redirect("labour_admin_startstop_view", event.slug)
+            return redirect(request.path)
 
         else:
             messages.error(request, _("Invalid request."))
@@ -66,4 +84,4 @@ def labour_admin_startstop_view(request, vars, event):
         form=form,
     )
 
-    return render(request, 'labour_admin_startstop_view.jade', vars)
+    return render(request, template, vars)

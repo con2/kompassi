@@ -24,6 +24,10 @@ def programme_admin_menu_items(request, event):
     special_active = request.path == special_url
     special_text = 'Ohjelmakartan ulkopuolisten esikatselu'
 
+    publish_url = url('programme_admin_publish_view', event.slug)
+    publish_active = request.path == publish_url
+    publish_text = _('Publish schedule')
+
     index_url = url('programme_admin_view', event.slug)
     index_active = request.path.startswith(index_url) and not any((
         invitations_active,
@@ -37,4 +41,5 @@ def programme_admin_menu_items(request, event):
         AdminMenuItem(is_active=invitations_active, href=invitations_url, text=invitations_text, notifications=invitations_notifications),
         AdminMenuItem(is_active=timetable_active, href=timetable_url, text=timetable_text),
         AdminMenuItem(is_active=special_active, href=special_url, text=special_text),
+        AdminMenuItem(is_active=publish_active, href=publish_url, text=publish_text),
     ]

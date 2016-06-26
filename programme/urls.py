@@ -10,6 +10,7 @@ from .views import (
     programme_admin_detail_view,
     programme_admin_email_list_view,
     programme_admin_invitations_view,
+    programme_admin_publish_view,
     programme_admin_special_view,
     programme_admin_timetable_view,
     programme_admin_view,
@@ -40,6 +41,12 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/special/?$',
         programme_special_view,
         name='programme_special_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/publish/?$',
+        programme_admin_publish_view,
+        name='programme_admin_publish_view'
     ),
 
     url(
