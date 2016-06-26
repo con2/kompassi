@@ -1,36 +1,39 @@
-extends core_admin_base
+extends base
 - load trans from i18n
 block title
   if programme.title
     | {{ programme.title }}
   else
     | Ohjelmanumeron tiedot
-block admin_content
+block content_full_width
+  .container
+    .nav.nav-tabs
+      include core_admin_menu_items.jade
 
-  for overlapping_programme in overlapping_programmes
-    .alert.alert-warning Päällekkäinen ohjelmanumero: <a href='{% url "programme_admin_detail_view" event.slug overlapping_programme.id %}'>{{ overlapping_programme.title }}</a> ({{ overlapping_programme.formatted_times }})
+    for overlapping_programme in overlapping_programmes
+      .alert.alert-warning Päällekkäinen ohjelmanumero: <a href='{% url "programme_admin_detail_view" event.slug overlapping_programme.id %}'>{{ overlapping_programme.title }}</a> ({{ overlapping_programme.formatted_times }})
 
-  include programme_admin_detail_views/pager.jade
+    include programme_admin_detail_views/pager.jade
 
-  ul.nav.nav-tabs
-    for tab in tabs
-      li(role='presentation', class='#{tab.active_css}')
-        a(href='##{tab.id}', aria-controls='#{tab.id}', role='tab', data-toggle='tab')= tab.title
-          if tab.notifications
-            .badge= tab.notifications
+    ul.nav.nav-tabs
+      for tab in tabs
+        li(role='presentation', class='#{tab.active_css}')
+          a(href='##{tab.id}', aria-controls='#{tab.id}', role='tab', data-toggle='tab')= tab.title
+            if tab.notifications
+              .badge= tab.notifications
 
-  form(method='POST', role='form').form-horizontal
-    //- To catch Enter button presses
-    button.btn.btn-success.hidden(type='submit', name='action', value='save-edit') {% trans "Save and continue" %}
+    form(method='POST', role='form').form-horizontal
+      //- To catch Enter button presses
+      button.btn.btn-success.hidden(type='submit', name='action', value='save-edit') {% trans "Save and continue" %}
 
-    .tab-content.kompassi-slight-space-above
-      include programme_admin_detail_views/public_tab.jade
-      include programme_admin_detail_views/schedule_tab.jade
-      include programme_admin_detail_views/needs_tab.jade
-      include programme_admin_detail_views/internal_tab.jade
-      include programme_admin_detail_views/hosts_tab.jade
+      .tab-content.kompassi-slight-space-above
+        include programme_admin_detail_views/public_tab.jade
+        include programme_admin_detail_views/schedule_tab.jade
+        include programme_admin_detail_views/needs_tab.jade
+        include programme_admin_detail_views/internal_tab.jade
+        include programme_admin_detail_views/hosts_tab.jade
 
-  include programme_admin_detail_views/invitation_modal.jade
-  include programme_admin_detail_views/freeform_host_modal.jade
-  include programme_admin_detail_views/change_host_role_modals.jade
-  include programme_admin_detail_views/change_invitation_role_modals.jade
+    include programme_admin_detail_views/invitation_modal.jade
+    include programme_admin_detail_views/freeform_host_modal.jade
+    include programme_admin_detail_views/change_host_role_modals.jade
+    include programme_admin_detail_views/change_invitation_role_modals.jade

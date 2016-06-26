@@ -22,6 +22,10 @@ msgstr "Lisää vapaamuotoinen ohjelmanjärjestäjä"
 msgid "All pending invitations were cancelled."
 msgstr "Kaikki avoimet kutsut on peruutettu."
 
+#: models/schedule.py
+msgid "All rooms"
+msgstr "Kaikki tilat"
+
 #: models/programme.py
 msgid "Anything else?"
 msgstr "Vapaamuotoiset terveiset"
@@ -201,6 +205,10 @@ msgstr "Kelvoton toiminto."
 #: views/programme_admin_invitations_view.py
 msgid "Invalid request."
 msgstr "Kelvoton pyyntö."
+
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade
+msgid "Invitation link. If the invitation e-mail does not get through due to eg. Microsoft, you can give this link to the invitee over eg. an instant messenger."
+msgstr "Kutsun linkki. Jos kutsusähköposti ei syystä tai toisesta (esim. Microsoft) mene läpi, voit antaa tämän linkin suoraan kutsutulle esim. pikaviestisovelluksen kautta."
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Invitation to organize programme"
@@ -648,6 +656,10 @@ msgstr "ohjelmaluokat"
 msgid "category"
 msgstr "ohjelmaluokka"
 
+#: models/schedule.py
+msgid "event"
+msgstr "tapahtuma"
+
 #: models/freeform_organizer.py proxies/freeform_organizer/admin.py
 msgid "freeform organizer"
 msgstr "vapaamuotoinen ohjelmanjärjestäjä"
@@ -687,6 +699,18 @@ msgstr "ohjelmakarttanäkymä"
 #: models/schedule.py
 msgid "schedule views"
 msgstr "ohjelmakarttanäkymät"
+
+#: models/schedule.py
+msgid "special start time"
+msgstr "poikkeava alkuaika"
+
+#: models/schedule.py
+msgid "special start times"
+msgstr "poikkeavat alkuajat"
+
+#: models/schedule.py
+msgid "starting time"
+msgstr "alkamisaika"
 
 #: models/tag.py
 msgid "tag"

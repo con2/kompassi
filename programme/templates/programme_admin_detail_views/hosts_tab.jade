@@ -48,8 +48,15 @@
                 |{{invitation.extra_invites}}
                 i.fa.fa-pencil-square-o.kompassi-icon-space-left
             td
-              button.btn.btn-xs.btn-danger(type='submit', name='action', value='cancel-invitation:{{ invitation.id }}', title='{% trans "Cancel invitation" %}')
-                i.fa.fa-trash
+              .btn-group
+                button.btn.btn-xs.btn-danger(type='submit', name='action', value='cancel-invitation:{{ invitation.id }}', title='{% trans "Cancel invitation" %}')
+                  i.fa.fa-trash
+                a.btn.btn-xs.btn-default(
+                  href='{% url "programme_accept_invitation_view" event.slug invitation.code %}'
+                  target='_blank'
+                  title='{% trans "Invitation link. If the invitation e-mail does not get through due to eg. Microsoft, you can give this link to the invitee over eg. an instant messenger." %}'
+                )
+                  i.fa.fa-share-square-o
         for freeform_organizer in freeform_organizers
           tr
             td(colspan="5")= freeform_organizer.text
