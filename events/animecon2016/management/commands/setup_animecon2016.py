@@ -369,6 +369,7 @@ class Setup(object):
         PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
     def setup_programme(self):
+        from core.utils import full_hours_between
         from labour.models import PersonnelClass
         from programme.models import (
             Category,
@@ -443,28 +444,35 @@ class Setup(object):
                 )
             )
 
-        for start_time, end_time in [
-            (
-                self.event.start_time.replace(hour=10, minute=0),
-                self.event.start_time.replace(hour=20, minute=0),
-            ),
-            (
-                self.event.end_time.replace(hour=10, minute=0),
-                self.event.end_time,
-            ),
-        ]:
-            TimeBlock.objects.get_or_create(
-                event=self.event,
-                start_time=start_time,
-                defaults=dict(
-                    end_time=end_time
+        if not TimeBlock.objects.filter(event=self.event).exists():
+            for start_time, end_time in [
+                (
+                    self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
+                    self.event.start_time.replace(hour=20, minute=0, tzinfo=self.tz),
+                ),
+                (
+                    self.event.end_time.replace(hour=10, minute=0, tzinfo=self.tz),
+                    self.event.end_time,
+                ),
+            ]:
+                TimeBlock.objects.get_or_create(
+                    event=self.event,
+                    start_time=start_time,
+                    defaults=dict(
+                        end_time=end_time
+                    )
                 )
-            )
 
-        SpecialStartTime.objects.get_or_create(
-            event=self.event,
-            start_time=self.event.start_time,
-        )
+                for hour_start_time in full_hours_between(start_time, end_time)[:-1]:
+                    SpecialStartTime.objects.get_or_create(
+                        event=self.event,
+                        start_time=hour_start_time.replace(minute=30)
+                    )
+
+            SpecialStartTime.objects.get_or_create(
+                event=self.event,
+                start_time=self.event.start_time,
+            )
 
         for view_name, room_names in [
             ('Pääohjelmatilat', [
