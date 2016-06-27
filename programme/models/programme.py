@@ -43,7 +43,6 @@ STATE_CHOICES = [
     ('asked', _('Asked from the host')),
     ('offered', _('Offer received')),
     ('accepted', _('Accepted')),
-    ('frozen', _('Frozen')),
     ('published', _('Published')),
 
     ('cancelled', _('Cancelled')),
@@ -91,8 +90,8 @@ PHOTOGRAPHY_CHOICES = [
     ('nope', _('Please do not photograph my programme')),
 ]
 
-PROGRAMME_STATES_HOST_CAN_EDIT = ['idea', 'asked', 'offered', 'accepted']
-PROGRAMME_STATES_ACTIVE = PROGRAMME_STATES_HOST_CAN_EDIT + ['frozen', 'published']
+PROGRAMME_STATES_HOST_CAN_EDIT = ['idea', 'asked', 'offered', 'accepted', 'published']
+PROGRAMME_STATES_ACTIVE = PROGRAMME_STATES_HOST_CAN_EDIT
 PROGRAMME_STATES_INACTIVE = ['rejected', 'cancelled']
 
 
@@ -203,6 +202,12 @@ class Programme(models.Model, CsvExportMixin):
         default='accepted',
         verbose_name=_('State'),
         help_text=_('The programmes in the state "Published" will be visible to the general public, if the schedule has already been published.'),
+    )
+
+    frozen = models.BooleanField(
+        default=False,
+        verbose_name=_('Frozen'),
+        help_text=_('When a programme is frozen, its details can no longer be edited by the programme host. The programme manager may continue to edit these, however.'),
     )
 
     start_time = models.DateTimeField(blank=True, null=True, verbose_name=START_TIME_LABEL)
@@ -442,16 +447,16 @@ class Programme(models.Model, CsvExportMixin):
             Badge.ensure(event=self.event, person=deleted_programme_role.person)
 
     @classmethod
-    def _get_in_states(cls, person, states):
+    def _get_in_states(cls, person, states, **extra_criteria):
         return (
-            cls.objects.filter(state__in=states, organizers=person)
+            cls.objects.filter(state__in=states, organizers=person, **extra_criteria)
                 .distinct()
                 .order_by('category__event__start_time', 'start_time', 'title')
         )
 
     @classmethod
     def get_editable_programmes(cls, person):
-        return cls._get_in_states(person, PROGRAMME_STATES_HOST_CAN_EDIT)
+        return cls._get_in_states(person, PROGRAMME_STATES_HOST_CAN_EDIT, frozen=False)
 
     @classmethod
     def get_rejected_programmes(cls, person):
@@ -463,20 +468,17 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def host_can_edit(self):
-        return self.state in PROGRAMME_STATES_HOST_CAN_EDIT
+        return self.state in PROGRAMME_STATES_HOST_CAN_EDIT and not self.frozen
 
     @property
     def host_cannot_edit_explanation(self):
         assert not self.host_can_edit
 
-        if self.state == 'published':
-            return _('This programme has been published. You can no longer edit it yourself. '
-                'If you need edits to be made, please contact the programme manager.')
-        elif self.state == 'cancelled':
+        if self.state == 'cancelled':
             return _('You have cancelled this programme.')
         elif self.state == 'rejected':
             return _('This programme has been rejected by the programme manager.')
-        elif self.state == 'frozen':
+        elif frozen:
             return _('This programme has been frozen by the programme manager.')
         else:
             raise NotImplementedError(self.state)

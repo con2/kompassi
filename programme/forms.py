@@ -168,6 +168,7 @@ class ScheduleForm(forms.ModelForm):
         model = Programme
         fields = (
             'state',
+            'frozen',
             'room',
             'start_time',
             'length',
