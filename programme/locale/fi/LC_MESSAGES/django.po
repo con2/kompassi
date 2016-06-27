@@ -621,10 +621,6 @@ msgid "This programme has been frozen by the programme manager."
 msgstr "Ohjelmavastaava on lukinnut tämän ohjelmanumeron."
 
 #: models/programme.py
-msgid "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager."
-msgstr "Ohjelmanumero on julkaistu, joten et voi enää muokata sitä itse. Jos tarvitset ohjelmanumeron tietoihin muutoksia, ole hyvä ja ota yhteyttä ohjelmavastaavaan."
-
-#: models/programme.py
 msgid "This programme has been rejected by the programme manager."
 msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
 
@@ -659,6 +655,10 @@ msgstr "Tarkastele ohjelmanumeron tietoja"
 #: models/programme.py
 msgid "What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance."
 msgstr "Minkälaista tietokonetta haluat käyttää? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
+
+#: models/programme.py
+msgid "When a programme is frozen, its details can no longer be edited by the programme host. The programme manager may continue to edit these, however."
+msgstr "Kun ohjelmanumero on lukittu, ohjelmanjärjestäjä ei voi enää muokata sen tietoja. Ohjelmavastaava voi muokata myös lukittua ohjelmanumeroa."
 
 #: models/programme.py
 msgid "Will you play audio in your programme?"
@@ -767,4 +767,7 @@ msgstr "tägi"
 #: models/tag.py
 msgid "tags"
 msgstr "tägit"
+
+#~ msgid "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager."
+#~ msgstr "Ohjelmanumero on julkaistu, joten et voi enää muokata sitä itse. Jos tarvitset ohjelmanumeron tietoihin muutoksia, ole hyvä ja ota yhteyttä ohjelmavastaavaan."
 
