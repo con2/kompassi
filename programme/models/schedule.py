@@ -9,6 +9,10 @@ from django.contrib import messages
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from dateutil.tz import tzlocal
+
+from core.utils import format_datetime
+
 
 logger = logging.getLogger('kompassi')
 
