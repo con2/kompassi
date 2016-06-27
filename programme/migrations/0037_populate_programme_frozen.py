@@ -10,9 +10,9 @@ ACTIVE_EVENTS = ['tracon11', 'animecon2016', 'kawacon2016']
 
 def populate_frozen(apps, schema_editor):
     Programme = apps.get_model('programme', 'programme')
-    Programme.objects.filter(state='published').update(frozen=True)
-    Programme.objects.filter(state='frozen', category__event__slug__in=ACTIVE_EVENTS).update(state='accepted', frozen=False)
-    Programme.objects.filter(state='frozen').exclude(category__event__slug__in=ACTIVE_EVENTS).update(state='accepted', frozen=True)
+    Programme.objects.filter(state='frozen').update(frozen=True)
+    Programme.objects.filter(state='published', category__event__slug__in=ACTIVE_EVENTS).update(state='accepted', frozen=False)
+    Programme.objects.filter(state='published').exclude(category__event__slug__in=ACTIVE_EVENTS).update(state='accepted', frozen=True)
 
 
 class Migration(migrations.Migration):
