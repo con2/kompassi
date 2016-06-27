@@ -106,6 +106,7 @@ class Badge(models.Model, CsvExportMixin):
         blank=True,
         db_index=True,
         verbose_name=_('Printing batch'),
+        on_delete=models.SET_NULL,
     )
 
     is_revoked = time_bool_property('revoked_at')
@@ -267,10 +268,13 @@ class Badge(models.Model, CsvExportMixin):
     def event_name(self):
         return self.personnel_class.event.name if self.personnel_class else u''
 
+    def get_printable_text(self, fields):
+        return '\n'.join(unicode(value) for value in self.get_csv_row(self.event, fields, 'comma_separated'))
+
     def to_html_print(self):
         def format_name_field(value, is_visible):
             if is_visible:
-                return u"<strong>{value}</strong>".format(value=escape(value))
+                return '<strong>{value}</strong>'.format(value=escape(value))
             else:
                 return escape(value)
 
@@ -281,9 +285,9 @@ class Badge(models.Model, CsvExportMixin):
         )
 
         if self.nick:
-            return u"{surname}, {first_name}, {nick}".format(**vars)
+            return "{surname}, {first_name}, {nick}".format(**vars)
         else:
-            return u"{surname}, {first_name}".format(**vars)
+            return "{surname}, {first_name}".format(**vars)
 
     def revoke(self, user=None):
         """
@@ -319,14 +323,14 @@ class Badge(models.Model, CsvExportMixin):
 
     def admin_get_full_name(self):
         if self.nick:
-            return u'{self.first_name} "{self.nick}" {self.surname}'.format(self=self)
+            return '{self.first_name} "{self.nick}" {self.surname}'.format(self=self)
         else:
-            return u'{self.first_name} {self.surname}'.format(self=self)
+            return '{self.first_name} {self.surname}'.format(self=self)
     admin_get_full_name.short_description = _('Name')
     admin_get_full_name.admin_order_field = ('surname', 'first_name', 'nick')
 
     def __unicode__(self):
-        return u"{person_name} ({personnel_class_name}, {event_name})".format(
+        return "{person_name} ({personnel_class_name}, {event_name})".format(
             person_name=self.admin_get_full_name(),
             personnel_class_name=self.personnel_class_name,
             event_name=self.event_name,

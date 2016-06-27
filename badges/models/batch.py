@@ -1,15 +1,29 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
 
-from django.db import models
+from django.db import models, transaction
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
+
+from six import text_type
 
 from core.utils import time_bool_property
 
 from .constants import BADGE_ELIGIBLE_FOR_BATCHING
 
 
+def contains_moon_runes(unicode_str):
+    try:
+        unicode_str.encode('ISO-8859-1')
+    except UnicodeEncodeError:
+        return True
+    else:
+        return False
+
+
+@python_2_unicode_compatible
 class Batch(models.Model):
     event = models.ForeignKey('core.Event', related_name='badge_batch_set')
 
@@ -22,7 +36,7 @@ class Batch(models.Model):
     is_printed = time_bool_property('printed_at')
 
     @classmethod
-    def create(cls, event, personnel_class=None, max_items=100):
+    def create(cls, event, personnel_class=None, max_items=100, moon_rune_policy='dontcare'):
         from .badge import Badge
 
         if personnel_class is not None:
@@ -31,19 +45,32 @@ class Batch(models.Model):
         else:
             badges = Badge.objects.filter(personnel_class__event=event)
 
-        badges = badges.filter(**BADGE_ELIGIBLE_FOR_BATCHING).order_by('created_at')
+        if moon_rune_policy == 'onlyinclude':
+            fields = Badge.get_csv_fields(event)
+            test = lambda badge: contains_moon_runes(badge.get_printable_text(fields))
+        elif moon_rune_policy == 'exclude':
+            fields = Badge.get_csv_fields(event)
+            test = lambda badge: not contains_moon_runes(badge.get_printable_text(fields))
+        elif moon_rune_policy == 'dontcare':
+            test = lambda badge: True
+        else:
+            raise NotImplementedError(moon_rune_policy)
 
-        if max_items is not None:
-            badges = badges[:max_items]
+        with transaction.atomic():
+            batch = cls(personnel_class=personnel_class, event=event)
+            batch.save()
 
-        batch = cls(personnel_class=personnel_class, event=event)
-        batch.save()
+            badges = badges.filter(**BADGE_ELIGIBLE_FOR_BATCHING).order_by('created_at')
+            num_selected_badges = 0
 
-        # Cannot update a query once a slice has been taken.
-        # badges.update(batch=batch)
-        for badge in badges:
-            badge.batch = batch
-            badge.save()
+            for badge in badges:
+                if test(badge):
+                    badge.batch = batch
+                    badge.save()
+
+                    num_selected_badges += 1
+                    if max_items is not None and num_selected_badges >= max_items:
+                        break
 
         return batch
 
@@ -61,5 +88,18 @@ class Batch(models.Model):
     def can_confirm(self):
         return self.printed_at is not None
 
-    def __unicode__(self):
-        return _(u"Batch %(batch_number)s") % dict(batch_number=self.pk)
+    def __str__(self):
+        return _("Batch %(batch_number)s") % dict(batch_number=self.pk)
+
+    def admin_get_number(self):
+        return text_type(self)
+    admin_get_number.short_description = _('Batch number')
+    admin_get_number.admin_order_field = 'id'
+
+    def admin_get_num_badges(self):
+        return self.badge_set.count()
+    admin_get_num_badges.short_description = _('Number of badges')
+
+    class Meta:
+        verbose_name = _('Batch')
+        verbose_name_plural = _('Batches')

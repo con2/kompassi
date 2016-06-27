@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import BadgesEventMeta, Badge
+from .models import BadgesEventMeta, Badge, Batch
 
 
 class InlineBadgesEventMetaAdmin(admin.StackedInline):
@@ -15,4 +15,12 @@ class BadgeAdmin(admin.ModelAdmin):
     raw_id_fields = ('person', 'batch', 'personnel_class')
 
 
+class BatchAdmin(admin.ModelAdmin):
+    model = Batch
+    list_display = ('event', 'admin_get_number', 'personnel_class', 'admin_get_num_badges')
+    list_display_links = ('event', 'admin_get_number')
+    list_filter = ('event',)
+
+
 admin.site.register(Badge, BadgeAdmin)
+admin.site.register(Batch, BatchAdmin)

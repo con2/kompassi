@@ -23,11 +23,19 @@ msgid "Awaiting allocation into batch"
 msgstr "Odottaa tulostuserää"
 
 #: models/batch.py
+msgid "Batch"
+msgstr "Tulostuserä"
+
+#: models/batch.py
 #, python-format
 msgid "Batch %(batch_number)s"
 msgstr "Erä %(batch_number)s"
 
-#: views/admin_views.py
+#: models/batch.py
+msgid "Batch number"
+msgstr "Erän numero"
+
+#: models/batch.py views/admin_views.py
 msgid "Batches"
 msgstr "Tulostuserät"
 
@@ -51,6 +59,10 @@ msgstr "Korosta nickiä"
 msgid "Entrance lists"
 msgstr "Nimilistat"
 
+#: forms.py
+msgid "Exclude badges with moon runes"
+msgstr "Sisällytä erään vain badgeja, joissa ei ole kuuriimuja"
+
 #: templates/badges_admin_badges_view.jade
 msgid "Export"
 msgstr "Vie"
@@ -62,6 +74,10 @@ msgstr "Suodata henkilöstöluokan mukaan"
 #: models/badge.py templates/badges_admin_badges_view.jade
 msgid "First name"
 msgstr "Etunimi"
+
+#: forms.py
+msgid "I don't care"
+msgstr "Ei väliä"
 
 #: forms.py
 msgid "If you leave this field blank, you will receive a batch with mixed badge types."
@@ -107,6 +123,10 @@ msgstr "Nimi"
 msgid "Nick name"
 msgstr "Nick"
 
+#: models/batch.py
+msgid "Number of badges"
+msgstr "Badgejen lukumäärä"
+
 #: templates/badges_admin_onboarding_view.jade views/admin_views.py
 msgid "Onboarding"
 msgstr "Saapuneeksi kirjaaminen"
@@ -117,6 +137,10 @@ msgid "One badge."
 msgid_plural "%(num_badges)s badges."
 msgstr[0] "Yksi badge."
 msgstr[1] "%(num_badges)s badgea."
+
+#: forms.py
+msgid "Only include badges with moon runes"
+msgstr "Sisällytä erään vain badgeja, joissa on kuuriimuja"
 
 #: models/badge.py
 msgid "Person"
@@ -130,9 +154,17 @@ msgstr "Henkilöstöluokka"
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
+#: forms.py
+msgid "Please state your policy towards badges with moon runes within this batch. You can choose to not care, to only include badges with moon runes, or to only include badges without moon runes. A badge with moon runes is defined as one whose contents cannot be encoded into ISO-8859-1. If unsure, select \"I don't care\"."
+msgstr "Miten suhtaudut kuuriimuihin tässä tulostuserässä? Voit valita olla välittämättä niistä, sisällyttää erään vain kuuriimuja sisältäviä badgeja tai sisällyttää erään vain badgeja jotka eivät sisällä kuuriimuja. Kuuriimuja sisältävä badge on sellainen, jonka sisältöä ei pysty koodaamaan ISO-8859-1-merkistöön (tyypillisimmin japanin kielen kirjoitusmerkit). Jos et ole varma mitä valita tähän, valitse \"Ei väliä\"."
+
 #: models/badge.py
 msgid "Please stay civil with the job title field."
 msgstr "Käytäthän tehtävänimike-kenttää sivistyneesti!"
+
+#: forms.py
+msgid "Policy for badges with moon runes"
+msgstr "Suhtautuminen kuuriimuja sisältäviin badgeihin"
 
 #: templates/badges_admin_badges_view.jade
 msgid "Printable version"

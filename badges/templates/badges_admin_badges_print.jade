@@ -1,7 +1,9 @@
 doctype html
+- load static from staticfiles
 html
   head
     title {{ title|safe }} | {{ KOMPASSI_INSTALLATION_NAME }}
+    link(rel='stylesheet', href='{% static "badges/css/print.css" %}')
   body
     header
       h1 {{ title|safe }}

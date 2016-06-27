@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django import forms
 from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -10,13 +12,32 @@ from labour.models import PersonnelClass
 from .models import Badge
 
 
+MOON_RUNES_CHOICES = [
+    ('dontcare', _('I don\'t care')),
+    ('exclude', _('Exclude badges with moon runes')),
+    ('onlyinclude', _('Only include badges with moon runes')),
+]
+
+
 class CreateBatchForm(forms.Form):
-    max_items = forms.IntegerField(label=u"Kuinka monta badgea (enintään)?", initial=100)
+    max_items = forms.IntegerField(label=u"Kuinka monta badgea (enintään)?", initial=100, min_value=1, max_value=10000)
     personnel_class = forms.ModelChoiceField(
         queryset=PersonnelClass.objects.all(),
         required=False,
-        label=_(u"Personnel class"),
-        help_text=_(u"If you leave this field blank, you will receive a batch with mixed badge types."),
+        label=_("Personnel class"),
+        help_text=_("If you leave this field blank, you will receive a batch with mixed badge types."),
+    )
+
+    moon_rune_policy = forms.ChoiceField(
+        choices=MOON_RUNES_CHOICES,
+        label=_('Policy for badges with moon runes'),
+        initial='dontcare',
+        help_text=_(
+            'Please state your policy towards badges with moon runes within this batch. '
+            'You can choose to not care, to only include badges with moon runes, or to only include '
+            'badges without moon runes. A badge with moon runes is defined as one whose contents cannot '
+            'be encoded into ISO-8859-1. If unsure, select "I don\'t care".'
+        ),
     )
 
     def __init__(self, *args, **kwargs):
@@ -41,7 +62,7 @@ class BadgeForm(forms.ModelForm):
         cleaned_data = super(BadgeForm, self).clean()
 
         if not any(cleaned_data.get(key) for key in ('first_name', 'surname', 'nick')):
-            raise ValidationError(_(u'At least one of first name, surname and nick must be provided.'))
+            raise ValidationError(_('At least one of first name, surname and nick must be provided.'))
 
         return cleaned_data
 

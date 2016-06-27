@@ -48,6 +48,45 @@ class CsvExportMixin(object):
     def get_csv_related(self):
         return dict()
 
+    def get_csv_row(self, event, fields, m2m_mode='separate_columns'):
+        result_row = []
+        related = self.get_csv_related()
+
+        for model, field in fields:
+            if isinstance(field, (unicode, str)):
+                field_name = field
+                field_type = None
+            else:
+                field_name = field.name
+                field_type = type(field)
+
+            if model in related:
+                source_instance = related.get(model, None)
+            else:
+                source_instance = self
+
+            field_value = getattr(source_instance, field_name) if source_instance is not None else None
+
+            if field_type is models.ManyToManyField and field_value is not None:
+                if m2m_mode == 'separate_columns':
+                    choices = get_m2m_choices(event, field)
+
+                    result_row.extend(
+                        field_value.filter(pk=choice.pk).exists()
+                        for choice in choices
+                    )
+                elif m2m_mode == 'comma_separated':
+                    result_row.append(u', '.join(item.__unicode__() for item in field_value.all()))
+                else:
+                    raise NotImplemented(m2m_mode)
+            elif field_type is models.DateTimeField and field_value is not None:
+                from django.utils.timezone import localtime
+                result_row.append(localtime(field_value).replace(tzinfo=None))
+            else:
+                result_row.append(field_value)
+
+        return result_row
+
 
 def write_header_row(event, writer, fields, m2m_mode='separate_columns'):
     header_row = []
@@ -96,42 +135,7 @@ get_m2m_choices.cache = {}
 
 
 def write_row(event, writer, fields, model_instance, m2m_mode):
-    result_row = []
-    related = model_instance.get_csv_related()
-
-    for model, field in fields:
-        if isinstance(field, (unicode, str)):
-            field_name = field
-            field_type = None
-        else:
-            field_name = field.name
-            field_type = type(field)
-
-        if model in related:
-            source_instance = related.get(model, None)
-        else:
-            source_instance = model_instance
-
-        field_value = getattr(source_instance, field_name) if source_instance is not None else None
-
-        if field_type is models.ManyToManyField and field_value is not None:
-            if m2m_mode == 'separate_columns':
-                choices = get_m2m_choices(event, field)
-
-                result_row.extend(
-                    field_value.filter(pk=choice.pk).exists()
-                    for choice in choices
-                )
-            elif m2m_mode == 'comma_separated':
-                result_row.append(u', '.join(item.__unicode__() for item in field_value.all()))
-            else:
-                raise NotImplemented(m2m_mode)
-        elif field_type is models.DateTimeField and field_value is not None:
-            from django.utils.timezone import localtime
-            result_row.append(localtime(field_value).replace(tzinfo=None))
-        else:
-            result_row.append(field_value)
-
+    result_row = model_instance.get_csv_row(event, fields, m2m_mode)
     writer.writerow(result_row)
 
 
