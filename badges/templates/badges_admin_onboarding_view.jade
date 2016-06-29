@@ -24,8 +24,9 @@ block admin_content
       tbody
         for badge in badges
           tr.a_badge(data-id=badge.id, class='{% if badge.is_arrived %}badge--arrived success{% endif %}')
-            td.loading
-              i.fa.fa-spinner.fa-spin
+            td.status.fa-fw
+              i.fa.fa-spinner.fa-pulse.status__loading
+              i.fa.fa-check.status__success
             td.name= badge.admin_get_full_name
             td.personnel_class= badge.personnel_class
             td.title= badge.job_title
@@ -46,18 +47,24 @@ block extra_head
     .a_badge {
       cursor: pointer;
     }
-    .a_badge .loading {
-      width: 1.5em;
+    .status {
+      box-sizing: content-box;
     }
-    .a_badge .loading .fa {
-      visibility: hidden;
+    .status .fa {
+      display: none;
     }
-    .badge--loading .loading .fa {
-      visibility: visible;
+    .badge--loading .status__loading {
+      display: inline;
+    }
+    .badge--arrived .status__success {
+      display: inline;
+    }
+    .badge--loading .status__success {
+      display: none;
     }
 
 block extra_scripts
-  script(src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js')
+  script(src='https://cdn.jsdelivr.net/lodash/4.13.1/lodash.min.js')
   script.
     var $search = $('#onboarding_search')
     var $badges = $('.onboarding__table .a_badge')
@@ -74,7 +81,7 @@ block extra_scripts
       })
     }, 100))
 
-    $badges.on('click', function () {
+    $badges.on('click', _.throttle(function () {
       var $this = $(this)
       if ($this.hasClass('badge--loading')) return
       var id = $this.data('id')
@@ -92,4 +99,4 @@ block extra_scripts
         .always(function () {
           $this.removeClass('badge--loading')
         })
-    })
+    }, 500, { trailing: false }))
