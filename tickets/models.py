@@ -15,6 +15,7 @@ from django.utils.encoding import python_2_unicode_compatible
 
 from dateutil.tz import tzlocal
 
+from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
 from core.utils import url, code_property, slugify, NONUNIQUE_SLUG_FIELD_PARAMS
 from payments.utils import compute_payment_request_mac
@@ -1044,7 +1045,7 @@ class OrderProduct(models.Model):
 
 
 @python_2_unicode_compatible
-class AccommodationInformation(models.Model):
+class AccommodationInformation(models.Model, CsvExportMixin):
     order_product = models.ForeignKey(OrderProduct, blank=True, null=True, related_name="accommodation_information_set")
 
     # XXX ugly hack: We hijack limit groups to represent (night, accommodation centre).
