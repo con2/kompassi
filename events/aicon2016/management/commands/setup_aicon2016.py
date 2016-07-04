@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 import os
 from datetime import datetime, timedelta
 
@@ -106,14 +108,13 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            (u'Vastaava', 'vastaava', 'labour'),
-            # (u'Vuorovastaava', 'ylivankari', 'labour', True),
-            # (u'Työvoima', 'tyovoima', 'labour', True),
-            # (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme', True),
-            # (u'Guest of Honour', 'goh', 'programme', False), # tervetullut muttei kutsuta automaattiviestillä
-            # (u'Media', 'media', 'badges', False),
-            # (u'Myyjä', 'myyja', 'badges', False),
-            # (u'Vieras', 'vieras', 'badges', False),
+            ('Vastaava', 'vastaava', 'labour'),
+            ('Vuorovastaava', 'vuorovastaava', 'labour'),
+            ('Työvoima', 'tyovoima', 'labour'),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            ('Media', 'media', 'badges'),
+            ('Myyjä', 'myyja', 'badges'),
+            ('Vieras', 'vieras', 'badges'),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -125,24 +126,24 @@ class Setup(object):
                 ),
             )
 
-        # tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
+        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
         vastaava = PersonnelClass.objects.get(event=self.event, slug='vastaava')
-        # ylivankari = PersonnelClass.objects.get(event=self.event, slug='ylivankari')
+        vuorovastaava = PersonnelClass.objects.get(event=self.event, slug='vuorovastaava')
         # ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
         for jc_data in [
-            (u'Vastaava', u'Tapahtuman järjestäjä', [vastaava]),
+            ('Vastaava', 'Tapahtuman järjestäjä', [vastaava]),
 
-            # (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, ylivankari]),
-            # (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [tyovoima, ylivankari]),
-            # (u'Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.', [tyovoima, ylivankari]),
-            # (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima, ylivankari]),
-            # (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.', [tyovoima, ylivankari]),
-            # (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima, ylivankari]),
-            # (u'myynti', u'Lipunmyynti ja narikka', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, ylivankari]),
-            # (u'info', u'Info-, ohjelma- ja yleisvänkäri', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, ylivankari]),
+            ('Erikoistehtävä', 'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, vuorovastaava]),
+            ('Järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [tyovoima, vuorovastaava]),
+            ('Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.', [tyovoima, vuorovastaava]),
+            ('Kasaus ja purku', 'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima, vuorovastaava]),
+            ('Logistiikka', 'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.', [tyovoima, vuorovastaava]),
+            ('Majoitusvalvoja', 'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima, vuorovastaava]),
+            ('myynti', 'Lipunmyynti ja narikka', 'Pääsylippujen ja oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, vuorovastaava]),
+            ('info', 'Info-, ohjelma- ja yleisvänkäri', 'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, vuorovastaava]),
 
-            # (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
+            # ('Ohjelmanpitäjä', 'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
             if len(jc_data) == 3:
                 name, description, pcs = jc_data
@@ -165,30 +166,30 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Vastaava']:
+        for name in ['Vastaava']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
-        # for jc_name, qualification_name in [
-        #     (u'Järjestyksenvalvoja', u'JV-kortti'),
-        #     (u'Logistiikka', u'Henkilöauton ajokortti (B)'),
-        # ]:
-        #     jc = JobCategory.objects.get(event=self.event, name=jc_name)
-        #     qual = Qualification.objects.get(name=qualification_name)
+        for jc_name, qualification_name in [
+            ('Järjestyksenvalvoja', 'JV-kortti'),
+            ('Logistiikka', 'Henkilöauton ajokortti (B)'),
+        ]:
+            jc = JobCategory.objects.get(event=self.event, name=jc_name)
+            qual = Qualification.objects.get(name=qualification_name)
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'vastaava',
+            slug='vastaava',
             defaults=dict(
-                title=u'Vastaavien ilmoittautumislomake',
+                title='Vastaavien ilmoittautumislomake',
                 signup_form_class_path='events.aicon2016.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.aicon2016.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2015, 10, 27, 12, 0, 0, tzinfo=self.tz),
@@ -222,17 +223,17 @@ class Setup(object):
             reference_number_template="2016{:05d}",
             contact_email='Aicon-lipunmyynti <liput@aicon.fi>',
             plain_contact_email='liput@aicon.fi',
-            ticket_free_text=u"Tämä on sähköinen lippusi Aicon-tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
-                u"lipunvaihtopisteessä.\n\n"
-                u"Tervetuloa Aiconin!",
-            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Aicon-tapahtumaan!</h2>"
-                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                u"<p>Lue lisää tapahtumasta <a href='http://2016.aicon.fi'>Aicon-tapahtuman kotisivuilta</a>.</p>"
-                u"<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
-                u"toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>liput@aicon.fi</em>"
+            ticket_free_text="Tämä on sähköinen lippusi Aicon-tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
+                "lipunvaihtopisteessä.\n\n"
+                "Tervetuloa Aiconin!",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Aicon-tapahtumaan!</h2>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://2016.aicon.fi'>Aicon-tapahtuman kotisivuilta</a>.</p>"
+                "<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
+                "toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>liput@aicon.fi</em>"
         )
 
         if self.test:
@@ -262,8 +263,8 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name=u'Aicon-pääsylippu',
-                description=u'Viikonloppulippu Aicon-tapahtumaan. Voimassa koko viikonlopun ajan la klo 12 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                name='Aicon-pääsylippu',
+                description='Viikonloppulippu Aicon-tapahtumaan. Voimassa koko viikonlopun ajan la klo 12 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
                 limit_groups=[
                     limit_group('Pääsyliput', 400),
                 ],
@@ -294,7 +295,7 @@ class Setup(object):
         domain = EmailAliasDomain.objects.get(domain_name='aicon.fi')
 
         for type_code, type_metavar in [
-            ('events.aicon2016.email_aliases:requested_alias', u'aicon11tehtävä'),
+            ('events.aicon2016.email_aliases:requested_alias', 'aicon11tehtävä'),
         ]:
             alias_type, created = EmailAliasType.objects.get_or_create(
                 domain=domain,
