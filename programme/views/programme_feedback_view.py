@@ -23,7 +23,7 @@ def programme_feedback_view(request, event, programme_id):
 
     if not programme.is_open_for_feedback:
         messages.error(request, _('This programme is not currently accepting feedback.'))
-        return redirect('programme_timetable_view', event.slug)
+        return redirect('core_event_view', event.slug)
 
     form = initialize_form(ProgrammeFeedbackForm, request)
 
@@ -36,7 +36,7 @@ def programme_feedback_view(request, event, programme_id):
             feedback.save()
 
             messages.success(request, _('Thank you for your feedback.'))
-            return redirect('programme_timetable_view', event.slug)
+            return redirect('core_event_view', event.slug)
         else:
             messages.error(request, _('Please check the form.'))
 
