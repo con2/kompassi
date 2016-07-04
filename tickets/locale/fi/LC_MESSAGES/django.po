@@ -45,3 +45,7 @@ msgstr "Sukunimi"
 msgid "Type"
 msgstr "Tyyppi"
 
+#: models.py
+msgid "phone number"
+msgstr "puhelinnumero"
+

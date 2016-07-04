@@ -1061,7 +1061,15 @@ class AccommodationInformation(models.Model, CsvExportMixin):
     # allow blank because these are pre-created
     first_name = models.CharField(max_length=100, blank=True, default='', verbose_name="Etunimi")
     last_name = models.CharField(max_length=100, blank=True, default='', verbose_name="Sukunimi")
-    phone_number = models.CharField(max_length=30,blank=True, default='', verbose_name="Puhelinnumero")
+
+    phone_number = models.CharField(
+        max_length=30,
+        blank=True,
+        default='',
+        validators=[phone_number_validator],
+        verbose_name="Puhelinnumero"
+    )
+
     email = models.EmailField(blank=True, default='', verbose_name='Sähköpostiosoite')
 
     @classmethod

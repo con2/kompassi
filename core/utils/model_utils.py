@@ -111,8 +111,6 @@ def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_
     """
     exc = _('Invalid phone number.')
 
-    print value
-
     try:
         phone_number = phonenumbers.parse(value, region)
     except phonenumbers.NumberParseException as e:

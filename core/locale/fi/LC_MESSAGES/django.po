@@ -70,6 +70,10 @@ msgstr "Annan luvan henkilötietojeni käyttöön rekisteriselosteen mukaisesti.
 msgid "If you go by a nick name or handle that you want printed in your badge and programme details, enter it here."
 msgstr "Vakiintunut lempinimi tai Internet-nick."
 
+#: utils/model_utils.py
+msgid "Invalid phone number."
+msgstr "Puhelinnumero ei kelpaa."
+
 #: forms.py
 msgid "Invalid user name"
 msgstr "Käyttäjänimi ei kelpaa"
