@@ -3,6 +3,8 @@
 import logging
 from datetime import date, datetime
 
+import phonenumbers
+
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -35,6 +37,23 @@ def birth_date_validator(value):
         value.strftime("%Y-%m-%d")
     except ValueError:
         raise ValidationError(exc)
+
+
+def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION):
+    """
+    Validate the phone number using Google's phonenumbers library.
+    """
+    exc = _('Invalid phone number.')
+
+    print value
+
+    try:
+        phone_number = phonenumbers.parse(value, region)
+    except phonenumbers.NumberParseException as e:
+        raise ValidationError(exc)
+    else:
+        if not phonenumbers.is_valid_number(phone_number):
+            raise ValidationError(exc)
 
 
 class Person(models.Model):
@@ -79,6 +98,7 @@ class Person(models.Model):
     phone = models.CharField(
         blank=True,
         max_length=PHONE_NUMBER_LENGTH,
+        validators=[phone_number_validator],
         verbose_name=u'Puhelinnumero',
         help_text=u'Puhelinnumeroasi käytetään tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan.',
     )
@@ -236,6 +256,32 @@ class Person(models.Model):
     @property
     def is_email_verified(self):
         return self.email_verified_at is not None
+
+    def get_normalized_phone_number(
+        self,
+        region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION,
+        format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
+    ):
+        """
+        Returns the phone number of this Person in a normalized format. If the phone number is invalid,
+        this is logged, and the invalid phone number is returned as-is.
+        """
+
+        if not self.phone:
+            return u''
+
+        phone_number_format = getattr(phonenumbers.PhoneNumberFormat, format, format)
+
+        try:
+            phone_number = phonenumbers.parse(self.phone, region)
+            return phonenumbers.format_number(phone_number, phone_number_format)
+        except phonenumbers.NumberParseException:
+            logger.exception('Person %s has invalid phone number: %s', self, self.phone)
+            return self.phone
+
+    @property
+    def normalized_phone_number(self):
+        return self.get_normalized_phone_number()
 
     @property
     def desuprofile_connection(self):

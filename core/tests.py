@@ -13,6 +13,23 @@ from dateutil.tz import tzlocal
 from .utils import check_password_strength, full_hours_between, slugify, format_interval
 
 
+class PersonTestCase(TestCase):
+    def test_normalized_phone_number(self):
+        from core.models import Person
+
+        p = Person(phone='0505551234')
+        self.assertEqual(
+            p.normalized_phone_number,
+            '+358 50 5551234'
+        )
+
+        p = Person(phone='ööää')
+        self.assertEqual(
+            p.normalized_phone_number,
+            'ööää'
+        )
+
+
 class UtilsTestCase(TestCase):
     def test_check_password_strength(self):
         check_password_strength('pieniISO6',

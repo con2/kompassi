@@ -292,6 +292,14 @@ AUTHENTICATION_BACKENDS = (
 KOMPASSI_PASSWORD_MIN_LENGTH = 8
 KOMPASSI_PASSWORD_MIN_CLASSES = 3
 
+# Default region for parsing phone numbers
+# Passed as the second argument to python-phonenumbers' .parse
+KOMPASSI_PHONENUMBERS_DEFAULT_REGION = 'FI'
+
+# Default format for normalizing phone numbers
+# getattr'd from phonenumbers.PhoneNumberFormat with itself as default
+KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT = 'INTERNATIONAL'
+
 # Don't actually send email
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 DEFAULT_FROM_EMAIL = 'suunnistajat@kompassi.eu'
