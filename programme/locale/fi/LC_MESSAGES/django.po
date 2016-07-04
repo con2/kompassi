@@ -42,6 +42,14 @@ msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko
 msgid "Audio playback"
 msgstr "Äänen toistaminen"
 
+#: admin.py
+msgid "Author"
+msgstr "Kirjoittaja"
+
+#: admin.py
+msgid "By clearing this tick box you can hide an abusive comment from the site."
+msgstr "Poistamalla valinnan tästä voit piilottaa pahantahtoisen kommentin sivustolta."
+
 #: templates/programme_admin_detail_views/change_host_role_modals.jade templates/programme_admin_detail_views/change_invitation_role_modals.jade templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Cancel"
 msgstr "Peruuta"
@@ -94,6 +102,10 @@ msgstr "Kuvaus"
 msgid "Discard changes and return to the list"
 msgstr "Hylkää muutokset ja palaa"
 
+#: templates/programme_feedback_view.jade
+msgid "Discard feedback and return to schedule"
+msgstr "Hylkää muutokset ja palaa ohjelmakarttaan"
+
 #: models/programme.py
 msgid "Do you have tech requirements that are not covered by the previous questions?"
 msgstr "Onko ohjelmallasi tekniikkatarpeita joita edeltävät kysymykset eivät kata?"
@@ -126,6 +138,10 @@ msgstr "Tapahtuma"
 msgid "Extra invites"
 msgstr "Lisäkutsut"
 
+#: admin.py
+msgid "Feedback"
+msgstr "Palaute"
+
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "First name"
 msgstr "Etunimi"
@@ -138,9 +154,30 @@ msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 msgid "Frozen"
 msgstr "Lukittu"
 
+#: templates/programme_info_fragment.jade
+msgid "Give feedback"
+msgstr "Anna palautetta"
+
+#: templates/programme_feedback_view.jade
+msgid "Give feedback about a programme"
+msgstr "Anna palautetta ohjelmanumerosta"
+
+#: models/programme_feedback.py
+msgid "Give feedback anonymously"
+msgstr "Anna palaute anonyymisti"
+
+#: templates/programme_feedback_view.jade
+#, python-format
+msgid "Give feedback: %(programme_title)s"
+msgstr "Anna palautetta: %(programme_title)s"
+
 #: templates/programme_admin_publish_view.jade
 msgid "Here you can set a time for the programme schedule to be automatically published. You can also publish or un-publish the schedule right away."
 msgstr "Tässä voit asettaa ajan, jona ohjelmakartta julkaistaan automaattisesti. Voit myös julkaista ohjelmakartan tai palauttaa sen ei-julkaistuksi välittömästi."
+
+#: admin.py
+msgid "Hide selected feedback"
+msgstr "Piilota valitut palautteet"
 
 #: templates/programme_admin_detail_views/needs_tab.jade views/programme_admin_detail_view.py
 msgid "Host needs"
@@ -173,6 +210,10 @@ msgstr "Kiellän ohjelmani videoinnin kokonaan"
 #: models/programme.py
 msgid "I'm not sure whether my programme contains copyright-encumbered content or not"
 msgstr "En ole varma, sisältääkö ohjelmani tekijänoikeudella suojattua sisältöä"
+
+#: models/programme_feedback.py
+msgid "IP address"
+msgstr "IP-osoite"
 
 #: models/programme.py
 msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
@@ -257,6 +298,10 @@ msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
 #: models/programme.py
 msgid "Microphones"
 msgstr "Mikrofonit"
+
+#: admin.py
+msgid "Moderation"
+msgstr "Moderointi"
 
 #: models/programme.py
 msgid "More than five – Please elaborate on your needs in the \"Other tech requirements\" field."
@@ -350,7 +395,7 @@ msgstr "Ohjelman valokuvaus"
 msgid "Please bear in mind that only programmes that are in the \"Published\" state are shown in the schedule."
 msgstr "Muistathan, että ohjelmakartassa näytetään vain ohjelmanumerot jotka ovat Julkaistu-tilassa."
 
-#: views/admin_views.py views/programme_accept_invitation_view.py views/programme_admin_detail_view.py
+#: views/admin_views.py views/programme_accept_invitation_view.py views/programme_admin_detail_view.py views/programme_feedback_view.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
@@ -446,6 +491,10 @@ msgstr "Poista ohjelmanjärjestäjä"
 msgid "Requested time slot"
 msgstr "Aikatoiveet"
 
+#: admin.py
+msgid "Restore selected feedback"
+msgstr "Palauta valitut palautteet näkyviin"
+
 #: templates/programme_admin_invitations_view.jade
 msgid "Revoke all open invitations"
 msgstr "Peru kaikki avoimet kutsut"
@@ -502,6 +551,10 @@ msgstr "Alkamisaika"
 msgid "State"
 msgstr "Tila"
 
+#: templates/programme_feedback_view.jade
+msgid "Submit feedback"
+msgstr "Lähetä palaute"
+
 #: templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_profile_detail_view.jade
 msgid "Surname"
 msgstr "Sukunimi"
@@ -517,6 +570,14 @@ msgstr "Teksti"
 #: views/programme_accept_invitation_view.py
 msgid "Thank you for accepting the invitation. You can change the information later from your profile."
 msgstr "Kiitos kutsun hyväksymisestä. Voit muuttaa tietoja myöhemmin profiilisi kautta."
+
+#: views/programme_feedback_view.py
+msgid "Thank you for your feedback."
+msgstr "Kiitos palautteesasi!"
+
+#: models/programme_feedback.py
+msgid "The IP address is only visible in the admin interface"
+msgstr "IP-osoite näkyy vain hallintakäyttöliittymässä."
 
 #: views/programme_admin_detail_view.py
 msgid "The changes were saved."
@@ -624,6 +685,10 @@ msgstr "Ohjelmavastaava on lukinnut tämän ohjelmanumeron."
 msgid "This programme has been rejected by the programme manager."
 msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
 
+#: views/programme_feedback_view.py
+msgid "This programme is not currently accepting feedback."
+msgstr "Tähän ohjelmanumeroon ei tällä hetkellä oteta vastaan palautetta."
+
 #: models/freeform_organizer.py
 msgid "This text will be shown as-is in the schedule"
 msgstr "Tämä teksti näytetään ohjelmakartassa sellaisenaan."
@@ -635,6 +700,10 @@ msgstr "Otsikko"
 #: templates/programme_admin_publish_view.jade
 msgid "Un-publish now"
 msgstr "Palauta ei-julkaistuksi"
+
+#: models/programme_feedback.py
+msgid "Unless you choose to give feedback anonymously, your name and e-mail address will be shared with the programme host and programme manager. Please note that even if you choose to leave feedback anonymously, abusive feedback can be traced back to you by the administrator of the system."
+msgstr "Ellet päätä jättää palautettasi anonyymisti, nimesi ja sähköpostiosoitteesi näytetään ohjelmanjärjestäjälle ja ohjelmavastaaville. Huomaathan, että mikäli palautteesi on asiaton, järjestelmän ylläpitäjä pystyy yhdistämään sen sinuun vaikka antaisit sen anonyymisti."
 
 #: templates/programme_accept_invitation_view.jade
 msgid "Update profile..."
@@ -651,6 +720,10 @@ msgstr "Videon toistaminen"
 #: templates/programme_profile_box.jade
 msgid "View programme details"
 msgstr "Tarkastele ohjelmanumeron tietoja"
+
+#: admin.py
+msgid "Visible"
+msgstr "Näkyvissä"
 
 #: models/programme.py
 msgid "What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance."
@@ -696,6 +769,10 @@ msgstr "Olet peruuttanut tämän ohjelmanumeron."
 msgid "You have not organized any programme in events that use this site."
 msgstr "Et ole järjestänyt ohjelmaa tapahtumissa, jotka käyttävät tätä sivustoa."
 
+#: templates/programme_feedback_view.jade
+msgid "Your feedback will be shared with the programme host and the programme managers."
+msgstr "Palautteesi toimitetaan ohjelmanjärjestäjälle sekä tapahtuman ohjelmavastaaville."
+
 #: models/category.py
 msgid "categories"
 msgstr "ohjelmaluokat"
@@ -704,9 +781,13 @@ msgstr "ohjelmaluokat"
 msgid "category"
 msgstr "ohjelmaluokka"
 
-#: models/schedule.py
+#: models/programme_feedback.py models/schedule.py
 msgid "event"
 msgstr "tapahtuma"
+
+#: models/programme_feedback.py
+msgid "feedback"
+msgstr "palaute"
 
 #: models/freeform_organizer.py proxies/freeform_organizer/admin.py
 msgid "freeform organizer"
@@ -724,9 +805,13 @@ msgstr "kutsu"
 msgid "invitations"
 msgstr "kutsut"
 
-#: models/programme.py
+#: models/programme.py models/programme_feedback.py
 msgid "programme"
 msgstr "Ohjelmanumero"
+
+#: models/programme_feedback.py
+msgid "programme feedback"
+msgstr "ohjelmapalaute"
 
 #: models/programme.py
 msgid "programmes"
@@ -768,6 +853,7 @@ msgstr "tägi"
 msgid "tags"
 msgstr "tägit"
 
-#~ msgid "This programme has been published. You can no longer edit it yourself. If you need edits to be made, please contact the programme manager."
-#~ msgstr "Ohjelmanumero on julkaistu, joten et voi enää muokata sitä itse. Jos tarvitset ohjelmanumeron tietoihin muutoksia, ole hyvä ja ota yhteyttä ohjelmavastaavaan."
+#: models/programme_feedback.py
+msgid "visible"
+msgstr "näkyvissä"
 

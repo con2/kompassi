@@ -14,6 +14,7 @@ from .views import (
     programme_admin_special_view,
     programme_admin_timetable_view,
     programme_admin_view,
+    programme_feedback_view,
     programme_internal_adobe_taggedtext_view,
     programme_internal_timetable_view,
     programme_json_view,
@@ -34,19 +35,21 @@ urlpatterns = [
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/?$',
         programme_timetable_view,
+        dict(show_programme_actions=True),
         name='programme_timetable_view'
     ),
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/special/?$',
         programme_special_view,
+        dict(show_programme_actions=True),
         name='programme_special_view'
     ),
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/publish/?$',
-        programme_admin_publish_view,
-        name='programme_admin_publish_view'
+        RedirectView.as_view(url='/events/%(event_slug)s/programme/admin/publish/', permanent=False),
+        name='programme_admin_old_publish_view_redirect'
     ),
 
     url(
@@ -76,6 +79,12 @@ urlpatterns = [
     ),
 
     url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/feedback/?$',
+        programme_feedback_view,
+        name='programme_feedback_view'
+    ),
+
+    url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme\.taggedtext$',
         programme_internal_adobe_taggedtext_view,
         name='programme_internal_adobe_taggedtext_view'
@@ -94,13 +103,11 @@ urlpatterns = [
         name='programme_moe_view'
     ),
 
-
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/invitation/(?P<code>[a-f0-9]+)/?$',
         programme_accept_invitation_view,
         name='programme_accept_invitation_view'
     ),
-
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/?$',
@@ -150,6 +157,11 @@ urlpatterns = [
         name='programme_admin_special_view'
     ),
 
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/publish/?$',
+        programme_admin_publish_view,
+        name='programme_admin_publish_view'
+    ),
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/programme\.(?P<format>xlsx|csv|tsv|html)$',

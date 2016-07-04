@@ -6,10 +6,10 @@ import logging
 import datetime
 from datetime import timedelta
 
-from django.db import models
-from django.db.models.signals import pre_save
 from django.conf import settings
 from django.contrib import messages
+from django.db import models
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -285,6 +285,10 @@ class Programme(models.Model, CsvExportMixin):
     def is_published(self):
         return self.state == 'published'
 
+    @property
+    def is_open_for_feedback(self):
+        return now() >= self.end_time
+
     @classmethod
     def get_or_create_dummy(cls, title=u'Dummy program', state='published'):
         from .category import Category
@@ -482,6 +486,14 @@ class Programme(models.Model, CsvExportMixin):
             return _('This programme has been frozen by the programme manager.')
         else:
             raise NotImplementedError(self.state)
+
+    def get_feedback_url(self, request=None):
+        path = url('programme_feedback_view', self.event.slug, self.pk)
+
+        if request:
+            return request.build_absolute_uri(path)
+        else:
+            return path
 
     class Meta:
         verbose_name = _('programme')

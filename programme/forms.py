@@ -25,6 +25,7 @@ from .models import (
     Invitation,
     Programme,
     ProgrammeEventMeta,
+    ProgrammeFeedback,
     ProgrammeRole,
     Role,
     Room,
@@ -312,4 +313,19 @@ class PublishForm(forms.ModelForm):
         model = ProgrammeEventMeta
         fields = (
             'public_from',
+        )
+
+
+class ProgrammeFeedbackForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ProgrammeFeedbackForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = ProgrammeFeedback
+        fields = (
+            'feedback',
+            'is_anonymous',
         )

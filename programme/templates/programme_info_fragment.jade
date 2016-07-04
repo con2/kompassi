@@ -1,3 +1,4 @@
+- load trans from i18n
 .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')
   h4
     span.title.kompassi-space-after {{ programme.title }}
@@ -13,3 +14,7 @@
         if programme.organizers.exists
           li.host {{ programme.formatted_hosts }}
     .description {{ programme.description|safe|linebreaks }}
+    if show_programme_actions
+      .btn-group.actions
+        if programme.is_open_for_feedback
+          a.btn.btn-success.btn-xs(href='{{ programme.get_feedback_url }}') {% trans "Give feedback" %}

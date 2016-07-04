@@ -55,6 +55,7 @@ def programme_timetable_view(
     event,
     internal_programmes=False,
     template='programme_timetable_view.jade',
+    show_programme_actions=False,
 ):
     vars = dict(
         # hide the user menu to prevent it getting cached
@@ -62,7 +63,12 @@ def programme_timetable_view(
         tabs=get_timetable_tabs(request, event),
     )
 
-    return actual_timetable_view(request, event, internal_programmes, template, vars)
+    return actual_timetable_view(request, event,
+        internal_programmes=internal_programmes,
+        template=template,
+        vars=vars,
+        show_programme_actions=show_programme_actions,
+    )
 
 # look, no cache
 @programme_event_required
@@ -77,7 +83,12 @@ def programme_internal_timetable_view(
         tabs=get_timetable_tabs(request, event),
     )
 
-    return actual_timetable_view(request, event, internal_programmes, template, vars)
+    return actual_timetable_view(request, event,
+        internal_programmes=internal_programmes,
+        template=template,
+        vars=vars,
+        show_programme_actions=True,
+    )
 
 
 def actual_timetable_view(
@@ -85,7 +96,8 @@ def actual_timetable_view(
     event,
     internal_programmes=False,
     template='programme_timetable_view.jade',
-    vars=None
+    vars=None,
+    show_programme_actions=False,
 ):
     if not vars:
         vars = dict()
@@ -103,6 +115,7 @@ def actual_timetable_view(
         categories=Category.objects.filter(**category_query),
         internal_programmes=internal_programmes,
         programmes_by_start_time=all_rooms.get_programmes_by_start_time(request=request),
+        show_programme_actions=show_programme_actions,
     )
 
     return render(request, template, vars)
@@ -110,8 +123,16 @@ def actual_timetable_view(
 
 @public_programme_required
 @require_safe
-def programme_special_view(request, event, template='programme_list.jade'):
-    return actual_special_view(request, event, template=template)
+def programme_special_view(
+    request,
+    event,
+    template='programme_list.jade',
+    show_programme_actions=False,
+):
+    return actual_special_view(request, event,
+        template=template,
+        show_programme_actions=show_programme_actions,
+    )
 
 
 def actual_special_view(
@@ -119,7 +140,8 @@ def actual_special_view(
     event,
     include_unpublished=False,
     template='programme_special_view.jade',
-    vars=None
+    vars=None,
+    show_programme_actions=False,
 ):
     criteria = dict(include_unpublished=include_unpublished)
 
@@ -138,6 +160,7 @@ def actual_special_view(
         tabs=get_timetable_tabs(request, event),
         event=event,
         programmes_by_start_time=programmes_by_start_time,
+        show_programme_actions=show_programme_actions,
     )
 
     return render(request, template, vars)

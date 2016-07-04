@@ -1,0 +1,62 @@
+# encoding: utf-8
+
+from __future__ import unicode_literals
+
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import truncatewords
+
+class ProgrammeFeedback(models.Model):
+    programme = models.ForeignKey('programme.Programme')
+    author = models.ForeignKey('core.Person')
+    author_ip_address = models.CharField(
+        max_length=48,
+        blank=True,
+        default='',
+        verbose_name=_('IP address'),
+        help_text=_('The IP address is only visible in the admin interface'),
+    )
+
+    is_anonymous = models.BooleanField(
+        default=False,
+        verbose_name=_('Give feedback anonymously'),
+        help_text=_(
+            'Unless you choose to give feedback anonymously, your name and e-mail address '
+            'will be shared with the programme host and programme manager. Please note that even '
+            'if you choose to leave feedback anonymously, abusive feedback can be traced back to '
+            'you by the administrator of the system.'
+        ),
+    )
+    feedback = models.TextField(verbose_name=_('feedback'))
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    hidden_at = models.DateTimeField(null=True)
+    hidden_by = models.ForeignKey('auth.User', null=True, blank=True)
+
+    @property
+    def is_visible(self):
+        return self.hidden_at is None
+
+    def admin_is_visible(self):
+        return self.is_visible
+    admin_is_visible.short_description = _('visible')
+    admin_is_visible.admin_order_field = 'hidden_at'
+    admin_is_visible.boolean = True
+
+    def admin_get_event(self):
+        return self.programme.event if self.programme else None
+    admin_get_event.short_description = _('event')
+    admin_get_event.admin_order_field = 'programme__category__event'
+
+    def admin_get_programme_title(self):
+        return self.programme.title if self.programme else None
+    admin_get_programme_title.short_description = _('programme')
+    admin_get_programme_title.admin_order_field = 'programme__title'
+
+    def admin_get_abridged_feedback(self, num_words=20):
+        return truncatewords(self.feedback, num_words)
+    admin_get_abridged_feedback.short_description = _('feedback')
+
+    class Meta:
+        verbose_name = _('programme feedback')
+        verbose_name_plural = _('programme feedback')

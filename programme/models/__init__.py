@@ -9,6 +9,7 @@ from .freeform_organizer import FreeformOrganizer
 from .invitation import Invitation
 from .tag import Tag
 from .programme import Programme, STATE_CHOICES, START_TIME_LABEL
+from .programme_feedback import ProgrammeFeedback
 from .schedule import (
     AllRoomsPseudoView,
     SpecialStartTime,
