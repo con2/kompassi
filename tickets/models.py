@@ -12,12 +12,13 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext_lazy as _
 
 from dateutil.tz import tzlocal
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
-from core.utils import url, code_property, slugify, NONUNIQUE_SLUG_FIELD_PARAMS
+from core.utils import url, code_property, slugify, NONUNIQUE_SLUG_FIELD_PARAMS, phone_number_validator
 from payments.utils import compute_payment_request_mac
 
 from .utils import format_date, format_price
@@ -495,7 +496,13 @@ class Customer(models.Model):
         verbose_name=u"Minulle saa lähettää tapahtumaan liittyviä tiedotteita sähköpostitse",
     )
 
-    phone_number = models.CharField(max_length=30, null=True, blank=True, verbose_name="Puhelinnumero")
+    phone_number = models.CharField(
+        max_length=30,
+        null=True,
+        blank=True,
+        validators=[phone_number_validator],
+        verbose_name=_('phone number')
+    )
 
     def __str__(self):
         return self.name

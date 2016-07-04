@@ -10,6 +10,8 @@ import json
 import sys
 import re
 
+import phonenumbers
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import Group, User
@@ -21,6 +23,7 @@ from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 
 from dateutil.tz import tzlocal
@@ -100,3 +103,34 @@ def get_previous_and_next(queryset, current):
           candidate = next_item
 
       return None, None
+
+
+def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION):
+    """
+    Validate the phone number using Google's phonenumbers library.
+    """
+    exc = _('Invalid phone number.')
+
+    print value
+
+    try:
+        phone_number = phonenumbers.parse(value, region)
+    except phonenumbers.NumberParseException as e:
+        raise ValidationError(exc)
+    else:
+        if not phonenumbers.is_valid_number(phone_number):
+            raise ValidationError(exc)
+
+
+def format_phone_number(
+    value,
+    region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION,
+    format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
+):
+    """
+    Formats a phone number or throws phonenumbers.NumberParseException.
+    """
+
+    phone_number_format = getattr(phonenumbers.PhoneNumberFormat, format, format)
+    phone_number = phonenumbers.parse(value, region)
+    return phonenumbers.format_number(phone_number, phone_number_format)

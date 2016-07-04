@@ -15,7 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.utils import timezone
 
-from ..utils import pick_attrs, calculate_age
+from ..utils import pick_attrs, calculate_age, format_phone_number, phone_number_validator
 from .constants import (
     EMAIL_LENGTH,
     PHONE_NUMBER_LENGTH,
@@ -37,23 +37,6 @@ def birth_date_validator(value):
         value.strftime("%Y-%m-%d")
     except ValueError:
         raise ValidationError(exc)
-
-
-def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION):
-    """
-    Validate the phone number using Google's phonenumbers library.
-    """
-    exc = _('Invalid phone number.')
-
-    print value
-
-    try:
-        phone_number = phonenumbers.parse(value, region)
-    except phonenumbers.NumberParseException as e:
-        raise ValidationError(exc)
-    else:
-        if not phonenumbers.is_valid_number(phone_number):
-            raise ValidationError(exc)
 
 
 class Person(models.Model):
@@ -267,14 +250,8 @@ class Person(models.Model):
         this is logged, and the invalid phone number is returned as-is.
         """
 
-        if not self.phone:
-            return u''
-
-        phone_number_format = getattr(phonenumbers.PhoneNumberFormat, format, format)
-
         try:
-            phone_number = phonenumbers.parse(self.phone, region)
-            return phonenumbers.format_number(phone_number, phone_number_format)
+            return format_phone_number(self.phone, region=region, format=format)
         except phonenumbers.NumberParseException:
             logger.exception('Person %s has invalid phone number: %s', self, self.phone)
             return self.phone
