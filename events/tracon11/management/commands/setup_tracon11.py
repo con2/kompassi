@@ -509,7 +509,7 @@ class Setup(object):
             'Riffi',
             'Maestro',
         ]:
-            order = self.get_ordering_number() + 70000 # XXX
+            order = self.get_ordering_number() + 90000 # XXX
 
             room, created = Room.objects.get_or_create(
                 venue=self.venue,
