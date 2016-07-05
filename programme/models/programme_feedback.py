@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import truncatewords
 
 class ProgrammeFeedback(models.Model):
-    programme = models.ForeignKey('programme.Programme')
+    programme = models.ForeignKey('programme.Programme', related_name='feedback')
     author = models.ForeignKey('core.Person')
     author_ip_address = models.CharField(
         max_length=48,
@@ -36,6 +36,10 @@ class ProgrammeFeedback(models.Model):
     @property
     def is_visible(self):
         return self.hidden_at is None
+
+    @property
+    def author_email(self):
+        return self.author.email if self.author else None
 
     def admin_is_visible(self):
         return self.is_visible

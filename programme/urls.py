@@ -20,6 +20,7 @@ from .views import (
     programme_json_view,
     programme_mobile_timetable_view,
     programme_profile_detail_view,
+    programme_profile_feedback_view,
     programme_profile_view,
     programme_special_view,
     programme_timetable_view,
@@ -185,5 +186,11 @@ urlpatterns = [
         r'^profile/programmes/(?P<programme_id>\d+)/?$',
         programme_profile_detail_view,
         name='programme_profile_detail_view',
+    ),
+
+    url(
+        r'^profile/programmes/(?P<programme_id>\d+)/feedback/?$',
+        programme_profile_feedback_view,
+        name='programme_profile_feedback_view',
     ),
 ]

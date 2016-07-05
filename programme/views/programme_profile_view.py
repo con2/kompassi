@@ -11,20 +11,20 @@ from ..models import Programme
 def programme_profile_view(request):
     person = request.user.person
 
-    editable_programmes = Programme.get_editable_programmes(person)
-    published_programmes = Programme.get_published_programmes(person)
+    future_programmes = Programme.get_future_programmes(person)
+    past_programmes = Programme.get_past_programmes(person)
     rejected_programmes = Programme.get_rejected_programmes(person)
 
     no_programmes = not any(i.exists() for i in (
-        editable_programmes,
-        published_programmes,
+        future_programmes,
+        past_programmes,
         rejected_programmes,
     ))
 
     vars = dict(
-        editable_programmes=editable_programmes,
+        future_programmes=future_programmes,
         no_programmes=no_programmes,
-        published_programmes=published_programmes,
+        past_programmes=past_programmes,
         rejected_programmes=rejected_programmes,
     )
 

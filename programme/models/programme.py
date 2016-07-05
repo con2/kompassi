@@ -459,16 +459,22 @@ class Programme(models.Model, CsvExportMixin):
         )
 
     @classmethod
-    def get_editable_programmes(cls, person):
-        return cls._get_in_states(person, PROGRAMME_STATES_HOST_CAN_EDIT, frozen=False)
+    def get_future_programmes(cls, person, t=None):
+        if t is None:
+            t = now()
+
+        return cls._get_in_states(person, PROGRAMME_STATES_ACTIVE, end_time__gt=t)
+
+    @classmethod
+    def get_past_programmes(cls, person, t=None):
+        if t is None:
+            t = now()
+
+        return cls._get_in_states(person, PROGRAMME_STATES_ACTIVE, end_time__lte=t)
 
     @classmethod
     def get_rejected_programmes(cls, person):
         return cls._get_in_states(person, PROGRAMME_STATES_INACTIVE)
-
-    @classmethod
-    def get_published_programmes(cls, person):
-        return cls._get_in_states(person, ['published'])
 
     @property
     def host_can_edit(self):

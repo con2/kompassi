@@ -166,24 +166,29 @@ def programme_admin_detail_view(request, vars, event, programme_id):
         else:
             messages.error(request, _('Invalid action.'))
 
+    invitations = programme.invitation_set.filter(state='valid')
+    feedback = programme.feedback.filter(hidden_at__isnull=True).order_by('created_at')
+
     tabs = [
         Tab('programme-admin-programme-public-tab', _('Public information'), active=True),
         Tab('programme-admin-programme-schedule-tab', _('Schedule information')),
         Tab('programme-admin-programme-needs-tab', _('Host needs')),
         Tab('programme-admin-programme-internal-tab', _('Internal information')),
-        Tab('programme-admin-programme-hosts-tab', _('Programme hosts')),
+        Tab('programme-admin-programme-hosts-tab', _('Programme hosts'), notifications=invitations.count()),
+        Tab('programme-admin-programme-feedback-tab', _('Feedback'), notifications=feedback.count()),
     ]
 
     previous_programme, next_programme = programme.get_previous_and_next_programme()
 
     vars.update(
+        feedback=feedback,
         forms_per_host=forms_per_host,
         change_invitation_role_forms=change_invitation_role_forms,
         freeform_organizer_form=freeform_organizer_form,
         freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
         internal_form=internal_form,
         invitation_form=invitation_form,
-        invitations=programme.invitation_set.filter(state='valid'),
+        invitations=invitations,
         needs_form=needs_form,
         next_programme=next_programme,
         overlapping_programmes=programme.get_overlapping_programmes(),

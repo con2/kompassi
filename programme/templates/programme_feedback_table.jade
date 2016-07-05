@@ -1,0 +1,17 @@
+- load trans from i18n
+table.table.table-striped
+  thead
+    tr
+      th {% trans "Author" %}
+      th {% trans "Timestamp" %}
+      th {% trans "Feedback" %}
+  tbody
+    for feedback_message in feedback
+      tr
+        td
+          if feedback_message.is_anonymous
+            em.text-muted {% trans "Anonymous" %}
+          else
+            a(href='mailto:{{ feedback_message.author_email }}')= feedback_message.author
+        td {{ feedback_message.created_at|date:"SHORT_DATETIME_FORMAT" }}
+        td {{ feedback_message.feedback|linebreaks }}

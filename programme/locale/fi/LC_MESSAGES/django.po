@@ -26,6 +26,10 @@ msgstr "Kaikki avoimet kutsut on peruutettu."
 msgid "All rooms"
 msgstr "Kaikki tilat"
 
+#: templates/programme_feedback_table.jade
+msgid "Anonymous"
+msgstr "Anonyymi"
+
 #: models/programme.py
 msgid "Anything else?"
 msgstr "Vapaamuotoiset terveiset"
@@ -42,7 +46,7 @@ msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko
 msgid "Audio playback"
 msgstr "Äänen toistaminen"
 
-#: admin.py
+#: admin.py templates/programme_feedback_table.jade
 msgid "Author"
 msgstr "Kirjoittaja"
 
@@ -138,7 +142,7 @@ msgstr "Tapahtuma"
 msgid "Extra invites"
 msgstr "Lisäkutsut"
 
-#: admin.py
+#: admin.py templates/programme_feedback_table.jade views/programme_admin_detail_view.py
 msgid "Feedback"
 msgstr "Palaute"
 
@@ -150,11 +154,15 @@ msgstr "Etunimi"
 msgid "Free-form organizer"
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 
-#: models/programme.py
+#: models/programme.py templates/programme_state_label.jade
 msgid "Frozen"
 msgstr "Lukittu"
 
-#: templates/programme_info_fragment.jade
+#: templates/programme_profile_view.jade
+msgid "Future programmes"
+msgstr "Tulevat ohjelmanumerot"
+
+#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_info_fragment.jade
 msgid "Give feedback"
 msgstr "Anna palautetta"
 
@@ -343,6 +351,10 @@ msgstr "Ei"
 msgid "No computer required"
 msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
 
+#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_profile_feedback_view.jade
+msgid "No feedback."
+msgstr "Tämä ohjelmanumero ei ole vielä saanut palautetta."
+
 #: templates/programme_profile_view.jade
 msgid "No programmes"
 msgstr "Ei ohjelmanumeroita"
@@ -354,6 +366,17 @@ msgstr "En ole varma"
 #: models/programme.py
 msgid "Offer received"
 msgstr "Ohjelmatarjous vastaanotettu"
+
+#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_profile_feedback_view.jade
+#, python-format
+msgid "One feedback message."
+msgid_plural "%(num_feedback_messages)s feedback messages."
+msgstr[0] "Yksi palaute."
+msgstr[1] "%(num_feedback_messages)s palautetta."
+
+#: views/programme_profile_feedback_view.py
+msgid "Only an organizer of the programme may view its feedback."
+msgstr "Vain ohjelmanjärjestäjä voi nähdä ohjelmansa palautteen."
 
 #: models/role.py
 msgid "Only hosts who are assigned public roles will be shown publicly in the programme schedule."
@@ -378,6 +401,10 @@ msgstr "Oma PC-kannettava"
 #: models/programme.py
 msgid "Own laptop – Mac"
 msgstr "Oma Mac-kannettava"
+
+#: templates/programme_profile_view.jade
+msgid "Past programmes"
+msgstr "Menneet ohjelmanumerot"
 
 #: models/role.py
 msgid "Personnel class"
@@ -423,6 +450,10 @@ msgstr "Järjestys"
 msgid "Programme"
 msgstr "Ohjelma"
 
+#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_profile_feedback_view.jade
+msgid "Programme feedback"
+msgstr "Ohjelman saama palaute"
+
 #: models/programme_role.py
 msgid "Programme host"
 msgstr "Ohjelmanjärjestäjä"
@@ -438,10 +469,6 @@ msgstr "Ohjelmanumeron tiedot"
 #: templates/programme_profile_view.jade views/public_views.py
 msgid "Programmes"
 msgstr "Ohjelmanumerot"
-
-#: templates/programme_profile_view.jade
-msgid "Programmes you can edit"
-msgstr "Ohjelmanumerot, joita voit muokata"
 
 #: models/role.py
 msgid "Public"
@@ -466,10 +493,6 @@ msgstr "Ohjelmakartan julkaiseminen"
 #: models/programme.py
 msgid "Published"
 msgstr "Julkaistu"
-
-#: templates/programme_profile_view.jade
-msgid "Published programmes"
-msgstr "Julkaistut ohjelmanumerot"
 
 #: models/programme.py
 msgid "Recording permission"
@@ -693,6 +716,10 @@ msgstr "Tähän ohjelmanumeroon ei tällä hetkellä oteta vastaan palautetta."
 msgid "This text will be shown as-is in the schedule"
 msgstr "Tämä teksti näytetään ohjelmakartassa sellaisenaan."
 
+#: templates/programme_feedback_table.jade
+msgid "Timestamp"
+msgstr "Aikaleima"
+
 #: models/programme.py proxies/helpers.py
 msgid "Title"
 msgstr "Otsikko"
@@ -720,6 +747,11 @@ msgstr "Videon toistaminen"
 #: templates/programme_profile_box.jade
 msgid "View programme details"
 msgstr "Tarkastele ohjelmanumeron tietoja"
+
+#: templates/programme_profile_box.jade
+#, fuzzy
+msgid "View programme feedback"
+msgstr "ohjelmapalaute"
 
 #: admin.py
 msgid "Visible"
@@ -856,4 +888,10 @@ msgstr "tägit"
 #: models/programme_feedback.py
 msgid "visible"
 msgstr "näkyvissä"
+
+#~ msgid "Programmes you can edit"
+#~ msgstr "Ohjelmanumerot, joita voit muokata"
+
+#~ msgid "Published programmes"
+#~ msgstr "Julkaistut ohjelmanumerot"
 

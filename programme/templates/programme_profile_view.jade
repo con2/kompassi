@@ -3,13 +3,13 @@ extends core_profile_base
 block title
   | {% trans "Programmes" %}
 block profile_content
-  if editable_programmes.exists
-    h3 {% trans "Programmes you can edit" %}
-    for programme in editable_programmes
+  if future_programmes.exists
+    h3 {% trans "Future programmes" %}
+    for programme in future_programmes
       include programme_profile_box.jade
-  if published_programmes.exists
-    h3 {% trans "Published programmes" %}
-    for programme in published_programmes
+  if past_programmes.exists
+    h3 {% trans "Past programmes" %}
+    for programme in past_programmes
       include programme_profile_box.jade
   if rejected_programmes.exists
     h3 {% trans "Cancelled and rejected programmes" %}
