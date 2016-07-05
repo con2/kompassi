@@ -469,11 +469,6 @@ class Setup(object):
                         start_time=hour_start_time.replace(minute=30)
                     )
 
-            SpecialStartTime.objects.get_or_create(
-                event=self.event,
-                start_time=self.event.start_time,
-            )
-
         for view_name, room_names in [
             ('Pääohjelmatilat', [
                 'Auditorio',
