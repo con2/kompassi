@@ -126,7 +126,7 @@ def actual_timetable_view(
 def programme_special_view(
     request,
     event,
-    template='programme_list.jade',
+    template='programme_special_view.jade',
     show_programme_actions=False,
 ):
     return actual_special_view(request, event,
