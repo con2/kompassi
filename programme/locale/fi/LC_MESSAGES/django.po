@@ -1,3 +1,7 @@
+#: models/programme.py
+msgid "A link to a recording of the programme in an external video service such as YouTube"
+msgstr "Linkki videotallenteeseen ohjelmasta ulkoisessa videopalvelussa kuten YouTubessa"
+
 #: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
 msgid "Abandon changes and return"
 msgstr "Hylkää muutokset ja palaa"
@@ -741,6 +745,10 @@ msgid "Updated at"
 msgstr "Päivitysaika"
 
 #: models/programme.py
+msgid "Video link"
+msgstr "Videolinkki"
+
+#: models/programme.py
 msgid "Video playback"
 msgstr "Videon toistaminen"
 
@@ -755,6 +763,10 @@ msgstr "Tarkastele ohjelmanumeron saamaa palautetta"
 #: admin.py
 msgid "Visible"
 msgstr "Näkyvissä"
+
+#: templates/programme_info_fragment.jade
+msgid "Watch the recording"
+msgstr "Katso tallenne"
 
 #: models/programme.py
 msgid "What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance."
