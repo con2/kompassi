@@ -416,10 +416,15 @@ class Programme(models.Model, CsvExportMixin):
             signup_extra.apply_state()
 
     def apply_state_group_membership(self):
-        from .programme_role import ProgrammeRole
+        from django.contrib.auth.models import Group
         from core.utils import ensure_user_group_membership
+        from .programme_role import ProgrammeRole
 
-        group = self.event.programme_event_meta.get_group('hosts')
+        try:
+            group = self.event.programme_event_meta.get_group('hosts')
+        except Group.DoesNotExist:
+            logger.warning('Event %s missing the programme hosts group', self.event)
+            return
 
         for person in self.organizers.all():
             assert person.user
