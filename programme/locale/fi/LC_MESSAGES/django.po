@@ -749,9 +749,8 @@ msgid "View programme details"
 msgstr "Tarkastele ohjelmanumeron tietoja"
 
 #: templates/programme_profile_box.jade
-#, fuzzy
 msgid "View programme feedback"
-msgstr "ohjelmapalaute"
+msgstr "Tarkastele ohjelmanumeron saamaa palautetta"
 
 #: admin.py
 msgid "Visible"
@@ -786,9 +785,8 @@ msgid "You can edit the details of this programme until it is published in the s
 msgstr "Voit muokata tämän ohjelmanumeron tietoja kunnes se on julkaistu ohjelmakarttaan."
 
 #: views/programme_feedback_view.py
-#, fuzzy
 msgid "You cannot leave anonymous feedback about your own programme."
-msgstr "Anna palautetta ohjelmanumerosta"
+msgstr "Et voi jättää anonyymiä palautetta omasta ohjelmastasi."
 
 #: views/programme_accept_invitation_view.py
 msgid "You have already accepted this invitation. You can edit the programme below."
