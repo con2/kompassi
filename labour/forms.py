@@ -134,9 +134,9 @@ class ObsoleteEmptySignupExtraV1Form(forms.ModelForm):
         exclude = ('signup', 'is_active')
 
 
-class SignupExtraForm(forms.ModelForm):
+class EmptySignupExtraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SignupExtraForm, self).__init__(*args, **kwargs)
+        super(EmptySignupExtraForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
