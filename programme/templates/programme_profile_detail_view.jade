@@ -32,7 +32,10 @@ block profile_content
               td= programme_role.role
           for other_invitation in invitations
             tr
-              td(colspan="3"): em {% trans "Someone has been invited, but they have not yet accepted their invitation." %}
+              if other_invitation.sired_by_current_user
+                td(colspan="3"): em= other_invitation.email
+              else
+                td(colspan="3"): em {% trans "Someone else has invited someone, but they have not yet accepted their invitation." %}
               td: em= other_invitation.role
           for invite_form in sired_invitation_formset
             tr

@@ -540,8 +540,8 @@ msgid "Some events have speaker roles that convey different privileges within th
 msgstr "Jotkin tapahtumat määrittelevät useita ohjelmanjärjestäjärooleja, jotka antavat eritasoiset edut. Tätä prioriteettikenttää käytetään korkeimmat edut antavan tason valitsemiseen."
 
 #: templates/programme_accept_invitation_view.jade templates/programme_profile_detail_view.jade
-msgid "Someone has been invited, but they have not yet accepted their invitation."
-msgstr "Joku on kutsuttu, mutta hän ei ole vielä hyväksynyt kutsuaan."
+msgid "Someone else has invited someone, but they have not yet accepted their invitation."
+msgstr "Joku toinen on kutsunut jonkun, mutta tämä ei ole vielä hyväksynyt kutsuaan."
 
 #: models/programme.py
 msgid "Starting time"

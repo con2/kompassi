@@ -79,13 +79,18 @@ def programme_profile_detail_view(request, programme_id):
         else:
             messages.error(request, 'Please check the form.')
 
+    invitations = Invitation.objects.filter(programme=programme, state='valid')
+    invitations = list(invitations)
+    for invitation in invitations:
+        invitation.sired_by_current_user = invitation.sire and invitation.sire.person == request.user.person
+
     vars = dict(
         event=event,
         form=form,
         signup_extra_form=signup_extra_form,
         freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
         host_can_invite_more=programme_role.extra_invites_left > 0,
-        invitations=Invitation.objects.filter(programme=programme, state='valid'),
+        invitations=invitations,
         programme=programme,
         programme_role=programme_role,
         programme_roles=ProgrammeRole.objects.filter(programme=programme),
