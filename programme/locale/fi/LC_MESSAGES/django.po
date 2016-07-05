@@ -50,6 +50,10 @@ msgstr "Äänen toistaminen"
 msgid "Author"
 msgstr "Kirjoittaja"
 
+#: forms.py
+msgid "Because you are the host of this programme, you cannot leave your feedback anonymously."
+msgstr "Et voi antaa palautetta omasta ohjelmanumerostasi anonyymisti."
+
 #: admin.py
 msgid "By clearing this tick box you can hide an abusive comment from the site."
 msgstr "Poistamalla valinnan tästä voit piilottaa pahantahtoisen kommentin sivustolta."
@@ -708,10 +712,6 @@ msgstr "Ohjelmavastaava on lukinnut tämän ohjelmanumeron."
 msgid "This programme has been rejected by the programme manager."
 msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
 
-#: views/programme_feedback_view.py
-msgid "This programme is not currently accepting feedback."
-msgstr "Tähän ohjelmanumeroon ei tällä hetkellä oteta vastaan palautetta."
-
 #: models/freeform_organizer.py
 msgid "This text will be shown as-is in the schedule"
 msgstr "Tämä teksti näytetään ohjelmakartassa sellaisenaan."
@@ -784,6 +784,11 @@ msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
 #: templates/programme_profile_detail_view.jade
 msgid "You can edit the details of this programme until it is published in the schedule."
 msgstr "Voit muokata tämän ohjelmanumeron tietoja kunnes se on julkaistu ohjelmakarttaan."
+
+#: views/programme_feedback_view.py
+#, fuzzy
+msgid "You cannot leave anonymous feedback about your own programme."
+msgstr "Anna palautetta ohjelmanumerosta"
 
 #: views/programme_accept_invitation_view.py
 msgid "You have already accepted this invitation. You can edit the programme below."
@@ -894,4 +899,7 @@ msgstr "näkyvissä"
 
 #~ msgid "Published programmes"
 #~ msgstr "Julkaistut ohjelmanumerot"
+
+#~ msgid "This programme is not currently accepting feedback."
+#~ msgstr "Tähän ohjelmanumeroon ei tällä hetkellä oteta vastaan palautetta."
 
