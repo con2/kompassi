@@ -17,4 +17,10 @@
     if show_programme_actions
       .btn-group.actions
         if programme.is_open_for_feedback
-          a.btn.btn-success.btn-xs(href='{{ programme.get_feedback_url }}') {% trans "Give feedback" %}
+          a.btn.btn-success.btn-xs(href='{{ programme.get_feedback_url }}')
+            i.fa.fa-comment.kompassi-icon-space-right
+            {% trans "Give feedback" %}
+        if programme.video_link
+          a.btn.btn-danger.btn-xs(href='{{ programme.video_link }}', target='_blank')
+            i.fa.fa-youtube-play.kompassi-icon-space-right
+            {% trans "Watch the recording" %}

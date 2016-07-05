@@ -173,6 +173,7 @@ class ScheduleForm(forms.ModelForm):
             'room',
             'start_time',
             'length',
+            'video_link',
         )
 
 

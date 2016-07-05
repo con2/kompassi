@@ -231,6 +231,14 @@ class Programme(models.Model, CsvExportMixin):
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
     tags = models.ManyToManyField('programme.Tag', blank=True, verbose_name=_('Tags'))
 
+    video_link = models.CharField(
+        max_length=255,
+        blank=True,
+        default='',
+        verbose_name=_('Video link'),
+        help_text=_('A link to a recording of the programme in an external video service such as YouTube'),
+    )
+
     created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_('Created at'))
     updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name=_('Updated at'))
 
