@@ -116,7 +116,9 @@ class Setup(object):
             ('Conitea', 'conitea', 'labour', True),
             ('Vuorovastaava', 'vuorovastaava', 'labour', True),
             ('Työvoima', 'tyovoima', 'labour', True),
-            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme', True),
+            ('Ohjelma', 'ohjelma', 'programme', True),
+            ('Ohjelma 2. luokka', 'ohjelma-2lk', 'programme', False),
+            ('Ohjelma 3. luokka', 'ohjelma-3lk', 'programme', False),
             ('Guest of Honour', 'goh', 'programme', False), # tervetullut muttei kutsuta automaattiviestillä
             ('Media', 'media', 'badges', False),
             ('Myyjä', 'myyja', 'badges', False),
@@ -162,7 +164,7 @@ class Setup(object):
             ('Yleisvänkäri', 'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima, vuorovastaava]),
             ('Info', 'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, vuorovastaava]),
 
-            ('Ohjelmanpitäjä', 'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
+            # ('Ohjelmanpitäjä', 'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
             if len(jc_data) == 3:
                 name, description, pcs = jc_data
@@ -529,15 +531,19 @@ class Setup(object):
             room.active = False
             room.save()
 
-        personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
-        role, unused = Role.objects.get_or_create(
-            personnel_class=personnel_class,
-            title='Ohjelmanjärjestäjä',
-            defaults=dict(
-                is_default=True,
-                require_contact_info=True,
+        for pc_slug, role_title, role_is_default in [
+            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+            ('ohjelma-2lk', 'Ohjelmanjärjestäjä (2. luokka)', False),
+            ('ohjelma-3lk', 'Ohjelmanjärjestäjä (3. luokka)', False),
+        ]:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                )
             )
-        )
 
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
