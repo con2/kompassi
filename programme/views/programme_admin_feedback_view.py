@@ -17,7 +17,7 @@ def programme_admin_feedback_view(request, vars, event, max_num_feedback_message
     feedback = ProgrammeFeedback.objects.filter(
         programme__category__event=event,
         hidden_at__isnull=True
-    ).order_by('-created_at') #[:max_num_feedback_messages]
+    ).order_by('-created_at').select_related('programme') #[:max_num_feedback_messages]
 
     vars.update(
         feedback=feedback
