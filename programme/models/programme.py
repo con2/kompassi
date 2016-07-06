@@ -90,6 +90,13 @@ PHOTOGRAPHY_CHOICES = [
     ('nope', _('Please do not photograph my programme')),
 ]
 
+RERUN_CHOICES = [
+    ('already', _('Yes. The programme has previously been presented in another convention.')),
+    ('will', _('Yes. The programme will be presented in a convention that takes place before this one.')),
+    ('might', _('Maybe. The programme might be presented in a convention that takes place before this one.')),
+    ('original', _('No. The programme is original to this convention and I promise not to present it elsewhere before.')),
+]
+
 PROGRAMME_STATES_HOST_CAN_EDIT = ['idea', 'asked', 'offered', 'accepted', 'published']
 PROGRAMME_STATES_ACTIVE = PROGRAMME_STATES_HOST_CAN_EDIT
 PROGRAMME_STATES_INACTIVE = ['rejected', 'cancelled']
@@ -188,6 +195,18 @@ class Programme(models.Model, CsvExportMixin):
         choices=PHOTOGRAPHY_CHOICES,
         verbose_name=_('Photography of your prorgmme'),
         help_text=_('Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed.'),
+    )
+
+    rerun = models.CharField(
+        default='original',
+        max_length=max(len(key) for (key, label) in RERUN_CHOICES),
+        choices=RERUN_CHOICES,
+        verbose_name=_('Is this a re-run?'),
+        help_text=_(
+            'Have you presented this same programme at another event before the event you are offering '
+            'it to now, or do you intend to present it in another event before this one? If you are unsure '
+            'about the re-run policy of this event, please consult the programme managers.'
+        ),
     )
 
     notes_from_host = models.TextField(

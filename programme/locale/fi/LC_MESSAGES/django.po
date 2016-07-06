@@ -187,6 +187,10 @@ msgstr "Anna palaute anonyymisti"
 msgid "Give feedback: %(programme_title)s"
 msgstr "Anna palautetta: %(programme_title)s"
 
+#: models/programme.py
+msgid "Have you presented this same programme at another event before the event you are offering it to now, or do you intend to present it in another event before this one? If you are unsure about the re-run policy of this event, please consult the programme managers."
+msgstr "Oletko esittänyt tämän saman ohjelman toisessa tapahtumassa ennen tapahtumaa, johon nyt sitä tarjoat, tai aiotko esittää sen ensin tapahtumassa joka on ennen tätä tapahtumaa? Jos et ole varma, hyväksyykö tämä tapahtuma uusintaohjelmaa tai mikä katsotaan uusintaohjelmaksi, ota yhteyttä ohjelmavastaavaan."
+
 #: templates/programme_admin_publish_view.jade
 msgid "Here you can set a time for the programme schedule to be automatically published. You can also publish or un-publish the schedule right away."
 msgstr "Tässä voit asettaa ajan, jona ohjelmakartta julkaistaan automaattisesti. Voit myös julkaista ohjelmakartan tai palauttaa sen ei-julkaistuksi välittömästi."
@@ -292,6 +296,10 @@ msgid "Invites"
 msgstr "Kutsut"
 
 #: models/programme.py
+msgid "Is this a re-run?"
+msgstr "Onko kyseessä uusinta?"
+
+#: models/programme.py
 msgid "It's OK to photograph my programme"
 msgstr "Ohjelmanumeroani saa valokuvata"
 
@@ -310,6 +318,10 @@ msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata ot
 #: models/programme.py
 msgid "May your programme be recorded and published in the Internet?"
 msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
+
+#: models/programme.py
+msgid "Maybe. The programme might be presented in a convention that takes place before this one."
+msgstr "Ehkä. Ohjelmanumero saatetaan esittää ensin toisessa tapahtumassa joka on ennen tätä tapahtumaa."
 
 #: models/programme.py
 msgid "Microphones"
@@ -366,6 +378,10 @@ msgstr "Tämä ohjelmanumero ei ole vielä saanut palautetta."
 #: templates/programme_profile_view.jade
 msgid "No programmes"
 msgstr "Ei ohjelmanumeroita"
+
+#: models/programme.py
+msgid "No. The programme is original to this convention and I promise not to present it elsewhere before."
+msgstr "Ei. Ohjelman ensiesitys on tässä tapahtumassa ja vakuutan etten esitä sitä muualla ensin."
 
 #: models/programme.py
 msgid "Not sure"
@@ -788,6 +804,14 @@ msgstr "Näytätkö videopätkiä osana ohjelmaasi?"
 msgid "Yes"
 msgstr "Kyllä"
 
+#: models/programme.py
+msgid "Yes. The programme has previously been presented in another convention."
+msgstr "Kyllä. Ohjelma on esitetty aiemmin toisessa tapahtumassa."
+
+#: models/programme.py
+msgid "Yes. The programme will be presented in a convention that takes place before this one."
+msgstr "Kyllä. Ohjelma esitetään ensin tapahtumassa joka on ennen tätä tapahtumaa."
+
 #: templates/programme_accept_invitation_view.jade
 msgid "You can change these details later by visiting your profile."
 msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
@@ -904,12 +928,4 @@ msgstr "tägit"
 msgid "visible"
 msgstr "näkyvissä"
 
-#~ msgid "Programmes you can edit"
-#~ msgstr "Ohjelmanumerot, joita voit muokata"
-
-#~ msgid "Published programmes"
-#~ msgstr "Julkaistut ohjelmanumerot"
-
-#~ msgid "This programme is not currently accepting feedback."
-#~ msgstr "Tähän ohjelmanumeroon ei tällä hetkellä oteta vastaan palautetta."
 
