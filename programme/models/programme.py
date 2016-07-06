@@ -533,6 +533,10 @@ class Programme(models.Model, CsvExportMixin):
         else:
             return path
 
+    @property
+    def visible_feedback(self):
+        return self.feedback.filter(hidden_at__isnull=True).select_related('author').order_by('-created_at')
+
     class Meta:
         verbose_name = _('programme')
         verbose_name_plural = _('programmes')

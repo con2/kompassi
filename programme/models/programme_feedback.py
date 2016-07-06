@@ -41,6 +41,13 @@ class ProgrammeFeedback(models.Model):
     def author_email(self):
         return self.author.email if self.author else None
 
+    @classmethod
+    def get_visible_feedback_for_event(cls, event):
+        return cls.objects.filter(
+            programme__category__event=event,
+            hidden_at__isnull=True,
+        ).select_related('programme').select_related('author').order_by('-created_at')
+
     def admin_is_visible(self):
         return self.is_visible
     admin_is_visible.short_description = _('visible')

@@ -167,7 +167,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
             messages.error(request, _('Invalid action.'))
 
     invitations = programme.invitation_set.filter(state='valid')
-    feedback = programme.feedback.filter(hidden_at__isnull=True).order_by('-created_at')
+    feedback = programme.visible_feedback
 
     tabs = [
         Tab('programme-admin-programme-public-tab', _('Public information'), active=True),
