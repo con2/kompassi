@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from core.utils import url
 from core.admin_menus import AdminMenuItem
 
-from ..models import Invitation
+from ..models import Invitation, ProgrammeFeedback
 
 
 def programme_admin_menu_items(request, event):
@@ -28,6 +28,14 @@ def programme_admin_menu_items(request, event):
     publish_active = request.path == publish_url
     publish_text = _('Publish schedule')
 
+    feedback_url = url('programme_admin_feedback_view', event.slug)
+    feedback_active = request.path == feedback_url
+    feedback_text = _('Programme feedback')
+    feedback_notifications = ProgrammeFeedback.objects.filter(
+        programme__category__event=event,
+        hidden_at__isnull=True
+    ).count()
+
     index_url = url('programme_admin_view', event.slug)
     index_active = request.path.startswith(index_url) and not any((
         invitations_active,
@@ -42,4 +50,5 @@ def programme_admin_menu_items(request, event):
         AdminMenuItem(is_active=timetable_active, href=timetable_url, text=timetable_text),
         AdminMenuItem(is_active=special_active, href=special_url, text=special_text),
         AdminMenuItem(is_active=publish_active, href=publish_url, text=publish_text),
+        AdminMenuItem(is_active=feedback_active, href=feedback_url, text=feedback_text, notifications=feedback_notifications),
     ]

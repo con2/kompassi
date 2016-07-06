@@ -24,7 +24,7 @@ def programme_profile_feedback_view(request, programme_id):
         messages.error(request, _('Only an organizer of the programme may view its feedback.'))
         return redirect('programme_profile_view')
 
-    feedback = programme.feedback.filter(hidden_by__isnull=True)
+    feedback = programme.feedback.filter(hidden_by__isnull=True).order_by('-created_at')
 
     vars = dict(
         event=event,

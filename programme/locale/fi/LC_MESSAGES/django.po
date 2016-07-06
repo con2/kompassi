@@ -30,7 +30,7 @@ msgstr "Kaikki avoimet kutsut on peruutettu."
 msgid "All rooms"
 msgstr "Kaikki tilat"
 
-#: templates/programme_feedback_table.jade
+#: templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade
 msgid "Anonymous"
 msgstr "Anonyymi"
 
@@ -50,7 +50,7 @@ msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko
 msgid "Audio playback"
 msgstr "Äänen toistaminen"
 
-#: admin.py templates/programme_feedback_table.jade
+#: admin.py templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade
 msgid "Author"
 msgstr "Kirjoittaja"
 
@@ -150,7 +150,7 @@ msgstr "Tapahtuma"
 msgid "Extra invites"
 msgstr "Lisäkutsut"
 
-#: admin.py templates/programme_feedback_table.jade views/programme_admin_detail_view.py
+#: admin.py templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade views/programme_admin_detail_view.py
 msgid "Feedback"
 msgstr "Palaute"
 
@@ -359,7 +359,7 @@ msgstr "Ei"
 msgid "No computer required"
 msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
 
-#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_profile_feedback_view.jade
+#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_admin_feedback_view.jade templates/programme_profile_feedback_view.jade
 msgid "No feedback."
 msgstr "Tämä ohjelmanumero ei ole vielä saanut palautetta."
 
@@ -375,7 +375,7 @@ msgstr "En ole varma"
 msgid "Offer received"
 msgstr "Ohjelmatarjous vastaanotettu"
 
-#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_profile_feedback_view.jade
+#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_admin_feedback_view.jade templates/programme_profile_feedback_view.jade
 #, python-format
 msgid "One feedback message."
 msgid_plural "%(num_feedback_messages)s feedback messages."
@@ -454,13 +454,13 @@ msgstr "Pyydän, että ohjelmastani otetaan valokuvia"
 msgid "Priority"
 msgstr "Järjestys"
 
-#: models/freeform_organizer.py models/invitation.py templates/programme_admin_invitations_view.jade
+#: models/freeform_organizer.py models/invitation.py templates/programme_admin_feedback_view.jade templates/programme_admin_invitations_view.jade
 msgid "Programme"
 msgstr "Ohjelma"
 
-#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_profile_feedback_view.jade
+#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_admin_feedback_view.jade templates/programme_profile_feedback_view.jade views/programme_admin_menu_items.py
 msgid "Programme feedback"
-msgstr "Ohjelman saama palaute"
+msgstr "Ohjelmapalaute"
 
 #: models/programme_role.py
 msgid "Programme host"
@@ -720,7 +720,7 @@ msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
 msgid "This text will be shown as-is in the schedule"
 msgstr "Tämä teksti näytetään ohjelmakartassa sellaisenaan."
 
-#: templates/programme_feedback_table.jade
+#: templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade
 msgid "Timestamp"
 msgstr "Aikaleima"
 
