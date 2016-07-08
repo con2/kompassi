@@ -34,8 +34,8 @@ def sms_received_handler(sender, **kwargs):
     match = regex.match(r'(?P<hotword>[a-z]+) ((?P<category>[a-z]*)(?:\s?)(?P<vote>\d+))', message.message.lower())  # doesn't work with pythons re. Recursive patterns are not allowed.
     if match is not None:
         # Message with hotword
+        found = False
         for hotword in hotwords:
-            found = False
             if hotword.slug == match.group('hotword'):
                 found = hotword
                 break
