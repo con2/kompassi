@@ -520,7 +520,7 @@ class Programme(models.Model, CsvExportMixin):
             return _('You have cancelled this programme.')
         elif self.state == 'rejected':
             return _('This programme has been rejected by the programme manager.')
-        elif frozen:
+        elif self.frozen:
             return _('This programme has been frozen by the programme manager.')
         else:
             raise NotImplementedError(self.state)
