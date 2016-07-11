@@ -4,10 +4,12 @@ extends core_profile_base
 block title
   {% trans "Edit programme" %}
 block profile_content
+  h3 {% trans "Edit programme" %}
   form(method='POST').form-horizontal
     {{ sired_invitation_formset.management_form }}
     .panel.panel-default
-      .panel-heading: strong {% trans "Edit programme" %}
+      .panel-heading
+        include programme_panel_heading.jade
       .panel-body {% crispy form %}
 
     if signup_extra_form

@@ -7,10 +7,15 @@ from django.utils.translation import ugettext_lazy as _
 from core.utils import url
 from core.admin_menus import AdminMenuItem
 
-from ..models import Invitation, ProgrammeFeedback
+from ..models import Invitation, ProgrammeFeedback, Programme
 
 
 def programme_admin_menu_items(request, event):
+    offers_url = url('programme_admin_view', event.slug) + '?state=offered&sort=created_at'
+    offers_active = request.get_full_path() == offers_url
+    offers_text = _('New offers')
+    offers_notifications = Programme.objects.filter(category__event=event, state='offered').count()
+
     invitations_url = url('programme_admin_invitations_view', event.slug)
     invitations_active = request.path == invitations_url
     invitations_text = _('Open invitations')
@@ -38,6 +43,7 @@ def programme_admin_menu_items(request, event):
 
     index_url = url('programme_admin_view', event.slug)
     index_active = request.path.startswith(index_url) and not any((
+        offers_active,
         invitations_active,
         timetable_active,
         special_active,
@@ -46,6 +52,7 @@ def programme_admin_menu_items(request, event):
 
     return [
         AdminMenuItem(is_active=index_active, href=index_url, text=index_text),
+        AdminMenuItem(is_active=offers_active, href=offers_url, text=offers_text, notifications=offers_notifications),
         AdminMenuItem(is_active=invitations_active, href=invitations_url, text=invitations_text, notifications=invitations_notifications),
         AdminMenuItem(is_active=timetable_active, href=timetable_url, text=timetable_text),
         AdminMenuItem(is_active=special_active, href=special_url, text=special_text),

@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django import forms
+from django.db.models import Q
 from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 
@@ -80,6 +81,44 @@ class ProgrammeSelfServiceForm(forms.ModelForm):
         fields = (
             'title',
             'description',
+            'computer',
+            'use_audio',
+            'use_video',
+            'number_of_microphones',
+            'tech_requirements',
+            'video_permission',
+            'encumbered_content',
+            'photography',
+            'rerun',
+            'room_requirements',
+            'requested_time_slot',
+            'notes_from_host',
+        )
+
+
+class ProgrammeOfferForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(ProgrammeOfferForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        for field_name in [
+            'title',
+            'description',
+        ]:
+            self.fields[field_name].required = True
+
+        self.fields['category'].queryset = Category.objects.filter(event=event, public=True)
+
+    class Meta:
+        model = Programme
+        fields = (
+            'title',
+            'description',
+            'category',
             'computer',
             'use_audio',
             'use_video',
@@ -216,12 +255,12 @@ class SiredInvitationForm(forms.ModelForm):
         )
 
 
-def get_sired_invitation_formset(request, invitation_or_programme_role):
+def get_sired_invitation_formset(request, num_extra_invites):
     SiredInvitationFormset = modelformset_factory(Invitation,
         form=SiredInvitationForm,
         validate_max=True,
-        extra=invitation_or_programme_role.extra_invites_left,
-        max_num=invitation_or_programme_role.extra_invites_left,
+        extra=num_extra_invites,
+        max_num=num_extra_invites,
     )
 
     return initialize_form_set(SiredInvitationFormset, request,

@@ -1,10 +1,12 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
-from core.utils import alias_property
+from core.utils import alias_property, is_within_period
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
 
 
@@ -12,17 +14,29 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     public_from = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Ohjelmakartan julkaisuaika',
-        help_text=u'Ohjelmakartta näkyy kansalle tästä eteenpäin.',
+        verbose_name='Ohjelmakartan julkaisuaika',
+        help_text='Ohjelmakartta näkyy kansalle tästä eteenpäin.',
     )
 
     contact_email = models.CharField(
         max_length=255,
         blank=True,
         validators=[contact_email_validator,],
-        verbose_name=u'yhteysosoite',
-        help_text=u'Kaikki ohjelmajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
-            u'osoitteesta, ja tämä osoite näytetään ohjelmanjärjestäjälle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
+        verbose_name='yhteysosoite',
+        help_text='Kaikki ohjelmajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
+            'osoitteesta, ja tämä osoite näytetään ohjelmanjärjestäjälle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
+    )
+
+    accepting_cold_offers_from = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Accepting cold offers from"),
+    )
+
+    accepting_cold_offers_until = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Accepting cold offers until"),
     )
 
     def get_special_programmes(self, include_unpublished=False, **extra_criteria):
@@ -53,6 +67,18 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     @property
     def is_public(self):
         return self.public_from is not None and now() > self.public_from
+
+    @property
+    def is_accepting_cold_offers(self):
+        return is_within_period(
+            self.accepting_cold_offers_from,
+            self.accepting_cold_offers_until,
+        )
+
+    @property
+    def default_role(self):
+        from .role import Role
+        return Role.objects.get(personnel_class__event=self.event, is_default=True)
 
     def publish(self):
         self.public_from = now()

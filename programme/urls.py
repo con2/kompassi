@@ -20,6 +20,7 @@ from .views import (
     programme_internal_timetable_view,
     programme_json_view,
     programme_mobile_timetable_view,
+    programme_offer_view,
     programme_profile_detail_view,
     programme_profile_feedback_view,
     programme_profile_view,
@@ -62,7 +63,7 @@ urlpatterns = [
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/fragment?$',
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/fragment/?$',
         programme_timetable_view,
         dict(template='programme_timetable_fragment.jade'),
         name='programme_timetable_fragment'
@@ -78,6 +79,12 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/full/?$',
         programme_internal_timetable_view,
         name='programme_internal_timetable_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/new/?$',
+        programme_offer_view,
+        name='programme_offer_view'
     ),
 
     url(

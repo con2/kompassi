@@ -39,7 +39,14 @@ logger = logging.getLogger('kompassi')
 
 @programme_admin_required
 def programme_admin_view(request, vars, event, format='screen'):
-    programmes = Programme.objects.filter(category__event=event)
+    programmes = (
+        Programme.objects.filter(category__event=event)
+            .select_related('category__event')
+            .select_related('room')
+
+            # Does not do the needful due to formatted_organizers operating on the "through" model
+            # .prefetch_related('organizers')
+    )
 
     categories = Category.objects.filter(event=event)
     category_filters = Filter(request, 'category').add_objects('category__slug', categories)
@@ -58,6 +65,7 @@ def programme_admin_view(request, vars, event, format='screen'):
         sorter.add('title', name='Otsikko', definition=('title',))
         sorter.add('start_time', name='Alkuaika', definition=('start_time','room'))
         sorter.add('room', name='Sali', definition=('room','start_time'))
+        sorter.add('created_at', name='Uusin ensin', definition=('-created_at',))
         programmes = sorter.order_queryset(programmes)
 
     if format == 'screen':

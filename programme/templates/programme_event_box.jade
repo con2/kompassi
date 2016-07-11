@@ -1,3 +1,4 @@
+- load i18n
 h3 Ohjelma
 
 if event.programme_event_meta.is_public
@@ -6,6 +7,11 @@ if event.programme_event_meta.is_public
   p: a(href='{% url "programme_timetable_view" event.slug %}').btn.btn-primary Tutustu ohjelma&shy;karttaan
 else
   h4 Tapahtuman ohjelmakarttaa ei ole vielä julkaistu.
+
+if event.programme_event_meta.is_accepting_cold_offers
+  h4 {% trans "The event is accepting programme offers" %}
+
+  p: a.btn.btn-primary(href='{% url "programme_offer_view" event.slug %}') {% trans "Offer programme" %}
 
 if is_programme_admin
   h4 Sinulla on ohjelma&shy;vastaavan oikeudet tähän tapahtumaan

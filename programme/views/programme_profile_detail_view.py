@@ -36,7 +36,9 @@ def programme_profile_detail_view(request, programme_id):
         readonly=not programme.host_can_edit,
     )
 
-    sired_invitation_formset = get_sired_invitation_formset(request, programme_role)
+    sired_invitation_formset = get_sired_invitation_formset(request,
+        num_extra_invites=programme_role.extra_invites_left,
+    )
 
     forms = [form, sired_invitation_formset]
 
@@ -87,13 +89,14 @@ def programme_profile_detail_view(request, programme_id):
     vars = dict(
         event=event,
         form=form,
-        signup_extra_form=signup_extra_form,
         freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
         host_can_invite_more=programme_role.extra_invites_left > 0,
         invitations=invitations,
+        num_extra_invites=programme_role.extra_invites_left,
         programme=programme,
         programme_role=programme_role,
         programme_roles=ProgrammeRole.objects.filter(programme=programme),
+        signup_extra_form=signup_extra_form,
         sired_invitation_formset=sired_invitation_formset,
     )
 

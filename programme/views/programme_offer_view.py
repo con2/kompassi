@@ -11,36 +11,29 @@ from django.utils.translation import ugettext_lazy as _
 from core.helpers import person_required
 from core.utils import initialize_form, initialize_form_set, set_defaults
 
-from ..forms import ProgrammeSelfServiceForm, get_sired_invitation_formset
+from ..forms import ProgrammeOfferForm, get_sired_invitation_formset
 from ..helpers import programme_event_required
 from ..models import Invitation, ProgrammeRole, FreeformOrganizer
 
 
 @programme_event_required
 @person_required
-def programme_accept_invitation_view(request, event, code):
-    invitation = get_object_or_404(Invitation, programme__category__event=event, code=code)
-    programme = invitation.programme
+def programme_offer_view(request, event, num_extra_invites=5):
+    meta = event.programme_event_meta
 
-    if invitation.state == 'used' and programme.host_can_edit:
-        messages.warning(request, _('You have already accepted this invitation. You can edit the programme below.'))
-        return redirect('programme_profile_detail_view', programme.pk)
-    elif invitation.state == 'used' and not programme.host_can_edit:
-        messages.error(request, _('You have already accepted this invitation. You can no longer edit the programme.'))
-        return redirect('programme_profile_view')
-    elif not (invitation.state == 'valid' and programme.host_can_edit):
-        messages.error(request, _('The invitation is no longer valid.'))
-        return redirect('programme_profile_view')
+    if not meta.is_accepting_cold_offers:
+        messages.error(request, _(
+            'This event is not currently accepting offers via this site. Please contact '
+            'the programme managers directly.'
+        ))
+        return redirect('core_event_view', event.slug)
 
-    form = initialize_form(ProgrammeSelfServiceForm, request,
-        instance=programme,
+    form = initialize_form(ProgrammeOfferForm, request,
         event=event,
         prefix='needs',
     )
 
-    sired_invitation_formset = get_sired_invitation_formset(request,
-        num_extra_invites=invitation.extra_invites_left
-    )
+    sired_invitation_formset = get_sired_invitation_formset(request, num_extra_invites=num_extra_invites)
 
     forms = [form, sired_invitation_formset]
 
@@ -60,8 +53,16 @@ def programme_accept_invitation_view(request, event, code):
     if request.method == 'POST':
         if all(the_form.is_valid() for the_form in forms):
             with transaction.atomic():
-                programme_role = invitation.accept(request.user.person)
-                programme = form.save()
+                programme = form.save(commit=False)
+                programme.state = 'offered'
+                programme.save()
+
+                programme_role = ProgrammeRole(
+                    person=request.user.person,
+                    programme=programme,
+                    role=meta.default_role,
+                )
+                programme_role.save()
 
                 if signup_extra_form:
                     signup_extra = signup_extra_form.process(signup_extra)
@@ -69,7 +70,7 @@ def programme_accept_invitation_view(request, event, code):
                 for extra_invite in sired_invitation_formset.save(commit=False):
                     extra_invite.programme = programme
                     extra_invite.created_by = request.user
-                    extra_invite.role = invitation.role
+                    extra_invite.role = programme_role.role
                     extra_invite.sire = programme_role
                     extra_invite.save()
                     extra_invite.send(request)
@@ -77,8 +78,7 @@ def programme_accept_invitation_view(request, event, code):
             programme.apply_state()
 
             messages.success(request, _(
-                'Thank you for accepting the invitation. You can change the '
-                'information later from your profile.'
+                'Thank you for offering your programme. The programme managers will be in touch.'
             ))
 
             return redirect('programme_profile_detail_view', programme.pk)
@@ -87,14 +87,13 @@ def programme_accept_invitation_view(request, event, code):
 
     vars = dict(
         form=form,
-        freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
-        host_can_invite_more=invitation.extra_invites > 0,
-        num_extra_invites=invitation.extra_invites,
-        invitation=invitation,
-        invitations=Invitation.objects.filter(programme=programme, state='valid').exclude(pk=invitation.pk),
-        programme_roles=ProgrammeRole.objects.filter(programme=programme),
+        freeform_organizers=FreeformOrganizer.objects.none(),
+        host_may_invite_more=num_extra_invites > 0,
+        invitations=Invitation.objects.none(),
+        num_extra_invites=num_extra_invites,
+        programme_roles=ProgrammeRole.objects.none(),
         signup_extra_form=signup_extra_form,
         sired_invitation_formset=sired_invitation_formset,
     )
 
-    return render(request, 'programme_accept_invitation_view.jade', vars)
+    return render(request, 'programme_offer_view.jade', vars)

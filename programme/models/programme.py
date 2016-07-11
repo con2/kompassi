@@ -9,6 +9,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.timezone import now
@@ -97,13 +98,16 @@ RERUN_CHOICES = [
     ('original', _('No. The programme is original to this convention and I promise not to present it elsewhere before.')),
 ]
 
-PROGRAMME_STATES_HOST_CAN_EDIT = ['idea', 'asked', 'offered', 'accepted', 'published']
-PROGRAMME_STATES_ACTIVE = PROGRAMME_STATES_HOST_CAN_EDIT
+PROGRAMME_STATES_ACTIVE = ['idea', 'asked', 'offered', 'accepted', 'published']
 PROGRAMME_STATES_INACTIVE = ['rejected', 'cancelled']
 
 
 class Programme(models.Model, CsvExportMixin):
-    category = models.ForeignKey('programme.Category', verbose_name=_('category'))
+    category = models.ForeignKey('programme.Category',
+        verbose_name=_('category'),
+        help_text=_('Choose the category that fits your programme the best. We reserve the right to change this.'),
+    )
+
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
     title = models.CharField(
@@ -143,7 +147,7 @@ class Programme(models.Model, CsvExportMixin):
             (3, '3'),
             (4, '4'),
             (5, '5'),
-            (99, _('More than five – Please elaborate on your needs in the "Other tech requirements" field.')),
+            (99, _('More than five – Please elaborate on your needs in the "Other tech requirements" field.')),
         ],
     )
 
@@ -483,9 +487,22 @@ class Programme(models.Model, CsvExportMixin):
             Badge.ensure(event=self.event, person=deleted_programme_role.person)
 
     @classmethod
-    def _get_in_states(cls, person, states, **extra_criteria):
+    def _get_in_states(cls, person, states, q=None, **extra_criteria):
+        """
+        Get me the programmes of this person which are in these states. Oh and I might have
+        some extra requirements for the programmes in the form of a Q object or kwargs.
+        """
+
+        if q is None:
+            q = Q()
+
+        q = q & Q(state__in=states, organizers=person)
+
+        if extra_criteria:
+            q = q & Q(**extra_criteria)
+
         return (
-            cls.objects.filter(state__in=states, organizers=person, **extra_criteria)
+            cls.objects.filter(q)
                 .distinct()
                 .order_by('category__event__start_time', 'start_time', 'title')
         )
@@ -495,7 +512,7 @@ class Programme(models.Model, CsvExportMixin):
         if t is None:
             t = now()
 
-        return cls._get_in_states(person, PROGRAMME_STATES_ACTIVE, end_time__gt=t)
+        return cls._get_in_states(person, PROGRAMME_STATES_ACTIVE, Q(end_time__gt=t) | Q(end_time__isnull=True))
 
     @classmethod
     def get_past_programmes(cls, person, t=None):
@@ -510,7 +527,11 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def host_can_edit(self):
-        return self.state in PROGRAMME_STATES_HOST_CAN_EDIT and not self.frozen
+        return (
+            self.state in PROGRAMME_STATES_ACTIVE and
+            not self.frozen and
+            not (self.event.end_time and now() >= self.event.end_time)
+        )
 
     @property
     def host_cannot_edit_explanation(self):
@@ -522,6 +543,8 @@ class Programme(models.Model, CsvExportMixin):
             return _('This programme has been rejected by the programme manager.')
         elif self.frozen:
             return _('This programme has been frozen by the programme manager.')
+        elif now() >= self.event.end_time:
+            return _('The event has ended and the programme has been archived.')
         else:
             raise NotImplementedError(self.state)
 

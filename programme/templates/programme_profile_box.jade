@@ -1,10 +1,7 @@
 - load trans from i18n
 .panel.panel-default
   .panel-heading
-    .pull-right
-      include programme_state_label.jade
-    strong.kompassi-space-after= programme.category.event.name
-    small.text-muted= programme.category.event.headline
+    include programme_panel_heading.jade
   .panel-body
     include programme_info_fragment.jade
   .panel-footer.clearfix

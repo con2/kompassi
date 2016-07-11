@@ -42,10 +42,10 @@ class Setup(object):
         ))
         self.venue, unused = Venue.objects.get_or_create(name='Tampere-talo')
         self.event, unused = Event.objects.get_or_create(slug='tracon11', defaults=dict(
-            name='Tracon 11',
-            name_genitive='Tracon 11 -tapahtuman',
-            name_illative='Tracon 11 -tapahtumaan',
-            name_inessive='Tracon 11 -tapahtumassa',
+            name='Tracon (2016)',
+            name_genitive='Traconin',
+            name_illative='Traconiin',
+            name_inessive='Traconissa',
             homepage_url='http://2016.tracon.fi',
             organization=self.organization,
             start_time=datetime(2016, 9, 3, 10, 0, tzinfo=self.tz),
@@ -302,13 +302,13 @@ class Setup(object):
             reference_number_template="2016{:05d}",
             contact_email='Traconin lipunmyynti <liput@tracon.fi>',
             plain_contact_email='liput@tracon.fi',
-            ticket_free_text="Tämä on sähköinen lippusi Tracon 11 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+            ticket_free_text="Tämä on sähköinen lippusi Tracon -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
                 "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
                 "lipunvaihtopisteessä.\n\n"
                 "Tervetuloa Traconiin!",
-            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Tracon 11 -tapahtumaan!</h2>"
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Tracon -tapahtumaan!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 "<p>Lue lisää tapahtumasta <a href='http://2016.tracon.fi'>Traconin kotisivuilta</a>.</p>",
         )
@@ -481,8 +481,13 @@ class Setup(object):
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
             public=False,
             admin_group=programme_admin_group,
-            contact_email='Tracon 11 -ohjelmatiimi <ohjelma@tracon.fi>',
+            contact_email='Tracon -ohjelmatiimi <ohjelma@tracon.fi>',
         ))
+
+        if settings.DEBUG:
+            programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
+            programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
+            programme_event_meta.save()
 
         for room_name in [
             'Aaria',
