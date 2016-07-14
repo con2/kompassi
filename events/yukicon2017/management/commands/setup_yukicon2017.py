@@ -33,6 +33,7 @@ class Setup(object):
         self.setup_tickets()
         self.setup_payments()
         # self.setup_labour()
+        # self.setup_programme()
         # self.setup_badges()
 
     def setup_core(self):
@@ -42,7 +43,7 @@ class Setup(object):
             name_inessive='Messukeskuksen Kokoustamossa',
         ))
         self.event, unused = Event.objects.get_or_create(slug='yukicon2017', defaults=dict(
-            name='Yukicon 4.0',
+            name='Yukicon 4.0 & Pyrycon',
             name_genitive='Yukicon 4.0 -tapahtuman',
             name_illative='Yukicon 4.0 -tapahtumaan',
             name_inessive='Yukicon 4.0 -tapahtumassa',
@@ -66,15 +67,15 @@ class Setup(object):
             reference_number_template="2017{:05d}",
             contact_email='Yukicon <yukicon@yukicon.fi>',
             plain_contact_email='yukicon@yukicon.fi',
-            ticket_free_text=u"Tämä on sähköinen lippusi Yukicon 4.0 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
-                u"lipunvaihtopisteessä.\n\n"
-                u"Tervetuloa Yukiconiin!",
-            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Yukicon 4.0 -tapahtumaan!</h2>"
-                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                u"<p>Lue lisää tapahtumasta <a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>",
+            ticket_free_text="Tämä on sähköinen lippusi. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
+                "lipunvaihtopisteessä.\n\n"
+                "Tervetuloa tapahtumaan!",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Yukicon 4.0- ja Pyrycon-tapahtumiin!</h2>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>",
             print_logo_path=mkpath('static', 'images', 'yukicon_436_test.jpg'),
             print_logo_width_mm=50,
             print_logo_height_mm=10
@@ -98,23 +99,18 @@ class Setup(object):
 
             return limit_group
 
-        def ordering():
-            ordering.counter += 10
-            return ordering.counter
-        ordering.counter = 0
-
         for product_info in [
             dict(
-                name='Yukicon 4.0 -pääsylippu',
-                description='Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
+                name='Yukicon 4.0 – Early Access',
+                description='Early Access -lipulla pääset Yukiconiin 18.–19.2.2017. Lippu oikeuttaa Early Access -etuuksien lunastuksen. Lippu ei oikeuta pääsyä Pyryconiin. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
                 limit_groups=[
-                    limit_group('Pääsyliput', 2400),
+                    limit_group('Early Access', 200),
                 ],
-                price_cents=2500,
+                price_cents=2900,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
-                ordering=ordering(),
+                ordering=self.get_ordering_number(),
             ),
         ]:
             name = product_info.pop('name')
@@ -134,6 +130,123 @@ class Setup(object):
         from payments.models import PaymentsEventMeta
         PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
+    def setup_programme(self):
+        from labour.models import PersonnelClass
+        from programme.models import (
+            Category,
+            Programme,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            Tag,
+            TimeBlock,
+            View,
+        )
+        from core.utils import full_hours_between
+
+        for room_name in [
+            '207',
+            '208',
+            '209',
+            'Pelihuone',
+            'Iso sali',
+        ]:
+            Room.objects.get_or_create(
+                venue=self.venue,
+                name=room_name,
+                defaults=dict(
+                    order=self.get_ordering_number(),
+                )
+            )
+
+        admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            admin_group=admin_group,
+        ))
+
+        if settings.DEBUG:
+            programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
+            programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
+            programme_event_meta.save()
+
+        for pc_slug, role_title, role_is_default in [
+            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+        ]:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                )
+            )
+
+        view, unused = View.objects.get_or_create(
+            event=self.event,
+            name='Ohjelmakartta',
+        )
+
+        if not view.rooms.exists():
+            view.rooms = Room.objects.filter(venue=self.venue, active=True)
+            view.save()
+
+        for category_name, category_style in [
+            ('Pelit', 'rope'),
+            ('Anime/manga', 'anime'),
+            ('Cosplay', 'cosplay'),
+            ('Muu', 'muu'),
+        ]:
+            Category.objects.get_or_create(
+                event=self.event,
+                title=category_name,
+                defaults=dict(
+                    style=category_style,
+                )
+            )
+
+        for tag_name, tag_style in [
+            ('Luento', 'label-default'),
+            ('Paneeli', 'label-success'),
+            ('Keskustelupiiri', 'label-info'),
+            ('Työpaja', 'label-warning'),
+            ("Let's Play", 'label-danger'),
+            ('Visa/leikki', 'label-primary'),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_name,
+                defaults=dict(
+                    style=tag_style,
+                ),
+            )
+
+        for start_time, end_time in [
+            (
+                self.event.start_time,
+                self.event.start_time.replace(hour=18),
+            ),
+            (
+                self.event.end_time.replace(hour=10),
+                self.event.end_time,
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+            # Half hours
+            # [:-1] – discard 18:30
+            for hour_start_time in full_hours_between(start_time, end_time)[:-1]:
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30)
+                )
+
     def setup_labour(self):
         from core.models import Person
         from labour.models import (
@@ -147,7 +260,7 @@ class Setup(object):
             Qualification,
             WorkPeriod,
         )
-        from ...models import SignupExtra, SpecialDiet
+        from ...models import SignupExtra, SpecialDiet, EventDay
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -246,7 +359,8 @@ class Setup(object):
             ),
             (
                 'Pukuhuoneet',
-                'KUVAUS PUUTTUU',
+                'Pukuhuonevänkärit vastaavat pukuhuoneiden siisteydestä ja viihtyvyydestä ja tarvittaessa auttavat '
+                'cosplayaajia pukujensa kanssa.',
                 [tyovoima]
             ),
             (
@@ -341,6 +455,13 @@ class Setup(object):
             'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
+
+        for event_day in [
+            'Pyrycon – Perjantai 17.2.2017',
+            'Yukicon 4.0 – Lauantai 18.2.2017',
+            'Yukicon 4.0 – Sunnuntai 19.2.2017',
+        ]:
+            EventDay.objects.get_or_create(name=event_day)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,

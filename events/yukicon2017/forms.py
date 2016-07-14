@@ -8,7 +8,7 @@ from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory, WorkPeriod
 
-from .models import SignupExtra
+from .models import SignupExtra, EventDay
 
 
 class SignupExtraForm(forms.ModelForm):
@@ -20,8 +20,10 @@ class SignupExtraForm(forms.ModelForm):
             'shift_type',
             'total_work',
             # 'night_work',
-            indented_without_label('construction'),
+            # indented_without_label('construction'),
             # indented_without_label('overseer'),
+
+            'work_days',
 
             indented_without_label('want_certificate'),
             # 'certificate_delivery_address',
@@ -37,6 +39,8 @@ class SignupExtraForm(forms.ModelForm):
             )
         )
 
+        self.fields['work_days'].help_text = 'Minä päivinä olet halukas työskentelemään?'
+
 
     class Meta:
         model = SignupExtra
@@ -44,8 +48,9 @@ class SignupExtraForm(forms.ModelForm):
             'shift_type',
             'total_work',
             # 'night_work',
-            'construction',
+            # 'construction',
             # 'overseer',
+            'work_days',
             'want_certificate',
             # 'certificate_delivery_address',
             'shirt_size',
@@ -59,6 +64,7 @@ class SignupExtraForm(forms.ModelForm):
 
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
+            work_days=forms.CheckboxSelectMultiple,
         )
 
     # def clean_certificate_delivery_address(self):
@@ -102,7 +108,41 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict(
-            job_categories=JobCategory.objects.filter(event__slug='yukicon2016', name='Conitea')
+            job_categories=JobCategory.objects.filter(event__slug='yukicon2016', name='Conitea'),
+            work_days=EventDay.objects.all(),
+        )
+
+
+class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super(ProgrammeSignupExtraForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'work_days',
+            'special_diet',
+            'special_diet_other',
+        )
+        self.fields['work_days'].help_text = 'Tarjoatko ohjelmaasi Pyryconiin, Yukiconiin vaiko kumpaan tahansa? Minä päivinä olisit valmis esittämään ohjelmasi?'
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            'work_days',
+            'special_diet',
+            'special_diet_other',
+        )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+            work_days=forms.CheckboxSelectMultiple,
+        )
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            shift_type='none',
+            total_work='8h',
+            free_text='Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta',
         )
 
 

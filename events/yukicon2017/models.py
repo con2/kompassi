@@ -2,7 +2,7 @@
 
 from django.db import models
 
-from labour.models import ObsoleteSignupExtraBaseV1
+from labour.models import SignupExtraBase
 from labour.querybuilder import QueryBuilder, add_prefix
 
 
@@ -60,7 +60,11 @@ class SpecialDiet(SimpleChoice):
     pass
 
 
-class SignupExtra(ObsoleteSignupExtraBaseV1):
+class EventDay(SimpleChoice):
+    pass
+
+
+class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(max_length=15,
         verbose_name=u'Toivottu työvuoron pituus',
         help_text=u'Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
@@ -79,10 +83,15 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
     #     choices=NIGHT_WORK_CHOICES,
     # )
 
-    construction = models.BooleanField(
-        default=False,
-        verbose_name=u'Voin työskennellä jo perjantaina',
-        # help_text=u'Huomaathan, että perjantain ja lauantain väliselle yölle ei ole tarjolla majoitusta.',
+    # construction = models.BooleanField(
+    #     default=False,
+    #     verbose_name=u'Voin työskennellä jo perjantaina',
+    #     # help_text=u'Huomaathan, että perjantain ja lauantain väliselle yölle ei ole tarjolla majoitusta.',
+    # )
+
+    work_days = models.ManyToManyField(EventDay,
+        verbose_name=u'Tapahtumapäivät',
+        help_text='Vänkärit: Minä päivinä olet halukas työskentelemään? Ohjelmanjärjestäjät: Tarjoatko ohjelmaasi Pyryconiin, Yukiconiin vai kumpaan tahansa?',
     )
 
     want_certificate = models.BooleanField(
@@ -152,6 +161,11 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
     def get_form_class(cls):
         from .forms import SignupExtraForm
         return SignupExtraForm
+
+    @classmethod
+    def get_programme_form_class(cls):
+        from .forms import ProgrammeSignupExtraForm
+        return ProgrammeSignupExtraForm
 
     @staticmethod
     def get_query_class():
