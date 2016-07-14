@@ -6,6 +6,7 @@ import logging
 
 from django.db import transaction
 from django.shortcuts import get_object_or_404, render, redirect
+from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 
 from core.helpers import person_required
@@ -75,7 +76,7 @@ def programme_profile_detail_view(request, programme_id):
                     extra_invite.save()
                     extra_invite.send(request)
 
-            messages.success(request, 'The changes were saved.')
+            messages.success(request, _('The changes were saved.'))
             return redirect('programme_profile_view')
 
         else:
