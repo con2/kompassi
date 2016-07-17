@@ -358,7 +358,6 @@ msgid "This survey does not apply to you."
 msgstr "Tämä kysely ei sovellu sinuun."
 
 #: views/labour_survey_view.py
-#, fuzzy
 msgid "This survey is not currently active."
 msgstr "Tämä kysely ei ole tällä hetkellä käytössä."
 
