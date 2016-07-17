@@ -22,6 +22,10 @@ from ..helpers import labour_event_required
 def labour_survey_view(request, event, survey_slug):
     survey = get_object_or_404(Survey, slug=survey_slug, event=event)
 
+    if not survey.is_active:
+        messages.error(request, _('This survey is not currently active.'))
+        return redirect('core_event_view', event.slug)
+
     try:
         signup = Signup.objects.get(event=event, person=request.user.person)
     except Signup.DoesNotExist:
