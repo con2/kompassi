@@ -25,6 +25,7 @@ from .labour_admin_signup_view import labour_admin_signup_view
 from .labour_admin_shirts_view import labour_admin_shirts_view
 from .labour_admin_special_diets_view import labour_admin_special_diets_view
 from .labour_admin_startstop_view import labour_admin_startstop_view
+from .labour_survey_view import labour_survey_view
 
 from .query_views import (
     query_index,

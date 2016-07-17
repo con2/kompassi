@@ -693,8 +693,18 @@ class Signup(models.Model, CsvExportMixin):
         return related
 
     def as_dict(self):
+        # XXX?
+        shift_wishes = self.signup_extra.shift_wishes if self.signup_extra.get_field('shift_wishes') else ''
+
         return dict(
             id=self.person.id,
             fullName=self.person.full_name,
-            shiftWishes='TODO',
+            shiftWishes=shift_wishes,
         )
+
+    @classmethod
+    def for_signup(cls, signup):
+        """
+        Surveys make use of this method.
+        """
+        return signup

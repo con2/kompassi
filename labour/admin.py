@@ -13,6 +13,7 @@ from .models import (
     Qualification,
     Shift,
     Signup,
+    Survey,
     WorkPeriod,
 )
 
@@ -87,6 +88,11 @@ class ShiftAdmin(admin.ModelAdmin):
     raw_id_fields = ('job', 'signup')
 
 
+class SurveyAdmin(admin.ModelAdmin):
+    list_display = ('event', 'title', 'admin_is_active')
+    list_filter = ('event',)
+
+
 admin.site.register(AlternativeSignupForm, AlternativeSignupFormAdmin)
 admin.site.register(InfoLink, InfoLinkAdmin)
 admin.site.register(Job, JobAdmin)
@@ -95,4 +101,5 @@ admin.site.register(PersonnelClass, PersonnelClassAdmin)
 admin.site.register(Qualification, QualificationAdmin)
 admin.site.register(Shift, ShiftAdmin)
 admin.site.register(Signup, SignupAdmin)
+admin.site.register(Survey, SurveyAdmin)
 admin.site.register(WorkPeriod)

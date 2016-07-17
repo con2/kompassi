@@ -65,6 +65,7 @@ class Setup(object):
             PersonnelClass,
             Qualification,
             WorkPeriod,
+            Survey,
         )
         from ...models import SignupExtra, SpecialDiet, Night
         from django.contrib.contenttypes.models import ContentType
@@ -262,6 +263,24 @@ class Setup(object):
                 signup_extra_form_class_path='events.tracon11.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2015, 9, 29, 15, 43, 0, tzinfo=self.tz),
                 active_until=datetime(2016, 9, 4, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
+
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug='tyovuorotoiveet',
+            defaults=dict(
+                title='Työvuorotoiveet',
+                description=(
+                    'Tässä vaiheessa voit vaikuttaa työvuoroihisi. Jos saavut tapahtumaan vasta sen alkamisen '
+                    'jälkeen tai sinun täytyy lähteä ennen tapahtuman loppumista, kerro se tässä. Lisäksi jos '
+                    'tiedät ettet ole käytettävissä tiettyihin aikoihin tapahtuman aikana tai haluat esimerkiksi '
+                    'nähdä jonkun ohjelmanumeron, kerro siitäkin. Työvuorotoiveiden toteutumista täysin ei voida '
+                    'taata.'
+                ),
+                form_class_path='events.tracon11.forms:ShiftWishesSurvey',
+                active_from=datetime(2016, 7, 16, 14, 13, 0, tzinfo=self.tz),
+                active_until=datetime(2016, 7, 31, 23, 59, 59, tzinfo=self.tz),
             ),
         )
 

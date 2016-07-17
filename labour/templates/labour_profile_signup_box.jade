@@ -1,9 +1,6 @@
 .panel.panel-default
   .panel-heading
-    .pull-right
-      .label(class='{{ signup.state_label_class }}') {{ signup.formatted_state }}
-    strong.kompassi-space-after {{ signup.event.name }}
-    small.text-muted {{ signup.event.headline }}
+    include labour_signup_panel_heading.jade
   if signup.is_active
     .panel-body
       p.help-block {{ signup.state_description }}

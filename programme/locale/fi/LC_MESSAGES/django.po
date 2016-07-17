@@ -658,7 +658,7 @@ msgstr "Kiitos palautteesasi!"
 msgid "The IP address is only visible in the admin interface"
 msgstr "IP-osoite näkyy vain hallintakäyttöliittymässä."
 
-#: views/programme_admin_detail_view.py
+#: views/programme_admin_detail_view.py views/programme_profile_detail_view.py
 msgid "The changes were saved."
 msgstr "Muutokset tallennettiin."
 

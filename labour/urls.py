@@ -25,6 +25,7 @@ from .views import (
     labour_profile_signups_view,
     labour_qualifications_view,
     labour_signup_view,
+    labour_survey_view,
     query_exec,
     query_index,
 )
@@ -51,6 +52,12 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/confirm/?$',
         labour_confirm_view,
         name='labour_confirm_view',
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/survey/(?P<survey_slug>[a-z0-9-]+)/?$',
+        labour_survey_view,
+        name='labour_survey_view',
     ),
 
     url(

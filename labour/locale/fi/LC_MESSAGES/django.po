@@ -1,6 +1,22 @@
+#: models/survey.py
+msgid "A reference to the form that is used as the survey form."
+msgstr "Viittaus lomakkeeseen jota kyselyssä käytetään."
+
 #: templates/labour_admin_jobcategory_view.jade
 msgid "Abandon changes and return"
 msgstr "Hylkää muutokset ja palaa"
+
+#: models/survey.py
+msgid "Active"
+msgstr "Aktiivinen"
+
+#: models/alternative_signup_forms.py models/survey.py
+msgid "Active from"
+msgstr "Käyttöaika alkaa"
+
+#: models/alternative_signup_forms.py models/survey.py
+msgid "Active until"
+msgstr "Käyttöaika päättyy"
 
 #: templates/labour_admin_jobcategories_view.jade templates/labour_admin_jobcategory_view.jade
 msgid "Add job category"
@@ -34,7 +50,7 @@ msgstr "Lukumäärä"
 msgid "Dashboard"
 msgstr "Kojelauta"
 
-#: models/job_category.py
+#: models/job_category.py models/survey.py
 msgid "Description"
 msgstr "Kuvaus"
 
@@ -65,6 +81,10 @@ msgstr "Päättymisaika"
 #: models/job_category.py
 msgid "For most job categories, you should select the 'worker' and 'underofficer' classes here, if applicable."
 msgstr "Useimpien tehtäväalueiden kohdalla tässä tulisi valita työvoima- ja vuorovastaavaluokat, mikäli sellaiset ovat tapahtuman käytössä."
+
+#: models/survey.py
+msgid "Form path"
+msgstr "Lomakkeen polku"
 
 #: forms.py
 msgid "Format: YYYY-MM-DD HH:MM:SS"
@@ -133,7 +153,7 @@ msgstr "Shirt"
 msgid "Personnel classes"
 msgstr "Henkilöstöluokat"
 
-#: views/labour_admin_jobcategory_view.py views/labour_admin_startstop_view.py views/public_views.py
+#: views/labour_admin_jobcategory_view.py views/labour_admin_startstop_view.py views/labour_survey_view.py views/public_views.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
@@ -229,9 +249,25 @@ msgstr "Avaa työvoimahaku välittömästi"
 msgid "Starting time"
 msgstr "Alkamisaika"
 
+#: templates/labour_survey_view.jade
+msgid "Submit answers"
+msgstr "Lähetä vastaukset"
+
 #: views/public_views.py
 msgid "Submit application"
 msgstr "Lähetä hakemus"
+
+#: models/survey.py
+msgid "Survey"
+msgstr "Kysely"
+
+#: models/survey.py
+msgid "Surveys"
+msgstr "Kyselyt"
+
+#: views/labour_survey_view.py
+msgid "Thank you for your answers."
+msgstr "Kiitos vastauksistasi!"
 
 #: views/public_views.py
 msgid "Thank you for your application!"
@@ -317,6 +353,14 @@ msgstr "Tämä tapahtuma ei ota tällä hetkellä vastaan hakemuksia."
 msgid "This job category cannot be removed because applications have already been made to it."
 msgstr "Tätä tehtäväaluetta ei voi poistaa, koska sille on jo tehty hakemuksia."
 
+#: views/labour_survey_view.py
+msgid "This survey does not apply to you."
+msgstr "Tämä kysely ei sovellu sinuun."
+
+#: models/survey.py
+msgid "Title"
+msgstr "Otsikko"
+
 #: views/public_views.py
 msgid "Update application"
 msgstr "Päivitä hakemus"
@@ -329,6 +373,10 @@ msgstr "Vapaaehtoistyövoiman hallinta"
 msgid "Volunteer work applications"
 msgstr "Vapaaehtoistyöhakemukset"
 
+#: models/survey.py
+msgid "Will be displayed at the top of the survey page."
+msgstr "Näytetään kyselysivun ylälaidassa."
+
 #: templates/labour_admin_jobcategories_view.jade
 msgid "Yes"
 msgstr "Kyllä"
@@ -336,6 +384,15 @@ msgstr "Kyllä"
 #: templates/labour_admin_startstop_view.jade
 msgid "You can also start or stop the application period immediately."
 msgstr "Työvoimahaun voi myös avata tai sulkea välittömästi."
+
+#: templates/labour_survey_view.jade
+#, python-format
+msgid "You can edit your answers via the same link until the survey expires at %(expiration_date)s."
+msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee %{expiration_date)s."
+
+#: views/labour_survey_view.py
+msgid "You have not signed up for this event."
+msgstr "Et ole ilmoittautunut tähän tapahtumaan."
 
 #: views/public_views.py
 msgid "Your application does not currently need to be confirmed."
