@@ -19,7 +19,7 @@ logger = logging.getLogger('kompassi')
 
 
 class Command(BaseCommand):
-    help = 'Closes the specified poll for voting'
+    help = 'Creates orders and sends e-tickets based on an XLSX export from Holvi'
 
     def add_arguments(self, parser):
         parser.add_argument('event_slug', type=text_type)
