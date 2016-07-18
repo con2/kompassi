@@ -31,9 +31,9 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_access()
-        # self.setup_payments()
+        self.setup_payments()
 
     def setup_core(self):
         from core.models import Venue, Event, Organization
@@ -211,7 +211,6 @@ class Setup(object):
             )
 
     def setup_tickets(self):
-        # XXX update for Aicon
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
         tickets_admin_group, = TicketsEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -221,19 +220,19 @@ class Setup(object):
             due_days=14,
             shipping_and_handling_cents=120,
             reference_number_template="2016{:05d}",
-            contact_email='Aicon-lipunmyynti <liput@aicon.fi>',
-            plain_contact_email='liput@aicon.fi',
-            ticket_free_text="Tämä on sähköinen lippusi Aicon-tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+            contact_email='Aicon-lipunmyynti <lipunmyynti@aicon.fi>',
+            plain_contact_email='lipunmyynti@aicon.fi',
+            ticket_free_text="Tämä on sähköinen lippusi Aiconiin. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
                 "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
                 "lipunvaihtopisteessä.\n\n"
-                "Tervetuloa Aiconin!",
-            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Aicon-tapahtumaan!</h2>"
+                "Tervetuloa Aiconiin!",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Aiconiin!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                "<p>Lue lisää tapahtumasta <a href='http://2016.aicon.fi'>Aicon-tapahtuman kotisivuilta</a>.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://aicon.fi'>Aiconin kotisivuilta</a>.</p>"
                 "<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
-                "toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>liput@aicon.fi</em>"
+                "toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>lipunmyynti@aicon.fi</em>"
         )
 
         if self.test:
@@ -242,13 +241,6 @@ class Setup(object):
                 ticket_sales_starts=t - timedelta(days=60),
                 ticket_sales_ends=t + timedelta(days=60),
             )
-        else:
-            # TODO
-            # defaults.update(
-            #     ticket_sales_starts=datetime(2016, 3, 4, 18, 0, tzinfo=self.tz),
-            #     ticket_sales_ends=datetime(2016, 6, 28, 18, 0, tzinfo=self.tz),
-            # )
-            pass
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
 
@@ -263,12 +255,30 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name='Aicon-pääsylippu',
-                description='Viikonloppulippu Aicon-tapahtumaan. Voimassa koko viikonlopun ajan la klo 12 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                name='Joukkorahoitus – Viikonloppulippu',
+                description='Tällä lipulla sisäänpääsy Aiconiin koko tapahtuman ajan! Lisäksi saat nimesi nettisivuillemme tulevaan kiitoslistaan, sekä kiitoskortin ja kangasmerkin! Myymme tavallisia viikonloppulippuja vielä myöhemminkin, mutta varmista omasi jo nyt!',
                 limit_groups=[
-                    limit_group('Pääsyliput', 400),
+                    limit_group('Pääsyliput', 11),
                 ],
-                price_cents=1000,
+                price_cents=3000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Joukkorahoitus – VIP-lippu',
+                description="""Aiconin kaikki VIP-liput ovat myynnissä joukkorahoituksessa! Tartu tilaisuuteen nyt, sillä toista ei välttämättä tule!
+Aiconin VIP-lippu sisältää tietenkin koko viikonlopun sisäänpääsyn tapahtumaan, mutta myös muuta! VIP-lippuihin saatetaan julkistaa vielä lisää sisältöä lähempänä conia, mutta nämä edut ovat varmoja:
+- VIP-lippulla pääset conin alkaessa vaihtamaan lippusi erillisestä VIP-jonosta
+- Conin aikana käytössäsi on VIP-tila, jota ylläpitää läpi tapahtuman VIP-asiakkaiden viihtyvyydestä vastaava host tai hostess.
+- VIP-tilasta on pääsy pääsaliin VIP-parvelle, joten et välttämättä tarvitse paikkalippua pääsalin ohjelmiin, toisin kuin muut conikävijät.
+- Saat conista mukaasi VIP-tuotepussin.
+Lisäksi saat nimesi nettisivuillamme julkaistavaan kiitoslistaan, sekä kiitoskortin ja kangasmerkin toimitettuna sinulle jo kevään aikana.""",
+                limit_groups=[
+                    limit_group('VIP-liput', 56),
+                ],
+                price_cents=5500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
