@@ -34,6 +34,7 @@ class Setup(object):
         self.setup_tickets()
         self.setup_access()
         self.setup_payments()
+        self.setup_programme()
 
     def setup_core(self):
         from core.models import Venue, Event, Organization
@@ -284,6 +285,18 @@ Lisäksi saat nimesi nettisivuillamme julkaistavaan kiitoslistaan, sekä kiitosk
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
+            dict(
+                name='Viikonloppulippu',
+                description='Tällä lipulla sisäänpääsy Aiconiin koko tapahtuman ajan! Lippu toimitetaan sähköpostiisi PDF-muotoisena E-lippuna, jonka vaihdat rannekkeeseen tapahtumaan saapuessasi.',
+                limit_groups=[
+                    limit_group('Pääsyliput', 11),
+                ],
+                price_cents=2500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
@@ -332,6 +345,135 @@ Lisäksi saat nimesi nettisivuillamme julkaistavaan kiitoslistaan, sekä kiitosk
     def setup_payments(self):
         from payments.models import PaymentsEventMeta
         PaymentsEventMeta.get_or_create_dummy(event=self.event)
+
+    def setup_programme(self):
+        from core.utils import full_hours_between
+        from labour.models import PersonnelClass
+        from programme.models import (
+            Category,
+            Programme,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            Tag,
+            TimeBlock,
+            View,
+        )
+
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Aiconin ohjelmatiimi <ohjelma@aicon.fi>',
+        ))
+
+        for room_name in [
+            'Vanaja-sali',
+            'Luentosali',
+            'Kokoushuone',
+            'Studio',
+        ]:
+            Room.objects.get_or_create(
+                venue=self.venue,
+                name=room_name,
+                defaults=dict(
+                    order=self.get_ordering_number()
+                )
+            )
+
+        personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
+
+        role, unused = Role.objects.get_or_create(
+            personnel_class=personnel_class,
+            title='Ohjelmanjärjestäjä',
+            defaults=dict(
+                is_default=True,
+                require_contact_info=True,
+            )
+        )
+
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                ('Luento', 'color1'),
+                ('Esittävä ohjelma', 'color2'),
+                ('Miitti', 'color3'),
+                ('Työpaja', 'color4'),
+                ('Karaoke', 'color5'),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    style=style,
+                    defaults=dict(
+                        title=title,
+                    )
+                )
+
+        for tag_name, tag_style in [
+            ('Suositeltu', 'hilight'),
+            ('Paikkaliput', 'label-danger'),
+            ('International', 'label-primary'),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_name,
+                defaults=dict(
+                    style=tag_style,
+                ),
+            )
+
+        if self.test:
+            # create some test programme
+            Programme.objects.get_or_create(
+                category=Category.objects.get(title='Luento', event=self.event),
+                title='Yaoi-paneeli',
+                defaults=dict(
+                    description='Kika-kika tirsk',
+                )
+            )
+
+        if not TimeBlock.objects.filter(event=self.event).exists():
+            for start_time, end_time in [
+                (
+                    self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
+                    self.event.start_time.replace(hour=20, minute=0, tzinfo=self.tz),
+                ),
+                (
+                    self.event.end_time.replace(hour=10, minute=0, tzinfo=self.tz),
+                    self.event.end_time,
+                ),
+            ]:
+                TimeBlock.objects.get_or_create(
+                    event=self.event,
+                    start_time=start_time,
+                    defaults=dict(
+                        end_time=end_time
+                    )
+                )
+
+                for hour_start_time in full_hours_between(start_time, end_time)[:-1]:
+                    SpecialStartTime.objects.get_or_create(
+                        event=self.event,
+                        start_time=hour_start_time.replace(minute=30)
+                    )
+
+        for view_name, room_names in [
+            ('Pääohjelmatilat', [
+                'Vanaja-sali',
+                'Luentosali',
+                'Kokoushuone',
+                'Studio',
+            ]),
+        ]:
+            rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
+                for room_name in room_names]
+
+            view, created = View.objects.get_or_create(event=self.event, name=view_name)
+
+            if created:
+                view.rooms = rooms
+                view.save()
 
 
 class Command(BaseCommand):
