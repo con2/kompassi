@@ -132,6 +132,10 @@ class Setup(object):
         vuorovastaava = PersonnelClass.objects.get(event=self.event, slug='vuorovastaava')
         # ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
+        # XXX
+        if JobCategory.objects.filter(event=self.event).exists():
+            return
+
         for jc_data in [
             ('Vastaava', 'Tapahtuman järjestäjä', [vastaava]),
 
