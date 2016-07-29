@@ -1,0 +1,2 @@
+FROM tracon/kompassi
+CMD ["gunicorn", "--bind=0.0.0.0:8000", "--workers=4", "turska.wsgi:application"]

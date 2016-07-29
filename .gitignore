@@ -1,7 +1,7 @@
 *.mo
 *.pot
 *.pyc
-*.sqlite3
+*.sqlite*
 /static/
 build/
 nohup.out

@@ -1,10 +1,19 @@
 # encoding: utf-8
-from __future__ import absolute_import
+
+from __future__ import absolute_import, unicode_literals
 
 import os
 from datetime import datetime, timedelta
+from email.utils import parseaddr
 
 from django.utils.translation import ugettext_lazy as _
+
+import environ
+
+
+env = environ.Env(DEBUG=(bool, False),) # set default values and casting
+# environ.Env.read_env() # reading .env file
+
 
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', *parts))
@@ -12,43 +21,25 @@ def mkpath(*parts):
 
 MKPATH = mkpath
 
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)
 
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_URLS_REGEX = r'^/(api|oauth2)/.*$'
-CORS_ORIGIN_WHITELIST = (
-    # Add any applications that need CORS for the API here
-    # 'kirppu.tracon.fi',
-)
+CORS_ORIGIN_WHITELIST = env('CORS_ORIGIN_WHITELIST', default='').split()
 
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-)
+ADMINS = [parseaddr(addr) for addr in env('ADMINS', default='').split(',') if addr]
 
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'turska.sqlite3',                      # Or path to database file if using sqlite3.
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
-    }
+    'default': env.db(default='sqlite:///turska.sqlite3'),
 }
 
-# Uncomment if you have memcached
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#         'LOCATION': [
-#             '127.0.0.1:11211'
-#         ]
-#     }
-# }
+CACHES = {
+    'default': env.cache(default='locmemcache://'),
+}
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env('ALLOWED_HOSTS', default='').split()
 
 TIME_ZONE = 'Europe/Helsinki'
 
@@ -85,7 +76,7 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-SECRET_KEY = 'jhdjl*kxcet2aaz)%ixmois*j_p+d*q79%legoz+9el(c%zc$%'
+SECRET_KEY = env.str('SECRET_KEY', default=('' if not DEBUG else 'xxx'))
 
 MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
@@ -161,18 +152,8 @@ INSTALLED_APPS = (
     'access',
     'sms',
     'membership',
-
-    # Uncomment if you have Atlassian Crowd
-    # 'crowd_integration',
-
-    # Uncomment if you do PDF tickets
     'lippukala',
-
-    # Uncomment if you have Celery
-    # 'background_tasks',
-
     'branding',
-    'desuprofile_integration',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -232,7 +213,7 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -264,13 +245,13 @@ MESSAGE_TAGS = {
 }
 
 
-KOMPASSI_APPLICATION_NAME = u'Kompassi'
-KOMPASSI_INSTALLATION_NAME = u'Kompassi (DEV)'
-KOMPASSI_INSTALLATION_NAME_ILLATIVE = u'Kompassin kehitys\u00ADinstanssiin'
-KOMPASSI_INSTALLATION_NAME_GENITIVE = u'Kompassin kehitys\u00ADinstanssin'
-KOMPASSI_INSTALLATION_NAME_PARTITIVE = u'Kompassin kehitys\u00ADinstanssia'
-KOMPASSI_INSTALLATION_SLUG = 'turskadev'
-KOMPASSI_PRIVACY_POLICY_URL = 'http://media.tracon.fi/2014/tracon9_turska_rekisteriseloste.pdf'
+KOMPASSI_APPLICATION_NAME = 'Kompassi'
+KOMPASSI_INSTALLATION_NAME = 'Kompassi (DEV)' if DEBUG else 'Kompassi'
+KOMPASSI_INSTALLATION_NAME_ILLATIVE = 'Kompassin kehitys\u00ADinstanssiin' if DEBUG else 'Kompassiin'
+KOMPASSI_INSTALLATION_NAME_GENITIVE = 'Kompassin kehitys\u00ADinstanssin' if DEBUG else 'Kompassin'
+KOMPASSI_INSTALLATION_NAME_PARTITIVE = 'Kompassin kehitys\u00ADinstanssia' if DEBUG else 'Kompassia'
+KOMPASSI_INSTALLATION_SLUG = env('KOMPASSI_INSTALLATION_SLUG', default='turskadev')
+KOMPASSI_PRIVACY_POLICY_URL = 'https://confluence.tracon.fi/display/CONDB/Rekisteriseloste'
 
 # Confluence & co. require a group of users
 KOMPASSI_NEW_USER_GROUPS = ['users']
@@ -293,9 +274,14 @@ KOMPASSI_PHONENUMBERS_DEFAULT_REGION = 'FI'
 # getattr'd from phonenumbers.PhoneNumberFormat with itself as default
 KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT = 'INTERNATIONAL'
 
-# Don't actually send email
-EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
-DEFAULT_FROM_EMAIL = 'suunnistajat@kompassi.eu'
+
+# Sending email
+if env('EMAIL_HOST', default=''):
+    EMAIL_HOST = env('EMAIL_HOST')
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='spam@example.com')
 
 
 if 'payments' in INSTALLED_APPS:
@@ -317,8 +303,9 @@ if 'lippukala' in INSTALLED_APPS:
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 
-if 'background_tasks' in INSTALLED_APPS:
-    BROKER_URL = 'amqp://{KOMPASSI_INSTALLATION_SLUG}:{KOMPASSI_INSTALLATION_SLUG}@localhost/{KOMPASSI_INSTALLATION_SLUG}'.format(**locals())
+if env('BROKER_URL', default=''):
+    INSTALLED_APPS = INSTALLED_APPS + ('background_tasks',)
+    BROKER_URL = env('BROKER_URL')
     CELERY_ACCEPT_CONTENT = ['json']
 
     #EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
@@ -341,38 +328,40 @@ if 'api_v2' in INSTALLED_APPS:
 
     OAUTH2_PROVIDER = dict(
         SCOPES=dict(
-            read=u'Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi',
-            write=u'Muokata käyttäjä- ja henkilötietojasi',
+            read='Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi',
+            write='Muokata käyttäjä- ja henkilötietojasi',
         )
     )
 
 
 if 'nexmo' in INSTALLED_APPS:
-    NEXMO_USERNAME = 'username'
-    NEXMO_PASSWORD = 'password'
-    NEXMO_FROM = 'Name or number'
-    NEXMO_INBOUND_KEY = '0123456789abcdef'
+    NEXMO_USERNAME = env('NEXMO_USERNAME', default='username')
+    NEXMO_PASSWORD = env('NEXMO_PASSWORD', default='password')
+    NEXMO_FROM = env('NEXMO_FROM', default='358505551234')
+    NEXMO_INBOUND_KEY = env('NEXMO_INBOUND_KEY', default='deadbeef')
 
 
 if 'branding' in INSTALLED_APPS:
-    KOMPASSI_ACCOUNT_BRANDING = u'Kompassi-tunnus'
-    KOMPASSI_ACCOUNT_BRANDING_PARTITIVE = u'Kompassi-tunnusta'
-    KOMPASSI_ACCOUNT_BRANDING_GENITIVE = u'Kompassi-tunnuksen (ent. Tracon-tunnuksen)'
-    KOMPASSI_ACCOUNT_BRANDING_ADESSIVE = u'Kompassi-tunnuksella'
-    KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = u'Kompassi-tunnuksellasi'
+    KOMPASSI_ACCOUNT_BRANDING = 'Kompassi-tunnus'
+    KOMPASSI_ACCOUNT_BRANDING_PARTITIVE = 'Kompassi-tunnusta'
+    KOMPASSI_ACCOUNT_BRANDING_GENITIVE = 'Kompassi-tunnuksen (ent. Tracon-tunnuksen)'
+    KOMPASSI_ACCOUNT_BRANDING_ADESSIVE = 'Kompassi-tunnuksella'
+    KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = 'Kompassi-tunnuksellasi'
 
 
-if 'crowd_integration' in INSTALLED_APPS:
-    KOMPASSI_CROWD_APPLICATION_NAME = 'kompassidev'
-    KOMPASSI_CROWD_APPLICATION_PASSWORD = 'secret'
-    KOMPASSI_CROWD_HOST = 'https://crowd.tracon.fi'
+if env('KOMPASSI_CROWD_APPLICATION_PASSWORD', default=''):
+    INSTALLED_APPS = INSTALLED_APPS + ('crowd_integration',)
+    KOMPASSI_CROWD_APPLICATION_NAME = env('KOMPASSI_CROWD_APPLICATION_NAME')
+    KOMPASSI_CROWD_APPLICATION_PASSWORD = env('KOMPASSI_CROWD_APPLICATION_PASSWORD')
+    KOMPASSI_CROWD_HOST = env('KOMPASSI_CROWD_HOST', default='https://crowd.tracon.fi')
     KOMPASSI_CROWD_BASE_URL = '{host}/crowd/rest/usermanagement/1'.format(host=KOMPASSI_CROWD_HOST)
 
 
-if 'desuprofile_integration' in INSTALLED_APPS:
-    KOMPASSI_DESUPROFILE_HOST = 'https://desucon.fi'
-    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID = 'kompassi_insecure_client_id'
-    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET = 'kompassi_insecure_client_secret'
+if env('KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID', default=''):
+    INSTALLED_APPS = INSTALLED_APPS + ('desuprofile_integration',)
+    KOMPASSI_DESUPROFILE_HOST = env('KOMPASSI_DESUPROFILE_HOST', default='https://desucon.fi')
+    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID = env('KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID')
+    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET = env('KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET')
     KOMPASSI_DESUPROFILE_OAUTH2_SCOPE = ['read']
     KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/'.format(**locals())
     KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/'.format(**locals())

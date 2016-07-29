@@ -27,8 +27,8 @@ class Command(BaseCommand):
         event_commands = [command for command in ("setup_%s" % event for event in events) if command in commands]
 
         management_commands = [
-            (('kompassi_i18n', '-acv2'), dict()),
-            (('collectstatic',), dict(interactive=False)),
+            # (('kompassi_i18n', '-acv2'), dict()),
+            # (('collectstatic',), dict(interactive=False)),
             (('migrate',), dict()),
             (('setup_core',), dict(test=test)),
             (('setup_labour_common_qualifications',), dict(test=test)),
