@@ -43,10 +43,11 @@ def programme_admin_menu_items(request, event):
 
     index_url = url('programme_admin_view', event.slug)
     index_active = request.path.startswith(index_url) and not any((
-        offers_active,
+        feedback_active,
         invitations_active,
-        timetable_active,
+        offers_active,
         special_active,
+        timetable_active,
     ))
     index_text = 'Ohjelmaluettelo'
 
