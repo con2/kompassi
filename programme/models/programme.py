@@ -271,19 +271,22 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def formatted_hosts(self):
-        from .programme_role import ProgrammeRole
-        from .freeform_organizer import FreeformOrganizer
+        if not hasattr(self, '_formatted_hosts'):
+            from .programme_role import ProgrammeRole
+            from .freeform_organizer import FreeformOrganizer
 
-        parts = [f.text for f in FreeformOrganizer.objects.filter(programme=self)]
+            parts = [f.text for f in FreeformOrganizer.objects.filter(programme=self)]
 
-        public_programme_roles = ProgrammeRole.objects.filter(
-            programme=self,
-            role__is_public=True
-        ).select_related('person')
+            public_programme_roles = ProgrammeRole.objects.filter(
+                programme=self,
+                role__is_public=True
+            ).select_related('person')
 
-        parts.extend(pr.person.display_name for pr in public_programme_roles)
+            parts.extend(pr.person.display_name for pr in public_programme_roles)
 
-        return u', '.join(parts)
+            self._formatted_hosts = ', '.join(parts)
+
+        return self._formatted_hosts
 
     @property
     def is_blank(self):

@@ -11,7 +11,7 @@
           li.room {{ programme.room.name }}
         if programme.start_time
           li.times klo {{ programme.start_time|date:"H:i"}}{% if programme.end_time %}&ndash;{{ programme.end_time|date:"H:i"}}{% endif %}
-        if programme.organizers.exists
+        if programme.formatted_hosts
           li.host {{ programme.formatted_hosts }}
     .description {{ programme.description|safe|linebreaks }}
     if show_programme_actions
