@@ -95,6 +95,7 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
     shirt_size = models.CharField(
         max_length=8,
         choices=SHIRT_SIZES,
+        default='NO_SHIRT',
         verbose_name='Paidan koko',
         help_text='Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. '
             'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
