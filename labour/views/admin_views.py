@@ -25,7 +25,7 @@ from core.tabs import Tab
 from core.utils import initialize_form, url
 
 from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
-from ..helpers import labour_admin_required, labour_event_required, labour_supervisor_required
+from ..helpers import labour_admin_required, labour_event_required
 from ..models.constants import SIGNUP_STATE_NAMES
 from ..models import (
     JobCategory,
@@ -157,4 +157,3 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
     )
 
     return render(request, 'labour_admin_mail_editor_view.jade', vars)
-

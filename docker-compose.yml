@@ -10,7 +10,7 @@ services:
       - postgres
       - memcache
     volumes:
-      - .:/usr/src/app:ro
+      - .:/usr/src/app
     environment:
       DEBUG: 1
       DATABASE_URL: psql://kompassi:secret@postgres/kompassi

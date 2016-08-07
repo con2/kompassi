@@ -1,0 +1,5 @@
+- load trans from i18n
+if is_intra_organizer
+  h3 {% trans "Organizer intranet" %}
+  h4 {% trans "You have access to the organizer intranet." %}
+  p: a.btn.btn-primary(href='{% url "intra_organizer_view" event.slug %}') {% trans "Go to the organizer view" %}

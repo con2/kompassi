@@ -1,0 +1,6 @@
+if is_intra_admin
+  .btn-group
+    a.btn.btn-primary.btn-xs(href='{% url "intra_admin_team_member_view" event.slug team_member.team.slug team_member.person.id %}')
+      i.fa.fa-pencil-square
+    //- a.btn.btn-danger.btn-xs(href='')
+    //-   i.fa.fa-trash

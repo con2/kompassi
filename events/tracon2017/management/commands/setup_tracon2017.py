@@ -30,6 +30,7 @@ class Setup(object):
         # self.setup_tickets()
         # self.setup_payments()
         # self.setup_programme()
+        self.setup_intra()
         self.setup_access()
         # self.setup_sms()
 
@@ -234,11 +235,6 @@ class Setup(object):
 
             return limit_group
 
-        def ordering():
-            ordering.counter += 10
-            return ordering.counter
-        ordering.counter = 0
-
         for product_info in [
             dict(
                 name='Viikonloppulippu',
@@ -251,7 +247,7 @@ class Setup(object):
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
-                ordering=ordering(),
+                ordering=self.get_ordering_number(),
             ),
             dict(
                 name='Lauantailippu',
@@ -263,7 +259,7 @@ class Setup(object):
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
-                ordering=ordering(),
+                ordering=self.get_ordering_number(),
             ),
             dict(
                 name='Sunnuntailippu',
@@ -275,7 +271,7 @@ class Setup(object):
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
-                ordering=ordering(),
+                ordering=self.get_ordering_number(),
             ),
             dict(
                 name='Iltabilelippu',
@@ -287,7 +283,7 @@ class Setup(object):
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
-                ordering=ordering(),
+                ordering=self.get_ordering_number(),
             ),
             dict(
                 name='Lattiamajoitus 1 yö pe-la - Aleksanterin koulu (sis. makuualusta)',
@@ -300,7 +296,7 @@ class Setup(object):
                 requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
-                ordering=ordering(),
+                ordering=self.get_ordering_number(),
             ),
             dict(
                 name='Lattiamajoitus 1 yö la-su - Aleksanterin koulu (sis. makuualusta)',
@@ -313,7 +309,7 @@ class Setup(object):
                 requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
-                ordering=ordering(),
+                ordering=self.get_ordering_number(),
             ),
             dict(
                 name='Lattiamajoitus 1 yö pe-la - Pyynikin koulu (ei sis. makuualustaa)',
@@ -326,7 +322,7 @@ class Setup(object):
                 requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
-                ordering=ordering(),
+                ordering=self.get_ordering_number(),
             ),
             dict(
                 name='Lattiamajoitus 1 yö la-su - Pyynikin koulu (ei sis. makuualustaa)',
@@ -339,7 +335,7 @@ class Setup(object):
                 requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
-                ordering=ordering(),
+                ordering=self.get_ordering_number(),
             ),
         ]:
             name = product_info.pop('name')
@@ -562,6 +558,42 @@ class Setup(object):
                 sms_enabled=True,
             )
         )
+
+    def setup_intra(self):
+        from intra.models import IntraEventMeta, Team
+
+        admin_group, = IntraEventMeta.get_or_create_groups(self.event, ['admins'])
+        organizer_group = self.event.labour_event_meta.get_group('conitea')
+        meta, unused = IntraEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                organizer_group=organizer_group,
+            )
+        )
+
+        for team_slug, team_name in [
+            ('jory', 'Johtoryhmä'),
+            ('ohjelma', 'Ohjelma'),
+            ('isosali', 'Iso sali'),
+            ('aspa', 'Asiakaspalvelu'),
+            ('talous', 'Talous'),
+            ('tilat', 'Tilat'),
+            ('tyovoima', 'Työvoima'),
+            ('tekniikka', 'Tekniikka'),
+            ('turva', 'Turva'),
+        ]:
+            team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            Team.objects.get_or_create(
+                event=self.event,
+                slug=team_slug,
+                defaults=dict(
+                    name=team_name,
+                    order=self.get_ordering_number(),
+                    group=team_group,
+                )
+            )
+
 
 
 class Command(BaseCommand):

@@ -78,6 +78,10 @@ if 'enrollment' in settings.INSTALLED_APPS:
     from enrollment.admin import InlineEnrollmentEventMetaAdmin
     event_admin_inlines.append(InlineEnrollmentEventMetaAdmin)
 
+if 'intra' in settings.INSTALLED_APPS:
+    from intra.admin import InlineIntraEventMetaAdmin
+    event_admin_inlines.append(InlineIntraEventMetaAdmin)
+
 
 class EventAdmin(admin.ModelAdmin):
     inlines = tuple(event_admin_inlines)

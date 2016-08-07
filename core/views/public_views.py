@@ -91,4 +91,8 @@ def core_event_view(request, event_slug):
         from sms.views import sms_event_box_context
         vars.update(sms_event_box_context(request, event))
 
+    if event.intra_event_meta:
+        from intra.views import intra_event_box_context
+        vars.update(intra_event_box_context(request, event))
+
     return render(request, 'core_event_view.jade', vars)

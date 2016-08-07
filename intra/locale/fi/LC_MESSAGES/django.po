@@ -1,0 +1,163 @@
+#: templates/intra_admin_team_member_view.jade
+msgid "Add a member to a team"
+msgstr "Lisää jäsen tiimiin"
+
+#: templates/intra_admin_team_member_view.jade
+msgid "Add member"
+msgstr "Lisää jäsen"
+
+#: templates/intra_admin_team_actions.jade
+msgid "Add member…"
+msgstr "Lisää jäsen…"
+
+#: templates/intra_admin_team_member_view.jade
+msgid "Cancel and return"
+msgstr "Peruuta ja palaa luetteloon"
+
+#: models/team_member.py
+msgid "Controls whether this person is added to the user group of this team. Group membership in turn usually controls membership on mailing lists and may convey additional access privileges."
+msgstr "Kontrolloi sitä, lisätäänkö jäsentä tiimin käyttäjäryhmään. Käyttäjäryhmän jäsenyys puolestaan voi antaa mm. käyttöoikeuksia ja/tai sähköpostilistan jäsenyyden."
+
+#: models/team_member.py
+msgid "Controls whether this person is shown in internal listings. You might want to un-tick this for people who have been added to this team for only the access or mailing lists."
+msgstr "Kontrolloi sitä, näytetäänkö jäsentä tässä tiimissä sisäisissä listauksissa. Saatat haluta poistaa ruksin tästä sellaisille henkilöille, jotka lisätään tiimiin vain käyttöoikeuksien tai sähköpostilistojen vuoksi."
+
+#: models/team_member.py
+msgid "Controls whether this person is shown in public listings."
+msgstr "Kontrolloi sitä, näytetäänkö jäsentä tässä tiimissä julkisissa listauksissa."
+
+#: models/team_member.py
+msgid "Default team"
+msgstr "Ensisijainen tiimi"
+
+#: models/team.py
+msgid "Description"
+msgstr "Kuvaus"
+
+#: models/team_member.py
+msgid "Display internally"
+msgstr "Näytä sisäisesti"
+
+#: models/team_member.py
+msgid "Display publicly"
+msgstr "Näytä julkisesti"
+
+#: templates/intra_organizer_view.jade
+msgid "E-mail address"
+msgstr "Sähköpostiosoite"
+
+#: templates/intra_admin_team_member_view.jade
+msgid "Edit team member"
+msgstr "Muokkaa jäsentä"
+
+#: models/team_member.py
+msgid "Event"
+msgstr "Tapahtuma"
+
+#: templates/intra_organizer_view.jade
+msgid "First name"
+msgstr "Etunimi"
+
+#: templates/intra_event_box.jade
+msgid "Go to the organizer view"
+msgstr "Siirry järjestäjänäkymään"
+
+#: models/team_member.py
+msgid "Group membership"
+msgstr "Ryhmän jäsenyys"
+
+#: models/team_member.py
+msgid "In some listings where space is tight, the person is only shown under their default team. Designating one team as the default for someone replaces their prior default team."
+msgstr "Joissain listauksissa joissa tila on kortilla kukin henkilö näytetään ainoastaan ensisijaisessa tiimissään. Yhden tiimin määrittäminen henkilölle ensisijaiseksi korvaa tämän mahdollisen aikaisemman ensisijaisen tiimin."
+
+#: templates/intra_organizer_view.jade
+msgid "Job title"
+msgstr "Tehtävänimike"
+
+#: models/team.py
+msgid "Name"
+msgstr "Nimi"
+
+#: templates/intra_organizer_view.jade
+msgid "Nick name"
+msgstr "Nick"
+
+#: templates/intra_organizer_view.jade
+#, python-format
+msgid "One member."
+msgid_plural "%(num_members)s members."
+msgstr[0] "Yksi jäsen."
+msgstr[1] "%(num_members)s jäsentä"
+
+#: models/team.py
+msgid "Order"
+msgstr "Järjestys"
+
+#: helpers.py templates/intra_event_box.jade
+msgid "Organizer intranet"
+msgstr "Järjestäjien intranet"
+
+#: templates/intra_organizer_view.jade
+msgid "Phone number"
+msgstr "Puhelinnumero"
+
+#: views/intra_admin_team_member_view.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkista lomake."
+
+#: templates/intra_admin_team_member_view.jade
+msgid "Save changes"
+msgstr "Tallenna muutokset"
+
+#: templates/intra_organizer_view.jade
+msgid "Surname"
+msgstr "Sukunimi"
+
+#: models/team_member.py
+msgid "Team leader"
+msgstr "Tiiminvetäjä"
+
+#: models/team_member.py
+msgid "Team leaders are placed first and hilighted in listings."
+msgstr "Tiiminvetäjät lajitellaan listauksen alkuun ja näytetään korostettuina."
+
+#: models/team_member.py
+msgid "Team member"
+msgstr "Tiimin jäsen"
+
+#: models/team_member.py
+msgid "Team members"
+msgstr "Tiimin jäsenet"
+
+#: templates/intra_admin_team_member_view.jade templates/intra_organizer_view.jade views/menu_items.py
+msgid "Teams and organizers"
+msgstr "Tiimit ja järjestäjät"
+
+#: views/intra_admin_team_member_view.py
+msgid "The member was added to the team."
+msgstr "Jäsen lisättiin tiimiin."
+
+#: helpers.py
+msgid "This event does not use the organizer intranet."
+msgstr "Tämä tapahtuma ei käytä järjestäjäintranetiä."
+
+#: templates/intra_organizer_view.jade
+msgid "This team has no members."
+msgstr "Tässä tiimissä ei ole jäseniä."
+
+#: models/team.py
+msgid "What is the team responsible for?"
+msgstr "Mitkä ovat tämän tiimin vastuut?"
+
+#: helpers.py
+msgid "You do not have access to the organizer intranet."
+msgstr "Sinulla ei ole pääsyä tämän tapahtuman järjestäjäintranetiin."
+
+#: helpers.py
+msgid "You do not have administrator access to the organizer intranet."
+msgstr "Sinulla ei ole tämän tapahtuman järjestäjäintranetin ylläpito-oikeuksia."
+
+#: templates/intra_event_box.jade
+msgid "You have access to the organizer intranet."
+msgstr "Sinulla on pääsy järjestäjien intranetiin."
+

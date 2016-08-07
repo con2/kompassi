@@ -1,0 +1,45 @@
+extends "core_admin_base.jade"
+- load i18n
+block title
+  {% trans "Teams and organizers" %}
+block admin_content
+  h3 {% trans "Teams and organizers" %}
+  for team in teams
+    .panel.panel-default
+      .panel-heading: strong {{ team.name }}
+
+      if team.description
+        .panel-body {{ team.description|safe|linebreaks }}
+
+      if team.members.exists
+        table.table.table-striped
+          thead
+            tr
+              th {% trans "Surname" %}
+              th {% trans "First name" %}
+              th {% trans "Nick name" %}
+              th {% trans "Job title" %}
+              th {% trans "E-mail address" %}
+              th {% trans "Phone number" %}
+              if is_intra_admin
+                th
+          tbody
+            for team_member in team.members.all
+              tr(class='{{ team_member.css_classes }}')
+                td= team_member.person.surname
+                td= team_member.person.first_name
+                td= team_member.person.nick
+                td= team_member.signup.job_title
+                td= team_member.person.email
+                td= team_member.person.phone
+                if is_intra_admin
+                  td
+                    include intra_admin_team_member_actions.jade
+        .panel-footer.clearfix
+          include intra_admin_team_actions.jade
+          p.text-muted
+            {% blocktrans count num_members=team.members.count %}One member.{% plural %}{{ num_members }} members.{% endblocktrans %}
+      else
+        .panel-footer.clearfix
+          include intra_admin_team_actions.jade
+          p.text-muted {% trans "This team has no members." %}

@@ -158,6 +158,7 @@ INSTALLED_APPS = (
     'access',
     'sms',
     'membership',
+    'intra',
     'lippukala',
     'branding',
     'desuprofile_integration',

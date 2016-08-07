@@ -157,10 +157,6 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
         return groups
 
-    def is_user_supervisor(self, user):
-        supervisor_group, = LabourEventMeta.get_or_create_groups(self.event, ['supervisors'])
-        return self.is_user_admin(user) or self.is_user_in_group(user, supervisor_group)
-
     def create_groups_async(self):
         if 'background_tasks' in settings.INSTALLED_APPS:
             from ..tasks import labour_event_meta_create_groups
@@ -173,7 +169,6 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
         job_categories_or_suffixes = list(SIGNUP_STATE_GROUPS)
         job_categories_or_suffixes.extend(JobCategory.objects.filter(event=self.event))
-        job_categories_or_suffixes.append('supervisors')
         return LabourEventMeta.get_or_create_groups(self.event, job_categories_or_suffixes)
 
     @property
