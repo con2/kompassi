@@ -66,9 +66,9 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
         night_work_filter = None
 
     sorter = Sorter(request, "sort")
-    sorter.add("name", name=u'Sukunimi, Etunimi', definition=('person__surname', 'person__first_name'))
-    sorter.add("newest", name=u'Uusin ensin', definition=('-created_at',))
-    sorter.add("oldest", name=u'Vanhin ensin', definition=('created_at',))
+    sorter.add("name", name='Sukunimi, Etunimi', definition=('person__surname', 'person__first_name'))
+    sorter.add("newest", name='Uusin ensin', definition=('-created_at',))
+    sorter.add("oldest", name='Vanhin ensin', definition=('created_at',))
     signups = sorter.order_queryset(signups)
 
     if request.method == 'POST':
@@ -77,27 +77,36 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
             SignupClass.mass_reject(signups)
         elif action == 'request_confirmation':
             SignupClass.mass_request_confirmation(signups)
+        elif action == 'send_shifts':
+            SignupClass.mass_send_shifts(signups)
         else:
-            messages.error(request, u'Ei semmosta toimintoa oo.')
+            messages.error(request, 'Ei semmosta toimintoa oo.')
 
         return redirect('labour_admin_signups_view', event.slug)
 
     elif format in HTML_TEMPLATES:
         num_would_mass_reject = signups.filter(**SignupClass.get_state_query_params('new')).count()
         num_would_mass_request_confirmation = signups.filter(**SignupClass.get_state_query_params('accepted')).count()
+        num_would_send_shifts = SignupClass.filter_signups_for_mass_send_shifts(signups).count()
 
         mass_operations = OrderedDict([
             ('reject', MassOperation(
                 'reject',
                 'labour-admin-mass-reject-modal',
-                u'Hylkää kaikki käsittelemättömät...',
-                num_would_mass_reject
+                'Hylkää kaikki käsittelemättömät...',
+                num_would_mass_reject,
             )),
             ('request_confirmation', MassOperation(
                 'request_confirmation',
                 'labour-admin-mass-request-confirmation-modal',
-                u'Vaadi vahvistusta kaikilta hyväksytyiltä...',
-                num_would_mass_request_confirmation
+                'Vaadi vahvistusta kaikilta hyväksytyiltä...',
+                num_would_mass_request_confirmation,
+            )),
+            ('send_shifts', MassOperation(
+                'send_shifts',
+                'labour-admin-mass-send-shifts-modal',
+                'Lähetä vuorot kaikille vuoroja odottaville, joille ne on määritelty...',
+                num_would_send_shifts,
             )),
         ])
 

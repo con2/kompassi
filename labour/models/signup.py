@@ -357,8 +357,29 @@ class Signup(models.Model, CsvExportMixin):
         return cls._mass_state_change('accepted', 'confirmation', signups)
 
     @classmethod
-    def _mass_state_change(cls, old_state, new_state, signups):
-        signups = signups.filter(**Signup.get_state_query_params(old_state))
+    def filter_signups_for_mass_send_shifts(cls, signups):
+        return signups.filter(
+            **cls.get_state_query_params('accepted')
+        ).exclude(
+            xxx_interim_shifts='',
+            shifts__isnull=True,
+        )
+
+    @classmethod
+    def mass_send_shifts(cls, signups):
+        return cls._mass_state_change(
+            old_state='accepted',
+            new_state='finished',
+            signups=signups,
+            filter_func=cls.filter_signups_for_mass_send_shifts
+        )
+
+    @classmethod
+    def _mass_state_change(cls, old_state, new_state, signups, filter_func=None):
+        if filter_func is None:
+            signups = signups.filter(**Signup.get_state_query_params(old_state))
+        else:
+            signups = filter_func(signups)
 
         for signup in signups:
             signup.state = new_state
