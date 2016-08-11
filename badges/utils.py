@@ -35,7 +35,7 @@ def default_badge_factory(event, person):
 
         # Insertion order matters (most privileged first). list.sort is guaranteed to be stable.
         personnel_classes.extend(
-            (programme_role.role.personnel_class, programme_role.role.title)
+            (programme_role.role.personnel_class, programme_role.role.public_title)
             for programme_role in ProgrammeRole.objects.filter(
                 person=person,
                 programme__category__event=event,
