@@ -45,6 +45,11 @@ def get_timetable_tabs(request, event):
         Tab(special_url, special_text, special_active, 0),
     ]
 
+SCHEDULE_TEMPLATES = dict(
+    reasonable='programme_timetable_view.jade',
+    full_width='programme_full_width_timetable_view.jade',
+)
+
 
 @public_programme_required
 @cache_control(public=True, max_age=5 * 60)
@@ -54,7 +59,7 @@ def programme_timetable_view(
     request,
     event,
     internal_programmes=False,
-    template='programme_timetable_view.jade',
+    template=None,
     show_programme_actions=False,
 ):
     vars = dict(
@@ -77,7 +82,7 @@ def programme_internal_timetable_view(
     request,
     event,
     internal_programmes=True,
-    template='programme_timetable_view.jade',
+    template=None,
 ):
     vars = dict(
         tabs=get_timetable_tabs(request, event),
@@ -95,10 +100,13 @@ def actual_timetable_view(
     request,
     event,
     internal_programmes=False,
-    template='programme_timetable_view.jade',
+    template=None,
     vars=None,
     show_programme_actions=False,
 ):
+    if template is None:
+        template = SCHEDULE_TEMPLATES[event.programme_event_meta.schedule_layout]
+
     if not vars:
         vars = dict()
 

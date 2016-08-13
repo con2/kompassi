@@ -10,6 +10,12 @@ from core.utils import alias_property, is_within_period
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
 
 
+SCHEDULE_LAYOUT_CHOICES = [
+    ('reasonable', _('Reasonable')),
+    ('full_width', _('Full-width')),
+]
+
+
 class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     public_from = models.DateTimeField(
         null=True,
@@ -37,6 +43,17 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         null=True,
         blank=True,
         verbose_name=_("Accepting cold offers until"),
+    )
+
+    schedule_layout = models.CharField(
+        max_length=max(len(choice[0]) for choice in SCHEDULE_LAYOUT_CHOICES),
+        default='reasonable',
+        choices=SCHEDULE_LAYOUT_CHOICES,
+        verbose_name=_('Schedule layout'),
+        help_text=_(
+            'Some events may opt to make their schedule use the full width of the browser window. '
+            'This option selects between reasonable width (the default) and full width.'
+        ),
     )
 
     def get_special_programmes(self, include_unpublished=False, **extra_criteria):
@@ -74,6 +91,13 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
             self.accepting_cold_offers_from,
             self.accepting_cold_offers_until,
         )
+
+    @property
+    def is_full_width(self):
+        """
+        For easy iffability in templates.
+        """
+        return self.schedule_layout == 'full-width'
 
     @property
     def default_role(self):

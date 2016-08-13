@@ -501,7 +501,12 @@ class Setup(object):
             public=False,
             admin_group=programme_admin_group,
             contact_email='Tracon -ohjelmatiimi <ohjelma@tracon.fi>',
+            schedule_layout='full_width',
         ))
+
+        # v48
+        programme_event_meta.schedule_layout = 'full_width'
+        programme_event_meta.save()
 
         if settings.DEBUG:
             programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
