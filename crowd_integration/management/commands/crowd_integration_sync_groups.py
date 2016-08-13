@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand
 
 from core.utils import create_temporary_password
 
-from ...utils import ensure_group_exists, create_user, ensure_user_is_member_of_group
+from ...utils import ensure_group_exists, create_user, ensure_user_is_member_of_group, CrowdError
 
 
 def dot(ch='.'):
