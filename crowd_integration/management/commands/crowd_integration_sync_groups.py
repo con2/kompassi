@@ -24,7 +24,7 @@ class Command(BaseCommand):
         User = get_user_model()
 
         for group in Group.objects.all():
-            ensure_group_exists(group)
+            ensure_group_exists(group.name)
             dot()
 
         for user in User.objects.filter(person__isnull=False):
