@@ -86,7 +86,10 @@ def core_registration_view(request):
 
             user = authenticate(username=username, password=password)
 
-            response = do_login(request, user=user, password=password, next=next)
+            # Supplying `password` here would cause Kompassi to try and synchronize the password
+            # into Crowd, which in turn would cause a race between the task that creates the user
+            # (with password, mind you) and the task that sets the password at login time.
+            response = do_login(request, user=user, password=None, next=next)
             messages.success(request,
                 'Käyttäjätunnuksesi on luotu. Tervetuloa {kompassiin}!'
                 .format(kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE)
