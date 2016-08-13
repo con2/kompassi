@@ -431,7 +431,7 @@ class Person(models.Model):
         for badge in self.badge_set.filter(personnel_class__event__start_time__gte=now()):
             Badge.ensure(person=self, event=badge.personnel_class.event)
 
-    def apply_state_async():
+    def apply_state_async(self):
         if 'crowd_integration' in settings.INSTALLED_APPS:
             if 'background_tasks' in settings.INSTALLED_APPS:
                 from crowd_integration.tasks import update_user
