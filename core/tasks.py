@@ -24,3 +24,9 @@ def person_apply_state(person_id):
     from .models import Person
     person = Person.objects.get(id=person_id)
     person.apply_state_async()
+
+
+@shared_task(ignore_result=True)
+def person_apply_state_new_user_async(person_id, password):
+    person = Person.objects.get(id=person_id)
+    person.apply_state_new_user_async(password)

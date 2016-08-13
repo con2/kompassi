@@ -416,20 +416,10 @@ class Person(models.Model):
         changed their name.
         """
         self.apply_state_sync()
-
-        if 'crowd_integration' in settings.INSTALLED_APPS:
-            if 'background_tasks' in settings.INSTALLED_APPS:
-                from crowd_integration.tasks import update_user
-                update_user.delay(self.user.pk)
-            else:
-                from crowd_integration.utils import update_user
-                update_user(self.user)
+        self.apply_state_async()
 
     def apply_state_sync(self):
         self.apply_state_update_badges()
-
-    def apply_state_async(self):
-        self.apply_state_update_crowd(self)
 
     def apply_state_update_badges(self):
         if 'badges' not in settings.INSTALLED_APPS:
@@ -441,18 +431,59 @@ class Person(models.Model):
         for badge in self.badge_set.filter(personnel_class__event__start_time__gte=now()):
             Badge.ensure(person=self, event=badge.personnel_class.event)
 
+    def apply_state_async():
+        if 'crowd_integration' in settings.INSTALLED_APPS:
+            if 'background_tasks' in settings.INSTALLED_APPS:
+                from crowd_integration.tasks import update_user
+                update_user.delay(self.user.pk)
+            else:
+                from crowd_integration.utils import update_user
+                update_user(self.user)
+
     def ensure_basic_groups(self):
+        """
+        Note that this method handles the basic groups only locally.
+
+        If the Crowd integration is active, basic groups will be added in Crowd by
+        apply_state_new_user_async.
+        """
         for group_name in settings.KOMPASSI_NEW_USER_GROUPS:
             self.user.groups.add(Group.objects.get(name=group_name))
 
     def apply_state_new_user(self, request, password):
+        self.apply_state_new_user_sync(request)
+        self.apply_state_new_user_async(password)
+
+    def apply_state_new_user_sync(self, request):
         self.setup_email_verification(request)
         self.ensure_basic_groups()
 
-        if 'crowd_integration' in settings.INSTALLED_APPS:
-            if 'background_tasks' in settings.INSTALLED_APPS:
-                from crowd_integration.tasks import create_user
-                create_user.delay(self.user.pk, password)
-            else:
-                from crowd_integration.utils import create_user
-                create_user(self.user, password)
+    def apply_state_new_user_async(self, password):
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from ..tasks import person_apply_state_new_user_async
+            person_apply_state_new_user_async.delay(self.pk, password)
+        else:
+            self._apply_state_new_user_async(password)
+
+    def _apply_state_new_user_async(self, password):
+        self.crowd_create_user(password)
+        self.crowd_sync_groups()
+
+    def crowd_create_user(self, password):
+        from crowd_integration.utils import create_user
+        create_user(self.user, password)
+
+    def crowd_sync_groups(self):
+        """
+        Ensures the user has their group membership set also in Crowd. Necessary for new users
+        to ensure basic groups, but not usually necessary for existing users because when eg.
+        labour changes the groups, it updates Crowd on the fly.
+
+        Really just used for initial groups (most importantly `users`).
+
+        TODO Propagate django-admin group changes to Crowd
+        https://docs.djangoproject.com/en/1.10/ref/signals/#m2m-changed
+        """
+        from crowd_integration.utils import ensure_user_group_membership
+        for group in self.user.groups.all():
+            ensure_user_group_membership(self.user, group.name)
