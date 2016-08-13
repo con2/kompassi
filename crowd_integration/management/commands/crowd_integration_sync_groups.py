@@ -35,5 +35,5 @@ class Command(BaseCommand):
                 dot('+')
 
             for group in user.groups.all():
-                ensure_user_is_member_of_group(user, group)
+                ensure_user_is_member_of_group(user, group.name)
                 dot()
