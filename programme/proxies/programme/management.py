@@ -9,8 +9,14 @@ from core.utils import (
 from ...models import Programme
 
 
-HAVE_POSTGRESQL_TIME_RANGE_FUNCTIONS = get_postgresql_version_num() >= 90200
 logger = logging.getLogger('kompassi')
+
+
+def have_postgresql_time_range_functions():
+    if not hasattr(have_postgresql_time_range_functions, '_result'):
+        have_postgresql_time_range_functions._result = get_postgresql_version_num() >= 90200
+
+    return have_postgresql_time_range_functions._result
 
 
 class ProgrammeManagementProxy(Programme):
@@ -26,7 +32,7 @@ class ProgrammeManagementProxy(Programme):
             self.length is None,
         )):
             return ProgrammeManagementProxy.objects.none()
-        elif HAVE_POSTGRESQL_TIME_RANGE_FUNCTIONS:
+        elif have_postgresql_time_range_functions():
             return ProgrammeManagementProxy.objects.raw(
                 resource_string(__name__, 'sql/overlapping_programmes.sql'),
                 (
