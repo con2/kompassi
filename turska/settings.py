@@ -179,26 +179,18 @@ INSTALLED_APPS = (
     'organizations.yukitea_ry',
     'organizations.luutakomero_ry',
 
-    'events.tracon8',
     'events.tracon9',
-    'events.kawacon2014',
-    'events.concon9',
     'events.traconx',
     'events.hitpoint2015',
-    'events.yukicon2015',
     'events.kuplii2015',
-    'events.popcult2015',
     'events.mimicon2015',
     'events.animecon2015',
-    'events.popcultday2015',
     'events.yukicon2016',
     'events.finncon2016',
     'events.frostbite2016',
     'events.tracon11',
     'events.kuplii2016',
     'events.aicon2016',
-    'events.popcult2016',
-    'events.ropecon2016',
     'events.kawacon2016',
     'events.mimicon2016',
     'events.desucon2016',
@@ -321,7 +313,7 @@ if 'lippukala' in INSTALLED_APPS:
 
     # NOTE these will be overridden by the respective fields in TicketsEventMeta
     # however, they need to be defined in settings or lippukala will barf.
-    LIPPUKALA_PRINT_LOGO_PATH = mkpath('events', 'popcult2016', 'static', 'images', 'popcult.png')
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath('events', 'mimicon2016', 'static', 'images', 'mimicon2016_logo.png')
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 
