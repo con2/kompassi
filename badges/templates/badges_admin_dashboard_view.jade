@@ -50,6 +50,11 @@ block admin_content
               th {{ meta.count_printed_badges }}
               th {{ meta.count_badges }}
               th
+        .panel-footer.clearfix
+          .btn-group.pull-right
+            a.btn.btn-success(href='{% url "badges_admin_create_view" event.slug %}')
+              i.fa.fa-plus.kompassi-icon-space-right
+              | Lisää uusi käsin
 
 block extra_scripts
   style
