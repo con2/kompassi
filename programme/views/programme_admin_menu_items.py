@@ -11,6 +11,10 @@ from ..models import Invitation, ProgrammeFeedback, Programme
 
 
 def programme_admin_menu_items(request, event):
+    organizers_url = url('programme_admin_organizers_view', event.slug)
+    organizers_active = request.path.startswith(organizers_url)
+    organizers_text = _('Programme hosts')
+
     offers_url = url('programme_admin_view', event.slug) + '?state=offered&sort=created_at'
     offers_active = request.get_full_path() == offers_url
     offers_text = _('New offers')
@@ -43,6 +47,7 @@ def programme_admin_menu_items(request, event):
 
     index_url = url('programme_admin_view', event.slug)
     index_active = request.path.startswith(index_url) and not any((
+        organizers_active,
         feedback_active,
         invitations_active,
         offers_active,
@@ -53,6 +58,7 @@ def programme_admin_menu_items(request, event):
 
     return [
         AdminMenuItem(is_active=index_active, href=index_url, text=index_text),
+        AdminMenuItem(is_active=organizers_active, href=organizers_url, text=organizers_text),
         AdminMenuItem(is_active=offers_active, href=offers_url, text=offers_text, notifications=offers_notifications),
         AdminMenuItem(is_active=invitations_active, href=invitations_url, text=invitations_text, notifications=invitations_notifications),
         AdminMenuItem(is_active=timetable_active, href=timetable_url, text=timetable_text),

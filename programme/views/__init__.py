@@ -29,6 +29,7 @@ from .programme_accept_invitation_view import programme_accept_invitation_view
 from .programme_admin_feedback_view import programme_admin_feedback_view
 from .programme_admin_invitations_view import programme_admin_invitations_view
 from .programme_admin_menu_items import programme_admin_menu_items
+from .programme_admin_organizers_view import programme_admin_organizers_view
 from .programme_admin_publish_view import programme_admin_publish_view
 from .programme_feedback_view import programme_feedback_view
 from .programme_offer_view import programme_offer_view

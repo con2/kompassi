@@ -92,3 +92,10 @@ class ProgrammeRole(models.Model):
     @property
     def extra_invites_left(self):
         return self.extra_invites - self.extra_invites_used
+
+    @property
+    def role_or_status(self):
+        if self.programme.state in ['accepted', 'published']:
+            return self.role.title
+        else:
+            return self.programme.get_state_display()
