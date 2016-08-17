@@ -7,9 +7,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "gulp",
-    "build": "gulp build",
-    "test": "mocha gallery/static_src/**/__tests__/*.js --compilers js:babel/register --require gallery/static_src/__tests__/test-helper.js"
+    "start": "node_modules/.bin/gulp",
+    "build": "node_modules/.bin/gulp build",
+    "test": "node_modules/.bin/mocha gallery/static_src/**/__tests__/*.js --compilers js:babel/register --require gallery/static_src/__tests__/test-helper.js"
   },
   "repository": {
     "type": "git",

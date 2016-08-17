@@ -20,6 +20,9 @@ function enrichJobCategory(jobCategory) {
   };
 
   if(jobCategory.people) {
+    jobCategory.people.forEach(person => {
+      person.text = `${person.fullName} (${person.currentlyAssigned}/${person.totalWork})`
+    })
     jobCategory.peopleById = _.keyBy(jobCategory.people, 'id');
   }
 

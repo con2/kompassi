@@ -31,18 +31,22 @@
             label.control-label.col-md-3 Henkilö
             .col-md-9
               select.form-control(data-bind="options: people,
-                                             optionsText: 'fullName',
+                                             optionsText: 'text',
                                              optionsCaption: 'Valitse henkilö...',
                                              value: person")
                 option(value="")
           .form-group
-            label.control-label.col-md-3 Lisätiedot
+            label.control-label.col-md-3 Vuoron lisätiedot
             .col-md-9
               textarea.form-control(data-bind='value: notes')
           .form-group
             label.control-label.col-md-3 Työvuorotoiveet
             .col-md-9
-              textarea.form-control(disabled, data-bind='value: shiftWishes')
+              textarea.form-control(disabled, rows=5, data-bind='value: shiftWishes')
+          .form-group
+            label.control-label.col-md-3 Vuorojen pituus
+            .col-md-9
+              input.form-control(disabled, data-bind='value: shiftType')
       .modal-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-default(href='', data-bind='click: cancel') Peruuta

@@ -27,6 +27,13 @@ export default class ShiftModal {
         return 'Henkilön työvuorotoiveet näkyvät tässä valittuasi henkilön...';
       }
     });
+    this.shiftType = this.person.fmap(person => {
+      if (person) {
+        return person.shiftType || '';
+      } else {
+        return 'Henkilön toivoma vuorojen pituus näkyy tässä valittuasi henkilön...';
+      }
+    });
 
     this.people = ko.observable([]);
 

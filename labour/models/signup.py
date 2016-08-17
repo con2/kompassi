@@ -715,12 +715,18 @@ class Signup(models.Model, CsvExportMixin):
 
     def as_dict(self):
         # XXX?
-        shift_wishes = self.signup_extra.shift_wishes if self.signup_extra.get_field('shift_wishes') else ''
+        signup_extra = self.signup_extra
+        shift_wishes = signup_extra.shift_wishes if signup_extra.get_field('shift_wishes') else ''
+        total_work = signup_extra.total_work if signup_extra.get_field('total_work') else ''
+        shift_type = signup_extra.get_shift_type_display() if signup_extra.get_field('shift_type') else ''
 
         return dict(
             id=self.person.id,
             fullName=self.person.full_name,
             shiftWishes=shift_wishes,
+            totalWork=total_work,
+            currentlyAssigned=self.shifts.all().aggregate(sum_hours=models.Sum('hours'))['sum_hours'],
+            shiftType=shift_type,
         )
 
     @classmethod
