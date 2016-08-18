@@ -46,6 +46,17 @@ from .constants import (
 
 
 class StateTransition(object):
+    """
+    This class represents a potential state transition of a Signup from its current state to
+    another. The state transition is illustrated by a color (a CSS class) and a piece of text in the
+    imperative form.
+
+    Furthermore, we may want to disable some transitions that would otherwise be legal. These cases
+    warrant an explanation to the user.
+
+    These state transitions will be represented by buttons on the State tab of the admin signup view.
+    """
+
     __slots__ = ['signup', 'to_state', 'disabled_reason']
 
     from core.utils import simple_object_repr as __repr__
