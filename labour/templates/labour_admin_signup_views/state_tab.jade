@@ -13,11 +13,17 @@
             td {{ state_text }}
     .panel-footer.clearfix
       .btn-group.pull-right
-        for state_name, button_class, button_text in signup.next_states_buttons
-          input.btn(class='{{ button_class }}'
-                    type='submit'
-                    name='set-state-{{ state_name }}'
-                    value='{{ button_text }}')
+        for button in signup.next_states_buttons
+          if button.is_disabled
+            input.btn(class='{{ button.css_class }}'
+                      value='{{ button.text }}',
+                      title='{{ button.disabled_reason }}',
+                      disabled)
+          else
+            input.btn(class='{{ button.css_class }}',
+                      type='submit',
+                      name='set-state-{{ button.to_state }}',
+                      value='{{ button.text }}')
 
   .panel.panel-default
     .panel-heading: strong Työvoima&shy;vastaavan merkinnät

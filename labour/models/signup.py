@@ -45,6 +45,44 @@ from .constants import (
 )
 
 
+class StateTransition(object):
+    __slots__ = ['signup', 'to_state', 'disabled_reason']
+
+    from core.utils import simple_object_repr as __repr__
+
+    def __init__(self, signup, to_state):
+        self.signup = signup
+        self.to_state = to_state
+        self.disabled_reason = self._determine_disabled_reason()
+
+    @property
+    def from_state(self):
+        return self.signup.state
+
+    @property
+    def css_class(self):
+        return SIGNUP_STATE_BUTTON_CLASSES[self.to_state]
+
+    @property
+    def text(self):
+        return SIGNUP_STATE_IMPERATIVES[self.to_state]
+
+    def _determine_disabled_reason(self):
+        # XXX In the Grand Order, the first flag is `is_active`.
+        # If the worker would end up in an inactive state, they must not have shifts.
+        if not STATE_FLAGS_BY_NAME[self.to_state][0] and self.signup.shifts.exists():
+            return _(
+                'This signup has shifts. Please remove the shifts before cancelling or '
+                'rejecting the signup.'
+            )
+
+        return ''
+
+    @property
+    def is_disabled(self):
+        return bool(self.disabled_reason)
+
+
 class Signup(models.Model, CsvExportMixin):
     person = models.ForeignKey('core.Person')
     event = models.ForeignKey('core.Event')
@@ -546,11 +584,7 @@ class Signup(models.Model, CsvExportMixin):
 
     @property
     def next_states_buttons(self):
-        return [(
-            state_name,
-            SIGNUP_STATE_BUTTON_CLASSES[state_name],
-            SIGNUP_STATE_IMPERATIVES[state_name],
-        ) for state_name in self.next_states]
+        return [StateTransition(self, to_state) for to_state in self.next_states]
 
     @property
     def formatted_state(self):
