@@ -8,19 +8,19 @@ block admin_content
     table.table.table-striped
       thead
         tr
-          th Kanava
+          th.hidden-xs Kanava
           th Otsikko
-          th Vastaanottaja
-          th Lähetetty
-          th Vanhennettu
+          th.hidden-xs Vastaanottaja
+          th.hidden-xs Lähetetty
+          th.hidden-xs Vanhennettu
       tbody
         for message in labour_messages
           tr
-            td {{ message.get_channel_display }}
+            td.hidden-xs {{ message.get_channel_display }}
             td: a(href='{% url "labour_admin_mail_editor_view" event.slug message.pk %}') {{ message.subject_template }}
-            td {{ message.recipient }}
-            td {{ message.sent_at|date }}
-            td {{ message.expired_at|date }}
+            td.hidden-xs {{ message.recipient }}
+            td.hidden-xs {{ message.sent_at|date }}
+            td.hidden-xs {{ message.expired_at|date }}
     .panel-footer.clearfix
       .button-group.pull-right
         a.btn.btn-primary(href='{% url "labour_admin_mail_new_view" event.slug %}') Uusi viesti
