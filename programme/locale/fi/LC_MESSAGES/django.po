@@ -166,7 +166,7 @@ msgstr "Lisäkutsut"
 msgid "Feedback"
 msgstr "Palaute"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "First name"
 msgstr "Etunimi"
 
@@ -174,9 +174,13 @@ msgstr "Etunimi"
 msgid "Free-form organizer"
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 
-#: models/programme.py templates/programme_state_label.jade
+#: models/programme.py templates/programme_admin_organizers_view.jade templates/programme_state_label.jade
 msgid "Frozen"
 msgstr "Lukittu"
+
+#: models/programme_event_meta.py
+msgid "Full-width"
+msgstr "Koko leveys"
 
 #: templates/programme_profile_view.jade
 msgid "Future programmes"
@@ -319,6 +323,10 @@ msgstr "Onko kyseessä uusinta?"
 msgid "It's OK to photograph my programme"
 msgstr "Ohjelmanumeroani saa valokuvata"
 
+#: models/role.py
+msgid "Job title"
+msgstr "Tehtävänimike"
+
 #: models/programme.py
 msgid "Laptop provided by the event"
 msgstr "Tapahtuman toimittama kannettava tietokone"
@@ -379,6 +387,10 @@ msgstr "Uudet tarjoukset"
 msgid "New programme"
 msgstr "Uusi ohjelmanumero"
 
+#: templates/programme_admin_organizers_view.jade
+msgid "Nick"
+msgstr "Nick"
+
 #: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "Nick name"
 msgstr "Nick"
@@ -394,6 +406,11 @@ msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
 #: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_admin_feedback_view.jade templates/programme_profile_feedback_view.jade
 msgid "No feedback."
 msgstr "Tämä ohjelmanumero ei ole vielä saanut palautetta."
+
+#: templates/programme_admin_organizers_view.jade
+#, python-format
+msgid "No programme hosts visible (total %(num_total_organizers)s)."
+msgstr "Ei ohjelmanjärjestäjiä näkyvissä (yhteensä %(num_total_organizers)s)."
 
 #: templates/programme_profile_view.jade
 msgid "No programmes"
@@ -422,6 +439,13 @@ msgid_plural "%(num_feedback_messages)s feedback messages."
 msgstr[0] "Yksi palaute."
 msgstr[1] "%(num_feedback_messages)s palautetta."
 
+#: templates/programme_admin_organizers_view.jade
+#, python-format
+msgid "One programme host visible (total %(num_total_organizers)s)."
+msgid_plural "%(num_organizers)s programme hosts (total %(num_total_organizers)s)."
+msgstr[0] "Näkyvissä yksi ohjelmanjärjestäjä (yhteensä %(num_total_organizers)s)."
+msgstr[1] "Näkyvissä %(num_organizers)s ohjelmanjärjestäjää (yhteensä %(num_total_organizers)s)."
+
 #: views/programme_profile_feedback_view.py
 msgid "Only an organizer of the programme may view its feedback."
 msgstr "Vain ohjelmanjärjestäjä voi nähdä ohjelmansa palautteen."
@@ -441,6 +465,10 @@ msgstr "Muut tekniikkatarpeet"
 #: models/programme.py
 msgid "Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed."
 msgstr "Tapahtuman viralliset valokuvaajat pyrkivät ottamaan valokuvia kaikista ohjelmanumeroista joista niitä on pyydetty."
+
+#: models/role.py
+msgid "Override public job title"
+msgstr "Korvaa tehtävänimike julkisesti"
 
 #: models/programme.py
 msgid "Own laptop – PC"
@@ -506,7 +534,7 @@ msgstr "Ohjelmapalaute"
 msgid "Programme host"
 msgstr "Ohjelmanjärjestäjä"
 
-#: models/programme_role.py templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_offer_view.jade templates/programme_profile_detail_view.jade views/programme_admin_detail_view.py
+#: models/programme_role.py templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_offer_view.jade templates/programme_profile_detail_view.jade views/programme_admin_detail_view.py views/programme_admin_menu_items.py
 msgid "Programme hosts"
 msgstr "Ohjelmanjärjestäjät"
 
@@ -514,7 +542,7 @@ msgstr "Ohjelmanjärjestäjät"
 msgid "Programme information"
 msgstr "Ohjelmanumeron tiedot"
 
-#: templates/programme_profile_view.jade views/public_views.py
+#: templates/programme_admin_organizers_view.jade templates/programme_profile_view.jade views/public_views.py
 msgid "Programmes"
 msgstr "Ohjelmanumerot"
 
@@ -541,6 +569,10 @@ msgstr "Ohjelmakartan julkaiseminen"
 #: models/programme.py
 msgid "Published"
 msgstr "Julkaistu"
+
+#: models/programme_event_meta.py
+msgid "Reasonable"
+msgstr "Järjellinen"
 
 #: models/programme.py
 msgid "Recording permission"
@@ -598,6 +630,11 @@ msgstr "Tallenna muutokset"
 msgid "Schedule information"
 msgstr "Ohjelmakarttatiedot"
 
+#: models/programme_event_meta.py
+#, fuzzy
+msgid "Schedule layout"
+msgstr "ohjelmakarttanäkymä"
+
 #: templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Send invitation"
 msgstr "Lähetä kutsu"
@@ -613,6 +650,10 @@ msgstr "Isäntä"
 #: models/role.py
 msgid "Some events have speaker roles that convey different privileges within the same personnel class. This priority field will put the speakers in their place."
 msgstr "Jotkin tapahtumat määrittelevät useita ohjelmanjärjestäjärooleja, jotka antavat eritasoiset edut. Tätä prioriteettikenttää käytetään korkeimmat edut antavan tason valitsemiseen."
+
+#: models/programme_event_meta.py
+msgid "Some events may opt to make their schedule use the full width of the browser window. This option selects between reasonable width (the default) and full width."
+msgstr "Jotkut tapahtumat haluavat käyttää ohjelmakartassaan selainikkunan koko leveyden. Tämä asetus vaihtaa koko järjellisen (oletus) ja koko leveyden välillä."
 
 #: templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "Someone else has invited someone, but they have not yet accepted their invitation."
@@ -630,7 +671,7 @@ msgstr "Tila"
 msgid "Submit feedback"
 msgstr "Lähetä palaute"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -767,6 +808,10 @@ msgstr "Tämä tapahtuma ei tällä hetkellä ota vastaan ohjelmatarjouksia täm
 #: models/programme.py
 msgid "This field is normally only visible to the programme managers. However, should the programme host request a record of their own personal details, this field will be included in that record."
 msgstr "Tämän kentän sisältö näkyy normaalisti vain ohjelmavastaaville. Se on kuitenkin sisällytettävä rekisteriotteeseen, mikäli ohjelmanjärjestäjä pyytää sellaista."
+
+#: models/role.py
+msgid "This gets displayed publicly instead of title, if set. Affects eg. badges."
+msgstr "Näytetään tehtävänimikkeen paikalla (esim. badgessa) roolin nimen asemesta."
 
 #: models/programme.py
 msgid "This programme has been frozen by the programme manager."
@@ -975,4 +1020,3 @@ msgstr "tägit"
 #: models/programme_feedback.py
 msgid "visible"
 msgstr "näkyvissä"
-

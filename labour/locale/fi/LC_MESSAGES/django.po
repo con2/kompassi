@@ -353,6 +353,10 @@ msgstr "Tämä tapahtuma ei ota tällä hetkellä vastaan hakemuksia."
 msgid "This job category cannot be removed because applications have already been made to it."
 msgstr "Tätä tehtäväaluetta ei voi poistaa, koska sille on jo tehty hakemuksia."
 
+#: models/signup.py
+msgid "This signup has shifts. Please remove the shifts before cancelling or rejecting the signup."
+msgstr "Tällä vapaaehtoistyöntekijällä on vuoroja. Ole hyvä ja poista vuorot ennen kuin peruutat tai hylkäät ilmoittautumisen."
+
 #: views/labour_survey_view.py
 msgid "This survey does not apply to you."
 msgstr "Tämä kysely ei sovellu sinuun."
@@ -360,6 +364,10 @@ msgstr "Tämä kysely ei sovellu sinuun."
 #: views/labour_survey_view.py
 msgid "This survey is not currently active."
 msgstr "Tämä kysely ei ole tällä hetkellä käytössä."
+
+#: templates/labour_admin_roster_views/TooSmall.jade
+msgid "This view has not been designed for a display this small. For an optimal user experience, please switch to a tablet or a computer."
+msgstr "Tätä näkymää ei ole suunniteltu näin kapealle näytölle. Paremman käyttökokemuksen saavuttamiseksi ole hyvä ja käytä tablettia tai tietokonetta."
 
 #: models/survey.py
 msgid "Title"
@@ -566,4 +574,3 @@ msgstr "aikajakeet"
 
 #~ msgid "Volunteer worker onboarding"
 #~ msgstr "Työvoiman kirjaaminen saapuneeksi"
-
