@@ -1,8 +1,11 @@
+- load trans from i18n
 for admin_menu_item in admin_menu_items
   if admin_menu_item.is_admin_menu_item
     li(class='{% if admin_menu_item.is_active %}active{% endif %}')
       a(href='{{ admin_menu_item.href }}')
         |{{ admin_menu_item.text }}
+        if admin_menu_item.is_mobile_incompatible
+          i.fa.fa-exclamation-triangle.kompassi-icon-space-left.visible-xs-inline(title='{% trans "This view has not been designed for a display this small. For an optimal user experience, please switch to a tablet or a computer." %}')
         if admin_menu_item.notifications
           span.badge.badge-default= admin_menu_item.notifications
   else

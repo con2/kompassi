@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
+from core.admin_menus import AdminMenuItem
 from core.utils import url
 
 
@@ -37,7 +38,14 @@ def labour_admin_menu_items(request, event):
         (dashboard_active, dashboard_url, dashboard_text),
         (signups_active, signups_url, signups_text),
         (mail_active, mail_url, mail_text),
-        (roster_active, roster_url, roster_text),
+
+        AdminMenuItem(
+            is_active=roster_active,
+            href=roster_url,
+            text=roster_text,
+            is_mobile_incompatible=True,
+        ),
+
         (jobcategories_active, jobcategories_url, jobcategories_text),
         (startstop_active, startstop_url, startstop_text),
     ]
