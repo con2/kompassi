@@ -51,6 +51,7 @@ def programme_admin_menu_items(request, event):
         feedback_active,
         invitations_active,
         offers_active,
+        publish_active,
         special_active,
         timetable_active,
     ))
