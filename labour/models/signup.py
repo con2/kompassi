@@ -7,6 +7,8 @@ from datetime import date, datetime, timedelta
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
@@ -770,7 +772,9 @@ class Signup(models.Model, CsvExportMixin):
             fullName=self.person.full_name,
             shiftWishes=shift_wishes,
             totalWork=total_work,
-            currentlyAssigned=self.shifts.all().aggregate(sum_hours=models.Sum('hours'))['sum_hours'],
+            currentlyAssigned=self.shifts.all().aggregate(
+                sum_hours=Coalesce(Sum('hours'), 0)
+            )['sum_hours'],
             shiftType=shift_type,
         )
 
