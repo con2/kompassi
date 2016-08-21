@@ -35,6 +35,9 @@
                 //-   i.fa.fa-trash
                 a.btn.btn-xs.btn-primary(title="{% trans 'Edit' %}", href="{% url 'labour_admin_roster_job_category_view' event.slug shift.job.job_category.slug %}")
                   i.fa.fa-pencil-square-o
+          if shift.notes
+            tr
+              td(colspan=6) {{ shift.notes|linebreaks }}
     .panel-footer
       if signup.shifts.exists
         .text-muted {% blocktrans with total_hours=total_hours count num_shifts=signup.shifts.count %}One shift, {{ total_hours}} h.{% plural %}{{ num_shifts}} shifts, total {{ total_hours}} h.{% endblocktrans %}

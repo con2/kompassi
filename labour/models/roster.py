@@ -190,12 +190,18 @@ class Shift(models.Model):
     admin_get_person.admin_order_field = 'signup__person'
 
     def __str__(self):
-        return '{interval} ({hours} h): {job_category_name} ({job_name})'.format(
+        parts = ['{interval} ({hours} h): {job_category_name} ({job_name})'.format(
             interval=format_interval(self.start_time, self.end_time),
             hours=self.hours,
             job_category_name=self.job.job_category.title if self.job and self.job.job_category else None,
             job_name=self.job.title if self.job else None,
-        )
+        )]
+
+        if self.notes:
+            parts.append(self.notes)
+            parts.append('')
+
+        return '\n'.join(parts)
 
     class Meta:
         verbose_name = _('shift')

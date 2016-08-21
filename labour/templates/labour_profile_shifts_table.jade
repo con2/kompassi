@@ -1,0 +1,33 @@
+- load i18n
+- load skeletonfmt from skeletor_tags
+if signup.is_finished
+  if signup.xxx_interim_shifts
+    .panel-body
+      .row
+        .col-md-3: label {% trans "Freeform shifts" %}:
+        .col-md-9 {{ signup.xxx_interim_shifts|linebreaks }}
+  if signup.shifts.exists
+    table.table.table-striped
+      thead
+        tr
+          th
+            - trans "Shift starts"
+          th
+            - trans "Shift ends"
+          th
+            - trans "Duration"
+          th
+            - trans "Job category"
+          th
+            - trans "Job"
+      tbody
+        for shift in signup.shifts.all
+          tr
+            td {{ shift.start_time|skeletonfmt:"MEd" }} klo {{ shift.start_time|skeletonfmt:"Hm" }}
+            td {{ shift.end_time|skeletonfmt:"MEd" }} klo {{ shift.end_time|skeletonfmt:"Hm" }}
+            td {{ shift.formatted_duration }}
+            td {{ shift.job.job_category }}
+            td {{ shift.job }}
+          if shift.notes
+            tr
+              td(colspan=5) {{ shift.notes|linebreaks }}

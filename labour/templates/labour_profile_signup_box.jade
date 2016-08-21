@@ -10,10 +10,6 @@
       .row
         .col-md-3: label {{ signup.job_categories_label }}:
         .col-md-9: include labour_profile_job_category_labels.jade
-      if signup.is_finished
-        .row
-          .col-md-3: label Työvuorot:
-          .col-md-9: {{ signup.formatted_shifts|linebreaks }}
       if signup.info_links.exists
         .row
           .col-md-3: label Työvoimaohjeet:
@@ -22,7 +18,7 @@
               div: a(href='{{ link.url }}', target='_blank') {{ link.title }}
       if signup.potential_privileges.exists
         .row
-          .col-md-3: label Pyydettävät käyttöoikeudet:
+          .col-md-3: label Käyttöoikeudet:
           .col-md-9
             for privilege in signup.potential_privileges
               div: a(href='{{ privilege.get_absolute_url }}') {{ privilege.title }}
@@ -33,6 +29,7 @@
             for granted_privilege in signup.granted_privileges
               div: a(href='{{ granted_privilege.privilege.get_absolute_url }}') {{ granted_privilege.privilege.title }}
 
+    include labour_profile_shifts_table.jade
     include labour_profile_message_table.jade
 
     if signup.applicant_has_actions

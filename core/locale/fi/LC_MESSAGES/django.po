@@ -243,6 +243,10 @@ msgstr "Tähän sähköpostiosoitteeseen on jo liitetty käyttäjätunnus. Jos o
 msgid "This user name is already taken."
 msgstr "Tämä käyttäjänimi on jo viety."
 
+#: templates/core_admin_menu_items.jade
+msgid "This view has not been designed for a display this small. For an optimal user experience, please switch to a tablet or a computer."
+msgstr ""
+
 #: templates/core_event_box.jade
 msgid "Ticket sales"
 msgstr "Lipunmyynti"
