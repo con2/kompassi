@@ -199,7 +199,6 @@ class Shift(models.Model):
 
         if self.notes:
             parts.append(self.notes)
-            parts.append('')
 
         return '\n'.join(parts)
 

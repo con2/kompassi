@@ -694,10 +694,14 @@ class Signup(models.Model, CsvExportMixin):
 
     @property
     def formatted_shifts(self):
-        parts = [text_type(shift) for shift in self.shifts.all()]
-        parts.append(self.xxx_interim_shifts)
+        parts = []
 
-        return "\n".join(part for part in parts if part)
+        if self.xxx_interim_shifts:
+            parts.append(self.xxx_interim_shifts)
+            
+        parts.extend(text_type(shift) for shift in self.shifts.all())
+
+        return "\n\n".join(part for part in parts if part)
 
     # for admin
     @property
