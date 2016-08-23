@@ -52,7 +52,7 @@ class Setup(object):
             homepage_url='http://2016.aicon.fi',
             organization=self.organization,
             start_time=datetime(2016, 10, 8, 10, 0, tzinfo=self.tz),
-            end_time=datetime(2016, 10, 9, 18, 0, tzinfo=self.tz),
+            end_time=datetime(2016, 10, 9, 16, 0, tzinfo=self.tz),
             venue=self.venue,
         ))
 
