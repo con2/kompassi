@@ -284,6 +284,22 @@ class Setup(object):
             ),
         )
 
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug='tyovoimamajoitus',
+            defaults=dict(
+                title='Työvoimamajoitustarpeiden tarkistus',
+                description=(
+                    'Jotta osaamme varata oikean määrän paikkoja työvoimamajoitukseen, pyydämme '
+                    'tässä vaiheessa tarkistamaan, pitääkö työvoimahaun yhteydessä ilmoittamasi '
+                    'majoitustarve (tai se, ettet tarvitse majoitusta) edelleen paikkansa.'
+                ),
+                form_class_path='events.tracon11.forms:LodgingNeedsSurvey',
+                active_from=datetime(2016, 8, 23, 21, 41, 0, tzinfo=self.tz),
+                active_until=datetime(2016, 8, 28, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
+
         for wiki_space, link_title, link_group in [
             ('TERA', 'Työvoimawiki', 'accepted'),
             ('INFO', 'Infowiki', 'info'),

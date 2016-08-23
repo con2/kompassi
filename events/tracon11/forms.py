@@ -201,3 +201,26 @@ class ShiftWishesSurvey(forms.ModelForm):
         fields = (
             'shift_wishes',
         )
+
+
+class LodgingNeedsSurvey(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(LodgingNeedsSurvey, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    @classmethod
+    def get_instance_for_signup(cls, signup):
+        return signup.signup_extra
+
+    class Meta:
+        model = SignupExtraV2
+        fields = (
+            'lodging_needs',
+        )
+        widgets = dict(
+            lodging_needs=forms.CheckboxSelectMultiple,
+        )

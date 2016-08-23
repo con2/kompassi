@@ -412,7 +412,7 @@ msgstr "Työvoimahaun voi myös avata tai sulkea välittömästi."
 #: templates/labour_survey_view.jade
 #, python-format
 msgid "You can edit your answers via the same link until the survey expires at %(expiration_date)s."
-msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee %{expiration_date)s."
+msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee %(expiration_date)s."
 
 #: views/labour_survey_view.py
 msgid "You have not signed up for this event."
@@ -586,3 +586,4 @@ msgstr "aikajakeet"
 
 #~ msgid "Volunteer worker onboarding"
 #~ msgstr "Työvoiman kirjaaminen saapuneeksi"
+
