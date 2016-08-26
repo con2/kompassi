@@ -26,6 +26,10 @@ def labour_admin_menu_items(request, event):
     roster_active = request.path.startswith(roster_url)
     roster_text = _("Shift planning")
 
+    shifts_url = url('labour_admin_shifts_view', event.slug)
+    shifts_active = request.path.startswith(shifts_url)
+    shifts_text = _("Shift lists")
+
     jobcategories_url = url('labour_admin_jobcategories_view', event.slug)
     jobcategories_active = request.path.startswith(jobcategories_url)
     jobcategories_text = _("Edit job categories")
@@ -44,6 +48,12 @@ def labour_admin_menu_items(request, event):
             href=roster_url,
             text=roster_text,
             is_mobile_incompatible=True,
+        ),
+
+        AdminMenuItem(
+            is_active=shifts_active,
+            href=shifts_url,
+            text=shifts_text,
         ),
 
         (jobcategories_active, jobcategories_url, jobcategories_text),

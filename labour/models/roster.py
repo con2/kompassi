@@ -15,6 +15,7 @@ from dateutil.tz import tzlocal
 
 from api.utils import JSONSchemaObject
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, ONE_HOUR, slugify, pick_attrs, format_datetime, format_interval
+from core.csv_export import CsvExportMixin
 
 
 class WorkPeriod(models.Model):
@@ -139,7 +140,7 @@ class JobRequirement(models.Model):
 
 
 @python_2_unicode_compatible
-class Shift(models.Model):
+class Shift(models.Model, CsvExportMixin):
     job = models.ForeignKey(Job, related_name='shifts')
     start_time = models.DateTimeField()
     hours = models.PositiveIntegerField()
@@ -170,6 +171,14 @@ class Shift(models.Model):
     def end_time(self):
         return self.start_time + timedelta(hours=self.hours)
 
+    # https://github.com/pydata/pandas/issues/7056
+    @property
+    def start_time_local(self):
+        return self.start_time.astimezone(tzlocal()).replace(tzinfo=None) if self.start_time else None
+    @property
+    def end_time_local(self):
+        return self.end_time.astimezone(tzlocal()).replace(tzinfo=None) if self.end_time else None
+
     @property
     def formatted_duration(self):
         return "{hours} h".format(hours=self.hours)
@@ -188,6 +197,32 @@ class Shift(models.Model):
         return self.signup.person if self.signup else None
     admin_get_person.short_description = _('person')
     admin_get_person.admin_order_field = 'signup__person'
+
+    @classmethod
+    def get_csv_fields(cls, event):
+        from core.models import Person
+        from ..models import JobCategory, Job
+
+        return [
+            (JobCategory, 'name'),
+            (Job, 'title'),
+            (Person, 'surname'),
+            (Person, 'first_name'),
+            (Person, 'nick'),
+            (Shift, 'start_time_local'),
+            (Shift, 'end_time_local'),
+            (Shift, 'hours'),
+        ]
+
+    def get_csv_related(self):
+        from core.models import Person
+        from ..models import JobCategory, Job
+
+        return {
+            JobCategory: self.job.job_category,
+            Job: self.job,
+            Person: self.signup.person,
+        }
 
     def __str__(self):
         parts = ['{interval} ({hours} h): {job_category_name} ({job_name})'.format(

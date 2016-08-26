@@ -1,0 +1,38 @@
+- load i18n
+- load crispy_forms_tags
+- load skeletor_tags
+table.table.table-striped
+  thead
+    tr
+      th
+        - trans "Job category"
+      th
+        - trans "Job"
+      th
+        - trans "Name"
+      th
+        - trans "Shift starts"
+      th
+        - trans "Shift ends"
+      th
+        - trans "Duration"
+      if show_actions
+        th
+  tbody
+    for shift in shifts
+      tr
+        td {{ shift.job.job_category }}
+        td {{ shift.job }}
+        td {{ shift.signup.person.full_name }}
+        td {{ shift.start_time|skeletonfmt:"MEd" }} klo {{ shift.start_time|skeletonfmt:"Hm" }}
+        td {{ shift.end_time|skeletonfmt:"MEd" }} klo {{ shift.end_time|skeletonfmt:"Hm" }}
+        td {{ shift.formatted_duration }}
+        if show_actions
+          td
+            .btn-group
+              //- a.btn.btn-xs.btn-danger(title="{% trans 'Delete' %}")
+              //-   i.fa.fa-trash
+              a.btn.btn-xs.btn-primary(title="{% trans 'See application' %}", href="{% url 'labour_admin_signup_view' event.slug shift.signup.person.pk %}")
+                i.fa.fa-user
+              a.btn.btn-xs.btn-primary(title="{% trans 'Edit' %}", href="{% url 'labour_admin_roster_job_category_view' event.slug shift.job.job_category.slug %}")
+                i.fa.fa-pencil-square-o

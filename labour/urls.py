@@ -8,6 +8,7 @@ from .views import (
     labour_admin_mail_editor_view,
     labour_admin_mail_view,
     labour_admin_roster_view,
+    labour_admin_shifts_view,
     labour_admin_shirts_view,
     labour_admin_signup_view,
     labour_admin_signups_view,
@@ -149,6 +150,18 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/shirts/?$',
         labour_admin_shirts_view,
         name='labour_admin_shirts_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/shifts/?$',
+        labour_admin_shifts_view,
+        name='labour_admin_shifts_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/shifts\.(?P<format>\w+)?$',
+        labour_admin_shifts_view,
+        name='labour_admin_export_shifts_view'
     ),
 
     url(
