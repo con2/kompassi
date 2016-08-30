@@ -15,6 +15,10 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
 
 `./manage.py setup --test` created a test user account `mahti` with password `mahti`.
 
+## Docker
+
+A Docker image is available as [tracon/kompassi](https://hub.docker.com/r/tracon/kompassi/). More info to follow.
+
 ## License
 
     The MIT License (MIT)
