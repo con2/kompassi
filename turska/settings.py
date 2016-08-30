@@ -95,6 +95,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'turska.urls'
 WSGI_APPLICATION = 'turska.wsgi.application'
 APPEND_SLASH = False
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 TEMPLATES = [
     {
