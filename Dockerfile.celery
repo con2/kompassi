@@ -1,2 +1,0 @@
-FROM tracon/kompassi
-CMD ["celery", "-A", "turska.celery_app:app", "worker"]
