@@ -54,7 +54,7 @@ DATETIME_FORMAT_STRFTIME = '%d.%m.%Y %H:%M:%S'
 LANGUAGE_CODE = 'fi'
 LANGUAGES = (
     ('fi', _('Finnish')),
-    ('en', _('English')),
+    # ('en', _('English')), # too broken
     # and all the other languages you have translated.
 )
 SITE_ID = 1
