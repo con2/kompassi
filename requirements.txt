@@ -1,5 +1,5 @@
-git+https://github.com/kcsry/lippukala@1.0.1#egg=lippukala==1.0.1
-git+https://github.com/tracon/django-nexmo@v2.0.1#egg=django-nexmo==2.0.1
+https://github.com/kcsry/lippukala/archive/1.1.1.tar.gz#egg=lippukala==1.1.1
+https://github.com/tracon/django-nexmo/archive/v2.0.1.tar.gz#egg=django-nexmo==2.0.1
 Babel~=2.3.0
 behave>=1.2,<1.3
 celery>=3.1,<3.2
