@@ -15,10 +15,15 @@ block content
       .panel-body
         - crispy form
       .panel-footer.clearfix
-        .btn-group.pull-right
-          button.btn.btn-success(type='submit')
-            i.fa.fa-check.kompassi-icon-space-right
-            {% trans "Submit answers" %}
-        .text-muted
-          if survey.active_until
-            {% blocktrans with expiration_date=survey.active_until|date:"SHORT_DATETIME_FORMAT" %}You can edit your answers via the same link until the survey expires at {{ expiration_date }}.{% endblocktrans %}
+        if survey.is_active
+          .btn-group.pull-right
+            button.btn.btn-success(type='submit')
+              i.fa.fa-check.kompassi-icon-space-right
+              {% trans "Submit answers" %}
+          .text-muted
+            if survey.active_until
+              {% blocktrans with expiration_date=survey.active_until|date:"SHORT_DATETIME_FORMAT" %}You can edit your answers via the same link until the survey expires at {{ expiration_date }}.{% endblocktrans %}
+            else
+              {% blocktrans %}You can edit your answers via the same link until the survey is closed.{% endblocktrans %}
+        else
+          .text-danger {% blocktrans %}The survey has expired. You can no longer alter your answers.{% endblocktrans %}

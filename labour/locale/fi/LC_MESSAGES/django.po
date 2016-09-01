@@ -369,6 +369,10 @@ msgstr "Pyytämäsi ilmoittautumislomake ei ole tällä hetkellä käytössä."
 msgid "The slug that would be derived from this name is already taken. Please choose another name."
 msgstr "Tästä nimestä johdettava tekninen nimi on jo käytössä. Ole hyvä ja valitse toinen nimi."
 
+#: templates/labour_survey_view.jade
+msgid "The survey has expired. You can no longer alter your answers."
+msgstr "Kysely on vanhentunut. Et voi enää muokata vastauksiasi."
+
 #: models/signup.py
 msgid "The workforce manager may use this field to inform other workforce managers that this applicant will not be accepted to a certain job category. This field is not visible to the applicant, but should they request a record of their own information, this field will be included."
 msgstr "Tätä kenttää voi käyttää tiedottamaan muille työvoimavastaaville, että tätä henkilöä ei oteta töihin ainakaan näille tehtäväalueille. Kentän merkitys on puhtaasti informatiivinen, eikä sillä ole vaikutusta mihinkään automaattiseen käsittelyyn."
@@ -442,9 +446,13 @@ msgstr "Työvoimahaun voi myös avata tai sulkea välittömästi."
 msgid "You can edit your answers via the same link until the survey expires at %(expiration_date)s."
 msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee %(expiration_date)s."
 
+#: templates/labour_survey_view.jade
+msgid "You can edit your answers via the same link until the survey is closed."
+msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee."
+
 #: views/labour_survey_view.py
-msgid "You have not signed up for this event."
-msgstr "Et ole ilmoittautunut tähän tapahtumaan."
+msgid "You have previously answered this survey that is no longer active. You may view your answers below, but you cannot alter them any more."
+msgstr "Olet aikaisemmin vastannut tähän kyselyyn, joka on sittemmin vanhentunut. Voit katsella vastauksiasi alla, muttet voi enää muokata niitä."
 
 #: views/public_views.py
 msgid "Your application does not currently need to be confirmed."
@@ -625,4 +633,7 @@ msgstr "{event_name}: Työvuorolista – {job_category_name}"
 
 #~ msgid "Volunteer worker onboarding"
 #~ msgstr "Työvoiman kirjaaminen saapuneeksi"
+
+#~ msgid "You have not signed up for this event."
+#~ msgstr "Et ole ilmoittautunut tähän tapahtumaan."
 

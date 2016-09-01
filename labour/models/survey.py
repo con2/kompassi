@@ -69,3 +69,14 @@ class Survey(models.Model):
         unique_together = [
             ('event', 'slug'),
         ]
+
+
+@python_2_unicode_compatible
+class SurveyRecord(models.Model):
+    survey = models.ForeignKey(Survey, related_name='survey_records')
+    person = models.ForeignKey('core.Person', related_name='survey_records')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.person.full_name if self.person else 'None'

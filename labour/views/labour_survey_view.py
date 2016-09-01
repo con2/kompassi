@@ -14,7 +14,7 @@ from django.views.decorators.http import require_http_methods
 from core.helpers import person_required
 from core.utils import initialize_form
 
-from ..models import Signup, Survey
+from ..models import Signup, Survey, SurveyRecord
 from ..helpers import labour_event_required
 
 
@@ -27,10 +27,6 @@ FakeSignup = namedtuple('FakeSignup', 'event')
 def labour_survey_view(request, event, survey_slug):
     survey = get_object_or_404(Survey, slug=survey_slug, event=event)
     person = request.user.person
-
-    if not survey.is_active:
-        messages.error(request, _('This survey is not currently active.'))
-        return redirect('core_event_view', event.slug)
 
     Form = survey.form_class
 
@@ -48,10 +44,25 @@ def labour_survey_view(request, event, survey_slug):
         messages.error(request, _('This survey does not apply to you.'))
         return redirect('core_event_view', event.slug)
 
-    form = initialize_form(Form, request, instance=instance, event=event)
+    if not survey.is_active:
+        if SurveyRecord.objects.filter(survey=survey, person=person).exists():
+            messages.warning(request, _(
+                'You have previously answered this survey that is no longer active. You may view '
+                'your answers below, but you cannot alter them any more.'
+            ))
+        else:
+            messages.error(request, _('This survey is not currently active.'))
+            return redirect('core_event_view', event.slug)
+
+    form = initialize_form(Form, request,
+        instance=instance,
+        event=event,
+        readonly=not survey.is_active,
+    )
 
     if request.method == 'POST':
-        if form.is_valid():
+        if form.is_valid() and survey.is_active:
+            SurveyRecord.objects.get_or_create(survey=survey, person=person)
             form.save()
             messages.success(request, _('Thank you for your answers.'))
             return redirect('core_event_view', event.slug)

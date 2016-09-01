@@ -5,6 +5,7 @@ from .form_utils import (
     initialize_form,
     initialize_form_set,
     make_field_readonly,
+    make_form_readonly,
     make_horizontal_form_helper,
 )
 

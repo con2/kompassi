@@ -17,4 +17,4 @@ from .alternative_signup_forms import AlternativeFormMixin, AlternativeSignupFor
 from .signup import Signup
 from .signup_extras import ObsoleteSignupExtraBaseV1, ObsoleteEmptySignupExtraV1, SignupExtraBase, EmptySignupExtra
 from .info_link import InfoLink
-from .survey import Survey
+from .survey import Survey, SurveyRecord

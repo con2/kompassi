@@ -16,6 +16,11 @@ def make_field_readonly(field):
         field.widget.attrs['readonly'] = True
 
 
+def make_form_readonly(form):
+    for field in form.fields.itervalues():
+        make_field_readonly(field)
+
+
 def initialize_form(FormClass, request, **kwargs):
     if 'readonly' in kwargs:
         readonly = kwargs.pop('readonly')
@@ -28,8 +33,7 @@ def initialize_form(FormClass, request, **kwargs):
         form = FormClass(**kwargs)
 
     if readonly:
-        for field in form.fields.values():
-            make_field_readonly(field)
+        make_form_readonly(form)
 
     return form
 
