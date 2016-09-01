@@ -193,8 +193,8 @@ class ShiftWishesSurvey(forms.ModelForm):
         self.helper.form_tag = False
 
     @classmethod
-    def get_instance_for_signup(cls, signup):
-        return signup.signup_extra
+    def get_instance_for_event_and_person(cls, event, person):
+        return SignupExtraV2.objects.get(event=event, person=person)
 
     class Meta:
         model = SignupExtraV2
@@ -213,8 +213,8 @@ class LodgingNeedsSurvey(forms.ModelForm):
         self.helper.form_tag = False
 
     @classmethod
-    def get_instance_for_signup(cls, signup):
-        return signup.signup_extra
+    def get_instance_for_event_and_person(cls, event, person):
+        return SignupExtraV2.objects.get(event=event, person=person)
 
     class Meta:
         model = SignupExtraV2
@@ -223,4 +223,26 @@ class LodgingNeedsSurvey(forms.ModelForm):
         )
         widgets = dict(
             lodging_needs=forms.CheckboxSelectMultiple,
+        )
+
+
+class AfterpartyParticipationSurvey(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(AfterpartyParticipationSurvey, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    @classmethod
+    def get_instance_for_event_and_person(cls, event, person):
+        return SignupExtraV2.objects.get(event=event, person=person, is_active=True)
+
+    class Meta:
+        model = SignupExtraV2
+        fields = (
+            'afterparty_participation',
+            'outward_coach_departure_time',
+            'return_coach_departure_time',
         )

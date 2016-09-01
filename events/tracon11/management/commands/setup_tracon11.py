@@ -300,6 +300,22 @@ class Setup(object):
             ),
         )
 
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug='kaatoilmo',
+            defaults=dict(
+                title='Ilmoittautuminen kaatajaisiin',
+                description=(
+                    'Kiitokseksi työpanoksestasi tapahtumassa Tracon tarjoaa sinulle mahdollisuuden '
+                    'osallistua kaatajaisiin lauantaina 17. syyskuuta 2016 Hangaslahden saunalla '
+                    'Tampereen lähistöllä. Kaatajaisiin osallistuminen edellyttää ilmoittautumista. '
+                ),
+                form_class_path='events.tracon11.forms:AfterpartyParticipationSurvey',
+                active_from=datetime(2016, 9, 1, 23, 48, 0, tzinfo=self.tz),
+                active_until=datetime(2016, 9, 11, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
+
         for wiki_space, link_title, link_group in [
             ('TERA', 'Työvoimawiki', 'accepted'),
             ('INFO', 'Infowiki', 'info'),

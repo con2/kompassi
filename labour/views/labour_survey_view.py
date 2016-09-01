@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+from collections import namedtuple
+
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -16,27 +18,33 @@ from ..models import Signup, Survey
 from ..helpers import labour_event_required
 
 
+FakeSignup = namedtuple('FakeSignup', 'event')
+
+
 @labour_event_required
 @person_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def labour_survey_view(request, event, survey_slug):
     survey = get_object_or_404(Survey, slug=survey_slug, event=event)
+    person = request.user.person
 
     if not survey.is_active:
         messages.error(request, _('This survey is not currently active.'))
         return redirect('core_event_view', event.slug)
 
-    try:
-        signup = Signup.objects.get(event=event, person=request.user.person)
-    except Signup.DoesNotExist:
-        messages.error(request, _('You have not signed up for this event.'))
-        return redirect('core_event_view', event.slug)
-
     Form = survey.form_class
 
     try:
-        instance = Form.get_instance_for_signup(signup)
+        signup = Signup.objects.get(event=event, person=person)
+    except Signup.DoesNotExist:
+        signup = FakeSignup(event)
+
+    try:
+        instance = Form.get_instance_for_event_and_person(event, person)
     except ObjectDoesNotExist:
+        instance = None
+
+    if instance is None:
         messages.error(request, _('This survey does not apply to you.'))
         return redirect('core_event_view', event.slug)
 

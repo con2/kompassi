@@ -274,6 +274,45 @@ class SignupExtraV2(SignupExtraBase):
         validators=[validate_slug]
     )
 
+    afterparty_participation = models.BooleanField(
+        default=False,
+        verbose_name='Osallistun kaatajaisiin',
+        help_text='Ruksaa tämä ruutu, mikäli haluat osallistua kaatajaisiin. Mikäli mielesi muuttuu '
+            'tai sinulle tulee este, peru ilmoittautumisesi poistamalla rasti tästä ruudusta.',
+    )
+
+    outward_coach_departure_time = models.CharField(
+        blank=True,
+        max_length=5,
+        choices=[
+            ('16:00', '16:00'),
+            ('17:00', '17:00'),
+            ('18:00', '18:00'),
+            ('nobus', 'En tarvitse menokyytiä (tulen omalla kyydillä)'),
+        ],
+        verbose_name='Menobussin lähtöaika',
+    )
+
+    return_coach_departure_time = models.CharField(
+        blank=True,
+        max_length=5,
+        choices=[
+            ('23:00', '23:00'),
+            ('00:00', '00:00'),
+            ('01:00', '01:00'),
+            ('nobus', 'En tarvitse paluukyytiä (poistun omalla kyydillä)'),
+        ],
+        verbose_name='Paluubussin lähtöaika',
+        help_text='Tracon tarjoaa maksuttoman bussikyydin kaatajaisiin ja takaisin Tampereen keskustorilta. '
+            'Saavuthan hyvissä ajoin ennen valitsemaasi lähtöaikaa lähtöpysäkille (Vanha kirkko), ja '
+            'huolehdithan itse siitä, että nouset oikeaan aikaan paluubussiin kaatajaispaikalla. Mikäli myöhästyt '
+            'valitsemastasi bussista, Tracon ei välttämättä pysty tarjoamaan sinulle kyytiä kaatajaisiin '
+            'tai sieltä pois. Bussit täytetään ilmoittautumisjärjestyksessä, ja mikäli jokin busseista '
+            'osoittautuu erityisen suosituksi, saatamme joutua siirtämään osallistujia bussista toiseen, '
+            'mistä ilmoitamme sähköpostitse. Meno- tai paluubussin vaihto kaatajaisilmoittautumisen sulkeuduttua '
+            'ainoastaan kaatajaisvastaavan myötävaikutuksella os. kaatajaiset@tracon.fi, ei omin päin.'
+    )
+
     @classmethod
     def get_form_class(cls):
         from .forms import SignupExtraForm
