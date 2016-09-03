@@ -2,9 +2,9 @@ extends core_profile_base
 block title
   | Työvoima&shy;hakemukset
 block profile_content
-  if signup_current_events.exists
+  if signups_current_events.exists
     h3 Työskentely parhaillaan käynnissä olevissa tapahtumissa
-    for signup in signup_current_events
+    for signup in signups_current_events
       include labour_profile_signup_box.jade
   if signups_future_events.exists
     h3 Hakemukset tuleviin tapahtumiin
