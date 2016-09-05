@@ -57,7 +57,7 @@ STATE_CSS = dict(
 
     accepted='label-primary',
     published='label-success',
-    
+
     cancelled='label-danger',
     rejected='label-danger',
 )
@@ -322,7 +322,8 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def is_open_for_feedback(self):
-        return now() >= self.end_time
+        t = now()
+        return t >= self.end_time or t >= self.event.end_time
 
     @classmethod
     def get_or_create_dummy(cls, title=u'Dummy program', state='published'):
