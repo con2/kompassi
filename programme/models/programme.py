@@ -323,7 +323,10 @@ class Programme(models.Model, CsvExportMixin):
     @property
     def is_open_for_feedback(self):
         t = now()
-        return t >= self.end_time or t >= self.event.end_time
+        return (
+            (self.end_time is not None and t >= self.end_time) or
+            (self.event.end_time is not None and t >= self.event.end_time)
+        )
 
     @classmethod
     def get_or_create_dummy(cls, title=u'Dummy program', state='published'):
