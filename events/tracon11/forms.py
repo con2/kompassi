@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+from datetime import date
+
 from django import forms
 
 from crispy_forms.layout import Layout, Fieldset
@@ -237,7 +239,12 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
 
     @classmethod
     def get_instance_for_event_and_person(cls, event, person):
-        return SignupExtraV2.objects.get(event=event, person=person, is_active=True)
+        return SignupExtraV2.objects.get(
+            event=event,
+            person=person,
+            person__birth_date__lte=date(1998, 9, 17),
+            is_active=True,
+        )
 
     class Meta:
         model = SignupExtraV2
