@@ -300,7 +300,16 @@ class Setup(object):
             ),
         )
 
-        Survey.objects.get_or_create(
+        kaatoilmo_override_does_not_apply_message = (
+            'Valitettavasti et pysty ilmoittautumaan kaatoon käyttäen tätä lomaketta. Tämä '
+            'voi johtua siitä, että sinua ei ole kutsuttu kaatoon, tai teknisestä syystä. '
+            'Kaatoon osallistumaan ovat oikeutettuja kaatopäivänä 18 vuotta täyttäneet '
+            'coniitit, vuorovastaavat, vänkärit sekä badgelliset ohjelmanjärjestäjät. '
+            'Mikäli saat tämän viestin siitä huolimatta, että olet mielestäsi oikeutettu '
+            'osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen '
+            '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
+        )
+        kaatoilmo, unused = Survey.objects.get_or_create(
             event=self.event,
             slug='kaatoilmo',
             defaults=dict(
@@ -310,11 +319,17 @@ class Setup(object):
                     'osallistua kaatajaisiin lauantaina 17. syyskuuta 2016 Hangaslahden saunalla '
                     'Tampereen lähistöllä. Kaatajaisiin osallistuminen edellyttää ilmoittautumista. '
                 ),
+                override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
                 form_class_path='events.tracon11.forms:AfterpartyParticipationSurvey',
                 active_from=datetime(2016, 9, 1, 23, 48, 0, tzinfo=self.tz),
                 active_until=datetime(2016, 9, 11, 23, 59, 59, tzinfo=self.tz),
             ),
         )
+
+        # v32
+        if not kaatoilmo.override_does_not_apply_message:
+            kaatoilmo.override_does_not_apply_message = kaatoilmo_override_does_not_apply_message
+            kaatoilmo.save()
 
         for wiki_space, link_title, link_group in [
             ('TERA', 'Työvoimawiki', 'accepted'),

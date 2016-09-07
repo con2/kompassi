@@ -41,7 +41,7 @@ def labour_survey_view(request, event, survey_slug):
         instance = None
 
     if instance is None:
-        messages.error(request, _('This survey does not apply to you.'))
+        messages.error(request, survey.does_not_apply_message)
         return redirect('core_event_view', event.slug)
 
     if not survey.is_active:

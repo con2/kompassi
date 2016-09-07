@@ -51,12 +51,28 @@ class Survey(models.Model):
 
     form_class = code_property('form_class_path')
 
+    override_does_not_apply_message = models.TextField(
+        default='',
+        verbose_name=_('Message when denied access'),
+        help_text=_(
+            "This message will be shown to the user when they attempt to access a query they don't"
+            "have access to."
+        ),
+    )
+
     def __str__(self):
         return self.title
 
     @property
     def is_active(self):
         return is_within_period(self.active_from, self.active_until)
+
+    @property
+    def does_not_apply_message(self):
+        if self.override_does_not_apply_message:
+            return self.override_does_not_apply_message
+        else:
+            return _('This survey does not apply to you.')
 
     def admin_is_active(self):
         return self.is_active
