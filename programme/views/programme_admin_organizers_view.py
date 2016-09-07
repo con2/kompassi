@@ -8,7 +8,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_safe
 
 from core.models import Person
+from core.sort_and_filter import Filter, Sorter
 from core.utils import initialize_form, groupby_strict
+from labour.models import PersonnelClass
 
 from ..helpers import programme_admin_required
 from ..models import Programme, ProgrammeRole
@@ -17,12 +19,6 @@ from ..models import Programme, ProgrammeRole
 @programme_admin_required
 @require_safe
 def programme_admin_organizers_view(request, vars, event):
-    # programmes = Programme.objects.filter(category__event=event).prefetch_related('organizers')
-    # programmes_by_organizer = defaultdict(list)
-    # for programme in programmes:
-    #     for organizer in programme.organizers.all():
-    #         programmes_by_organizer[organizer].append(programme)
-
     programme_roles = (
         ProgrammeRole.objects.filter(programme__category__event=event)
             .select_related('person')
@@ -31,6 +27,16 @@ def programme_admin_organizers_view(request, vars, event):
             .order_by('person__surname', 'person__first_name', 'programme__title')
     )
 
+    personnel_classes = PersonnelClass.objects.filter(
+        event=event,
+        role__personnel_class__event=event,
+    )
+    personnel_class_filters = Filter(request, 'personnel_class').add_objects('role__personnel_class__slug', personnel_classes)
+    programme_roles = personnel_class_filters.filter_queryset(programme_roles)
+
+    active_filters = Filter(request, 'active').add_booleans('is_active')
+    programme_roles = active_filters.filter_queryset(programme_roles)
+
     organizers = []
     prs_by_organizer = groupby_strict(programme_roles, lambda pr: pr.person)
     for organizer, prs in prs_by_organizer:
@@ -38,9 +44,11 @@ def programme_admin_organizers_view(request, vars, event):
         organizers.append(organizer)
 
     vars.update(
-        organizers=organizers,
+        active_filters=active_filters,
         num_organizers=len(organizers),
         num_total_organizers=Person.objects.filter(programme__category__event=event).distinct().count(),
+        organizers=organizers,
+        personnel_class_filters=personnel_class_filters,
     )
 
     return render(request, 'programme_admin_organizers_view.jade', vars)

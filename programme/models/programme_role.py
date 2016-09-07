@@ -16,6 +16,9 @@ class ProgrammeRole(models.Model):
     role = models.ForeignKey('programme.Role')
     invitation = models.ForeignKey('programme.Invitation', null=True, blank=True)
 
+    # denormalized from programme.state
+    is_active = models.BooleanField(default=True)
+
     extra_invites = models.PositiveIntegerField(
         default=0,
         verbose_name=_('Extra invites'),

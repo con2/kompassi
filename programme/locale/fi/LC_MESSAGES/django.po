@@ -26,6 +26,10 @@ msgstr "Kylmien tarjousten vastaanotto päättyy"
 msgid "Activate selected items"
 msgstr "Aktivoi valitut kohteet"
 
+#: templates/programme_admin_organizers_view.jade
+msgid "Active"
+msgstr "Aktiivinen"
+
 #: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Add free-form organizer"
 msgstr "Lisää vapaamuotoinen ohjelmanjärjestäjä"
@@ -165,6 +169,10 @@ msgstr "Lisäkutsut"
 #: admin.py templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade views/programme_admin_detail_view.py
 msgid "Feedback"
 msgstr "Palaute"
+
+#: templates/programme_admin_organizers_view.jade
+msgid "Filter organizers"
+msgstr "Suodata ohjelmanjärjestäjiä"
 
 #: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "First name"
@@ -482,7 +490,7 @@ msgstr "Oma Mac-kannettava"
 msgid "Past programmes"
 msgstr "Menneet ohjelmanumerot"
 
-#: models/role.py
+#: models/role.py templates/programme_admin_organizers_view.jade
 msgid "Personnel class"
 msgstr "Henkilöstöluokka"
 
@@ -631,9 +639,8 @@ msgid "Schedule information"
 msgstr "Ohjelmakarttatiedot"
 
 #: models/programme_event_meta.py
-#, fuzzy
 msgid "Schedule layout"
-msgstr "ohjelmakarttanäkymä"
+msgstr "Ohjelmakartan asettelu"
 
 #: templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Send invitation"
@@ -1020,4 +1027,3 @@ msgstr "tägit"
 #: models/programme_feedback.py
 msgid "visible"
 msgstr "näkyvissä"
-

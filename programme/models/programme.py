@@ -271,15 +271,18 @@ class Programme(models.Model, CsvExportMixin):
         return self.category.event
 
     @property
+    def programme_roles(self):
+        from .programme_role import ProgrammeRole
+        return ProgrammeRole.objects.filter(programme=self)
+
+    @property
     def formatted_hosts(self):
         if not hasattr(self, '_formatted_hosts'):
-            from .programme_role import ProgrammeRole
             from .freeform_organizer import FreeformOrganizer
 
             parts = [f.text for f in FreeformOrganizer.objects.filter(programme=self)]
 
-            public_programme_roles = ProgrammeRole.objects.filter(
-                programme=self,
+            public_programme_roles = self.programme_roles.filter(
                 role__is_public=True
             ).select_related('person')
 
@@ -429,6 +432,7 @@ class Programme(models.Model, CsvExportMixin):
         self.apply_state_async()
 
     def apply_state_sync(self, deleted_programme_roles):
+        self.apply_state_update_programme_roles()
         self.apply_state_update_signup_extras()
         self.apply_state_create_badges(deleted_programme_roles)
 
@@ -441,6 +445,9 @@ class Programme(models.Model, CsvExportMixin):
 
     def _apply_state_async(self):
         self.apply_state_group_membership()
+
+    def apply_state_update_programme_roles(self):
+        self.programme_roles.update(is_active=self.is_active)
 
     def apply_state_update_signup_extras(self):
         for signup_extra in self.signup_extras:

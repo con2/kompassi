@@ -8,6 +8,41 @@ block content_full_width
       include core_admin_menu_items.jade
 
     .panel.panel-default
+      .panel-heading: strong {% trans "Filter organizers" %}
+      .panel-body.signup-filters
+        .row
+          .col-md-3: strong {% trans "Active" %}
+          .col-md-9
+            for it, active in active_filters
+              if active
+                span.label.label-brand.kompassi-space-after
+                  a(href='?{{ it.qs_del }}') {{ it.name }}
+              else
+                span.label.label-default.kompassi-space-after
+                  a(href='?{{ it.qs_add }}') {{ it.name }}
+        .row
+          .col-md-3: strong {% trans "Personnel class" %}
+          .col-md-9
+            for it, active in personnel_class_filters
+              if active
+                span.label.label-brand.kompassi-space-after
+                  a(href='?{{ it.qs_del }}') {{ it.name }}
+              else
+                span.label.label-default.kompassi-space-after
+                  a(href='?{{ it.qs_add }}') {{ it.name }}
+        //- hr
+        //- .row
+        //-   .col-md-3: strong Luettelojärjestys
+        //-   .col-md-9
+        //-     for so, active in sorter
+        //-       if active
+        //-         span.label.label-brand.kompassi-space-after
+        //-           a(href='?{{ so.qs_add }}') {{ so.name }}
+        //-       else
+        //-         span.label.label-default.kompassi-space-after
+        //-           a(href='?{{ so.qs_add }}') {{ so.name }}
+
+    .panel.panel-default
       .panel-heading: strong {% trans "Programme hosts" %}
       table.table.table-striped
         thead
