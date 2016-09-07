@@ -17,3 +17,4 @@ node_modules/
 rev-manifest.json
 labour/static/labour/css/roster-*.css
 labour/static/labour/js/roster-*.js
+.env

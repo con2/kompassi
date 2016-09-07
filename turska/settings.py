@@ -3,6 +3,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+import warnings
 from datetime import datetime, timedelta
 from email.utils import parseaddr
 
@@ -12,7 +13,11 @@ import environ
 
 
 env = environ.Env(DEBUG=(bool, False),) # set default values and casting
-# environ.Env.read_env() # reading .env file
+
+# silence warning from .env not existing
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore')
+    environ.Env.read_env() # reading .env file
 
 
 def mkpath(*parts):
