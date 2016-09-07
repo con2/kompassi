@@ -168,6 +168,12 @@ urlpatterns = [
     ),
 
     url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/organizers\.(?P<format>\w+)?$',
+        programme_admin_organizers_view,
+        name='programme_admin_export_organizers_view',
+    ),
+
+    url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/timetable/?$',
         programme_admin_timetable_view,
         name='programme_admin_timetable_view'

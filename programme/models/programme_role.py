@@ -8,9 +8,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from six import text_type
 
+from core.csv_export import CsvExportMixin
+
 
 @python_2_unicode_compatible
-class ProgrammeRole(models.Model):
+class ProgrammeRole(models.Model, CsvExportMixin):
     person = models.ForeignKey('core.Person')
     programme = models.ForeignKey('programme.Programme')
     role = models.ForeignKey('programme.Role')
@@ -102,3 +104,27 @@ class ProgrammeRole(models.Model):
             return self.role.title
         else:
             return self.programme.get_state_display()
+
+    @classmethod
+    def get_csv_fields(cls, event):
+        from core.models import Person
+        from .programme import Programme
+
+        return [
+            (Person, 'surname'),
+            (Person, 'first_name'),
+            (Person, 'nick'),
+            (Person, 'email'),
+            (Person, 'phone'),
+            (Programme, 'title'),
+            (cls, 'role_or_status'),
+        ]
+
+    def get_csv_related(self):
+        from core.models import Person
+        from .programme import Programme
+
+        return {
+            Person: self.person,
+            Programme: self.programme,
+        }

@@ -3,10 +3,13 @@
 from collections import defaultdict
 
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_safe
 
+from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat, csv_response
 from core.models import Person
 from core.sort_and_filter import Filter, Sorter
 from core.utils import initialize_form, groupby_strict
@@ -16,9 +19,14 @@ from ..helpers import programme_admin_required
 from ..models import Programme, ProgrammeRole
 
 
+EXPORT_FORMATS = EXPORT_FORMATS + [
+    ExportFormat('Sähköpostiosoitteet', 'txt', 'txt'),
+]
+
+
 @programme_admin_required
 @require_safe
-def programme_admin_organizers_view(request, vars, event):
+def programme_admin_organizers_view(request, vars, event, format='screen'):
     programme_roles = (
         ProgrammeRole.objects.filter(programme__category__event=event)
             .select_related('person')
@@ -45,10 +53,29 @@ def programme_admin_organizers_view(request, vars, event):
 
     vars.update(
         active_filters=active_filters,
+        export_formats=EXPORT_FORMATS,
         num_organizers=len(organizers),
         num_total_organizers=Person.objects.filter(programme__category__event=event).distinct().count(),
         organizers=organizers,
         personnel_class_filters=personnel_class_filters,
     )
 
-    return render(request, 'programme_admin_organizers_view.jade', vars)
+    if format == 'screen':
+        return render(request, 'programme_admin_organizers_view.jade', vars)
+    elif format == 'txt':
+        emails = '\n'.join(programme_roles.order_by('person__email').values_list('person__email', flat=True).distinct())
+        return HttpResponse(emails, content_type='text/plain')
+    elif format in CSV_EXPORT_FORMATS:
+        filename = "{event.slug}_programme_organizers_{timestamp}.{format}".format(
+            event=event,
+            timestamp=now().strftime('%Y%m%d%H%M%S'),
+            format=format,
+        )
+
+        return csv_response(event, ProgrammeRole, programme_roles,
+            dialect=CSV_EXPORT_FORMATS[format],
+            filename=filename,
+            m2m_mode='separate_columns',
+        )
+    else:
+        raise NotImplementedError(format)
