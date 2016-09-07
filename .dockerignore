@@ -1,3 +1,24 @@
-.git
-node_modules
+# stuff in .gitignore
+.bundle/
+.env
+.idea/
+.sublime-*
+*.mo
+*.pot
 *.pyc
+*.sql.xz
+*.sqlite*
+/static/
+/venv*
+build/
+labour/static/labour/css/roster-*.css
+labour/static/labour/js/roster-*.js
+node_modules/
+nohup.out
+pip-log.txt
+rev-manifest.json
+tmp/
+virtualenv/
+
+# stuff not in .gitgnore
+.git
