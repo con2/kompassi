@@ -1,13 +1,13 @@
 image = "tracon/kompassi:build-${env.BUILD_NUMBER}"
 
-stage "Build" {
+stage("Build") {
   node {
     checkout scm
     sh "docker build --tag ${image} ."
   }
 }
 
-stage "Test" {
+stage("Test") {
   node {
     sh '''
       docker run --rm ${image} \
