@@ -28,6 +28,13 @@ stage("Push") {
 stage("Deploy") {
   node {
     git url: "git@github.com:tracon/ansible-tracon"
-    sh "ansible-playbook --vault-password-file=~/.vault_pass.txt -l neula.kompassi.eu -sK -t kompassi-deploy tracon.yml"
+    sh """
+      ansible-playbook \
+        --vault-password-file=~/.vault_pass.txt \
+        --user root \
+        --limit neula.kompassi.eu \
+        --tags kompassi-deploy \
+        tracon.yml
+    """
   }
 }
