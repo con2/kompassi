@@ -1,4 +1,4 @@
-image = "tracon/kompassi:build-${env.BUILD_NUMBER}"
+def image = "tracon/kompassi:build-${env.BUILD_NUMBER}"
 
 stage("Build") {
   node {
@@ -9,10 +9,10 @@ stage("Build") {
 
 stage("Test") {
   node {
-    sh '''
+    sh """
       docker run --rm ${image} \
         -e DEBUG=1 \
         python manage.py test --keepdb
-    '''
+    """
   }
 }
