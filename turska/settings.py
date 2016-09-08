@@ -160,6 +160,7 @@ INSTALLED_APPS = (
     'membership',
     'lippukala',
     'branding',
+    'desuprofile_integration',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -363,11 +364,10 @@ if env('KOMPASSI_CROWD_APPLICATION_PASSWORD', default=''):
     KOMPASSI_CROWD_BASE_URL = '{host}/crowd/rest/usermanagement/1'.format(host=KOMPASSI_CROWD_HOST)
 
 
-if env('KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID', default=''):
-    INSTALLED_APPS = INSTALLED_APPS + ('desuprofile_integration',)
+if 'desuprofile_integration' in INSTALLED_APPS:
     KOMPASSI_DESUPROFILE_HOST = env('KOMPASSI_DESUPROFILE_HOST', default='https://desucon.fi')
-    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID = env('KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID')
-    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET = env('KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET')
+    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID = env('KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID', default='kompassi_insecure_client_id')
+    KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET = env('KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET', default='kompassi_insecure_client_secret')
     KOMPASSI_DESUPROFILE_OAUTH2_SCOPE = ['read']
     KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/'.format(**locals())
     KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/'.format(**locals())
