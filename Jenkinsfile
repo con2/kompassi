@@ -10,8 +10,10 @@ stage("Build") {
 stage("Test") {
   node {
     sh """
-      docker run --rm ${image} \
-        -e DEBUG=1 \
+      docker run \
+        --rm \
+        --env DEBUG=1 \
+        ${image} \
         python manage.py test --keepdb
     """
   }
