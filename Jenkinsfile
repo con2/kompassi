@@ -24,3 +24,10 @@ stage("Push") {
     sh "docker tag ${image} tracon/kompassi:latest && docker push tracon/kompassi:latest"
   }
 }
+
+stage("Deploy") {
+  node {
+    git url: "git@github.com:tracon/ansible-tracon"
+    sh "ansible-playbook --vault-password-file=~/.vault_pass.txt -l neula.kompassi.eu -sK -t kompassi-deploy tracon.yml"
+  }
+}
