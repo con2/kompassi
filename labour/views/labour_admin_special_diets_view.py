@@ -43,9 +43,15 @@ def labour_admin_special_diets_view(request, vars, event):
     if not any((special_diet_field, special_diet_other_field)):
         messages.error(request, _('This event does not record special diets.'))
 
+    # XXX Tracon 11 afterparty participation hack
+    if request.GET.get('afterparty_participation'):
+        messages.warning(request, 'Näytetään vain kaatajaisten osallistujien tiedot.')
+        signup_extras = SignupExtra.objects.filter(afterparty_participation=True)
+    else:
+        signup_extras = SignupExtra.objects.filter(is_active=True)
+
     if special_diet_field:
-        signup_extras_with_standard_special_diets = SignupExtra.objects.filter(
-            is_active=True,
+        signup_extras_with_standard_special_diets = signup_extras.filter(
             special_diet__isnull=False
         )
 
@@ -61,10 +67,8 @@ def labour_admin_special_diets_view(request, vars, event):
 
     if special_diet_other_field:
         # TODO assumes name special_diet_other
-        signup_extras_with_other_special_diets = (
-            SignupExtra.objects
-                .filter(is_active=True)
-                .exclude(special_diet_other__in=NO_SPECIAL_DIET_REPLIES)
+        signup_extras_with_other_special_diets = signup_extras.exclude(
+            special_diet_other__in=NO_SPECIAL_DIET_REPLIES
         )
     else:
         signup_extras_with_other_special_diets = []
