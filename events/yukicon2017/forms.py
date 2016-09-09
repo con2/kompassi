@@ -119,16 +119,13 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            'work_days',
             'special_diet',
             'special_diet_other',
         )
-        self.fields['work_days'].help_text = 'Tarjoatko ohjelmaasi Pyryconiin, Yukiconiin vaiko kumpaan tahansa? Minä päivinä olisit valmis esittämään ohjelmasi?'
 
     class Meta:
         model = SignupExtra
         fields = (
-            'work_days',
             'special_diet',
             'special_diet_other',
         )

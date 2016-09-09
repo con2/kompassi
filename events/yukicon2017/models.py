@@ -91,7 +91,7 @@ class SignupExtra(SignupExtraBase):
 
     work_days = models.ManyToManyField(EventDay,
         verbose_name=u'Tapahtumapäivät',
-        help_text='Vänkärit: Minä päivinä olet halukas työskentelemään? Ohjelmanjärjestäjät: Tarjoatko ohjelmaasi Pyryconiin, Yukiconiin vai kumpaan tahansa?',
+        help_text='Minä päivinä olet halukas työskentelemään?',
     )
 
     want_certificate = models.BooleanField(

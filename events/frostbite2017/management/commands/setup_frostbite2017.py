@@ -192,7 +192,7 @@ class Setup(object):
         )
 
         ProgrammeEventMeta.get_or_create_groups(self.event, ['hosts'])
-        programme_admin_group = Group.objects.get(name=LabourEventMeta.make_group_name(self.event, 'vastaava'))
+        programme_admin_group, = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins'])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
             public=False,
             admin_group=programme_admin_group,

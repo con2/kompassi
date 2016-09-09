@@ -32,9 +32,9 @@ class Setup(object):
         self.setup_core()
         self.setup_tickets()
         self.setup_payments()
-        # self.setup_labour()
-        # self.setup_programme()
-        # self.setup_badges()
+        self.setup_labour()
+        self.setup_programme()
+        self.setup_badges()
 
     def setup_core(self):
         from core.models import Venue, Event
