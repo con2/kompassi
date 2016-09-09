@@ -3,10 +3,10 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs, omit_keys
 
 
 def format_job_categories(job_categories):
@@ -65,6 +65,32 @@ class JobCategory(models.Model):
         meta.create_groups()
 
         return job_category, created
+
+    @classmethod
+    def copy_from_event(cls, source_event, target_event):
+        from .personnel_class import PersonnelClass
+
+        with transaction.atomic():
+            for job_category in JobCategory.objects.filter(event=source_event):
+                new_job_category, created = cls.objects.get_or_create(
+                    event=target_event,
+                    slug=job_category.slug,
+                    defaults=omit_keys(vars(job_category), '_state', 'id', 'event_id', 'slug')
+                )
+
+                if not created:
+                    continue
+
+                for personnel_class in job_category.personnel_classes.all():
+                    new_personnel_class, unused = PersonnelClass.objects.get_or_create(
+                        event=target_event,
+                        slug=personnel_class.slug,
+                        defaults=omit_keys(vars(personnel_class), '_state', 'id', 'event_id', 'slug')
+                    )
+                    new_job_category.personnel_classes.add(new_personnel_class)
+
+                for required_qualification in job_category.required_qualifications.all():
+                    new_job_category.required_qualifications.add(required_qualification)
 
     @property
     def group(self):

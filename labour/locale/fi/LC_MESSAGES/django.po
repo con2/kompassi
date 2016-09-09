@@ -130,6 +130,10 @@ msgstr "Tehtäväalue"
 msgid "Mass messages"
 msgstr "Työvoimaviestit"
 
+#: models/survey.py
+msgid "Message when denied access"
+msgstr ""
+
 #: models/job_category.py templates/labour_admin_shifts_table.jade
 msgid "Name"
 msgstr "Nimi"
@@ -397,11 +401,15 @@ msgstr "Tämä tapahtuma ei ota tällä hetkellä vastaan hakemuksia."
 msgid "This job category cannot be removed because applications have already been made to it."
 msgstr "Tätä tehtäväaluetta ei voi poistaa, koska sille on jo tehty hakemuksia."
 
+#: models/survey.py
+msgid "This message will be shown to the user when they attempt to access a query they don'thave access to."
+msgstr ""
+
 #: models/signup.py
 msgid "This signup has shifts. Please remove the shifts before cancelling or rejecting the signup."
 msgstr "Tällä vapaaehtoistyöntekijällä on vuoroja. Ole hyvä ja poista vuorot ennen kuin peruutat tai hylkäät ilmoittautumisen."
 
-#: views/labour_survey_view.py
+#: models/survey.py
 msgid "This survey does not apply to you."
 msgstr "Tämä kysely ei sovellu sinuun."
 

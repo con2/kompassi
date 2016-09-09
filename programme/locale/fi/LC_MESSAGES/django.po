@@ -162,6 +162,11 @@ msgstr "Loppumisaika"
 msgid "Event"
 msgstr "Tapahtuma"
 
+#: templates/programme_admin_organizers_view.jade
+#, fuzzy
+msgid "Export"
+msgstr "Teksti"
+
 #: models/invitation.py models/programme_role.py
 msgid "Extra invites"
 msgstr "Lisäkutsut"
@@ -1027,3 +1032,4 @@ msgstr "tägit"
 #: models/programme_feedback.py
 msgid "visible"
 msgstr "näkyvissä"
+

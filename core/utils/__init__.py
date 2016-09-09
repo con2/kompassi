@@ -26,6 +26,7 @@ from .misc_utils import (
     set_defaults,
     simple_object_init,
     simple_object_repr,
+    omit_keys,
 )
 
 from .properties import (

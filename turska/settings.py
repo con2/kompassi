@@ -188,6 +188,7 @@ INSTALLED_APPS = (
     'events.tylycon2017',
     'events.shippocon2016',
     'events.yukicon2017',
+    'events.frostbite2017',
 )
 
 LOGGING = {

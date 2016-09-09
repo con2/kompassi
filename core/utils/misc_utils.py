@@ -209,3 +209,10 @@ class class_property(object):
         self.f = f
     def __get__(self, obj, owner):
         return self.f(owner)
+
+
+def omit_keys(mapping, *keys_to_omit, **keys_to_set):
+    return dict(
+        ((key, value) for (key, value) in mapping.iteritems() if key not in keys_to_omit),
+        **keys_to_set
+    )
