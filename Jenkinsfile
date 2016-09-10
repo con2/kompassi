@@ -12,6 +12,7 @@ stage("Test") {
     sh """
       docker run \
         --rm \
+        --link jenkins.tracon.fi-postgres:postgres
         --env-file ~/.kompassi.env \
         ${image} \
         python manage.py test --keepdb
