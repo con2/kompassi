@@ -12,7 +12,7 @@ stage("Test") {
     sh """
       docker run \
         --rm \
-        --env DEBUG=1 \
+        --env-file ~/.kompassi.env \
         ${image} \
         python manage.py test --keepdb
     """
