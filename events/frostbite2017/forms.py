@@ -154,16 +154,7 @@ class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
     def get_job_categories_query(self, event, admin=False):
         assert not admin
 
-        return Q(event__slug='frostbite2017', slug__in=[
-            'pelisali',
-            'kahvila',
-            'sidosryhmat',
-            'av-tekniikka',
-            'logistiikka',
-            'desutv',
-            'tulkki',
-            'valokuvaaja',
-        ])
+        return Q(event__slug='frostbite2017', public=False) & ~Q(slug='vastaava')
 
     def get_excluded_field_defaults(self):
         return dict(
