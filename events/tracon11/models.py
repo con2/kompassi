@@ -313,6 +313,10 @@ class SignupExtraV2(SignupExtraBase):
             'ainoastaan kaatajaisvastaavan myötävaikutuksella os. kaatajaiset@tracon.fi, ei omin päin.'
     )
 
+    afterparty_coaches_changed = models.BooleanField(
+        default=False,
+    )
+
     @classmethod
     def get_form_class(cls):
         from .forms import SignupExtraForm
