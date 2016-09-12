@@ -37,6 +37,13 @@ class SignupExtraForm(forms.ModelForm):
                 'prior_experience',
                 'shift_wishes',
                 'free_text',
+            ),
+            # TODO remove when copy-pasting
+            Fieldset('Kaatajaiset',
+                'afterparty_participation',
+                'outward_coach_departure_time',
+                'return_coach_departure_time',
+                'afterparty_coaches_changed',
             )
         )
 
@@ -56,6 +63,10 @@ class SignupExtraForm(forms.ModelForm):
             'prior_experience',
             'shift_wishes',
             'free_text',
+            'afterparty_participation',
+            'outward_coach_departure_time',
+            'return_coach_departure_time',
+            'afterparty_coaches_changed',
         )
 
         widgets = dict(
