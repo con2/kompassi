@@ -20,7 +20,7 @@ http://aikataulut.tampere.fi/?stop=5209&lang=&key=&showLines=28A,28B,28C,28Y
 Olet valinnut seuraavat kyytivaihtoehdot:
 
 Menomatka: {{ signup_extra.get_outward_coach_departure_time_display }}
-Paluumatka: {{ signup_extra.get_outward_coach_departure_time_display }}
+Paluumatka: {{ signup_extra.get_return_coach_departure_time_display }}
 
 Saavuthan ajoissa valitsemallesi bussille. Bussiin ilmoittautuneet ja kyseiseen vuoroon oikeutetut pääsevät ensimmäisenä sisään. Jos bussissa on tämän jälkeen tilaa, voidaan sinne ottaa muita.
 {% endif %}
