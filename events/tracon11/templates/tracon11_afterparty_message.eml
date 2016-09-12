@@ -1,4 +1,4 @@
-Tervehdys {{ signup_extra.person.first_name_or_nick }}!
+Tervehdys {{ signup_extra.person.nick_or_first_name }}!
 
 Olet ilmoittautunut Traconin kaatajaisiin 17.9. Hangaslahden saunalla (Lassinlinnankatu 24, 33610 Tampere). Pöytä on katettu conitean toimesta ja itsesi lisäksi tarvitset mukaan vain oman pyyhkeen!
 
