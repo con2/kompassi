@@ -301,6 +301,42 @@ Lisäksi saat nimesi nettisivuillamme julkaistavaan kiitoslistaan, sekä kiitosk
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
+            dict(
+                name='Lauantailippu',
+                description='Tällä lipulla sisäänpääsy Aiconiin lauantain 8.10.2016 ajan! Lippu toimitetaan sähköpostiisi PDF-muotoisena E-lippuna, jonka vaihdat rannekkeeseen tapahtumaan saapuessasi.',
+                limit_groups=[
+                    limit_group('Lauantailiput', 100),
+                ],
+                price_cents=1500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Sunnuntailippu',
+                description='Tällä lipulla sisäänpääsy Aiconiin sunnuntain 9.10.2016 ajan! Lippu toimitetaan sähköpostiisi PDF-muotoisena E-lippuna, jonka vaihdat rannekkeeseen tapahtumaan saapuessasi.',
+                limit_groups=[
+                    limit_group('Sunnuntailiput', 100),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Iltabilelippu',
+                description='Tällä lipulla sisäänpääsy Aiconin iltabileisiin lauantai-iltana 8.10.2016 Skogsterissa! Lippu toimitetaan sähköpostiisi PDF-muotoisena E-lippuna. Iltabilelippu ei oikeuta pääsyyn Aiconiin, etkä tarvitse Aiconin ranneketta osallistuaksesi iltabileisiin.',
+                limit_groups=[
+                    limit_group('Iltabilelippu', 300),
+                ],
+                price_cents=400,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
