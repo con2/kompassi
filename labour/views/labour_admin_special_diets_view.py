@@ -53,7 +53,7 @@ def labour_admin_special_diets_view(request, vars, event):
     if special_diet_field:
         signup_extras_with_standard_special_diets = signup_extras.filter(
             special_diet__isnull=False
-        )
+        ).distinct()
 
         special_diets = SpecialDiets()
 
