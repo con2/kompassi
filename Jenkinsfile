@@ -22,7 +22,7 @@ stage("Test") {
 
 stage("Push") {
   node {
-    sh "docker tag ${image} tracon/kompassi:latest && docker push tracon/kompassi:latest"
+    sh "docker tag ${image} tracon/kompassi:latest && docker push tracon/kompassi:latest && docker rmi ${image}"
   }
 }
 
