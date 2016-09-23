@@ -26,7 +26,7 @@ def mkpath(*parts):
 
 MKPATH = mkpath
 
-DEBUG = env.bool('DEBUG', default=False)
+DEBUG = True # env.bool('DEBUG', default=False)
 
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_URLS_REGEX = r'^/(api|oauth2)/.*$'
@@ -161,6 +161,7 @@ INSTALLED_APPS = (
     'lippukala',
     'branding',
     'desuprofile_integration',
+    'enrollment',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',

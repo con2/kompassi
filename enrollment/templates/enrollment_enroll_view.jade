@@ -1,0 +1,17 @@
+extends base.jade
+block title
+  | Ilmoittaudu
+block content
+  h2 Ilmoittaudu
+
+  form(method='POST')
+    {% csrf_token %}
+
+    .panel.panel-default
+      .panel-heading: strong Ilmoittautuminen
+
+      .panel-footer.clearfix
+          .btn-group.pull-right
+              button(type='submit').btn.btn-success
+                i.fa.fa-check.kompassi-inline-icon
+                | Ilmoittaudu
