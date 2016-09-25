@@ -3,6 +3,7 @@
 import logging
 from datetime import timedelta
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
@@ -152,6 +153,10 @@ class Event(models.Model):
     def get_or_create_dummy(cls):
         from .venue import Venue
         from .organization import Organization
+
+        # TODO not the best place for this, encap. see also admin command core_update_maysendinfo
+        from django.contrib.auth.models import Group
+        Group.objects.get_or_create(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME)
 
         venue, unused = Venue.get_or_create_dummy()
         organization, unused = Organization.get_or_create_dummy()

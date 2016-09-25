@@ -432,13 +432,30 @@ class Person(models.Model):
             Badge.ensure(person=self, event=badge.personnel_class.event)
 
     def apply_state_async(self):
-        if 'crowd_integration' in settings.INSTALLED_APPS:
-            if 'background_tasks' in settings.INSTALLED_APPS:
-                from crowd_integration.tasks import update_user
-                update_user.delay(self.user.pk)
-            else:
-                from crowd_integration.utils import update_user
-                update_user(self.user)
+        if 'background_tasks' in settings.INSTALLED_APPS:
+            from .tasks import person_apply_state_async
+            person_apply_state_async(self.pk)
+        else:
+            self._apply_state_async()
+
+    def _apply_state_async(self):
+        self.apply_state_update_crowd()
+        self.apply_state_update_may_send_info_group_membership()
+
+    def apply_state_update_crowd(self):
+        if 'crowd_integration' not in settings.INSTALLED_APPS:
+            return
+
+        from crowd_integration.utils import update_user
+        update_user(self.user)
+
+    def apply_state_update_may_send_info_group_membership(self):
+        from ..utils import ensure_user_is_member_of_group
+        ensure_user_is_member_of_group(
+            user=self.user,
+            group=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME,
+            should_belong_to_group=self.may_send_info,
+        )
 
     def ensure_basic_groups(self):
         """

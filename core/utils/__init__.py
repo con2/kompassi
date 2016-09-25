@@ -16,6 +16,7 @@ from .misc_utils import (
     create_temporary_password,
     ensure_groups_exist,
     ensure_user_group_membership,
+    ensure_user_is_member_of_group,
     get_code,
     give_all_app_perms_to_group,
     groupby_strict,

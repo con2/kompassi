@@ -53,6 +53,13 @@ def give_all_app_perms_to_group(app_label, group):
 
 
 def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
+    """
+    Deprecated. Use ensure_user_is_member_of_group(user, group_or_name, True) # or False.
+
+    This calling convention was due to IPA having considerable per-call overhead
+    but being able to operate on multiple groups per call.
+    """
+
     if not isinstance(user, User):
         user = user.user
 
@@ -70,6 +77,24 @@ def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
 
         for group in groups_to_remove:
             cr_ensure_user_group_membership(user, group.name, False)
+
+
+def ensure_user_is_member_of_group(user, group, should_belong_to_group=True):
+    if isinstance(group, basestring):
+        group = Group.objects.get(name=group)
+    elif isinstance(group, Group):
+        pass
+    else:
+        group = group.group
+
+    if should_belong_to_group:
+        group.user_set.add(user)
+    else:
+        group.user_set.remove(user)
+
+    if 'crowd_integration' in settings.INSTALLED_APPS:
+        from crowd_integration.utils import ensure_user_group_membership as cr_ensure_user_group_membership
+        cr_ensure_user_group_membership(user, group.name, should_belong_to_group)
 
 
 def ensure_groups_exist(group_names):

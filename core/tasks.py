@@ -20,10 +20,10 @@ def send_email(**opts):
 
 
 @shared_task(ignore_result=True)
-def person_apply_state(person_id):
+def person_apply_state_async(person_id):
     from .models import Person
     person = Person.objects.get(id=person_id)
-    person.apply_state_async()
+    person._apply_state_async()
 
 
 @shared_task(ignore_result=True)

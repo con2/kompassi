@@ -29,3 +29,6 @@ class Command(BaseCommand):
         for group_name in settings.KOMPASSI_NEW_USER_GROUPS:
             group, created = Group.objects.get_or_create(name=group_name)
             log_get_or_create(logger, group, created)
+
+        group, created = Group.objects.get_or_create(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME)
+        log_get_or_create(logger, group, created)
