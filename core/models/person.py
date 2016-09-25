@@ -433,7 +433,7 @@ class Person(models.Model):
 
     def apply_state_async(self):
         if 'background_tasks' in settings.INSTALLED_APPS:
-            from .tasks import person_apply_state_async
+            from ..tasks import person_apply_state_async
             person_apply_state_async(self.pk)
         else:
             self._apply_state_async()
