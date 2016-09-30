@@ -4,6 +4,13 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
 
 ## Getting Started
 
+### The Easy Way
+
+    docker-compose up
+    iexplore http://localhost:8000
+
+### The Hard Way
+
     virtualenv venv-kompassi
     source venv-kompassi/bin/activate
     git clone https://github.com/tracon/kompassi.git
