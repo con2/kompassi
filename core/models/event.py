@@ -174,6 +174,7 @@ class Event(models.Model):
     tickets_event_meta = event_meta_property('tickets', 'tickets.models:TicketsEventMeta')
     payments_event_meta = event_meta_property('payments', 'payments.models:PaymentsEventMeta')
     sms_event_meta = event_meta_property('sms', 'sms.models:SMSEventMeta')
+    enrollment_event_meta = event_meta_property('enrollment', 'enrollment.models:EnrollmentEventMeta')
 
     def app_event_meta(self, app_label):
         return getattr(self, '{}_event_meta'.format(app_label))
