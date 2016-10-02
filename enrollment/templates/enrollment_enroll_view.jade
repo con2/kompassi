@@ -1,4 +1,5 @@
 extends base.jade
+- load crispy_forms_tags
 block title
   | Ilmoittaudu
 block content
@@ -11,6 +12,8 @@ block content
       .panel-heading: strong Ilmoittautuminen
 
       unless already_enrolled
+          {% crispy form %}
+
           .panel-footer.clearfix
               .btn-group.pull-right
                   button(type='submit').btn.btn-success
