@@ -11,7 +11,7 @@ from core.utils import alias_property
 # Sisältää kaikki kentät, joita ilmoittautumisessa on mahdollista käyttää
 class Enrollment(models.Model):
     event = models.ForeignKey('core.event')
-#    person = models.ForeignKey('core.person')
+    person = models.ForeignKey('core.person')
     # lisää kenttiä tähän
 
 # Tapahtuma käyttää tätä kertomaan, käyttääkö enrollment-moduulia
