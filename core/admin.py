@@ -40,7 +40,7 @@ merge_selected_people.short_description = u'Yhdistä valitut henkilöt'
 class PersonAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Basic information', {'fields': [('first_name', 'surname'), 'nick']}),
-        ('Contact information', {'fields': ['email', 'phone']}),
+        ('Contact information', {'fields': ['email', 'phone', 'may_send_info']}),
         ('Official information', {'fields': ['official_first_names', 'muncipality']}),
         ('Display', {'fields': ['preferred_name_display_style']}),
         ('Notes', {'fields': ['notes']}),
