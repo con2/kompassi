@@ -10,8 +10,12 @@ block content
     .panel.panel-default
       .panel-heading: strong Ilmoittautuminen
 
-      .panel-footer.clearfix
-          .btn-group.pull-right
-              button(type='submit').btn.btn-success
-                i.fa.fa-check.kompassi-inline-icon
-                | Ilmoittaudu
+      unless already_enrolled
+          .panel-footer.clearfix
+              .btn-group.pull-right
+                  button(type='submit').btn.btn-success
+                    i.fa.fa-check.kompassi-inline-icon
+                    | Ilmoittaudu
+      else
+          p.text-danger Olet jo ilmoittautunut tähän tapahtumaan.
+
