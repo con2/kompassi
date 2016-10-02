@@ -454,7 +454,7 @@ class Person(models.Model):
         ensure_user_is_member_of_group(
             user=self.user,
             group=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME,
-            should_belong_to_group=self.may_send_info,
+            should_belong_to_group=self.may_send_info and self.is_email_verified,
         )
 
     def ensure_basic_groups(self):
