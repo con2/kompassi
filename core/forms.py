@@ -25,7 +25,11 @@ valid_username = RegexValidator(
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(required=True, max_length=30, label=_('User name or e-mail address'))
+    username = forms.CharField(
+        required=True,
+        max_length=EMAIL_LENGTH,
+        label=_('User name or e-mail address')
+    )
 
     password = forms.CharField(
         required=True,
