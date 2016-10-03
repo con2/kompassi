@@ -108,7 +108,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict(
-            job_categories=JobCategory.objects.filter(event__slug='yukicon2016', name='Conitea'),
+            job_categories=JobCategory.objects.filter(event__slug='yukicon2017', name='Conitea'),
             work_days=EventDay.objects.all(),
         )
 
