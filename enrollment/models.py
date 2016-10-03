@@ -8,14 +8,18 @@ from django.utils.translation import ugettext_lazy as _
 from core.models import EventMetaBase
 from core.utils import alias_property
 
-# Sisältää kaikki kentät, joita ilmoittautumisessa on mahdollista käyttää
+
+"""
+Holds all the possible fields an enrollment instance may have
+"""
 class Enrollment(models.Model):
     event = models.ForeignKey('core.event')
     person = models.ForeignKey('core.person')
-    # lisää kenttiä tähän
 
-# Tapahtuma käyttää tätä kertomaan, käyttääkö enrollment-moduulia
-# Todo mitkä ovat lopulliset kentät?
+
+"""
+An event creates an instance of this class to indicate use of enrollment module
+"""
 class EnrollmentEventMeta(EventMetaBase):
     enrollment_opens = models.DateTimeField(
         null=True,

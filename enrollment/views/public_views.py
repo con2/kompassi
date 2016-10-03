@@ -29,6 +29,7 @@ def enrollment_enroll_view(request, event):
     if request.method == 'POST':
         if already_enrolled:
             messages.error(request, u'Olet jo ilmoittautunut tähän tapahtumaan.')
+            return redirect('core_event_view', event.slug)
         elif mandatory_information_missing:
             messages.error(request, u'Ilmoittautumisestasi puuttuu pakollisia tietoja.')
         elif not form.is_valid():
@@ -42,8 +43,7 @@ def enrollment_enroll_view(request, event):
             messages.success(request,
                 u'Kiitos ilmoittautumisestasi!'
             )
-
-        return redirect('core_event_view', event.slug)
+            return redirect('core_event_view', event.slug)
 
     vars = dict(
         already_enrolled=already_enrolled,
