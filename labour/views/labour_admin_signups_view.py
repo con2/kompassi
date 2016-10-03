@@ -58,9 +58,11 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
     signups = state_filter.filter_queryset(signups)
 
     if SignupExtra.get_field('night_work'):
-        night_work_filter = Filter(request, 'night_work').add_booleans('{app_label}_signup_extra__night_work'.format(
+        night_work_path = '{prefix}{app_label}_signup_extra__night_work'.format(
+            prefix='person__' if SignupExtra.schema_version >= 2 else '',
             app_label=SignupExtra._meta.app_label
-        ))
+        )
+        night_work_filter = Filter(request, 'night_work').add_booleans(night_work_path)
         signups = night_work_filter.filter_queryset(signups)
     else:
         night_work_filter = None
