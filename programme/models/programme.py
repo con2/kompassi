@@ -32,7 +32,7 @@ from core.utils import (
 from ..utils import window, next_full_hour
 
 
-RECORDING_PERMISSION_CHOICES = [
+VIDEO_PERMISSION_CHOICES = [
     ('public', _('My programme may be recorded and published')),
     ('private', _('I forbid publishing my programme, but it may be recorded for archiving purposes')),
     ('forbidden', _('I forbid recording my programme altogether')),
@@ -180,8 +180,8 @@ class Programme(models.Model, CsvExportMixin):
 
     video_permission = models.CharField(
         max_length=15,
-        choices=RECORDING_PERMISSION_CHOICES,
-        default=RECORDING_PERMISSION_CHOICES[0][0],
+        choices=VIDEO_PERMISSION_CHOICES,
+        default=VIDEO_PERMISSION_CHOICES[0][0],
         verbose_name=_('Recording permission'),
         help_text=_('May your programme be recorded and published in the Internet?'),
     )

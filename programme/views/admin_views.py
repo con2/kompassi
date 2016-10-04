@@ -25,7 +25,11 @@ from ..models import (
     ProgrammeRole,
     Role,
     Room,
+)
+from ..models.programme import (
     STATE_CHOICES,
+    VIDEO_PERMISSION_CHOICES,
+    PHOTOGRAPHY_CHOICES,
 )
 from ..helpers import programme_admin_required, group_programmes_by_start_time
 from ..forms import ProgrammePublicForm
@@ -60,6 +64,14 @@ def programme_admin_view(request, vars, event, format='screen'):
     state_filters.filter_queryset(programmes)
     programmes = state_filters.filter_queryset(programmes)
 
+    video_permission_filters = Filter(request, 'video_permission').add_choices('video_permission', VIDEO_PERMISSION_CHOICES)
+    video_permission_filters.filter_queryset(programmes)
+    programmes = video_permission_filters.filter_queryset(programmes)
+
+    photography_filters = Filter(request, 'photography').add_choices('photography', PHOTOGRAPHY_CHOICES)
+    photography_filters.filter_queryset(programmes)
+    programmes = photography_filters.filter_queryset(programmes)
+
     if format != 'html':
         sorter = Sorter(request, 'sort')
         sorter.add('title', name='Otsikko', definition=('title',))
@@ -72,10 +84,12 @@ def programme_admin_view(request, vars, event, format='screen'):
         vars.update(
             category_filters=category_filters,
             export_formats=EXPORT_FORMATS,
+            photography_filters=photography_filters,
             programmes=programmes,
             room_filters=room_filters,
             sorter=sorter,
             state_filters=state_filters,
+            video_permission_filters=video_permission_filters,
         )
 
         return render(request, 'programme_admin_view.jade', vars)

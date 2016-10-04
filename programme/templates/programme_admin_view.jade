@@ -36,6 +36,26 @@ block admin_content
             else
               span.label.label-default.kompassi-space-after
                 a(href='?{{ sf.qs_add }}') {{ sf.name }}
+      .row
+        .col-md-3: strong Videointilupa
+        .col-md-9
+          for it, active in video_permission_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ it.qs_del }}') {{ it.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ it.qs_add }}') {{ it.name }}
+      .row
+        .col-md-3: strong Valokuvauslupa
+        .col-md-9
+          for it, active in photography_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ it.qs_del }}') {{ it.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ it.qs_add }}') {{ it.name }}
       hr
       .row
         .col-md-3: strong Luettelojärjestys
