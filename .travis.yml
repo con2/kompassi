@@ -1,5 +1,6 @@
 sudo: false
 language: python
+env: DEBUG=1
 cache:
   directories:
   - "$HOME/.cache/pip"
