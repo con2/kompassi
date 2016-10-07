@@ -32,6 +32,7 @@ class Setup(object):
         self.setup_payments()
         self.setup_labour()
         self.setup_badges()
+        self.setup_enrollment() # TESTING ONLY
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -131,6 +132,36 @@ class Setup(object):
     def setup_payments(self):
         from payments.models import PaymentsEventMeta
         PaymentsEventMeta.get_or_create_dummy(event=self.event)
+
+
+    # TESTING ONLY, NOT TO BE ADDED TO PRODUCTION
+    def setup_enrollment(self):
+        from enrollment.models import (
+            EnrollmentEventMeta,
+            SpecialDiet,
+        )
+
+        enrollment_admin_group, = EnrollmentEventMeta.get_or_create_groups(self.event, ['admins'])
+ 
+        enrollment_event_meta_defaults = dict(
+            admin_group=enrollment_admin_group,
+            form_code_path='events.yukicon2016.forms:EnrollmentForm',
+        )
+
+        enrollment_event_meta, unused = EnrollmentEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=enrollment_event_meta_defaults,
+        )
+
+        for diet_name in [
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
+        ]:
+        SpecialDiet.objects.get_or_create(name=diet_name)
+        
 
     def setup_labour(self):
         from core.models import Person
