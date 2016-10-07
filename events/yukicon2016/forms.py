@@ -11,6 +11,19 @@ from labour.models import Signup, JobCategory, WorkPeriod
 from .models import SignupExtra
 
 
+class EnrollmentForm(forms.ModelForm):
+    class Meta:
+        model = Enrollment
+        fields = (
+          'special_diet',
+          'special_diet_other',
+          )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+        )
+
+
 class SignupExtraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SignupExtraForm, self).__init__(*args, **kwargs)
