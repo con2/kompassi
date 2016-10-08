@@ -33,7 +33,7 @@ class Enrollment(models.Model):
     special_diet = models.ManyToManyField(
         SpecialDiet,
         blank=True,
-        verbose_name='_("Diet")'
+        verbose_name=_("Diet")
     )
 
     special_diet_other = models.TextField(
@@ -76,6 +76,5 @@ class EnrollmentEventMeta(EventMetaBase):
             from core.utils import get_code
             self._form_code = get_code(self.form_code_path)
 
-        return self.form_code
+        return self._form_code
 
-        

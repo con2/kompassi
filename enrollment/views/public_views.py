@@ -6,13 +6,16 @@ from core.utils import get_code, initialize_form
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import ugettext_lazy as _
 
 from ..helpers import enrollment_event_required
-from ..models import Enrollment, EnrollmentEventMeta
+from ..models import Enrollment
 
 @enrollment_event_required
 @person_required
 def enrollment_enroll_view(request, event):
+
+    meta = event.enrollment_event_meta
 
     already_enrolled = Enrollment.objects.filter(
         event=event,
@@ -23,7 +26,7 @@ def enrollment_enroll_view(request, event):
         request.user.person
     )
 
-    EnrollmentForm = get_code(EnrollmentEventMeta.form_code)
+    EnrollmentForm = meta.form_code
     form = initialize_form(EnrollmentForm, request)
 
     if request.method == 'POST':
@@ -39,6 +42,7 @@ def enrollment_enroll_view(request, event):
             enrollment.event = event
             enrollment.person = request.user.person
             enrollment.save()
+            form.save_m2m()
 
             messages.success(request,
                 _("Thank you for enrolling.")

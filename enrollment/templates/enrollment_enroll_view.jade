@@ -45,16 +45,17 @@ block content
       .text-muted {% trans "Please check your contact information and update your profile if necessary. By submitting this form you agree to these contact details being shared with the event organizer." %}
 
 
-  form(method='POST')
-    {% csrf_token %}
+  unless already_enrolled
+    form(method='POST', role='form').form-horizontal
+      .panel.panel-default
+        .panel-heading: strong {% trans "Additional information" %}
+        .panel-body
+          - crispy form
+        .panel-footer.clearfix
+          .btn-group.pull-right
+            button.btn.btn-success(type='submit')
+              i.fa.fa-check.kompassi-icon-space-right
+              | {% trans "Enroll" %}
 
-    unless already_enrolled
-        {% crispy form %}
-
-        .btn-group.pull-right
-            button(type='submit').btn.btn-success
-              i.fa.fa-check.kompassi-inline-icon
-              | {% trans "Enroll" %}
-    else
-        p.text-danger {% trans "You have already enrolled." %}
-
+  else
+    p.text-danger {% trans "You have already enrolled." %}
