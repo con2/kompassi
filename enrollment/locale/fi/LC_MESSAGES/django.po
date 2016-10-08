@@ -1,0 +1,96 @@
+#: templates/enrollment_enroll_view.jade
+msgid "Additional information"
+msgstr "Lisätiedot"
+
+#: templates/enrollment_enroll_view.jade
+msgid "Contact information"
+msgstr "Yhetystiedot"
+
+#: models.py
+msgid "Diet"
+msgstr "Ruokavalio"
+
+#: templates/enrollment_enroll_view.jade
+msgid "E-mail address"
+msgstr "Sähköpostiosoite"
+
+#: templates/enrollment_enroll_view.jade
+msgid "Enroll"
+msgstr "Ilmoittaudu"
+
+#: models.py
+msgid "Enrollment closes"
+msgstr "Ilmoittautuminen päättyy"
+
+#: models.py
+msgid "Enrollment opens"
+msgstr "Ilmoittautuminen alkaa"
+
+#: templates/enrollment_enroll_view.jade
+msgid "First name"
+msgstr "Etunimi"
+
+#: models.py
+msgid "If you're on a diet that's not included in the list, please detail your diet here. Event organizer will try to take dietary needs into consideration, but all diets may not be catered for."
+msgstr "Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään."
+
+#: templates/enrollment_enroll_view.jade
+msgid "If your name is publicly displayed, this is how your name will be published. You can change the name display style in your profile."
+msgstr "Jos nimesi näytetään julkisesti, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
+
+#: views/public_views.py
+msgid "Missing mandatory information."
+msgstr "Pakollisia tietoja puuttuu."
+
+#: templates/enrollment_enroll_view.jade
+msgid "Name as displayed"
+msgstr "Nimen esittäminen"
+
+#: templates/enrollment_enroll_view.jade
+msgid "Nick name"
+msgstr "Nick"
+
+#: models.py
+msgid "Other diets"
+msgstr "Muu erikoisruokavalio"
+
+#: templates/enrollment_enroll_view.jade
+msgid "Phone number"
+msgstr "Puhelinnumero"
+
+#: views/public_views.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkista lomake."
+
+#: templates/enrollment_enroll_view.jade
+msgid "Please check your contact information and update your profile if necessary. By submitting this form you agree to these contact details being shared with the event organizer."
+msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman järjestäjille."
+
+#: models.py
+msgid "Reference to form class. Example: events.yukicon2016.forms:EnrollmentForm"
+msgstr "Form-luokan viittaus. Esimerkki: events.yukicon2016.forms:EnrollmentForm"
+
+#: templates/enrollment_enroll_view.jade
+msgid "Surname"
+msgstr "Sukunimi"
+
+#: views/public_views.py
+msgid "Thank you for enrolling."
+msgstr "Kiitos ilmoittautumisestasi."
+
+#: templates/enrollment_enroll_view.jade
+msgid "Update profile..."
+msgstr "Päivitä profiili..."
+
+#: templates/enrollment_enroll_view.jade
+msgid "Using this form you can enroll in the event. Please note that filling in the form does not guarantee automatic admittance into the event. You will be contacted by the event organizer and notified of the decision whether to accept your enrollment or not."
+msgstr "Tällä lomakkeella voit ilmoittautua tapahtumaan. Huomaathan, että tämän lomakkeen täyttäminen ei takaa automaattista pääsyä tapahtumaan. Tapahtuman järjestäjät ottavat sinuun yhteyttä ja kertovat päätöksestään hyväksyä ilmoittautumisesi."
+
+#: views/public_views.py
+msgid "You are already enrolled in this event."
+msgstr "Olet jo ilmoittautunut tähän tapahtumaan."
+
+#: templates/enrollment_enroll_view.jade
+msgid "You have already enrolled."
+msgstr "Olet jo ilmoittautunut."
+
