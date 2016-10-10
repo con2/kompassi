@@ -112,6 +112,18 @@ class Setup(object):
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
+            dict(
+                name='Pyryconin pääsylippu',
+                description='Lipulla pääset Pyryconiin perjantaina 17. helmikuuta 2017. Lippu ei oikeuta pääsyä Yukiconiin. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta. Ei palautus- tai vaihto-oikeutta.',
+                limit_groups=[
+                    limit_group('Pyrycon', 1200),
+                ],
+                price_cents=600,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
