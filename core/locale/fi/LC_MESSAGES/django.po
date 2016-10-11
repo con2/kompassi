@@ -34,6 +34,14 @@ msgstr "Sähköpostiosoite"
 msgid "E-mail address verification"
 msgstr "Sähköpostiosoitteen vahvistaminen"
 
+#: templates/core_event_box.jade
+msgid "Enrollment"
+msgstr "Ilmoittautuminen"
+
+#: templates/core_event_box.jade
+msgid "Enrollment open"
+msgstr "Ilmoittautuminen käynnissä"
+
 #: templates/core_event_boxen.jade
 msgid "Events currently in progress"
 msgstr "Parhaillaan käynnissä olevat tapahtumat"
@@ -286,4 +294,3 @@ msgstr "Salasana väärin."
 #: sort_and_filter.py
 msgid "Yes"
 msgstr "Kyllä"
-
