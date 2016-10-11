@@ -6,6 +6,11 @@
     if event.start_time
       p {{ event.formatted_start_and_end_date }}
     p
+      if event.enrollment_event_meta
+        if event.enrollment_event_meta.is_enrollment_open
+          span.label.label-primary.kompassi-space-after: a(href='{% url "enrollment_enroll_view" event.slug %}') {% trans "Enrollment open" %}
+        else
+          span.label.label-default.kompassi-space-after {% trans "Enrollment" %}
       if event.labour_event_meta
         if event.labour_event_meta.is_registration_open
           span.label.label-primary.kompassi-space-after: a(href='{% url "labour_signup_view" event.slug %}') {% trans "Recruiting volunteers" %}
