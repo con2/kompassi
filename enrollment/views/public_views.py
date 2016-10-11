@@ -14,7 +14,6 @@ from ..models import Enrollment
 @enrollment_event_required
 @person_required
 def enrollment_enroll_view(request, event):
-
     meta = event.enrollment_event_meta
 
     already_enrolled = Enrollment.objects.filter(
@@ -26,7 +25,7 @@ def enrollment_enroll_view(request, event):
         request.user.person
     )
 
-    EnrollmentForm = meta.form_code
+    EnrollmentForm = meta.form_class
     form = initialize_form(EnrollmentForm, request)
 
     if request.method == 'POST':

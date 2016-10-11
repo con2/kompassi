@@ -52,12 +52,11 @@ class Enrollment(models.Model):
     )
 
 
-
-"""
-An event creates an instance of this class to indicate use of enrollment module
-"""
 class EnrollmentEventMeta(EventMetaBase):
-    form_code_path = models.CharField(
+    """
+    An event has an instance of this class to indicate use of the enrollment module.
+    """
+    form_class_path = models.CharField(
         max_length=63,
         help_text=_("Reference to form class. Example: events.yukicon2016.forms:EnrollmentForm"),
     );
@@ -77,10 +76,9 @@ class EnrollmentEventMeta(EventMetaBase):
     public_until = alias_property('enrollment_closes')
 
     @property
-    def form_code(self):
-        if not getattr(self, '_form_code', None):
+    def form_class(self):
+        if not getattr(self, '_form_class', None):
             from core.utils import get_code
-            self._form_code = get_code(self.form_code_path)
+            self._form_class = get_code(self.form_class_path)
 
-        return self._form_code
-
+        return self._form_class
