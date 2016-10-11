@@ -74,6 +74,10 @@ if 'badges' in settings.INSTALLED_APPS:
     from badges.admin import InlineBadgesEventMetaAdmin
     event_admin_inlines.append(InlineBadgesEventMetaAdmin)
 
+if 'enrollment' in settings.INSTALLED_APPS:
+    from enrollment.admin import InlineEnrollmentEventMetaAdmin
+    event_admin_inlines.append(InlineEnrollmentEventMetaAdmin)
+
 
 class EventAdmin(admin.ModelAdmin):
     inlines = tuple(event_admin_inlines)

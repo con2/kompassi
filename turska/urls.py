@@ -24,6 +24,7 @@ for app_name in [
     'desuprofile_integration',
     'membership',
     'events.tracon11',
+    'enrollment',
 ]:
     if app_name in settings.INSTALLED_APPS:
         urlpatterns.append(url(r'', include('{app_name}.urls'.format(app_name=app_name))))

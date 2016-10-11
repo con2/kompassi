@@ -161,6 +161,7 @@ INSTALLED_APPS = (
     'lippukala',
     'branding',
     'desuprofile_integration',
+    'enrollment',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
