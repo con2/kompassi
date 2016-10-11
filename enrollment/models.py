@@ -10,6 +10,10 @@ from core.utils import alias_property
 
 
 class SimpleChoice(models.Model):
+    """
+    Abstract base model for generic simple M2M fields.
+    """
+
     name = models.CharField(max_length=63)
 
     def __unicode__(self):
@@ -23,10 +27,10 @@ class SpecialDiet(SimpleChoice):
     pass
 
 
-"""
-Holds all the possible fields an enrollment instance may have
-"""
 class Enrollment(models.Model):
+    """
+    Holds all the possible fields an enrollment instance may have
+    """
     event = models.ForeignKey('core.event')
     person = models.ForeignKey('core.person')
 
@@ -38,11 +42,13 @@ class Enrollment(models.Model):
 
     special_diet_other = models.TextField(
         blank=True,
-        verbose_name=_("Other diets"),
-        help_text=_("If you\'re on a diet that\'s not included in the list, "
-                     "please detail your diet here. Event organizer will try "
-                     "to take dietary needs into consideration, but all diets "
-                     "may not be catered for.")
+        verbose_name=_('Other diets'),
+        help_text=_(
+            'If you\'re on a diet that\'s not included in the list, '
+            'please detail your diet here. Event organizer will try '
+            'to take dietary needs into consideration, but all diets '
+            'may not be catered for.'
+        )
     )
 
 
