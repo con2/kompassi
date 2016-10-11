@@ -67,6 +67,10 @@ def core_event_view(request, event_slug):
         settings=settings,
     )
 
+    if event.enrollment_event_meta:
+        from enrollment.views import enrollment_event_box_context
+        vars.update(enrollment_event_box_context(request, event))
+
     if event.labour_event_meta:
         from labour.views import labour_event_box_context
         vars.update(labour_event_box_context(request, event))
@@ -88,4 +92,3 @@ def core_event_view(request, event_slug):
         vars.update(sms_event_box_context(request, event))
 
     return render(request, 'core_event_view.jade', vars)
-

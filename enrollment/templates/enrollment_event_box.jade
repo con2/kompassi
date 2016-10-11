@@ -1,0 +1,14 @@
+- load trans from i18n
+h3 {% trans "Enrollment" %}
+if enrollment
+  h4 {% trans "You have already signed up for this event" %}
+else
+  if event.enrollment_event_meta.is_enrollment_open
+    h4 {% trans "You can enroll for this event" %}
+    a(href='{% url "enrollment_enroll_view" event.slug %}').btn.btn-primary {% trans "Enroll for this event" %}
+  else
+    h4 {% trans "Enrollment for this event is not currently open." %}
+
+if is_enrollment_admin
+  h4 {% trans "You have enrollment admin privileges for this event" %}
+  //- p: a(href='{% url "enrollment_admin_dashboard_view" event.slug %}').btn.btn-primary {% trans "Go to admin view…" %}

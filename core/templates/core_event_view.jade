@@ -17,6 +17,10 @@ block content
           a(href='{{ event.homepage_url }}', target='_blank')
             img(src='{{ event.logo_url }}', alt='{{ event.name }}', width='100%')
 
+    if event.enrollment_event_meta
+      include enrollment_event_box.jade
+      hr
+
     if event.labour_event_meta
       include labour_event_box.jade
       hr

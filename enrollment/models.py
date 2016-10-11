@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from core.models import EventMetaBase
-from core.utils import alias_property
+from core.utils import alias_property, is_within_period
 
 
 class SimpleChoice(models.Model):
@@ -82,3 +82,7 @@ class EnrollmentEventMeta(EventMetaBase):
             self._form_class = get_code(self.form_class_path)
 
         return self._form_class
+
+    @property
+    def is_enrollment_open(self):
+        return is_within_period(self.enrollment_opens, self.enrollment_closes)

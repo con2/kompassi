@@ -1,1 +1,2 @@
 from .enrollment_enroll_view import enrollment_enroll_view
+from .enrollment_event_box_context import enrollment_event_box_context
