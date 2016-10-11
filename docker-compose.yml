@@ -19,6 +19,7 @@ services:
       CACHE_URL: memcache://memcache
   celery:
     image: tracon/kompassi
+    command: celery -A turska.celery_app:app worker
     links:
       - rabbitmq
       - postgres
