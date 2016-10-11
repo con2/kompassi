@@ -49,6 +49,7 @@ def enrollment_enroll_view(request, event):
     vars = dict(
         already_enrolled=already_enrolled,
         event_slug = event,
+        event=event,
         form=form,
     )
 

@@ -5,7 +5,7 @@ block title
   | {% trans "Enroll" %}
 block content
   h2 {% trans "Enroll" %}
-  p {% trans "Using this form you can enroll in the event. Please note that filling in the form does not guarantee automatic admittance into the event. You will be contacted by the event organizer and notified of the decision whether to accept your enrollment or not." %}
+  {{ event.enrollment_event_meta.enrollment_form_message|safe|linebreaks }}
 
   .panel.panel-default
     .panel-heading: strong {% trans "Contact information" %}
