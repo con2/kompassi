@@ -191,6 +191,7 @@ INSTALLED_APPS = (
     'events.yukicon2017',
     'events.frostbite2017',
     'events.kuplii2017',
+    'events.tracrossf2016',
 )
 
 LOGGING = {
