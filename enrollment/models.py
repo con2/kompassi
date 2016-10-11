@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import python_2_unicode_compatible
 
 from core.models import EventMetaBase
 from core.utils import alias_property, is_within_period
@@ -27,6 +28,7 @@ class SpecialDiet(SimpleChoice):
     pass
 
 
+@python_2_unicode_compatible
 class Enrollment(models.Model):
     """
     Holds all the possible fields an enrollment instance may have
@@ -50,6 +52,12 @@ class Enrollment(models.Model):
             'may not be catered for.'
         )
     )
+
+    def __str__(self):
+        return '{event}: {person}'.format(
+            event=self.event,
+            person=self.person,
+        )
 
 
 class EnrollmentEventMeta(EventMetaBase):
