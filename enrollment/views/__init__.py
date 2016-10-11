@@ -1,3 +1,1 @@
-from .public_views import (
-    enrollment_enroll_view,
-)
+from .enrollment_enroll_view import enrollment_enroll_view

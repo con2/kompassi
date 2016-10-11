@@ -50,7 +50,6 @@ def enrollment_enroll_view(request, event):
         already_enrolled=already_enrolled,
         event_slug = event,
         form=form,
-        mandatory_information_missing=mandatory_information_missing,
     )
 
     return render(request, 'enrollment_enroll_view.jade', vars)
