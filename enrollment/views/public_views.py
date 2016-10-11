@@ -21,6 +21,11 @@ def enrollment_enroll_view(request, event):
         person=request.user.person,
     ).exists()
 
+    if already_enrolled:
+        # TODO Display
+        messages.error(request, _("You are already enrolled in this event."))
+        return redirect('core_event_view', event.slug)
+
     mandatory_information_missing = not (
         request.user.person
     )
@@ -29,10 +34,9 @@ def enrollment_enroll_view(request, event):
     form = initialize_form(EnrollmentForm, request)
 
     if request.method == 'POST':
-        if already_enrolled:
-            messages.error(request, _("You are already enrolled in this event."))
-            return redirect('core_event_view', event.slug)
-        elif mandatory_information_missing:
+        # TODO Allow changing/cancelling enrollment as long as enrollment period is open
+
+        if mandatory_information_missing:
             messages.error(request, _("Missing mandatory information."))
         elif not form.is_valid():
             messages.error(request, _("Please check the form."))
