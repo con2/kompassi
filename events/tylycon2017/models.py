@@ -143,6 +143,12 @@ class SignupExtra(SignupExtraBase):
     #         u'osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.'
     # )
 
+    motivation = models.TextField(
+        blank=True,
+        verbose_name=u'Miksi haet Tylyconiin?',
+        help_text=u'Kerro, miksi haluat töihin juuri tähän coniin.'
+    )
+
     free_text = models.TextField(
         blank=True,
         verbose_name=u'Vapaa alue',
