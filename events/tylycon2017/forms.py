@@ -32,6 +32,7 @@ class SignupExtraForm(forms.ModelForm):
                 'special_diet_other',
                 # indented_without_label('need_lodging'),
                 'prior_experience',
+                'motivation',
                 # 'shift_wishes',
                 'free_text',
             )
@@ -53,6 +54,7 @@ class SignupExtraForm(forms.ModelForm):
             'special_diet_other',
             # 'need_lodging',
             'prior_experience',
+            'motivation',
             # 'shift_wishes',
             'free_text',
         )
