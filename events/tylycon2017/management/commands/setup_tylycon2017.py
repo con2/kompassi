@@ -234,6 +234,7 @@ class Setup(object):
             'Tähtitorni',
             'Loitsuluokka',
             'Kasvihuone 3',
+            'Salaisuuksien kammio',
         ]:
             Room.objects.get_or_create(
                 venue=self.venue,
@@ -278,7 +279,7 @@ class Setup(object):
             ('Puheohjelma', 'color1'),
             ('Keskusteluohjelma', 'color2'),
             ('Työpaja', 'color3'),
-            ('Muuohjelma', 'color4'),
+            ('Muu ohjelma', 'color4'),
         ]:
             Category.objects.get_or_create(
                 event=self.event,
