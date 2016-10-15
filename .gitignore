@@ -18,3 +18,4 @@ pip-log.txt
 rev-manifest.json
 tmp/
 virtualenv/
+.DS_Store
