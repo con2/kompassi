@@ -76,9 +76,9 @@ class Setup(object):
             front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Yukicon 4.0- ja Pyrycon-tapahtumiin!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 "<p>Lue lisää tapahtumasta <a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>",
-            print_logo_path=mkpath('static', 'images', 'yukicon_436_test.jpg'),
+            print_logo_path=mkpath('static', 'images', 'yukicon2017_logo.png'),
             print_logo_width_mm=50,
-            print_logo_height_mm=10
+            print_logo_height_mm=16
         )
 
         if self.test:
@@ -89,6 +89,11 @@ class Setup(object):
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+
+        if 'yukicon_436_test' in meta.print_logo_path:
+            meta.print_logo_path = mkpath('static', 'images', 'yukicon2017_logo.png')
+            meta.print_logo_height_mm = 16
+            meta.save()
 
         def limit_group(description, limit):
             limit_group, unused = LimitGroup.objects.get_or_create(
