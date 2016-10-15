@@ -937,6 +937,7 @@ class Order(models.Model):
                 msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
 
         elif msgtype == "delivery_confirmation":
+            assert self.requires_shipping
             msgsubject = u"{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
             msgbody = render_to_string("tickets_confirm_delivery.eml", self.email_vars)
 
