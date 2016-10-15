@@ -32,6 +32,7 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_access()
+        self.setup_programme()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -194,7 +195,6 @@ class Setup(object):
                 )
             )
 
-
     def setup_access(self):
         from access.models import Privilege, GroupPrivilege, EmailAliasType, GroupEmailAliasGrant
 
@@ -212,6 +212,107 @@ class Setup(object):
                     active_until=self.event.end_time,
                 )
             )
+
+    def setup_programme(self):
+        from labour.models import PersonnelClass
+        from programme.models import (
+            Category,
+            Programme,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            Tag,
+            TimeBlock,
+            View,
+        )
+        from core.utils import full_hours_between
+
+        for room_name in [
+            'Suuri sali',
+            'Tarvehuone',
+            'Tähtitorni',
+            'Loitsuluokka',
+            'Kasvihuone 3',
+        ]:
+            Room.objects.get_or_create(
+                venue=self.venue,
+                name=room_name,
+                defaults=dict(
+                    order=self.get_ordering_number(),
+                )
+            )
+
+        admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            admin_group=admin_group,
+        ))
+
+        if settings.DEBUG:
+            programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
+            programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
+            programme_event_meta.save()
+
+        for pc_slug, role_title, role_is_default in [
+            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+        ]:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                )
+            )
+
+        view, unused = View.objects.get_or_create(
+            event=self.event,
+            name='Ohjelmakartta',
+        )
+
+        if not view.rooms.exists():
+            view.rooms = Room.objects.filter(venue=self.venue, active=True)
+            view.save()
+
+        for category_name, category_style in [
+            ('Puheohjelma', 'color1'),
+            ('Keskusteluohjelma', 'color2'),
+            ('Työpaja', 'color3'),
+            ('Muuohjelma', 'color4'),
+        ]:
+            Category.objects.get_or_create(
+                event=self.event,
+                title=category_name,
+                defaults=dict(
+                    style=category_style,
+                )
+            )
+
+        for tag_name, tag_style in [
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_name,
+                defaults=dict(
+                    style=tag_style,
+                ),
+            )
+
+        TimeBlock.objects.get_or_create(
+            event=self.event,
+            start_time=self.event.start_time,
+            defaults=dict(
+                end_time=self.event.end_time,
+            ),
+        )
+
+        # Half hours
+        # [:-1] – discard 18:30
+        # for hour_start_time in full_hours_between(start_time, end_time)[:-1]:
+        #     SpecialStartTime.objects.get_or_create(
+        #         event=self.event,
+        #         start_time=hour_start_time.replace(minute=30)
+        #     )
 
 
 class Command(BaseCommand):
