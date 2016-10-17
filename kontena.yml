@@ -7,19 +7,16 @@ services:
       file: docker-compose.yml
       service: web
     image: registry.kontena.local/kompassi:latest
-    volumes: []
   celery:
     extends:
       file: docker-compose.yml
       service: celery
-    volumes: []
+    image: registry.kontena.local/kompassi:latest
   postgres:
-    stateful: true
     extends:
       file: docker-compose.yml
       service: postgres
   rabbitmq:
-    stateful: true
     extends:
       file: docker-compose.yml
       service: rabbitmq
