@@ -1,0 +1,29 @@
+---
+version: '2'
+name: kompassi
+services:
+  web:
+    extends:
+      file: docker-compose.yml
+      service: web
+    image: registry.kontena.local/kompassi:latest
+    volumes: []
+  celery:
+    extends:
+      file: docker-compose.yml
+      service: celery
+    volumes: []
+  postgres:
+    stateful: true
+    extends:
+      file: docker-compose.yml
+      service: postgres
+  rabbitmq:
+    stateful: true
+    extends:
+      file: docker-compose.yml
+      service: rabbitmq
+  memcache:
+    extends:
+      file: docker-compose.yml
+      service: memcache
