@@ -67,7 +67,7 @@ class JobCategory(models.Model):
         return job_category, created
 
     @classmethod
-    def copy_from_event(cls, source_event, target_event):
+    def copy_from_event(cls, source_event, target_event, remap_personnel_classes=dict()):
         from .personnel_class import PersonnelClass
 
         with transaction.atomic():
@@ -82,9 +82,14 @@ class JobCategory(models.Model):
                     continue
 
                 for personnel_class in job_category.personnel_classes.all():
+                    personnel_class_slug = remap_personnel_classes.get(
+                        personnel_class.slug,
+                        personnel_class.slug,
+                    )
+
                     new_personnel_class, unused = PersonnelClass.objects.get_or_create(
                         event=target_event,
-                        slug=personnel_class.slug,
+                        slug=personnel_class_slug,
                         defaults=omit_keys(vars(personnel_class), '_state', 'id', 'event_id', 'slug')
                     )
                     new_job_category.personnel_classes.add(new_personnel_class)
