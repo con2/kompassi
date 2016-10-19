@@ -1,22 +1,20 @@
 # encoding: utf-8
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.timezone import now
 
 from .misc_utils import get_code
 
 
-def event_meta_property(app_label, code_path):
+def event_meta_property(app_label):
     if app_label not in settings.INSTALLED_APPS:
         return property(lambda self: None)
 
     def _get(self):
-        # NOTE moving get_code invocation outside _get would create a circular import
-        EventMetaClass = get_code(code_path)
-
         try:
-            return EventMetaClass.objects.get(event=self)
-        except EventMetaClass.DoesNotExist:
+            return getattr(self, '{}eventmeta'.format(app_label))
+        except ObjectDoesNotExist:
             return None
 
     return property(_get)

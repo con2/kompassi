@@ -48,6 +48,8 @@ class BadgesTestCase(TestCase):
         self.meta.save()
 
         badge.revoke()
+
+        signup = Signup.objects.get(id=signup.id)
         signup.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)

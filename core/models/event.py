@@ -173,14 +173,14 @@ class Event(models.Model):
             ),
         )
 
-    labour_event_meta = event_meta_property('labour', 'labour.models:LabourEventMeta')
-    programme_event_meta = event_meta_property('programme', 'programme.models:ProgrammeEventMeta')
-    badges_event_meta = event_meta_property('badges', 'badges.models:BadgesEventMeta')
-    tickets_event_meta = event_meta_property('tickets', 'tickets.models:TicketsEventMeta')
-    payments_event_meta = event_meta_property('payments', 'payments.models:PaymentsEventMeta')
-    sms_event_meta = event_meta_property('sms', 'sms.models:SMSEventMeta')
-    enrollment_event_meta = event_meta_property('enrollment', 'enrollment.models:EnrollmentEventMeta')
-    intra_event_meta = event_meta_property('intra', 'intra.models:IntraEventMeta')
+    labour_event_meta = event_meta_property('labour')
+    programme_event_meta = event_meta_property('programme')
+    badges_event_meta = event_meta_property('badges')
+    tickets_event_meta = event_meta_property('tickets')
+    payments_event_meta = event_meta_property('payments')
+    sms_event_meta = event_meta_property('sms')
+    enrollment_event_meta = event_meta_property('enrollment')
+    intra_event_meta = event_meta_property('intra')
 
     def app_event_meta(self, app_label):
         return getattr(self, '{}_event_meta'.format(app_label))
