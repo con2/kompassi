@@ -4,13 +4,17 @@ msgstr "Lisätiedot"
 
 #: templates/enrollment_enroll_view.jade
 msgid "Contact information"
-msgstr "Yhetystiedot"
+msgstr "Yhteystiedot"
 
-#: models.py
+#: templates/enrollment_admin_special_diets_view.jade
+msgid "Count"
+msgstr "Lukumäärä"
+
+#: models.py models/enrollment.py
 msgid "Diet"
 msgstr "Ruokavalio"
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_admin_view.jade templates/enrollment_enroll_view.jade
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -22,11 +26,15 @@ msgstr "Ilmoittaudu"
 msgid "Enroll for this event"
 msgstr "Ilmoittaudu tapahtumaan"
 
+#: templates/enrollment_admin_view.jade views/enrollment_admin_menu_items.py
+msgid "Enrolled people"
+msgstr "Ilmoittautuneet"
+
 #: apps.py templates/enrollment_event_box.jade
 msgid "Enrollment"
 msgstr "Ilmoittautuminen"
 
-#: models.py
+#: models.py models/enrollment_event_meta.py
 msgid "Enrollment closes"
 msgstr "Ilmoittautuminen päättyy"
 
@@ -34,19 +42,23 @@ msgstr "Ilmoittautuminen päättyy"
 msgid "Enrollment for this event is not currently open."
 msgstr "Ilmoittautuminen tähän tapahtumaan ei ole juuri nyt käynnissä."
 
-#: models.py
+#: models.py models/enrollment_event_meta.py
 msgid "Enrollment form message"
 msgstr "Ilmoittautumislomakkeen viesti"
 
-#: models.py
+#: models.py models/enrollment_event_meta.py
 msgid "Enrollment opens"
 msgstr "Ilmoittautuminen alkaa"
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_admin_view.jade templates/enrollment_enroll_view.jade
 msgid "First name"
 msgstr "Etunimi"
 
-#: models.py
+#: templates/enrollment_event_box.jade
+msgid "Go to admin view…"
+msgstr "Siirry ylläpitonäkymään…"
+
+#: models.py models/enrollment.py
 msgid "If you're on a diet that's not included in the list, please detail your diet here. Event organizer will try to take dietary needs into consideration, but all diets may not be catered for."
 msgstr "Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään."
 
@@ -54,19 +66,47 @@ msgstr "Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, i
 msgid "If your name is publicly displayed, this is how your name will be published. You can change the name display style in your profile."
 msgstr "Jos nimesi näytetään julkisesti, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
 
+#: helpers.py
+msgid "Manage enrollment"
+msgstr "Ilmoittautumisten hallinta"
+
 #: templates/enrollment_enroll_view.jade
 msgid "Name as displayed"
 msgstr "Nimen esittäminen"
+
+#: templates/enrollment_admin_view.jade
+msgid "Nick"
+msgstr "Nick"
 
 #: templates/enrollment_enroll_view.jade
 msgid "Nick name"
 msgstr "Nick"
 
-#: models.py
+#: templates/enrollment_admin_view.jade
+#, python-format
+msgid "No enrolled people visible (total %(num_total_enrolled)s)."
+msgstr "Ei ilmoittautuneita näkyvissä (yhteensä %(num_total_enrolled)s)."
+
+#: templates/enrollment_admin_view.jade
+#, python-format
+msgid "One enrolled person visible (total %(num_total_enrolled)s)."
+msgid_plural "%(num_enrolled)s enrolled people visible (total %(num_total_enrolled)s)."
+msgstr[0] "Näytetään yksi ilmoittautunut (yhteensä %(num_total_enrolled)s)."
+msgstr[1] "Näytetään %(num_enrolled)s ilmoittautunutta (yhteensä %(num_total_enrolled)s)."
+
+#: models.py models/enrollment.py
 msgid "Other diets"
 msgstr "Muu erikoisruokavalio"
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_admin_special_diets_view.jade
+msgid "Other special diet"
+msgstr "Muu erikoisruokavalio"
+
+#: templates/enrollment_admin_special_diets_view.jade
+msgid "Other special diets"
+msgstr "Muu erikoisruokavalio"
+
+#: templates/enrollment_admin_view.jade templates/enrollment_enroll_view.jade
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
@@ -78,11 +118,27 @@ msgstr "Ole hyvä ja tarkista lomake."
 msgid "Please check your contact information and update your profile if necessary. By submitting this form you agree to these contact details being shared with the event organizer."
 msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman järjestäjille."
 
-#: models.py
+#: models.py models/enrollment_event_meta.py
 msgid "Reference to form class. Example: events.yukicon2016.forms:EnrollmentForm"
 msgstr "Form-luokan viittaus. Esimerkki: events.yukicon2016.forms:EnrollmentForm"
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_admin_special_diets_view.jade
+msgid "Special diet"
+msgstr "erikoisruokavalio"
+
+#: views/enrollment_admin_menu_items.py
+msgid "Special diets"
+msgstr "Erikoisruokavaliot"
+
+#: templates/enrollment_admin_special_diets_view.jade
+msgid "Standard special diet"
+msgstr "Tyypillinen erikoisruokavalio"
+
+#: templates/enrollment_admin_special_diets_view.jade
+msgid "Standard special diets"
+msgstr "Tyypilliset erikoisruokavaliot"
+
+#: templates/enrollment_admin_view.jade templates/enrollment_enroll_view.jade
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -90,21 +146,29 @@ msgstr "Sukunimi"
 msgid "Thank you for enrolling."
 msgstr "Kiitos ilmoittautumisestasi."
 
+#: helpers.py
+msgid "This event does not use this site to manage enrollment."
+msgstr "Tämä tapahtuma ei käytä tätä sivustoa ilmoittautumisten hallintaan."
+
 #: templates/enrollment_enroll_view.jade
 msgid "Update profile..."
 msgstr "Päivitä profiili..."
 
-#: models.py
+#: models.py models/enrollment_event_meta.py
 msgid "Use this field to override the message that is shown in top of the enrollment form. If this field is not filled in, a default message is shown."
 msgstr "Käytä tätä kenttää korvaamaan viesti, joka näytetään ilmoittautumislomakkeen yläosassa. Jos kenttä on tyhjä, näytetään oletusviesti."
 
-#: models.py
+#: models.py models/enrollment_event_meta.py
 msgid "Using this form you can enroll in the event. Please note that filling in the form does not guarantee automatic admittance into the event. You will be contacted by the event organizer and notified of the decision whether to accept your enrollment or not."
 msgstr "Tällä lomakkeella voit ilmoittautua tapahtumaan. Huomaathan, että tämän lomakkeen täyttäminen ei takaa automaattista pääsyä tapahtumaan. Tapahtuman järjestäjät ottavat sinuun yhteyttä ja kertovat päätöksestään hyväksyä ilmoittautumisesi."
 
 #: views/enrollment_enroll_view.py
 msgid "You are already enrolled in this event."
 msgstr "Olet jo ilmoittautunut tähän tapahtumaan."
+
+#: helpers.py
+msgid "You are not allowed to manage enrollment for this event."
+msgstr "Sinulla ei ole ilmoittautumisten ylläpito-oikeuksia tähän tapahtumaan.."
 
 #: templates/enrollment_event_box.jade
 msgid "You can enroll for this event"

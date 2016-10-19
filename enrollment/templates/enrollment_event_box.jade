@@ -11,4 +11,4 @@ else
 
 if is_enrollment_admin
   h4 {% trans "You have enrollment admin privileges for this event" %}
-  //- p: a(href='{% url "enrollment_admin_dashboard_view" event.slug %}').btn.btn-primary {% trans "Go to admin view…" %}
+  p: a(href='{% url "enrollment_admin_view" event.slug %}').btn.btn-primary {% trans "Go to admin view…" %}

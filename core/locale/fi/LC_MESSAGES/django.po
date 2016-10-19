@@ -294,3 +294,4 @@ msgstr "Salasana väärin."
 #: sort_and_filter.py
 msgid "Yes"
 msgstr "Kyllä"
+
