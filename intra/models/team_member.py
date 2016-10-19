@@ -51,6 +51,11 @@ class TeamMember(models.Model):
     def event(self):
         return self.team.event if self.team else None
 
+    @property
+    def signup(self):
+        from labour.models import Signup
+        return Signup.objects.get(event=self.event, person=self.person)
+
     def admin_get_event(self):
         return self.event
     admin_get_event.short_description = _('Event')
