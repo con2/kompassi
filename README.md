@@ -1,5 +1,8 @@
 # Kompassi Event Management System
 
+[![Build Status](https://travis-ci.org/tracon/kompassi.svg?branch=master)](https://travis-ci.org/tracon/kompassi)
+[![Sponsored by Leonidas](https://img.shields.io/badge/sponsored%20by-leonidas-blue.svg)](https://leonidasoy.fi/opensource)
+
 Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. Work in progress.
 
 ## Getting Started
@@ -59,3 +62,5 @@ A Docker image is available as [tracon/kompassi](https://hub.docker.com/r/tracon
     THE SOFTWARE.
 
 For third-party component licenses, see [LICENSE](https://github.com/tracon/kompassi/blob/master/LICENSE.md).
+
+The work of Santtu Pajukanta on Kompassi has been sponsored by [Leonidas Oy](https://leonidasoy.fi/opensource).
