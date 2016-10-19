@@ -63,4 +63,4 @@ A Docker image is available as [tracon/kompassi](https://hub.docker.com/r/tracon
 
 For third-party component licenses, see [LICENSE](https://github.com/tracon/kompassi/blob/master/LICENSE.md).
 
-The work of Santtu Pajukanta on Kompassi has been sponsored by [Leonidas Oy](https://leonidasoy.fi/opensource).
+The work of Santtu Pajukanta on Kompassi has been partially sponsored by [Leonidas Oy](https://leonidasoy.fi/opensource).
