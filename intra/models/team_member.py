@@ -99,8 +99,20 @@ class TeamMember(models.Model):
 @receiver(post_save, sender=TeamMember)
 def on_team_member_update(sender, instance, **kwargs):
     logger.debug('TeamMember %s update hook', instance)
-    ensure_user_is_member_of_group(instance.person.user, instance.team.group, instance.is_group_member)
 
+    # only one primary team per person per event
+    if instance.is_primary_team:
+        TeamMember.objects.filter(
+            team__event=instance.event,
+            person=instance.person,
+            is_primary_team=True,
+        ).exclude(
+            id=instance.id,
+        ).update(
+            is_primary_team=False
+        )
+
+    ensure_user_is_member_of_group(instance.person.user, instance.team.group, instance.is_group_member)
 
 @receiver(post_delete, sender=TeamMember)
 def on_team_member_delete(sender, instance, **kwargs):
