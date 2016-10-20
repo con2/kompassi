@@ -31,7 +31,7 @@ block admin_content
                 td= team_member.person.nick
                 td= team_member.signup.job_title
                 td= team_member.person.email
-                td= team_member.person.phone
+                td= team_member.person.normalized_phone_number
                 if is_intra_admin
                   td
                     include intra_admin_team_member_actions.jade
