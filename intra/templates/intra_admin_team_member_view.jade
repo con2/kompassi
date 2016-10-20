@@ -18,10 +18,13 @@ block admin_content
         .btn-group.pull-right
           a.btn.btn-default(href='{% url "intra_organizer_view" event.slug %}') {% trans "Cancel and return" %}
           if form.instance.pk
-            button.btn.btn-success(type='submit')
+            button.btn.btn-danger(type='submit', name='action', value='delete')
+              i.fa.fa-trash.kompassi-icon-space-right
+              {% trans "Remove team member" %}
+            button.btn.btn-success(type='submit', name='action', value='save-return')
               i.fa.fa-floppy-o.kompassi-icon-space-right
               {% trans "Save changes" %}
           else
-            button.btn.btn-success(type='submit')
+            button.btn.btn-success(type='submit', name='action', value='save-return')
               i.fa.fa-plus.kompassi-icon-space-right
               {% trans "Add member" %}

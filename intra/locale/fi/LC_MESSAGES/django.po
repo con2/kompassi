@@ -87,7 +87,7 @@ msgstr "Nick"
 msgid "One member."
 msgid_plural "%(num_members)s members."
 msgstr[0] "Yksi jäsen."
-msgstr[1] "%(num_members)s jäsentä"
+msgstr[1] "%(num_members)s jäsentä."
 
 #: models/team.py
 msgid "Order"
@@ -160,4 +160,3 @@ msgstr "Sinulla ei ole tämän tapahtuman järjestäjäintranetin ylläpito-oike
 #: templates/intra_event_box.jade
 msgid "You have access to the organizer intranet."
 msgstr "Sinulla on pääsy järjestäjien intranetiin."
-

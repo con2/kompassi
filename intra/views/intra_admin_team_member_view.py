@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import messages
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
@@ -47,12 +48,23 @@ def intra_admin_team_member_view(request, vars, event, team_slug=None, person_id
         form = initialize_form(TeamMemberForm, request, event=event, initial=initial_data)
 
     if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            messages.success(request, _('The member was added to the team.'))
+        action = request.POST.get('action')
+        if action == 'save-return':
+            if form.is_valid():
+                form.save()
+                messages.success(request, _('The member was added to the team.'))
+                return redirect('intra_organizer_view', event.slug)
+            else:
+                messages.error(request, _('Please check the form.'))
+        elif action == 'delete':
+            if not team_member.pk:
+                return HttpResponseNotFound()
+
+            team_member.delete()
+            messages.success(request, _('The member was removed from the team.'))
             return redirect('intra_organizer_view', event.slug)
         else:
-            messages.error(request, _('Please check the form.'))
+            messages.error(request, _('Invalid action.'))
 
     vars.update(
         form=form,
