@@ -18,6 +18,8 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             'shift_type',
+            'shift_setup',
+            'shift_cleanup',
             'total_work',
             # 'night_work',
             # indented_without_label('construction'),
@@ -43,6 +45,8 @@ class SignupExtraForm(forms.ModelForm):
         model = SignupExtra
         fields = (
             'shift_type',
+            'shift_setup',
+            'shift_cleanup',
             'total_work',
             # 'night_work',
             # 'construction',
@@ -127,6 +131,8 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_field_defaults(self):
         return dict(
             shift_type='kaikkikay',
+            shift_setup=False,
+            shift_cleanup=False,
             total_work='yli12h',
             # construction=False,
             # overseer=False,
