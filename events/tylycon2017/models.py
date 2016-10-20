@@ -75,6 +75,18 @@ class SignupExtra(SignupExtraBase):
         choices=TOTAL_WORK_CHOICES,
     )
 
+    shift_setup = models.BooleanField(
+        default=False,
+        verbose_name=u'Voin työskennellä aamulla klo 8 alkaen',
+        help_text=u'Ensimmäiset työtehtävät alkavat klo 8. Älä valitse tätä ruutua, jos et esimerkiksi kulkuyhteyksien vuoksi pysty saapumaan Malmitalolle klo 8:an mennessä.',
+    )
+
+    shift_cleanup = models.BooleanField(
+        default=False,
+        verbose_name=u'Voin työskennellä illalla klo 20 asti',
+        help_text=u'Viimeiset työtehtävät jatkuvat klo 20 asti. Älä valitse tätä ruutua, jos et esimerkiksi kulkuyhteyksien vuoksi pysty jäämään Malmitalolle klo 20:en asti.',
+    )
+
     # night_work = models.CharField(max_length=5,
     #     verbose_name=u'Voitko työskennellä yöllä?',
     #     help_text=u'Yötöitä voi olla ainoastaan lauantain ja sunnuntain välisenä yönä.',
