@@ -10,6 +10,10 @@ msgstr "Lisää jäsen"
 msgid "Add member…"
 msgstr "Lisää jäsen…"
 
+#: templates/intra_organizer_view.jade
+msgid "Assign this organizer to a team…"
+msgstr "Sijoita järjestäjä tiimiin…"
+
 #: templates/intra_admin_team_member_view.jade
 msgid "Cancel and return"
 msgstr "Peruuta ja palaa luetteloon"
@@ -70,6 +74,10 @@ msgstr "Ryhmän jäsenyys"
 msgid "In some listings where space is tight, the person is only shown under their default team. Designating one team as the default for someone replaces their prior default team."
 msgstr "Joissain listauksissa joissa tila on kortilla kukin henkilö näytetään ainoastaan ensisijaisessa tiimissään. Yhden tiimin määrittäminen henkilölle ensisijaiseksi korvaa tämän mahdollisen aikaisemman ensisijaisen tiimin."
 
+#: views/intra_admin_team_member_view.py
+msgid "Invalid action."
+msgstr "Kelvoton toiminto."
+
 #: templates/intra_organizer_view.jade
 msgid "Job title"
 msgstr "Tehtävänimike"
@@ -89,6 +97,13 @@ msgid_plural "%(num_members)s members."
 msgstr[0] "Yksi jäsen."
 msgstr[1] "%(num_members)s jäsentä."
 
+#: templates/intra_organizer_view.jade
+#, python-format
+msgid "One unassigned organizer."
+msgid_plural "%(num_members)s unassigned organizer."
+msgstr[0] "Yksi sijoittamaton järjestäjä."
+msgstr[1] "%(num_members)s sijoittamatonta järjestäjää."
+
 #: models/team.py
 msgid "Order"
 msgstr "Järjestys"
@@ -104,6 +119,10 @@ msgstr "Puhelinnumero"
 #: views/intra_admin_team_member_view.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
+
+#: templates/intra_admin_team_member_view.jade
+msgid "Remove team member"
+msgstr "Poista jäsen tiimistä"
 
 #: templates/intra_admin_team_member_view.jade
 msgid "Save changes"
@@ -137,6 +156,14 @@ msgstr "Tiimit ja järjestäjät"
 msgid "The member was added to the team."
 msgstr "Jäsen lisättiin tiimiin."
 
+#: views/intra_admin_team_member_view.py
+msgid "The member was removed from the team."
+msgstr "Jäsen poistettiin tiimiistä."
+
+#: templates/intra_organizer_view.jade
+msgid "These organizers have not yet been assigned to a team."
+msgstr "Näitä järjestäjiä ei ole vielä sijoitettu mihinkään tiimiin."
+
 #: helpers.py
 msgid "This event does not use the organizer intranet."
 msgstr "Tämä tapahtuma ei käytä järjestäjäintranetiä."
@@ -144,6 +171,10 @@ msgstr "Tämä tapahtuma ei käytä järjestäjäintranetiä."
 #: templates/intra_organizer_view.jade
 msgid "This team has no members."
 msgstr "Tässä tiimissä ei ole jäseniä."
+
+#: templates/intra_organizer_view.jade
+msgid "Unassigned organizers"
+msgstr "Sijoittamattomat järjestäjät"
 
 #: models/team.py
 msgid "What is the team responsible for?"
@@ -160,3 +191,4 @@ msgstr "Sinulla ei ole tämän tapahtuman järjestäjäintranetin ylläpito-oike
 #: templates/intra_event_box.jade
 msgid "You have access to the organizer intranet."
 msgstr "Sinulla on pääsy järjestäjien intranetiin."
+

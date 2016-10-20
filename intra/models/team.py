@@ -29,6 +29,8 @@ class Team(models.Model):
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     group = models.ForeignKey('auth.Group')
 
+    panel_css_class = 'panel-default'
+
     def __str__(self):
         return self.name
 

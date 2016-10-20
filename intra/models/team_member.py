@@ -19,7 +19,7 @@ logger = logging.getLogger('kompassi')
 @python_2_unicode_compatible
 class TeamMember(models.Model):
     team = models.ForeignKey('intra.Team', related_name='members')
-    person = models.ForeignKey('core.Person', related_name='members')
+    person = models.ForeignKey('core.Person', related_name='team_memberships')
 
     is_primary_team = models.BooleanField(
         default=True,
