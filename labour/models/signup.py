@@ -463,6 +463,7 @@ class Signup(models.Model, CsvExportMixin):
 
     def apply_state_group_membership(self):
         from .job_category import JobCategory
+        from .personnel_class import PersonnelClass
 
         groups_to_add = set()
         groups_to_remove = set()
@@ -479,6 +480,15 @@ class Signup(models.Model, CsvExportMixin):
         for job_category in JobCategory.objects.filter(event=self.event):
             should_belong_to_group = self.job_categories_accepted.filter(pk=job_category.pk).exists()
             group = self.event.labour_event_meta.get_group(job_category.slug)
+
+            if should_belong_to_group:
+                groups_to_add.add(group)
+            else:
+                groups_to_remove.add(group)
+
+        for personnel_class in PersonnelClass.objects.filter(event=self.event, app_label='labour'):
+            should_belong_to_group = self.personnel_classes.filter(pk=personnel_class.pk).exists()
+            group = self.event.labour_event_meta.get_group(personnel_class.slug)
 
             if should_belong_to_group:
                 groups_to_add.add(group)
@@ -698,7 +708,7 @@ class Signup(models.Model, CsvExportMixin):
 
         if self.xxx_interim_shifts:
             parts.append(self.xxx_interim_shifts)
-            
+
         parts.extend(text_type(shift) for shift in self.shifts.all())
 
         return "\n\n".join(part for part in parts if part)

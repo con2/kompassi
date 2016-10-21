@@ -136,22 +136,31 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
         if 'mailings' in settings.INSTALLED_APPS:
             from mailings.models import RecipientGroup
+            from .job_category import JobCategory
+            from .personnel_class import PersonnelClass
 
             for jc_or_suffix, group in zip(job_categories_or_suffixes, groups):
-                if isinstance(jc_or_suffix, basestring):
-                    verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[jc_or_suffix]
-                    job_category = None
-                else:
+                if isinstance(jc_or_suffix, JobCategory):
                     verbose_name = jc_or_suffix.name
                     job_category = jc_or_suffix
+                    personnel_class = None
+                elif isinstance(jc_or_suffix, PersonnelClass):
+                    verbose_name = jc_or_suffix.name
+                    job_category = None
+                    personnel_class = jc_or_suffix
+                else:
+                    verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[jc_or_suffix]
+                    job_category = None
+                    personnel_class = None
 
                 RecipientGroup.objects.get_or_create(
                     event=event,
                     app_label='labour',
                     group=group,
                     defaults=dict(
-                        verbose_name=verbose_name,
                         job_category=job_category,
+                        personnel_class=personnel_class,
+                        verbose_name=verbose_name,
                     ),
                 )
 
@@ -166,9 +175,11 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
     def create_groups(self):
         from .job_category import JobCategory
+        from .personnel_class import PersonnelClass
 
         job_categories_or_suffixes = list(SIGNUP_STATE_GROUPS)
         job_categories_or_suffixes.extend(JobCategory.objects.filter(event=self.event))
+        job_categories_or_suffixes.extend(PersonnelClass.objects.filter(event=self.event, app_label='labour'))
         return LabourEventMeta.get_or_create_groups(self.event, job_categories_or_suffixes)
 
     @property

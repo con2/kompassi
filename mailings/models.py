@@ -1,12 +1,14 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from hashlib import sha1
 import logging
 from datetime import datetime, timedelta
 
 from django.utils import timezone
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save, post_save
 
 from math import ceil
 
@@ -14,6 +16,9 @@ from django.conf import settings
 from django.db import models
 from django.template import Template, Context
 from django.utils import timezone
+
+from labour.models import JobCategory
+from labour.models import PersonnelClass
 
 
 logger = logging.getLogger('kompassi')
@@ -25,28 +30,26 @@ DELAY_PER_MESSAGE_FRAGMENT_MILLIS = 350
 
 
 class RecipientGroup(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
-    app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name=u'Sovellus')
-    group = models.ForeignKey('auth.Group', verbose_name=u'Käyttäjäryhmä')
-    verbose_name = models.CharField(max_length=63, verbose_name=u'Nimi')
-    job_category = models.ForeignKey('labour.JobCategory', null=True, blank=True)
+    event = models.ForeignKey('core.Event', verbose_name='Tapahtuma')
+    app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name='Sovellus')
+    group = models.ForeignKey('auth.Group', verbose_name='Käyttäjäryhmä')
+    verbose_name = models.CharField(max_length=63, verbose_name='Nimi', blank=True, default='')
+    job_category = models.ForeignKey(JobCategory, null=True, blank=True)
+    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
 
     def __unicode__(self):
-        return u"{self.event.name}: {self.verbose_name}".format(self=self)
-
-    @classmethod
-    def update_for_job_category(cls, job_category):
-        try:
-            recipient_group = cls.objects.get(job_category=job_category)
-        except cls.DoesNotExist:
-            logger.warn('Job category %s/%s has no recipient group', job_category.event.slug, job_category.slug)
+        if self.job_category:
+            kind = ' (tehtäväalue)'
+        elif self.personnel_class:
+            kind = ' (henkilöstöluokka)'
         else:
-            recipient_group.verbose_name = job_category.name
-            recipient_group.save()
+            kind = ''
+
+        return '{self.event.name}: {self.verbose_name}{kind}'.format(self=self, kind=kind)
 
     class Meta:
-        verbose_name = u'vastaanottajaryhmä'
-        verbose_name_plural = u'vastaanottajaryhmät'
+        verbose_name = 'vastaanottajaryhmä'
+        verbose_name_plural = 'vastaanottajaryhmät'
 
 
 CHANNEL_CHOICES = [
@@ -55,25 +58,50 @@ CHANNEL_CHOICES = [
 ]
 
 
+@receiver(pre_save, sender=RecipientGroup)
+def set_recipient_group_computed_fields(sender, instance, **kwargs):
+    if not instance.verbose_name:
+        if instance.job_category:
+            instance.verbose_name = instance.job_category.name
+        elif instance.personnel_class:
+            instance.verbose_name = instance.personnel_class.name
+
+
+@receiver(post_save, sender=JobCategory)
+def update_jc_recipient_group_verbose_name(sender, instance, created, **kwargs):
+    if created:
+        return
+
+    RecipientGroup.objects.filter(job_category=instance).update(verbose_name=instance.name)
+
+
+@receiver(post_save, sender=PersonnelClass)
+def update_pc_recipient_group_verbose_name(sender, instance, created, **kwargs):
+    if created:
+        return
+
+    RecipientGroup.objects.filter(personnel_class=instance).update(verbose_name=instance.name)
+
+
 class Message(models.Model):
     channel = models.CharField(
         max_length=5,
-        verbose_name=u'Kanava',
-        default=u'email',
+        verbose_name='Kanava',
+        default='email',
         choices=CHANNEL_CHOICES,
     )
-    recipient = models.ForeignKey(RecipientGroup, verbose_name=u'Vastaanottajaryhmä')
+    recipient = models.ForeignKey(RecipientGroup, verbose_name='Vastaanottajaryhmä')
 
     subject_template = models.CharField(
         max_length=255,
-        verbose_name=u'Otsikko',
-        help_text=u'HUOM! Otsikko näkyy vastaanottajalle ainoastaan, jos viesti lähetetään '
+        verbose_name='Otsikko',
+        help_text='HUOM! Otsikko näkyy vastaanottajalle ainoastaan, jos viesti lähetetään '
             u'sähköpostitse. Tekstiviestillä lähetettäville viesteille otsikkoa käytetään '
             u'ainoastaan viestin tunnistamiseen sisäisesti.',
     )
     body_template = models.TextField(
-        verbose_name=u'Viestin teksti',
-        help_text=u'Teksti {{ signup.formatted_job_categories_accepted }} korvataan '
+        verbose_name='Viestin teksti',
+        help_text='Teksti {{ signup.formatted_job_categories_accepted }} korvataan '
             u'listalla hyväksytyn vänkärin tehtäväalueista ja teksti '
             u'{{ signup.formatted_shifts }} korvataan vänkärin vuoroilla. '
             u'Käyttäessäsi näitä muotoilukoodeja laita ne omiksi kappaleikseen ts. reunusta ne tyhjillä riveillä.'
@@ -169,8 +197,8 @@ class Message(models.Model):
         return Template(self.subject_template).render(Context(dict(event=self.event)))
 
     class Meta:
-        verbose_name = u'viesti'
-        verbose_name_plural = u'viestit'
+        verbose_name = 'viesti'
+        verbose_name_plural = 'viestit'
 
 
 class DedupMixin(object):

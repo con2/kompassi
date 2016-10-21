@@ -1,9 +1,18 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
+import logging
+
 from django.db import models
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
+
+
+logger = logging.getLogger('kompassi')
 
 
 class PersonnelClass(models.Model):
@@ -15,8 +24,8 @@ class PersonnelClass(models.Model):
     priority = models.IntegerField(default=0)
 
     class Meta:
-        verbose_name = _(u'personnel class')
-        verbose_name_plural = _(u'personnel classes')
+        verbose_name = _('personnel class')
+        verbose_name_plural = _('personnel classes')
 
         unique_together = [
             ('event', 'slug'),

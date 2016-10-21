@@ -162,6 +162,8 @@ class BadgesTestCase(TestCase):
             priority=pc1.priority - 10
         )
 
+        self.event.labour_event_meta.create_groups()
+
         signup.personnel_classes.add(pc2)
         signup.apply_state()
 
