@@ -1,7 +1,7 @@
 # Kompassi Event Management System
 
 [![Build Status](https://travis-ci.org/tracon/kompassi.svg?branch=master)](https://travis-ci.org/tracon/kompassi)
-[![Sponsored by Leonidas](https://img.shields.io/badge/sponsored%20by-leonidas-blue.svg)](https://leonidasoy.fi/opensource)
+[![Sponsored by Leonidas](https://img.shields.io/badge/sponsored%20by-leonidas-389fc1.svg)](https://leonidasoy.fi/opensource)
 
 Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. Work in progress.
 
