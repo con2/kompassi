@@ -5,6 +5,10 @@ services:
   web:
     image: tracon/kompassi
     command: gunicorn --bind=0.0.0.0:8000 --workers=4 turska.wsgi:application
+    instances: 3
+    deploy:
+      strategy: ha
+      wait_for_port: 8000
     links:
       - rabbitmq
       - postgres
