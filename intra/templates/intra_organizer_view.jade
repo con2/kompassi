@@ -83,7 +83,9 @@ block admin_content
           include intra_admin_team_actions.jade
           p.text-muted {% trans "This team has no members." %}
 
-  .btn-group.pull-right
-    a.btn.btn-default(href='{% url "intra_organizer_export_view" event.slug "vcf" %}')
-      i.fa.fa-cloud-download.kompassi-icon-space-right
-      {% trans "Export contacts in vCard format" %}
+  //- TODO Hidden because vobject fails to handle unicode due to utter plebbery. Try again with py3.
+  .clearfix.hidden
+    .btn-group.pull-right
+      a.btn.btn-default(href='{% url "intra_organizer_export_view" event.slug "vcf" %}')
+        i.fa.fa-cloud-download.kompassi-icon-space-right
+        {% trans "Export contacts in vCard format" %}
