@@ -23,6 +23,15 @@ class EmailAliasType(models.Model):
     )
     account_name_code = models.CharField(max_length=255, default='access.email_aliases:firstname_surname')
 
+    priority = models.IntegerField(
+        default=0,
+        verbose_name=_('priority'),
+        help_text=_(
+            'When determining the e-mail address of a person in relation to a specific event, the '
+            'e-mail alias type with the smallest priority number wins.'
+        ),
+    )
+
     def _make_account_name_for_person(self, person):
         account_name_func = get_code(self.account_name_code)
         return account_name_func(person)

@@ -106,6 +106,15 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
                 )
             )
 
+        # v14
+        EmailAliasType.objects.filter(
+            domain=domain,
+            metavar='nick',
+            priority=0,
+        ).update(
+            priority=-10,
+        )
+
         internals_domain, created = EmailAliasDomain.objects.get_or_create(
             domain_name='kompassi.eu',
             defaults=dict(

@@ -727,6 +727,17 @@ class Signup(models.Model, CsvExportMixin):
             group__user=self.person.user,
         )
 
+    @property
+    def email_address(self):
+        from access.models import EmailAlias
+
+        email_alias = EmailAlias.objects.filter(
+            type__domain__organization=self.event.organization,
+            person=self.person,
+        ).order_by('type__priority').first() # TODO order
+
+        return email_alias.email_address if email_alias else self.person.email
+
     @classmethod
     def get_csv_fields(cls, event):
         if getattr(event, '_signup_csv_fields', None) is None:
