@@ -18,6 +18,12 @@ urlpatterns = [
     ),
 
     url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/intra/people\.(?P<format>\w+)$',
+        intra_organizer_view,
+        name='intra_organizer_export_view',
+    ),
+
+    url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/intra/admin/teams/(?P<team_slug>[a-z0-9-]+)/members/new/?$',
         intra_admin_team_member_view,
         name='intra_admin_team_add_member_view',

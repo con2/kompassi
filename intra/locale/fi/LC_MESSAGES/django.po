@@ -59,6 +59,10 @@ msgid "Event"
 msgstr "Tapahtuma"
 
 #: templates/intra_organizer_view.jade
+msgid "Export contacts in vCard format"
+msgstr "Vie yhteystiedot vCard-muodossa"
+
+#: templates/intra_organizer_view.jade
 msgid "First name"
 msgstr "Etunimi"
 

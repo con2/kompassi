@@ -1,9 +1,12 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 import logging
 from datetime import date, datetime
 
 import phonenumbers
+import vobject
 
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -29,7 +32,7 @@ logger = logging.getLogger('kompassi')
 
 
 def birth_date_validator(value):
-    exc = u"Virheellinen syntymäaika."
+    exc = "Virheellinen syntymäaika."
     try:
         if value <= date(1900, 1, 1) or value >= date.today():
             raise ValidationError(exc)
@@ -40,23 +43,23 @@ def birth_date_validator(value):
 
 
 class Person(models.Model):
-    first_name = models.CharField(max_length=1023, verbose_name=_(u'First name'))
+    first_name = models.CharField(max_length=1023, verbose_name=_('First name'))
     official_first_names = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_(u'Official first names'),
+        verbose_name=_('Official first names'),
     )
-    surname = models.CharField(max_length=1023, verbose_name=_(u'Surname'))
+    surname = models.CharField(max_length=1023, verbose_name=_('Surname'))
     nick = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_(u'Nick name'),
-        help_text=_(u'If you go by a nick name or handle that you want printed in your badge and programme details, enter it here.')
+        verbose_name=_('Nick name'),
+        help_text=_('If you go by a nick name or handle that you want printed in your badge and programme details, enter it here.')
     )
     birth_date = models.DateField(
         null=True,
         blank=True,
-        verbose_name=u'Syntymäaika',
+        verbose_name='Syntymäaika',
         help_text=BIRTH_DATE_HELP_TEXT,
         validators=[birth_date_validator],
     )
@@ -64,63 +67,63 @@ class Person(models.Model):
     muncipality = models.CharField(
         blank=True,
         max_length=127,
-        verbose_name=u'Kotikunta',
-        help_text=u'Virallinen kotikuntasi eli kunta jossa olet kirjoilla. Kotikunta ja väestörekisteriin '
-            u'merkityt etunimesi (kaikki) ovat pakollisia tietoja, mikäli kuulut '
-            u'tai haluat liittyä johonkin yhdistykseen joka käyttää tätä sivustoa jäsenrekisterin '
-            u'hallintaan.'
+        verbose_name='Kotikunta',
+        help_text='Virallinen kotikuntasi eli kunta jossa olet kirjoilla. Kotikunta ja väestörekisteriin '
+            'merkityt etunimesi (kaikki) ovat pakollisia tietoja, mikäli kuulut '
+            'tai haluat liittyä johonkin yhdistykseen joka käyttää tätä sivustoa jäsenrekisterin '
+            'hallintaan.'
     )
 
     email = models.EmailField(
         blank=True,
         max_length=EMAIL_LENGTH,
-        verbose_name=u'Sähköpostiosoite',
-        help_text=u'Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä asioissa.',
+        verbose_name='Sähköpostiosoite',
+        help_text='Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä asioissa.',
     )
 
     phone = models.CharField(
         blank=True,
         max_length=PHONE_NUMBER_LENGTH,
         validators=[phone_number_validator],
-        verbose_name=u'Puhelinnumero',
-        help_text=u'Puhelinnumeroasi käytetään tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan.',
+        verbose_name='Puhelinnumero',
+        help_text='Puhelinnumeroasi käytetään tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan.',
     )
 
     may_send_info = models.BooleanField(
         default=False,
-        verbose_name=u'Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>',
+        verbose_name='Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>',
     )
 
     allow_work_history_sharing = models.BooleanField(
         default=False,
-        verbose_name=u'Työskentelyhistoriani saa näyttää kokonaisuudessaan niille tapahtumille, joihin haen vapaaehtoistyöhön <i>(vapaaehtoinen)</i>',
-        help_text=u'Mikäli et anna tähän lupaa, tapahtuman työvoimavastaavalle näytetään ainoastaan työskentelysi aikaisemmissa saman organisaation järjestämissä tapahtumissa.'
+        verbose_name='Työskentelyhistoriani saa näyttää kokonaisuudessaan niille tapahtumille, joihin haen vapaaehtoistyöhön <i>(vapaaehtoinen)</i>',
+        help_text='Mikäli et anna tähän lupaa, tapahtuman työvoimavastaavalle näytetään ainoastaan työskentelysi aikaisemmissa saman organisaation järjestämissä tapahtumissa.'
     )
 
     preferred_name_display_style = models.CharField(
         max_length=31,
-        verbose_name=u'Nimen esittäminen',
-        help_text=u'Tässä voit vaikuttaa siihen, missä muodossa nimesi esitetään (esim. painetaan badgeesi).',
+        verbose_name='Nimen esittäminen',
+        help_text='Tässä voit vaikuttaa siihen, missä muodossa nimesi esitetään (esim. painetaan badgeesi).',
         blank=True,
         choices=NAME_DISPLAY_STYLE_CHOICES,
     )
 
-    notes = models.TextField(blank=True, verbose_name=u'Käsittelijän merkinnät')
+    notes = models.TextField(blank=True, verbose_name='Käsittelijän merkinnät')
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True)
 
     email_verified_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['surname']
-        verbose_name = u'Henkilö'
-        verbose_name_plural = u'Henkilöt'
+        verbose_name = 'Henkilö'
+        verbose_name_plural = 'Henkilöt'
 
     def __unicode__(self):
         return self.full_name
 
     def clean(self):
         if self.is_nick_visible and not self.nick:
-            raise ValidationError(u'Jos nick on tarkoitus näyttää, se myös täytyy syöttää.')
+            raise ValidationError('Jos nick on tarkoitus näyttää, se myös täytyy syöttää.')
 
     @property
     def full_name(self):
@@ -142,14 +145,14 @@ class Person(models.Model):
         else:
             first_name = self.first_name
 
-        return u"{surname}, {first_name}".format(
+        return "{surname}, {first_name}".format(
             surname=self.surname,
             first_name=first_name,
         )
 
     @property
     def official_name_short(self):
-        return u"{surname}, {first_name}".format(
+        return "{surname}, {first_name}".format(
             surname=self.surname,
             first_name=self.first_name,
         )
@@ -163,7 +166,7 @@ class Person(models.Model):
 
     @property
     def name_and_email(self):
-        return u"{self.first_name} {self.surname} <{self.email}>".format(self=self)
+        return "{self.first_name} {self.surname} <{self.email}>".format(self=self)
 
     @property
     def name_display_style(self):
@@ -504,3 +507,22 @@ class Person(models.Model):
         from crowd_integration.utils import ensure_user_group_membership
         for group in self.user.groups.all():
             ensure_user_group_membership(self.user, group.name)
+
+    def as_vcard(self):
+        vcard = vobject.vCard()
+
+        vcard.add('n')
+        vcard.n.value = vobject.vcard.Name(family=self.surname, given=self.first_name)
+
+        vcard.add('fn')
+        vcard.fn.value = self.firstname_surname
+
+        vcard.add('email')
+        vcard.email.value = self.email
+        vcard.email.type_param = 'INTERNET'
+
+        vcard.add('tel')
+        vcard.tel.value = self.phone
+        vcard.tel.type_param = 'cell'
+
+        return vcard.serialize()

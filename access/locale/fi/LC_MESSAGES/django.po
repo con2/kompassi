@@ -26,6 +26,10 @@ msgstr ""
 msgid "Slack invite automations"
 msgstr ""
 
+#: models/email_alias_type.py
+msgid "When determining the e-mail address of a person in relation to a specific event, the e-mail alias type with the smallest priority number wins."
+msgstr ""
+
 #: models/access_organization_meta.py
 msgid "access management settings"
 msgstr ""
@@ -140,6 +144,10 @@ msgstr ""
 
 #: models/smtp_server.py
 msgid "port number"
+msgstr ""
+
+#: models/email_alias_type.py
+msgid "priority"
 msgstr ""
 
 #: models/privilege.py

@@ -82,3 +82,8 @@ block admin_content
         .panel-footer.clearfix
           include intra_admin_team_actions.jade
           p.text-muted {% trans "This team has no members." %}
+
+  .btn-group.pull-right
+    a.btn.btn-default(href='{% url "intra_organizer_export_view" event.slug "vcf" %}')
+      i.fa.fa-cloud-download.kompassi-icon-space-right
+      {% trans "Export contacts in vCard format" %}

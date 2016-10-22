@@ -29,3 +29,4 @@ requests-oauthlib>=0.6,<0.7
 requests>=2.9,<2.10
 unicodecsv>=0.14,<0.15
 XlsxWriter>=0.7,<0.8
+vobject~=0.9.3
