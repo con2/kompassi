@@ -31,6 +31,7 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
+        self.setup_intra()
         # self.setup_tickets()
         self.setup_access()
         # self.setup_payments()
@@ -331,6 +332,36 @@ class Setup(object):
                 badge_layout='nick',
             )
         )
+
+    def setup_intra(self):
+        from intra.models import IntraEventMeta, Team
+
+        admin_group, = IntraEventMeta.get_or_create_groups(self.event, ['admins'])
+        organizer_group = self.event.labour_event_meta.get_group('conitea')
+        meta, unused = IntraEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                organizer_group=organizer_group,
+            )
+        )
+
+        for team_slug, team_name in [
+            ('tuottajat', 'Tuottajat'),
+            ('infra', 'Infra'),
+            ('palvelut', 'Palvelut'),
+            ('ohjelma', 'Ohjelma'),
+        ]:
+            team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            Team.objects.get_or_create(
+                event=self.event,
+                slug=team_slug,
+                defaults=dict(
+                    name=team_name,
+                    order=self.get_ordering_number(),
+                    group=team_group,
+                )
+            )
 
 
 class Command(BaseCommand):
