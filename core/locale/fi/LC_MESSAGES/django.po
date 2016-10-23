@@ -2,6 +2,10 @@
 msgid "Accepting applications"
 msgstr "Ottaa vastaan hakemuksia"
 
+#: templates/core_event_box.jade
+msgid "Accepting programme"
+msgstr "Ohjelmahaku käynnissä"
+
 #: views/profile_views.py
 msgid "As you changed your e-mail address, you need to verify your e-mail address again. Please check your e-mail and proceed with the instructions you will find there. Please note that you may experience reduced functionality until you have confirmed your e-mail address again. We apologize for the inconvenience."
 msgstr "Koska muutit sähköpostiosoitettasi, sinun tarvitsee vahvistaa sähköpostiosoitteesi uudelleen. Ole hyvä ja tarkista sähköpostisi, ja noudata sähköpostiisi lähetettyjä ohjeita. Huomaathan, että et välttämättä pysty käyttämään joitain Kompassin toimintoja ennen kuin olet jälleen vahvistanut sähköpostiosoitteesi. Pahoittelemme tästä aiheutuvaa hankaluutta."
@@ -253,7 +257,7 @@ msgstr "Tämä käyttäjänimi on jo viety."
 
 #: templates/core_admin_menu_items.jade
 msgid "This view has not been designed for a display this small. For an optimal user experience, please switch to a tablet or a computer."
-msgstr ""
+msgstr "Tätä näkymää ei ole suunniteltu näin pienelle näytölle. Optimaalisen käyttökokemuksen saavuttamiseksi ole hyvä ja käytä tablettia tai tietokonetta."
 
 #: templates/core_event_box.jade
 msgid "Ticket sales"
