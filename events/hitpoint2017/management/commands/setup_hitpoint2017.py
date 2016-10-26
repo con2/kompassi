@@ -33,6 +33,7 @@ class Setup(object):
         self.setup_labour()
         self.setup_intra()
         self.setup_tickets()
+        self.setup_programme()
         self.setup_access()
         self.setup_payments()
         self.setup_badges()
@@ -216,6 +217,156 @@ class Setup(object):
                     group=labour_event_meta.get_group(link_group),
                 )
             )
+
+    def setup_programme(self):
+        from labour.models import PersonnelClass
+        from programme.models import (
+            Category,
+            Programme,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            TimeBlock,
+            View,
+        )
+
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Tracon Hitpoint -ohjelmatiimi <hitpoint.ohjelma@tracon.fi>',
+            schedule_layout='sensible',
+        ))
+
+        if settings.DEBUG:
+            programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
+            programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
+            programme_event_meta.save()
+
+        for room_name in [
+            # 'Aaria',
+            # 'Iso sali',
+            # 'Pieni sali',
+            # # 'Sopraano', # Not in programme use
+            # 'Rondo',
+            # 'Studio',
+            # 'Sonaatti 1',
+            # 'Sonaatti 2',
+            # # 'Basso', # No longer exists
+            # # 'Opus 1', # No longer exists
+            # 'Opus 2',
+            # 'Opus 3',
+            # 'Opus 4',
+            # 'Talvipuutarha',
+            # 'Puistolava',
+            # 'Pieni ulkolava',
+            # 'Puisto - Iso miittiteltta',
+            # 'Puisto - Pieni miittiteltta',
+            # 'Puisto - Bofferiteltta',
+            # 'Muualla ulkona',
+            # 'Duetto 2',
+            # 'Riffi',
+            # 'Maestro',
+        ]:
+            order = self.get_ordering_number() + 90000 # XXX
+
+            room, created = Room.objects.get_or_create(
+                venue=self.venue,
+                name=room_name,
+                defaults=dict(
+                    order=order
+                )
+            )
+
+            room.order = order
+            room.save()
+
+        for room_name in [
+            # 'Sopraano',
+            # 'Basso',
+            # 'Opus 1',
+        ]:
+            room = Room.objects.get(venue=self.venue, name=room_name)
+            room.active = False
+            room.save()
+
+        for pc_slug, role_title, role_is_default in [
+            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+            # ('ohjelma-2lk', 'Ohjelmanjärjestäjä (2. luokka)', False),
+            # ('ohjelma-3lk', 'Ohjelmanjärjestäjä (3. luokka)', False),
+        ]:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                )
+            )
+
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                ('Larp', 'color1'),
+                ('Lautapelit', 'color2'),
+                ('Puheohjelma', 'color3'),
+                ('Roolipeli', 'color4'),
+                ('Turnaus', 'color5'),
+                ('Sisäinen ohjelma', 'sisainen'),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    title=title,
+                    defaults=dict(
+                        style=style,
+                        public=style != 'sisainen',
+                    )
+                )
+
+        for start_time, end_time in [
+            (
+                datetime(2017, 3, 4, 11, 0, tzinfo=self.tz),
+                datetime(2017, 3, 5, 1, 0, tzinfo=self.tz),
+            ),
+            (
+                datetime(2017, 3, 5, 11, 0, tzinfo=self.tz),
+                datetime(2017, 3, 5, 18, 0, tzinfo=self.tz),
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+        SpecialStartTime.objects.get_or_create(
+            event=self.event,
+            start_time=datetime(2017, 3, 4, 10, 30, tzinfo=self.tz),
+        )
+
+        # XXX
+        have_views = True
+        # have_views = View.objects.filter(event=self.event).exists()
+        if not have_views:
+            for view_name, room_names in [
+                ('Pääohjelmatilat', [
+                    'Iso sali',
+                    'Pieni sali',
+                    'Sonaatti 1',
+                    'Sonaatti 2',
+                    'Duetto 2',
+                    'Maestro',
+                ]),
+            ]:
+                rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
+                    for room_name in room_names]
+
+                view, created = View.objects.get_or_create(event=self.event, name=view_name)
+                view.rooms = rooms
+                view.save()
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
