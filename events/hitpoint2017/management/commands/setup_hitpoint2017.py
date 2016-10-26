@@ -32,9 +32,9 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_access()
-        # self.setup_payments()
+        self.setup_payments()
         self.setup_badges()
 
     def setup_core(self):
@@ -270,11 +270,11 @@ class Setup(object):
         for product_info in [
             dict(
                 name='Tracon Hitpoint -pääsylippu',
-                description='Viikonloppulippu Tracon Hitpoint -tapahtumaan. Voimassa koko viikonlopun ajan la klo 12 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                description='Viikonloppulippu Tracon Hitpoint 2017-tapahtumaan. Voimassa koko viikonlopun ajan la klo 10 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
                 limit_groups=[
-                    limit_group('Pääsyliput', 400),
+                    limit_group('Pääsyliput', 900),
                 ],
-                price_cents=1000,
+                price_cents=1500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
