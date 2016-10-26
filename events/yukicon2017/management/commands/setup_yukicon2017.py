@@ -182,6 +182,10 @@ class Setup(object):
             admin_group=admin_group,
         ))
 
+        if not programme_event_meta.contact_email:
+            programme_event_meta.contact_email = 'Yukiconin ohjelmavastaava <ohjelma@yukicon.fi>'
+            programme_event_meta.save()
+
         if settings.DEBUG:
             programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
             programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
