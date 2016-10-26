@@ -194,6 +194,7 @@ INSTALLED_APPS = (
     'events.kuplii2017',
     'events.tracrossf2016',
     'events.tracon2017',
+    'events.supergalacticspaceparty',
 )
 
 LOGGING = {
