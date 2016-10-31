@@ -43,6 +43,12 @@ class SMTPPassword(models.Model):
 
         return pw, obj
 
+    def as_dict(self):
+        return dict(
+            username=self.person.user.username,
+            password_hash=self.password_hash,
+        )
+
     class Meta:
         verbose_name = _('SMTP password')
         verbose_name_plural = _('SMTP passwords')

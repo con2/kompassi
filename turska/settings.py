@@ -332,6 +332,11 @@ if env('BROKER_URL', default=''):
     CELERY_RESULT_SERIALIZER = 'json'
 
 
+if env('KOMPAQ_URL', default=''):
+    INSTALLED_APPS = INSTALLED_APPS + ('kompaq',)
+    KOMPAQ_URL = env('KOMPAQ_URL')
+
+
 if 'api' in INSTALLED_APPS:
     KOMPASSI_APPLICATION_USER_GROUP = '{KOMPASSI_INSTALLATION_SLUG}-apps'.format(**locals())
 

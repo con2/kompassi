@@ -2,12 +2,13 @@
 
 from datetime import date, datetime, timedelta
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from access.models import EmailAliasDomain, EmailAliasType, AccessOrganizationMeta
+from access.models import EmailAliasDomain, EmailAliasType, AccessOrganizationMeta, SMTPServer
 from core.models import Organization
 from core.utils import slugify
 from membership.models import MembershipOrganizationMeta, Term
@@ -122,6 +123,14 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
                 has_internal_aliases=True,
             )
         )
+
+        if settings.DEBUG:
+            smtp_server, created = SMTPServer.objects.get_or_create(
+                hostname='sakataki.ext.b2.fi',
+            )
+
+            if created:
+                smtp_server.domains.add(domain)
 
 
 class Command(BaseCommand):
