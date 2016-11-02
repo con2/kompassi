@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 
+from core.models.constants import EMAIL_LENGTH
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 
@@ -28,6 +29,13 @@ class Team(models.Model):
     )
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     group = models.ForeignKey('auth.Group')
+
+    email = models.EmailField(
+        blank=True,
+        max_length=EMAIL_LENGTH,
+        verbose_name=_('E-mail address'),
+        help_text=_('The primary contact e-mail of the team.'),
+    )
 
     def __str__(self):
         return self.name

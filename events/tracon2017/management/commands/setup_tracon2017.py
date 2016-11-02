@@ -584,16 +584,23 @@ class Setup(object):
             ('turva', 'Turva'),
         ]:
             team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
-            Team.objects.get_or_create(
+            email = '{}@tracon.fi'.format(team_slug)
+
+            team, created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
                 defaults=dict(
                     name=team_name,
                     order=self.get_ordering_number(),
                     group=team_group,
+                    email=email
                 )
             )
 
+            # TODO once mailing lists exist
+            # if not team.email:
+            #     team.email = email
+            #     team.save()
 
 
 class Command(BaseCommand):
