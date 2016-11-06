@@ -312,7 +312,9 @@ class Setup(object):
                 ('Lautapelit', 'color2'),
                 ('Puheohjelma', 'color3'),
                 ('Roolipeli', 'color4'),
-                ('Turnaus', 'color5'),
+                ('Korttipelit', 'color5'),
+                ('Figupelit', 'color6'),
+                ('Muu ohjelma', 'color7'),
                 ('Sisäinen ohjelma', 'sisainen'),
             ]:
                 Category.objects.get_or_create(
