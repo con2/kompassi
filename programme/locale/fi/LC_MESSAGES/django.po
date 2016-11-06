@@ -14,13 +14,13 @@ msgstr "Hyväksy kutsu"
 msgid "Accepted"
 msgstr "Hyväksytty"
 
-#: models/programme_event_meta.py
+#: forms.py models/programme_event_meta.py
 msgid "Accepting cold offers from"
-msgstr "Hyväksyy kylmiä tarjouksia alkaen"
+msgstr "Ohjelmahaku alkaa"
 
-#: models/programme_event_meta.py
+#: forms.py models/programme_event_meta.py
 msgid "Accepting cold offers until"
-msgstr "Kylmien tarjousten vastaanotto päättyy"
+msgstr "Ohjelmahaku päättyy"
 
 #: admin.py
 msgid "Activate selected items"
@@ -106,6 +106,10 @@ msgstr "Vaihda ohjelmanjärjestäjäkutsun roolia"
 msgid "Choose the category that fits your programme the best. We reserve the right to change this."
 msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa."
 
+#: templates/programme_admin_cold_offers_view.jade views/programme_admin_menu_items.py
+msgid "Cold offer period starting and ending times"
+msgstr "Ohjelmahaun ajastaminen"
+
 #: models/programme.py
 msgid "Computer use"
 msgstr "Tietokoneen käyttö"
@@ -154,6 +158,10 @@ msgstr "Suojattu sisältö"
 msgid "Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings."
 msgstr "Sisältääkö ohjelmasi tekijänoikeudella suojattua sisältöä? YouTubessa julkaistavat videotallenteet eivät voi sisältää kolmansien osapuolten tekijänoikeudella suojattua videota tai ääntä. Suojattu sisältö editoidaan pois videotallenteista."
 
+#: templates/programme_admin_cold_offers_view.jade
+msgid "End now"
+msgstr "Sulje heti"
+
 #: models/programme.py
 msgid "Ending time"
 msgstr "Loppumisaika"
@@ -163,9 +171,8 @@ msgid "Event"
 msgstr "Tapahtuma"
 
 #: templates/programme_admin_organizers_view.jade
-#, fuzzy
 msgid "Export"
-msgstr "Teksti"
+msgstr "Vie"
 
 #: models/invitation.py models/programme_role.py
 msgid "Extra invites"
@@ -182,6 +189,10 @@ msgstr "Suodata ohjelmanjärjestäjiä"
 #: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "First name"
 msgstr "Etunimi"
+
+#: forms.py
+msgid "Format: YYYY-MM-DD HH:MM:SS"
+msgstr "Muoto: YYYY-MM-DD HH:MM:SS"
 
 #: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "Free-form organizer"
@@ -224,6 +235,10 @@ msgstr "Oletko esittänyt tämän saman ohjelman toisessa tapahtumassa ennen tap
 msgid "Here you can set a time for the programme schedule to be automatically published. You can also publish or un-publish the schedule right away."
 msgstr "Tässä voit asettaa ajan, jona ohjelmakartta julkaistaan automaattisesti. Voit myös julkaista ohjelmakartan tai palauttaa sen ei-julkaistuksi välittömästi."
 
+#: templates/programme_admin_cold_offers_view.jade
+msgid "Here you can set the starting and ending times for the period during which the event will accept cold offers. The cold offer form will automatically open at the beginning and close at the end of the period."
+msgstr "Tässä voit ajastaa ohjelmahaun avautumisen ja päättymisen. Ohjelmahaun aikana tapahtuma ottaa vastaan \"kylmiä\" ohjelmatarjouksia eli ohjelmaa voi tarjota suoraan Kompassin lomakkeella ottamatta ensin yhteyttä ohjelmatiimiin. Ohjelmatiimi voi perustaa uusia ohjelmanumeroita myös ohjelmahakuajan ulkopuolella."
+
 #: admin.py
 msgid "Hide selected feedback"
 msgstr "Piilota valitut palautteet"
@@ -263,6 +278,10 @@ msgstr "En ole varma, sisältääkö ohjelmani tekijänoikeudella suojattua sis�
 #: models/programme_feedback.py
 msgid "IP address"
 msgstr "IP-osoite"
+
+#: templates/programme_admin_cold_offers_view.jade
+msgid "If the <em>Accepting cold offers from</em> field is empty, the cold offer form will stay closed. If the <em>Accepting cold offers from</em> field is set but the <em>Accepting cold offers until</em> field is empty, the cold offer form will stay open once the beginning of the period has been reached."
+msgstr "Jos <em>Ohjelmahaku alkaa</em> -kenttä on tyhjä, ohjelmahaku pysyy suljettuna. Jos <em>Ohjelmahaku alkaa</em> -kenttä on täytetty mutta <em>Ohjelmahaku päättyy</em> -kenttä ei ole täytetty, ohjelmahaku pysyy alettuaan avoimena."
 
 #: models/programme.py
 msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
@@ -631,11 +650,11 @@ msgstr "Tilatarpeet"
 msgid "Save and continue"
 msgstr "Tallenna ja jatka"
 
-#: templates/programme_admin_detail_views/buttons.jade templates/programme_admin_publish_view.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_cold_offers_view.jade templates/programme_admin_detail_views/buttons.jade templates/programme_admin_publish_view.jade templates/programme_profile_detail_view.jade
 msgid "Save and return"
 msgstr "Tallenna ja palaa"
 
-#: templates/programme_admin_publish_view.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_cold_offers_view.jade templates/programme_admin_publish_view.jade templates/programme_profile_detail_view.jade
 msgid "Save changes"
 msgstr "Tallenna muutokset"
 
@@ -670,6 +689,10 @@ msgstr "Jotkut tapahtumat haluavat käyttää ohjelmakartassaan selainikkunan ko
 #: templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "Someone else has invited someone, but they have not yet accepted their invitation."
 msgstr "Joku toinen on kutsunut jonkun, mutta tämä ei ole vielä hyväksynyt kutsuaan."
+
+#: templates/programme_admin_cold_offers_view.jade
+msgid "Start now"
+msgstr "Avaa ohjelmahaku välittömästi"
 
 #: models/programme.py
 msgid "Starting time"
@@ -715,6 +738,18 @@ msgstr "IP-osoite näkyy vain hallintakäyttöliittymässä."
 msgid "The changes were saved."
 msgstr "Muutokset tallennettiin."
 
+#: forms.py
+msgid "The closing time must be after the opening time."
+msgstr "Sulkeutumisajan täytyy olla avautumisajan jälkeen."
+
+#: views/programme_admin_cold_offers_view.py
+msgid "The cold offer period was ended."
+msgstr "Ohjelmahaku suljettiin."
+
+#: views/programme_admin_cold_offers_view.py
+msgid "The cold offer period was started."
+msgstr "Ohjelmahaku avattiin."
+
 #: models/programme.py
 msgid "The event has ended and the programme has been archived."
 msgstr "Tapahtuma on ohi ja ohjelmanumero on arkistoitu."
@@ -722,6 +757,18 @@ msgstr "Tapahtuma on ohi ja ohjelmanumero on arkistoitu."
 #: templates/programme_event_box.jade
 msgid "The event is accepting programme offers"
 msgstr "Tapahtuma ottaa vastaan ohjelmatarjouksia"
+
+#: templates/programme_admin_cold_offers_view.jade
+msgid "The event is currently accepting cold offers."
+msgstr "Tapahtuma ottaa parhaillaan vastaan kylmiä ohjelmatarjouksia."
+
+#: templates/programme_admin_cold_offers_view.jade
+msgid "The event is currently not accepting cold offers."
+msgstr "Tapahtuma ei tällä hetkellä ota vastaan kylmiä ohjelmatarjouksia."
+
+#: views/programme_admin_cold_offers_view.py
+msgid "The event was already accepting cold offers."
+msgstr "Tapahtuman ohjelmahaku oli jo käynnissä."
 
 #: views/programme_admin_detail_view.py
 msgid "The freeform organizer was successfully added."
@@ -808,6 +855,10 @@ msgstr "Ohjelmakartta julkaistiin."
 #: views/programme_admin_publish_view.py
 msgid "The schedule was un-published."
 msgstr "Ohjelmakartta palautettiin ei-julkaistuksi."
+
+#: views/programme_admin_cold_offers_view.py
+msgid "The times for cold offer period were saved."
+msgstr "Ohjelmahaun avautumis- ja sulkeutumisajat tallennettiin."
 
 #: models/programme.py
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
@@ -916,6 +967,10 @@ msgstr "Kyllä. Ohjelma on esitetty aiemmin toisessa tapahtumassa."
 #: models/programme.py
 msgid "Yes. The programme will be presented in a convention that takes place before this one."
 msgstr "Kyllä. Ohjelma esitetään ensin tapahtumassa joka on ennen tätä tapahtumaa."
+
+#: templates/programme_admin_cold_offers_view.jade
+msgid "You can also start or stop accepting cold offers immediately."
+msgstr "Voit myös avata tai sulkea ohjelmahaun välittömästi."
 
 #: templates/programme_accept_invitation_view.jade templates/programme_offer_view.jade
 msgid "You can change these details later by visiting your profile."

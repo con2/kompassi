@@ -33,6 +33,10 @@ def programme_admin_menu_items(request, event):
     special_active = request.path == special_url
     special_text = 'Ohjelmakartan ulkopuolisten esikatselu'
 
+    cold_offers_url = url('programme_admin_cold_offers_view', event.slug)
+    cold_offers_active = request.path == cold_offers_url
+    cold_offers_text = _('Cold offer period starting and ending times')
+
     publish_url = url('programme_admin_publish_view', event.slug)
     publish_active = request.path == publish_url
     publish_text = _('Publish schedule')
@@ -51,6 +55,7 @@ def programme_admin_menu_items(request, event):
         feedback_active,
         invitations_active,
         offers_active,
+        cold_offers_active,
         publish_active,
         special_active,
         timetable_active,
@@ -64,6 +69,7 @@ def programme_admin_menu_items(request, event):
         AdminMenuItem(is_active=invitations_active, href=invitations_url, text=invitations_text, notifications=invitations_notifications),
         AdminMenuItem(is_active=timetable_active, href=timetable_url, text=timetable_text),
         AdminMenuItem(is_active=special_active, href=special_url, text=special_text),
+        AdminMenuItem(is_active=cold_offers_active, href=cold_offers_url, text=cold_offers_text),
         AdminMenuItem(is_active=publish_active, href=publish_url, text=publish_text),
         AdminMenuItem(is_active=feedback_active, href=feedback_url, text=feedback_text, notifications=feedback_notifications),
     ]

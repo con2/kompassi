@@ -26,6 +26,7 @@ from .programme_admin_detail_view import (
 )
 
 from .programme_accept_invitation_view import programme_accept_invitation_view
+from .programme_admin_cold_offers_view import programme_admin_cold_offers_view
 from .programme_admin_feedback_view import programme_admin_feedback_view
 from .programme_admin_invitations_view import programme_admin_invitations_view
 from .programme_admin_menu_items import programme_admin_menu_items

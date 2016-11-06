@@ -6,6 +6,7 @@ from .views import (
     programme_accept_invitation_view,
     programme_admin_change_host_role_view,
     programme_admin_change_invitation_role_view,
+    programme_admin_cold_offers_view,
     programme_admin_create_view,
     programme_admin_detail_view,
     programme_admin_email_list_view,
@@ -13,6 +14,7 @@ from .views import (
     programme_admin_invitations_view,
     programme_admin_organizers_view,
     programme_admin_publish_view,
+    programme_admin_cold_offers_view,
     programme_admin_special_view,
     programme_admin_timetable_view,
     programme_admin_view,
@@ -48,12 +50,6 @@ urlpatterns = [
         programme_special_view,
         dict(show_programme_actions=True),
         name='programme_special_view'
-    ),
-
-    url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/publish/?$',
-        RedirectView.as_view(url='/events/%(event_slug)s/programme/admin/publish/', permanent=False),
-        name='programme_admin_old_publish_view_redirect'
     ),
 
     url(
@@ -189,6 +185,12 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/publish/?$',
         programme_admin_publish_view,
         name='programme_admin_publish_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/start/?$',
+        programme_admin_cold_offers_view,
+        name='programme_admin_cold_offers_view'
     ),
 
     url(

@@ -32,6 +32,7 @@ from .models import (
     Room,
     Tag,
 )
+from .proxies.programme_event_meta.cold_offers import ColdOffersProgrammeEventMetaProxy
 from .models.programme import START_TIME_LABEL
 
 
@@ -343,13 +344,13 @@ class PublishForm(forms.ModelForm):
         self.helper.form_tag = False
 
     # def clean_registration_closes(self):
-    #     registration_opens = self.cleaned_data.get('registration_opens')
-    #     registration_closes = self.cleaned_data.get('registration_closes')
+    #     accepting_cold_offers_from = self.cleaned_data.get('accepting_cold_offers_from')
+    #     accepting_cold_offers_until = self.cleaned_data.get('accepting_cold_offers_until')
 
-    #     if registration_opens and registration_closes and registration_opens >= registration_closes:
+    #     if accepting_cold_offers_from and accepting_cold_offers_until and accepting_cold_offers_from >= accepting_cold_offers_until:
     #         raise forms.ValidationError(_("The registration closing time must be after the registration opening time."))
 
-    #     return registration_closes
+    #     return accepting_cold_offers_until
 
     class Meta:
         model = ProgrammeEventMeta
@@ -376,4 +377,39 @@ class ProgrammeFeedbackForm(forms.ModelForm):
         fields = (
             'feedback',
             'is_anonymous',
+        )
+
+
+class ColdOffersForm(forms.ModelForm):
+    # XXX get a date picker
+    accepting_cold_offers_from = forms.DateTimeField(
+        required=False,
+        label=_('Accepting cold offers from'),
+    )
+    accepting_cold_offers_until = forms.DateTimeField(
+        required=False,
+        label=_('Accepting cold offers until'),
+        help_text=_("Format: YYYY-MM-DD HH:MM:SS"),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(ColdOffersForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    def clean_registration_closes(self):
+        accepting_cold_offers_from = self.cleaned_data.get('accepting_cold_offers_from')
+        accepting_cold_offers_until = self.cleaned_data.get('accepting_cold_offers_until')
+
+        if accepting_cold_offers_from and accepting_cold_offers_until and accepting_cold_offers_from >= accepting_cold_offers_until:
+            raise forms.ValidationError(_("The closing time must be after the opening time."))
+
+        return accepting_cold_offers_until
+
+    class Meta:
+        model = ColdOffersProgrammeEventMetaProxy
+        fields = (
+            'accepting_cold_offers_from',
+            'accepting_cold_offers_until',
         )

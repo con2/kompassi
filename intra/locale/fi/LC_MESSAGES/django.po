@@ -46,7 +46,7 @@ msgstr "Näytä sisäisesti"
 msgid "Display publicly"
 msgstr "Näytä julkisesti"
 
-#: templates/intra_organizer_view.jade
+#: models/team.py templates/intra_organizer_view.jade
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -163,6 +163,10 @@ msgstr "Jäsen lisättiin tiimiin."
 #: views/intra_admin_team_member_view.py
 msgid "The member was removed from the team."
 msgstr "Jäsen poistettiin tiimiistä."
+
+#: models/team.py
+msgid "The primary contact e-mail of the team."
+msgstr "Tiimin ensisijainen yhteysosoite."
 
 #: templates/intra_organizer_view.jade
 msgid "These organizers have not yet been assigned to a team."
