@@ -9,26 +9,76 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
 from core.helpers import person_required
-from core.utils import initialize_form, initialize_form_set, set_defaults
+from core.utils import initialize_form, initialize_form_set, set_defaults, set_attrs
 
 from ..forms import ProgrammeOfferForm, get_sired_invitation_formset
 from ..helpers import programme_event_required
-from ..models import Invitation, ProgrammeRole, FreeformOrganizer
+from ..models import Invitation, ProgrammeRole, FreeformOrganizer, AlternativeProgrammeForm
+
+
+DEFAULT_NUM_EXTRA_INVITES = 5
 
 
 @programme_event_required
 @person_required
-def programme_offer_view(request, event, num_extra_invites=5):
+def programme_offer_view(request, event):
     meta = event.programme_event_meta
 
-    if not meta.is_accepting_cold_offers:
+    if not meta.is_using_alternative_programme_forms:
+        # event uses implicit default form
+        return redirect('programme_offer_form_view', event.slug, 'default')
+
+    # event uses explicitly defined forms
+    alternative_programme_forms = AlternativeProgrammeForm.get_active_alternative_programme_forms(
+        event=event,
+    )
+
+    if not meta.is_accepting_cold_offers or not alternative_programme_forms.exists():
         messages.error(request, _(
             'This event is not currently accepting offers via this site. Please contact '
             'the programme managers directly.'
         ))
         return redirect('core_event_view', event.slug)
 
-    form = initialize_form(ProgrammeOfferForm, request,
+    vars = dict(
+        event=event,
+        alternative_programme_forms=alternative_programme_forms,
+    )
+
+    return render(request, 'programme_offer_view.jade', vars)
+
+
+@programme_event_required
+@person_required
+def programme_offer_form_view(request, event, form_slug):
+    meta = event.programme_event_meta
+    alternative_programme_forms = AlternativeProgrammeForm.objects.filter(event=event)
+
+    if not alternative_programme_forms.exists() and form_slug == 'default':
+        # implicit default form
+        alternative_programme_form = None
+        FormClass = ProgrammeOfferForm
+        num_extra_invites = DEFAULT_NUM_EXTRA_INVITES
+
+        if not meta.is_accepting_cold_offers:
+            messages.error(request, _(
+                'This event is not currently accepting offers via this site. Please contact '
+                'the programme managers directly.'
+            ))
+            return redirect('core_event_view', event.slug)
+    else:
+        alternative_programme_form = get_object_or_404(alternative_programme_forms, slug=form_slug)
+        num_extra_invites = alternative_programme_form.num_extra_invites
+        FormClass = alternative_programme_form.programme_form_class
+
+        if not alternative_programme_form.is_active:
+            messages.error(request, _(
+                'The form you specified is not currently open for cold offers. Please contact '
+                'the programme managers directly.'
+            ))
+            return redirect('core_event_view', event.slug)
+
+    form = initialize_form(FormClass, request,
         event=event,
         prefix='needs',
     )
@@ -55,7 +105,18 @@ def programme_offer_view(request, event, num_extra_invites=5):
             with transaction.atomic():
                 programme = form.save(commit=False)
                 programme.state = 'offered'
+                programme.form = alternative_programme_form
+
+                if alternative_programme_form:
+                    set_attrs(programme, **form.get_excluded_field_defaults())
+                    programme.form_used = alternative_programme_form
+
                 programme.save()
+                form.save_m2m()
+
+                if alternative_programme_form:
+                    set_attrs(programme, **form.get_excluded_m2m_field_defaults())
+                    programme.save()
 
                 programme_role = ProgrammeRole(
                     person=request.user.person,
@@ -86,9 +147,10 @@ def programme_offer_view(request, event, num_extra_invites=5):
             messages.error(request, _('Please check the form.'))
 
     vars = dict(
+        alternative_programme_form=alternative_programme_form,
+        event=event,
         form=form,
         freeform_organizers=FreeformOrganizer.objects.none(),
-        host_may_invite_more=num_extra_invites > 0,
         invitations=Invitation.objects.none(),
         num_extra_invites=num_extra_invites,
         programme_roles=ProgrammeRole.objects.none(),
@@ -96,4 +158,4 @@ def programme_offer_view(request, event, num_extra_invites=5):
         sired_invitation_formset=sired_invitation_formset,
     )
 
-    return render(request, 'programme_offer_view.jade', vars)
+    return render(request, 'programme_offer_form_view.jade', vars)

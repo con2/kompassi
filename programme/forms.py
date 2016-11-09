@@ -21,6 +21,7 @@ from core.utils import (
 
 from .models import (
     AllRoomsPseudoView,
+    AlternativeProgrammeForm,
     Category,
     FreeformOrganizer,
     Invitation,
@@ -36,14 +37,22 @@ from .proxies.programme_event_meta.cold_offers import ColdOffersProgrammeEventMe
 from .models.programme import START_TIME_LABEL
 
 
-class ProgrammePublicForm(forms.ModelForm):
+class ProgrammeAdminCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
-        super(ProgrammePublicForm, self).__init__(*args, **kwargs)
+        super(ProgrammeAdminCreateForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
+
+        self.fields['form_used'].queryset = AlternativeProgrammeForm.objects.filter(event=event)
+        self.fields['form_used'].help_text = _(
+            'Select the form that will be used to edit the information of this programme. '
+            'If this field is left blank, the default form will be used. '
+            'Some events do not offer a choice of different forms, in which case '
+            'this field will not have options and the default form will always be used. '
+        )
 
         self.fields['category'].queryset = Category.objects.filter(event=event)
         self.fields['tags'].queryset = Tag.objects.filter(event=event)
@@ -53,6 +62,7 @@ class ProgrammePublicForm(forms.ModelForm):
         fields = (
             'title',
             'description',
+            'form_used',
             'category',
             'tags',
         )

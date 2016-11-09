@@ -2,6 +2,10 @@
 msgid "A link to a recording of the programme in an external video service such as YouTube"
 msgstr "Linkki videotallenteeseen ohjelmasta ulkoisessa videopalvelussa kuten YouTubessa"
 
+#: models/alternative_programme_form.py
+msgid "A reference to the form class that implements the form. Example: hitpoint2017.forms:RolePlayingGameForm"
+msgstr "Viittaus lomakkeen toteuttavaan luokkaan. Esimerkki: hitpoint2017.forms:RpgForm"
+
 #: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
 msgid "Abandon changes and return"
 msgstr "Hylkää muutokset ja palaa"
@@ -30,6 +34,14 @@ msgstr "Aktivoi valitut kohteet"
 msgid "Active"
 msgstr "Aktiivinen"
 
+#: models/alternative_programme_form.py
+msgid "Active from"
+msgstr "Käyttöaika alkaa"
+
+#: models/alternative_programme_form.py
+msgid "Active until"
+msgstr "Käyttöaika päättyy"
+
 #: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/hosts_tab.jade
 msgid "Add free-form organizer"
 msgstr "Lisää vapaamuotoinen ohjelmanjärjestäjä"
@@ -41,6 +53,10 @@ msgstr "Kaikki avoimet kutsut on peruutettu."
 #: models/schedule.py
 msgid "All rooms"
 msgstr "Kaikki tilat"
+
+#: models/programme.py
+msgid "Amount of physical play"
+msgstr "Peli sisältää fyysistä pelaamista"
 
 #: templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade
 msgid "Anonymous"
@@ -65,6 +81,10 @@ msgstr "Äänen toistaminen"
 #: admin.py templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade
 msgid "Author"
 msgstr "Kirjoittaja"
+
+#: models/programme.py
+msgid "Author (if other than the GM)"
+msgstr "Pelin kirjoittaja (jos muu kuin pelinjohtaja)"
 
 #: forms.py
 msgid "Because you are the host of this programme, you cannot leave your feedback anonymously."
@@ -127,6 +147,10 @@ msgid "Deactivate selected items"
 msgstr "Deaktivoi valitut kohteet"
 
 #: models/programme.py
+msgid "Describe your game in three words: for example, genre, theme and attitude."
+msgstr "Kuvaile peliäsi kolmella sanalla, esim. genre, teema ja asenne."
+
+#: models/programme.py
 msgid "Description"
 msgstr "Kuvaus"
 
@@ -165,6 +189,10 @@ msgstr "Sulje heti"
 #: models/programme.py
 msgid "Ending time"
 msgstr "Loppumisaika"
+
+#: models/programme.py
+msgid "English OK"
+msgstr "Englanti OK"
 
 #: models/role.py proxies/helpers.py
 msgid "Event"
@@ -243,10 +271,6 @@ msgstr "Tässä voit ajastaa ohjelmahaun avautumisen ja päättymisen. Ohjelmaha
 msgid "Hide selected feedback"
 msgstr "Piilota valitut palautteet"
 
-#: templates/programme_admin_detail_views/needs_tab.jade views/programme_admin_detail_view.py
-msgid "Host needs"
-msgstr "Ohjelmanjärjestäjän tarpeet"
-
 #: templates/programme_profile_detail_view.jade
 msgid "Hosts can only be invited by the programme manager. If you have agreed with the programme manager to include people who are not listed here, please contact the programme manager. In order to receive speaker benefits, all hosts of the programme must be listed here."
 msgstr "Vain ohjelmavastaava voi kutsua ohjelmanjärjestäjiä. Mikäli olet sopinut ohjelmavastaavan kanssa useammasta järjestäjästä ohjelmaasi eikä heitä ole listattu tähän, ole hyvä ja ota yhteyttä ohjelmavastaavaan. Saadakseen ohjelmanjärjestäjän edut kaikkien ohjelmanjärjestäjien tulee olla listattu tässä."
@@ -284,6 +308,10 @@ msgid "If the <em>Accepting cold offers from</em> field is empty, the cold offer
 msgstr "Jos <em>Ohjelmahaku alkaa</em> -kenttä on tyhjä, ohjelmahaku pysyy suljettuna. Jos <em>Ohjelmahaku alkaa</em> -kenttä on täytetty mutta <em>Ohjelmahaku päättyy</em> -kenttä ei ole täytetty, ohjelmahaku pysyy alettuaan avoimena."
 
 #: models/programme.py
+msgid "If the scenario has been written by someone else than the GM, we require that the author be disclosed."
+msgstr "Jos skenaarion on kirjoittanut joku muu kuin sen tässä tapahtumassa vetävä pelinjohtaja, on kirjoittaja ilmoitettava tässä."
+
+#: models/programme.py
 msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
 msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
 
@@ -291,7 +319,7 @@ msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yll�
 msgid "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile."
 msgstr "Jos nimesi näytetään julkisesti tämän ohjelman järjestäjänä, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
 
-#: templates/programme_offer_view.jade
+#: templates/programme_offer_form_view.jade
 msgid "If your programme has other hosts in addition to yourself, please write their e-mail addresses here. They will be sent invitations to confirm their participation in your programme. Please note that the programme manager may at their discretion limit the number of hosts allowed for your programme. Inviting someone here does not guarantee automatic admittance into the event. Adding more hosts later requires approval from the programme manager."
 msgstr "Jos ohjelmanumerossasi on lisäksesi muita ohjelmanpitäjiä, syötä heidän sähköpostiosoitteensa tähän. Heille lähetetään kutsu vahvistaa osallistumisensa ohjelmaan. Huomaathan, että kutsun lähettäminen ei takaa automaattista sisäänpääsyä. Ohjelmavastaava voi harkintansa mukaan rajoittaa ohjelmanumeroon hyväksyttävien ohjelmanpitäjien määrää."
 
@@ -299,7 +327,11 @@ msgstr "Jos ohjelmanumerossasi on lisäksesi muita ohjelmanpitäjiä, syötä he
 msgid "In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room."
 msgstr "Jotta ohjelmanumero näkyisi ohjelmakartassa, sillä tulee olla alkuaika sekä pituus ja sen tulee olla sijoitettu johonkin saliin."
 
-#: templates/programme_accept_invitation_view.jade templates/programme_offer_view.jade templates/programme_profile_detail_view.jade
+#: models/programme.py
+msgid "In this context, physical play can mean, for example, using your whole body, acting the actions of your character or moving around in the allocated space."
+msgstr "Tässä kontekstissa fyysisellä fyysinen pelaaminen voi tarkoittaa esimerksi koko keholla pelaamista, hahmon näyttelemistä tai pelitilassa liikkumista."
+
+#: templates/programme_accept_invitation_view.jade templates/programme_offer_form_view.jade templates/programme_profile_detail_view.jade
 msgid "Information about yourself"
 msgstr "Tietoja itsestäsi"
 
@@ -366,6 +398,10 @@ msgstr "Tapahtuman toimittama kannettava tietokone"
 #: models/programme.py
 msgid "Length (minutes)"
 msgstr "Pituus (minuuttia)"
+
+#: models/programme.py
+msgid "Lots of it"
+msgstr "Paljon"
 
 #: models/programme.py
 msgid "Make up a concise title for your programme. We reserve the right to edit the title."
@@ -453,10 +489,18 @@ msgid "No. The programme is original to this convention and I promise not to pre
 msgstr "Ei. Ohjelman ensiesitys on tässä tapahtumassa ja vakuutan etten esitä sitä muualla ensin."
 
 #: models/programme.py
+msgid "Not at all"
+msgstr "Ei lainkaan"
+
+#: models/programme.py
 msgid "Not sure"
 msgstr "En ole varma"
 
-#: templates/programme_event_box.jade templates/programme_offer_view.jade
+#: models/alternative_programme_form.py
+msgid "Number of extra invites"
+msgstr "Lisäkutsujen määrä"
+
+#: templates/programme_event_box.jade templates/programme_offer_form_view.jade templates/programme_offer_view.jade
 msgid "Offer programme"
 msgstr "Tarjoa ohjelmanumeroa"
 
@@ -530,7 +574,7 @@ msgstr "Ohjelman valokuvaus"
 msgid "Please bear in mind that only programmes that are in the \"Published\" state are shown in the schedule."
 msgstr "Muistathan, että ohjelmakartassa näytetään vain ohjelmanumerot jotka ovat Julkaistu-tilassa."
 
-#: views/admin_views.py views/programme_accept_invitation_view.py views/programme_admin_detail_view.py views/programme_feedback_view.py views/programme_offer_view.py
+#: views/programme_accept_invitation_view.py views/programme_admin_create_view.py views/programme_admin_detail_view.py views/programme_feedback_view.py views/programme_offer_view.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
@@ -547,8 +591,28 @@ msgid "Please enter an e-mail address to invite another host"
 msgstr "Ole hyvä ja syötä sähköpostiosoite kutsuaksesi toisen ohjelmanjärjestäjän"
 
 #: models/programme.py
+msgid "Please give your best guess on how long you expect your game to take."
+msgstr "Heitä paras arvauksesi siitä, kuinka kauan pelisi tulee kestämään."
+
+#: models/programme.py
 msgid "Please photograph my programme"
 msgstr "Pyydän, että ohjelmastani otetaan valokuvia"
+
+#: models/programme.py
+msgid "Please tick this box if you are able, prepared and willing to host your programme in English if necessary."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään ohjelmasi tarvittaessa englanniksi."
+
+#: models/programme.py
+msgid "Please tick this box if your game can be enjoyed even without any prior role-playing experience."
+msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa roolipelikokemusta olisi hyvin vähän tai ei lainkaan."
+
+#: models/programme.py
+msgid "Please tick this box if your game contains themes that require it to be restricted to players of 18 years and older."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää sellaisia teemoja, joiden takia pelaajien on oltava täysi-ikäisiä."
+
+#: models/programme.py
+msgid "Please tick this box if your game is suitable for younger players. Please give more details, if necessary, in the last open field."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sopii myös nuoremmille pelaajille. Anna tarvittaessa lisätietoja ikäsuosituksista viimeisessä avoimessa kentässä."
 
 #: models/role.py
 msgid "Priority"
@@ -562,15 +626,19 @@ msgstr "Ohjelma"
 msgid "Programme feedback"
 msgstr "Ohjelmapalaute"
 
+#: templates/programme_admin_detail_views/programme_tab.jade views/programme_admin_detail_view.py
+msgid "Programme form"
+msgstr "Ohjelmalomake"
+
 #: models/programme_role.py
 msgid "Programme host"
 msgstr "Ohjelmanjärjestäjä"
 
-#: models/programme_role.py templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_offer_view.jade templates/programme_profile_detail_view.jade views/programme_admin_detail_view.py views/programme_admin_menu_items.py
+#: models/programme_role.py templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_offer_form_view.jade templates/programme_profile_detail_view.jade views/programme_admin_detail_view.py views/programme_admin_menu_items.py
 msgid "Programme hosts"
 msgstr "Ohjelmanjärjestäjät"
 
-#: templates/programme_accept_invitation_view.jade templates/programme_offer_view.jade
+#: templates/programme_accept_invitation_view.jade templates/programme_offer_form_view.jade
 msgid "Programme information"
 msgstr "Ohjelmanumeron tiedot"
 
@@ -586,10 +654,6 @@ msgstr "Julkinen"
 msgid "Public from"
 msgstr "Julkaisuaika"
 
-#: templates/programme_admin_detail_views/public_tab.jade views/programme_admin_detail_view.py
-msgid "Public information"
-msgstr "Julkiset tiedot"
-
 #: templates/programme_admin_publish_view.jade
 msgid "Publish now"
 msgstr "Julkaise heti"
@@ -601,6 +665,10 @@ msgstr "Ohjelmakartan julkaiseminen"
 #: models/programme.py
 msgid "Published"
 msgstr "Julkaistu"
+
+#: models/programme.py
+msgid "RPG system"
+msgstr "Pelisysteemi"
 
 #: models/programme_event_meta.py
 msgid "Reasonable"
@@ -666,17 +734,25 @@ msgstr "Ohjelmakarttatiedot"
 msgid "Schedule layout"
 msgstr "Ohjelmakartan asettelu"
 
+#: forms.py
+msgid "Select the form that will be used to edit the information of this programme. If this field is left blank, the default form will be used. Some events do not offer a choice of different forms, in which case this field will not have options and the default form will always be used. "
+msgstr "Valitse lomake, jota käytetään ohjelmanumeron tietojen syöttämiseen. Mikäli tämä kenttä jätetään tyhjäksi, käytetään oletuslomaketta. Jotkin tapahtumat eivät tarjoa valittavia lomakkeita lainkaan, jolloin tämä kenttä ei tarjoa vaihtoehtoja ja oletuslomaketta käytetään joka tapauksessa."
+
 #: templates/programme_admin_detail_views/invitation_modal.jade
 msgid "Send invitation"
 msgstr "Lähetä kutsu"
 
-#: templates/programme_offer_view.jade
+#: templates/programme_offer_form_view.jade
 msgid "Send offer"
 msgstr "Lähetä tarjous"
 
 #: models/invitation.py
 msgid "Sire"
 msgstr "Isäntä"
+
+#: models/programme.py
+msgid "Some"
+msgstr "Jonkin verran"
 
 #: models/role.py
 msgid "Some events have speaker roles that convey different privileges within the same personnel class. This priority field will put the speakers in their place."
@@ -770,6 +846,10 @@ msgstr "Tapahtuma ei tällä hetkellä ota vastaan kylmiä ohjelmatarjouksia."
 msgid "The event was already accepting cold offers."
 msgstr "Tapahtuman ohjelmahaku oli jo käynnissä."
 
+#: views/programme_offer_view.py
+msgid "The form you specified is not currently open for cold offers. Please contact the programme managers directly."
+msgstr "Tämä tapahtuma ei tällä hetkellä ota vastaan ohjelmatarjouksia tämän sivuston kautta. Ole hyvä ja ota suoraan yhteyttä ohjelmavastaaviin."
+
 #: views/programme_admin_detail_view.py
 msgid "The freeform organizer was successfully added."
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä lisätty."
@@ -820,7 +900,7 @@ msgstr[1] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi %(num_invite)s mu
 msgid "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details."
 msgstr "Ohjelmavastaava on kutsunut sinut järjestämään ohjelmanumeron, joka on yksilöity alla. Saadaksesi ohjelmanjärjestäjän edut sinun tulee hyväksyä tämä kutsu ja täyttää pyydetyt lisätiedot."
 
-#: views/admin_views.py
+#: views/programme_admin_create_view.py
 msgid "The programme was created."
 msgstr "Ohjelmanumero luotiin."
 
@@ -864,6 +944,10 @@ msgstr "Ohjelmahaun avautumis- ja sulkeutumisajat tallennettiin."
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
 msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta."
 
+#: templates/programme_offer_view.jade
+msgid "This event is currently open for programme offers. Please begin by selecting below the type of programme you are offering."
+msgstr "Tämä tapahtuma ottaa parhaillaan vastaan ohjelmatarjouksia. Aloita valitsemalla tarjottavan ohjelmanumeron tyyppi alta."
+
 #: views/programme_offer_view.py
 msgid "This event is not currently accepting offers via this site. Please contact the programme managers directly."
 msgstr "Tämä tapahtuma ei tällä hetkellä ota vastaan ohjelmatarjouksia tämän sivuston kautta. Ole hyvä ja ota suoraan yhteyttä ohjelmavastaaviin."
@@ -888,6 +972,14 @@ msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
 msgid "This text will be shown as-is in the schedule"
 msgstr "Tämä teksti näytetään ohjelmakartassa sellaisenaan."
 
+#: models/alternative_programme_form.py
+msgid "This title is visible to the programme host."
+msgstr "Tämä otsikko näkyy ohjelmanpitäjälle."
+
+#: models/programme.py
+msgid "Three-word description"
+msgstr "Kolmen sanan kuvaus"
+
 #: templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade
 msgid "Timestamp"
 msgstr "Aikaleima"
@@ -895,6 +987,10 @@ msgstr "Aikaleima"
 #: models/programme.py proxies/helpers.py
 msgid "Title"
 msgstr "Otsikko"
+
+#: models/alternative_programme_form.py
+msgid "To support programmes with multiple hosts, the host offering the programme may be enabled to invite more hosts to their programme by entering their e-mail addresses. This field controls if this is available and at most how many e-mail addresses may be entered."
+msgstr "Joissain ohjelmanumeroissa on useita ohjelmanpitäjiä. Tämän mahdollistamiseksi ohjelman ilmoittajalle voidaan antaa mahdollisuus kutsua ohjelmanumeroon useampia järjestäjiä syöttämällä näiden sähköpostiosoitteet. Tämä kenttä kontrolloi, onko tämä mahdollisuus olemassa ja montako sähköpostiosoitetta on mahdollista syöttää."
 
 #: templates/programme_admin_publish_view.jade
 msgid "Un-publish now"
@@ -912,7 +1008,7 @@ msgstr "Päivitä profiilia..."
 msgid "Updated at"
 msgstr "Päivitysaika"
 
-#: templates/programme_offer_view.jade
+#: templates/programme_offer_form_view.jade
 msgid "Using this form you can offer programme to the event. Please note that filling in the form does not guarantee automatic admittance into the event. You will be contacted by the programme manager and notified of the decision whether to accept the programme or not."
 msgstr "Tällä lomakkeella voit tarjota ohjelmaa tapahtumaan. Huomaathan, että tämän lomakkeen täyttäminen ei takaa automaattista pääsyä tapahtumaan. Ohjelmavastaavat ottavat sinuun yhteyttä ohjelmatarjouksesi tiimoilta ja kertovat päätöksestään hyväksyäkö ohjelmasi tapahtuman ohjelmistoon."
 
@@ -936,6 +1032,14 @@ msgstr "Tarkastele ohjelmanumeron saamaa palautetta"
 msgid "Visible"
 msgstr "Näkyvissä"
 
+#: models/alternative_programme_form.py
+msgid "Visible on the page that offers different kinds of forms."
+msgstr "Näkyy sivulla, josta ohjelman tarjoaminen aloitetaan ja josta valitaan, minkätyyppistä ohjelmaa tarjotaan."
+
+#: models/alternative_programme_form.py
+msgid "Visible to the hosts that register their programmes using this form."
+msgstr "Näkyy lomakkeen yläpuolella ilmoitettaessa ohjelmaa käyttäen tätä lomaketta."
+
 #: templates/programme_info_fragment.jade
 msgid "Watch the recording"
 msgstr "Katso tallenne"
@@ -947,6 +1051,18 @@ msgstr "Minkälaista tietokonetta haluat käyttää? Suosittelemme painokkaasti 
 #: models/programme.py
 msgid "When a programme is frozen, its details can no longer be edited by the programme host. The programme manager may continue to edit these, however."
 msgstr "Kun ohjelmanumero on lukittu, ohjelmanjärjestäjä ei voi enää muokata sen tietoja. Ohjelmavastaava voi muokata myös lukittua ohjelmanumeroa."
+
+#: models/programme.py
+msgid "When would you like to run your RPG? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them in the last open field."
+msgstr "Mihin aikaan haluaisit pitää ohjelmasi? Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä viimeisessä avoimessa kentässä."
+
+#: models/programme.py
+msgid "Which form was used to offer this Programme? If null, the default form was used."
+msgstr "Mitä lomaketta käyttäen tämä ohjelmanumero on tarjottu? Jos kenttä on tyhjä, ohjelmanumeron tarjoamiseen käytettiin oletuslomaketta."
+
+#: models/programme.py
+msgid "Which rule system is your RPG using?"
+msgstr "Mitä pelijärjestelmää roolipelisi käyttää?"
 
 #: models/programme.py
 msgid "Will you play audio in your programme?"
@@ -972,7 +1088,7 @@ msgstr "Kyllä. Ohjelma esitetään ensin tapahtumassa joka on ennen tätä tapa
 msgid "You can also start or stop accepting cold offers immediately."
 msgstr "Voit myös avata tai sulkea ohjelmahaun välittömästi."
 
-#: templates/programme_accept_invitation_view.jade templates/programme_offer_view.jade
+#: templates/programme_accept_invitation_view.jade templates/programme_offer_form_view.jade
 msgid "You can change these details later by visiting your profile."
 msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
 
@@ -1004,6 +1120,22 @@ msgstr "Et ole järjestänyt ohjelmaa tapahtumissa, jotka käyttävät tätä si
 msgid "Your feedback will be shared with the programme host and the programme managers."
 msgstr "Palautteesi toimitetaan ohjelmanjärjestäjälle sekä tapahtuman ohjelmavastaaville."
 
+#: models/alternative_programme_form.py
+msgid "alternative programme form"
+msgstr "vaihtoehtoinen ohjelmalomake"
+
+#: models/alternative_programme_form.py
+msgid "alternative programme forms"
+msgstr "vaihtoehtoiset ohjelmalomakkeet"
+
+#: models/programme.py
+msgid "approximate length (minutes)"
+msgstr "arvioitu pituus (minuuttia)"
+
+#: models/programme.py
+msgid "beginner friendly"
+msgstr "aloittelijaystävällinen"
+
 #: models/category.py
 msgid "categories"
 msgstr "ohjelmaluokat"
@@ -1012,13 +1144,29 @@ msgstr "ohjelmaluokat"
 msgid "category"
 msgstr "ohjelmaluokka"
 
-#: models/programme_feedback.py models/schedule.py
+#: models/programme.py
+msgid "children-friendly"
+msgstr "lapsiystävällinen"
+
+#: models/alternative_programme_form.py
+msgid "description"
+msgstr "kuvaus"
+
+#: models/alternative_programme_form.py models/programme_feedback.py models/schedule.py
 msgid "event"
 msgstr "tapahtuma"
+
+#: models/programme.py
+msgid "experienced participants preferred"
+msgstr "peli suosii kokeneita pelaajia"
 
 #: models/programme_feedback.py
 msgid "feedback"
 msgstr "palaute"
+
+#: models/programme.py
+msgid "form used"
+msgstr "käytetty lomake"
 
 #: models/freeform_organizer.py proxies/freeform_organizer/admin.py
 msgid "freeform organizer"
@@ -1036,9 +1184,21 @@ msgstr "kutsu"
 msgid "invitations"
 msgstr "kutsut"
 
+#: models/programme.py
+msgid "maximum number of players"
+msgstr "pelaajia enintään"
+
+#: models/programme.py
+msgid "minimum number of players"
+msgstr "pelaajia vähintään"
+
+#: models/programme.py
+msgid "preferred time slots"
+msgstr "aikatoiveet"
+
 #: models/programme.py models/programme_feedback.py
 msgid "programme"
-msgstr "Ohjelmanumero"
+msgstr "ohjelmanumero"
 
 #: models/programme_feedback.py
 msgid "programme feedback"
@@ -1047,6 +1207,10 @@ msgstr "ohjelmapalaute"
 #: models/programme.py
 msgid "programmes"
 msgstr "Ohjelmanumerot"
+
+#: models/programme.py
+msgid "restricted to people of age 18 and over"
+msgstr "peli on tarkoitettu vain täysi-ikäisille pelaajille"
 
 #: models/role.py
 msgid "role"
@@ -1063,6 +1227,10 @@ msgstr "ohjelmakarttanäkymä"
 #: models/schedule.py
 msgid "schedule views"
 msgstr "ohjelmakarttanäkymät"
+
+#: models/alternative_programme_form.py
+msgid "short description"
+msgstr "lyhyt kuvaus"
 
 #: models/schedule.py
 msgid "special start time"
@@ -1084,7 +1252,17 @@ msgstr "tägi"
 msgid "tags"
 msgstr "tägit"
 
+#: models/alternative_programme_form.py
+msgid "title"
+msgstr "otsikko"
+
 #: models/programme_feedback.py
 msgid "visible"
 msgstr "näkyvissä"
+
+#~ msgid "Host needs"
+#~ msgstr "Ohjelmanjärjestäjän tarpeet"
+
+#~ msgid "Public information"
+#~ msgstr "Julkiset tiedot"
 

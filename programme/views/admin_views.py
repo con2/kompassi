@@ -32,7 +32,7 @@ from ..models.programme import (
     PHOTOGRAPHY_CHOICES,
 )
 from ..helpers import programme_admin_required, group_programmes_by_start_time
-from ..forms import ProgrammePublicForm
+from ..forms import ProgrammeAdminCreateForm
 
 
 EXPORT_FORMATS = EXPORT_FORMATS + [
@@ -127,26 +127,6 @@ def programme_admin_view(request, vars, event, format='screen'):
         return render(request, 'programme_admin_print_view.jade', vars)
     else:
         raise NotImplementedError(format)
-
-
-@programme_admin_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
-def programme_admin_create_view(request, vars, event):
-    form = initialize_form(ProgrammePublicForm, request, event=event)
-
-    if request.method == 'POST':
-        if form.is_valid():
-            programme = form.save()
-            messages.success(request, _('The programme was created.'))
-            return redirect('programme_admin_detail_view', event.slug, programme.pk)
-        else:
-            messages.error(request, _('Please check the form.'))
-
-    vars.update(
-        form=form,
-    )
-
-    return render(request, 'programme_admin_create_view.jade', vars)
 
 
 @programme_admin_required

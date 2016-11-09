@@ -31,7 +31,15 @@ def programme_profile_detail_view(request, programme_id):
     programme = programme_role.programme
     event = programme.category.event
 
-    form = initialize_form(ProgrammeSelfServiceForm, request,
+    if programme.form_used:
+        alternative_programme_form = programme.form_used
+        FormClass = alternative_programme_form.programme_form_class
+    else:
+        # implicit default form
+        alternative_programme_form = None
+        FormClass = ProgrammeSelfServiceForm
+
+    form = initialize_form(FormClass, request,
         instance=programme,
         event=event,
         readonly=not programme.host_can_edit,
@@ -88,15 +96,16 @@ def programme_profile_detail_view(request, programme_id):
         invitation.sired_by_current_user = invitation.sire and invitation.sire.person == request.user.person
 
     vars = dict(
+        alternative_programme_form=alternative_programme_form,
         event=event,
         form=form,
         freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
         host_can_invite_more=programme_role.extra_invites_left > 0,
         invitations=invitations,
         num_extra_invites=programme_role.extra_invites_left,
-        programme=programme,
         programme_role=programme_role,
         programme_roles=ProgrammeRole.objects.filter(programme=programme),
+        programme=programme,
         signup_extra_form=signup_extra_form,
         sired_invitation_formset=sired_invitation_formset,
     )

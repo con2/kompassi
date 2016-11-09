@@ -40,6 +40,9 @@ class SimpleChoice(models.Model):
 class SpecialDiet(SimpleChoice):
     pass
 
+class TimeSlot(SimpleChoice):
+    pass
+
 
 class SignupExtra(ObsoleteSignupExtraBaseV1):
     shift_type = models.CharField(max_length=15,

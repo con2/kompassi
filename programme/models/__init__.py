@@ -17,3 +17,4 @@ from .schedule import (
     View,
     ViewMethodsMixin,
 )
+from .alternative_programme_form import AlternativeProgrammeForm, AlternativeProgrammeFormMixin

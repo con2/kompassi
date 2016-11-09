@@ -104,6 +104,16 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         from .role import Role
         return Role.objects.get(personnel_class__event=self.event, is_default=True)
 
+    @property
+    def is_using_alternative_programme_forms(self):
+        from .alternative_programme_form import AlternativeProgrammeForm
+        return AlternativeProgrammeForm.objects.filter(event=self.event).exists()
+
+    @property
+    def default_alternative_programme_form(self):
+        from .alternative_programme_form import AlternativeProgrammeForm
+        return AlternativeProgrammeForm.objects.filter(event=self.event, slug='default').first()
+
     def publish(self):
         self.public_from = now()
         self.save()

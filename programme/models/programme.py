@@ -8,6 +8,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib import messages
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import pre_save
@@ -99,14 +100,36 @@ RERUN_CHOICES = [
     ('original', _('No. The programme is original to this convention and I promise not to present it elsewhere before.')),
 ]
 
+PHYSICAL_PLAY_CHOICES = [
+    ('lots', _('Lots of it')),
+    ('some', _('Some')),
+    ('none', _('Not at all')),
+]
+
 PROGRAMME_STATES_ACTIVE = ['idea', 'asked', 'offered', 'accepted', 'published']
 PROGRAMME_STATES_INACTIVE = ['rejected', 'cancelled']
 
 
 class Programme(models.Model, CsvExportMixin):
+    """
+    Represents a scheduled programme in an event. Usually belongs to a Category and has a start and
+    end time. Also usually happens in a Room.
+
+    Note that this is a "dense sparse model" meaning the model covers multiple types of Programme
+    some of which have fields that are not used by the others. The fields used are specified by the
+    Form used. The default form fits lectures etc. and other types of programme are covered using
+    AlternativeProgrammeForms.
+    """
+
     category = models.ForeignKey('programme.Category',
         verbose_name=_('category'),
         help_text=_('Choose the category that fits your programme the best. We reserve the right to change this.'),
+    )
+    form_used = models.ForeignKey('programme.AlternativeProgrammeForm',
+        blank=True,
+        null=True,
+        verbose_name=_('form used'),
+        help_text=_('Which form was used to offer this Programme? If null, the default form was used.'),
     )
 
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
@@ -119,8 +142,16 @@ class Programme(models.Model, CsvExportMixin):
 
     description = models.TextField(
         blank=True,
+        default='',
         verbose_name=_('Description'),
         help_text=_('This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description.'),
+    )
+    three_word_description = models.CharField(
+        max_length=1023,
+        blank=True,
+        default='',
+        verbose_name=_('Three-word description'),
+        help_text=_('Describe your game in three words: for example, genre, theme and attitude.'),
     )
 
     use_audio = models.CharField(
@@ -246,6 +277,77 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_('In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room.'),
     )
 
+    # Originally hitpoint2017 rpg form fields
+    rpg_system = models.CharField(
+        max_length=512,
+        blank=True,
+        default='',
+        verbose_name=_('RPG system'),
+        help_text=_('Which rule system is your RPG using?'),
+    )
+    approximate_length = models.IntegerField(
+        blank=True,
+        null=True,
+        default=240,
+        verbose_name=_('approximate length (minutes)'),
+        help_text=_('Please give your best guess on how long you expect your game to take.'),
+    )
+    physical_play = models.CharField(
+        max_length=max(len(key) for (key, text) in PHYSICAL_PLAY_CHOICES),
+        default='some',
+        choices=PHYSICAL_PLAY_CHOICES,
+        verbose_name=_('Amount of physical play'),
+        help_text=_('In this context, physical play can mean, for example, using your whole body, acting the actions of your character or moving around in the allocated space.'),
+    )
+    is_english_ok = models.BooleanField(
+        verbose_name=_('English OK'),
+        help_text=_('Please tick this box if you are able, prepared and willing to host your programme in English if necessary.'),
+        default=False,
+    )
+    is_children_friendly = models.BooleanField(
+        verbose_name=_('children-friendly'),
+        help_text=_('Please tick this box if your game is suitable for younger players. Please give more details, if necessary, in the last open field.'),
+        default=False,
+    )
+    is_age_restricted = models.BooleanField(
+        verbose_name=_('restricted to people of age 18 and over'),
+        help_text=_('Please tick this box if your game contains themes that require it to be restricted to players of 18 years and older.'),
+        default=False,
+    )
+    is_beginner_friendly = models.BooleanField(
+        verbose_name=_('beginner friendly'),
+        help_text=_('Please tick this box if your game can be enjoyed even without any prior role-playing experience.'),
+        default=False,
+    )
+    is_intended_for_experienced_participants = models.BooleanField(
+        verbose_name=_('experienced participants preferred'),
+        default=False,
+    )
+    min_players = models.PositiveIntegerField(
+        verbose_name=_('minimum number of players'),
+        help_text=_('How many players must there at least be for the game to take place?'),
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(99)],
+    )
+    max_players = models.PositiveIntegerField(
+        verbose_name=_('maximum number of players'),
+        help_text=_('What is the maximum number of players that can take part in a single run of the game?'),
+        default=4,
+        validators=[MinValueValidator(1), MaxValueValidator(99)],
+    )
+    hitpoint2017_preferred_time_slots = models.ManyToManyField('hitpoint2017.TimeSlot',
+        verbose_name=_('preferred time slots'),
+        help_text=_('When would you like to run your RPG? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them in the last open field.'),
+    )
+    other_author = models.CharField(
+        max_length=1023,
+        blank=True,
+        default='',
+        verbose_name=_('Author (if other than the GM)'),
+        help_text=_('If the scenario has been written by someone else than the GM, we require that the author be disclosed.'),
+    )
+
+    # Internal fields
     notes = models.TextField(
         blank=True,
         verbose_name=_('Internal notes'),

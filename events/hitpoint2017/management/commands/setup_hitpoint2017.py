@@ -42,8 +42,7 @@ class Setup(object):
         from core.models import Venue, Event
 
         self.venue, unused = Venue.objects.get_or_create(
-            name='Ilmoitetaan myöhemmin',
-            name_inessive='Ilmoitetaan myöhemmin',
+            name='Tampere-talo',
         )
         self.event, unused = Event.objects.get_or_create(slug='hitpoint2017', defaults=dict(
             name='Tracon Hitpoint 2017',
@@ -53,8 +52,8 @@ class Setup(object):
             homepage_url='http://2017.hitpoint.tracon.fi',
             organization_name='Tracon ry',
             organization_url='http://ry.tracon.fi',
-            start_time=None,
-            end_time=None,
+            start_time=datetime(2017, 3, 4, 10, 0, tzinfo=self.tz),
+            end_time=datetime(2017, 3, 5, 18, 0, tzinfo=self.tz),
             venue=self.venue,
         ))
 
@@ -221,6 +220,7 @@ class Setup(object):
     def setup_programme(self):
         from labour.models import PersonnelClass
         from programme.models import (
+            AlternativeProgrammeForm,
             Category,
             Programme,
             ProgrammeEventMeta,
@@ -230,6 +230,7 @@ class Setup(object):
             TimeBlock,
             View,
         )
+        from ...models import TimeSlot
 
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
@@ -369,6 +370,72 @@ class Setup(object):
                 view, created = View.objects.get_or_create(event=self.event, name=view_name)
                 view.rooms = rooms
                 view.save()
+
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='rpg',
+            defaults=dict(
+                title='Tarjoa pöytäroolipeliä',
+                description='''
+Rooli- ja korttipelitapahtumana itseään mainostava Tracon Hitpoint 2017 on luonnollisesti etsimässä halukkaita pelinjohtajia vetämään pelejään 4.–5. maaliskuuta 2017 pidettävään tapahtumaan Tampereen Tampere-talolla. Tapahtumassa ei ole erityistä teemaa, joten pelitarjonta voi olla mitä tahansa avaruuslänkkäristä transhumanistiseen politiikkakähmäilyyn.
+
+Vedettävä roolipeli voi olla joku suurista ja kuuluisista tai jokin tuntemattomampi, lyhyt pikkupeli tai eeppinen tarina. Mikäli olet pitämässä vähintään neljän (4) tunnin edestä pelejä, olet oikeutettu ilmaiseen sisäänpääsyyn koko tapahtuman ajaksi.
+                '''.strip(),
+                programme_form_code='events.hitpoint2017.forms:RpgForm',
+                active_from=datetime(2016, 11, 13, 15, 47, tzinfo=self.tz),
+                active_until=datetime(2017, 1, 31, 23, 59, 59, tzinfo=self.tz),
+                num_extra_invites=0,
+                order=10,
+            )
+        )
+
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='freeform',
+            defaults=dict(
+                title='Tarjoa freeform-skenaariota',
+                short_description='Freeformit ovat liveroolipelien kaltaisia pelejä, joissa pelaajat pelaavat koko keholla ja näyttelevät hahmoja.',
+                description='''
+Freeformit ovat liveroolipelien kaltaisia pelejä, joissa pelaajat pelaavat koko keholla ja näyttelevät hahmoja. Freeform pelataan yhdessä huoneessa vähäisellä rekvisiitalla tai kokonaan ilman rekvisiittaa. Pelit ovat usein vahvasti tarinankerronnallisia, ja juoni voi rakentua ennalta määrätyistä kohtauksista. Pelissä on yleensä mukana 3-8 pelaajaa ja peli kestää 2-4 tuntia. Freeform voi tarkoittaa esimerkiksi jotain seuraavista:
+
+<ul><li>Semi-live</li><li>Chamber Larp</li><li>Mini Larp</li><li>Fastaval-skenaario</li><li>Black Box</li><li>Jeepform</li></ul>
+
+Freeformit täyttävät yleensä yhden tai useamman seuraavista:
+
+<ul><li>Selkeä lähtökohta ja tiukka tarinankerronta</li><li>Emotionaalinen kokemus pelaajille</li><li>Elementtejä, jotka työntävät roolipelien rajoja osallistavan tarinankerronnan välineenä</li></ul>
+
+Pelinjohtajille tarjotaan ilmainen viikonloppulippu peluuttamalla neljän tunnin verran pelejä. Freeform-pelinjohtajien ilmoittautuminen on auki 31.1. asti. Lisätietoja voi kysyä sähköpostitse: <a href="mailto:hitpoint.freeform@tracon.fi">hitpoint.freeform@tracon.fi</a>.
+                '''.strip(),
+                programme_form_code='events.hitpoint2017.forms:FreeformForm',
+                active_from=datetime(2016, 11, 13, 15, 47, tzinfo=self.tz),
+                active_until=datetime(2017, 1, 31, 23, 59, 59, tzinfo=self.tz),
+                num_extra_invites=0,
+                order=20,
+            )
+        )
+
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='default',
+            defaults=dict(
+                title='Tarjoa puhe- tai muuta ohjelmaa',
+                short_description='Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole roolipeli tai freeform-skenaario.',
+                programme_form_code='programme.forms:ProgrammeOfferForm',
+                active_from=datetime(2016, 11, 13, 15, 47, tzinfo=self.tz),
+                num_extra_invites=0,
+                order=30,
+            )
+        )
+
+        for time_slot_name in [
+            'Lauantaina päivällä',
+            'Lauantaina iltapäivällä',
+            'Lauantaina illalla',
+            'Lauantain ja sunnuntain välisenä yönä',
+            'Sunnuntaina aamupäivällä',
+            'Sunnuntaina päivällä',
+        ]:
+            TimeSlot.objects.get_or_create(name=time_slot_name)
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product

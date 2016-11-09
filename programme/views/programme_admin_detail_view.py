@@ -13,14 +13,13 @@ from core.utils import initialize_form
 from core.tabs import Tab
 
 from ..forms import (
+    ChangeHostRoleForm,
+    ChangeInvitationRoleForm,
     FreeformOrganizerForm,
     InvitationForm,
     ProgrammeInternalForm,
-    ProgrammeNeedsForm,
-    ProgrammePublicForm,
+    ProgrammeSelfServiceForm,
     ScheduleForm,
-    ChangeHostRoleForm,
-    ChangeInvitationRoleForm,
 )
 from ..helpers import programme_admin_required
 from ..models import (
@@ -40,11 +39,15 @@ PerHostForms = namedtuple('PerHostForms', 'change_host_role_form signup_extra_fo
 def programme_admin_detail_view(request, vars, event, programme_id):
     programme = get_object_or_404(ProgrammeManagementProxy, category__event=event, pk=int(programme_id))
 
-    public_form = initialize_form(ProgrammePublicForm, request, instance=programme, event=event, prefix='public')
-    needs_form = initialize_form(ProgrammeNeedsForm, request, instance=programme, event=event, prefix='needs')
+    if programme.form_used:
+        FormClass = programme.form_used.programme_form_class
+    else:
+        FormClass = ProgrammeSelfServiceForm
+
+    programme_form = initialize_form(FormClass, request, instance=programme, event=event, prefix='programme')
     internal_form = initialize_form(ProgrammeInternalForm, request, instance=programme, event=event, prefix='internal')
     schedule_form = initialize_form(ScheduleForm, request, instance=programme, event=event, prefix='schedule')
-    forms = [public_form, needs_form, schedule_form, internal_form]
+    forms = [programme_form, schedule_form, internal_form]
 
     invitation_form = initialize_form(InvitationForm, request, event=event, prefix='invitation')
     freeform_organizer_form = initialize_form(FreeformOrganizerForm, request, prefix='freeform')
@@ -170,9 +173,8 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     feedback = programme.visible_feedback
 
     tabs = [
-        Tab('programme-admin-programme-public-tab', _('Public information'), active=True),
+        Tab('programme-admin-programme-tab', _('Programme form'), active=True),
         Tab('programme-admin-programme-schedule-tab', _('Schedule information')),
-        Tab('programme-admin-programme-needs-tab', _('Host needs')),
         Tab('programme-admin-programme-internal-tab', _('Internal information')),
         Tab('programme-admin-programme-hosts-tab', _('Programme hosts'), notifications=invitations.count()),
         Tab('programme-admin-programme-feedback-tab', _('Feedback'), notifications=feedback.count()),
@@ -189,13 +191,12 @@ def programme_admin_detail_view(request, vars, event, programme_id):
         internal_form=internal_form,
         invitation_form=invitation_form,
         invitations=invitations,
-        needs_form=needs_form,
         next_programme=next_programme,
         overlapping_programmes=programme.get_overlapping_programmes(),
         previous_programme=previous_programme,
         programme=programme,
         programme_roles=programme_roles,
-        public_form=public_form,
+        programme_form=programme_form,
         schedule_form=schedule_form,
         tabs=tabs,
     )
@@ -257,4 +258,3 @@ def programme_admin_change_invitation_role_view(request, vars, event, programme_
     programme = change_role_form.instance.programme
 
     return redirect('programme_admin_detail_view', programme.event.slug, programme.pk)
-

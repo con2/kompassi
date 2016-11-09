@@ -24,6 +24,7 @@ from .views import (
     programme_json_view,
     programme_mobile_timetable_view,
     programme_offer_view,
+    programme_offer_form_view,
     programme_profile_detail_view,
     programme_profile_feedback_view,
     programme_profile_view,
@@ -82,6 +83,12 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/new/?$',
         programme_offer_view,
         name='programme_offer_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/new/(?P<form_slug>[a-z0-9-]+)/?$',
+        programme_offer_form_view,
+        name='programme_offer_form_view'
     ),
 
     url(
