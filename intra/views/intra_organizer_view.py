@@ -27,9 +27,10 @@ def intra_organizer_view(request, vars, event, format='screen'):
     teams = Team.objects.filter(event=event).prefetch_related('members')
 
     vars.update(
+        num_total_organizers=meta.organizer_group.user_set.count(),
+        num_unassigned_organizers=len(meta.unassigned_organizers),
         teams=teams,
         unassigned_organizers=meta.unassigned_organizers,
-        num_unassigned_organizers=len(meta.unassigned_organizers)
     )
 
     if format in HTML_TEMPLATES:

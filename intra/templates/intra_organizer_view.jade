@@ -95,3 +95,5 @@ block admin_content
       a.btn.btn-default(href='{% url "intra_organizer_export_view" event.slug "vcf" %}')
         i.fa.fa-cloud-download.kompassi-icon-space-right
         {% trans "Export contacts in vCard format" %}
+
+  p.text-muted {% blocktrans count num_total_organizers=num_total_organizers %}One organizer in total.{% plural %}{{ num_total_organizers }} organizers in total.{% endblocktrans %}

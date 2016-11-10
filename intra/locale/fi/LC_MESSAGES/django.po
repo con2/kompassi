@@ -103,6 +103,13 @@ msgstr[1] "%(num_members)s jäsentä."
 
 #: templates/intra_organizer_view.jade
 #, python-format
+msgid "One organizer in total."
+msgid_plural "%(num_total_organizers)s organizers in total."
+msgstr[0] "Yhteensä yksi järjestäjä."
+msgstr[1] "Yhteensä %(num_total_organizers)s järjestäjää."
+
+#: templates/intra_organizer_view.jade
+#, python-format
 msgid "One unassigned organizer."
 msgid_plural "%(num_members)s unassigned organizer."
 msgstr[0] "Yksi sijoittamaton järjestäjä."
