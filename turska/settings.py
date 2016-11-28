@@ -195,6 +195,7 @@ INSTALLED_APPS = (
     'events.tracrossf2016',
     'events.tracon2017',
     'events.supergalacticspaceparty',
+    'events.popcult2017',
 )
 
 LOGGING = {
