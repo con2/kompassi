@@ -38,10 +38,17 @@ def get_order(request, event):
 
     if order_id is not None:
         # There is an order in the session; return it
-        return Order.objects.get(id=order_id)
-    else:
-        # No order in the session; return an unsaved order
-        return Order(event=event, ip_address=request.META.get("REMOTE_ADDR"))
+        try:
+            return Order.objects.get(
+                id=order_id,
+                event=event,
+                cancellation_time__isnull=True,
+            )
+        except Order.DoesNotExist:
+            clear_order(request, event)
+
+    # No order in the session; return an unsaved order
+    return Order(event=event, ip_address=request.META.get("REMOTE_ADDR"))
 
 
 def clear_order(request, event):
