@@ -32,7 +32,13 @@ def programme_accept_invitation_view(request, event, code):
         messages.error(request, _('The invitation is no longer valid.'))
         return redirect('programme_profile_view')
 
-    form = initialize_form(ProgrammeSelfServiceForm, request,
+    alternative_programme_form = programme.form_used
+    if alternative_programme_form:
+        FormClass = alternative_programme_form.programme_form_class
+    else:
+        FormClass = ProgrammeSelfServiceForm
+
+    form = initialize_form(FormClass, request,
         instance=programme,
         event=event,
         prefix='needs',

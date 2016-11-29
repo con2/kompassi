@@ -185,7 +185,9 @@ class Setup(object):
         from django.contrib.auth.models import Group
         from labour.models import PersonnelClass, LabourEventMeta
         from programme.models import (
+            AlternativeProgrammeForm,
             Category,
+            Programme,
             Programme,
             ProgrammeEventMeta,
             Role,
@@ -218,6 +220,26 @@ class Setup(object):
                 )
             )
             role_priority += 10
+
+        form, created = AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='default',
+            defaults=dict(
+                title='Ohjelmalomake',
+                short_description='',
+                programme_form_code='events.frostbite2017.forms:ProgrammeForm',
+                active_from=datetime(2016, 11, 29, 22, 24, tzinfo=self.tz),
+                num_extra_invites=0,
+            )
+        )
+
+        if created:
+            Programme.objects.filter(
+                category__event=self.event,
+                form_used__isnull=True,
+            ).update(
+                form_used=form,
+            )
 
     def setup_access(self):
         from access.models import Privilege, GroupPrivilege
