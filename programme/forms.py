@@ -22,6 +22,7 @@ from core.utils import (
 from .models import (
     AllRoomsPseudoView,
     AlternativeProgrammeForm,
+    AlternativeProgrammeFormMixin,
     Category,
     FreeformOrganizer,
     Invitation,
@@ -107,7 +108,7 @@ class ProgrammeSelfServiceForm(forms.ModelForm):
         )
 
 
-class ProgrammeOfferForm(forms.ModelForm):
+class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
 
