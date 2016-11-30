@@ -125,6 +125,9 @@ class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.fields['category'].queryset = Category.objects.filter(event=event, public=True)
 
+    def get_excluded_field_defaults(self):
+        return dict()
+
     class Meta:
         model = Programme
         fields = (
