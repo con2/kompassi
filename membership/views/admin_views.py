@@ -43,6 +43,9 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
 
     if request.method == 'POST' and state_filters.selected_slug == 'approval':
         memberships.update(state='in_effect')
+        for membership in memberships:
+            membership.apply_state()
+
         messages.success(request, u'Hyväksyntää odottavat jäsenhakemukset hyväksyttiin.')
         return redirect('membership_admin_members_view', organization.slug)
 
