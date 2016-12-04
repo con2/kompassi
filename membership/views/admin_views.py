@@ -169,7 +169,11 @@ def membership_admin_emails_api(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     return HttpResponse(
-        '\n'.join(membership.person.email for membership in organization.memberships.all() if membership.person.email),
+        '\n'.join(
+            membership.person.email
+            for membership in organization.memberships.filter(state='in_effect')
+            if membership.person.email
+        ),
         content_type='text/plain; charset=UTF-8'
     )
 
