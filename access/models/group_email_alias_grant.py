@@ -2,10 +2,15 @@
 
 from __future__ import unicode_literals
 
+import logging
+
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
+
+
+logger = logging.getLogger('kompassi')
 
 
 class GroupEmailAliasGrant(models.Model):
