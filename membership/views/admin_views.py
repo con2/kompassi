@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.contrib import messages
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
@@ -22,10 +21,25 @@ from ..models import STATE_CHOICES, Membership
 
 
 EXPORT_FORMATS = [
-    ('html', u'Tulostettava versio'),
-    ('xlsx', u'Excel'),
-    ('csv', u'CSV'),
+    ('html', 'Tulostettava versio'),
+    ('xlsx', 'Excel'),
+    ('csv', 'CSV'),
 ]
+
+
+EXPORT_TYPE_VERBOSE = dict(
+    approval='Hyväksyntää odottavat hakemukset',
+    discharged='Erotetut jäsenet',
+    declined='Hylätyt jäsenhakemukset',
+    in_effect='Jäsenluettelo',
+    all='Jäsenluettelo',
+)
+
+
+HTML_TEMPLATES = dict(
+    screen='membership_admin_members_view.jade',
+    html='membership_admin_export_html_view.jade',
+)
 
 
 @membership_admin_required
@@ -44,31 +58,22 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
     memberships = memberships.order_by('person__surname', 'person__official_first_names')
 
     if request.method == 'POST' and state_filters.selected_slug == 'approval':
-        # PLEASE DON'T: locally cached objects do not get updated and apply_state does not do teh ndf
+        # PLEASE DON'T: locally cached objects do not get updated and apply_state does not do the needful
         # memberships.update(state='in_effect')
 
+        # TODO encap in Membership
         for membership in memberships:
             membership.state = 'in_effect'
             membership.save()
             membership.apply_state()
 
-        messages.success(request, u'Hyväksyntää odottavat jäsenhakemukset hyväksyttiin.')
+        messages.success(request, 'Hyväksyntää odottavat jäsenhakemukset hyväksyttiin.')
         return redirect('membership_admin_members_view', organization.slug)
 
-    export_type = state_filters.selected_slug
-    if export_type == 'approval':
-        export_type_verbose = u'Hyväksyntää odottavat hakemukset'
-    elif export_type == 'discharged':
-        export_type_verbose = u'Erotetut jäsenet'
-    elif export_type == 'declined':
-        export_type_verbose = u'Hylätyt jäsenhakemukset'
-    elif export_type == 'in_effect':
-        export_type_verbose = u'Jäsenluettelo'
-    elif not export_type:
-        export_type = 'all'
-        export_type_verbose = u'Jäsenluettelo'
+    export_type = state_filters.selected_slug or 'all'
+    export_type_verbose = EXPORT_TYPE_VERBOSE[export_type]
 
-    title = u'{organization.name} – {export_type_verbose}'.format(
+    title = '{organization.name} – {export_type_verbose}'.format(
         organization=organization,
         export_type_verbose=export_type_verbose,
     )
@@ -86,10 +91,8 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
         title=title,
     )
 
-    if format == 'screen':
-        return render(request, 'membership_admin_members_view.jade', vars)
-    elif format == 'html':
-        return render(request, 'membership_admin_export_html_view.jade', vars)
+    if format in HTML_TEMPLATES:
+        return render(request, HTML_TEMPLATES[format], vars)
     elif format in CSV_EXPORT_FORMATS:
         filename = "{organization.slug}_members_{timestamp}.{format}".format(
             organization=organization,
@@ -98,10 +101,13 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
         )
 
         return csv_response(organization, Membership, memberships,
-            dialect='xlsx',
+            dialect=format,
             filename=filename,
             m2m_mode='separate_columns',
         )
+    else:
+        raise NotImplementedError(format)
+
 
 @membership_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
@@ -111,39 +117,35 @@ def membership_admin_member_view(request, vars, organization, person_id):
     member_form = initialize_form(MemberForm, request, instance=membership.person, readonly=read_only, prefix='member')
     membership_form = initialize_form(MembershipForm, request, instance=membership, prefix='membership')
 
+    forms = [membership_form] if read_only else [membership_form, member_form]
+
     if request.method == 'POST':
         action = request.POST['action']
 
         if action in ['save-edit', 'save-return']:
-            if read_only:
-                valid = membership_form.is_valid()
-            else:
-                valid = membership_form.is_valid() and member_form.is_valid()
-
-            if valid:
-                membership_form.save()
-                if not read_only:
-                    member_form.save()
+            if all(form.is_valid() for form in forms):
+                for form in forms:
+                    form.save()
 
                 membership.apply_state()
 
-                messages.success(request, u'Jäsenen tiedot tallennettiin.')
+                messages.success(request, 'Jäsenen tiedot tallennettiin.')
 
                 if action == 'save-return':
                     return redirect('membership_admin_members_view', organization.slug)
 
             else:
-                messages.error(request, u'Tarkista lomakkeen tiedot.')
+                messages.error(request, 'Tarkista lomakkeen tiedot.')
         else:
             raise NotImplementedError(action)
 
     previous_membership, next_membership = membership.get_previous_and_next()
 
     tabs = [
-        Tab('membership-admin-person-tab', u'Jäsenen tiedot', active=True),
-        Tab('membership-admin-state-tab', u'Jäsenyyden tila'),
-        #Tab('membership-admin-events-tab', u'Jäsenyyteen liittyvät tapahtumat'),
-        #Tab('membership-admin-payments-tab', u'Jäsenmaksut'),
+        Tab('membership-admin-person-tab', 'Jäsenen tiedot', active=True),
+        Tab('membership-admin-state-tab', 'Jäsenyyden tila'),
+        # Tab('membership-admin-events-tab', 'Jäsenyyteen liittyvät tapahtumat'),
+        # Tab('membership-admin-payments-tab', 'Jäsenmaksut'),
     ]
 
     vars.update(
@@ -167,7 +169,7 @@ def membership_admin_emails_api(request, organization_slug):
     organization = get_object_or_404(Organization, slug=organization_slug)
 
     return HttpResponse(
-        u'\n'.join(membership.person.email for membership in organization.memberships.all() if membership.person.email),
+        '\n'.join(membership.person.email for membership in organization.memberships.all() if membership.person.email),
         content_type='text/plain; charset=UTF-8'
     )
 
@@ -175,6 +177,6 @@ def membership_admin_emails_api(request, organization_slug):
 def membership_admin_menu_items(request, organization):
     members_url = url('membership_admin_members_view', organization.slug)
     members_active = request.path.startswith(members_url)
-    members_text = u'Jäsenrekisteri'
+    members_text = 'Jäsenrekisteri'
 
     return [(members_active, members_url, members_text)]
