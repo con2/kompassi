@@ -6,8 +6,9 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
 
-from core.models import Organization, Person, GroupManagementMixin
-from core.utils import format_date, ensure_user_group_membership
+from core.csv_export import CsvExportMixin
+from core.models import GroupManagementMixin, Organization, Person
+from core.utils import ensure_user_group_membership, format_date
 from tickets.utils import format_price
 
 
@@ -66,7 +67,8 @@ PAYMENT_TYPE_CHOICES = [
     (u'bank_transfer', u'Tilisiirto'),
 ]
 
-class Membership(models.Model):
+
+class Membership(models.Model, CsvExportMixin):
     organization = models.ForeignKey(Organization, verbose_name=u'Yhdistys', related_name='memberships')
     person = models.ForeignKey(Person, verbose_name=u'Henkilö', related_name='memberships')
     state = models.CharField(
