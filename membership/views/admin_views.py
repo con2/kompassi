@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -42,8 +44,12 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
     memberships = memberships.order_by('person__surname', 'person__official_first_names')
 
     if request.method == 'POST' and state_filters.selected_slug == 'approval':
-        memberships.update(state='in_effect')
+        # PLEASE DON'T: locally cached objects do not get updated and apply_state does not do teh ndf
+        # memberships.update(state='in_effect')
+
         for membership in memberships:
+            membership.state = 'in_effect'
+            membership.save()
             membership.apply_state()
 
         messages.success(request, u'Hyväksyntää odottavat jäsenhakemukset hyväksyttiin.')

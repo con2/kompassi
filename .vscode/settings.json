@@ -1,0 +1,5 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "editor.rulers": [120],
+    "python.pythonPath":"../venv-kompassi/bin/python"
+}
