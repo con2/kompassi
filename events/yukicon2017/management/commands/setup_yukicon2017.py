@@ -166,7 +166,7 @@ class Setup(object):
             '207',
             '208',
             '209',
-            'Pelihuone',
+            '205',
             'Iso sali',
         ]:
             Room.objects.get_or_create(
@@ -242,27 +242,29 @@ class Setup(object):
                 ),
             )
 
-        for start_time, end_time in [
-            (
-                self.event.start_time,
-                self.event.start_time.replace(hour=18),
-            ),
-            (
-                self.event.end_time.replace(hour=10),
-                self.event.end_time,
-            ),
-        ]:
-            TimeBlock.objects.get_or_create(
-                event=self.event,
-                start_time=start_time,
-                defaults=dict(
-                    end_time=end_time
+        if not TimeBlock.objects.filter(event=self.event).exists():
+            for start_time, end_time in [
+                (
+                    self.event.start_time,
+                    self.event.start_time.replace(hour=22, tzinfo=self.tz),
+                ),
+                (
+                    self.event.end_time.replace(hour=9, tzinfo=self.tz),
+                    self.event.end_time,
+                ),
+            ]:
+                TimeBlock.objects.get_or_create(
+                    event=self.event,
+                    start_time=start_time,
+                    defaults=dict(
+                        end_time=end_time
+                    )
                 )
-            )
 
+        for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             # [:-1] – discard 18:30
-            for hour_start_time in full_hours_between(start_time, end_time)[:-1]:
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
                 SpecialStartTime.objects.get_or_create(
                     event=self.event,
                     start_time=hour_start_time.replace(minute=30)
