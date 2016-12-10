@@ -1,10 +1,30 @@
+# encoding: utf-8
+
+from __future__ import unicode_literals
+
+from django.utils.translation import get_language_from_request
+
+
+def get_other_language(request):
+    current_language_code = get_language_from_request(request)
+    if current_language_code == 'fi':
+        return 'en', 'In English…'
+    else:
+        return 'fi', 'Suomeksi…'
+
+
 def core_context(request):
     from django.conf import settings
     from .views import core_profile_menu_items
 
+    other_language_code, other_language_name = get_other_language(request)
+
     vars = dict(
         settings=settings,
         core_profile_menu_items=core_profile_menu_items(request),
+        other_language_code=other_language_code,
+        other_language_name=other_language_name,
+        show_language_warning=(other_language_code == 'fi'),
     )
 
     for key in [

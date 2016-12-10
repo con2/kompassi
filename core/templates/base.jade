@@ -31,17 +31,19 @@ html
             else
               include core_navbar_event.jade
           ul.nav.navbar-nav.navbar-right
+            include core_navbar_language.jade
             if not login_page
               include core_navbar_user.jade
 
     #wrap
-      if messages
-        .messages.container
-          for message in messages
-            if message.tags
-              .alert(class="alert-{{ message.tags }}") {{ message|safe }}
-            else
-              .alert {{ message|safe }}
+      .messages.container
+        for message in messages
+          if message.tags
+            .alert(class="alert-{{ message.tags }}") {{ message|safe }}
+          else
+            .alert {{ message|safe }}
+
+        include core_language_warning.jade
 
       include core_page_wizard_progress_bar.jade
 
