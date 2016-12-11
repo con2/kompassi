@@ -122,7 +122,7 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name='The White Rabbit',
+                name='The Queen of Hearts',
                 description=(
                     'Kuninkaallisen menon takaa The Queen of Hearts-lippu, jolla pääset päiväosioon aikaisemmin sisälle ja saat sisäänpääsyn Through the Looking Glass -iltaosioon. Lisäksi lippu sisältää kuva-session upeiden kunniavieraidemme kanssa ihanan Sanni Siiran kuvaamana sekä pienen lahjakassin!\n\n'
                     'The Queen of Hearts – Vip full day ticket, includes early entrance to the In the Wonderland day section and entrance to the Through the looking Glass evening section. The ticket also includes a small goodie bag and a photosession with the guests of honors by Sanni Siira!'
@@ -134,7 +134,7 @@ class Setup(object):
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
-                ordering=ordering(),
+                ordering=15,
             ),
             dict(
                 name='Through the Looking Glass',
