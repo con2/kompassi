@@ -22,7 +22,7 @@ def get_send_time(obj):
 get_send_time.short_description = u"Vastaanotettu"
 
 def format_price(obj):
-    return u"%d,%02d €" % divmod(obj.used_credit, 100)
+    return u"%d,%02d €" % divmod(obj.used_credit, 100)
 format_price.short_description = u"Käytetty krediitti"
 
 class SMSRecipientGroupAdmin(admin.ModelAdmin):

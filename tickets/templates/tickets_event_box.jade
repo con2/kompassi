@@ -1,11 +1,12 @@
-h3 Lipunmyynti
+- load i18n
+h3 {% trans "Ticket sales" %}
 
 if event.tickets_event_meta.is_ticket_sales_open
-  h4 Tapahtuman lipunmyynti on käynnissä
+  h4 {% trans "Ticket sales is currently open." %}
 
-  p: a(href='{% url "tickets_welcome_view" event.slug %}').btn.btn-primary Osta lippuja
+  p: a(href='{% url "tickets_welcome_view" event.slug %}').btn.btn-primary {% trans "Buy tickets" %}
 else
-  h4 Tapahtuman lipunmyynti ei ole tällä hetkellä käynnissä.
+  h4 {% trans "Ticket sales is not currently open." %}
 
 if is_tickets_admin
   h4 Sinulla on lipunmyynti&shy;vastaavan oikeudet tähän tapahtumaan

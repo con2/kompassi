@@ -2,7 +2,7 @@
 
 
 def format_price(cents):
-    return u"%d,%02d €" % divmod(cents, 100)
+    return u"%d,%02d €" % divmod(cents, 100)
 
 
 def format_date(dt):
