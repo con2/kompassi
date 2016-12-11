@@ -288,6 +288,10 @@ msgid "How many microphones do you require?"
 msgstr "Montako mikrofonia tarvitset?"
 
 #: models/programme.py
+msgid "How many players must there at least be for the game to take place?"
+msgstr ""
+
+#: models/programme.py
 msgid "I forbid publishing my programme, but it may be recorded for archiving purposes"
 msgstr "Kiellän ohjelmani julkaisemisen, mutta sen saa videoida arkistokäyttöön"
 
@@ -1043,6 +1047,10 @@ msgstr "Näkyy lomakkeen yläpuolella ilmoitettaessa ohjelmaa käyttäen tätä 
 #: templates/programme_info_fragment.jade
 msgid "Watch the recording"
 msgstr "Katso tallenne"
+
+#: models/programme.py
+msgid "What is the maximum number of players that can take part in a single run of the game?"
+msgstr ""
 
 #: models/programme.py
 msgid "What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance."

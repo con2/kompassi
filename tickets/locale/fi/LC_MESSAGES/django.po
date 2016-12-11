@@ -1,14 +1,122 @@
+#: views/public_views.py
+msgid "Additional info"
+msgstr "Lisätiedot"
+
+#: models.py
+msgid "Address"
+msgstr "Osoite"
+
+#: models.py
+msgid "Allow sending news and other information related to this event via e-mail"
+msgstr "Minulle saa lähettää sähköpostitse uutisia ja muita tietoja tähän tapahtumaan liittyen"
+
+#: templates/tickets_order_fragment.jade templates/tickets_order_product_table.jade
+msgid "Amount"
+msgstr "Lukumäärä"
+
+#: templates/tickets_buttons_fragment.jade
+msgid "Cancel order"
+msgstr "Peruuta tilaus"
+
+#: models.py
+msgid "Check the e-mail address carefully. The order confirmation and any electronic tickets will be sent to this e-mail address. NOTE: We have had significant trouble with e-mail delivery to webmail services of Microsoft (Hotmail, Live.com, Outlook.com etc). If possible, we recommend using an e-mail address other than one provided by Microsoft, such as GMail."
+msgstr "Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus ja mahdolliset e-liput lähetetään tähän osoiteeseen. HUOM! Meillä on sinnikkäistä yrityksistämme huolimatta jatkuvia vaikeuksia sähköpostin läpimenossa Microsoftin sähköpostipalveluihin (Hotmail, Live.com, Outlook.com ym.). Mikäli mahdollista, suosittelemme käyttämään muuta kuin Microsoftin tarjoamaa sähköpostiosoitetta, kuten GMailia."
+
+#: models.py
+msgid "City"
+msgstr "Postitoimipaikka"
+
+#: templates/tickets_confirm_phase.jade
+msgid "Confirm order"
+msgstr "Vahvista tilaus"
+
+#: views/public_views.py
+msgid "Confirmation"
+msgstr "Vahvistus"
+
+#: models.py
+msgid "Contact e-mail address (with description)"
+msgstr "Asiakaspalvelun sähköpostiosoite (selitteen kanssa)"
+
+#: templates/tickets_order_fragment.jade
+msgid "Contact information"
+msgstr "Yhteystiedot"
+
 #: templates/tickets_admin_shirts_view.jade
 msgid "Count"
 msgstr "Lukumäärä"
 
-#: admin.py
+#: templates/tickets_order_fragment.jade views/public_views.py
+msgid "Delivery address"
+msgstr "Toimitusosoite"
+
+#: models.py
+msgid "Description"
+msgstr "Kuvaus"
+
+#: models.py
+msgid "E-mail address"
+msgstr "Sähköpostiosoite"
+
+#: models.py
+msgid "E-ticket text"
+msgstr "E-lipun teksti"
+
+#: admin.py models.py
 msgid "Event"
 msgstr "Tapahtuma"
 
-#: templates/tickets_admin_shirts_view.jade
+#: models.py templates/tickets_admin_shirts_view.jade
 msgid "First name"
 msgstr "Etunimi"
+
+#: models.py
+msgid "Format: Fooevent Ticket Sales &lt;tickets@fooevent.example.com&gt;"
+msgstr "Muoto: Footapahtuman lipunmyynti &lt;tickets@fooevent.example.com&gt;"
+
+#: models.py
+msgid "Front page text"
+msgstr "Etusivun teksti"
+
+#: models.py
+msgid "If set, all tickets-related e-mail messages will be also sent to this e-mail address."
+msgstr "Mikäli tämä on asetettu, kaikki lippuihin liittyvä sähköposti lähetetään piilokopiona myös tähän osoitteeseen."
+
+#: templates/tickets_confirm_phase.jade
+msgid "In order to ensure speedy delivery of your order, please remember to return to the ticket shop from the payment provider after completing your payment."
+msgstr "Varmistaaksesi tilauksesi nopean toimituksen, muistathan palata maksamisen jälkeen maksupalvelusta verkkokauppaamme."
+
+#: models.py
+msgid "Logo height (mm)"
+msgstr "Logon korkeus (mm)"
+
+#: models.py
+msgid "Logo path"
+msgstr "Logon polku"
+
+#: models.py
+msgid "Logo width (mm)"
+msgstr "Logon leveys (mm)"
+
+#: models.py
+msgid "Maximum amount to sell"
+msgstr "Maksimimäärä"
+
+#: models.py
+msgid "Monitoring e-mail address"
+msgstr "Tarkkailusähköposti"
+
+#: templates/tickets_buttons_fragment.jade
+msgid "New order"
+msgstr "Uusi tilaus"
+
+#: templates/tickets_buttons_fragment.jade
+msgid "Next"
+msgstr "Seuraava"
+
+#: templates/tickets_confirm_phase.jade
+msgid "Note!"
+msgstr "Huom!"
 
 #: templates/tickets_admin_shirts_view.jade
 #, python-format
@@ -16,6 +124,74 @@ msgid "One shirt."
 msgid_plural "%(num_shirts)s shirts."
 msgstr[0] "Yksi paita."
 msgstr[1] "%(num_shirts)s paitaa."
+
+#: models.py
+msgid "Payment due (days)"
+msgstr "Maksuaika (päivää)"
+
+#: views/public_views.py
+msgid "Please check the form."
+msgstr "Ole hyvä ja tarkista lomake."
+
+#: templates/tickets_confirm_phase.jade
+msgid "Please check your delivery information, especially the e-mail address, and the amounts of products being ordered. By selecting <em>Proceed to payment</em> you will navigate to a payment page on which you will select the payment method."
+msgstr "Ole hyvä ja tarkista toimitusosoite, erityisesti sähköpostiosoite, ja tilattavien tuotteiden määrät. Valitsemalla <em>Siirry maksamaan</em> siirryt maksupalveluun, jossa pääset valitsemaan maksutavan."
+
+#: templates/tickets_tickets_phase.jade
+msgid "Please fill in the amount for each product. You can combine multiple products in a single order. You will have a chance to check these before the final confirmation and payment."
+msgstr "Ole hyvä ja syötä tilattavien tuotteiden määrät. Voit yhdistää samaan tilaukseen useita eri tilauksia. Ennen tilauksen vahvistamista ja maksua sinulla on vielä tilaisuus tarkistaa tuotteiden määrät."
+
+#: views/public_views.py
+msgid "Please select at least one product."
+msgstr "Ole hyvä ja valitse vähintään yksi tuote."
+
+#: models.py
+msgid "Postal code"
+msgstr "Postinumero"
+
+#: templates/tickets_buttons_fragment.jade
+msgid "Previous"
+msgstr "Edellinen"
+
+#: templates/tickets_buttons_fragment.jade
+msgid "Proceed to payment"
+msgstr "Siirry maksamaan"
+
+#: templates/tickets_order_fragment.jade templates/tickets_order_product_table.jade
+msgid "Product"
+msgstr "Tuote"
+
+#: templates/tickets_tickets_phase.jade
+msgid "Product selection"
+msgstr "Tuotteiden valinta"
+
+#: templates/tickets_order_fragment.jade
+msgid "Products"
+msgstr "Tuotteet"
+
+#: models.py
+msgid "Receipt footer"
+msgstr "Kuitin alatunniste"
+
+#: models.py
+msgid "Reference number template"
+msgstr "Viitenumeron muoto"
+
+#: models.py
+msgid "Reservation period (seconds)"
+msgstr "Varausaika (sekuntia)"
+
+#: templates/tickets_buttons_fragment.jade
+msgid "Return to event home page"
+msgstr "Palaa tapahtuman kotisivuille"
+
+#: templates/tickets_order_fragment.jade
+msgid "Shipping and handling"
+msgstr "Toimituskulut"
+
+#: models.py
+msgid "Shipping and handling (cents)"
+msgstr "Toimituskulut (senttejä)"
 
 #: templates/tickets_admin_shirts_view.jade
 msgid "Shirt list"
@@ -33,19 +209,135 @@ msgstr "Paitakoko"
 msgid "Shirt size summary"
 msgstr "Paitakokojen yhteenveto"
 
+#: views/public_views.py
+msgid "Shirt sizes"
+msgstr "Paitakoot"
+
 #: templates/tickets_admin_shirts_view.jade
 msgid "Shirt type"
 msgstr "Paitatyyppi"
 
-#: templates/tickets_admin_shirts_view.jade
+#: models.py templates/tickets_admin_shirts_view.jade
 msgid "Surname"
 msgstr "Sukunimi"
+
+#: templates/tickets_thanks_phase.jade
+msgid "Thank you for your order!"
+msgstr "Kiitos tilauksestasi!"
+
+#: views/public_views.py
+msgid "Thank you!"
+msgstr "Kiitos!"
+
+#: models.py
+msgid "The file system path to a logo that will be printed on the electronic ticket."
+msgstr "Polku tiedostojärjestelmässä logoon, joka tulostetaan sähköisille lipuille"
+
+#: models.py
+msgid "The height of the logo to be printed on electronic tickets, in millimeters. Roughly 20 mm recommended."
+msgstr "Sähköisiin lippuihin tulostettavan logon korkeus millimetreissä. Suositus n. 20 mm."
+
+#: models.py
+msgid "The width of the logo to be printed on electronic tickets, in millimeters. Roughly 40 mm recommended."
+msgstr "Sähköisiin lippuihin tulostettavan logon korkeus millimetreissä. Suositus n. 40 mm."
+
+#: models.py
+msgid "This is how long the customer has after confirmation to complete the payment. NOTE: Currently unimplemented."
+msgstr ""
+
+#: models.py
+msgid "This text will be printed in the electronic ticket."
+msgstr ""
+
+#: models.py
+msgid "This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended."
+msgstr ""
+
+#: models.py
+msgid "This text will be shown on the front page of the web shop."
+msgstr ""
+
+#: models.py
+msgid "Ticket sales ends"
+msgstr ""
+
+#: models.py
+msgid "Ticket sales starts"
+msgstr ""
+
+#: templates/tickets_phase_base.jade
+msgid "Ticket shop"
+msgstr "Lippukauppa"
+
+#: views/public_views.py
+msgid "Tickets"
+msgstr "Liput"
+
+#: templates/tickets_order_fragment.jade
+msgid "Total"
+msgstr "Yhteensä"
 
 #: admin.py
 msgid "Type"
 msgstr "Tyyppi"
 
+#: views/public_views.py
+msgid "Unfortunately a product you have selected has just been sold out."
+msgstr "Valitettavasti jokin valitsemistasi tuotteista on juuri myyty loppuun."
+
+#: templates/tickets_order_fragment.jade templates/tickets_order_product_table.jade
+msgid "Unit price"
+msgstr "Yksikköhinta"
+
+#: models.py
+msgid "Uses Python .format() string formatting."
+msgstr ""
+
+#: views/public_views.py
+msgid "Welcome"
+msgstr "Tervetuloa"
+
+#: templates/tickets_thanks_phase.jade
+msgid "Your order is now complete. Welcome to the event!"
+msgstr "Tilauksesi on nyt valmis. Tervetuloa tapahtumaan!"
+
+#: models.py
+msgid "customer"
+msgstr "asiakas"
+
+#: models.py
+msgid "customers"
+msgstr "asiakkaat"
+
+#: models.py
+msgid "limit group"
+msgstr "loppuunmyyntiryhmä"
+
+#: models.py
+msgid "limit groups"
+msgstr "loppuunmyyntiryhmät"
+
+#: templates/tickets_order_fragment.jade
+msgid "pcs."
+msgstr "kpl"
+
 #: models.py
 msgid "phone number"
 msgstr "puhelinnumero"
+
+#: models.py
+msgid "product"
+msgstr "tuote"
+
+#: models.py
+msgid "products"
+msgstr "tuotteet"
+
+#: models.py
+msgid "ticket sales settings for event"
+msgstr ""
+
+#: models.py
+msgid "ticket sales settings for events"
+msgstr ""
 

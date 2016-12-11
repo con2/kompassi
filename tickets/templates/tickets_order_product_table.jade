@@ -1,9 +1,10 @@
 - load crispy_forms_tags
+- load i18n
 thead
   tr
-    th Tuote
-    th Kappalehinta
-    th(style='min-width: 80px') Määrä
+    th {% trans "Product" %}
+    th {% trans "Unit price" %}
+    th(style='min-width: 80px') {% trans "Amount" %}
 tbody
   for iform in form
     tr

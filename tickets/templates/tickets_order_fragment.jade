@@ -1,9 +1,10 @@
+- load i18n
 .row
   .col-md-6
     if order.requires_shipping
-      h3 Toimitusosoite
+      h3 {% trans "Delivery address" %}
     else
-      h3 Yhteystiedot
+      h3 {% trans "Contact information" %}
     .well
       p
         | {{ order.customer.name }}
@@ -16,26 +17,26 @@
         br
         | {{ order.customer.phone_number }}
   .col-md-6
-    h3 Liput
+    h3 {% trans "Products" %}
     table.table.table-bordered.table-striped
       thead
         tr
-          th Määrä
-          th Tuote
-          th à
-          th Yht.
+          th {% trans "Amount" %}
+          th {% trans "Product" %}
+          th {% trans "Unit price" %}
+          th {% trans "Total" %}
       tbody
         for op in products
           tr
-            td {{ op.count }} kpl
+            td {{ op.count }} {% trans "pcs." %}
             td {{ op.product.name }}
             td {{ op.product.formatted_price }}
             td {{ op.formatted_price }}
 
         tr
-          td(colspan='3') Toimituskulut
+          td(colspan='3') {% trans "Shipping and handling" %}
           td {{ order.formatted_shipping_and_handling }}
 
         tr
-          th(colspan='3') Yhteensä
+          th(colspan='3') {% trans "Total" %}
           th {{ order.formatted_price }}

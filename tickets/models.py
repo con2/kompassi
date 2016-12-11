@@ -32,23 +32,23 @@ UNPAID_CANCEL_DAYS = 1
 @python_2_unicode_compatible
 class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
     shipping_and_handling_cents = models.IntegerField(
-        verbose_name='Toimituskulut (senttejä)',
+        verbose_name=_('Shipping and handling (cents)'),
         default=0,
     )
 
     due_days = models.IntegerField(
-        verbose_name='Maksuaika (päiviä)',
+        verbose_name=_('Payment due (days)'),
         default=14,
     )
 
     ticket_sales_starts = models.DateTimeField(
-        verbose_name='Lipunmyynnin alkuaika',
+        verbose_name=_('Ticket sales starts'),
         null=True,
         blank=True,
     )
 
     ticket_sales_ends = models.DateTimeField(
-        verbose_name='Lipunmyynnin päättymisaika',
+        verbose_name=_('Ticket sales ends'),
         null=True,
         blank=True,
     )
@@ -56,70 +56,70 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
     reference_number_template = models.CharField(
         max_length=31,
         default="{:04d}",
-        verbose_name='Viitenumeron formaatti',
-        help_text='Paikkamerkin {} kohdalle sijoitetaan tilauksen numero. Nollilla täyttäminen esim. {:04d} (4 merkin leveydeltä).',
+        verbose_name=_('Reference number template'),
+        help_text=_('Uses Python .format() string formatting.'),
     )
 
     contact_email = models.CharField(
         max_length=255,
         validators=[contact_email_validator,],
-        verbose_name=u"Asiakaspalvelun sähköpostiosoite selitteineen",
-        help_text=u"Ongelmatilanteissa käyttäjää kehotetaan ottamaan yhteyttä tähän osoitteeseen. Muoto: Tracon 9 -lipunmyynti &lt;liput@tracon.fi&gt;",
+        verbose_name=_('Contact e-mail address (with description)'),
+        help_text=_('Format: Fooevent Ticket Sales &lt;tickets@fooevent.example.com&gt;'),
         blank=True,
     )
 
     ticket_spam_email = models.CharField(
         max_length=255,
         blank=True,
-        verbose_name='Tarkkailusähköposti',
-        help_text='Kaikki järjestelmän lähettämät sähköpostiviestit lähetetään myös tähän osoitteeseen.',
+        verbose_name=_('Monitoring e-mail address'),
+        help_text=_('If set, all tickets-related e-mail messages will be also sent to this e-mail address.'),
     )
 
     reservation_seconds = models.IntegerField(
-        verbose_name='Varausaika (sekuntia)',
-        help_text='Käyttäjällä on tämän verran aikaa siirtyä maksamaan ja maksaa tilauksensa tai tilaus perutaan.',
+        verbose_name=_('Reservation period (seconds)'),
+        help_text=_('This is how long the customer has after confirmation to complete the payment. NOTE: Currently unimplemented.'),
         default=1800,
     )
 
     ticket_free_text = models.TextField(
         blank=True,
-        verbose_name='E-lipun teksti',
-        help_text='Tämä teksti tulostetaan E-lippuun.',
+        verbose_name=_('E-ticket text'),
+        help_text=_('This text will be printed in the electronic ticket.'),
     )
 
     front_page_text = models.TextField(
         blank=True,
         default='',
-        verbose_name='Etusivun teksti',
-        help_text='Tämä teksti näytetään lippukaupan ensimmäisellä vaiheella.',
+        verbose_name=_('Front page text'),
+        help_text=_('This text will be shown on the front page of the web shop.'),
     )
 
     print_logo_path = models.CharField(
         max_length=255,
         blank=True,
         default='',
-        verbose_name='Logon polku',
-        help_text='Tämä logo printataan e-lippuun.',
+        verbose_name=_('Logo path'),
+        help_text=_('The file system path to a logo that will be printed on the electronic ticket.'),
     )
 
     print_logo_width_mm = models.IntegerField(
         default=0,
-        verbose_name='Logon leveys (mm)',
-        help_text='E-lippuun printattavan logon leveys millimetreinä. Suositellaan noin 40 millimetriä leveää logoa.',
+        verbose_name=_('Logo width (mm)'),
+        help_text=_('The width of the logo to be printed on electronic tickets, in millimeters. Roughly 40 mm recommended.'),
     )
 
     print_logo_height_mm = models.IntegerField(
         default=0,
-        verbose_name='Logon korkeus (mm)',
-        help_text='E-lippuun printattavan logon korkeus millimetreinä. Suositellaan noin 20 millimetriä korkeaa logoa.',
+        verbose_name=_('Logo height (mm)'),
+        help_text=_('The height of the logo to be printed on electronic tickets, in millimeters. Roughly 20 mm recommended.'),
     )
 
     receipt_footer = models.CharField(
         blank=True,
         default='',
         max_length=1023,
-        verbose_name='Pakkauslistan alatunniste',
-        help_text='Tämä teksti tulostetaan postitettavien tilausten pakkauslistan alatunnisteeseen. Tässä on hyvä mainita mm. järjestävän tahon yhteystiedot.',
+        verbose_name=_('Receipt footer'),
+        help_text=_('This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended.'),
     )
 
     def __str__(self):
@@ -158,8 +158,8 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
     class Meta:
-        verbose_name = 'tapahtuman lipunmyyntiasetukset'
-        verbose_name_plural = 'tapahtuman lipunmyyntiasetukset'
+        verbose_name = _('ticket sales settings for event')
+        verbose_name_plural = _('ticket sales settings for events')
 
 
 @python_2_unicode_compatible
@@ -285,16 +285,16 @@ class Batch(models.Model):
 class LimitGroup(models.Model):
     # REVERSE: product_set = ManyToMany(Product)
 
-    event = models.ForeignKey('core.Event', verbose_name='Tapahtuma')
-    description = models.CharField(max_length=255, verbose_name='Kuvaus')
-    limit = models.IntegerField(verbose_name='Enimmäismäärä')
+    event = models.ForeignKey('core.Event', verbose_name=_('Event'))
+    description = models.CharField(max_length=255, verbose_name=_('Description'))
+    limit = models.IntegerField(verbose_name=_('Maximum amount to sell'))
 
     def __str__(self):
         return "{self.description} ({self.amount_available}/{self.limit})".format(self=self)
 
     class Meta:
-        verbose_name = 'loppuunmyyntiryhmä'
-        verbose_name_plural = 'loppuunmyyntiryhmät'
+        verbose_name = _('limit group')
+        verbose_name_plural = _('limit groups')
 
     @property
     def amount_sold(self):
@@ -436,8 +436,8 @@ class Product(models.Model):
         return "%s (%s)" % (self.name, self.formatted_price)
 
     class Meta:
-        verbose_name = 'tuote'
-        verbose_name_plural = 'tuotteet'
+        verbose_name = _('product')
+        verbose_name_plural = _('products')
 
     @classmethod
     def get_or_create_dummy(cls, name='Dummy product', limit_groups=[]):
@@ -477,23 +477,31 @@ class Product(models.Model):
 class Customer(models.Model):
     # REVERSE: order = OneToOne(Order)
 
-    first_name = models.CharField(max_length=100, verbose_name="Etunimi")
-    last_name = models.CharField(max_length=100, verbose_name="Sukunimi")
-    address = models.CharField(max_length=200, verbose_name="Katuosoite")
-    zip_code = models.CharField(max_length=5, verbose_name="Postinumero")
-    city = models.CharField(max_length=30, verbose_name="Postitoimipaikka")
+    first_name = models.CharField(max_length=100, verbose_name=_('First name'))
+    last_name = models.CharField(max_length=100, verbose_name=_('Surname'))
+    address = models.CharField(max_length=200, verbose_name=_('Address'))
+
+    zip_code = models.CharField(
+        max_length=5,
+        verbose_name=_('Postal code'),
+    )
+
+    city = models.CharField(max_length=255, verbose_name=_('City'))
 
     email = models.EmailField(
-        verbose_name=u"Sähköpostiosoite",
-        help_text='Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus sekä mahdolliset sähköiset liput '
-            u'lähetetään tähän sähköpostiosoitteeseen. HUOM! Hotmail-osoitteiden kanssa on välillä ollut '
-            u'viestien perillemeno-ongelmia. Suosittelemme käyttämään jotain muuta sähköpostiosoitetta kuin Hotmailia.',
+        verbose_name=_('E-mail address'),
+        help_text=_(
+            'Check the e-mail address carefully. The order confirmation and any electronic tickets '
+            'will be sent to this e-mail address. NOTE: We have had significant trouble with e-mail '
+            'delivery to webmail services of Microsoft (Hotmail, Live.com, Outlook.com etc). If possible, '
+            'we recommend using an e-mail address other than one provided by Microsoft, such as GMail.'
+        ),
     )
 
     allow_marketing_email = models.BooleanField(
         default=True,
         blank=True,
-        verbose_name=u"Minulle saa lähettää tapahtumaan liittyviä tiedotteita sähköpostitse",
+        verbose_name=_('Allow sending news and other information related to this event via e-mail'),
     )
 
     phone_number = models.CharField(
@@ -508,8 +516,8 @@ class Customer(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'asiakas'
-        verbose_name_plural = 'asiakkaat'
+        verbose_name = _('customer')
+        verbose_name_plural = _('customers')
 
     @property
     def name(self):

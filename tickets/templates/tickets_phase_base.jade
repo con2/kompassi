@@ -1,6 +1,7 @@
 extends base.jade
+- load i18n
 block title
-  | Lippukauppa
+  | {% trans "Ticket shop" %}
 block content
   ul.breadcrumb
     for the_phase in phases

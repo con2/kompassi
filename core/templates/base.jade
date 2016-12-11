@@ -37,13 +37,14 @@ html
 
     #wrap
       .messages.container
+        include core_language_warning.jade
+
         for message in messages
           if message.tags
             .alert(class="alert-{{ message.tags }}") {{ message|safe }}
           else
             .alert {{ message|safe }}
 
-        include core_language_warning.jade
 
       include core_page_wizard_progress_bar.jade
 

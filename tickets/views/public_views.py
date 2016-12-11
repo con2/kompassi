@@ -1,40 +1,22 @@
 # encoding: utf-8
 
-from collections import defaultdict
-import datetime
-from time import mktime
+from __future__ import unicode_literals
 
-from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
-from django.template import RequestContext
-from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
-from django.views.decorators.http import require_POST, require_safe, require_http_methods
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.db.models import Sum
+from django.http import HttpResponseNotAllowed, HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.utils.translation import ugettext_lazy as _
 
-try:
-    from reportlab.pdfgen import canvas
-except ImportError:
-    from warnings import warn
-    warn('Failed to import ReportLab. Generating receipts will fail.')
+from core.utils import groupby_strict, initialize_form, url
 
-from core.utils import initialize_form, url, groupby_strict
-
-# XXX * imports
-from ..models import (
-    AccommodationInformation,
-    Customer,
-    Order,
-    OrderProduct,
-    Product,
-    ShirtOrder,
-    ShirtSize,
-    ShirtType,
-)
 from ..forms import *
 from ..helpers import *
+# XXX * imports
+from ..models import (
+    OrderProduct,
+    ShirtOrder,
+    ShirtSize,
+)
 from ..utils import *
 
 
@@ -85,7 +67,6 @@ class Phase(object):
     prev_phase = None
     next_phase = None
     payment_phase = None
-    next_text = "Seuraava &raquo;"
     can_cancel = True
     index = None
     delay_complete = False
@@ -151,7 +132,7 @@ class Phase(object):
 
     def validate(self, request, event, form):
         if not form.is_valid():
-            messages.error(request, 'Tarkista lomakkeen sisältö.')
+            messages.error(request, _('Please check the form.'))
             return ["syntax"]
         else:
             return []
@@ -173,7 +154,6 @@ class Phase(object):
             next_phase=bool(self.next_phase),
             prev_phase=bool(self.prev_phase),
             can_cancel=self.can_cancel,
-            next_text=self.next_text,
             payment_phase=self.payment_phase,
             name=self.name
         )
@@ -214,7 +194,7 @@ class Phase(object):
 
 class WelcomePhase(Phase):
     name = "tickets_welcome_view"
-    friendly_name = "Tervetuloa"
+    friendly_name = _('Welcome')
     template = "tickets_welcome_phase.jade"
     prev_phase = None
     next_phase = "tickets_tickets_view"
@@ -236,7 +216,7 @@ tickets_welcome_view = decorate(tickets_welcome_phase)
 
 class TicketsPhase(Phase):
     name = "tickets_tickets_view"
-    friendly_name = "Liput"
+    friendly_name = _('Tickets')
     template = "tickets_tickets_phase.jade"
     prev_phase = "tickets_welcome_view"
     next_phase = "tickets_address_view"
@@ -250,16 +230,16 @@ class TicketsPhase(Phase):
 
         # If the above step failed, not all forms have cleaned_data.
         if errors:
-            messages.error(request, u'Tarkista lomakkeen sisältö.')
+            messages.error(request, _('Please check the form.'))
             return errors
 
         if sum(i.cleaned_data["count"] for i in form) <= 0:
-            messages.info(request, u'Valitse vähintään yksi tuote.')
+            messages.info(request, _('Please select at least one product.'))
             errors.append("zero")
             return errors
 
         if any(i.instance.product.amount_available < i.cleaned_data["count"] for i in form):
-            messages.error(request, u'Valitsemasi tuote on valitettavasti juuri myyty loppuun.')
+            messages.error(request, _('Unfortunately a product you have selected has just been sold out.'))
             errors.append("soldout")
             return errors
 
@@ -286,7 +266,7 @@ tickets_tickets_view = decorate(tickets_tickets_phase)
 
 class AccommodationPhase(Phase):
     name = "tickets_accommodation_view"
-    friendly_name = u"Lisätiedot"
+    friendly_name = _('Additional info')
     template = "tickets_accommodation_phase.jade"
     prev_phase = "tickets_tickets_view"
     next_phase = "tickets_address_view"
@@ -300,7 +280,7 @@ class AccommodationPhase(Phase):
 
         # If the above step failed, not all forms have cleaned_data.
         if errors:
-            messages.error(request, u'Tarkista lomakkeen sisältö.')
+            messages.error(request, _('Please check the form.'))
             return errors
 
     def make_form(self, request, event):
@@ -334,7 +314,7 @@ class ShirtsPhase(Phase):
     """
 
     name = "tickets_shirts_view"
-    friendly_name = "Paidat"
+    friendly_name = _('Shirt sizes')
     template = "tickets_shirts_phase.html"
     next_phase = "tickets_address_view"
     prev_phase = "tickets_tickets_view"
@@ -403,7 +383,7 @@ tickets_shirts_view = decorate(tickets_shirts_phase)
 
 class AddressPhase(Phase):
     name = "tickets_address_view"
-    friendly_name = "Toimitusosoite"
+    friendly_name = _('Delivery address')
     template = "tickets_address_phase.jade"
     prev_phase = "tickets_tickets_view"
     next_phase = "tickets_confirm_view"
@@ -437,11 +417,10 @@ tickets_address_view = decorate(tickets_address_phase)
 
 class ConfirmPhase(Phase):
     name = "tickets_confirm_view"
-    friendly_name = "Vahvistaminen"
+    friendly_name = _('Confirmation')
     template = "tickets_confirm_phase.jade"
     prev_phase = "tickets_address_view"
     next_phase = "payments_redirect_view"
-    next_text = "Siirry maksamaan &#10003;"
     payment_phase = True
     delay_complete = True
 
@@ -490,11 +469,10 @@ tickets_confirm_view = decorate(tickets_confirm_phase)
 
 class ThanksPhase(Phase):
     name = "tickets_thanks_view"
-    friendly_name = "Kiitos!"
+    friendly_name = _('Thank you!')
     template = "tickets_thanks_phase.jade"
     prev_phase = None
     next_phase = "tickets_welcome_view"
-    next_text = "Uusi tilaus"
     can_cancel = False
 
     def available(self, request, event):

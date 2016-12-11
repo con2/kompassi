@@ -1,17 +1,18 @@
+- load i18n
 p
   if phase.payment_phase
-    button.btn.btn-success.btn-block.btn-large(type='submit', name='action', value='next') Siirry maksamaan &#10004;
+    button.btn.btn-success.btn-block.btn-large(type='submit', name='action', value='next') {% trans "Proceed to payment" %} &#10004;
   elif phase.next_phase and phase.can_cancel
-    button.btn.btn-primary.btn-block.btn-large(type='submit', name='action', value='next') Seuraava &rarr;
+    button.btn.btn-primary.btn-block.btn-large(type='submit', name='action', value='next') {% trans "Next" %} &rarr;
   else
-    a.btn.btn-primary.btn-block.btn-large(href='{{ event.homepage_url }}') Takaisin {{ event.name_genitive }} sivuille &rarr;
+    a.btn.btn-primary.btn-block.btn-large(href='{{ event.homepage_url }}') {% trans "Return to event home page" %} &rarr;
 p
   if phase.prev_phase
-    button.btn(type='submit', name='action', value='prev') &larr; Edellinen
+    button.btn(type='submit', name='action', value='prev') &larr; {% trans "Previous" %}
   else
-    button.btn.disabled(type='submit', name='action', value='prev', disabled='disabled') &larr; Edellinen
+    button.btn.disabled(type='submit', name='action', value='prev', disabled='disabled') &larr; {% trans "Previous" %}
 
   if phase.can_cancel
-    button.btn.btn-danger(type='submit', name='action', value='cancel') &times; Keskeytä
+    button.btn.btn-danger(type='submit', name='action', value='cancel') &times; {% trans "Cancel order" %}
   else
-    button.btn.btn-success(type='submit', name='action', value='next') &#10044; Uusi tilaus
+    button.btn.btn-success(type='submit', name='action', value='next') &#10044; {% trans "New order" %}

@@ -1,10 +1,6 @@
 extends tickets_phase_base.jade
 block body_text
-  h2 Kiitos tilauksesta!
-  p Tilauksesi on nyt valmis. Tervetuloa tapahtumaan!
-  if order.requires_shipping
-    p Huomioithan, että lippuja toimitetaan isommissa erissä, joten lippujesi toimituksessa voi kestää useampi viikko.
-    p
-      | Kaikki lipputilaukset toimitetaan kuitenkin <strong>hyvissä ajoin ennen tapahtumaa</strong>.
+  h2 {% trans "Thank you for your order!" %}
+  p {% trans "Your order is now complete. Welcome to the event!" %}
 block form_content
   include tickets_order_fragment.jade
