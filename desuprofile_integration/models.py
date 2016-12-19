@@ -67,7 +67,7 @@ class Desuprofile(DesuprofileBase, JSONSchemaObject):
         type='object',
         properties=dict(
             id=dict(type='number'),
-            username=dict(type='string', minLength=1, maxLength=30),
+            username=dict(type='string', minLength=1, maxLength=150),
             first_name=dict(type='string', minLength=1),
             last_name=dict(type='string', minLength=1),
             nickname=dict(type='string', optional=True),
