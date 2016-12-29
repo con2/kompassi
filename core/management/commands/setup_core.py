@@ -1,12 +1,10 @@
 # encoding: utf-8
 
 import logging
-from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group
-from django.contrib.contenttypes.models import ContentType
 
 from ...models import Person
 from ...utils import log_get_or_create
