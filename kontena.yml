@@ -13,6 +13,7 @@ services:
       - rabbitmq
       - postgres
       - memcache
+      - loadbalancer
     environment:
       DEBUG: 1
       DATABASE_URL: psql://kompassi:secret@kompassi-postgres.kontena.local/kompassi
@@ -22,8 +23,6 @@ services:
       KONTENA_LB_BALANCE: roundrobin
       KONTENA_LB_INTERNAL_PORT: 8000
       KONTENA_LB_VIRTUAL_HOSTS: kompassi.dev
-    external_links:
-      - platform-external_lb
   celery:
     image: tracon/kompassi
     command: celery -A turska.celery_app:app worker
@@ -48,3 +47,8 @@ services:
     stateful: true
   memcache:
     image: memcached
+  loadbalancer:
+    image: kontena/lb:latest
+    ports:
+      - 80:80
+      - 443:443
