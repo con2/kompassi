@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from ..utils import SLUG_FIELD_PARAMS, slugify
+from ..utils import SLUG_FIELD_PARAMS, slugify, pick_attrs
 
 
 logger = logging.getLogger('kompassi')
@@ -88,6 +88,13 @@ class Organization(models.Model):
             return self.accessorganizationmeta
         except AccessOrganizationMeta.DoesNotExist:
             return None
+
+    def as_dict(self):
+        return pick_attrs(self,
+            'slug',
+            'name',
+            'homepage_url',
+        )
 
     class Meta:
         verbose_name = u'Organisaatio'

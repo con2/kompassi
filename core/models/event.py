@@ -189,4 +189,8 @@ class Event(models.Model):
         return pick_attrs(self,
             'slug',
             'name',
+            'homepage_url',
+            'headline',
+
+            organization=self.organization.as_dict(),
         )
