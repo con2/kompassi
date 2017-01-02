@@ -393,9 +393,10 @@ class Person(models.Model):
                 'display_name',
                 'preferred_name_display_style',
 
-                'phone',
                 'email',
                 'birth_date',
+
+                phone=self.normalized_phone_number,
             ),
 
             username=self.user.username if self.user else None,
