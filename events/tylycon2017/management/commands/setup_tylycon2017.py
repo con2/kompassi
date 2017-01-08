@@ -162,11 +162,11 @@ class Setup(object):
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
@@ -233,8 +233,6 @@ class Setup(object):
             'Tarvehuone',
             'Tähtitorni',
             'Loitsuluokka',
-            'Kasvihuone 3',
-            'Salaisuuksien kammio',
         ]:
             Room.objects.get_or_create(
                 venue=self.venue,
