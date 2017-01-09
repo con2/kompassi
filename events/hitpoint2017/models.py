@@ -65,7 +65,7 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
 
     construction = models.BooleanField(
         default=False,
-        verbose_name='Voin työskennellä jo perjantaina 27. marraskuuta',
+        verbose_name='Voin työskennellä jo perjantaina',
         help_text='Huomaathan, että perjantain ja lauantain väliselle yölle ei ole tarjolla majoitusta.',
     )
 
