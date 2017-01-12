@@ -15,7 +15,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         assert 'background_tasks' in settings.INSTALLED_APPS
 
-        print options
-
         from core.tasks import run_admin_command
         run_admin_command.delay(*options['async_cmd_args'])
