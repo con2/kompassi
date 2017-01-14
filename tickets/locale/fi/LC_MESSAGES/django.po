@@ -14,6 +14,10 @@ msgstr "Minulle saa lähettää sähköpostitse uutisia ja muita tietoja tähän
 msgid "Amount"
 msgstr "Lukumäärä"
 
+#: templates/tickets_event_box.jade
+msgid "Buy tickets"
+msgstr "Osta lippuja"
+
 #: templates/tickets_buttons_fragment.jade
 msgid "Cancel order"
 msgstr "Peruuta tilaus"
@@ -243,27 +247,39 @@ msgstr "Sähköisiin lippuihin tulostettavan logon korkeus millimetreissä. Suos
 
 #: models.py
 msgid "This is how long the customer has after confirmation to complete the payment. NOTE: Currently unimplemented."
-msgstr ""
+msgstr "Ostajalla on tämän verran aikaa tilauksen vahvistuksen jälkeen maksaa tilauksensa. HUOM: Ei toteutettu."
 
 #: models.py
 msgid "This text will be printed in the electronic ticket."
-msgstr ""
+msgstr "Tämä teksti tulostetaan sähköiseen lippuun."
 
 #: models.py
 msgid "This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended."
-msgstr ""
+msgstr "Tämä teksti tulostetaan postitse toimitettavien tilausten keräilylistan alareunaan. Tähän on suositeltavaa sisällyttää yhteystiedot."
 
 #: models.py
 msgid "This text will be shown on the front page of the web shop."
-msgstr ""
+msgstr "Tämä teksti näytetään verkkokaupan etusivulla."
+
+#: templates/tickets_event_box.jade
+msgid "Ticket sales"
+msgstr "Lipunmyynti"
 
 #: models.py
 msgid "Ticket sales ends"
-msgstr ""
+msgstr "Lipunmyynti päättyy"
+
+#: templates/tickets_event_box.jade
+msgid "Ticket sales is currently open."
+msgstr "Lipunmyynti on parhaillaan käynnissä."
+
+#: templates/tickets_event_box.jade
+msgid "Ticket sales is not currently open."
+msgstr "Lipunmyynti ei ole tällä hetkellä käynnissä."
 
 #: models.py
 msgid "Ticket sales starts"
-msgstr ""
+msgstr "Lipunmyynti alkaa"
 
 #: templates/tickets_phase_base.jade
 msgid "Ticket shop"
@@ -291,7 +307,7 @@ msgstr "Yksikköhinta"
 
 #: models.py
 msgid "Uses Python .format() string formatting."
-msgstr ""
+msgstr "Käyttää Pythonin .format()-tekstimuotoilua."
 
 #: views/public_views.py
 msgid "Welcome"
@@ -335,9 +351,9 @@ msgstr "tuotteet"
 
 #: models.py
 msgid "ticket sales settings for event"
-msgstr ""
+msgstr "tapahtuman lipunmyyntiasetukset"
 
 #: models.py
 msgid "ticket sales settings for events"
-msgstr ""
+msgstr "tapahtumien lipunmyyntiasetukset"
 
