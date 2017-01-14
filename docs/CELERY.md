@@ -13,20 +13,16 @@ To use `background_tasks`, you need an AMQP 0.91 broker such as RabbitMQ. Not te
 To install and configure RabbitMQ and the associated Python modules, do
 
     sudo apt-get install rabbitmq-server
-    sudo -Hu rabbitmq rabbitmqctl add_vhost turskadev
-    sudo -Hu rabbitmq rabbitmqctl add_user turskadev turskadev
-    sudo -Hu rabbitmq rabbitmqctl set_permissions -p turskadev turskadev '.*' '.*' '.*'
+    sudo -Hu rabbitmq rabbitmqctl add_vhost kompassidev
+    sudo -Hu rabbitmq rabbitmqctl add_user kompassidev kompassidev
+    sudo -Hu rabbitmq rabbitmqctl set_permissions -p kompassidev kompassidev '.*' '.*' '.*'
 
-    pip install -r requirements-background_tasks.txt
-
-Edit `settings.py`, uncomment the line with `background_tasks` in `INSTALLED_APPS`. Also have a look at the configuration section further below that starts with
-
-    if 'background_tasks' in INSTALLED_APPS:
+    export BROKER_URL=rabbitmq://kompassidev:kompassidev@localhost/kompassidev
 
 By convention we use `KOMPASSI_INSTALLATION_SLUG` as the vhost name and user name in RabbitMQ. In development, we also use it as the password. In production, you should set up a secure password.
 
 Now you should be able to
 
-    celery -A turska worker
+    celery -A kompassi worker
 
-Note that the Celery app name `turska` is hardcoded into `turska/celery_app.py` and is not the `KOMPASSI_INSTALLATION_SLUG` from `settings.py`. Please dedicate a RabbitMQ vhost for each Kompassi instance.
+Note that the Celery app name `kompassi` is hardcoded into `kompassi/celery_app.py` and is not the `KOMPASSI_INSTALLATION_SLUG` from `settings.py`. Please dedicate a RabbitMQ vhost for each Kompassi instance.
