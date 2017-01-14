@@ -20,7 +20,7 @@ services:
       ALLOWED_HOSTS: '*'
   celery:
     build: .
-    command: celery -A turska.celery_app:app worker
+    command: celery -A kompassi.celery_app:app worker
     links:
       - rabbitmq
       - postgres

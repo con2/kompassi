@@ -4,7 +4,7 @@ name: kompassi
 services:
   web:
     image: tracon/kompassi
-    command: gunicorn --bind=0.0.0.0:8000 --workers=4 turska.wsgi:application
+    command: gunicorn --bind=0.0.0.0:8000 --workers=4 kompassi.wsgi:application
     instances: 3
     deploy:
       strategy: ha
@@ -25,7 +25,7 @@ services:
       KONTENA_LB_VIRTUAL_HOSTS: kompassi.dev
   celery:
     image: tracon/kompassi
-    command: celery -A turska.celery_app:app worker
+    command: celery -A kompassi.celery_app:app worker
     links:
       - rabbitmq
       - postgres

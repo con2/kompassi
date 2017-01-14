@@ -37,7 +37,7 @@ ADMINS = [parseaddr(addr) for addr in env('ADMINS', default='').split(',') if ad
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': env.db(default='sqlite:///turska.sqlite3'),
+    'default': env.db(default='sqlite:///db.sqlite3'),
 }
 
 CACHES = {
@@ -96,8 +96,8 @@ MIDDLEWARE_CLASSES = (
     'django_babel.middleware.LocaleMiddleware',
 )
 
-ROOT_URLCONF = 'turska.urls'
-WSGI_APPLICATION = 'turska.wsgi.application'
+ROOT_URLCONF = 'kompassi.urls'
+WSGI_APPLICATION = 'kompassi.wsgi.application'
 APPEND_SLASH = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -105,7 +105,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            mkpath('turska','templates'),
+            mkpath('kompassi','templates'),
         ],
         'OPTIONS': {
             'context_processors': [
