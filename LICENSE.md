@@ -2,7 +2,7 @@
 
     The MIT License (MIT)
 
-    Copyright © 2009-2016 Santtu Pajukanta
+    Copyright © 2009-2017 Santtu Pajukanta
     Copyright © 2009–2015 Jussi Sorjonen
     Copyright © 2011 Petri Haikonen
     Copyright © 2012-2015 Meeri Panula

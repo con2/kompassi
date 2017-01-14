@@ -2,4 +2,4 @@
 {% if event and event.homepage_url and event.organization.homepage_url and event.organization.name %}
 <a href='{{ event.homepage_url }}' target='_blank'>{{ event.name_genitive }}</a> järjestää <a href='{{ event.organization.homepage_url }}' target='_blank'>{{ event.organization.name }}</a>.
 {% endif %}
- {{ KOMPASSI_APPLICATION_NAME }} &copy; 2009&ndash;2016 <a href='https://github.com/tracon/kompassi/blob/master/LICENSE.md'>Santtu Pajukanta et al</a>. <a href='{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}'>{% trans "Privacy policy" %}</a>.
+ {{ KOMPASSI_APPLICATION_NAME }} &copy; 2009&ndash;2017 <a href='https://github.com/tracon/kompassi/blob/master/LICENSE.md'>Santtu Pajukanta et al</a>. <a href='{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}'>{% trans "Privacy policy" %}</a>.
