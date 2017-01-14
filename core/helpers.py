@@ -1,13 +1,15 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from functools import wraps
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
 from .models import Person, Organization, Event
-from .utils import login_redirect, event_meta_property
+from .utils import login_redirect, event_meta_property  # noqa
 from .page_wizard import page_wizard_init, page_wizard_clear
 
 
@@ -16,7 +18,7 @@ def person_required(view_func):
     @wraps(view_func)
     def inner(request, *args, **kwargs):
         try:
-            person = request.user.person
+            person = request.user.person  # noqa
         except Person.DoesNotExist:
             return login_redirect(request, view='core_personify_view')
 
@@ -26,7 +28,7 @@ def person_required(view_func):
 
 
 # XXX WIP
-def app_admin_required(app_label, error_message=u'Tämä moduuli ei ole käytössä tälle tapahtumalle.'):
+def app_admin_required(app_label, error_message='Tämä moduuli ei ole käytössä tälle tapahtumalle.'):
     def outer(view_func):
         @wraps(view_func)
         def inner(request, event, *args, **kwargs):
@@ -39,7 +41,7 @@ def app_admin_required(app_label, error_message=u'Tämä moduuli ei ole käytös
             meta = getattr(event, event_meta_name, None)
 
             if not meta:
-                messages.error(request, u"Tämä tapahtuma ei käytä Turskaa työvoiman hallintaan.")
+                messages.error(request, "Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
                 return redirect('core_event_view', event.slug)
 
             if not meta.is_user_admin(request.user):
@@ -64,7 +66,7 @@ def app_event_required(app_label, error_message):
             meta = event.labour_event_meta
 
             if not meta:
-                messages.error(request, u"Tämä tapahtuma ei käytä Turskaa työvoiman hallintaan.")
+                messages.error(request, "Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
                 return redirect('core_event_view', event.slug)
 
             return view_func(request, event, *args, **kwargs)
@@ -108,7 +110,7 @@ def public_organization_required(view_func):
         if request.user.is_staff:
             organization = get_object_or_404(Organization, slug=organization_slug)
             if not organization.public:
-                messages.warning(request, u'Tämä yhdistys ei ole julkinen. Tämä sivu ei näy tavallisille käyttäjille.')
+                messages.warning(request, 'Tämä yhdistys ei ole julkinen. Tämä sivu ei näy tavallisille käyttäjille.')
         else:
             organization = get_object_or_404(Organization, slug=organization_slug, public=True)
 

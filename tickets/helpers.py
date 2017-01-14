@@ -144,7 +144,7 @@ def tickets_admin_required(view_func):
         meta = event.tickets_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa lipunmyyntiin.")
+            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
             return redirect('core_event_view', event.slug)
 
         if not meta.is_user_admin(request.user):
@@ -169,7 +169,7 @@ def tickets_event_required(view_func):
         meta = event.tickets_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa lipunmyyntiin.")
+            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
             return redirect('core_event_view', event.slug)
 
         if not (meta.is_ticket_sales_open or meta.is_user_admin(request.user)):

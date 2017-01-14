@@ -19,7 +19,7 @@ def labour_admin_required(view_func):
         meta = event.labour_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa työvoiman hallintaan.")
+            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
             return redirect('core_event_view', event.slug)
 
         if not event.labour_event_meta.is_user_admin(request.user):
@@ -42,7 +42,7 @@ def labour_event_required(view_func):
         meta = event.labour_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Turskaa työvoiman hallintaan.")
+            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
             return redirect('core_event_view', event.slug)
 
         return view_func(request, event, *args, **kwargs)
