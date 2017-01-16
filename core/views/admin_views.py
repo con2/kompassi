@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
@@ -18,10 +20,10 @@ def core_admin_impersonate_view(request, username):
     user = authenticate(username=username, allow_passwordless_login=YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN)
 
     messages.warning(request,
-        u'Käytät nyt Kompassia toisen käyttäjän oikeuksilla. Tämän toiminnon käyttö on sallittua '
-        u'ainoastaan sellaisiin ylläpitotoimenpiteisiin, joiden hoitaminen ylläpitotunnuksilla on '
-        u'muuten tarpeettoman työlästä tai hankalaa. Muista kirjautua ulos, kun olet saanut '
-        u'ylläpitotoimenpiteet hoidettua.'
+        'Käytät nyt Kompassia toisen käyttäjän oikeuksilla. Tämän toiminnon käyttö on sallittua '
+        'ainoastaan sellaisiin ylläpitotoimenpiteisiin, joiden hoitaminen ylläpitotunnuksilla on '
+        'muuten tarpeettoman työlästä tai hankalaa. Muista kirjautua ulos, kun olet saanut '
+        'ylläpitotoimenpiteet hoidettua.'
     )
 
     return do_login(request, user, password=None, next=next)
