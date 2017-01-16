@@ -1,14 +1,25 @@
 from django.contrib.auth.models import User
 
 
-class KompassiImpersonationBackend(object):
+# Sentinel object
+YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN = object()
+
+
+class PasswordlessLoginBackend(object):
     """
-    Supports authentication without password for the impersonation feature. All authentication 
-    attempts that have a password are forwarded to the next backend.
+    Supports authentication without password for the impersonation feature.
+
+    Pass a username and allow_passwordless_login=YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN to authenticate() to invoke
+    this backend.
+
+    All authentication attempts that have a password are forwarded to the next backend.
     """
 
-    def authenticate(self, username, password=None):
+    def authenticate(self, username, password=None, allow_passwordless_login=None):
         if password is not None:
+            return None
+
+        if allow_passwordless_login is not YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN:
             return None
 
         try:

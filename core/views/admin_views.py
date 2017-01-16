@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.http import require_safe
 
+from ..backends import YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN
 from ..utils import get_next
 from .login_views import do_login
 
@@ -14,7 +15,7 @@ from .login_views import do_login
 @require_safe
 def core_admin_impersonate_view(request, username):
     next = get_next(request)
-    user = authenticate(username=username) # look, no password
+    user = authenticate(username=username, allow_passwordless_login=YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN)
 
     messages.warning(request,
         u'Käytät nyt Kompassia toisen käyttäjän oikeuksilla. Tämän toiminnon käyttö on sallittua '
