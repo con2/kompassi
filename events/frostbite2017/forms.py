@@ -9,7 +9,7 @@ from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin, SignupForm
-from labour.models import Signup, JobCategory, WorkPeriod
+from labour.models import Signup, JobCategory
 from programme.models import AlternativeProgrammeFormMixin
 from programme.forms import ProgrammeSelfServiceForm
 
@@ -26,7 +26,7 @@ class SignupExtraForm(forms.ModelForm):
             indented_without_label('night_work'),
 
             Fieldset('Lisätiedot',
-                'shirt_size',
+                # 'shirt_size',
                 'special_diet',
                 'special_diet_other',
                 'desu_amount',
@@ -39,7 +39,7 @@ class SignupExtraForm(forms.ModelForm):
         model = SignupExtra
         fields = (
             'shift_type',
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
             'desu_amount',
@@ -55,7 +55,7 @@ class SignupExtraForm(forms.ModelForm):
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
         admin = kwargs.pop('admin')
 
         assert not admin
@@ -95,7 +95,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset('Lisätiedot',
-                'shirt_size',
+                # 'shirt_size',
                 'special_diet',
                 'special_diet_other',
             ),
@@ -104,7 +104,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
         )
@@ -127,7 +127,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
         )
@@ -135,7 +135,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
         )
@@ -174,7 +174,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
             indented_without_label('night_work'),
 
             Fieldset('Lisätiedot',
-                'shirt_size',
+                # 'shirt_size',
                 'special_diet',
                 'special_diet_other',
                 'desu_amount',
@@ -187,7 +187,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
         model = SignupExtra
         fields = (
             'shift_type',
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
             'desu_amount',
