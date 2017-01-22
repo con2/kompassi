@@ -196,6 +196,7 @@ INSTALLED_APPS = (
     'events.supergalacticspaceparty',
     'events.popcult2017',
     'events.lookingforalice',
+    'events.desucon2017',
 )
 
 LOGGING = {
