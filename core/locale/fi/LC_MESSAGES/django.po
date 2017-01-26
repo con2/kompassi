@@ -74,6 +74,10 @@ msgstr "Osaan tämän sivuston palveluista tarvitset Kompassi-tunnuksen, jonka v
 msgid "Forgot password"
 msgstr "Salasana unohtunut"
 
+#: templates/core_event_view.jade
+msgid "Go to event home page…"
+msgstr "Tapahtuman kotisivulle…"
+
 #: forms.py
 msgid "I hereby authorize the use of my personal information as outlined in the privacy policy. See site footer for a link to the privacy policy. <em>(mandatory)</em>"
 msgstr "Annan luvan henkilötietojeni käyttöön rekisteriselosteen mukaisesti. Linkki rekisteriselosteeseen löytyy sivuston alatunnisteesta. <i>(pakollinen)</i>"
