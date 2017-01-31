@@ -4,17 +4,15 @@ import json
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.http import Http404
+from django.db import transaction
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_POST, require_safe
 
 from core.helpers import person_required
-from core.models import Event, Person
+from core.models import Person
 from core.utils import (
     initialize_form,
     login_redirect,
@@ -22,16 +20,13 @@ from core.utils import (
     set_attrs,
 )
 from core.page_wizard import (
-    page_wizard_clear,
     page_wizard_init,
     page_wizard_vars,
 )
 
-from ..forms import SignupForm
 from ..models import (
     AlternativeSignupForm,
     JobCategory,
-    LabourEventMeta,
     PersonQualification,
     Qualification,
     Signup,
@@ -189,21 +184,22 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
                 set_attrs(signup, **signup_form.get_excluded_field_defaults())
                 set_attrs(signup_extra, **signup_extra_form.get_excluded_field_defaults())
 
-            signup = signup_form.save()
+            with transaction.atomic():
+                signup = signup_form.save()
 
-            signup_extra.signup = signup
-            signup_extra = signup_extra_form.save()
+                signup_extra.signup = signup
+                signup_extra = signup_extra_form.save()
 
-            if alternative_signup_form is not None:
-                # Save m2m field defaults
-                for obj, form in [
-                    (signup, signup_form),
-                    (signup_extra, signup_extra_form),
-                ]:
-                    defaults = form.get_excluded_m2m_field_defaults()
-                    if defaults:
-                        set_attrs(obj, **defaults)
-                        obj.save()
+                if alternative_signup_form is not None:
+                    # Save m2m field defaults
+                    for obj, form in [
+                        (signup, signup_form),
+                        (signup_extra, signup_extra_form),
+                    ]:
+                        defaults = form.get_excluded_m2m_field_defaults()
+                        if defaults:
+                            set_attrs(obj, **defaults)
+                            obj.save()
 
             signup.apply_state()
 

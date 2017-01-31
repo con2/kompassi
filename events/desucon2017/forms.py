@@ -29,7 +29,6 @@ class SignupExtraForm(forms.ModelForm):
                 'shirt_size',
                 'special_diet',
                 'special_diet_other',
-                'desu_amount',
                 'prior_experience',
                 'free_text',
             )
@@ -42,7 +41,6 @@ class SignupExtraForm(forms.ModelForm):
             'shirt_size',
             'special_diet',
             'special_diet_other',
-            'desu_amount',
             'night_work',
             'prior_experience',
             'free_text',
@@ -116,7 +114,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_field_defaults(self):
         return dict(
             shift_type='none',
-            desu_amount=666,
             free_text='Syötetty käyttäen vastaavan ilmoittautumislomaketta',
         )
 
@@ -147,7 +144,6 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_field_defaults(self):
         return dict(
             shift_type='none',
-            desu_amount=666,
             free_text='Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta',
         )
 
@@ -177,7 +173,6 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
                 'shirt_size',
                 'special_diet',
                 'special_diet_other',
-                'desu_amount',
                 'prior_experience',
                 'free_text',
             )
@@ -190,7 +185,6 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
             'shirt_size',
             'special_diet',
             'special_diet_other',
-            'desu_amount',
             'night_work',
             'prior_experience',
             'free_text',

@@ -59,11 +59,6 @@ class SignupExtra(SignupExtraBase):
         choices=SHIFT_TYPE_CHOICES,
     )
 
-    desu_amount = models.PositiveIntegerField(
-        verbose_name='Desumäärä',
-        help_text='Kuinka monessa Desuconissa olet työskennellyt?',
-    )
-
     prior_experience = models.TextField(
         blank=True,
         verbose_name='Työkokemus',
