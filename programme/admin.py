@@ -6,6 +6,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from .models import (
+    AlternativeProgrammeForm,
     Category,
     FreeformOrganizer,
     Programme,
@@ -174,6 +175,13 @@ class ProgrammeFeedbackAdmin(admin.ModelAdmin):
             feedback.hidden_by = request.user
             feedback.save()
 
+
+class AlternativeProgrammeFormAdmin(admin.ModelAdmin):
+    model = AlternativeProgrammeForm
+    list_display = ('event', 'title')
+    list_filter = ('event',)
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Role, RoleAdmin)
@@ -185,3 +193,4 @@ admin.site.register(SpecialStartTime, SpecialStartTimeAdmin)
 admin.site.register(InvitationAdminProxy, InvitationAdmin)
 admin.site.register(FreeformOrganizerAdminProxy, FreeformOrganizerAdmin)
 admin.site.register(ProgrammeFeedback, ProgrammeFeedbackAdmin)
+admin.site.register(AlternativeProgrammeForm, AlternativeProgrammeFormAdmin)
