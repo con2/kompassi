@@ -29,7 +29,7 @@ class Setup(object):
         self.setup_badges()
         # self.setup_tickets()
         # self.setup_payments()
-        # self.setup_programme()
+        self.setup_programme()
         self.setup_intra()
         self.setup_access()
         # self.setup_sms()
@@ -355,17 +355,14 @@ class Setup(object):
             meta.receipt_footer = u"Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi"
             meta.save()
 
-
     def setup_payments(self):
         from payments.models import PaymentsEventMeta
         PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
-
     def setup_programme(self):
-        # TODO CHECK setup_access TOO!
-
         from labour.models import PersonnelClass
         from programme.models import (
+            AlternativeProgrammeForm,
             Category,
             Programme,
             ProgrammeEventMeta,
@@ -390,29 +387,29 @@ class Setup(object):
             programme_event_meta.save()
 
         for room_name in [
-            'Aaria',
-            'Iso sali',
-            'Pieni sali',
-            # 'Sopraano', # Not in programme use
-            'Rondo',
-            'Studio',
-            'Sonaatti 1',
-            'Sonaatti 2',
-            # 'Basso', # No longer exists
-            # 'Opus 1', # No longer exists
-            'Opus 2',
-            'Opus 3',
-            'Opus 4',
-            'Talvipuutarha',
-            'Puistolava',
-            'Pieni ulkolava',
-            'Puisto - Iso miittiteltta',
-            'Puisto - Pieni miittiteltta',
-            'Puisto - Bofferiteltta',
-            'Muualla ulkona',
-            'Duetto 2',
-            'Riffi',
-            'Maestro',
+            # 'Aaria',
+            # 'Iso sali',
+            # 'Pieni sali',
+            # # 'Sopraano', # Not in programme use
+            # 'Rondo',
+            # 'Studio',
+            # 'Sonaatti 1',
+            # 'Sonaatti 2',
+            # # 'Basso', # No longer exists
+            # # 'Opus 1', # No longer exists
+            # 'Opus 2',
+            # 'Opus 3',
+            # 'Opus 4',
+            # 'Talvipuutarha',
+            # 'Puistolava',
+            # 'Pieni ulkolava',
+            # 'Puisto - Iso miittiteltta',
+            # 'Puisto - Pieni miittiteltta',
+            # 'Puisto - Bofferiteltta',
+            # 'Muualla ulkona',
+            # 'Duetto 2',
+            # 'Riffi',
+            # 'Maestro',
         ]:
             order = self.get_ordering_number() + 90000 # XXX
 
@@ -428,9 +425,9 @@ class Setup(object):
             room.save()
 
         for room_name in [
-            'Sopraano',
-            'Basso',
-            'Opus 1',
+            # 'Sopraano',
+            # 'Basso',
+            # 'Opus 1',
         ]:
             room = Room.objects.get(venue=self.venue, name=room_name)
             room.active = False
@@ -479,12 +476,12 @@ class Setup(object):
 
         for start_time, end_time in [
             (
-                datetime(2017, 9, 3, 11, 0, 0, tzinfo=self.tz),
-                datetime(2017, 9, 4, 1 , 0, 0, tzinfo=self.tz),
+                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=1, minute=0, tzinfo=self.tz),
             ),
             (
-                datetime(2017, 9, 4, 9 , 0, 0, tzinfo=self.tz),
-                datetime(2017, 9, 4, 17, 0, 0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),
             ),
         ]:
             TimeBlock.objects.get_or_create(
@@ -497,11 +494,9 @@ class Setup(object):
 
         SpecialStartTime.objects.get_or_create(
             event=self.event,
-            start_time=datetime(2017, 9, 3, 10, 30, 0, tzinfo=self.tz),
+            start_time=self.event.start_time.replace(hour=10, minute=30, tzinfo=self.tz),
         )
 
-        # XXX
-        # have_views = False
         have_views = View.objects.filter(event=self.event).exists()
         if not have_views:
             for view_name, room_names in [
@@ -510,6 +505,8 @@ class Setup(object):
                     'Pieni sali',
                     'Sonaatti 1',
                     'Sonaatti 2',
+                    'Puisto - Iso miittiteltta',
+                    'Puisto - Pieni miittiteltta',
                     'Duetto 2',
                     'Maestro',
                 ]),
@@ -521,6 +518,32 @@ class Setup(object):
                 view.rooms = rooms
                 view.save()
 
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='rpg',
+            defaults=dict(
+                title='Tarjoa pöytäroolipeliä',
+                programme_form_code='events.tracon2017.forms:RpgForm',
+                active_from=datetime(2017, 2, 2, 22, 47, tzinfo=self.tz),
+                active_until=None,
+                num_extra_invites=0,
+                order=10,
+            )
+        )
+
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='default',
+            defaults=dict(
+                title='Tarjoa puhe- tai muuta ohjelmaa',
+                short_description='Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole pöytäroolipeli.',
+                programme_form_code='programme.forms:ProgrammeOfferForm',
+                active_from=datetime(2017, 2, 2, 22, 47, tzinfo=self.tz),
+                num_extra_invites=3,
+                order=30,
+            )
+        )
+
     def setup_access(self):
         from access.models import Privilege, GroupPrivilege, EmailAliasType, GroupEmailAliasGrant
 
@@ -528,7 +551,7 @@ class Setup(object):
         privilege = Privilege.objects.get(slug='tracon-slack')
         for group in [
             self.event.labour_event_meta.get_group('accepted'),
-            # self.event.programme_event_meta.get_group('hosts'),
+            self.event.programme_event_meta.get_group('hosts'),
         ]:
             GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 

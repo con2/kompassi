@@ -2,15 +2,16 @@
 
 from __future__ import unicode_literals
 
-from datetime import date
-
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
+from events.hitpoint2017.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT
 from labour.forms import AlternativeFormMixin
-from labour.models import Signup, JobCategory, WorkPeriod
+from labour.models import Signup, JobCategory
+from programme.models import Programme, AlternativeProgrammeFormMixin
 
 from .models import SignupExtra
 
@@ -78,7 +79,7 @@ class SignupExtraForm(forms.ModelForm):
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
         admin = kwargs.pop('admin')
 
         assert not admin
@@ -185,9 +186,74 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
 
-class ShiftWishesSurvey(forms.ModelForm):
+class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
+
+        super(RpgForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.helper.layout = Layout(
+            'title',
+            'rpg_system',
+            'approximate_length',
+            'min_players',
+            'max_players',
+            'description',
+            'three_word_description',
+            'hitpoint2017_preferred_time_slots',
+            'notes_from_host',
+
+            Fieldset(_('Whom is the game for?'),
+                'is_english_ok',
+                'is_children_friendly',
+                'is_age_restricted',
+                'is_beginner_friendly',
+                'is_intended_for_experienced_participants',
+            ),
+        )
+
+        self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+
+        self.fields['three_word_description'].required = True
+        self.fields['rpg_system'].required = True
+
+        self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
+        self.fields['description'].required = True
+
+    class Meta:
+        model = Programme
+        fields = (
+            'title',
+            'rpg_system',
+            'approximate_length',
+            'min_players',
+            'max_players',
+            'three_word_description',
+            'description',
+            'hitpoint2017_preferred_time_slots',
+            'notes_from_host',
+            'is_english_ok',
+            'is_children_friendly',
+            'is_age_restricted',
+            'is_beginner_friendly',
+            'is_intended_for_experienced_participants',
+        )
+
+        widgets = dict(
+            hitpoint2017_preferred_time_slots=forms.CheckboxSelectMultiple,
+        )
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            category=Category.objects.get(event__slug='hitpoint2017', slug='roolipeli'),
+        )
+
+
+class ShiftWishesSurvey(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('event')
 
         super(ShiftWishesSurvey, self).__init__(*args, **kwargs)
 
@@ -207,7 +273,7 @@ class ShiftWishesSurvey(forms.ModelForm):
 
 class LodgingNeedsSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
 
         super(LodgingNeedsSurvey, self).__init__(*args, **kwargs)
 
