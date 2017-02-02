@@ -119,6 +119,10 @@ class AlternativeProgrammeForm(models.Model):
             ~Q(active_until__isnull=False, active_until__lte=t)
         )
 
+        if kwargs:
+            # any extra criteria that may have been defined
+            q = q & Q(**kwargs)
+
         return cls.objects.filter(q)
 
     class Meta:
