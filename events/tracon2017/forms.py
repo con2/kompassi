@@ -11,7 +11,7 @@ from core.utils import horizontal_form_helper, indented_without_label
 from events.hitpoint2017.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory
-from programme.models import Programme, AlternativeProgrammeFormMixin
+from programme.models import Category, Programme, AlternativeProgrammeFormMixin
 
 from .models import SignupExtra
 
@@ -40,7 +40,6 @@ class SignupExtraForm(forms.ModelForm):
                 'free_text',
             ),
         )
-
 
     class Meta:
         model = SignupExtra
@@ -125,7 +124,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             ),
         )
 
-
     class Meta:
         model = SignupExtra
         fields = (
@@ -188,7 +186,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
 
         super(RpgForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
