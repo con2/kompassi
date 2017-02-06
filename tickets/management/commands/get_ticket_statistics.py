@@ -42,10 +42,13 @@ class Command(BaseCommand):
         writer = csv.writer(stdout, dialect='excel')
         writer.writerow(['days_to_event'] + event_slugs)
 
+        cumulative = Counter()
+
         for days_to_event in xrange(min(stats.keys()), max(stats.keys()) + 1):
             row = [days_to_event]
 
             for event_slug in event_slugs:
-                row.append(stats[days_to_event][event_slug])
+                cumulative[event_slug] += stats[days_to_event][event_slug]
+                row.append(cumulative[event_slug])
 
             writer.writerow(row)
