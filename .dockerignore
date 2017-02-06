@@ -6,8 +6,7 @@
 *.mo
 *.pot
 *.pyc
-*.sql.xz
-*.sqlite*
+*.sql*
 /static/
 /venv*
 build/
