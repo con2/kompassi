@@ -36,7 +36,6 @@ services:
     image: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./kompassi-201702062028.sql:/sqldump.sql
     environment:
       POSTGRES_USER: kompassi
       POSTGRES_PASSWORD: secret
