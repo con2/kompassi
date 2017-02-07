@@ -3,27 +3,20 @@
 from __future__ import unicode_literals
 
 import logging
-from pkg_resources import resource_string
 
-from django.contrib import messages
-from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
-from django.views.decorators.http import require_http_methods, require_safe
+from django.views.decorators.http import require_safe
 
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat
 from core.models import Person
 from core.sort_and_filter import Filter, Sorter
-from core.tabs import Tab
-from core.utils import initialize_form, initialize_form_set, url
 
 from ..models import (
+    AlternativeProgrammeForm,
     Category,
     Programme,
-    ProgrammeRole,
-    Role,
     Room,
 )
 from ..models.programme import (
@@ -32,7 +25,6 @@ from ..models.programme import (
     PHOTOGRAPHY_CHOICES,
 )
 from ..helpers import programme_admin_required, group_programmes_by_start_time
-from ..forms import ProgrammeAdminCreateForm
 
 
 EXPORT_FORMATS = EXPORT_FORMATS + [
@@ -72,6 +64,13 @@ def programme_admin_view(request, vars, event, format='screen'):
     photography_filters.filter_queryset(programmes)
     programmes = photography_filters.filter_queryset(programmes)
 
+    forms = AlternativeProgrammeForm.objects.filter(event=event)
+    if forms.exists():
+        form_filters = Filter(request, 'form_used').add_objects('form_used__slug', forms)
+        programmes = form_filters.filter_queryset(programmes)
+    else:
+        form_filters = None
+
     if format != 'html':
         sorter = Sorter(request, 'sort')
         sorter.add('title', name='Otsikko', definition=('title',))
@@ -84,6 +83,7 @@ def programme_admin_view(request, vars, event, format='screen'):
         vars.update(
             category_filters=category_filters,
             export_formats=EXPORT_FORMATS,
+            form_filters=form_filters,
             photography_filters=photography_filters,
             programmes=programmes,
             room_filters=room_filters,
