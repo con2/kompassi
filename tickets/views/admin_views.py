@@ -370,11 +370,11 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
         return csv_response(event, AccommodationInformation, accommodees, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
     elif format == 'screen':
         filters = [
-            (limit_group_id == limit_group.id, limit_group)
-            for limit_group in LimitGroup.objects.filter(
+            (limit_group_id == lg.id, lg)
+            for lg in LimitGroup.objects.filter(
                 event=event,
                 product__requires_accommodation_information=True,
-            )
+            ).distinct()
         ]
 
         vars.update(
