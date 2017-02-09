@@ -3,34 +3,26 @@
 from __future__ import unicode_literals
 
 import logging
-import datetime
 from datetime import timedelta
 
 from django.conf import settings
-from django.contrib import messages
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from dateutil.tz import tzlocal
 
 from core.csv_export import CsvExportMixin
-from core.models import EventMetaBase, OneTimeCode
 from core.utils import (
-    alias_property,
     format_datetime,
-    full_hours_between,
-    get_previous_and_next,
     NONUNIQUE_SLUG_FIELD_PARAMS,
     slugify,
     url,
 )
 
-from ..utils import window, next_full_hour
+
+logger = logging.getLogger('kompassi')
 
 
 VIDEO_PERMISSION_CHOICES = [
