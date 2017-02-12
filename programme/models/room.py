@@ -38,7 +38,6 @@ class Room(models.Model):
         verbose_name = u'tila'
         verbose_name_plural = u'tilat'
         unique_together = [
-            ('venue', 'order'),
             ('venue', 'slug'),
         ]
 

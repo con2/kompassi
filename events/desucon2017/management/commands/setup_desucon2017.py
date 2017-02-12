@@ -10,7 +10,7 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from core.utils import slugify
+from core.utils import full_hours_between
 
 
 class Setup(object):
@@ -116,11 +116,6 @@ class Setup(object):
                 ),
             )
 
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
-        vastaava = PersonnelClass.objects.get(event=self.event, slug='vastaava')
-        vuorovastaava = PersonnelClass.objects.get(event=self.event, slug='vuorovastaava')
-        ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
-
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
                 source_event=Event.objects.get(slug='desucon2016'),
@@ -152,7 +147,7 @@ class Setup(object):
             'Vegaaninen',
             'Lakto-ovo-vegetaristinen',
         ]:
-            SpecialDiet.objects.get_or_create(name=diet_name)            
+            SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
@@ -163,8 +158,10 @@ class Setup(object):
                 signup_extra_form_class_path='events.desucon2017.forms:SpecialistSignupExtraForm',
                 active_from=datetime(2017, 1, 22, 0, 0, 0, tzinfo=self.tz),
                 active_until=self.event.start_time,
-                signup_message='Täytä tämä lomake vain, '
-                    'jos joku Desuconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella. ',
+                signup_message=(
+                    'Täytä tämä lomake vain, '
+                    'jos joku Desuconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella. '
+                ),
             ),
         )
 
@@ -182,15 +179,16 @@ class Setup(object):
         )
 
     def setup_programme(self):
-        from django.contrib.auth.models import Group
-        from labour.models import PersonnelClass, LabourEventMeta
+        from labour.models import PersonnelClass
         from programme.models import (
             AlternativeProgrammeForm,
             Category,
-            Programme,
-            Programme,
             ProgrammeEventMeta,
             Role,
+            Room,
+            SpecialStartTime,
+            TimeBlock,
+            View,
         )
 
         ProgrammeEventMeta.get_or_create_groups(self.event, ['hosts'])
@@ -202,6 +200,23 @@ class Setup(object):
         ))
 
         personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
+
+        room_order = 0
+        for room_name in [
+            'Pääsali',
+            'Kuusi',
+            'Puuseppä',
+            'Koivu',
+            'Honka',
+        ]:
+            Room.objects.get_or_create(
+                venue=self.event.venue,
+                name=room_name,
+                defaults=dict(
+                    order=room_order,
+                ),
+            )
+            room_order += 10
 
         role_priority = 0
         for role_title in [
@@ -221,6 +236,28 @@ class Setup(object):
             )
             role_priority += 10
 
+        for title, slug, style in [
+            ('Muu ohjelma', 'other', 'color1'),
+            ('Paneeli', 'paneeli', 'color2'),
+            ('Luento', 'luento', 'color3'),
+            ('Keskustelupiiri', 'keskustelupiiri', 'color4'),
+            ('Paja', 'paja', 'color5'),
+            ('Pienluento', 'pienluento', 'color6'),
+            ('Esitys', 'esit', 'color7'),
+            ('Visa', 'visa', 'color7'),
+            ('Erikoisohjelma', 'erik', 'color7'),
+            ('Sisäinen ohjelma', 'sisainen-ohjelma', 'sisainen'),
+        ]:
+            Category.objects.get_or_create(
+                event=self.event,
+                slug=slug,
+                defaults=dict(
+                    title=title,
+                    style=style,
+                    public=style != 'sisainen',
+                )
+            )
+
         form, created = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='default',
@@ -233,13 +270,45 @@ class Setup(object):
             )
         )
 
+        if not TimeBlock.objects.filter(event=self.event).exists():
+            for start_time, end_time in [
+                (
+                    datetime(2017, 6, 16, 17, 0, 0, tzinfo=self.tz),
+                    datetime(2017, 6, 17, 1, 0, 0, tzinfo=self.tz),
+                ),
+                (
+                    datetime(2017, 6, 17, 9, 0, 0, tzinfo=self.tz),
+                    datetime(2017, 6, 18, 1, 0, 0, tzinfo=self.tz),
+                ),
+                (
+                    datetime(2017, 6, 18, 9, 0, 0, tzinfo=self.tz),
+                    datetime(2017, 6, 18, 18, 0, 0, tzinfo=self.tz),
+                ),
+            ]:
+                TimeBlock.objects.get_or_create(
+                    event=self.event,
+                    start_time=start_time,
+                    defaults=dict(
+                        end_time=end_time
+                    )
+                )
+
+        for time_block in TimeBlock.objects.filter(event=self.event):
+            # Half hours
+            # [:-1] – discard 18:30
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30)  # look, no tz
+                )
+
+        view, created = View.objects.get_or_create(
+            event=self.event,
+            name='Ohjelmakartta',
+        )
         if created:
-            Programme.objects.filter(
-                category__event=self.event,
-                form_used__isnull=True,
-            ).update(
-                form_used=form,
-            )
+            view.rooms = self.event.venue.room_set.all()
+            view.save()
 
     def setup_access(self):
         from access.models import Privilege, GroupPrivilege
