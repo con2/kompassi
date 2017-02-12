@@ -149,33 +149,6 @@ class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
 
-class ProgrammeNeedsForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
-
-        super(ProgrammeNeedsForm, self).__init__(*args, **kwargs)
-
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-
-    class Meta:
-        model = Programme
-        fields = (
-            'computer',
-            'use_audio',
-            'use_video',
-            'number_of_microphones',
-            'tech_requirements',
-            'video_permission',
-            'encumbered_content',
-            'photography',
-            'rerun',
-            'room_requirements',
-            'requested_time_slot',
-            'notes_from_host',
-        )
-
-
 class ProgrammeInternalForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
@@ -213,6 +186,8 @@ class ScheduleForm(forms.ModelForm):
             ) for start_time in AllRoomsPseudoView(event).start_times()
         ]
 
+        self.fields['tags'].queryset = Tag.objects.filter(event=event)
+
     def clean_start_time(self):
         start_time = self.cleaned_data.get('start_time')
 
@@ -230,6 +205,11 @@ class ScheduleForm(forms.ModelForm):
             'start_time',
             'length',
             'video_link',
+            'tags',
+        )
+
+        widgets = dict(
+            tags=forms.CheckboxSelectMultiple,
         )
 
 

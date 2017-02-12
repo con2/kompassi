@@ -187,6 +187,7 @@ class Setup(object):
             Role,
             Room,
             SpecialStartTime,
+            Tag,
             TimeBlock,
             View,
         )
@@ -309,6 +310,25 @@ class Setup(object):
         if created:
             view.rooms = self.event.venue.room_set.all()
             view.save()
+
+        tag_order = 0
+        for tag_title, tag_style in [
+            ('Cosplaypainotteinen ohjelma', 'label-danger'),
+            ('Mangapainotteinen ohjelma', 'label-success'),
+            ('Ohjelman tarkoitus on viihdyttää', 'label-primary'),
+            ('Ohjelma sisältää juonipaljastuksia', 'label-warning'),
+            ('Ohjelma keskittyy analysoivampaan lähestymistapaan', 'label-default'),
+            ('Animepainotteinen ohjelma', 'label-info'),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    order=tag_order,
+                    style=tag_style,
+                ),
+            )
+            tag_order += 10
 
     def setup_access(self):
         from access.models import Privilege, GroupPrivilege
