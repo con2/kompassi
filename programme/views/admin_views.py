@@ -140,6 +140,7 @@ def programme_admin_timetable_view(request, vars, event):
         internal_programmes=True,
         template='programme_admin_timetable_view.jade',
         vars=vars,
+        show_programme_actions=True,
     )
 
 
@@ -153,11 +154,17 @@ def programme_admin_special_view(request, vars, event):
         event,
         template='programme_admin_special_view.jade',
         vars=vars,
+        show_programme_actions=True,
     )
 
 
 @programme_admin_required
 def programme_admin_email_list_view(request, vars, event):
-    addresses = Person.objects.filter(programme__category__event=event).order_by('email').values_list('email', flat=True).distinct()
+    addresses = (
+        Person.objects.filter(programme__category__event=event)
+            .order_by('email')
+            .values_list('email', flat=True)
+            .distinct()
+    )
 
     return HttpResponse("\n".join(addr for addr in addresses if addr), content_type='text/plain')
