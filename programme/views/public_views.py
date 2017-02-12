@@ -1,32 +1,22 @@
 # encoding: utf-8
 
-from itertools import groupby
-from datetime import datetime
-import json
-
-from dateutil.tz import tzlocal
-
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
-from django.template import RequestContext
-from django.template.response import TemplateResponse
+from django.shortcuts import render
 from django.template.loader import render_to_string
-from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import cache_page, cache_control
-from django.views.decorators.http import require_http_methods, require_safe
+from django.views.decorators.http import require_safe
 
 from api.utils import api_view
 from core.tabs import Tab
-from core.utils import initialize_form, url
+from core.sort_and_filter import Filter
+from core.utils import url
 
 from ..models import (
     View,
     AllRoomsPseudoView,
     Category,
-    Tag,
-    Programme,
 )
 from ..helpers import programme_event_required, public_programme_required, group_programmes_by_start_time
 
@@ -45,6 +35,7 @@ def get_timetable_tabs(request, event):
         Tab(special_url, special_text, special_active, 0),
     ]
 
+
 SCHEDULE_TEMPLATES = dict(
     reasonable='programme_timetable_view.jade',
     full_width='programme_full_width_timetable_view.jade',
@@ -53,7 +44,7 @@ SCHEDULE_TEMPLATES = dict(
 
 @public_programme_required
 @cache_control(public=True, max_age=5 * 60)
-@cache_page(5 * 60) # XXX remove once nginx cache is in place
+@cache_page(5 * 60)  # XXX remove once nginx cache is in place
 @require_safe
 def programme_timetable_view(
     request,
@@ -74,6 +65,7 @@ def programme_timetable_view(
         vars=vars,
         show_programme_actions=show_programme_actions,
     )
+
 
 # look, no cache
 @programme_event_required
@@ -159,16 +151,21 @@ def actual_special_view(
 
     programmes = event.programme_event_meta.get_special_programmes(**criteria).order_by('start_time')
 
+    categories = Category.objects.filter(event=event, public=True)
+    category_filters = Filter(request, 'category').add_objects('category__slug', categories)
+    programmes = category_filters.filter_queryset(programmes)
+
     programmes_by_start_time = group_programmes_by_start_time(programmes)
 
     if vars is None:
         vars = dict()
 
     vars.update(
-        tabs=get_timetable_tabs(request, event),
+        category_filters=category_filters,
         event=event,
         programmes_by_start_time=programmes_by_start_time,
         show_programme_actions=show_programme_actions,
+        tabs=get_timetable_tabs(request, event),
     )
 
     return render(request, template, vars)
@@ -189,7 +186,7 @@ def programme_internal_dumpdata_view(request):
 
 
 @cache_control(public=True, max_age=1 * 60)
-@cache_page(1 * 60) # XXX remove once nginx cache is in place
+@cache_page(1 * 60)  # XXX remove once nginx cache is in place
 @public_programme_required
 @require_safe
 def programme_mobile_timetable_view(request, event):
