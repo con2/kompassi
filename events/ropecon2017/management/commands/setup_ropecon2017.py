@@ -109,6 +109,24 @@ class Setup(object):
                 available=True,
                 ordering=ordering(),
             ),
+            dict(
+                name='Ropecon 2017 -t-paita',
+                description=(
+                    'T-paidat maksetaan ennakkoon ja noudetaan tapahtumasta. Paitakoot valitaan seuraavassa '
+                    'vaiheessa. <a href="http://2017.ropecon.fi/fi/ropecon-paidat" target="_blank">Lue lisää '
+                    'paitamalleista ja katso kokotaulukot</a>'
+                ),
+                limit_groups=[
+                    limit_group('T-paidat', 10000),
+                ],
+                price_cents=3500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                requires_shirt_size=True,
+                available=True,
+                ordering=ordering(),
+            ),
+
             # dict(
             #     name='Ropecon 2017 päivälippu perjantai',
             #     description='Ropecon 2017 tapahtuman pääsylippu oikeuttaen yhden päivän sisäänpääsyrannekkeeseen.',
@@ -145,19 +163,6 @@ class Setup(object):
             #     available=True,
             #     ordering=ordering(),
             # ),
-            # dict(
-            #     name='Ropecon 2017 -t-paita',
-            #     description='T-paidat maksetaan ennakkoon ja noudetaan tapahtumasta. Paitakoot valitaan seuraavassa vaiheessa. <a href="http://2017.ropecon.fi/fi/ropecon-paidat" target="_blank">Lue lisää paitamalleista ja katso kokotaulukot</a>',
-            #     limit_groups=[
-            #         limit_group('T-paidat', 10000),
-            #     ],
-            #     price_cents=1900,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     requires_shirt_size=True,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
@@ -173,14 +178,12 @@ class Setup(object):
                 product.save()
 
         for shirt_type_name, shirt_size_names in [
-            # ('Unisex-T-paita', ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL']),
-            # ('Naisten muotoonleikattu paita', ['XS', 'S', 'M', 'L', 'XL', 'XXL']),
-            # ('Miesten muotoonleikattu paita', ['S', 'M', 'L', 'XL', 'XXL']),
+            ('Unisex-T-paita', ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL']),
+            ('Naisten muotoonleikattu paita', ['XS', 'S', 'M', 'L', 'XL', 'XXL']),
+            ('Miesten muotoonleikattu paita', ['S', 'M', 'L', 'XL', 'XXL']),
         ]:
             for shirt_color in [
                 'Musta',
-                'Kaaoksenpunainen',
-                'Harmoninen sininen',
             ]:
                 shirt_type, created = ShirtType.objects.get_or_create(
                     event=self.event,
