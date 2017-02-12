@@ -89,7 +89,9 @@ RERUN_CHOICES = [
     ('already', _('Yes. The programme has previously been presented in another convention.')),
     ('will', _('Yes. The programme will be presented in a convention that takes place before this one.')),
     ('might', _('Maybe. The programme might be presented in a convention that takes place before this one.')),
-    ('original', _('No. The programme is original to this convention and I promise not to present it elsewhere before.')),
+    ('original', _(
+        'No. The programme is original to this convention and I promise not to present it elsewhere before.'
+    )),
 ]
 
 PHYSICAL_PLAY_CHOICES = [
@@ -136,7 +138,12 @@ class Programme(models.Model, CsvExportMixin):
         blank=True,
         default='',
         verbose_name=_('Description'),
-        help_text=_('This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description.'),
+        help_text=_(
+            'This description is published in the web schedule and the programme booklet. The purpose of this '
+            'description is to give the participant sufficient information to decide whether to take part or '
+            'not and to market your programme to the participants. We reserve the right to edit the '
+            'description.'
+        ),
     )
     three_word_description = models.CharField(
         max_length=1023,
@@ -180,7 +187,10 @@ class Programme(models.Model, CsvExportMixin):
         choices=COMPUTER_CHOICES,
         max_length=max(len(key) for (key, label) in COMPUTER_CHOICES),
         verbose_name=_('Computer use'),
-        help_text=_('What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance.'),
+        help_text=_(
+            'What kind of a computer do you wish to use? The use of your own computer is only possible if '
+            'agreed in advance.'
+        ),
     )
 
     tech_requirements = models.TextField(
@@ -192,13 +202,19 @@ class Programme(models.Model, CsvExportMixin):
     room_requirements = models.TextField(
         blank=True,
         verbose_name=_('Room requirements'),
-        help_text=_('How large an audience do you expect for your programme? What kind of a room do you wish for your programme?'),
+        help_text=_(
+            'How large an audience do you expect for your programme? What kind of a room do you wish for your '
+            'programme?'
+        ),
     )
 
     requested_time_slot = models.TextField(
         blank=True,
         verbose_name=_('Requested time slot'),
-        help_text=_('At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?'),
+        help_text=_(
+            'At what time would you like to hold your programme? Are there other programme that you do not '
+            'wish to co-incide with?'
+        ),
     )
 
     video_permission = models.CharField(
@@ -214,7 +230,10 @@ class Programme(models.Model, CsvExportMixin):
         max_length=max(len(key) for (key, label) in ENCUMBERED_CONTENT_CHOICES),
         choices=ENCUMBERED_CONTENT_CHOICES,
         verbose_name=_('Encumbered content'),
-        help_text=_('Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings.'),
+        help_text=_(
+            'Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited '
+            'out of video recordings.'
+        ),
     )
 
     photography = models.CharField(
@@ -222,7 +241,10 @@ class Programme(models.Model, CsvExportMixin):
         max_length=max(len(key) for (key, label) in PHOTOGRAPHY_CHOICES),
         choices=PHOTOGRAPHY_CHOICES,
         verbose_name=_('Photography of your prorgmme'),
-        help_text=_('Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed.'),
+        help_text=_(
+            'Our official photographers will try to cover all programmes whose hosts request their programmes '
+            'to be photographed.'
+        ),
     )
 
     rerun = models.CharField(
@@ -240,7 +262,10 @@ class Programme(models.Model, CsvExportMixin):
     notes_from_host = models.TextField(
         blank=True,
         verbose_name=_('Anything else?'),
-        help_text=_('If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here.'),
+        help_text=_(
+            'If there is anything else you wish to say to the programme manager that is not covered by the '
+            'above questions, please enter it here.'
+        ),
     )
 
     state = models.CharField(
@@ -248,13 +273,19 @@ class Programme(models.Model, CsvExportMixin):
         choices=STATE_CHOICES,
         default='accepted',
         verbose_name=_('State'),
-        help_text=_('The programmes in the state "Published" will be visible to the general public, if the schedule has already been published.'),
+        help_text=_(
+            'The programmes in the state "Published" will be visible to the general public, if the schedule '
+            'has already been published.'
+        ),
     )
 
     frozen = models.BooleanField(
         default=False,
         verbose_name=_('Frozen'),
-        help_text=_('When a programme is frozen, its details can no longer be edited by the programme host. The programme manager may continue to edit these, however.'),
+        help_text=_(
+            'When a programme is frozen, its details can no longer be edited by the programme host. The '
+            'programme manager may continue to edit these, however.'
+        ),
     )
 
     start_time = models.DateTimeField(blank=True, null=True, verbose_name=START_TIME_LABEL)
@@ -266,7 +297,10 @@ class Programme(models.Model, CsvExportMixin):
         blank=True,
         null=True,
         verbose_name=_('Length (minutes)'),
-        help_text=_('In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room.'),
+        help_text=_(
+            'In order to be displayed in the schedule, the programme must have a start time and a length and '
+            'must be assigned into a room.'
+        ),
     )
 
     # Originally hitpoint2017 rpg form fields
@@ -289,21 +323,33 @@ class Programme(models.Model, CsvExportMixin):
         default='some',
         choices=PHYSICAL_PLAY_CHOICES,
         verbose_name=_('Amount of physical play'),
-        help_text=_('In this context, physical play can mean, for example, using your whole body, acting the actions of your character or moving around in the allocated space.'),
+        help_text=_(
+            'In this context, physical play can mean, for example, using your whole body, acting the actions '
+            'of your character or moving around in the allocated space.'
+        ),
     )
     is_english_ok = models.BooleanField(
         verbose_name=_('English OK'),
-        help_text=_('Please tick this box if you are able, prepared and willing to host your programme in English if necessary.'),
+        help_text=_(
+            'Please tick this box if you are able, prepared and willing to host your programme in English if '
+            'necessary.'
+        ),
         default=False,
     )
     is_children_friendly = models.BooleanField(
         verbose_name=_('children-friendly'),
-        help_text=_('Please tick this box if your game is suitable for younger players. Please give more details, if necessary, in the last open field.'),
+        help_text=_(
+            'Please tick this box if your game is suitable for younger players. Please give more details, if '
+            'necessary, in the last open field.'
+        ),
         default=False,
     )
     is_age_restricted = models.BooleanField(
         verbose_name=_('restricted to people of age 18 and over'),
-        help_text=_('Please tick this box if your game contains themes that require it to be restricted to players of 18 years and older.'),
+        help_text=_(
+            'Please tick this box if your game contains themes that require it to be restricted to players of '
+            '18 years and older.'
+        ),
         default=False,
     )
     is_beginner_friendly = models.BooleanField(
@@ -329,21 +375,30 @@ class Programme(models.Model, CsvExportMixin):
     )
     hitpoint2017_preferred_time_slots = models.ManyToManyField('hitpoint2017.TimeSlot',
         verbose_name=_('preferred time slots'),
-        help_text=_('When would you like to run your RPG? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them in the last open field.'),
+        help_text=_(
+            'When would you like to run your RPG? The time slots are intentionally vague. If you have more '
+            'specific needs regarding the time, please explain them in the last open field.'
+        ),
     )
     other_author = models.CharField(
         max_length=1023,
         blank=True,
         default='',
         verbose_name=_('Author (if other than the GM)'),
-        help_text=_('If the scenario has been written by someone else than the GM, we require that the author be disclosed.'),
+        help_text=_(
+            'If the scenario has been written by someone else than the GM, we require that the author be '
+            'disclosed.'
+        ),
     )
 
     # Internal fields
     notes = models.TextField(
         blank=True,
         verbose_name=_('Internal notes'),
-        help_text=_('This field is normally only visible to the programme managers. However, should the programme host request a record of their own personal details, this field will be included in that record.'),
+        help_text=_(
+            'This field is normally only visible to the programme managers. However, should the programme '
+            'host request a record of their own personal details, this field will be included in that record.'
+        ),
     )
     room = models.ForeignKey('programme.Room', blank=True, null=True, verbose_name=_('Room'))
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
@@ -396,10 +451,6 @@ class Programme(models.Model, CsvExportMixin):
     @property
     def css_classes(self):
         return self.category.style if self.category.style else ''
-
-    @property
-    def event(self):
-        return self.category.event
 
     @property
     def is_active(self):
@@ -487,7 +538,7 @@ class Programme(models.Model, CsvExportMixin):
                 'start_time',
                 'end_time',
 
-                language='fi', # XXX hardcoded
+                language='fi',  # XXX hardcoded
                 status=1 if self.is_public else 0,
                 kind=self.category.slug,
                 kind_display=self.category.title,
