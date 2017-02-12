@@ -166,7 +166,7 @@ APPROXIMATE_LENGTH_HELP_TEXT = _(
 
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
 
         super(RpgForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -238,7 +238,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     """
 
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
 
         super(FreeformForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()

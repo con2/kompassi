@@ -222,7 +222,6 @@ class Setup(object):
         from programme.models import (
             AlternativeProgrammeForm,
             Category,
-            Programme,
             ProgrammeEventMeta,
             Role,
             Room,
@@ -237,7 +236,7 @@ class Setup(object):
             public=False,
             admin_group=programme_admin_group,
             contact_email='Tracon Hitpoint -ohjelmatiimi <hitpoint.ohjelma@tracon.fi>',
-            schedule_layout='sensible',
+            schedule_layout='reasonable',
         ))
 
         if settings.DEBUG:
@@ -308,20 +307,22 @@ class Setup(object):
 
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
-            for title, style in [
-                ('Larp', 'color1'),
-                ('Lautapelit', 'color2'),
-                ('Puheohjelma', 'color3'),
-                ('Roolipeli', 'color4'),
-                ('Korttipelit', 'color5'),
-                ('Figupelit', 'color6'),
-                ('Muu ohjelma', 'color7'),
-                ('Sisäinen ohjelma', 'sisainen'),
+            for title, slug, style in [
+                ('Larp', 'larp', 'color1'),
+                ('Lautapelit', 'lautapelit', 'color2'),
+                ('Puheohjelma', 'puheohjelma', 'color3'),
+                ('Roolipeli', 'roolipeli', 'color4'),
+                ('Freeform', 'freeform', 'color1'),
+                ('Korttipelit', 'korttipelit', 'color5'),
+                ('Figupelit', 'figupelit', 'color6'),
+                ('Muu ohjelma', 'muu-ohjelma', 'color7'),
+                ('Sisäinen ohjelma', 'sisainen-ohjelma', 'sisainen'),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
-                    title=title,
+                    slug=slug,
                     defaults=dict(
+                        title=title,
                         style=style,
                         public=style != 'sisainen',
                     )
