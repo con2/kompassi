@@ -1,7 +1,8 @@
 # encoding: utf-8
 
+from __future__ import unicode_literals
+
 from django.db import models
-from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
@@ -9,6 +10,8 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 class Tag(models.Model):
     event = models.ForeignKey('core.Event')
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+
     title = models.CharField(max_length=63)
     order = models.IntegerField(default=0)
     style = models.CharField(max_length=15, default='label-default')
@@ -16,7 +19,16 @@ class Tag(models.Model):
     def __unicode__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if self.title and not self.slug:
+            self.slug = slugify(self.title)
+
+        return super(Tag, self).save(*args, **kwargs)
+
     class Meta:
-        verbose_name = _(u'tag')
-        verbose_name_plural = _(u'tags')
+        verbose_name = _('tag')
+        verbose_name_plural = _('tags')
         ordering = ['order']
+        unique_together = [
+            ('event', 'slug'),
+        ]

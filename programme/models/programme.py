@@ -491,10 +491,11 @@ class Programme(models.Model, CsvExportMixin):
                 status=1 if self.is_public else 0,
                 kind=self.category.slug,
                 kind_display=self.category.title,
-                identifier=u'p{id}'.format(id=self.id),
+                identifier=self.slug or 'p{id}'.format(id=self.id),
                 location=self.room.name,
                 location_slug=self.room.slug,
                 presenter=self.formatted_hosts,
+                tags=list(self.tags.values_list('slug', flat=True)),
             )
         else:
             raise NotImplementedError(format)

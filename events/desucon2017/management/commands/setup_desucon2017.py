@@ -312,18 +312,19 @@ class Setup(object):
             view.save()
 
         tag_order = 0
-        for tag_title, tag_style in [
-            ('Cosplaypainotteinen ohjelma', 'label-danger'),
-            ('Mangapainotteinen ohjelma', 'label-success'),
-            ('Ohjelman tarkoitus on viihdyttää', 'label-primary'),
-            ('Ohjelma sisältää juonipaljastuksia', 'label-warning'),
-            ('Ohjelma keskittyy analysoivampaan lähestymistapaan', 'label-default'),
-            ('Animepainotteinen ohjelma', 'label-info'),
+        for tag_title, tag_slug, tag_style in [
+            ('Cosplaypainotteinen ohjelma', 'cosplay', 'label-danger'),
+            ('Mangapainotteinen ohjelma', 'manga', 'label-success'),
+            ('Ohjelman tarkoitus on viihdyttää', 'viihde', 'label-primary'),
+            ('Ohjelma sisältää juonipaljastuksia', 'spoilers', 'label-warning'),
+            ('Ohjelma keskittyy analysoivampaan lähestymistapaan', 'analyysi', 'label-default'),
+            ('Animepainotteinen ohjelma', 'anime', 'label-info'),
         ]:
             Tag.objects.get_or_create(
                 event=self.event,
-                title=tag_title,
+                slug=tag_slug,
                 defaults=dict(
+                    title=tag_title,
                     order=tag_order,
                     style=tag_style,
                 ),
