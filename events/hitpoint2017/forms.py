@@ -298,5 +298,5 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            category=Category.objects.get(event__slug='hitpoint2017', slug='roolipeli'),
+            category=Category.objects.get(event__slug='hitpoint2017', slug='freeform'),
         )
