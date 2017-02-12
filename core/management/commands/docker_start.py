@@ -4,7 +4,7 @@ import logging
 
 from django.conf import settings
 from django.db import ProgrammingError
-from django.core.management import call_command, get_commands
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 

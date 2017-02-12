@@ -151,7 +151,10 @@ def actual_special_view(
 
     programmes = event.programme_event_meta.get_special_programmes(**criteria).order_by('start_time')
 
-    categories = Category.objects.filter(event=event, public=True)
+    categories_criteria = dict(event=event)
+    if not include_unpublished:
+        categories_criteria.update(public=True)
+    categories = Category.objects.filter(**categories_criteria)
     category_filters = Filter(request, 'category').add_objects('category__slug', categories)
     programmes = category_filters.filter_queryset(programmes)
 
