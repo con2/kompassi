@@ -96,8 +96,12 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name='Ropecon 2017 viikonloppulippu pe-su',
-                description='Ropecon 2017 -tapahtuman pääsylippu, joka oikeuttaa kolmen päivän sisäänpääsyrannekkeeseen.',
+                name='Ropecon 2017 viikonloppulippu pe–su (Norppa & Kultisti -kampanja)',
+                description=(
+                    'Ropecon 2017 -tapahtuman pääsylippu, joka oikeuttaa kolmen päivän '
+                    'sisäänpääsyrannekkeeseen. Kun tilaat lippusi 28.2. mennessä, saat myös Norppa & Kultisti '
+                    '-kangasmerkin!'
+                ),
                 limit_groups=[
                     limit_group('Pääsyliput perjantai', 10000),
                     limit_group('Pääsyliput lauantai', 10000),
@@ -107,6 +111,23 @@ class Setup(object):
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
+                ordering=ordering(),
+            ),
+            dict(
+                name='Ropecon 2017 viikonloppulippu pe–su',
+                description=(
+                    'Ropecon 2017 -tapahtuman pääsylippu, joka oikeuttaa kolmen päivän '
+                    'sisäänpääsyrannekkeeseen.'
+                ),
+                limit_groups=[
+                    limit_group('Pääsyliput perjantai', 10000),
+                    limit_group('Pääsyliput lauantai', 10000),
+                    limit_group('Pääsyliput sunnuntai', 10000),
+                ],
+                price_cents=3500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=False,
                 ordering=ordering(),
             ),
             dict(
