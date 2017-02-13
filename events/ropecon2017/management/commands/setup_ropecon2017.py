@@ -113,13 +113,13 @@ class Setup(object):
                 name='Ropecon 2017 -t-paita',
                 description=(
                     'T-paidat maksetaan ennakkoon ja noudetaan tapahtumasta. Paitakoot valitaan seuraavassa '
-                    'vaiheessa. <a href="http://2017.ropecon.fi/fi/ropecon-paidat" target="_blank">Lue lisää '
+                    'vaiheessa. <a href="https://2017.ropecon.fi/spessupaita-2017/" target="_blank">Lue lisää '
                     'paitamalleista ja katso kokotaulukot</a>'
                 ),
                 limit_groups=[
                     limit_group('T-paidat', 10000),
                 ],
-                price_cents=3500,
+                price_cents=3000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 requires_shirt_size=True,
@@ -178,7 +178,7 @@ class Setup(object):
                 product.save()
 
         for shirt_type_name, shirt_size_names in [
-            ('Unisex-T-paita', ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL']),
+            ('Unisex-T-paita', ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL']),
             ('Naisten muotoonleikattu paita', ['XS', 'S', 'M', 'L', 'XL', 'XXL']),
             ('Miesten muotoonleikattu paita', ['S', 'M', 'L', 'XL', 'XXL']),
         ]:
