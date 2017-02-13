@@ -131,7 +131,7 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name='Ropecon 2017 -t-paita',
+                name='Ropecon 2017 Conformers -paita',
                 description=(
                     'T-paidat maksetaan ennakkoon ja noudetaan tapahtumasta. Paitakoot valitaan seuraavassa '
                     'vaiheessa. <a href="https://2017.ropecon.fi/spessupaita-2017/" target="_blank">Lue lisää '
