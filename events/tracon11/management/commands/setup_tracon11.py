@@ -599,9 +599,9 @@ class Setup(object):
             room.save()
 
         for room_name in [
-            'Sopraano',
-            'Basso',
-            'Opus 1',
+            # 'Sopraano',
+            # 'Basso',
+            # 'Opus 1',
         ]:
             room = Room.objects.get(venue=self.venue, name=room_name)
             room.active = False
