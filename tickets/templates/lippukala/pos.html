@@ -98,24 +98,36 @@ function confirmUseCode(code) {
 
 function search(enter) {
     var nStarting = 0;
-    var inputCode = codeInput.value;
+    var inputCode = codeInput.value.toLowerCase();
 	var regexpText = "^" + inputCode;
 	if(/^[a-z]+ /i.test(inputCode)) { // Cheap "fuzzy" searching ("d bu" will match "desu butler")
-		regexpText = "^" + inputCode.split(/\s+/).filter(function(word){return word.length>0;}).join("[^ ]+? ");
+		regexpText = "^" + inputCode.split(/\s+/).filter(function(word){return word.length>0;}).join("[^ ]*? ");
 		regexpText = regexpText.replace(/\s+$/, '');
 	}
     var searchRegexp = new RegExp(regexpText, "i");
     var lastCode = null;
     document.body.className = "";
-    forEachCode(function(code) {
-        if(searchRegexp.test(code.code) || searchRegexp.test((code.prefix || "") + code.code) || searchRegexp.test(code.lit)) {
+    forEachCode(function (code) {
+        var prefixedCode = (code.prefix || "") + code.code;
+        if (
+            inputCode == code.code ||
+            inputCode == prefixedCode ||
+            inputCode == code.lit.toLowerCase() ||
+            searchRegexp.test(code.code) ||
+            searchRegexp.test(prefixedCode) ||
+            searchRegexp.test(code.lit)
+        ) {
             nStarting++;
             lastCode = code;
         }
     });
     if(nStarting == 1) {
         showCode(lastCode);
-        if(enter) confirmUseCode(lastCode);
+
+        // XXX HACK to lose race
+        if(enter) setTimeout(function() { confirmUseCode(lastCode) }, 500);
+    } else if (nStarting == 0) {
+        statusDiv.innerHTML = "Koodilla ei löydy yhtään lippua. Ole hyvä ja tarkista oikeinkirjoitus ja tapahtuma!";
     } else {
         statusDiv.innerHTML = "... " + nStarting + " ...";
     }
