@@ -334,7 +334,7 @@ class Setup(object):
                 datetime(2017, 3, 5, 1, 0, tzinfo=self.tz),
             ),
             (
-                datetime(2017, 3, 5, 11, 0, tzinfo=self.tz),
+                datetime(2017, 3, 5, 9, 0, tzinfo=self.tz),
                 datetime(2017, 3, 5, 18, 0, tzinfo=self.tz),
             ),
         ]:
