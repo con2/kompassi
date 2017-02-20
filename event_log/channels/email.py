@@ -14,6 +14,7 @@ def send_update_for_entry(subscription, entry):
         subject=subject,
         body=body,
         to=(subscription.recipient_name_and_email,),
+        reply_to=entry.email_reply_to,
     )
 
     if settings.DEBUG:
