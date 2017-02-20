@@ -30,3 +30,19 @@ class FeedbackMessage(models.Model):
     def admin_get_abridged_feedback(self, num_words=20):
         return truncatewords(self.feedback, num_words)
     admin_get_abridged_feedback.short_description = _('feedback')
+
+    @property
+    def author_display_name(self):
+        from core.models import Person
+
+        if self.author:
+            try:
+                return self.author.person.display_name
+            except Person.DoesNotExist:
+                return self.author.get_full_name()
+        else:
+            return 'Anonymous ({ip_address})'.format(ip_address=self.author_ip_address)
+
+    @property
+    def author_email(self):
+        return self.author.email if self.author else ''

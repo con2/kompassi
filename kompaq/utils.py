@@ -64,7 +64,7 @@ def _format_message(instance, action):
 
 
 def send_update(instance, action='created'):
-    if not 'kompaq' in settings.INSTALLED_APPS:
+    if 'kompaq' not in settings.INSTALLED_APPS:
         return
 
     channel = _get_channel()

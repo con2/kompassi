@@ -164,6 +164,7 @@ INSTALLED_APPS = (
     'desuprofile_integration',
     'enrollment',
     'feedback',
+    'event_log',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
