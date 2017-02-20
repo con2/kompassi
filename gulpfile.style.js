@@ -21,5 +21,10 @@ gulp.task("style:build", () => {
 });
 
 gulp.task("style:watch", () => {
-    gulp.watch("core/static_src/less/**/*.less", ["style:build"]);
+    gulp.watch([
+        "core/static_src/less/**/*.less",
+        "feedback/static_src/less/**/*.less",
+    ], [
+        "style:build"
+    ]);
 });

@@ -1,0 +1,40 @@
+#: templates/feedback_widget.jade
+msgid "Feedback privacy policy…"
+msgstr ""
+
+#: templates/feedback_widget.jade
+msgid "Give feedback"
+msgstr ""
+
+#: models/feedback_message.py
+msgid "IP address"
+msgstr ""
+
+#: templates/feedback_widget.jade
+msgid "Send feedback"
+msgstr ""
+
+#: templates/feedback_widget.jade
+msgid "Thank you for your feedback!"
+msgstr ""
+
+#: models/feedback_message.py
+msgid "The IP address is only visible in the admin interface"
+msgstr ""
+
+#: forms.py
+msgid "Your feedback"
+msgstr ""
+
+#: models/feedback_message.py
+msgid "feedback"
+msgstr ""
+
+#: models/feedback_message.py
+msgid "feedback message"
+msgstr ""
+
+#: models/feedback_message.py
+msgid "feedback messages"
+msgstr ""
+

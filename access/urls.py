@@ -1,5 +1,4 @@
-from django.conf.urls import include, url
-from django.views.generic.base import RedirectView
+from django.conf.urls import url
 
 from .views import (
     access_admin_aliases_api,
@@ -10,6 +9,7 @@ from .views import (
     access_profile_privileges_view,
     access_profile_request_privilege_view,
 )
+
 
 urlpatterns = [
     url(

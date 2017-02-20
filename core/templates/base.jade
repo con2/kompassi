@@ -55,6 +55,9 @@ html
 
       #push
 
+    if 'feedback' in settings.INSTALLED_APPS
+      include feedback_widget.jade
+
     footer
       .container
         p.credit

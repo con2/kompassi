@@ -1,0 +1,42 @@
+- load i18n
+- load crispy_forms_tags
+
+.panel-group#kompassi-feedback-widget
+  .panel.panel-primary
+    .panel-heading
+      strong
+        a(href='#kompassi-feedback-widget-collapse',
+          role='button',
+          data-toggle='collapse',
+          data-parent='#kompassi-feedback-widget',
+          aria-expanded='false',
+          aria-controls='kompassi-feedback-widget-collapse') {% trans "Give feedback" %}
+    .panel-collapse.collapse#kompassi-feedback-widget-collapse
+      .panel-body
+        form(onsubmit='sendKompassiFeedback(event);')#kompassi-feedback-widget-form
+          {% crispy feedback_form %}
+
+          .btn-group.pull-right
+            button.btn.btn-primary(type='submit')
+              i.fa.fa-floppy-o
+              | {% trans "Send feedback" %}
+
+          p.help-block
+            a(href='{{ settings.FEEDBACK_PRIVACY_POLICY_URL }}', target='_blank') {% trans "Feedback privacy policy…" %}
+
+script.
+  function sendKompassiFeedback(event) {
+    event.preventDefault();
+
+    var $form = $('#kompassi-feedback-widget-form');
+
+    $.ajax({
+      type: 'POST',
+      url: '{% url "feedback_view" %}',
+      data: $form.serialize()
+    }).then(function() {
+      alert("{% trans 'Thank you for your feedback!' %}");
+      $form[0].reset();
+      $('#kompassi-feedback-widget-collapse').collapse('hide');
+    });
+  }

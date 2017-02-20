@@ -110,6 +110,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'core.context_processors.core_context',
+                'feedback.context_processors.feedback_context',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.debug',
@@ -162,6 +163,7 @@ INSTALLED_APPS = (
     'branding',
     'desuprofile_integration',
     'enrollment',
+    'feedback',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -269,6 +271,7 @@ KOMPASSI_INSTALLATION_NAME_GENITIVE = 'Kompassin kehitys\u00ADinstanssin' if DEB
 KOMPASSI_INSTALLATION_NAME_PARTITIVE = 'Kompassin kehitys\u00ADinstanssia' if DEBUG else 'Kompassia'
 KOMPASSI_INSTALLATION_SLUG = env('KOMPASSI_INSTALLATION_SLUG', default='turskadev')
 KOMPASSI_PRIVACY_POLICY_URL = 'https://confluence.tracon.fi/display/CONDB/Rekisteriseloste'
+FEEDBACK_PRIVACY_POLICY_URL = 'https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute'
 
 # Confluence & co. require a group of users
 KOMPASSI_NEW_USER_GROUPS = ['users']
