@@ -17,7 +17,6 @@ class FeedbackMessage(models.Model):
         blank=True,
         default='',
         verbose_name=_('IP address'),
-        help_text=_('The IP address is only visible in the admin interface'),
     )
 
     feedback = models.TextField(verbose_name=_('feedback'))

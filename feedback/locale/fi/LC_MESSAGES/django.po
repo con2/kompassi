@@ -1,40 +1,36 @@
 #: templates/feedback_widget.jade
 msgid "Feedback privacy policy…"
-msgstr ""
+msgstr "Tietoa palautteen käsittelystä…"
 
 #: templates/feedback_widget.jade
 msgid "Give feedback"
-msgstr ""
+msgstr "Anna palautetta"
 
 #: models/feedback_message.py
 msgid "IP address"
-msgstr ""
+msgstr "IP-osoite"
 
 #: templates/feedback_widget.jade
 msgid "Send feedback"
-msgstr ""
+msgstr "Lähetä palaute"
 
 #: templates/feedback_widget.jade
 msgid "Thank you for your feedback!"
-msgstr ""
-
-#: models/feedback_message.py
-msgid "The IP address is only visible in the admin interface"
-msgstr ""
+msgstr "Kiitos palautteestasi!"
 
 #: forms.py
 msgid "Your feedback"
-msgstr ""
+msgstr "Palautteesi"
 
-#: models/feedback_message.py
+#: apps.py models/feedback_message.py
 msgid "feedback"
-msgstr ""
+msgstr "palaute"
 
 #: models/feedback_message.py
 msgid "feedback message"
-msgstr ""
+msgstr "palaute"
 
 #: models/feedback_message.py
 msgid "feedback messages"
-msgstr ""
+msgstr "palautteet"
 
