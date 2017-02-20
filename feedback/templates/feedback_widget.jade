@@ -3,14 +3,12 @@
 
 .panel-group#kompassi-feedback-widget
   .panel.panel-primary
-    .panel-heading
-      strong
-        a(href='#kompassi-feedback-widget-collapse',
-          role='button',
-          data-toggle='collapse',
-          data-parent='#kompassi-feedback-widget',
-          aria-expanded='false',
-          aria-controls='kompassi-feedback-widget-collapse') {% trans "Give feedback" %}
+    .panel-heading(data-toggle='collapse',
+                   data-target='#kompassi-feedback-widget-collapse',
+                   role='button',
+                   aria-expanded='false',
+                   aria-controls='kompassi-feedback-widget-collapse')
+      strong {% trans "Give feedback" %}
     .panel-collapse.collapse#kompassi-feedback-widget-collapse
       .panel-body
         form(onsubmit='sendKompassiFeedback(event);')#kompassi-feedback-widget-form
