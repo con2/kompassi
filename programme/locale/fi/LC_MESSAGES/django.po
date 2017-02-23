@@ -312,6 +312,10 @@ msgid "If the <em>Accepting cold offers from</em> field is empty, the cold offer
 msgstr "Jos <em>Ohjelmahaku alkaa</em> -kenttä on tyhjä, ohjelmahaku pysyy suljettuna. Jos <em>Ohjelmahaku alkaa</em> -kenttä on täytetty mutta <em>Ohjelmahaku päättyy</em> -kenttä ei ole täytetty, ohjelmahaku pysyy alettuaan avoimena."
 
 #: models/programme.py
+msgid "If the programme requires signing up in advance, put a link here and it will be shown as a button in the schedule."
+msgstr "Mikäli ohjelmanumero edellyttää ilmoittautumista etukäteen, laita linkki ennakkoilmoittautumiseen tähän niin se näytetään nappulana ohjelmakartassa."
+
+#: models/programme.py
 msgid "If the scenario has been written by someone else than the GM, we require that the author be disclosed."
 msgstr "Jos skenaarion on kirjoittanut joku muu kuin sen tässä tapahtumassa vetävä pelinjohtaja, on kirjoittaja ilmoitettava tässä."
 
@@ -749,6 +753,14 @@ msgstr "Lähetä kutsu"
 #: templates/programme_offer_form_view.jade
 msgid "Send offer"
 msgstr "Lähetä tarjous"
+
+#: templates/programme_info_fragment.jade
+msgid "Sign up"
+msgstr "Ilmoittaudu"
+
+#: models/programme.py
+msgid "Signup link"
+msgstr "Ilmoittautumislinkki"
 
 #: models/invitation.py
 msgid "Sire"

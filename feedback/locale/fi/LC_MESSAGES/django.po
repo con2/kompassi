@@ -2,6 +2,10 @@
 msgid "Feedback privacy policy…"
 msgstr "Tietoa palautteen käsittelystä…"
 
+#: event_log_entry_types.py
+msgid "Feedback received from {entry.feedback_message.author_display_name}"
+msgstr ""
+
 #: templates/feedback_widget.jade
 msgid "Give feedback"
 msgstr "Anna palautetta"
