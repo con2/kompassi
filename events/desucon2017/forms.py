@@ -199,9 +199,12 @@ class ProgrammeForm(ProgrammeSelfServiceForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         super(ProgrammeForm, self).__init__(*args, **kwargs)
 
-        self.fields['title'].disabled = True
-        self.fields['title'].help_text = None
-        self.fields['title'].required = False
-        self.fields['description'].disabled = True
-        self.fields['description'].help_text = 'Et voi muuttaa ohjelman otsikkoa tai kuvausta tässä, sillä ne päivittyvät Kompassiin suoraan Desusaitin ohjelmakartasta. Jos otsikkoa tai kuvausta on tarpeen muuttaa, ota yhteyttä ohjelmavastaavaan.'
-        self.fields['description'].required = False
+        # self.fields['title'].disabled = True
+        # self.fields['title'].help_text = None
+        # self.fields['title'].required = False
+        # self.fields['description'].disabled = True
+        # self.fields['description'].help_text = 'Et voi muuttaa ohjelman otsikkoa tai kuvausta tässä, sillä ne päivittyvät Kompassiin suoraan Desusaitin ohjelmakartasta. Jos otsikkoa tai kuvausta on tarpeen muuttaa, ota yhteyttä ohjelmavastaavaan.'
+        # self.fields['description'].required = False
+
+    def get_excluded_field_defaults(self):
+        return dict()
