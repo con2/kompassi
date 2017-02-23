@@ -411,6 +411,16 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name=_('Video link'),
         help_text=_('A link to a recording of the programme in an external video service such as YouTube'),
     )
+    signup_link = models.CharField(
+        max_length=255,
+        blank=True,
+        default='',
+        verbose_name=_('Signup link'),
+        help_text=_(
+            'If the programme requires signing up in advance, put a link here and it will be shown '
+            'as a button in the schedule.'
+        ),
+    )
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_('Created at'))
     updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name=_('Updated at'))
@@ -474,6 +484,14 @@ class Programme(models.Model, CsvExportMixin):
         return (
             (self.end_time is not None and t >= self.end_time) or
             (self.event.end_time is not None and t >= self.event.end_time)
+        )
+
+    @property
+    def show_signup_link(self):
+        t = now()
+        return self.signup_link and (
+            (self.start_time is not None and t <= self.start_time) or
+            (self.event.start_time is not None and t <= self.event.start_time)
         )
 
     @classmethod

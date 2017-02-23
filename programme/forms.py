@@ -205,6 +205,7 @@ class ScheduleForm(forms.ModelForm):
             'start_time',
             'length',
             'video_link',
+            'signup_link',
             'tags',
         )
 

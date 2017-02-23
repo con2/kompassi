@@ -24,3 +24,7 @@
           a.btn.btn-danger.btn-xs(href='{{ programme.video_link }}', target='_blank')
             i.fa.fa-youtube-play.kompassi-icon-space-right
             {% trans "Watch the recording" %}
+        if programme.show_signup_link
+          a.btn.btn-success.btn-xs(href='{{ programme.signup_link }}', target='_blank')
+            i.fa.fa-pencil-o.kompassi-icon-space-right
+            {% trans "Sign up" %}
