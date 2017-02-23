@@ -11,7 +11,7 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from core.utils import slugify
+from core.utils import slugify, full_hours_between
 
 
 def mkpath(*parts):
@@ -350,6 +350,15 @@ class Setup(object):
             event=self.event,
             start_time=datetime(2017, 3, 4, 10, 30, tzinfo=self.tz),
         )
+
+        for time_block in TimeBlock.objects.filter(event=self.event):
+            # Half hours
+            # [:-1] – discard 18:30
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30)
+                )
 
         # XXX
         have_views = True
