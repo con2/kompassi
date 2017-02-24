@@ -561,8 +561,8 @@ class Programme(models.Model, CsvExportMixin):
                 kind=self.category.slug,
                 kind_display=self.category.title,
                 identifier=self.slug or 'p{id}'.format(id=self.id),
-                location=self.room.name,
-                location_slug=self.room.slug,
+                location=self.room.name if self.room else None,
+                location_slug=self.room.slug if self.room else None,
                 presenter=self.formatted_hosts,
                 tags=list(self.tags.values_list('slug', flat=True)),
             )

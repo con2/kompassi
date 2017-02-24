@@ -14,11 +14,16 @@ from core.sort_and_filter import Filter
 from core.utils import url
 
 from ..models import (
-    View,
     AllRoomsPseudoView,
     Category,
+    Programme,
+    View,
 )
-from ..helpers import programme_event_required, public_programme_required, group_programmes_by_start_time
+from ..helpers import (
+    group_programmes_by_start_time,
+    programme_event_required,
+    public_programme_required,
+)
 
 
 def get_timetable_tabs(request, event):
@@ -216,21 +221,23 @@ def programme_internal_adobe_taggedtext_view(request, event):
 @programme_event_required
 @require_safe
 @api_view
-def programme_json_view(request, event, format='default'):
-    result = []
+def programme_json_view(request, event, format='default', include_unpublished=False):
+    criteria = dict(category__event=event)
 
-    for start_time, incontinuity, row in AllRoomsPseudoView(event).get_programmes_by_start_time(request=request):
-        for programme, rowspan in row:
-            if programme is None:
-                continue
+    if not include_unpublished:
+        criteria.update(state='published')
 
-            # TODO revise
-            if format == 'desucon' and not programme.is_public:
-                continue
+    programmes = (
+        Programme.objects.filter(**criteria)
+            .select_related('category__event')
+            .select_related('room')
+            .prefetch_related('tags')
 
-            result.append(programme.as_json(format=format))
+            # Does not do the needful due to formatted_organizers operating on the "through" model
+            # .prefetch_related('organizers')
+    )
 
-    return result
+    return [programme.as_json(format=format) for programme in programmes]
 
 
 def programme_profile_menu_items(request):
