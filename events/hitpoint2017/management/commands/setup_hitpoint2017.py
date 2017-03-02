@@ -118,6 +118,7 @@ class Setup(object):
             ('Media', 'media', 'badges', False),
             ('Myyjä', 'myyja', 'badges', False),
             ('Vieras', 'vieras', 'badges', False),
+            ('Vapaalippu', 'vapaalippu', 'badges', False),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
