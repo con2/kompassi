@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 
 from core.models.constants import EMAIL_LENGTH
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs
 
 
 @python_2_unicode_compatible
@@ -63,6 +63,19 @@ class Team(models.Model):
                 name='Dummy team',
             ),
         )
+
+    def as_dict(self, include_members=True):
+        result = pick_attrs(self,
+            'name',
+            'description',
+            'slug',
+            'email',
+        )
+
+        if include_members:
+            result.update(members=[member.as_dict() for member in self.members.filter(is_shown_publicly=True)])
+
+        return result
 
     class Meta:
         ordering = ('event', 'order', 'name')

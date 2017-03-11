@@ -10,6 +10,20 @@ from core.utils import login_redirect
 from .views.menu_items import intra_admin_menu_items, intra_organizer_menu_items
 
 
+def intra_event_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, event_slug, *args, **kwargs):
+        event = get_object_or_404(Event, slug=event_slug)
+        meta = event.intra_event_meta
+
+        if not meta:
+            messages.error(request, _('This event does not use the organizer intranet.'))
+            return redirect('core_event_view', event.slug)
+
+        return view_func(request, event, *args, **kwargs)
+    return wrapper
+
+
 def intra_organizer_required(view_func):
     @wraps(view_func)
     def wrapper(request, event_slug, *args, **kwargs):

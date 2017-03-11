@@ -10,7 +10,7 @@ from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from core.utils import ensure_user_is_member_of_group
+from core.utils import ensure_user_is_member_of_group, pick_attrs
 
 
 logger = logging.getLogger('kompassi')
@@ -87,6 +87,15 @@ class TeamMember(models.Model):
         return cls.objects.get_or_create(
             team=team,
             person=person,
+        )
+
+    def as_dict(self):
+        return pick_attrs(self,
+            'is_team_leader',
+
+            display_name=self.person.display_name,
+            email=self.signup.email_address,
+            job_title=self.signup.job_title,
         )
 
     class Meta:

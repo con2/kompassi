@@ -143,10 +143,19 @@ class Message(models.Model):
 
         delay = 0
         for person in recipients:
-            person_message, created = PersonMessage.objects.get_or_create(
-                person=person,
-                message=self,
-            )
+            try:
+                person_message, created = PersonMessage.objects.get_or_create(
+                    person=person,
+                    message=self,
+                )
+            except PersonMessage.MultipleObjectsReturned:
+                # This actually happens sometimes.
+                logger.warning('A Person doth multiple PersonMessages for a single Message have!')
+                person_message = PersonMessage.objects.filter(
+                    person=person,
+                    message=self
+                ).first()
+                created = False
 
             if created or resend:
                 person_message.actually_send(delay)
