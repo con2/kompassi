@@ -141,6 +141,7 @@ class Message(models.Model):
         if recipients is None:
             recipients = [user.person for user in self.recipient.group.user_set.all()]
 
+        # TODO this delay stuff should not be here (only applies to SMS messages)
         delay = 0
         for person in recipients:
             try:
