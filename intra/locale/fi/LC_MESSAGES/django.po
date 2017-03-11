@@ -10,6 +10,10 @@ msgstr "Lisää jäsen"
 msgid "Add member…"
 msgstr "Lisää jäsen…"
 
+#: models/team_member.py
+msgid "As set by the user themself"
+msgstr "Käyttäjän itsensä asettama"
+
 #: templates/intra_organizer_view.jade
 msgid "Assign this organizer to a team…"
 msgstr "Sijoita järjestäjä tiimiin…"
@@ -65,6 +69,10 @@ msgstr "Vie yhteystiedot vCard-muodossa"
 #: templates/intra_organizer_view.jade
 msgid "First name"
 msgstr "Etunimi"
+
+#: models/team_member.py
+msgid "For the purpose of public listings, the name display style of the team member may be overridden here."
+msgstr "Tässä voit asettaa tavan, jolla järjestäjän nimi näytetään julkisissa listauksissa. Ellei ole erityistä syytä vaihtaa jonkun henkilön nimen esitystapaa, tämä kenttä on suositeltavaa jättää arvoon \"Käyttäjän itsensä asettama\"."
 
 #: templates/intra_event_box.jade
 msgid "Go to the organizer view"
@@ -122,6 +130,10 @@ msgstr "Järjestys"
 #: helpers.py templates/intra_event_box.jade
 msgid "Organizer intranet"
 msgstr "Järjestäjien intranet"
+
+#: models/team_member.py
+msgid "Override name display style"
+msgstr "Nimen esitystapa"
 
 #: templates/intra_organizer_view.jade
 msgid "Phone number"

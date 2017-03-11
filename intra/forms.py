@@ -34,4 +34,5 @@ class TeamMemberForm(forms.ModelForm):
             'is_shown_internally',
             'is_shown_publicly',
             'is_group_member',
+            'override_name_display_style',
         )

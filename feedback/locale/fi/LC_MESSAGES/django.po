@@ -8,7 +8,7 @@ msgstr ""
 
 #: templates/feedback_widget.jade
 msgid "Give feedback"
-msgstr "Anna palautetta"
+msgstr "Anna palautetta Kompassista"
 
 #: models/feedback_message.py
 msgid "IP address"

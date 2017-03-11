@@ -11,6 +11,12 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import ensure_user_is_member_of_group, pick_attrs
+from core.models.constants import NAME_DISPLAY_STYLE_CHOICES
+
+
+NAME_DISPLAY_STYLE_CHOICES = [
+    ('', _('As set by the user themself')),
+] + NAME_DISPLAY_STYLE_CHOICES
 
 
 logger = logging.getLogger('kompassi')
@@ -45,6 +51,14 @@ class TeamMember(models.Model):
         default=True,
         verbose_name=_('Group membership'),
         help_text=_('Controls whether this person is added to the user group of this team. Group membership in turn usually controls membership on mailing lists and may convey additional access privileges.'),
+    )
+    override_name_display_style = models.CharField(
+        max_length=max(len(key) for (key, label) in NAME_DISPLAY_STYLE_CHOICES),
+        blank=True,
+        choices=NAME_DISPLAY_STYLE_CHOICES,
+        default='',
+        verbose_name=_('Override name display style'),
+        help_text=_('For the purpose of public listings, the name display style of the team member may be overridden here.'),
     )
 
     @property
@@ -89,11 +103,18 @@ class TeamMember(models.Model):
             person=person,
         )
 
+    @property
+    def display_name(self):
+        if self.override_name_display_style:
+            return self.person.get_formatted_name(self.override_name_display_style)
+        else:
+            return self.person.display_name
+
     def as_dict(self):
         return pick_attrs(self,
             'is_team_leader',
+            'display_name',
 
-            display_name=self.person.display_name,
             email=self.signup.email_address,
             job_title=self.signup.job_title,
         )

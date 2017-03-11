@@ -180,7 +180,13 @@ class Person(models.Model):
 
     @property
     def display_name(self):
-        return NAME_DISPLAY_STYLE_FORMATS[self.name_display_style].format(self=self)
+        return self.get_formatted_name()
+
+    def get_formatted_name(self, name_display_style=None):
+        if not name_display_style:
+            name_display_style = self.name_display_style
+        
+        return NAME_DISPLAY_STYLE_FORMATS[name_display_style].format(self=self)
 
     @property
     def username(self):
