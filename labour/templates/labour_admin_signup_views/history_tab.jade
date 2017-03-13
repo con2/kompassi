@@ -25,6 +25,6 @@
         if signup.person.allow_work_history_sharing
           .help-block Hakija on sallinut työskentelyhistoriansa jakamisen {{ settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE }} käyttävien järjestäjätahojen välillä.
         else
-          .help-block Hakija ei ole sallinut työskentelyhistoriansa jakamista {{ settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE }} käyttävien järjestäjätahojen välillä, joten näkyvissä on ainoastaan työskentely {{ signup.organization.name_genitive }} järjestämissä tapahtumissa.
+          .help-block Hakija ei ole sallinut työskentelyhistoriansa jakamista {{ settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE }} käyttävien järjestäjätahojen välillä, joten näkyvissä on ainoastaan työskentely {{ signup.event.organization.name_genitive }} järjestämissä tapahtumissa.
   else
     p.kompassi-space-above.text-muted Tämä henkilö ei ole työskennellyt muissa {{ signup.event.organization.name_genitive }} tapahtumissa.
