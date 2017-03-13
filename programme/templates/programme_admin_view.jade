@@ -108,7 +108,4 @@ block admin_content
             li: a(href='{% url "programme_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
               i.fa.fa-cloud-download.kompassi-icon-space-right
               |{{ export_format.name }}
-          li: a.btn.btn-link(href='{% url "programme_admin_email_list_view" event.slug %}', target='_blank')
-            i.fa.fa-envelope.kompassi-icon-space-right
-            |Sähköposti&shy;osoitteet
         a.btn.btn-primary(href='{% url "programme_admin_create_view" event.slug %}') Uusi ohjelma
