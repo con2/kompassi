@@ -318,10 +318,10 @@ class Person(models.Model):
         self.setup_code(request, EmailVerificationToken)
 
     def setup_password_reset(self, request):
-        from ipware.ip import get_real_ip
+        from ipware.ip import get_ip
         from .password_reset_token import PasswordResetToken
 
-        self.setup_code(request, PasswordResetToken, ip_address=get_real_ip(request) or '')
+        self.setup_code(request, PasswordResetToken, ip_address=get_ip(request) or '')
 
     def verify_email(self, code=None):
         from .email_verification_token import EmailVerificationToken, EmailVerificationError

@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
 
+from ipware.ip import get_ip
+
 from .models import Order, OrderProduct
 
 
@@ -48,7 +50,7 @@ def get_order(request, event):
             clear_order(request, event)
 
     # No order in the session; return an unsaved order
-    return Order(event=event, ip_address=request.META.get("REMOTE_ADDR"))
+    return Order(event=event, ip_address=get_ip(request))
 
 
 def clear_order(request, event):
