@@ -6,8 +6,6 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
-from ipware.ip import get_ip
-
 from core.helpers import person_required
 from core.utils import initialize_form
 

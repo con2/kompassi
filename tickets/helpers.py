@@ -50,7 +50,7 @@ def get_order(request, event):
             clear_order(request, event)
 
     # No order in the session; return an unsaved order
-    return Order(event=event, ip_address=get_ip(request))
+    return Order(event=event, ip_address=get_ip(request) or '')
 
 
 def clear_order(request, event):
