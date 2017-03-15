@@ -7,7 +7,7 @@ msgid "Feedback received from {entry.feedback_message.author_display_name}"
 msgstr ""
 
 #: templates/feedback_widget.jade
-msgid "Give feedback"
+msgid "Give feedback about Kompassi"
 msgstr "Anna palautetta Kompassista"
 
 #: models/feedback_message.py
