@@ -55,6 +55,11 @@ class SpecialDiet(SimpleChoice):
     pass
 
 
+class Shift(SimpleChoice):
+    pass
+
+
+
 class SignupExtra(SignupExtraBase):
     shirt_size = models.CharField(
         max_length=8,
@@ -85,6 +90,12 @@ class SignupExtra(SignupExtraBase):
         blank=True,
         verbose_name='Majoitustarve lattiamajoituksessa',
         help_text='Vänkärinä saat tarvittaessa maksuttoman majoituksen lattiamajoituksessa. Merkitse tähän, minä öinä tarvitset lattiamajoitusta.',
+    )
+
+    shifts = models.ManyToManyField(
+        Shift,
+        verbose_name='Voin työskennellä',
+        help_text='Milloin olet käytettävissä? Tilavänkäreille (ja muille halukkaille) on tarjolla työvuoroja myös ennen conin aukeamista sekä conin päättymisen jälkeen.',
     )
 
     afterparty = models.CharField(

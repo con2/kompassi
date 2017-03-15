@@ -61,7 +61,7 @@ class Setup(object):
             Qualification,
             WorkPeriod,
         )
-        from ...models import SpecialDiet, SignupExtra, Night
+        from ...models import SpecialDiet, SignupExtra, Night, Shift
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -147,6 +147,14 @@ class Setup(object):
                 active_until=self.event.end_time,
             ),
         )
+
+        for shift_name in [
+            'Perjantaina',
+            'Lauantaina',
+            'Sunnuntaina',
+            'Sunnuntai-iltana ja maanantaina',
+        ]:
+            Shift.objects.get_or_create(name=shift_name)        
 
     def setup_programme(self):
         from programme.models import Room, ProgrammeEventMeta, Category, TimeBlock, View, SpecialStartTime
