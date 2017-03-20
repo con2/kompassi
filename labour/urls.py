@@ -56,7 +56,7 @@ urlpatterns = [
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/survey/(?P<survey_slug>[a-z0-9-]+)/?$',
+        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/surveys/(?P<survey_slug>[a-z0-9-]+)/?$',
         labour_survey_view,
         name='labour_survey_view',
     ),
