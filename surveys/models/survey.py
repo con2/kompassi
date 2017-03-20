@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
 
 from core.utils import SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS
@@ -34,9 +35,15 @@ class EventSurvey(Survey):
     event = models.ForeignKey('core.Event')
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
+    def get_absolute_url(self):
+        return reverse('event_survey_view', kwargs=dict(event_slug=self.event.slug, survey_slug=self.slug))
+
     class Meta:
         unique_together = [('event', 'slug')]
 
 
 class GlobalSurvey(Survey):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
+
+    def get_absolute_url(self):
+        return reverse('global_survey_view', kwargs=dict(survey_slug=self.slug))
