@@ -393,3 +393,10 @@ if 'desuprofile_integration' in INSTALLED_APPS:
     KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/'.format(**locals())
     KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/'.format(**locals())
     KOMPASSI_DESUPROFILE_API_URL = '{KOMPASSI_DESUPROFILE_HOST}/api/user/me/'.format(**locals())
+
+
+# PostgreSQL required for surveys app (uses django.contrib.postgres.fields.JSONField)
+if DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql_psycopg2':
+    INSTALLED_APPS = INSTALLED_APPS + ('surveys',)
+else:
+    warnings.warn(UserWarning('surveys app disabled (PostgreSQL required)'))
