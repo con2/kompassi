@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext_lazy as _
 
 from core.utils import SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS
 
@@ -22,7 +23,9 @@ class Survey(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    model = JSONField()
+    model = JSONField(help_text=_(
+        'Use the <a href="http://surveyjs.org/builder/">Survey.JS Builder</a> to create the survey.'
+    ))
 
     def __str__(self):
         return self.title
