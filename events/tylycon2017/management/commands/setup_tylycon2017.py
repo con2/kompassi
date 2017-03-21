@@ -33,6 +33,7 @@ class Setup(object):
         self.setup_labour()
         self.setup_access()
         self.setup_programme()
+        self.setup_badges()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -316,6 +317,18 @@ class Setup(object):
         #         event=self.event,
         #         start_time=hour_start_time.replace(minute=30)
         #     )
+
+    def setup_badges(self):
+        from badges.models import BadgesEventMeta
+
+        badge_admin_group, = BadgesEventMeta.get_or_create_groups(self.event, ['admins'])
+        meta, unused = BadgesEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=badge_admin_group,
+                badge_layout='trad',
+            )
+        )
 
 
 class Command(BaseCommand):
