@@ -24,7 +24,8 @@ class Survey(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     model = JSONField(help_text=_(
-        'Use the <a href="http://surveyjs.org/builder/">Survey.JS Builder</a> to create the survey.'
+        'Use the <a href="http://surveyjs.org/builder/" target="_blank">Survey.JS Builder</a> '
+        'to create the survey.'
     ))
 
     def __str__(self):
