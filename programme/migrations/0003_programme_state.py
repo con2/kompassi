@@ -30,5 +30,5 @@ class Migration(migrations.Migration):
             field=models.CharField(default=b'accepted', help_text='Tilassa "Julkaistu" olevat ohjelmat n\xe4kyv\xe4t ohjelmakartassa, jos ohjelmakartta on julkinen.', max_length=15, verbose_name='Ohjelmanumeron tila', choices=[('idea', 'Ideoitu sis\xe4isti'), ('asked', 'Kysytty ohjelmanj\xe4rjest\xe4j\xe4lt\xe4'), ('offered', 'Ohjelmatarjous vastaanotettu'), ('accepted', 'Hyv\xe4ksytty'), ('published', 'Julkaistu'), ('cancelled', 'Peruutettu'), ('rejected', 'Hyl\xe4tty')]),
             preserve_default=True,
         ),
-        migrations.RunPython(publish_all_existing_programme),
+        migrations.RunPython(publish_all_existing_programme, elidable=True),
     ]

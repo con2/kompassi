@@ -26,5 +26,5 @@ class Migration(migrations.Migration):
             name='signup_extra_form_class_path',
             field=models.CharField(default=b'labour.forms:ObsoleteEmptySignupExtraV1Form', help_text='Viittaus lis\xe4tietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm', max_length=63),
         ),
-        migrations.RunPython(fix_signup_extra_form_class_paths),
+        migrations.RunPython(fix_signup_extra_form_class_paths, elidable=True),
     ]

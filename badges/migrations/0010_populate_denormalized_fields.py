@@ -42,5 +42,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_denormalized_fields),
+        migrations.RunPython(populate_denormalized_fields, elidable=True),
     ]

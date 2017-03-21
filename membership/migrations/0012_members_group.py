@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(related_name='admin_group_for', verbose_name='Yll\xe4pit\xe4j\xe4ryhm\xe4', to='auth.Group'),
             preserve_default=True,
         ),
-        migrations.RunPython(populate_members_group),
+        migrations.RunPython(populate_members_group, elidable=True),
         migrations.AlterField(
             model_name='membershiporganizationmeta',
             name='members_group',

@@ -28,5 +28,5 @@ class Migration(migrations.Migration):
             name='is_active',
             field=models.BooleanField(default=True),
         ),
-        migrations.RunPython(populate_programme_role_is_active),
+        migrations.RunPython(populate_programme_role_is_active, elidable=True),
     ]

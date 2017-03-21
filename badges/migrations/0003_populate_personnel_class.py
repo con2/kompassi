@@ -45,6 +45,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_badge_personnel_class),
-        migrations.RunPython(populate_batch_personnel_class),
+        migrations.RunPython(populate_badge_personnel_class, elidable=True),
+        migrations.RunPython(populate_batch_personnel_class, elidable=True),
     ]

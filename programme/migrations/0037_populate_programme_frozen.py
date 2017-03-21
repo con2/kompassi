@@ -22,5 +22,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_frozen),
+        migrations.RunPython(populate_frozen, elidable=True),
     ]

@@ -29,5 +29,5 @@ class Migration(migrations.Migration):
             field=models.CharField(default='', max_length=255, verbose_name='Nimi genetiiviss\xe4'),
             preserve_default=False,
         ),
-        migrations.RunPython(populate_name_genitive),
+        migrations.RunPython(populate_name_genitive, elidable=True),
     ]

@@ -22,5 +22,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_slug)
+        migrations.RunPython(populate_slug, elidable=True)
     ]

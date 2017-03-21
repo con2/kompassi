@@ -47,5 +47,5 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(verbose_name='J\xe4rjest\xe4j\xe4taho', blank=True, to='core.Organization', null=True),
             preserve_default=True,
         ),
-        migrations.RunPython(populate_organization),
+        migrations.RunPython(populate_organization, elidable=True),
     ]

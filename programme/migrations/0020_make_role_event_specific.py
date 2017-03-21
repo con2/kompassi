@@ -53,5 +53,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(make_role_event_specific),
+        migrations.RunPython(make_role_event_specific, elidable=True),
     ]

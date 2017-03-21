@@ -33,5 +33,5 @@ class Migration(migrations.Migration):
             field=models.CharField(max_length=63),
             preserve_default=True,
         ),
-        migrations.RunPython(populate_end_times),
+        migrations.RunPython(populate_end_times, elidable=True),
     ]

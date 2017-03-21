@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             name='category',
             unique_together=set([('event', 'slug')]),
         ),
-        migrations.RunPython(populate_slug),
+        migrations.RunPython(populate_slug, elidable=True),
         migrations.AlterField(
             model_name='category',
             name='slug',

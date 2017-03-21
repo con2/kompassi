@@ -17,5 +17,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(delete_spurious_badges)
+        migrations.RunPython(delete_spurious_badges, elidable=True)
     ]

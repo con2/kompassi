@@ -31,5 +31,5 @@ class Migration(migrations.Migration):
             name='room',
             unique_together=set([('venue', 'order'), ('venue', 'slug')]),
         ),
-        migrations.RunPython(populate_room_slug),
+        migrations.RunPython(populate_room_slug, elidable=True),
     ]

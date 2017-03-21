@@ -29,5 +29,5 @@ class Migration(migrations.Migration):
             name='order_product',
             field=models.ForeignKey(related_name='accommodation_information_set', blank=True, to='tickets.OrderProduct', null=True),
         ),
-        migrations.RunPython(populate_accommodation_limit_group),
+        migrations.RunPython(populate_accommodation_limit_group, elidable=True),
     ]

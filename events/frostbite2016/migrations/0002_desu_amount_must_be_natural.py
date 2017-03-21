@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(fix_negative_desu_amounts),
+        migrations.RunPython(fix_negative_desu_amounts, elidable=True),
         migrations.AlterField(
             model_name='signupextra',
             name='desu_amount',

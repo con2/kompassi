@@ -41,5 +41,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_recipient_group_job_category)
+        migrations.RunPython(populate_recipient_group_job_category, elidable=True)
     ]
