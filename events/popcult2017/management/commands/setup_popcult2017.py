@@ -197,7 +197,7 @@ class Setup(object):
                 admin_group=badge_admin_group,
                 badge_layout='nick',
             )
-        )        
+        )
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
@@ -210,7 +210,6 @@ class Setup(object):
             shipping_and_handling_cents=0,
             reference_number_template="2017{:05d}",
             contact_email='Popcult Helsinki <liput@popcult.fi>',
-            plain_contact_email='liput@popcult.fi',
             ticket_free_text=
                 "Tämä on sähköinen lippusi Popcult Helsinki 2017 -tapahtumaan. Sähköinen lippu vaihdetaan\n"
                 "rannekkeeseen lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai\n"

@@ -22,7 +22,17 @@ from labour.models import (
     WorkPeriod,
     PersonnelClass,
 )
-from programme.models import ProgrammeEventMeta, Category, Programme, Room, Role, TimeBlock, SpecialStartTime, View, Tag
+from programme.models import (
+    Category,
+    Programme,
+    ProgrammeEventMeta,
+    Role,
+    Room,
+    SpecialStartTime,
+    Tag,
+    TimeBlock,
+    View,
+)
 from tickets.models import TicketsEventMeta, LimitGroup, Product
 from badges.models import BadgesEventMeta
 
@@ -358,7 +368,6 @@ class Command(BaseCommand):
             shipping_and_handling_cents=100,
             reference_number_template='9{:05d}',
             contact_email='Tracon 9 -lipunmyynti <liput@tracon.fi>',
-            plain_contact_email='liput@tracon.fi',
             ticket_spam_email='japsu@tracon.fi',
             ticket_free_text=u"Tämä on sähköinen lippusi Tracon 9 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"

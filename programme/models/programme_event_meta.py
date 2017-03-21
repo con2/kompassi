@@ -56,6 +56,14 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         ),
     )
 
+    def __init__(self, *args, **kwargs):
+        if 'public' in kwargs:
+            public = kwargs.pop('public')
+            if public:
+                kwargs['public_from'] = now()
+
+        super(ProgrammeEventMeta, self).__init__(*args, **kwargs)
+
     def get_special_programmes(self, include_unpublished=False, **extra_criteria):
         from .room import Room
         from .programme import Programme

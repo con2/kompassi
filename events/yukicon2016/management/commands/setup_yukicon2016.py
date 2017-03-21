@@ -63,7 +63,6 @@ class Setup(object):
             shipping_and_handling_cents=0,
             reference_number_template="2016{:05d}",
             contact_email='Yukicon <yukicon@yukicon.fi>',
-            plain_contact_email='yukicon@yukicon.fi',
             ticket_free_text=u"Tämä on sähköinen lippusi Yukicon 3.0 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"

@@ -56,7 +56,6 @@ class Setup(object):
             shipping_and_handling_cents=0,
             reference_number_template="2017{:05d}",
             contact_email='Ropeconin lipunmyynti <rahat@ropecon.fi>',
-            plain_contact_email='rahat@ropecon.fi',
             front_page_text=(
                 "<h2>Tervetuloa ostamaan pääsylippuja Ropeconiin!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä. Liput lähetetään "

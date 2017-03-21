@@ -226,7 +226,6 @@ class Setup(object):
             shipping_and_handling_cents=120,
             reference_number_template="2016{:05d}",
             contact_email='Aicon-lipunmyynti <lipunmyynti@aicon.fi>',
-            plain_contact_email='lipunmyynti@aicon.fi',
             ticket_free_text="Tämä on sähköinen lippusi Aiconiin. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"

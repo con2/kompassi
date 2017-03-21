@@ -54,7 +54,6 @@ class Setup(object):
             shipping_and_handling_cents=0,
             reference_number_template="2017{:05d}",
             contact_email='Looking for Alice <tickets.lookingforalice@gmail.com>',
-            plain_contact_email='tickets.lookingforalice@gmail.com',
             ticket_free_text=(
                 "Tämä on sähköinen lippusi Looking for Alice -tapahtumaan. Voit tulostaa tämän lipun tai\n"
                 "näyttää sen älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole\n"

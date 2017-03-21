@@ -64,7 +64,6 @@ class Setup(object):
             shipping_and_handling_cents=0,
             reference_number_template="2016{:05d}",
             contact_email='Mimicon <lipunmyynti@mimicon.fi>',
-            plain_contact_email='lipunmyynti@mimicon.fi',
             ticket_free_text="Tämä on sähköinen lippusi Mimicon 2016 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"

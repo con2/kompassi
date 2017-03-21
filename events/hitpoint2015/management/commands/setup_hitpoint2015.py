@@ -248,7 +248,6 @@ class Setup(object):
             shipping_and_handling_cents=120,
             reference_number_template="2015{:05d}",
             contact_email='Tracon Hitpoint -lipunmyynti <hitpoint@tracon.fi.fi>',
-            plain_contact_email='hitpoint@tracon.fi.fi',
             ticket_free_text=u"Tämä on sähköinen lippusi Tracon Hitpoint -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
