@@ -18,4 +18,3 @@ rev-manifest.json
 tmp/
 virtualenv/
 .DS_Store
-.vscode
