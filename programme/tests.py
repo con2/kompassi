@@ -32,7 +32,7 @@ class UtilsTestCase(TestCase):
         a_week_from_now = now() + timedelta(days=7)
         a_week_ago = now() - timedelta(days=7)
 
-        meta.public_From = a_week_from_now
+        meta.public_from = a_week_from_now
         assert not meta.is_public
 
         meta.public_from = a_week_ago

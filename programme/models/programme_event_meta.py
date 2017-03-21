@@ -69,6 +69,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
+        from django.utils.timezone import now
 
         event, unused = Event.get_or_create_dummy()
         admin_group, hosts_group = cls.get_or_create_groups(event, ['admins', 'hosts'])
@@ -77,7 +78,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
             event=event,
             defaults=dict(
                 admin_group=admin_group,
-                public=True
+                public_from=now(),
             )
         )
 
