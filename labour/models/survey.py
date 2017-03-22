@@ -1,15 +1,11 @@
 # encoding: utf-8
 
-
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, code_property, is_within_period
 
 
-@python_2_unicode_compatible
 class Survey(models.Model):
     """
     The Labour Manager may have their Workers fill in a Survey some time after signing up.
@@ -87,7 +83,6 @@ class Survey(models.Model):
         ]
 
 
-@python_2_unicode_compatible
 class SurveyRecord(models.Model):
     survey = models.ForeignKey(Survey, related_name='survey_records')
     person = models.ForeignKey('core.Person', related_name='survey_records')

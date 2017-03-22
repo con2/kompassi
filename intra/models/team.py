@@ -1,16 +1,12 @@
 # encoding: utf-8
 
-
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 
 from core.models.constants import EMAIL_LENGTH
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs
 
 
-@python_2_unicode_compatible
 class Team(models.Model):
     event = models.ForeignKey('core.Event')
     order = models.IntegerField(

@@ -1,17 +1,14 @@
 # encoding: utf-8
 
 
-
 from django.db import models, transaction
 from django.template.loader import render_to_string
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import url
 from core.models import OneTimeCodeLite
 
 
-@python_2_unicode_compatible
 class Invitation(OneTimeCodeLite):
     """
     In order to add a Host to a Programme, the Programme Manager sends an invitation to the e-mail address of the

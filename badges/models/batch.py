@@ -1,9 +1,6 @@
 # encoding: utf-8
 
-
-
 from django.db import models, transaction
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
@@ -23,7 +20,6 @@ def contains_moon_runes(unicode_str):
         return False
 
 
-@python_2_unicode_compatible
 class Batch(models.Model):
     event = models.ForeignKey('core.Event', related_name='badge_batch_set')
 

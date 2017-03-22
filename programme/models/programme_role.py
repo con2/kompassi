@@ -1,9 +1,6 @@
 # encoding: utf-8
 
-
-
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from six import text_type
@@ -11,7 +8,6 @@ from six import text_type
 from core.csv_export import CsvExportMixin
 
 
-@python_2_unicode_compatible
 class ProgrammeRole(models.Model, CsvExportMixin):
     person = models.ForeignKey('core.Person')
     programme = models.ForeignKey('programme.Programme')

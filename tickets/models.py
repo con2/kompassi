@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-
-
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
 from time import time, mktime
@@ -11,7 +9,6 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from dateutil.tz import tzlocal
@@ -29,7 +26,6 @@ LOW_AVAILABILITY_THRESHOLD = 10
 UNPAID_CANCEL_DAYS = 1
 
 
-@python_2_unicode_compatible
 class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
     shipping_and_handling_cents = models.IntegerField(
         verbose_name=_('Shipping and handling (cents)'),
@@ -162,7 +158,6 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         verbose_name_plural = _('ticket sales settings for events')
 
 
-@python_2_unicode_compatible
 class Batch(models.Model):
     event = models.ForeignKey('core.Event')
 
@@ -281,7 +276,6 @@ class Batch(models.Model):
         verbose_name_plural = 'toimituserät'
 
 
-@python_2_unicode_compatible
 class LimitGroup(models.Model):
     # REVERSE: product_set = ManyToMany(Product)
 
@@ -338,7 +332,6 @@ class LimitGroup(models.Model):
         return [limit_saturday, limit_sunday]
 
 
-@python_2_unicode_compatible
 class ShirtType(models.Model):
     event = models.ForeignKey('core.event')
     name = models.CharField(max_length=255)
@@ -358,7 +351,6 @@ class ShirtType(models.Model):
         unique_together = [('event', 'slug')]
 
 
-@python_2_unicode_compatible
 class ShirtSize(models.Model):
     type = models.ForeignKey(ShirtType, related_name='shirt_sizes')
     name = models.CharField(max_length=255)
@@ -378,7 +370,6 @@ class ShirtSize(models.Model):
         unique_together = [('type', 'slug')]
 
 
-@python_2_unicode_compatible
 class Product(models.Model):
     event = models.ForeignKey('core.Event')
 
@@ -473,7 +464,6 @@ class Product(models.Model):
 
 
 # TODO mayhaps combine with Person someday soon?
-@python_2_unicode_compatible
 class Customer(models.Model):
     # REVERSE: order = OneToOne(Order)
 
@@ -546,7 +536,6 @@ class Customer(models.Model):
         )
 
 
-@python_2_unicode_compatible
 class Order(models.Model):
     # REVERSE: order_product_set = ForeignKeyFrom(OrderProduct)
 
@@ -1027,7 +1016,6 @@ class Order(models.Model):
         return count
 
 
-@python_2_unicode_compatible
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, related_name="order_product_set")
     product = models.ForeignKey(Product, related_name="order_product_set")
@@ -1060,7 +1048,6 @@ class OrderProduct(models.Model):
         verbose_name_plural = 'tilausrivit'
 
 
-@python_2_unicode_compatible
 class AccommodationInformation(models.Model, CsvExportMixin):
     order_product = models.ForeignKey(OrderProduct, blank=True, null=True, related_name="accommodation_information_set")
 
@@ -1135,7 +1122,6 @@ class AccommodationInformation(models.Model, CsvExportMixin):
         verbose_name_plural = 'majoittujan tiedot'
 
 
-@python_2_unicode_compatible
 class ShirtOrder(models.Model):
     order = models.ForeignKey(Order, related_name='shirt_orders')
     size = models.ForeignKey(ShirtSize, related_name='shirt_orders')

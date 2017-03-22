@@ -1,14 +1,11 @@
 # encoding: utf-8
 
-
-
 import logging
 
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 
 from .email_alias_mixin import EmailAliasMixin
 
@@ -16,7 +13,6 @@ from .email_alias_mixin import EmailAliasMixin
 logger = logging.getLogger('kompassi')
 
 
-@python_2_unicode_compatible
 class EmailAlias(EmailAliasMixin, models.Model):
     type = models.ForeignKey('access.EmailAliasType', verbose_name=_('type'), related_name='email_aliases')
     person = models.ForeignKey('core.Person', verbose_name=_('person'), related_name='email_aliases')

@@ -1,17 +1,13 @@
 # encoding: utf-8
 
-
-
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.core.urlresolvers import reverse
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS
 
 
-@python_2_unicode_compatible
 class Survey(models.Model):
     # Subclasses must provide a `slug` field
     # slug = models.CharField(...)

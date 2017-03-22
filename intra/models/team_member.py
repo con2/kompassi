@@ -1,13 +1,10 @@
 # encoding: utf-8
 
-
-
 import logging
 
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import ensure_user_is_member_of_group, pick_attrs
@@ -22,7 +19,6 @@ NAME_DISPLAY_STYLE_CHOICES = [
 logger = logging.getLogger('kompassi')
 
 
-@python_2_unicode_compatible
 class TeamMember(models.Model):
     team = models.ForeignKey('intra.Team', related_name='members')
     person = models.ForeignKey('core.Person', related_name='team_memberships')

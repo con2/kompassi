@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-
-
 import logging
 
 from django.conf import settings
@@ -9,7 +7,6 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
@@ -30,7 +27,6 @@ APP_ALIAS_TEMPLATES = dict(
 )
 
 
-@python_2_unicode_compatible
 class InternalEmailAlias(EmailAliasMixin, models.Model):
     domain = models.ForeignKey('access.EmailAliasDomain', verbose_name=_('domain'))
 

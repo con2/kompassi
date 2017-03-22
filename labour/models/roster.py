@@ -1,14 +1,11 @@
 # encoding: utf-8
 
-
-
 from collections import namedtuple, defaultdict
 from datetime import timedelta
 
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzlocal
@@ -139,7 +136,6 @@ class JobRequirement(models.Model):
         verbose_name_plural = _('job requirements')
 
 
-@python_2_unicode_compatible
 class Shift(models.Model, CsvExportMixin):
     job = models.ForeignKey(Job, related_name='shifts')
     start_time = models.DateTimeField()
