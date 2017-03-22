@@ -24,7 +24,7 @@ class BadgePrivacyAdapter(object):
         self.badge = badge
 
     def __str__(self):
-        return self.badge.__unicode__()
+        return self.badge.__str__()
 
     @property
     def first_name(self):

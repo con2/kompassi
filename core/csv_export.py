@@ -76,7 +76,7 @@ class CsvExportMixin(object):
                         for choice in choices
                     )
                 elif m2m_mode == 'comma_separated':
-                    result_row.append(', '.join(item.__unicode__() for item in field_value.all()))
+                    result_row.append(', '.join(item.__str__() for item in field_value.all()))
                 else:
                     raise NotImplemented(m2m_mode)
             elif field_type is models.DateTimeField and field_value is not None:
@@ -104,7 +104,7 @@ def write_header_row(event, writer, fields, m2m_mode='separate_columns'):
                 choices = get_m2m_choices(event, field)
                 header_row.extend(
                     "{field_name}: {choice}"
-                    .format(field_name=field_name, choice=choice.__unicode__())
+                    .format(field_name=field_name, choice=choice.__str__())
                     for choice in choices
                 )
             elif m2m_mode == 'comma_separated':

@@ -64,7 +64,7 @@ class SignupExtraMixin(object):
         self.save()
 
     def __str__(self):
-        return self.signup.__unicode__() if self.signup else 'None'
+        return self.signup.__str__() if self.signup else 'None'
 
 
 class SignupExtraBase(SignupExtraMixin, models.Model):
