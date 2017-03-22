@@ -153,15 +153,15 @@ class Command(BaseCommand):
         for dirpath, dirnames, filenames in filtered_walk(os.path.join(app.path, "locale")):
             for filename in filenames:
                 filename = os.path.join(dirpath, filename)
+                print(filename)
                 if filename.endswith(".po"):
                     with open(filename, "r") as infp:
                         catalog = pofile.read_po(infp)
                     if not len(catalog):
                         continue
-                    sio = io.StringIO()
-                    print(type(catalog))
-                    mofile.write_mo(sio, catalog)
+                    bio = io.BytesIO()
+                    mofile.write_mo(bio, catalog)
                     mo_file = filename.replace(".po", ".mo")
                     with open(mo_file, "wb") as outfp:
-                        outfp.write(sio.getvalue())
+                        outfp.write(bio.getvalue())
                     self.log.info("%s compiled to %s", filename, mo_file)
