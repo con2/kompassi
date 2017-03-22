@@ -668,7 +668,7 @@ class Order(models.Model):
     def t_shirts(self):
         # TODO use db aggregate
         queryset = self.order_product_set.filter(count__gt=0, product__requires_shirt_size=True)
-        return queryset.aggregate(models.Sum('count'))['count__sum']
+        return queryset.aggregate(models.Sum('count'))['count__sum'] or 0
 
     @property
     def reference_number_base(self):
@@ -676,11 +676,11 @@ class Order(models.Model):
 
     def _make_reference_number(self):
         s = self.reference_number_base
-        return s + str(-sum(int(x)*[7,3,1][i%3] for i, x in enumerate(s[::-1])) % 10)
+        return s + str(-sum(int(x) * [7, 3, 1][i % 3] for i, x in enumerate(s[::-1])) % 10)
 
     @property
     def formatted_reference_number(self):
-        return "".join((i if (n+1) % 5 else i+" ") for (n, i) in enumerate(self.reference_number[::-1]))[::-1]
+        return "".join((i if (n + 1) % 5 else i + " ") for (n, i) in enumerate(self.reference_number[::-1]))[::-1]
 
     @property
     def formatted_order_number(self):
