@@ -81,8 +81,8 @@ class Setup(object):
         )
 
         for type_code, type_metavar in [
-            ('access.email_aliases:firstname_surname', u'etunimi.sukunimi'),
-            ('access.email_aliases:nick', u'nick'),
+            ('access.email_aliases:firstname_surname', 'etunimi.sukunimi'),
+            ('access.email_aliases:nick', 'nick'),
         ]:
             alias_type, created = EmailAliasType.objects.get_or_create(
                 domain=domain,

@@ -4,5 +4,5 @@ from django.apps import AppConfig
 
 
 class MembershipAppConfig(AppConfig):
-    name = u'membership'
-    verbose_name = u'Jäsenrekisteri'
+    name = 'membership'
+    verbose_name = 'Jäsenrekisteri'

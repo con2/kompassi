@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 
@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='accommodationinformation',
             name='email',
-            field=models.EmailField(default='', max_length=254, verbose_name=b'S\xc3\xa4hk\xc3\xb6postiosoite', blank=True),
+            field=models.EmailField(default='', max_length=254, verbose_name='S\xc3\xa4hk\xc3\xb6postiosoite', blank=True),
         ),
         migrations.AlterField(
             model_name='customer',

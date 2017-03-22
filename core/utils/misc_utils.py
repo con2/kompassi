@@ -29,7 +29,7 @@ def check_password_strength(
 ):
     if min_length and len(password) < min_length:
         raise ValidationError(
-            u'Salasanan tulee olla vähintään {0} merkkiä pitkä.'.format(min_length)
+            'Salasanan tulee olla vähintään {0} merkkiä pitkä.'.format(min_length)
         )
 
     if min_classes:
@@ -40,8 +40,8 @@ def check_password_strength(
 
         if class_score < min_classes:
             raise ValidationError(
-                u'Salasanassa tulee olla vähintään {0} seuraavista: pieni kirjain, iso '
-                u'kirjain, numero, erikoismerkit. Ääkköset lasketaan erikoismerkeiksi'
+                'Salasanassa tulee olla vähintään {0} seuraavista: pieni kirjain, iso '
+                'kirjain, numero, erikoismerkit. Ääkköset lasketaan erikoismerkeiksi'
                 .format(min_classes)
             )
 
@@ -80,7 +80,7 @@ def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
 
 
 def ensure_user_is_member_of_group(user, group, should_belong_to_group=True):
-    if isinstance(group, basestring):
+    if isinstance(group, str):
         group = Group.objects.get(name=group)
     elif isinstance(group, Group):
         pass
@@ -134,14 +134,14 @@ def get_code(path):
 
 
 def set_attrs(obj, **attrs):
-    for key, value in attrs.iteritems():
+    for key, value in attrs.items():
         setattr(obj, key, value)
 
     return obj
 
 
 def set_defaults(obj, **attrs):
-    for key, value in attrs.iteritems():
+    for key, value in attrs.items():
         if getattr(obj, key, None) is None:
             setattr(obj, key, value)
 
@@ -163,7 +163,7 @@ def simple_object_init(self, *args, **kwargs):
     for key, value in zip(self.__slots__, args):
         setattr(self, key, value)
 
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
         setattr(self, key, value)
 
 
@@ -221,7 +221,7 @@ def mutate_query_params(request, mutations):
     """
 
     new_qs = request.GET.copy()
-    for key, value in mutations.items():
+    for key, value in list(mutations.items()):
         if value in (None, False):
             new_qs.pop(key, None)
         else:
@@ -238,6 +238,6 @@ class class_property(object):
 
 def omit_keys(mapping, *keys_to_omit, **keys_to_set):
     return dict(
-        ((key, value) for (key, value) in mapping.iteritems() if key not in keys_to_omit),
+        ((key, value) for (key, value) in mapping.items() if key not in keys_to_omit),
         **keys_to_set
     )

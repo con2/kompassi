@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import badges.models
@@ -32,8 +32,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BadgesEventMeta',
             fields=[
-                ('event', models.OneToOneField(related_name=b'badgeseventmeta', primary_key=True, serialize=False, to='core.Event')),
-                ('badge_factory_code', models.CharField(default=b'badges.utils:default_badge_factory', help_text='Funktio, joka selvitt\xe4\xe4, mink\xe4 tyyppinen badge henkil\xf6lle pit\xe4isi luoda. Oletusarvo toimii, jos tapahtumalla on tasan yksi badgepohja. Ks. esimerkkitoteutus tracon9/badges.py:badge_factory.', max_length=b'255', verbose_name='Badgetehdas')),
+                ('event', models.OneToOneField(related_name='badgeseventmeta', primary_key=True, serialize=False, to='core.Event')),
+                ('badge_factory_code', models.CharField(default='badges.utils:default_badge_factory', help_text='Funktio, joka selvitt\xe4\xe4, mink\xe4 tyyppinen badge henkil\xf6lle pit\xe4isi luoda. Oletusarvo toimii, jos tapahtumalla on tasan yksi badgepohja. Ks. esimerkkitoteutus tracon9/badges.py:badge_factory.', max_length='255', verbose_name='Badgetehdas')),
                 ('admin_group', models.ForeignKey(to='auth.Group')),
             ],
             options={
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Luotu')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='P\xe4ivitetty')),
                 ('printed_at', models.DateTimeField(null=True, blank=True)),
-                ('event', models.ForeignKey(related_name=b'badge_batch_set', to='core.Event')),
+                ('event', models.ForeignKey(related_name='badge_batch_set', to='core.Event')),
             ],
             options={
             },
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
             name='Template',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex=b'[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
+                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex='[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
                 ('name', models.CharField(max_length=63)),
                 ('event', models.ForeignKey(to='core.Event')),
             ],

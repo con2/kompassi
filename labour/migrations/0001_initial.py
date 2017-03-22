@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import django.core.validators
@@ -19,10 +19,10 @@ class Migration(migrations.Migration):
             name='AlternativeSignupForm',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex=b'[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
+                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex='[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
                 ('title', models.CharField(help_text='T\xe4m\xe4 otsikko n\xe4kyy k\xe4ytt\xe4j\xe4lle.', max_length=63, verbose_name='Otsikko')),
                 ('signup_form_class_path', models.CharField(help_text='Viittaus ilmoittautumislomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupForm', max_length=63)),
-                ('signup_extra_form_class_path', models.CharField(default=b'labour.forms:EmptySignupExtraForm', help_text='Viittaus lis\xe4tietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm', max_length=63)),
+                ('signup_extra_form_class_path', models.CharField(default='labour.forms:EmptySignupExtraForm', help_text='Viittaus lis\xe4tietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm', max_length=63)),
                 ('active_from', models.DateTimeField(null=True, verbose_name='K\xe4ytt\xf6aika alkaa', blank=True)),
                 ('active_until', models.DateTimeField(null=True, verbose_name='K\xe4ytt\xf6aika p\xe4\xe4ttyy', blank=True)),
                 ('signup_message', models.TextField(default='', help_text='T\xe4m\xe4 viesti n\xe4ytet\xe4\xe4n kaikille t\xe4t\xe4 lomaketta k\xe4ytt\xe4ville ty\xf6voimailmoittautumisen alussa. K\xe4ytettiin esimerkiksi Tracon 9:ss\xe4 kertomaan, ett\xe4 ty\xf6voimahaku on avoinna en\xe4\xe4 JV:ille ja erikoisteht\xe4ville.', null=True, verbose_name='Ilmoittautumisen huomautusviesti', blank=True)),
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=63, verbose_name='teht\xe4v\xe4alueen nimi')),
-                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex=b'[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
+                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex='[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
                 ('description', models.TextField(help_text='Kuvaus n\xe4kyy hakijoille hakulomakkeella. Kerro ainakin, mik\xe4li teht\xe4v\xe4\xe4n tarvitaan erityisi\xe4 tietoja tai taitoja.', verbose_name='teht\xe4v\xe4alueen kuvaus', blank=True)),
                 ('public', models.BooleanField(default=True, help_text='Teht\xe4viin, jotka eiv\xe4t ole avoimessa haussa, voi hakea vain ty\xf6voimavastaavan l\xe4hett\xe4m\xe4ll\xe4 hakulinkill\xe4.', verbose_name='avoimessa haussa')),
             ],
@@ -91,7 +91,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LabourEventMeta',
             fields=[
-                ('event', models.OneToOneField(related_name=b'laboureventmeta', primary_key=True, serialize=False, to='core.Event')),
+                ('event', models.OneToOneField(related_name='laboureventmeta', primary_key=True, serialize=False, to='core.Event')),
                 ('registration_opens', models.DateTimeField(null=True, verbose_name='ty\xf6voimahaku alkaa', blank=True)),
                 ('registration_closes', models.DateTimeField(null=True, verbose_name='ty\xf6voimahaku p\xe4\xe4ttyy', blank=True)),
                 ('work_begins', models.DateTimeField(verbose_name='Ensimm\xe4iset ty\xf6vuorot alkavat')),
@@ -124,7 +124,7 @@ class Migration(migrations.Migration):
             name='Qualification',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', unique=True, max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex=b'[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
+                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', unique=True, max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex='[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
                 ('name', models.CharField(max_length=63, verbose_name='p\xe4tevyyden nimi')),
                 ('description', models.TextField(verbose_name='kuvaus', blank=True)),
                 ('qualification_extra_content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
@@ -163,7 +163,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EmptySignupExtra',
             fields=[
-                ('signup', models.OneToOneField(related_name=b'+', primary_key=True, serialize=False, to='labour.Signup')),
+                ('signup', models.OneToOneField(related_name='+', primary_key=True, serialize=False, to='labour.Signup')),
             ],
             options={
                 'abstract': False,
@@ -200,13 +200,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='signup',
             name='job_categories',
-            field=models.ManyToManyField(help_text='Valitse kaikki ne teht\xe4v\xe4t, joissa olisit valmis ty\xf6skentelem\xe4\xe4n tapahtumassa. Huomaathan, ett\xe4 sinulle tarjottavia teht\xe4vi\xe4 voi rajoittaa se, mit\xe4 p\xe4tevyyksi\xe4 olet ilmoittanut sinulla olevan. Esimerkiksi j\xe4rjestyksenvalvojaksi voivat ilmoittautua ainoastaan JV-kortilliset.', related_name=b'signup_set', verbose_name='Haettavat teht\xe4v\xe4t', to='labour.JobCategory'),
+            field=models.ManyToManyField(help_text='Valitse kaikki ne teht\xe4v\xe4t, joissa olisit valmis ty\xf6skentelem\xe4\xe4n tapahtumassa. Huomaathan, ett\xe4 sinulle tarjottavia teht\xe4vi\xe4 voi rajoittaa se, mit\xe4 p\xe4tevyyksi\xe4 olet ilmoittanut sinulla olevan. Esimerkiksi j\xe4rjestyksenvalvojaksi voivat ilmoittautua ainoastaan JV-kortilliset.', related_name='signup_set', verbose_name='Haettavat teht\xe4v\xe4t', to='labour.JobCategory'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='signup',
             name='job_categories_accepted',
-            field=models.ManyToManyField(related_name=b'accepted_signup_set', to='labour.JobCategory', blank=True, help_text='Teht\xe4v\xe4alueet, joilla hyv\xe4ksytty vapaaehtoisty\xf6ntekij\xe4 tulee ty\xf6skentelem\xe4\xe4n. T\xe4m\xe4n perusteella henkil\xf6lle mm. l\xe4hetet\xe4\xe4n oman teht\xe4v\xe4alueensa ty\xf6voimaohjeet. Harmaalla merkityt teht\xe4v\xe4alueet ovat niit\xe4, joihin hakija ei ole itse hakenut.', null=True, verbose_name='Hyv\xe4ksytyt teht\xe4v\xe4alueet'),
+            field=models.ManyToManyField(related_name='accepted_signup_set', to='labour.JobCategory', blank=True, help_text='Teht\xe4v\xe4alueet, joilla hyv\xe4ksytty vapaaehtoisty\xf6ntekij\xe4 tulee ty\xf6skentelem\xe4\xe4n. T\xe4m\xe4n perusteella henkil\xf6lle mm. l\xe4hetet\xe4\xe4n oman teht\xe4v\xe4alueensa ty\xf6voimaohjeet. Harmaalla merkityt teht\xe4v\xe4alueet ovat niit\xe4, joihin hakija ei ole itse hakenut.', null=True, verbose_name='Hyv\xe4ksytyt teht\xe4v\xe4alueet'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -218,7 +218,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='signup',
             name='work_periods',
-            field=models.ManyToManyField(help_text='Valitse kaikki ne ajanjaksot, joina voit ty\xf6skennell\xe4 tapahtumassa. T\xe4m\xe4 ei ole lopullinen ty\xf6vuorosi, vaan ty\xf6voimatiimi pyrkii sijoittamaan ty\xf6vuorosi n\xe4ille ajoille.', related_name=b'signup_set', verbose_name='Ty\xf6vuorotoiveet', to='labour.WorkPeriod'),
+            field=models.ManyToManyField(help_text='Valitse kaikki ne ajanjaksot, joina voit ty\xf6skennell\xe4 tapahtumassa. T\xe4m\xe4 ei ole lopullinen ty\xf6vuorosi, vaan ty\xf6voimatiimi pyrkii sijoittamaan ty\xf6vuorosi n\xe4ille ajoille.', related_name='signup_set', verbose_name='Ty\xf6vuorotoiveet', to='labour.WorkPeriod'),
             preserve_default=True,
         ),
         migrations.AddField(

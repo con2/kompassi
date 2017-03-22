@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -75,7 +75,7 @@ class Privilege(models.Model):
         ).exclude(granted_privileges__person=person).distinct()
 
     def get_absolute_url(self):
-        return u'{base_url}#privilege-{id}'.format(
+        return '{base_url}#privilege-{id}'.format(
             base_url=reverse('access_profile_privileges_view'),
             id=self.id,
         )

@@ -35,15 +35,15 @@ def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
 
             try:
                 badge.full_clean()
-            except ValidationError, e:
+            except ValidationError as e:
                 messages.error(request, e.message)
             else:
                 badge.save()
 
-                messages.success(request, _(u'The badge has been added.'))
+                messages.success(request, _('The badge has been added.'))
                 return redirect('badges_admin_dashboard_view', event.slug)
         else:
-            messages.error(request, _(u'Please check the form.'))
+            messages.error(request, _('Please check the form.'))
 
     vars.update(
         form=form,

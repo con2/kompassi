@@ -20,11 +20,11 @@ class SignupExtraForm(forms.ModelForm):
             'shift_type',
             'total_work',
 
-            Fieldset(u'Työtodistus',
+            Fieldset('Työtodistus',
                 indented_without_label('want_certificate'),
                 'certificate_delivery_address',
             ),
-            Fieldset(u'Lisätiedot',
+            Fieldset('Lisätiedot',
                 'special_diet',
                 'special_diet_other',
                 indented_without_label('need_lodging'),
@@ -57,8 +57,8 @@ class SignupExtraForm(forms.ModelForm):
         certificate_delivery_address = self.cleaned_data['certificate_delivery_address']
 
         if want_certificate and not certificate_delivery_address:
-            raise forms.ValidationError(u'Koska olet valinnut haluavasi työtodistuksen, on '
-                u'työtodistuksen toimitusosoite täytettävä.')
+            raise forms.ValidationError('Koska olet valinnut haluavasi työtodistuksen, on '
+                'työtodistuksen toimitusosoite täytettävä.')
 
         return certificate_delivery_address
 
@@ -75,12 +75,12 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Tehtävän tiedot',
+            Fieldset('Tehtävän tiedot',
                 'job_title',
             ),
         )
 
-        self.fields['job_title'].help_text = u"Mikä on vastaavatehtäväsi? Printataan badgeen. Voi muokata myöhemminkin"
+        self.fields['job_title'].help_text = "Mikä on vastaavatehtäväsi? Printataan badgeen. Voi muokata myöhemminkin"
         self.fields['job_title'].required = True
 
     class Meta:
@@ -104,7 +104,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             'email_alias',
-            Fieldset(u'Lisätiedot',
+            Fieldset('Lisätiedot',
                 'special_diet',
                 'special_diet_other',
             ),
@@ -129,9 +129,9 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             total_work='yli12h',
             need_lodging=False,
             want_certificate=False,
-            certificate_delivery_address=u'',
-            prior_experience=u'',
-            free_text=u'Syötetty käyttäen vastaavan ilmoittautumislomaketta',
+            certificate_delivery_address='',
+            prior_experience='',
+            free_text='Syötetty käyttäen vastaavan ilmoittautumislomaketta',
         )
 
     def get_excluded_m2m_field_defaults(self):

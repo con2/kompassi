@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from hashlib import sha1
 import logging
@@ -96,15 +96,15 @@ class Message(models.Model):
         max_length=255,
         verbose_name='Otsikko',
         help_text='HUOM! Otsikko näkyy vastaanottajalle ainoastaan, jos viesti lähetetään '
-            u'sähköpostitse. Tekstiviestillä lähetettäville viesteille otsikkoa käytetään '
-            u'ainoastaan viestin tunnistamiseen sisäisesti.',
+            'sähköpostitse. Tekstiviestillä lähetettäville viesteille otsikkoa käytetään '
+            'ainoastaan viestin tunnistamiseen sisäisesti.',
     )
     body_template = models.TextField(
         verbose_name='Viestin teksti',
         help_text='Teksti {{ signup.formatted_job_categories_accepted }} korvataan '
-            u'listalla hyväksytyn vänkärin tehtäväalueista ja teksti '
-            u'{{ signup.formatted_shifts }} korvataan vänkärin vuoroilla. '
-            u'Käyttäessäsi näitä muotoilukoodeja laita ne omiksi kappaleikseen ts. reunusta ne tyhjillä riveillä.'
+            'listalla hyväksytyn vänkärin tehtäväalueista ja teksti '
+            '{{ signup.formatted_shifts }} korvataan vänkärin vuoroilla. '
+            'Käyttäessäsi näitä muotoilukoodeja laita ne omiksi kappaleikseen ts. reunusta ne tyhjillä riveillä.'
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -296,7 +296,7 @@ class PersonMessage(models.Model):
             msgbcc.append(meta.monitor_email)
 
         if settings.DEBUG:
-            print self.body.text
+            print(self.body.text)
 
         EmailMessage(
             subject=self.subject.text,

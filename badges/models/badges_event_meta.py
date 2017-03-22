@@ -13,23 +13,23 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     badge_layout = models.CharField(
         max_length=4,
         default='trad',
-        choices=(('trad', _(u'Traditional')), ('nick', _(u'Emphasize nick name'))),
-        verbose_name=u'Badgen asettelu',
+        choices=(('trad', _('Traditional')), ('nick', _('Emphasize nick name'))),
+        verbose_name='Badgen asettelu',
         help_text=_(
-            u'This controls how fields are grouped in the badge. Traditional: job title, firstname surname, '
-            u'nick. Emphasize nick name: first name or nick, surname or full name, job title.'
+            'This controls how fields are grouped in the badge. Traditional: job title, firstname surname, '
+            'nick. Emphasize nick name: first name or nick, surname or full name, job title.'
         ),
     )
 
     real_name_must_be_visible = models.BooleanField(
         default=False,
-        verbose_name=_(u'Require real name to be visible'),
+        verbose_name=_('Require real name to be visible'),
         help_text=_(
-            u'In most events, it is up to the person carrying the badge to decide whether or not '
-            u'their real name is displayed in their badge. Some choose to go by their first name or nick '
-            u'name only. Some events have, however, decided to restrict this and require the first name and '
-            u'surname to be visible in all badges. If this option is selected, only the name display styles '
-            u'<em>Firstname Surname</em> and <em>Firstname "Nick" Surname</em> are effectively allowed.'
+            'In most events, it is up to the person carrying the badge to decide whether or not '
+            'their real name is displayed in their badge. Some choose to go by their first name or nick '
+            'name only. Some events have, however, decided to restrict this and require the first name and '
+            'surname to be visible in all badges. If this option is selected, only the name display styles '
+            '<em>Firstname Surname</em> and <em>Firstname "Nick" Surname</em> are effectively allowed.'
         )
     )
 

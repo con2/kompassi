@@ -23,76 +23,76 @@ logger = logging.getLogger('kompassi')
 class Event(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
 
-    name = models.CharField(max_length=63, verbose_name=u'Tapahtuman nimi')
+    name = models.CharField(max_length=63, verbose_name='Tapahtuman nimi')
 
-    organization = models.ForeignKey('core.Organization', verbose_name=u'Järjestäjätaho')
+    organization = models.ForeignKey('core.Organization', verbose_name='Järjestäjätaho')
 
     name_genitive = models.CharField(
         max_length=63,
-        verbose_name=u'Tapahtuman nimi genetiivissä',
-        help_text=u'Esimerkki: Susiconin',
+        verbose_name='Tapahtuman nimi genetiivissä',
+        help_text='Esimerkki: Susiconin',
     )
 
     name_illative = models.CharField(
         max_length=63,
-        verbose_name=u'Tapahtuman nimi illatiivissä',
-        help_text=u'Esimerkki: Susiconiin',
+        verbose_name='Tapahtuman nimi illatiivissä',
+        help_text='Esimerkki: Susiconiin',
     )
 
     name_inessive = models.CharField(
         max_length=63,
-        verbose_name=u'Tapahtuman nimi inessiivissä',
-        help_text=u'Esimerkki: Susiconissa',
+        verbose_name='Tapahtuman nimi inessiivissä',
+        help_text='Esimerkki: Susiconissa',
     )
 
-    description = models.TextField(blank=True, verbose_name=u'Kuvaus')
+    description = models.TextField(blank=True, verbose_name='Kuvaus')
 
     venue = models.ForeignKey('core.Venue',
-        verbose_name=u'Tapahtumapaikka',
+        verbose_name='Tapahtumapaikka',
     )
 
     start_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Alkamisaika',
+        verbose_name='Alkamisaika',
     )
 
     end_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=u'Päättymisaika',
+        verbose_name='Päättymisaika',
     )
 
     homepage_url = models.CharField(
         blank=True,
         max_length=255,
-        verbose_name=u'Tapahtuman kotisivu',
+        verbose_name='Tapahtuman kotisivu',
     )
 
     public = models.BooleanField(
         default=True,
-        verbose_name=u'Julkinen',
-        help_text=u'Julkiset tapahtumat näytetään etusivulla.'
+        verbose_name='Julkinen',
+        help_text='Julkiset tapahtumat näytetään etusivulla.'
     )
 
     logo_url = models.CharField(
         blank=True,
         max_length=255,
         default='',
-        verbose_name=u'Tapahtuman logon URL',
-        help_text=u'Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)',
+        verbose_name='Tapahtuman logon URL',
+        help_text='Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)',
     )
 
     description = models.TextField(
         blank=True,
         default='',
-        verbose_name=u'Tapahtuman kuvaus',
-        help_text=u'Muutaman kappaleen mittainen kuvaus tapahtumasta. Näkyy tapahtumasivulla.',
+        verbose_name='Tapahtuman kuvaus',
+        help_text='Muutaman kappaleen mittainen kuvaus tapahtumasta. Näkyy tapahtumasivulla.',
     )
 
     class Meta:
-        verbose_name = u'Tapahtuma'
-        verbose_name_plural = u'Tapahtumat'
+        verbose_name = 'Tapahtuma'
+        verbose_name_plural = 'Tapahtumat'
 
     def __init__(self, *args, **kwargs):
         # Avoid having to manually transform 20 or so event setup scripts with organization_name and organization_url
@@ -101,7 +101,7 @@ class Event(models.Model):
             from .organization import Organization
 
             organization_name = kwargs.pop('organization_name')
-            organization_url = kwargs.pop('organization_url', u'')
+            organization_url = kwargs.pop('organization_url', '')
 
             kwargs['organization'], unused = Organization.objects.get_or_create(
                 slug=slugify(organization_name),
@@ -130,7 +130,7 @@ class Event(models.Model):
 
     @property
     def name_and_year(self):
-        return u"{name} ({year})".format(
+        return "{name} ({year})".format(
             name=self.name,
             year=self.start_time.year,
         )
@@ -147,7 +147,7 @@ class Event(models.Model):
         ]
         headline_parts = [part for part in headline_parts if part]
 
-        return u' '.join(headline_parts)
+        return ' '.join(headline_parts)
 
     @classmethod
     def get_or_create_dummy(cls):

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import logging
 from datetime import date, datetime
@@ -329,10 +329,10 @@ class Person(models.Model):
         if self.is_email_verified:
             raise EmailVerificationError('already_verified')
 
-        if isinstance(code, basestring):
+        if isinstance(code, str):
             try:
                 code = EmailVerificationToken.objects.get(code=code)
-            except EmailVerificationToken.DoesNotExist, e:
+            except EmailVerificationToken.DoesNotExist as e:
                 raise EmailVerificationError('invalid_code')
 
         if code:

@@ -11,7 +11,7 @@ from core.utils import initialize_form
 
 
 class CreateBatchForm(forms.Form):
-    max_items = forms.IntegerField(label=u"Kuinka monta tilausta (enintään)?")
+    max_items = forms.IntegerField(label="Kuinka monta tilausta (enintään)?")
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
@@ -47,10 +47,10 @@ def batches_view(Batch, template, CreateBatchForm=CreateBatchForm, created_at_fi
             if 'new-batch' in request.POST:
                 if new_batch_form.is_valid():
                     batch = Batch.create(event=event, **new_batch_form.cleaned_data)
-                    messages.success(request, u"Erä {batch.pk} on luotu onnistuneesti".format(batch=batch))
+                    messages.success(request, "Erä {batch.pk} on luotu onnistuneesti".format(batch=batch))
                     return redirect(request.path)
                 else:
-                    messages.error(request, u"Ole hyvä ja korjaa lomakkeen virheet.")
+                    messages.error(request, "Ole hyvä ja korjaa lomakkeen virheet.")
 
             elif 'cancel-batch' in request.POST or 'confirm-batch' in request.POST:
                 hidden_batch_crouching_form = HiddenBatchCrouchingForm(request.POST)
@@ -63,16 +63,16 @@ def batches_view(Batch, template, CreateBatchForm=CreateBatchForm, created_at_fi
 
                     if 'cancel-batch' in request.POST and batch.can_cancel:
                         batch.cancel()
-                        messages.success(request, u"Erä peruttiin.")
+                        messages.success(request, "Erä peruttiin.")
                         return redirect(request.path)
 
                     elif 'confirm-batch' in request.POST and batch.can_confirm:
                         batch.confirm()
-                        messages.success(request, u"Erä on merkitty valmiiksi.")
+                        messages.success(request, "Erä on merkitty valmiiksi.")
                         return redirect(request.path)
 
                 # error
-                messages.error(request, u"Et ole tulitikku kung-fulleni.")
+                messages.error(request, "Et ole tulitikku kung-fulleni.")
 
         vars.update(
             new_batch_form=new_batch_form,

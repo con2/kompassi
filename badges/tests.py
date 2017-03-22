@@ -66,7 +66,7 @@ class BadgesTestCase(TestCase):
         signup, unused = Signup.get_or_create_dummy(accepted=True)
 
         # No explicit job title
-        signup.job_title = u''
+        signup.job_title = ''
         signup.save()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
@@ -75,7 +75,7 @@ class BadgesTestCase(TestCase):
         jc1 = signup.job_categories_accepted.first()
         assert badge.job_title == jc1.name
 
-        jc2, unused = JobCategory.get_or_create_dummy(name=u'Hitman')
+        jc2, unused = JobCategory.get_or_create_dummy(name='Hitman')
         signup.job_categories_accepted = [jc2]
         signup.save()
         signup.apply_state()
@@ -85,7 +85,7 @@ class BadgesTestCase(TestCase):
         assert badge.job_title == jc2.name
 
         # Explicit job title should override
-        title = u'Chief Hitman Commander to the Queen'
+        title = 'Chief Hitman Commander to the Queen'
         signup.job_title = title
         signup.save()
         signup.apply_state()
@@ -95,7 +95,7 @@ class BadgesTestCase(TestCase):
         assert badge.job_title == title
 
         # Removing explicit job title should reset to job category based title
-        signup.job_title = u''
+        signup.job_title = ''
         signup.save()
         signup.apply_state()
 
@@ -259,7 +259,7 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.first_name == self.person.first_name
 
-        self.person.first_name = u'Matilda'
+        self.person.first_name = 'Matilda'
         self.person.save()
         self.person.apply_state()
 

@@ -42,7 +42,7 @@ def get_query_config(vars, query_builder):
     fields, titles = query_builder.get_columns()
 
     # Order by case insensitive titles located in 'titles'-dict values.
-    ordered_titles = sorted(titles.items(), cmp=lambda lhs, rhs: cmp(lhs[1].lower(), rhs[1].lower()))
+    ordered_titles = sorted(list(titles.items()), cmp=lambda lhs, rhs: cmp(lhs[1].lower(), rhs[1].lower()))
 
     # Create ordered list of fields from ordered titles.
     ordered_fields = [(key, fields[key]) for key, _ in ordered_titles if key in fields]
@@ -62,7 +62,7 @@ def get_query_config(vars, query_builder):
 def query_index(request, vars, event):
     query_builder_class = get_query(event)
     if query_builder_class is None:
-        messages.error(request, u"Tapahtumalla ei ole kyselymäärityksiä. Ota yhteys ylläpitäjään.")
+        messages.error(request, "Tapahtumalla ei ole kyselymäärityksiä. Ota yhteys ylläpitäjään.")
         return HttpResponseRedirect(reverse("labour_admin_dashboard_view", args=[event.slug]))
 
     query_builder = query_builder_class()
@@ -85,7 +85,7 @@ def merge_values(values):
         groups = list(g)
         merged_value = {}
         for group in groups:
-            for key, val in group.iteritems():
+            for key, val in group.items():
                 if not merged_value.get(key):
                     merged_value[key] = val
                 elif val != merged_value[key]:
@@ -104,7 +104,7 @@ def convert_datetimes(values):
     Format all date/datetime-like values to strings.
     """
     for entry in values:
-        for key, value in entry.items():
+        for key, value in list(entry.items()):
             try:
                 if isinstance(value, datetime.date):
                     entry[key] = value.strftime(RFC8601DATE)

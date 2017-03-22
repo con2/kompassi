@@ -7,7 +7,7 @@ from core.utils import DateField, horizontal_form_helper
 from .models import JVKortti
 
 class JVKorttiForm(forms.ModelForm):
-    expiration_date = DateField(label=u'Viimeinen voimassaolopäivä')
+    expiration_date = DateField(label='Viimeinen voimassaolopäivä')
 
     def __init__(self, *args, **kwargs):
         super(JVKorttiForm, self).__init__(*args, **kwargs)

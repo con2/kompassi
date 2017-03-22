@@ -4,7 +4,7 @@ from .utils import emailify
 
 
 def firstname_surname(person):
-    return emailify(u'{person.first_name} {person.surname}'.format(person=person))
+    return emailify('{person.first_name} {person.surname}'.format(person=person))
 
 def nick(person):
     if person.nick:

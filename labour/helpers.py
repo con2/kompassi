@@ -19,7 +19,7 @@ def labour_admin_required(view_func):
         meta = event.labour_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
+            messages.error(request, "Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
             return redirect('core_event_view', event.slug)
 
         if not event.labour_event_meta.is_user_admin(request.user):
@@ -28,7 +28,7 @@ def labour_admin_required(view_func):
         vars = dict(
             event=event,
             admin_menu_items=labour_admin_menu_items(request, event),
-            admin_title=u'Työvoiman hallinta'
+            admin_title='Työvoiman hallinta'
         )
 
         return view_func(request, vars, event, *args, **kwargs)
@@ -42,7 +42,7 @@ def labour_event_required(view_func):
         meta = event.labour_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
+            messages.error(request, "Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
             return redirect('core_event_view', event.slug)
 
         return view_func(request, event, *args, **kwargs)

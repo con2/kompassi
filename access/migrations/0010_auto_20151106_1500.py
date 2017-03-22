@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='smtpserver',
             name='crypto',
-            field=models.CharField(default=b'tls', max_length=5, verbose_name='Salaus', choices=[(b'plain', b'Ei salausta'), (b'ssl', b'SSL'), (b'tls', b'TLS')]),
+            field=models.CharField(default='tls', max_length=5, verbose_name='Salaus', choices=[('plain', 'Ei salausta'), ('ssl', 'SSL'), ('tls', 'TLS')]),
             preserve_default=True,
         ),
         migrations.AddField(

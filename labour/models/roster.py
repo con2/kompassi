@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from collections import namedtuple, defaultdict
 from datetime import timedelta
@@ -163,7 +163,7 @@ class Shift(models.Model, CsvExportMixin):
     @property
     def work_hours(self):
         cur_time = self.start_time
-        for i in xrange(self.hours):
+        for i in range(self.hours):
             yield cur_time
             cur_time += ONE_HOUR
 

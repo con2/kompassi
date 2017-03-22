@@ -96,18 +96,18 @@ class Setup(object):
             event=self.event,
             slug='kaatajaiset',
             defaults=dict(
-                name=u'Kaatajaiset',
+                name='Kaatajaiset',
             ),
         )
 
         for pc_name, pc_slug, pc_app_label, pc_afterparty in [
-            (u'Kuplitea', 'kuplitea', 'labour', True),
-            (u'Työvoima', 'tyovoima', 'labour', True),
-            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme', True),
-            (u'Guest of Honour', 'goh', 'programme', False), # tervetullut muttei kutsuta automaattiviestillä
-            (u'Media', 'media', 'badges', False),
-            (u'Myyjä', 'myyja', 'badges', False),
-            (u'Vieras', 'vieras', 'badges', False),
+            ('Kuplitea', 'kuplitea', 'labour', True),
+            ('Työvoima', 'tyovoima', 'labour', True),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme', True),
+            ('Guest of Honour', 'goh', 'programme', False), # tervetullut muttei kutsuta automaattiviestillä
+            ('Media', 'media', 'badges', False),
+            ('Myyjä', 'myyja', 'badges', False),
+            ('Vieras', 'vieras', 'badges', False),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -128,16 +128,16 @@ class Setup(object):
         ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
         for name, description, pcs in [
-            (u'Kuplitea', u'Tapahtuman järjestelytoimikunnan eli kuplitean jäsen', [kuplitea]),
+            ('Kuplitea', 'Tapahtuman järjestelytoimikunnan eli kuplitean jäsen', [kuplitea]),
 
-            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima]),
-            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima]),
-            (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe kello 14-18 sekä su kello 19 asti, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima]),
-            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima]),
-            (u'Info', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima]),
-            (u'Salivänkäri', u'Salivänkäri vastaa ohjelmasalien toiminnasta. He pitävät huolen, että ohjelmat alkavat ja loppuvat ajallaan ja että ohjelmanjärjestäjillä on kaikki mitä he tarvitsevat salissa.', [tyovoima]),
+            ('Erikoistehtävä', 'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima]),
+            ('Järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima]),
+            ('Kasaus ja purku', 'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe kello 14-18 sekä su kello 19 asti, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima]),
+            ('Yleisvänkäri', 'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima]),
+            ('Info', 'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima]),
+            ('Salivänkäri', 'Salivänkäri vastaa ohjelmasalien toiminnasta. He pitävät huolen, että ohjelmat alkavat ja loppuvat ajallaan ja että ohjelmanjärjestäjillä on kaikki mitä he tarvitsevat salissa.', [tyovoima]),
 
-            (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
+            ('Ohjelmanpitäjä', 'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
@@ -154,11 +154,11 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Kuplitea']:
+        for name in ['Kuplitea']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            (u'Järjestyksenvalvoja', u'JV-kortti'),
+            ('Järjestyksenvalvoja', 'JV-kortti'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
@@ -167,19 +167,19 @@ class Setup(object):
             jc.save()
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'kuplitea',
+            slug='kuplitea',
             defaults=dict(
-                title=u'Kuplitean ilmoittautumislomake',
+                title='Kuplitean ilmoittautumislomake',
                 signup_form_class_path='events.kuplii2016.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.kuplii2016.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2015, 10, 22, 20, 0, 0, tzinfo=self.tz),

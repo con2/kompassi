@@ -17,9 +17,9 @@ logger = logging.getLogger('kompassi')
 ONE_TIME_CODE_LENGTH = 40
 ONE_TIME_CODE_ALPHABET = '0123456789abcdef'
 ONE_TIME_CODE_STATE_CHOICES = [
-    ('valid', _(u'Valid')),
-    ('used', _(u'Used')),
-    ('revoked', _(u'Revoked')),
+    ('valid', _('Valid')),
+    ('used', _('Used')),
+    ('revoked', _('Revoked')),
 ]
 
 
@@ -120,7 +120,7 @@ class OneTimeCodeLite(models.Model, OneTimeCodeMixin):
     email = models.EmailField(
         blank=True,
         max_length=EMAIL_LENGTH,
-        verbose_name=_(u'E-mail address'),
+        verbose_name=_('E-mail address'),
     )
     created_at = models.DateTimeField(auto_now_add=True)
     used_at = models.DateTimeField(null=True, blank=True)

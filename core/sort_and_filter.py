@@ -87,7 +87,7 @@ class SortAndFilterBase(object):
         :rtype: Iterable[tuple[dict, bool]]
         """
         selected_slug = self.selected_slug
-        for defn in self.definitions.values():
+        for defn in list(self.definitions.values()):
             yield (defn, defn.slug == selected_slug)
 
 

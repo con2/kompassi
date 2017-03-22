@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from collections import defaultdict, namedtuple, OrderedDict
 from datetime import date, datetime, timedelta
@@ -251,7 +251,7 @@ class Signup(models.Model, CsvExportMixin):
         p = self.person.full_name if self.person else 'None'
         e = self.event.name if self.event else 'None'
 
-        return u'{p} / {e}'.format(**locals())
+        return '{p} / {e}'.format(**locals())
 
     @property
     def signup_extra_model(self):
@@ -273,14 +273,14 @@ class Signup(models.Model, CsvExportMixin):
         return self.job_categories.count() > NUM_FIRST_CATEGORIES
 
     def get_redacted_category_names(self):
-        return u', '.join(cat.name for cat in self.job_categories.all()[NUM_FIRST_CATEGORIES:])
+        return ', '.join(cat.name for cat in self.job_categories.all()[NUM_FIRST_CATEGORIES:])
 
     @property
     def job_categories_label(self):
         if self.state == 'new':
-            return u'Haetut tehtävät'
+            return 'Haetut tehtävät'
         else:
-            return u'Hyväksytyt tehtävät'
+            return 'Hyväksytyt tehtävät'
 
     @property
     def job_category_accepted_labels(self):
@@ -309,7 +309,7 @@ class Signup(models.Model, CsvExportMixin):
 
         else:
             from warnings import warn
-            warn(u'Unknown state: {state}'.format(self=self))
+            warn('Unknown state: {state}'.format(self=self))
             labels = []
 
         return labels
@@ -335,7 +335,7 @@ class Signup(models.Model, CsvExportMixin):
         elif self.job_categories_accepted.exists():
             return self.job_categories_accepted.first().name
         else:
-            return u'Työvoima'
+            return 'Työvoima'
 
     @property
     def granted_privileges(self):

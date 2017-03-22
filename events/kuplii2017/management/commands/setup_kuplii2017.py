@@ -93,13 +93,13 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            (u'Kuplitea', 'kuplitea', 'labour'),
-            (u'Työvoima', 'tyovoima', 'labour'),
-            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            (u'Guest of Honour', 'goh', 'programme'),
-            (u'Media', 'media', 'badges'),
-            (u'Myyjä', 'myyja', 'badges'),
-            (u'Vieras', 'vieras', 'badges'),
+            ('Kuplitea', 'kuplitea', 'labour'),
+            ('Työvoima', 'tyovoima', 'labour'),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            ('Guest of Honour', 'goh', 'programme'),
+            ('Media', 'media', 'badges'),
+            ('Myyjä', 'myyja', 'badges'),
+            ('Vieras', 'vieras', 'badges'),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -123,11 +123,11 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Kuplitea']:
+        for name in ['Kuplitea']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            (u'Järjestyksenvalvoja', u'JV-kortti'),
+            ('Järjestyksenvalvoja', 'JV-kortti'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
@@ -136,19 +136,19 @@ class Setup(object):
             jc.save()
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'kuplitea',
+            slug='kuplitea',
             defaults=dict(
-                title=u'Kuplitean ilmoittautumislomake',
+                title='Kuplitean ilmoittautumislomake',
                 signup_form_class_path='events.kuplii2017.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.kuplii2017.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2016, 9, 21, 20, 0, 0, tzinfo=self.tz),

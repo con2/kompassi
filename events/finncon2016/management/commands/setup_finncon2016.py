@@ -97,14 +97,14 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            (u'Conitea', 'conitea', 'labour'),
-            (u'Ylivänkäri', 'ylivankari', 'labour'),
-            (u'Työvoima', 'tyovoima', 'labour'),
-            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            (u'Guest of Honour', 'goh', 'programme'),
-            (u'Media', 'media', 'badges'),
-            (u'Myyjä', 'myyja', 'badges'),
-            (u'Vieras', 'vieras', 'badges'),
+            ('Conitea', 'conitea', 'labour'),
+            ('Ylivänkäri', 'ylivankari', 'labour'),
+            ('Työvoima', 'tyovoima', 'labour'),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            ('Guest of Honour', 'goh', 'programme'),
+            ('Media', 'media', 'badges'),
+            ('Myyjä', 'myyja', 'badges'),
+            ('Vieras', 'vieras', 'badges'),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -122,20 +122,20 @@ class Setup(object):
         ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
         for name, description, pcs in [
-            (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli Conitean jäsen', [conitea]),
+            ('Conitea', 'Tapahtuman järjestelytoimikunnan eli Conitean jäsen', [conitea]),
 
-            (u'Info', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, ylivankari]),
-            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [tyovoima, ylivankari]),
-            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Edellyttää hygieniapassia.', [tyovoima, ylivankari]),
-            (u'Salivänkäri', u'Salivänkäri vastaa ohjelmasalien toiminnasta. He pitävät huolen, että ohjelmat alkavat ja loppuvat ajallaan ja että ohjelmanjärjestäjillä on kaikki mitä he tarvitsevat salissa.', [tyovoima, ylivankari]),
-            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima, ylivankari]),
-            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, ylivankari]),
-            (u'Iltabileiden lipunmyyjä', u'Iltabileiden pääsylippujen myyntiä sekä tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, ylivankari]),
-            (u'Iltabileiden järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen iltabileissä. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, ylivankari]),
-            (u'Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.', [tyovoima, ylivankari]),
-            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, ylivankari]),
+            ('Info', 'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, ylivankari]),
+            ('Narikka', 'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [tyovoima, ylivankari]),
+            ('Green room', 'Työvoiman ruokahuolto green roomissa. Edellyttää hygieniapassia.', [tyovoima, ylivankari]),
+            ('Salivänkäri', 'Salivänkäri vastaa ohjelmasalien toiminnasta. He pitävät huolen, että ohjelmat alkavat ja loppuvat ajallaan ja että ohjelmanjärjestäjillä on kaikki mitä he tarvitsevat salissa.', [tyovoima, ylivankari]),
+            ('Yleisvänkäri', 'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima, ylivankari]),
+            ('Järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, ylivankari]),
+            ('Iltabileiden lipunmyyjä', 'Iltabileiden pääsylippujen myyntiä sekä tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, ylivankari]),
+            ('Iltabileiden järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen iltabileissä. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, ylivankari]),
+            ('Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.', [tyovoima, ylivankari]),
+            ('Erikoistehtävä', 'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, ylivankari]),
 
-            (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
+            ('Ohjelmanpitäjä', 'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
@@ -152,12 +152,12 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for slug in [u'conitea']:
+        for slug in ['conitea']:
             JobCategory.objects.filter(event=self.event, slug=slug).update(public=False)
 
         for jc_name, qualification_name in [
-            (u'Järjestyksenvalvoja', u'JV-kortti'),
-            (u'Iltabileiden järjestyksenvalvoja', u'JV-kortti'),
+            ('Järjestyksenvalvoja', 'JV-kortti'),
+            ('Iltabileiden järjestyksenvalvoja', 'JV-kortti'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
@@ -167,7 +167,7 @@ class Setup(object):
 
         period_length = timedelta(hours=8)
         for period_description, period_start in [
-            (u'TODO', None),
+            ('TODO', None),
             # (u"Perjantain kasaus (pe klo 14-18)", None),
             # (u"Lauantain aamuvuoro (la klo 08-11)", None),
             # (u"Lauantain päivävuoro (la klo 11-15)", None),
@@ -186,19 +186,19 @@ class Setup(object):
             )
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'conitea',
+            slug='conitea',
             defaults=dict(
-                title=u'Conitean ilmoittautumislomake',
+                title='Conitean ilmoittautumislomake',
                 signup_form_class_path='events.finncon2016.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.finncon2016.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2015, 8, 18, 0, 0, 0, tzinfo=self.tz),
@@ -241,7 +241,7 @@ class Setup(object):
         personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
         role, unused = Role.objects.get_or_create(
             personnel_class=personnel_class,
-            title=u'Ohjelmanjärjestäjä',
+            title='Ohjelmanjärjestäjä',
             defaults=dict(
                 is_default=True,
                 require_contact_info=True,
@@ -251,11 +251,11 @@ class Setup(object):
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
             for title, style in [
-                (u'Puheohjelma', u'anime'),
-                (u'Akateeminen ohjelma', u'cosplay'),
-                (u'Miitti', u'miitti'),
-                (u'Työpaja', u'rope'),
-                (u'Muu ohjelma', u'muu'),
+                ('Puheohjelma', 'anime'),
+                ('Akateeminen ohjelma', 'cosplay'),
+                ('Miitti', 'miitti'),
+                ('Työpaja', 'rope'),
+                ('Muu ohjelma', 'muu'),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
@@ -293,17 +293,17 @@ class Setup(object):
         # )
 
         for view_name, room_names in [
-            (u'Pääohjelmatilat', [
-                u'Juhlasali',
-                u'Auditorio A1',
-                u'Luentosali A3',
-                u'Luentosali A4',
+            ('Pääohjelmatilat', [
+                'Juhlasali',
+                'Auditorio A1',
+                'Luentosali A3',
+                'Luentosali A4',
             ]),
-            (u'Toissijaiset ohjelmatilat', [
-                u'Auditorio D10a',
-                u'Auditorio D10b',
-                u'Auditorio D11',
-                u'Luentosali A05',
+            ('Toissijaiset ohjelmatilat', [
+                'Auditorio D10a',
+                'Auditorio D10b',
+                'Auditorio D11',
+                'Luentosali A05',
             ]),
         ]:
             rooms = [

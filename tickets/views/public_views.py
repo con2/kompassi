@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed, HttpResponseRedirect
@@ -430,7 +430,7 @@ class ConfirmPhase(Phase):
         order_products = order.order_product_set.filter(count__gt=0)
 
         if any(i.product.amount_available < i.count for i in order_products):
-            messages.error(request, u'Valitsemasi tuote on valitettavasti juuri myyty loppuun.')
+            messages.error(request, 'Valitsemasi tuote on valitettavasti juuri myyty loppuun.')
             errors.append("soldout_confirm")
             return errors
 

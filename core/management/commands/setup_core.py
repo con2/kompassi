@@ -22,7 +22,7 @@ class Command(BaseCommand):
             person, created = Person.get_or_create_dummy()
             log_get_or_create(logger, person, created)
         else:
-            print "Setting up core in production mode"
+            print("Setting up core in production mode")
 
         for group_name in settings.KOMPASSI_NEW_USER_GROUPS:
             group, created = Group.objects.get_or_create(name=group_name)

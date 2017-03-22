@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 
 class BadgePrivacyAdapter(object):
@@ -28,15 +28,15 @@ class BadgePrivacyAdapter(object):
 
     @property
     def first_name(self):
-        return self.badge.first_name.strip() if self.badge.is_first_name_visible else u''
+        return self.badge.first_name.strip() if self.badge.is_first_name_visible else ''
 
     @property
     def surname(self):
-        return self.badge.surname.strip() if self.badge.is_surname_visible else u''
+        return self.badge.surname.strip() if self.badge.is_surname_visible else ''
 
     @property
     def nick(self):
-        return self.badge.nick.strip() if self.badge.is_nick_visible else u''
+        return self.badge.nick.strip() if self.badge.is_nick_visible else ''
 
     @property
     def nick_or_first_name(self):

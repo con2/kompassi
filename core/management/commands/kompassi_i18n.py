@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import StringIO
+import io
 import logging
 
 import os
@@ -23,7 +23,7 @@ def extract_template(fileobj, keywords, comment_tags, options):
     src = templatize(src, "")
     if "gettext" in src:
         src = re.sub(r"\n\s+", "\n", src)  # Remove indentation
-        return extract_python(StringIO.StringIO(src.encode("utf8")), keywords, comment_tags, options)
+        return extract_python(io.StringIO(src.encode("utf8")), keywords, comment_tags, options)
     return ()
 
 
@@ -158,7 +158,8 @@ class Command(BaseCommand):
                         catalog = pofile.read_po(infp)
                     if not len(catalog):
                         continue
-                    sio = StringIO.StringIO()
+                    sio = io.StringIO()
+                    print(type(catalog))
                     mofile.write_mo(sio, catalog)
                     mo_file = filename.replace(".po", ".mo")
                     with open(mo_file, "wb") as outfp:

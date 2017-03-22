@@ -14,14 +14,14 @@ from .models import EmailAlias, GroupEmailAliasGrant, EmailAliasType
 
 class FakePerson(object):
     first_name = 'Santtu'
-    surname = u'Pajukanta'
+    surname = 'Pajukanta'
 
 
 class EmailifyTestCase(NonDatabaseTestCase):
     def test_emailify(self):
-        self.assertEqual(emailify(u''), u'')
-        self.assertEqual(emailify(u'Santtu Pajukanta'), u'santtu.pajukanta')
-        self.assertEqual(emailify(u'Kalle-Jooseppi Mäki-Kangas-Ketelä'), u'kalle-jooseppi.maki-kangas-ketela')
+        self.assertEqual(emailify(''), '')
+        self.assertEqual(emailify('Santtu Pajukanta'), 'santtu.pajukanta')
+        self.assertEqual(emailify('Kalle-Jooseppi Mäki-Kangas-Ketelä'), 'kalle-jooseppi.maki-kangas-ketela')
 
     def test_firstname_surname(self):
         self.assertEqual(firstname_surname(FakePerson()), 'santtu.pajukanta')
@@ -56,7 +56,7 @@ class EmailAliasesTestCase(TestCase):
             account_name_code='access.email_aliases:nick',
         ))
 
-        self.person.nick = u''
+        self.person.nick = ''
         self.person.save()
 
         self.assertEqual(alias_type.email_aliases.count(), 0)

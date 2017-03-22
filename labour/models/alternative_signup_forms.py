@@ -25,25 +25,25 @@ class AlternativeSignupForm(models.Model):
     OrganizerSignupForm and OrganizerSignupExtraForm.
     """
 
-    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
+    event = models.ForeignKey('core.Event', verbose_name='Tapahtuma')
 
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
     title = models.CharField(
         max_length=63,
-        verbose_name=u'Otsikko',
-        help_text=u'Tämä otsikko näkyy käyttäjälle.'
+        verbose_name='Otsikko',
+        help_text='Tämä otsikko näkyy käyttäjälle.'
     )
 
     signup_form_class_path = models.CharField(
         max_length=63,
-        help_text=u'Viittaus ilmoittautumislomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupForm',
+        help_text='Viittaus ilmoittautumislomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupForm',
     )
 
     signup_extra_form_class_path = models.CharField(
         max_length=63,
         default='labour.forms:ObsoleteEmptySignupExtraV1Form',
-        help_text=u'Viittaus lisätietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm',
+        help_text='Viittaus lisätietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm',
     )
 
     active_from = models.DateTimeField(
@@ -61,11 +61,11 @@ class AlternativeSignupForm(models.Model):
     signup_message = models.TextField(
         null=True,
         blank=True,
-        default=u'',
-        verbose_name=u'Ilmoittautumisen huomautusviesti',
-        help_text=u'Tämä viesti näytetään kaikille tätä lomaketta käyttäville työvoimailmoittautumisen alussa. Käytettiin '
-            u'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
-            u'erikoistehtäville.',
+        default='',
+        verbose_name='Ilmoittautumisen huomautusviesti',
+        help_text='Tämä viesti näytetään kaikille tätä lomaketta käyttäville työvoimailmoittautumisen alussa. Käytettiin '
+            'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
+            'erikoistehtäville.',
     )
 
     def __unicode__(self):
@@ -92,8 +92,8 @@ class AlternativeSignupForm(models.Model):
         return is_within_period(self.active_from, self.active_until)
 
     class Meta:
-        verbose_name = _(u'alternative signup form')
-        verbose_name_plural = _(u'alternative signup forms')
+        verbose_name = _('alternative signup form')
+        verbose_name_plural = _('alternative signup forms')
         unique_together = [
             ('event', 'slug'),
         ]

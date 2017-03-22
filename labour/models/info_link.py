@@ -5,23 +5,23 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class InfoLink(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name=u'Tapahtuma')
+    event = models.ForeignKey('core.Event', verbose_name='Tapahtuma')
     group = models.ForeignKey('auth.Group',
-        verbose_name=u'Ryhmä',
-        help_text=u'Linkki näytetään vain tämän ryhmän jäsenille.',
+        verbose_name='Ryhmä',
+        help_text='Linkki näytetään vain tämän ryhmän jäsenille.',
     )
 
     url = models.CharField(
         max_length=255,
-        verbose_name=u'Osoite',
-        help_text=u'Muista aloittaa ulkoiset linkit <i>http://</i> tai <i>https://</i>.'
+        verbose_name='Osoite',
+        help_text='Muista aloittaa ulkoiset linkit <i>http://</i> tai <i>https://</i>.'
     )
 
-    title = models.CharField(max_length=255, verbose_name=u'Teksti')
+    title = models.CharField(max_length=255, verbose_name='Teksti')
 
     class Meta:
-        verbose_name = _(u'info link')
-        verbose_name_plural = _(u'info links')
+        verbose_name = _('info link')
+        verbose_name_plural = _('info links')
 
     def __unicode__(self):
         return self.title

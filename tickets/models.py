@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
@@ -526,7 +526,7 @@ class Customer(models.Model):
     @property
     def sanitized_name(self):
         return "".join(i for i in self.name if i.isalpha() or i in
-            (u'ä', u'Ä', u'ö', u'Ö', u'å', u'Å', u'-', u"'", u" "))
+            ('ä', 'Ä', 'ö', 'Ö', 'å', 'Å', '-', "'", " "))
 
     @property
     def name_and_email(self):
@@ -858,7 +858,7 @@ class Order(models.Model):
                 order=lippukala_order,
                 prefix=self.lippukala_prefix,
                 product_text=op.product.name,
-            ) for i in xrange(op.count)]
+            ) for i in range(op.count)]
 
         return lippukala_order, codes
 
@@ -938,30 +938,30 @@ class Order(models.Model):
             if 'lippukala' in settings.INSTALLED_APPS and self.contains_electronic_tickets:
                 attachments.append(('e-lippu.pdf', self.get_etickets_pdf(), 'application/pdf'))
 
-                msgsubject = u"{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
+                msgsubject = "{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
                 msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
             else:
-                msgsubject = u"{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
+                msgsubject = "{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
                 msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
 
         elif msgtype == "delivery_confirmation":
             assert self.requires_shipping
-            msgsubject = u"{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
+            msgsubject = "{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
             msgbody = render_to_string("tickets_confirm_delivery.eml", self.email_vars)
 
         elif msgtype == "cancellation_notice":
-            msgsubject = u"{self.event.name}: Tilaus peruttu ({self.formatted_order_number})".format(self=self)
+            msgsubject = "{self.event.name}: Tilaus peruttu ({self.formatted_order_number})".format(self=self)
             msgbody = render_to_string("tickets_cancellation_notice.eml", self.email_vars)
 
         elif msgtype == "uncancellation_notice":
-            msgsubject = u"{self.event.name}: Tilaus palautettu ({self.formatted_order_number})".format(self=self)
+            msgsubject = "{self.event.name}: Tilaus palautettu ({self.formatted_order_number})".format(self=self)
             msgbody = render_to_string("tickets_uncancellation_notice.eml", self.email_vars)
 
         else:
             raise NotImplementedError(msgtype)
 
         if settings.DEBUG:
-            print msgbody
+            print(msgbody)
 
         message = EmailMessage(
             subject=msgsubject,
@@ -1110,7 +1110,7 @@ class AccommodationInformation(models.Model, CsvExportMixin):
 
     @property
     def formatted_order_number(self):
-        return self.order_product.order.formatted_order_number if self.order_product else u''
+        return self.order_product.order.formatted_order_number if self.order_product else ''
 
     @classmethod
     def get_csv_fields(cls, event):

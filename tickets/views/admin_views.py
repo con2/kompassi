@@ -249,35 +249,35 @@ def tickets_admin_order_view(request, vars, event, order_id):
             if 'cancel' in request.POST and can_cancel:
                 save()
                 order.cancel()
-                messages.success(request, u'Tilaus peruutettiin.')
+                messages.success(request, 'Tilaus peruutettiin.')
                 return redirect('tickets_admin_order_view', event.slug, order.pk)
 
             elif 'uncancel' in request.POST and can_uncancel:
                 save()
                 order.uncancel()
-                messages.success(request, u'Tilaus palautettiin.')
+                messages.success(request, 'Tilaus palautettiin.')
                 return redirect('tickets_admin_order_view', event.slug, order.pk)
 
             elif 'mark-paid' in request.POST and can_mark_paid:
                 save()
                 order.confirm_payment()
-                messages.success(request, u'Tilaus merkittiin maksetuksi.')
+                messages.success(request, 'Tilaus merkittiin maksetuksi.')
                 return redirect('tickets_admin_order_view', event.slug, order.pk)
 
             elif 'resend-confirmation' in request.POST and can_resend:
                 save()
                 order.send_confirmation_message('payment_confirmation')
-                messages.success(request, u'Vahvistusviesti lähetettiin uudelleen.')
+                messages.success(request, 'Vahvistusviesti lähetettiin uudelleen.')
                 return redirect('tickets_admin_order_view', event.slug, order.pk)
 
             elif 'save' in request.POST:
                 save()
-                messages.success(request, u'Muutokset tallennettiin.')
+                messages.success(request, 'Muutokset tallennettiin.')
 
             else:
-                messages.error(request, u'Tuntematon tai kielletty toiminto.')
+                messages.error(request, 'Tuntematon tai kielletty toiminto.')
         else:
-            messages.error(request, u'Ole hyvä ja tarkista lomake.')
+            messages.error(request, 'Ole hyvä ja tarkista lomake.')
 
     vars.update(
         order=order,
@@ -312,10 +312,10 @@ def tickets_admin_tools_view(request, vars, event):
         if 'cancel-unpaid' in request.POST:
             num_cancelled_orders = Order.cancel_unpaid_orders(event=event)
             messages.success(request,
-                u'{num_cancelled_orders} tilausta peruttiin.'.format(**locals())
+                '{num_cancelled_orders} tilausta peruttiin.'.format(**locals())
             )
         else:
-            messages.error(request, u'Tuntematon toiminto.')
+            messages.error(request, 'Tuntematon toiminto.')
 
         return redirect('tickets_admin_tools_view', event.slug)
 
@@ -401,7 +401,7 @@ def tickets_admin_accommodation_create_view(request, vars, event, limit_group_id
         info.limit_groups = [limit_group]
         info.save()
 
-        messages.success(request, u'Majoittuja lisättiin.')
+        messages.success(request, 'Majoittuja lisättiin.')
         return redirect('tickets_admin_accommodation_filtered_view', event.slug, limit_group_id)
 
     vars.update(
@@ -462,27 +462,27 @@ if 'lippukala' in settings.INSTALLED_APPS:
 def tickets_admin_menu_items(request, event):
     stats_url = url('tickets_admin_stats_view', event.slug)
     stats_active = request.path == stats_url
-    stats_text = u"Myyntitilanne"
+    stats_text = "Myyntitilanne"
 
     orders_url = url('tickets_admin_orders_view', event.slug)
     orders_active = request.path.startswith(orders_url)
-    orders_text = u"Tilaukset"
+    orders_text = "Tilaukset"
 
     batches_url = url('tickets_admin_batches_view', event.slug)
     batches_active = request.path.startswith(batches_url)
-    batches_text = u"Toimituserät"
+    batches_text = "Toimituserät"
 
     accommodation_url = url('tickets_admin_accommodation_view', event.slug)
     accommodation_active = request.path.startswith(accommodation_url)
-    accommodation_text = u"Majoituslistat"
+    accommodation_text = "Majoituslistat"
 
     tools_url = url('tickets_admin_tools_view', event.slug)
     tools_active = request.path.startswith(tools_url)
-    tools_text = u"Työkalut"
+    tools_text = "Työkalut"
 
     shirts_url = url('tickets_admin_shirts_view', event.slug)
     shirts_active = request.path.startswith(shirts_url)
-    shirts_text = u'Paidat'
+    shirts_text = 'Paidat'
 
     items = [
         (stats_active, stats_url, stats_text),
@@ -496,7 +496,7 @@ def tickets_admin_menu_items(request, event):
     if 'lippukala' in settings.INSTALLED_APPS:
         pos_url = url('tickets_admin_pos_view', event.slug)
         pos_active = False
-        pos_text = u"Lipuntarkastus"
+        pos_text = "Lipuntarkastus"
 
         items.extend([
             (pos_active, pos_url, pos_text),

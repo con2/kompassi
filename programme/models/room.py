@@ -35,8 +35,8 @@ class Room(models.Model):
 
     class Meta:
         ordering = ['venue', 'order']
-        verbose_name = u'tila'
-        verbose_name_plural = u'tilat'
+        verbose_name = 'tila'
+        verbose_name_plural = 'tilat'
         unique_together = [
             ('venue', 'slug'),
         ]
@@ -47,7 +47,7 @@ class Room(models.Model):
         venue, unused = Venue.get_or_create_dummy()
         return cls.objects.get_or_create(
             venue=venue,
-            name=u'Dummy room',
+            name='Dummy room',
             defaults=dict(
                 order=0,
             )

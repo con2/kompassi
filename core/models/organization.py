@@ -15,29 +15,29 @@ logger = logging.getLogger('kompassi')
 class Organization(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
 
-    name = models.CharField(max_length=255, verbose_name=u'Nimi')
-    name_genitive = models.CharField(max_length=255, verbose_name=u'Nimi genetiivissä')
+    name = models.CharField(max_length=255, verbose_name='Nimi')
+    name_genitive = models.CharField(max_length=255, verbose_name='Nimi genetiivissä')
 
-    description = models.TextField(blank=True, verbose_name=u'Kuvaus')
-    homepage_url = models.CharField(blank=True, max_length=255, verbose_name=u'Kotisivu')
+    description = models.TextField(blank=True, verbose_name='Kuvaus')
+    homepage_url = models.CharField(blank=True, max_length=255, verbose_name='Kotisivu')
     muncipality = models.CharField(
         blank=True,
         max_length=127,
-        verbose_name=u'Yhdistyksen kotipaikka',
-        help_text=u'Kunta, johon yhdistys on rekisteröity.',
+        verbose_name='Yhdistyksen kotipaikka',
+        help_text='Kunta, johon yhdistys on rekisteröity.',
     )
     public = models.BooleanField(
         default=False,
-        verbose_name=u'Julkinen',
-        help_text=u'Julkisilla yhdistyksillä on yhdistyssivu ja ne näytetään etusivulla.',
+        verbose_name='Julkinen',
+        help_text='Julkisilla yhdistyksillä on yhdistyssivu ja ne näytetään etusivulla.',
     )
 
     logo_url = models.CharField(
         blank=True,
         max_length=255,
         default='',
-        verbose_name=u'Organisaation logon URL',
-        help_text=u'Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)',
+        verbose_name='Organisaation logon URL',
+        help_text='Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)',
     )
 
     def save(self, *args, **kwargs):
@@ -45,10 +45,10 @@ class Organization(models.Model):
             self.slug = slugify(self.name)
 
         if self.name and not self.name_genitive:
-            if self.name.endswith(u' ry'):
-                self.name_genitive = self.name + u':n'
+            if self.name.endswith(' ry'):
+                self.name_genitive = self.name + ':n'
             else:
-                self.name_genitive = self.name + u'n'
+                self.name_genitive = self.name + 'n'
 
         return super(Organization, self).save(*args, **kwargs)
 
@@ -97,5 +97,5 @@ class Organization(models.Model):
         )
 
     class Meta:
-        verbose_name = u'Organisaatio'
-        verbose_name_plural = u'Organisaatiot'
+        verbose_name = 'Organisaatio'
+        verbose_name_plural = 'Organisaatiot'

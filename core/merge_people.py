@@ -24,7 +24,7 @@ def possible_merges(people):
 
     result = []
 
-    for unused, people_to_merge in key_map.iteritems():
+    for unused, people_to_merge in key_map.items():
         if len(people_to_merge) > 1:
             person_to_spare, people_to_merge = find_best_candidate(people_to_merge)
             result.append((person_to_spare, people_to_merge))

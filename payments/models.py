@@ -31,8 +31,8 @@ class PaymentsEventMeta(EventMetaBase):
         ))
 
     class Meta:
-        verbose_name = u'tapahtuman maksunvälitystiedot'
-        verbose_name_plural = u'tapahtuman maksunvälitystiedot'
+        verbose_name = 'tapahtuman maksunvälitystiedot'
+        verbose_name_plural = 'tapahtuman maksunvälitystiedot'
 
 
 class Payment(models.Model):
@@ -53,23 +53,23 @@ class Payment(models.Model):
         meta = self.event.payments_event_meta
         assert meta is not None
 
-    	computed_mac = hashlib.md5()
-    	computed_mac.update(meta.checkout_password)
+        computed_mac = hashlib.md5()
+        computed_mac.update(meta.checkout_password)
         computed_mac.update("&")
-    	computed_mac.update(self.VERSION)
+        computed_mac.update(self.VERSION)
         computed_mac.update("&")
-    	computed_mac.update(self.STAMP)
+        computed_mac.update(self.STAMP)
         computed_mac.update("&")
-    	computed_mac.update(self.REFERENCE)
+        computed_mac.update(self.REFERENCE)
         computed_mac.update("&")
-    	computed_mac.update(self.PAYMENT)
+        computed_mac.update(self.PAYMENT)
         computed_mac.update("&")
-    	computed_mac.update(str(self.STATUS))
+        computed_mac.update(str(self.STATUS))
         computed_mac.update("&")
-    	computed_mac.update(str(self.ALGORITHM))
+        computed_mac.update(str(self.ALGORITHM))
 
         # XXX should this read ==?
-    	return self.MAC != computed_mac.hexdigest().upper
+        return self.MAC != computed_mac.hexdigest().upper
 
     def clean(self):
         if not self._check_mac():

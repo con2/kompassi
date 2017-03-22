@@ -12,19 +12,19 @@ class FreeformOrganizer(models.Model):
     """
 
     programme = models.ForeignKey('programme.Programme',
-        verbose_name=_(u'Programme'),
+        verbose_name=_('Programme'),
         related_name='freeform_organizers',
     )
 
     text = models.CharField(
         max_length=255,
-        verbose_name=_(u'Text'),
-        help_text=_(u'This text will be shown as-is in the schedule'),
+        verbose_name=_('Text'),
+        help_text=_('This text will be shown as-is in the schedule'),
     )
 
     def __unicode__(self):
-        return u'{text} ({programme})'.format(text=self.text, programme=self.programme)
+        return '{text} ({programme})'.format(text=self.text, programme=self.programme)
 
     class Meta:
-        verbose_name = _(u'freeform organizer')
-        verbose_name_plural = _(u'freeform organizers')
+        verbose_name = _('freeform organizer')
+        verbose_name_plural = _('freeform organizers')

@@ -10,14 +10,14 @@ from ...models import Privilege, SlackAccess
 class Command(BaseCommand):
     def handle(*args, **opts):
         for slug, title, team_name in [
-            (u'tracon-slack', u'Traconin Slack-yhteisö', u'traconfi'),
-            (u'desuslack', u'Desuconin Slack-yhteisö', u'desucon'),
+            ('tracon-slack', 'Traconin Slack-yhteisö', 'traconfi'),
+            ('desuslack', 'Desuconin Slack-yhteisö', 'desucon'),
         ]:
             privilege, created = Privilege.objects.get_or_create(
                 slug=slug,
                 defaults=dict(
                     title=title,
-                    description=u'''
+                    description='''
 <p>Slack on reaaliaikainen chat-palvelu, jota voi käyttää selaimella, mobiilisovelluksilla sekä
 työpöytäsovelluksilla. Tämä tapahtuma käyttää Slackia järjestäjien, työvoiman ja ohjelmanjärjestäjien väliseen
 kommunikointiin. Slackin käyttö on vapaaehtoista mutta erittäin suositeltavaa.</p>
@@ -36,7 +36,7 @@ toimintoa pääsyn pyytämiseen, vaan pyydä pääsyä sähköpostitse os. <em>{
 et halua näyttää mitään sähköpostiosoitetta muille tämän Slack-yhteisön jäsenille, et valitettavasti voi käyttää
 Slackia.</p>
                     '''.strip().format(default_from_email=settings.DEFAULT_FROM_EMAIL),
-                    request_success_message=u'Kutsu Slackiin on lähetetty sähköpostiisi.',
+                    request_success_message='Kutsu Slackiin on lähetetty sähköpostiisi.',
                     grant_code='access.privileges:invite_to_slack',
                 )
             )

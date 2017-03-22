@@ -13,7 +13,7 @@ from core.utils import slugify
 from membership.models import MembershipOrganizationMeta, Term
 
 
-ORGANIZATION_DESCRIPTION = u"""
+ORGANIZATION_DESCRIPTION = """
 Yukitea ry on voittoa tavoittelematon yhdistys, jonka tavoite on edistää ja kehittää videopeli-, animaatio-, elokuva- ja sarjakuvaharrastuksia.
 
 Yukitea ry on vuosittaisen Yukicon -anime- ja pelitapahtuman järjestäjä.
@@ -41,7 +41,7 @@ class Setup(object):
 
         # v10
         if not self.organization.muncipality:
-            self.organization.muncipality = u'Espoo'
+            self.organization.muncipality = 'Espoo'
         if self.organization.public is None:
             self.organization.public = True
         if not self.organization.description:
@@ -56,7 +56,7 @@ class Setup(object):
             admin_group=membership_admin_group,
             members_group=members_group,
             receiving_applications=False,
-            membership_requirements=u"""
+            membership_requirements="""
 Yukitea ry hyväksyy varsinaisia ja kannatusjäseniä. Kompassin kautta on mahdollista liittyä vain kannatusjäseneksi. Kannatusjäsen on jäsen, joka tukee yhdistyksen toimintaa rahallisesti osallistumatta siihen aktiivisesti. Kannatusjäsenillä ei ole läsnäolo-, puhe- tai äänioikeutta yhdistyksen kokouksissa.
 
 Yhdistyksen varsinaisiksi jäseniksi voidaan hyväksyä henkilöitä, jotka osallistuvat yhdistyksen toimintaan. Jos haluat liittyä yhdistyksen varsinaiseksi jäseneksi, ota yhteyttä yhdistyksen hallitukseen yukicon@yukicon.fi.

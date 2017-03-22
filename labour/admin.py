@@ -44,12 +44,12 @@ class QualificationAdmin(admin.ModelAdmin):
 
 def make_selected_job_categories_public(modeladmin, request, queryset):
     queryset.update(public=True)
-make_selected_job_categories_public.short_description = u'Laita valitut tehtävät julkiseen hakuun'
+make_selected_job_categories_public.short_description = 'Laita valitut tehtävät julkiseen hakuun'
 
 
 def make_selected_job_categories_nonpublic(modeladmin, request, queryset):
     queryset.update(public=False)
-make_selected_job_categories_nonpublic.short_description = u'Ota valitut tehtävät pois julkisesta hausta'
+make_selected_job_categories_nonpublic.short_description = 'Ota valitut tehtävät pois julkisesta hausta'
 
 
 class JobCategoryAdmin(admin.ModelAdmin):

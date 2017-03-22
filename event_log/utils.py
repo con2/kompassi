@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import logging
 
@@ -27,7 +27,7 @@ def log_creations(model, **extra_kwargs_for_emit):
             return
 
         kwargs_for_emit = dict()
-        for key, value in extra_kwargs_for_emit.iteritems():
+        for key, value in extra_kwargs_for_emit.items():
             if value is INSTANCE:
                 value = instance
             elif callable(value):

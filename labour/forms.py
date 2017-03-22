@@ -26,8 +26,8 @@ from .models import (
 
 
 class AdminPersonForm(PersonForm):
-    age_now = forms.IntegerField(required=False, label=u'Ikä nyt')
-    age_event_start = forms.IntegerField(required=False, label=u'Ikä tapahtuman alkaessa')
+    age_now = forms.IntegerField(required=False, label='Ikä nyt')
+    age_event_start = forms.IntegerField(required=False, label='Ikä tapahtuman alkaessa')
 
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
@@ -101,7 +101,7 @@ class SignupForm(forms.ModelForm, SignupFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Tehtävät',
+            Fieldset('Tehtävät',
                 'job_categories'
             ),
         )
@@ -110,7 +110,7 @@ class SignupForm(forms.ModelForm, SignupFormMixin):
         job_categories = self.cleaned_data['job_categories']
 
         if not all(jc.is_person_qualified(self.instance.person) for jc in job_categories):
-            raise forms.ValidationError(u'Sinulla ei ole vaadittuja pätevyyksiä valitsemiisi tehtäviin.')
+            raise forms.ValidationError('Sinulla ei ole vaadittuja pätevyyksiä valitsemiisi tehtäviin.')
 
         return job_categories
 
@@ -178,9 +178,9 @@ class SignupAdminForm(forms.ModelForm):
         job_categories_accepted = self.cleaned_data['job_categories_accepted']
 
         if self.instance.is_accepted and not job_categories_accepted and self.instance.job_categories.count() != 1:
-            raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi tehtäväalue. Henkilön hakema tehtävä ei ole yksikäsitteinen, joten tehtäväaluetta ei voitu valita automaattisesti.')
+            raise forms.ValidationError('Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi tehtäväalue. Henkilön hakema tehtävä ei ole yksikäsitteinen, joten tehtäväaluetta ei voitu valita automaattisesti.')
         elif (self.instance.is_rejected or self.instance.is_cancelled) and job_categories_accepted:
-            raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään tehtäväalue ei saa olla valittuna.')
+            raise forms.ValidationError('Kun ilmoittautuminen on hylätty, mikään tehtäväalue ei saa olla valittuna.')
 
         return job_categories_accepted
 
@@ -188,9 +188,9 @@ class SignupAdminForm(forms.ModelForm):
         personnel_classes = self.cleaned_data['personnel_classes']
 
         if self.instance.is_accepted and not personnel_classes:
-            raise forms.ValidationError(u'Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi Henkilöstöluokka.')
+            raise forms.ValidationError('Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi Henkilöstöluokka.')
         elif (self.instance.is_rejected or self.instance.is_cancelled) and personnel_classes:
-            raise forms.ValidationError(u'Kun ilmoittautuminen on hylätty, mikään Henkilöstöluokka ei saa olla valittuna.')
+            raise forms.ValidationError('Kun ilmoittautuminen on hylätty, mikään Henkilöstöluokka ei saa olla valittuna.')
 
         return personnel_classes
 

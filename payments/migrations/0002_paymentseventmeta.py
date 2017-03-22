@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PaymentsEventMeta',
             fields=[
-                ('event', models.OneToOneField(related_name=b'paymentseventmeta', primary_key=True, serialize=False, to='core.Event')),
+                ('event', models.OneToOneField(related_name='paymentseventmeta', primary_key=True, serialize=False, to='core.Event')),
                 ('checkout_password', models.CharField(max_length=255)),
                 ('checkout_merchant', models.CharField(max_length=255)),
                 ('checkout_delivery_date', models.CharField(max_length=9)),

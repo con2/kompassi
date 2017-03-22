@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -12,7 +12,7 @@ class GroupPrivilege(models.Model):
     event = models.ForeignKey('core.Event', null=True, blank=True, related_name='group_privileges')
 
     def __unicode__(self):
-        return u'{group_name} - {privilege_title}'.format(
+        return '{group_name} - {privilege_title}'.format(
             group_name=self.group.name if self.group else None,
             privilege_title=self.privilege.title if self.privilege else None,
         )

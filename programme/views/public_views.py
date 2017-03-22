@@ -29,11 +29,11 @@ from ..helpers import (
 def get_timetable_tabs(request, event):
     timetable_url = url('programme_timetable_view', event.slug)
     timetable_active = request.path == timetable_url
-    timetable_text = u'Ohjelmakartta'
+    timetable_text = 'Ohjelmakartta'
 
     special_url = url('programme_special_view', event.slug)
     special_active = request.path == special_url
-    special_text = u'Ohjelmakartan ulkopuolinen ohjelma'
+    special_text = 'Ohjelmakartan ulkopuolinen ohjelma'
 
     return [
         Tab(timetable_url, timetable_text, timetable_active, 0),
@@ -183,7 +183,7 @@ def actual_special_view(
 @require_safe
 def programme_internal_dumpdata_view(request):
     from django.core import management
-    from cStringIO import StringIO
+    from io import StringIO
 
     buffer = StringIO()
     management.call_command('dumpdata', 'programme', stdout=buffer)
@@ -243,7 +243,7 @@ def programme_json_view(request, event, format='default', include_unpublished=Fa
 def programme_profile_menu_items(request):
     programme_url = url('programme_profile_view')
     programme_active = request.path.startswith(programme_url)
-    programme_text = _(u'Programmes')
+    programme_text = _('Programmes')
 
     return [
         (programme_active, programme_url, programme_text)

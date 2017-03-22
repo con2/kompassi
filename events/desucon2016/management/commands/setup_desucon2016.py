@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from datetime import datetime, timedelta
 
@@ -97,14 +97,14 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            (u'Vastaava', 'vastaava', 'labour'),
-            (u'Vuorovastaava', 'vuorovastaava', 'labour'),
-            (u'Työvoima', 'tyovoima', 'labour'),
-            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            (u'Guest of Honour', 'goh', 'programme'),
-            (u'Media', 'media', 'badges'),
-            (u'Myyjä', 'myyja', 'badges'),
-            (u'Vieras', 'vieras', 'badges'),
+            ('Vastaava', 'vastaava', 'labour'),
+            ('Vuorovastaava', 'vuorovastaava', 'labour'),
+            ('Työvoima', 'tyovoima', 'labour'),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            ('Guest of Honour', 'goh', 'programme'),
+            ('Media', 'media', 'badges'),
+            ('Myyjä', 'myyja', 'badges'),
+            ('Vieras', 'vieras', 'badges'),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -122,29 +122,29 @@ class Setup(object):
         ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
         for name, description, pcs in [
-            (u'Vastaava', u'', [vastaava]),
-            (u'Pelisali', u'', [tyovoima, vuorovastaava]),
-            (u'Kahvila', u'', [tyovoima, vuorovastaava]),
-            (u'AV-tekniikka', u'', [tyovoima, vuorovastaava]),
-            (u'Logistiikka', u'', [tyovoima, vuorovastaava]),
-            (u'DesuTV', u'', [tyovoima, vuorovastaava]),
-            (u'Tulkki', u'', [tyovoima, vuorovastaava]),
-            (u'Sidosryhmät', u'', [tyovoima, vuorovastaava]),
+            ('Vastaava', '', [vastaava]),
+            ('Pelisali', '', [tyovoima, vuorovastaava]),
+            ('Kahvila', '', [tyovoima, vuorovastaava]),
+            ('AV-tekniikka', '', [tyovoima, vuorovastaava]),
+            ('Logistiikka', '', [tyovoima, vuorovastaava]),
+            ('DesuTV', '', [tyovoima, vuorovastaava]),
+            ('Tulkki', '', [tyovoima, vuorovastaava]),
+            ('Sidosryhmät', '', [tyovoima, vuorovastaava]),
 
-            (u'Narikka', u'Narikkakuutit ovat vastuussa tapahtuman narikoiden pyörittämisestä. Työ itsessään on yksinkertaista, mutta tekemistä sen sijaan on varmasti riittävästi. Narikka on henkilömäärältään suurin työvoimaryhmä.', [tyovoima, vuorovastaava]),
-            (u'Siivous', u'Siivouskuutit ovat vastuussa tapahtuman yleisestä siisteydestä. He kulkevat ympäriinsä tehtävänään roskakorien tyhjennys, vesipisteiden täyttö, vessoihin papereiden lisääminen ja monet muut pienet askareet. Työ tehdään pääsääntöisesti kuuttipareittain.', [tyovoima, vuorovastaava]),
-            (u'Green room', u'Green room -kuuttina sinun täytyy olla kykeneväinen itsenäiseen ja oma-aloitteeseen työskentelyyn. Tehtäviisi kuuluu kahvin keitto, esivalmistelutyöt, paikkojen siistiminen ym. Huomioithan että tekemistä riittää GreenRoomissa lähestulkoon läpi vuorokauden, joten tämä ei ole pesti jossa pärjää peukkujen pyörittelyllä.', [tyovoima, vuorovastaava]),
-            (u'Info', u'Infotiski on tapahtuman hyvin öljytty hermokeskus, joka ottaa vastaan ja ohjaa informaatiota eteenpäin. Työnkuvaasi infokuuttina kuuluu kysymyksiin vastaaminen niin kävijöille kuin työvoimallekin, neuvonta, kuulutukset ja muun informaation edelleenlähetys asianomaisille. Infopiste on yksi tapahtumapaikan näkyvimmistä työvoimapisteistä. Sen työntekijöiltä toivotaan asiakaspalveluosaamista ja ongelmanratkaisutaitoja sekä hyvää huumorintajua.', [tyovoima, vuorovastaava]),
-            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, vuorovastaava]),
-            (u'Valokuvaaja', u'Desukuvaajana tehtävänäsi on yleis-, ohjelma- ja photoshoot-kuvaus. Kuvauspisteen kuvaajat kuvaavat cosplayasuja studiossa. Valokuvaus tapahtuu kuvaajien omalla kalustolla.', [tyovoima, vuorovastaava]),
-            (u'Taltiointi', u'Taltiointikuutit tallentavat Desuconin ohjelmista äänen ja kuvan. Osa taltiointitiimin jäsenistä myös editoi tämän materiaalin, jotta ohjelmat ovat nähtävissä myöhemminkin. Lisäksi taltiointikuutit kuvaavat videomateriaalia muuten tapahtumasta.', [tyovoima, vuorovastaava]),
+            ('Narikka', 'Narikkakuutit ovat vastuussa tapahtuman narikoiden pyörittämisestä. Työ itsessään on yksinkertaista, mutta tekemistä sen sijaan on varmasti riittävästi. Narikka on henkilömäärältään suurin työvoimaryhmä.', [tyovoima, vuorovastaava]),
+            ('Siivous', 'Siivouskuutit ovat vastuussa tapahtuman yleisestä siisteydestä. He kulkevat ympäriinsä tehtävänään roskakorien tyhjennys, vesipisteiden täyttö, vessoihin papereiden lisääminen ja monet muut pienet askareet. Työ tehdään pääsääntöisesti kuuttipareittain.', [tyovoima, vuorovastaava]),
+            ('Green room', 'Green room -kuuttina sinun täytyy olla kykeneväinen itsenäiseen ja oma-aloitteeseen työskentelyyn. Tehtäviisi kuuluu kahvin keitto, esivalmistelutyöt, paikkojen siistiminen ym. Huomioithan että tekemistä riittää GreenRoomissa lähestulkoon läpi vuorokauden, joten tämä ei ole pesti jossa pärjää peukkujen pyörittelyllä.', [tyovoima, vuorovastaava]),
+            ('Info', 'Infotiski on tapahtuman hyvin öljytty hermokeskus, joka ottaa vastaan ja ohjaa informaatiota eteenpäin. Työnkuvaasi infokuuttina kuuluu kysymyksiin vastaaminen niin kävijöille kuin työvoimallekin, neuvonta, kuulutukset ja muun informaation edelleenlähetys asianomaisille. Infopiste on yksi tapahtumapaikan näkyvimmistä työvoimapisteistä. Sen työntekijöiltä toivotaan asiakaspalveluosaamista ja ongelmanratkaisutaitoja sekä hyvää huumorintajua.', [tyovoima, vuorovastaava]),
+            ('Järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi > Pätevyydet).', [tyovoima, vuorovastaava]),
+            ('Valokuvaaja', 'Desukuvaajana tehtävänäsi on yleis-, ohjelma- ja photoshoot-kuvaus. Kuvauspisteen kuvaajat kuvaavat cosplayasuja studiossa. Valokuvaus tapahtuu kuvaajien omalla kalustolla.', [tyovoima, vuorovastaava]),
+            ('Taltiointi', 'Taltiointikuutit tallentavat Desuconin ohjelmista äänen ja kuvan. Osa taltiointitiimin jäsenistä myös editoi tämän materiaalin, jotta ohjelmat ovat nähtävissä myöhemminkin. Lisäksi taltiointikuutit kuvaavat videomateriaalia muuten tapahtumasta.', [tyovoima, vuorovastaava]),
             #(u'Myyntisali', u'Myyntisalikuutin tehtävänä on pääsääntöisesti vastata Desuconin oman oheistuotemyyntipöydän tuotteiden järjestelemisestä ja myymisestä. Myyntisalikuutin toimenkuvaan kuuluu myös myyntisalissa päivystäminen: tämä tarkoittaa kävijöiden kysymyksiin vastaamista, ohjeistamista, myyjien Green Roomin ylläpitoa ja myyjien auttamista ongelmatilanteissa. Hakijoilta vaaditaan aiempaa rahankäsittelykokemusta.', [tyovoima, vuorovastaava]),
-            (u'Myynti', u'Myyntikuuttina tehtävänäsi on vaihtaa e-lippuja rannekkeisiin ja myydä oheistuotteita Desuconin myyntipöydällä. Työ sisältää vauhtia, vaarattomia tilanteita ja rahan käsittelyä. Vuorot ovat pääsääntöisesti päiväsaikaan ja iltavuoroja ei juuri ole. Suurin ruuhka tapahtumaan saapuvilla on perjantaina, jolloin olet toivottavasti jo paikalla.', [tyovoima, vuorovastaava]),
-            (u'Tekniikka', u'Tekniikkakuutit huolehtivat tapahtuman aikana teknologian toimivuudesta. Työtehtävät ovat hyvin monipuolisia verkon rakentamisesta ohjelmansalien äänentoistosta huolehtimiseen, joten tietotekniikan laaja perustuntemus on valinnan edellytyksenä.', [tyovoima, vuorovastaava]),
-            (u'Cosplay', u'Cosplaykuuttein tehtävänä on huolehtia etupäässä cosplaykisaajain avustamisesta harjoitusten ja kilpailujen aikana takahuoneessa ja kulisseissa. Työ jakautuu kaikille conipäiville ja sisältää moninaista puuhaa kisaajien ohjaamisesta paikkalippujen jakamiseen ja lavasteiden kuljettamiseen.', [tyovoima, vuorovastaava]),
-            (u'Majoitus', u'Majoituskuuttein tehtävä on vastata majoittujien turvallisuudesta. Kuutit ottavat majoittujat vastaan, ja pitävät huolta siitä, että ketään ylimääräistä ei päästetä majoitustiloihin. Kuutit myös kiertelevät majoitustiloja ympäri valvomassa järjestystä. Työ tehdään lattiamajoitusalueella.', [tyovoima, vuorovastaava]),
+            ('Myynti', 'Myyntikuuttina tehtävänäsi on vaihtaa e-lippuja rannekkeisiin ja myydä oheistuotteita Desuconin myyntipöydällä. Työ sisältää vauhtia, vaarattomia tilanteita ja rahan käsittelyä. Vuorot ovat pääsääntöisesti päiväsaikaan ja iltavuoroja ei juuri ole. Suurin ruuhka tapahtumaan saapuvilla on perjantaina, jolloin olet toivottavasti jo paikalla.', [tyovoima, vuorovastaava]),
+            ('Tekniikka', 'Tekniikkakuutit huolehtivat tapahtuman aikana teknologian toimivuudesta. Työtehtävät ovat hyvin monipuolisia verkon rakentamisesta ohjelmansalien äänentoistosta huolehtimiseen, joten tietotekniikan laaja perustuntemus on valinnan edellytyksenä.', [tyovoima, vuorovastaava]),
+            ('Cosplay', 'Cosplaykuuttein tehtävänä on huolehtia etupäässä cosplaykisaajain avustamisesta harjoitusten ja kilpailujen aikana takahuoneessa ja kulisseissa. Työ jakautuu kaikille conipäiville ja sisältää moninaista puuhaa kisaajien ohjaamisesta paikkalippujen jakamiseen ja lavasteiden kuljettamiseen.', [tyovoima, vuorovastaava]),
+            ('Majoitus', 'Majoituskuuttein tehtävä on vastata majoittujien turvallisuudesta. Kuutit ottavat majoittujat vastaan, ja pitävät huolta siitä, että ketään ylimääräistä ei päästetä majoitustiloihin. Kuutit myös kiertelevät majoitustiloja ympäri valvomassa järjestystä. Työ tehdään lattiamajoitusalueella.', [tyovoima, vuorovastaava]),
 
-            (u'Ohjelmanpitäjä', u'', [ohjelma]),
+            ('Ohjelmanpitäjä', '', [ohjelma]),
         ]:
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
@@ -161,13 +161,13 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Vastaava', u'Pelisali', u'Kahvila', u'Sidosryhmät', u'AV-tekniikka', u'Logistiikka', u'DesuTV', u'Tulkki', u'Valokuvaaja']:
+        for name in ['Vastaava', 'Pelisali', 'Kahvila', 'Sidosryhmät', 'AV-tekniikka', 'Logistiikka', 'DesuTV', 'Tulkki', 'Valokuvaaja']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
-        JobCategory.objects.filter(event=self.event, name=u'Ohjelmanpitäjä').update(app_label='programme')
+        JobCategory.objects.filter(event=self.event, name='Ohjelmanpitäjä').update(app_label='programme')
 
         for jc_name, qualification_name in [
-            (u'Järjestyksenvalvoja', u'JV-kortti'),
+            ('Järjestyksenvalvoja', 'JV-kortti'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
@@ -177,9 +177,9 @@ class Setup(object):
 
         organizer_form, unused = AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'vastaava',
+            slug='vastaava',
             defaults=dict(
-                title=u'Vastaavan ilmoittautumislomake',
+                title='Vastaavan ilmoittautumislomake',
                 signup_form_class_path='events.desucon2016.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.desucon2016.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2016, 1, 28, 0, 0, 0, tzinfo=self.tz),
@@ -192,25 +192,25 @@ class Setup(object):
             organizer_form.save()
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'xxlomake',
+            slug='xxlomake',
             defaults=dict(
-                title=u'Erikoistehtävien ilmoittautumislomake',
+                title='Erikoistehtävien ilmoittautumislomake',
                 signup_form_class_path='events.desucon2016.forms:SpecialistSignupForm',
                 signup_extra_form_class_path='events.desucon2016.forms:SpecialistSignupExtraForm',
                 active_from=datetime(2016, 1, 28, 0, 0, 0, tzinfo=self.tz),
                 active_until=self.event.start_time,
-                signup_message=u'Yleinen työvoimahaku Desuconiin ei ole enää auki. Täytä tämä lomake vain, '
-                    u'jos joku Desuconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella. ',
+                signup_message='Yleinen työvoimahaku Desuconiin ei ole enää auki. Täytä tämä lomake vain, '
+                    'jos joku Desuconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella. ',
             ),
         )
 

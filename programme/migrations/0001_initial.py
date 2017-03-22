@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import programme.models
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(unique=True, max_length=63)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('used_at', models.DateTimeField(null=True, blank=True)),
-                ('state', models.CharField(default=b'valid', max_length=8, choices=[(b'valid', 'Kelvollinen'), (b'used', 'K\xe4ytetty'), (b'revoked', 'Mit\xe4t\xf6ity')])),
+                ('state', models.CharField(default='valid', max_length=8, choices=[('valid', 'Kelvollinen'), ('used', 'K\xe4ytetty'), ('revoked', 'Mit\xe4t\xf6ity')])),
                 ('person', models.ForeignKey(to='core.Person')),
                 ('programme', models.ForeignKey(to='programme.Programme')),
             ],
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProgrammeEventMeta',
             fields=[
-                ('event', models.OneToOneField(related_name=b'programmeeventmeta', primary_key=True, serialize=False, to='core.Event')),
+                ('event', models.OneToOneField(related_name='programmeeventmeta', primary_key=True, serialize=False, to='core.Event')),
                 ('public', models.BooleanField(default=True)),
                 ('contact_email', models.CharField(help_text='Kaikki ohjelmaj\xe4rjestelm\xe4n l\xe4hett\xe4m\xe4t s\xe4hk\xf6postiviestit l\xe4hetet\xe4\xe4n t\xe4st\xe4 osoitteesta, ja t\xe4m\xe4 osoite n\xe4ytet\xe4\xe4n ohjelmanj\xe4rjest\xe4j\xe4lle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.', max_length=255, verbose_name='yhteysosoite', blank=True)),
                 ('admin_group', models.ForeignKey(to='auth.Group')),
@@ -147,7 +147,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=15)),
                 ('order', models.IntegerField(default=0)),
-                ('style', models.CharField(default=b'label-default', max_length=15)),
+                ('style', models.CharField(default='label-default', max_length=15)),
                 ('event', models.ForeignKey(to='core.Event')),
             ],
             options={

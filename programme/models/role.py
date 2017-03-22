@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.db import models
 from django.dispatch import receiver
@@ -59,7 +59,7 @@ class Role(models.Model):
         return self.override_public_title if self.override_public_title else self.title
 
     @classmethod
-    def get_or_create_dummy(cls, personnel_class=None, priority=0, title=u'Overbaron'):
+    def get_or_create_dummy(cls, personnel_class=None, priority=0, title='Overbaron'):
         from labour.models import PersonnelClass
 
         if personnel_class is None:

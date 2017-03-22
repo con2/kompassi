@@ -9,36 +9,36 @@ from core.utils import validate_slug
 
 
 SHIFT_TYPE_CHOICES = [
-    (u'2h', '2 tunnin vuoroja'),
-    (u'4h', '4 tunnin vuoroja'),
-    (u'yli4h', 'Yli 4 tunnin vuoroja'),
+    ('2h', '2 tunnin vuoroja'),
+    ('4h', '4 tunnin vuoroja'),
+    ('yli4h', 'Yli 4 tunnin vuoroja'),
 ]
 
 
 TOTAL_WORK_CHOICES = [
-    (u'8h', '8 tuntia'),
-    (u'yli8h', 'Yli 8 tuntia'),
+    ('8h', '8 tuntia'),
+    ('yli8h', 'Yli 8 tuntia'),
 ]
 
 
 SHIRT_SIZES = [
-    (u'NO_SHIRT', u'Ei paitaa'),
+    ('NO_SHIRT', 'Ei paitaa'),
 
-    (u'XS', u'XS Unisex'),
-    (u'S', u'S Unisex'),
-    (u'M', u'M Unisex'),
-    (u'L', u'L Unisex'),
-    (u'XL', u'XL Unisex'),
-    (u'XXL', u'XXL Unisex'),
-    (u'3XL', u'3XL Unisex'),
-    (u'4XL', u'4XL Unisex'),
-    (u'5XL', u'5XL Unisex'),
+    ('XS', 'XS Unisex'),
+    ('S', 'S Unisex'),
+    ('M', 'M Unisex'),
+    ('L', 'L Unisex'),
+    ('XL', 'XL Unisex'),
+    ('XXL', 'XXL Unisex'),
+    ('3XL', '3XL Unisex'),
+    ('4XL', '4XL Unisex'),
+    ('5XL', '5XL Unisex'),
 
-    (u'LF_XS', u'XS Ladyfit'),
-    (u'LF_S', u'S Ladyfit'),
-    (u'LF_M', u'M Ladyfit'),
-    (u'LF_L', u'L Ladyfit'),
-    (u'LF_XL', u'XL Ladyfit'),
+    ('LF_XS', 'XS Ladyfit'),
+    ('LF_S', 'S Ladyfit'),
+    ('LF_M', 'M Ladyfit'),
+    ('LF_L', 'L Ladyfit'),
+    ('LF_XL', 'XL Ladyfit'),
 ]
 
 
@@ -51,14 +51,14 @@ class SpecialDiet(models.Model):
 
 class SignupExtra(ObsoleteSignupExtraBaseV1):
     shift_type = models.CharField(max_length=15,
-        verbose_name=u'Toivottu työvuoron pituus',
-        help_text=u'Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
+        verbose_name='Toivottu työvuoron pituus',
+        help_text='Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
         choices=SHIFT_TYPE_CHOICES,
     )
 
     total_work = models.CharField(max_length=15,
-        verbose_name=u'Toivottu kokonaistyömäärä',
-        help_text=u'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
+        verbose_name='Toivottu kokonaistyömäärä',
+        help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
         choices=TOTAL_WORK_CHOICES,
     )
 
@@ -67,46 +67,46 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         blank=True,
         max_length=8,
         choices=SHIRT_SIZES,
-        verbose_name=u'Paidan koko',
-        help_text=u'Ajoissa ilmoittautuneet vänkärit saavat mahdollisesti maksuttoman työvoimapaidan. '
-            u'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
-            u'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
-            u'target="_blank">ladyfit-paita</a>',
+        verbose_name='Paidan koko',
+        help_text='Ajoissa ilmoittautuneet vänkärit saavat mahdollisesti maksuttoman työvoimapaidan. '
+            'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
+            'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
+            'target="_blank">ladyfit-paita</a>',
     )
 
     dead_dog = models.BooleanField(
         default=False,
-        verbose_name=u'Osallistun dead dogeihin',
-        help_text=u'Dead dogit ovat heti tapahtuman jälkeen järjestettävät kestit kaikille täysikäisille työvoimaan kuuluville. Dead dogit järjestetään TKL:n bussireittien tavoitettavissa olevassa paikassa. Ilmoittautuminen ei ole sitova.',
+        verbose_name='Osallistun dead dogeihin',
+        help_text='Dead dogit ovat heti tapahtuman jälkeen järjestettävät kestit kaikille täysikäisille työvoimaan kuuluville. Dead dogit järjestetään TKL:n bussireittien tavoitettavissa olevassa paikassa. Ilmoittautuminen ei ole sitova.',
     )
 
     special_diet = models.ManyToManyField(
         SpecialDiet,
         blank=True,
-        verbose_name=u'Erikoisruokavalio'
+        verbose_name='Erikoisruokavalio'
     )
 
     special_diet_other = models.TextField(
         blank=True,
-        verbose_name=u'Muu erikoisruokavalio',
-        help_text=u'Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
-            u'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
-            u'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+        verbose_name='Muu erikoisruokavalio',
+        help_text='Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
+            'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
+            'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
     )
 
     prior_experience = models.TextField(
         blank=True,
-        verbose_name=u'Työkokemus',
-        help_text=u'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
-            u'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
-            u'hakemassasi tehtävässä.'
+        verbose_name='Työkokemus',
+        help_text='Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
+            'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
+            'hakemassasi tehtävässä.'
     )
 
     free_text = models.TextField(
         blank=True,
-        verbose_name=u'Vapaa alue',
-        help_text=u'Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
-            u'omaa kenttää yllä, käytä tätä kenttää.'
+        verbose_name='Vapaa alue',
+        help_text='Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
+            'omaa kenttää yllä, käytä tätä kenttää.'
     )
 
     @classmethod
@@ -137,13 +137,13 @@ class Signupfinncon2016(QueryBuilder):
         "signup__person__nick",
     ]
     view_groups = (
-        (u"Henkilötiedot", add_prefix("signup__person__", (
+        ("Henkilötiedot", add_prefix("signup__person__", (
             "surname", "first_name", "nick", "phone", "email", "birth_date"))),
-        (u"Sisäiset", add_prefix("signup__", (
+        ("Sisäiset", add_prefix("signup__", (
             "state", "job_categories_accepted__pk", "notes", "created_at", "updated_at"))),
-        (u"Työvuorotoiveet", "signup__job_categories__pk", "shift_type", "total_work"),
-        (u"Lisätiedot", "special_diet__pk", "special_diet_other",
+        ("Työvuorotoiveet", "signup__job_categories__pk", "shift_type", "total_work"),
+        ("Lisätiedot", "special_diet__pk", "special_diet_other",
             "prior_experience", "free_text"),
-        (u"Tila", add_prefix("signup__time_", ("accepted", "finished", "complained", "cancelled",
+        ("Tila", add_prefix("signup__time_", ("accepted", "finished", "complained", "cancelled",
                                               "rejected", "arrived", "work_accepted", "reprimanded",))),
     )

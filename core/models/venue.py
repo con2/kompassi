@@ -4,16 +4,16 @@ from django.db import models
 
 
 class Venue(models.Model):
-    name = models.CharField(max_length=63, verbose_name=u'Tapahtumapaikan nimi')
+    name = models.CharField(max_length=63, verbose_name='Tapahtumapaikan nimi')
     name_inessive = models.CharField(
         max_length=63,
-        verbose_name=u'Tapahtumapaikan nimi inessiivissä',
-        help_text=u'Esimerkki: Paasitornissa',
+        verbose_name='Tapahtumapaikan nimi inessiivissä',
+        help_text='Esimerkki: Paasitornissa',
     )
 
     class Meta:
-        verbose_name = u'Tapahtumapaikka'
-        verbose_name_plural = u'Tapahtumapaikat'
+        verbose_name = 'Tapahtumapaikka'
+        verbose_name_plural = 'Tapahtumapaikat'
 
     def __unicode__(self):
         return self.name

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -21,7 +21,7 @@ def forwards_func(apps, schema_editor):
                 slug='tyovoima',
                 defaults=dict(
                     app_label='labour',
-                    name=u'Työvoima',
+                    name='Työvoima',
                 )
             )
         else:

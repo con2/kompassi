@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.db import models, transaction
@@ -10,7 +10,7 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs, omit_ke
 
 
 def format_job_categories(job_categories):
-    return u", ".join(jc.name for jc in job_categories)
+    return ", ".join(jc.name for jc in job_categories)
 
 
 class JobCategory(models.Model):
@@ -45,7 +45,7 @@ class JobCategory(models.Model):
     )
 
     @classmethod
-    def get_or_create_dummy(cls, name=u'Courier'):
+    def get_or_create_dummy(cls, name='Courier'):
         from core.models import Event
         from .labour_event_meta import LabourEventMeta
         from .personnel_class import PersonnelClass

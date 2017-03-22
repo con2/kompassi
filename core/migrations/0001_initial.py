@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 from django.conf import settings
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(unique=True, max_length=63)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('used_at', models.DateTimeField(null=True, blank=True)),
-                ('state', models.CharField(default=b'valid', max_length=8, choices=[(b'valid', 'Kelvollinen'), (b'used', 'K\xe4ytetty'), (b'revoked', 'Mit\xe4t\xf6ity')])),
+                ('state', models.CharField(default='valid', max_length=8, choices=[('valid', 'Kelvollinen'), ('used', 'K\xe4ytetty'), ('revoked', 'Mit\xe4t\xf6ity')])),
                 ('email', models.CharField(max_length=255)),
             ],
             options={
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             name='Event',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', unique=True, max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex=b'[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
+                ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', unique=True, max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex='[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
                 ('name', models.CharField(max_length=63, verbose_name='Tapahtuman nimi')),
                 ('headline', models.CharField(default='', max_length=63, verbose_name='Alaotsikko', blank=True)),
                 ('name_genitive', models.CharField(help_text='Esimerkki: Susiconin', max_length=63, verbose_name='Tapahtuman nimi genetiiviss\xe4')),
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(unique=True, max_length=63)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('used_at', models.DateTimeField(null=True, blank=True)),
-                ('state', models.CharField(default=b'valid', max_length=8, choices=[(b'valid', 'Kelvollinen'), (b'used', 'K\xe4ytetty'), (b'revoked', 'Mit\xe4t\xf6ity')])),
+                ('state', models.CharField(default='valid', max_length=8, choices=[('valid', 'Kelvollinen'), ('used', 'K\xe4ytetty'), ('revoked', 'Mit\xe4t\xf6ity')])),
                 ('ip_address', models.CharField(max_length=45, blank=True)),
             ],
             options={
@@ -73,7 +73,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('first_name', models.CharField(max_length=1023, verbose_name='Etunimi')),
                 ('surname', models.CharField(max_length=1023, verbose_name='Sukunimi')),
-                ('nick', models.CharField(help_text=b'Lempi- tai kutsumanimi', max_length=1023, blank=True)),
+                ('nick', models.CharField(help_text='Lempi- tai kutsumanimi', max_length=1023, blank=True)),
                 ('birth_date', models.DateField(help_text='Syntym\xe4aika muodossa 24.2.1994', null=True, verbose_name='Syntym\xe4aika', blank=True)),
                 ('email', models.EmailField(help_text='S\xe4hk\xf6posti on ensisijainen yhteydenpitokeino tapahtumaan liittyviss\xe4 asioissa.', max_length=255, verbose_name='S\xe4hk\xf6postiosoite', blank=True)),
                 ('phone', models.CharField(help_text='Puhelinnumeroasi k\xe4ytet\xe4\xe4n tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan.', max_length=255, verbose_name='Puhelinnumero', blank=True)),

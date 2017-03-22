@@ -11,6 +11,6 @@ class FreeformOrganizerAdminProxy(FreeformOrganizer, ProgrammeyThingamajieAdminH
     """
 
     class Meta:
-        verbose_name = _(u'freeform organizer')
-        verbose_name_plural = _(u'freeform organizers')
+        verbose_name = _('freeform organizer')
+        verbose_name_plural = _('freeform organizers')
         proxy = True

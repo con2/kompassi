@@ -40,11 +40,11 @@ def membership_apply_view(request, organization):
 
     if request.method == 'POST':
         if already_member:
-            messages.error(request, u'Olet jo jäsen tai jäsenhakemuksesi on jo käsiteltävänä.')
+            messages.error(request, 'Olet jo jäsen tai jäsenhakemuksesi on jo käsiteltävänä.')
         elif mandatory_information_missing:
-            messages.error(request, u'Profiilistasi puuttuu pakollisia tietoja.')
+            messages.error(request, 'Profiilistasi puuttuu pakollisia tietoja.')
         elif not form.is_valid():
-            messages.error(request, u'Tarkista lomakkeen tiedot.')
+            messages.error(request, 'Tarkista lomakkeen tiedot.')
         else:
             membership = form.save(commit=False)
             membership.organization = organization
@@ -53,8 +53,8 @@ def membership_apply_view(request, organization):
             membership.save()
 
             messages.success(request,
-                u'Kiitos jäsenyyshakemuksestasi! Yhdistyksen hallitus käsittelee '
-                u'hakemuksesi seuraavassa kokouksessaan.'
+                'Kiitos jäsenyyshakemuksestasi! Yhdistyksen hallitus käsittelee '
+                'hakemuksesi seuraavassa kokouksessaan.'
             )
 
         return redirect('core_organization_view', organization.slug)
@@ -114,6 +114,6 @@ def membership_organization_box_context(request, organization):
 def membership_profile_menu_items(request):
     membership_profile_url = reverse('membership_profile_view')
     membership_profile_active = request.path.startswith(membership_profile_url)
-    membership_profile_text = u'Yhdistysten jäsenyydet'
+    membership_profile_text = 'Yhdistysten jäsenyydet'
 
     return [(membership_profile_active, membership_profile_url, membership_profile_text)]

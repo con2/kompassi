@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import logging
 
@@ -48,7 +48,7 @@ class EmailAliasType(models.Model):
     admin_get_organization.admin_order_field = 'domain__organization'
 
     def __unicode__(self):
-        return u'{metavar}@{domain}'.format(
+        return '{metavar}@{domain}'.format(
             metavar=self.metavar,
             domain=self.domain.domain_name if self.domain else None,
         )

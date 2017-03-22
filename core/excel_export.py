@@ -1,5 +1,5 @@
 import xlsxwriter
-import cStringIO as StringIO
+import io as StringIO
 
 class XlsxWriter(object):
     """
@@ -19,7 +19,7 @@ class XlsxWriter(object):
 
     def writerow(self, row):
         for col, value in enumerate(row):
-            if isinstance(value, (str, unicode)):
+            if isinstance(value, str):
                 # Workaround to avoid corner case bug that triggers (when all of the following)
                 # - value starts with http:// (write interprets it as URL)
                 # - value is longer than 255 chars

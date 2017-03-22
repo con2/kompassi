@@ -12,8 +12,8 @@ class Perk(models.Model):
     name = models.CharField(max_length=63)
 
     class Meta:
-        verbose_name = _(u'perk')
-        verbose_name_plural = _(u'perks')
+        verbose_name = _('perk')
+        verbose_name_plural = _('perks')
 
         unique_together = [
             ('event', 'slug'),

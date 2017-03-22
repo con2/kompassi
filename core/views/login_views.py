@@ -65,12 +65,12 @@ def core_login_view(request):
             if user:
                 response = do_login(request, user=user, password=password, next=next)
                 page_wizard_clear(request)
-                messages.success(request, u'Olet nyt kirjautunut sisään.')
+                messages.success(request, 'Olet nyt kirjautunut sisään.')
                 return response
             else:
-                messages.error(request, u'Sisäänkirjautuminen epäonnistui.')
+                messages.error(request, 'Sisäänkirjautuminen epäonnistui.')
         else:
-            messages.error(request, u'Ole hyvä ja korjaa virheelliset kentät.')
+            messages.error(request, 'Ole hyvä ja korjaa virheelliset kentät.')
 
     vars = page_wizard_vars(request)
 
@@ -92,7 +92,7 @@ def do_login(request, user, password=None, next='core_frontpage_view'):
     if 'api' in settings.INSTALLED_APPS:
         if user.groups.filter(name=settings.KOMPASSI_APPLICATION_USER_GROUP).exists():
             messages.error(request,
-                u'API-käyttäjätunnuksilla sisäänkirjautuminen on estetty.'
+                'API-käyttäjätunnuksilla sisäänkirjautuminen on estetty.'
             )
             return redirect('core_frontpage_view')
 
@@ -118,5 +118,5 @@ def do_login(request, user, password=None, next='core_frontpage_view'):
 def core_logout_view(request):
     next = get_next(request)
     logout(request)
-    messages.success(request, u'Olet nyt kirjautunut ulos.')
+    messages.success(request, 'Olet nyt kirjautunut ulos.')
     return redirect(next)

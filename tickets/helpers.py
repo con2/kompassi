@@ -55,11 +55,11 @@ def get_order(request, event):
 
 def clear_order(request, event):
     order_key = ORDER_KEY_TEMPLATE.format(event=event)
-    if request.session.has_key(order_key):
+    if order_key in request.session:
         del request.session[order_key]
 
     phase_key = PHASE_KEY_TEMPLATE.format(event=event)
-    if request.session.has_key(phase_key):
+    if phase_key in request.session:
         del request.session[phase_key]
 
 
@@ -128,7 +128,7 @@ SEARCH_CRITERIA_MAP = dict(
 
 
 def perform_search(event, **kwargs):
-    criteria = dict((SEARCH_CRITERIA_MAP[k], v) for (k, v) in kwargs.iteritems() if v)
+    criteria = dict((SEARCH_CRITERIA_MAP[k], v) for (k, v) in kwargs.items() if v)
     return event.order_set.filter(
         confirm_time__isnull=False,
         **criteria
@@ -146,7 +146,7 @@ def tickets_admin_required(view_func):
         meta = event.tickets_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
+            messages.error(request, "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
             return redirect('core_event_view', event.slug)
 
         if not meta.is_user_admin(request.user):
@@ -155,7 +155,7 @@ def tickets_admin_required(view_func):
         vars = dict(
             event=event,
             admin_menu_items=tickets_admin_menu_items(request, event),
-            admin_title=u'Lipunmyynnin hallinta',
+            admin_title='Lipunmyynnin hallinta',
         )
 
         return view_func(request, vars, event, *args, **kwargs)
@@ -171,11 +171,11 @@ def tickets_event_required(view_func):
         meta = event.tickets_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
+            messages.error(request, "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
             return redirect('core_event_view', event.slug)
 
         if not (meta.is_ticket_sales_open or meta.is_user_admin(request.user)):
-            messages.error(request, u"Tämän tapahtuman lipunmyynti ei ole vielä alkanut.")
+            messages.error(request, "Tämän tapahtuman lipunmyynti ei ole vielä alkanut.")
             return redirect('core_event_view', event.slug)
 
         return view_func(request, event, *args, **kwargs)
