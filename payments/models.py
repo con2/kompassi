@@ -8,6 +8,7 @@ from django.db import models
 from core.models import EventMetaBase
 
 from .defaults import EVENT_META_DEFAULTS
+from .utils import u
 
 
 class PaymentsEventMeta(EventMetaBase):
@@ -54,22 +55,21 @@ class Payment(models.Model):
         assert meta is not None
 
         computed_mac = hashlib.md5()
-        computed_mac.update(meta.checkout_password)
-        computed_mac.update("&")
-        computed_mac.update(self.VERSION)
-        computed_mac.update("&")
-        computed_mac.update(self.STAMP)
-        computed_mac.update("&")
-        computed_mac.update(self.REFERENCE)
-        computed_mac.update("&")
-        computed_mac.update(self.PAYMENT)
-        computed_mac.update("&")
-        computed_mac.update(str(self.STATUS))
-        computed_mac.update("&")
-        computed_mac.update(str(self.ALGORITHM))
+        computed_mac.update(u(meta.checkout_password))
+        computed_mac.update(b'&')
+        computed_mac.update(u(self.VERSION))
+        computed_mac.update(b'&')
+        computed_mac.update(u(self.STAMP))
+        computed_mac.update(b'&')
+        computed_mac.update(u(self.REFERENCE))
+        computed_mac.update(b'&')
+        computed_mac.update(u(self.PAYMENT))
+        computed_mac.update(b'&')
+        computed_mac.update(u(str(self.STATUS)))
+        computed_mac.update(b'&')
+        computed_mac.update(u(str(self.ALGORITHM)))
 
-        # XXX should this read ==?
-        return self.MAC != computed_mac.hexdigest().upper
+        return self.MAC == computed_mac.hexdigest().upper()
 
     def clean(self):
         if not self._check_mac():
