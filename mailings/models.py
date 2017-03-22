@@ -37,7 +37,7 @@ class RecipientGroup(models.Model):
     job_category = models.ForeignKey(JobCategory, null=True, blank=True)
     personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.job_category:
             kind = ' (tehtäväalue)'
         elif self.personnel_class:
@@ -203,7 +203,7 @@ class Message(models.Model):
     def app_event_meta(self):
         return self.event.app_event_meta(self.app_label)
 
-    def __unicode__(self):
+    def __str__(self):
         return Template(self.subject_template).render(Context(dict(event=self.event)))
 
     class Meta:

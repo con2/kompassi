@@ -49,7 +49,7 @@ TOTAL_WORK_CHOICES = [
 class SimpleChoice(models.Model):
     name = models.CharField(max_length=63)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:

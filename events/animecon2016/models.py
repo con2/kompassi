@@ -20,7 +20,7 @@ KORTITON_JV_HETU_HELP_TEXT = 'HUOM! Täytä tämä kenttä vain, jos haet <stron
 class SimpleChoice(models.Model):
     name = models.CharField(max_length=63)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:

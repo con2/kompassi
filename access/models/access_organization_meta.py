@@ -15,7 +15,7 @@ class AccessOrganizationMeta(models.Model, GroupManagementMixin):
     organization = models.OneToOneField(Organization, primary_key=True, verbose_name=_('organization'))
     admin_group = models.ForeignKey(Group, verbose_name=_('administrator group'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.organization.name if self.organization is not None else 'None'
 
     class Meta:

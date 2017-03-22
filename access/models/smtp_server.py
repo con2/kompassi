@@ -29,7 +29,7 @@ class SMTPServer(models.Model):
         related_name='smtp_servers',
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.hostname
 
     class Meta:

@@ -27,7 +27,7 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
         help_text='Esim. copy-paste säännöistä.'
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.organization.name if self.organization is not None else 'None'
 
     class Meta:
@@ -117,7 +117,7 @@ class Membership(models.Model, CsvExportMixin):
             muncipality=self.person.muncipality,
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return "{organization}/{person}".format(
             organization=self.organization.name if self.organization else None,
             person=self.person.official_name if self.person else None,
@@ -265,7 +265,7 @@ class Term(models.Model):
       else:
         return 'Maksutapa ei ole tiedossa.'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -279,7 +279,7 @@ class MembershipFeePayment(models.Model):
 
     payment_date = models.DateField(auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.term.title if self.term else 'None'
 
     class Meta:

@@ -32,7 +32,7 @@ class OneTimeCodeMixin(object):
     def from_email(self):
         return settings.DEFAULT_FROM_EMAIL
 
-    def __unicode__(self):
+    def __str__(self):
         return self.code
 
     def revoke(self):

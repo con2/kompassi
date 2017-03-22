@@ -23,5 +23,5 @@ class InfoLink(models.Model):
         verbose_name = _('info link')
         verbose_name_plural = _('info links')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title

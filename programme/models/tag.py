@@ -16,7 +16,7 @@ class Tag(models.Model):
     order = models.IntegerField(default=0)
     style = models.CharField(max_length=15, default='label-default')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):

@@ -119,7 +119,7 @@ class JobCategory(models.Model):
             ('event', 'slug'),
         ]
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property
@@ -156,13 +156,12 @@ class JobCategory(models.Model):
         """
         Returns an array of accepted workers. Used by the Roster API.
         """
-        return [
-            signup.as_dict()
-            for signup in self.accepted_signup_set
-                .filter(is_active=True)
-                .order_by('person__surname', 'person__first_name')
-                .select_related('person')
-        ]
+        return [signup.as_dict() for signup in (
+            self.accepted_signup_set
+            .filter(is_active=True)
+            .order_by('person__surname', 'person__first_name')
+            .select_related('person')
+        )]
 
     def save(self, *args, **kwargs):
         if self.name and not self.slug:

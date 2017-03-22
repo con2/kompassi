@@ -22,7 +22,7 @@ class FreeformOrganizer(models.Model):
         help_text=_('This text will be shown as-is in the schedule'),
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return '{text} ({programme})'.format(text=self.text, programme=self.programme)
 
     class Meta:

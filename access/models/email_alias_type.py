@@ -47,7 +47,7 @@ class EmailAliasType(models.Model):
     admin_get_organization.short_description = _('organization')
     admin_get_organization.admin_order_field = 'domain__organization'
 
-    def __unicode__(self):
+    def __str__(self):
         return '{metavar}@{domain}'.format(
             metavar=self.metavar,
             domain=self.domain.domain_name if self.domain else None,

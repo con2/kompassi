@@ -105,7 +105,7 @@ class View(models.Model, ViewMethodsMixin):
     order = models.IntegerField(default=0)
     rooms = models.ManyToManyField('programme.Room')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -135,7 +135,7 @@ class SpecialStartTime(models.Model):
     event = models.ForeignKey('core.event', verbose_name=_('event'))
     start_time = models.DateTimeField(verbose_name=_('starting time'))
 
-    def __unicode__(self):
+    def __str__(self):
         from core.utils import format_datetime
         return format_datetime(self.start_time) if self.start_time else 'None'
 

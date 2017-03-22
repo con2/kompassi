@@ -22,7 +22,7 @@ class JVKortti(QualificationExtraBase):
 
     expiration_date = models.DateField(verbose_name="Viimeinen voimassaolopäivä")
 
-    def __unicode__(self):
+    def __str__(self):
         n = self.card_number
         d = format_date(self.expiration_date, settings.DATE_FORMAT)
 

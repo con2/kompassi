@@ -17,7 +17,7 @@ class Room(models.Model):
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def programme_continues_at(self, the_time, **conditions):

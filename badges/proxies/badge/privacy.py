@@ -23,7 +23,7 @@ class BadgePrivacyAdapter(object):
     def __init__(self, badge):
         self.badge = badge
 
-    def __unicode__(self):
+    def __str__(self):
         return self.badge.__unicode__()
 
     @property

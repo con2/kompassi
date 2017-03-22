@@ -18,7 +18,7 @@ class GroupEmailAliasGrant(models.Model):
     type = models.ForeignKey('access.EmailAliasType', verbose_name='Tyyppi')
     active_until = models.DateTimeField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{group_name}: {type}'.format(
             group_name=self.group.name if self.group else None,
             type=self.type,

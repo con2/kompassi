@@ -76,7 +76,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         verbose_name = _('labour event meta')
         verbose_name_plural = _('labour event metas')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.event.name if self.event else 'None'
 
     @property

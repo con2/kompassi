@@ -52,7 +52,7 @@ class Organization(models.Model):
 
         return super(Organization, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

@@ -118,7 +118,7 @@ class Person(models.Model):
         verbose_name = 'Henkilö'
         verbose_name_plural = 'Henkilöt'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.full_name
 
     def clean(self):
@@ -185,7 +185,7 @@ class Person(models.Model):
     def get_formatted_name(self, name_display_style=None):
         if not name_display_style:
             name_display_style = self.name_display_style
-        
+
         return NAME_DISPLAY_STYLE_FORMATS[name_display_style].format(self=self)
 
     @property

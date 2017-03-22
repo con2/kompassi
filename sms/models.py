@@ -30,7 +30,7 @@ class Hotword(models.Model):
     valid_to = models.DateTimeField()
     assigned_event = models.ForeignKey('core.Event')
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.hotword)
 
     class Meta:
@@ -50,7 +50,7 @@ class VoteCategory(models.Model):
     hotword = models.ForeignKey(Hotword)
     primary = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.category)
 
     class Meta:
@@ -67,7 +67,7 @@ class Nominee(models.Model):
         null=True
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.number, self.name)
 
     class Meta:
@@ -109,7 +109,7 @@ class SMSEventMeta(EventMetaBase):
     def is_current(self):
         return self.current is not None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.event.name
 
     @classmethod
@@ -128,7 +128,7 @@ class SMSMessageIn(models.Model):
     message = models.ForeignKey('nexmo.InboundMessage')
     SMSEventMeta = models.ForeignKey(SMSEventMeta)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.message.message
 
     class Meta:

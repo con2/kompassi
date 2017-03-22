@@ -63,7 +63,7 @@ class SignupExtraMixin(object):
         self.is_active = self.determine_is_active()
         self.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.signup.__unicode__() if self.signup else 'None'
 
 

@@ -33,7 +33,7 @@ class WorkPeriod(models.Model):
         verbose_name = _('work period')
         verbose_name_plural= _('work periods')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 
@@ -54,7 +54,7 @@ class Job(models.Model):
 
         return super(Job, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def admin_get_event(self):

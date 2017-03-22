@@ -16,7 +16,7 @@ class Category(models.Model):
     notes = models.TextField(blank=True)
     public = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:

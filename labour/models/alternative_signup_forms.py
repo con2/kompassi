@@ -68,7 +68,7 @@ class AlternativeSignupForm(models.Model):
             'erikoistehtäville.',
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @property

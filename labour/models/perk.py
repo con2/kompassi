@@ -19,7 +19,7 @@ class Perk(models.Model):
             ('event', 'slug'),
         ]
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):

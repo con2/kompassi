@@ -113,7 +113,7 @@ class Event(models.Model):
 
         super(Event, self).__init__(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):

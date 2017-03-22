@@ -455,7 +455,7 @@ class Programme(models.Model, CsvExportMixin):
     def is_blank(self):
         return False
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @property

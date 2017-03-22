@@ -329,7 +329,7 @@ class Badge(models.Model, CsvExportMixin):
     admin_get_full_name.short_description = _('Name')
     admin_get_full_name.admin_order_field = ('surname', 'first_name', 'nick')
 
-    def __unicode__(self):
+    def __str__(self):
         return "{person_name} ({personnel_class_name}, {event_name})".format(
             person_name=self.admin_get_full_name(),
             personnel_class_name=self.personnel_class_name,

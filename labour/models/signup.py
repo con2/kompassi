@@ -247,7 +247,7 @@ class Signup(models.Model, CsvExportMixin):
         verbose_name = _('signup')
         verbose_name_plural = _('signups')
 
-    def __unicode__(self):
+    def __str__(self):
         p = self.person.full_name if self.person else 'None'
         e = self.event.name if self.event else 'None'
 

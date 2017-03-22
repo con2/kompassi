@@ -18,7 +18,7 @@ class Qualification(models.Model):
         verbose_name = _('qualification')
         verbose_name_plural = _('qualifications')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property
@@ -53,7 +53,7 @@ class PersonQualification(models.Model):
         verbose_name = _('qualification holder')
         verbose_name_plural = _('qualification holders')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.qualification.name if self.qualification else 'None'
 
     @property

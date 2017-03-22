@@ -31,7 +31,7 @@ WORKING_DAYS_CHOICES = [
 class SpecialDiet(models.Model):
     name = models.CharField(max_length=63)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

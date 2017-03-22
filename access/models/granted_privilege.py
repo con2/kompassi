@@ -31,7 +31,7 @@ class GrantedPrivilege(models.Model):
     def state_css(self):
         return STATE_CSS[self.state]
 
-    def __unicode__(self):
+    def __str__(self):
         return '{person_name} - {privilege_title}'.format(
             person_name=self.person.full_name if self.person else None,
             privilege_title=self.privilege.title if self.privilege else None,
