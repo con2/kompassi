@@ -1,4 +1,4 @@
-git+https://github.com/kcsry/lippukala.git@python3.6#egg=lippukala==1.1.1
+git+https://github.com/kcsry/lippukala.git#egg=lippukala==1.1.1
 git+https://github.com/tracon/django-nexmo.git@python3#egg=django-nexmo==2.0.1
 git+https://github.com/syrusakbary/pyjade.git@d8cf1d9404c759c6a2430c9a900874ab0e970cd8#egg=pyjade==4.0.0
 Babel~=2.3.0
