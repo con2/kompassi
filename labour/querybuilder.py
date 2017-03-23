@@ -289,7 +289,7 @@ class QueryBuilder(object):
         :return: list
         """
         output = []
-        for key, value in list(items.items()):
+        for key, value in items.items():
             if key is not "":
                 output.extend([LOOKUP_SEP.join((key, field)) for field in value])
             else:
