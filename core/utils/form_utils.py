@@ -51,7 +51,7 @@ def initialize_form_set(FormSetClass, request, **kwargs):
 
     if readonly:
         for form in form_set:
-            for field in list(form.fields.values()):
+            for field in form.fields.values():
                 make_field_readonly(field)
 
     return form_set

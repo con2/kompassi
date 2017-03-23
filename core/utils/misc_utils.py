@@ -221,7 +221,7 @@ def mutate_query_params(request, mutations):
     """
 
     new_qs = request.GET.copy()
-    for key, value in list(mutations.items()):
+    for key, value in mutations.items():
         if value in (None, False):
             new_qs.pop(key, None)
         else:

@@ -104,7 +104,7 @@ def convert_datetimes(values):
     Format all date/datetime-like values to strings.
     """
     for entry in values:
-        for key, value in list(entry.items()):
+        for key, value in entry.items():
             try:
                 if isinstance(value, datetime.date):
                     entry[key] = value.strftime(RFC8601DATE)
