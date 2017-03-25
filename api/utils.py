@@ -25,7 +25,7 @@ def http_basic_auth(func):
         if 'HTTP_AUTHORIZATION' in request.META:
             authmeth, auth = request.META['HTTP_AUTHORIZATION'].split(' ', 1)
             if authmeth.lower() == 'basic':
-                auth = base64.decodebytes(auth.encode('UTF-8'))
+                auth = base64.decodebytes(auth.encode('UTF-8')).decode('UTF-8')  # fmh
                 username, password = auth.split(':', 1)
                 user = authenticate(username=username, password=password)
                 if user:
