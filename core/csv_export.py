@@ -40,7 +40,7 @@ class CsvExportMixin(object):
             if not isinstance(field, models.ForeignKey):
                 fields.append((cls, field))
 
-        for field, unused in cls._meta.get_m2m_with_model():
+        for field in cls._meta.many_to_many:
             fields.append((cls, field))
 
         return fields
