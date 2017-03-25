@@ -14,10 +14,13 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
 
 ### The Hard Way
 
-    virtualenv venv-kompassi
-    source venv-kompassi/bin/activate
+**NOTE:** Python 3.6 or greater is required. Python 2.7 is not supported.
+
+    python3.6 -m venv venv3-kompassi
+    source venv3-kompassi/bin/activate
     git clone https://github.com/tracon/kompassi.git
     cd kompassi
+    pip install -U pip setuptools wheel
     pip install -r requirements.txt
     ./manage.py setup
     ./manage.py runserver
