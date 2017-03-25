@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import mailings.models
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
             name='RecipientGroup',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('app_label', models.CharField(max_length=63, verbose_name='Sovellus', choices=[(b'labour', b'Ty\xc3\xb6voima')])),
+                ('app_label', models.CharField(max_length=63, verbose_name='Sovellus', choices=[('labour', 'Ty\xc3\xb6voima')])),
                 ('verbose_name', models.CharField(max_length=63, verbose_name='Nimi')),
                 ('event', models.ForeignKey(verbose_name='Tapahtuma', to='core.Event')),
                 ('group', models.ForeignKey(verbose_name='K\xe4ytt\xe4j\xe4ryhm\xe4', to='auth.Group')),

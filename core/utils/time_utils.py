@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import sys
 from datetime import date, datetime, timedelta
@@ -57,7 +57,7 @@ def is_within_period(period_start, period_end, t=None):
 def format_date_range(start_date, end_date):
     # XXX Finnish-specific
 
-    range_format = u"{start_date}–{end_date}"
+    range_format = "{start_date}–{end_date}"
     if sys.platform == "win32":
         # `strftime` on Windows does not support `%-` formats,
         # for some unfathomable reason.

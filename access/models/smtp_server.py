@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -29,7 +29,7 @@ class SMTPServer(models.Model):
         related_name='smtp_servers',
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.hostname
 
     class Meta:

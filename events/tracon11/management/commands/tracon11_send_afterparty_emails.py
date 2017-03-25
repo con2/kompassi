@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.mail import send_mail
@@ -33,11 +33,11 @@ class Command(BaseCommand):
                     [recipient],
                     fail_silently=False
                 )
-                print recipient
+                print(recipient)
             else:
-                print 'To:', recipient
-                print 'Subject:', subject
-                print
-                print body
-                print
-                print
+                print('To:', recipient)
+                print('Subject:', subject)
+                print()
+                print(body)
+                print()
+                print()

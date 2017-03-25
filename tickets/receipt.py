@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import with_statement
+
 
 from contextlib import contextmanager
 import os
@@ -48,45 +48,45 @@ def render_receipt(order, c):
 
     c.drawString(BASE_INDENT, 270*mm, order.customer.name)
     c.drawString(BASE_INDENT, 265*mm, order.customer.address)
-    c.drawString(BASE_INDENT, 260*mm, u"%s %s" % (order.customer.zip_code, order.customer.city))
+    c.drawString(BASE_INDENT, 260*mm, "%s %s" % (order.customer.zip_code, order.customer.city))
 
-    c.drawString(BASE_INDENT, 200*mm, u"Hyvä vastaanottaja,")
+    c.drawString(BASE_INDENT, 200*mm, "Hyvä vastaanottaja,")
 
-    c.drawString(BASE_INDENT, 190*mm, u"Tässä tilaamanne {0} -pääsyliput:".format(order.event.name))
+    c.drawString(BASE_INDENT, 190*mm, "Tässä tilaamanne {0} -pääsyliput:".format(order.event.name))
 
     ypos = 180*mm
 
     for op in order.order_product_set.filter(product__requires_shipping=True):
-        c.drawString(BASE_INDENT, ypos, u"%d kpl" % op.count)
+        c.drawString(BASE_INDENT, ypos, "%d kpl" % op.count)
         c.drawString(DEEP_INDENT, ypos, op.product.name)
 
         ypos -= 10*mm
 
     non_ship = order.order_product_set.filter(product__requires_shipping=False)
     if non_ship:
-        c.drawString(BASE_INDENT, ypos, u"Seuraavista tilaamistanne tuotteista saatte lisäohjeita sähköpostitse ennen tapahtumaa:")
+        c.drawString(BASE_INDENT, ypos, "Seuraavista tilaamistanne tuotteista saatte lisäohjeita sähköpostitse ennen tapahtumaa:")
         ypos -= 10*mm
 
         for op in non_ship:
-            c.drawString(BASE_INDENT, ypos, u"%d kpl" % op.count)
+            c.drawString(BASE_INDENT, ypos, "%d kpl" % op.count)
             c.drawString(DEEP_INDENT, ypos, op.product.name)
 
             ypos -= 10*mm
 
-    c.drawString(BASE_INDENT, ypos, u"Mikäli yllä olevassa luettelossa on virheitä tai kuoren sisältö ei vastaa luetteloa, olkaa hyvä ja")
-    c.drawString(BASE_INDENT, ypos - 5*mm, u"ottakaa viipymättä yhteyttä lipunmyyntivastaavaan sähköpostitse: {0}".format(order.event.tickets_event_meta.plain_contact_email))
+    c.drawString(BASE_INDENT, ypos, "Mikäli yllä olevassa luettelossa on virheitä tai kuoren sisältö ei vastaa luetteloa, olkaa hyvä ja")
+    c.drawString(BASE_INDENT, ypos - 5*mm, "ottakaa viipymättä yhteyttä lipunmyyntivastaavaan sähköpostitse: {0}".format(order.event.tickets_event_meta.plain_contact_email))
     #c.drawString(BASE_INDENT, ypos - 10*mm, u"tai puhelimitse numeroon 0400 464 988 (Janne Forsell, parhaiten tavoittaa klo 10-18).")
 
-    c.drawString(BASE_INDENT, ypos - 15*mm, u"Mainitkaa viestissänne tilausnumeronne #%04d." % order.id)
+    c.drawString(BASE_INDENT, ypos - 15*mm, "Mainitkaa viestissänne tilausnumeronne #%04d." % order.id)
 
     ypos -= 30*mm
 
-    c.drawString(BASE_INDENT, ypos, u"Lisätietoja {0} -tapahtumasta löydätte kotisivuiltamme: {1}".format(order.event.name, order.event.homepage_url))
+    c.drawString(BASE_INDENT, ypos, "Lisätietoja {0} -tapahtumasta löydätte kotisivuiltamme: {1}".format(order.event.name, order.event.homepage_url))
 
     ypos -= 15*mm
 
-    c.drawString(BASE_INDENT, ypos, u"Ystävällisin terveisin")
-    c.drawString(BASE_INDENT, ypos - 10*mm, u"{0} järjestäjät".format(order.event.name_genitive))
+    c.drawString(BASE_INDENT, ypos, "Ystävällisin terveisin")
+    c.drawString(BASE_INDENT, ypos - 10*mm, "{0} järjestäjät".format(order.event.name_genitive))
 
     c.line(BASE_INDENT, 20*mm, 210*mm - BASE_INDENT, 20*mm)
     c.setFont("Helvetica", 8)
@@ -97,9 +97,9 @@ def render_receipt(order, c):
 
 def test():
     class DummyCustomer:
-        name = u"Essi Esimerkki"
-        address = u"Animupolunkaarteenrinteentie 5 as. 9"
-        zip_code = u"33720"
+        name = "Essi Esimerkki"
+        address = "Animupolunkaarteenrinteentie 5 as. 9"
+        zip_code = "33720"
         city = "Tampere"
 
     class DummyOrder:

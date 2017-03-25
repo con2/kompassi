@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from collections import defaultdict, namedtuple
 
@@ -32,7 +32,7 @@ def enrollment_admin_special_diets_view(request, vars, event):
     for signup_extra in enrollments_with_standard_special_diets:
         special_diets[signup_extra.formatted_special_diet].count += 1
 
-    special_diets = special_diets.values()
+    special_diets = list(special_diets.values())
     special_diets.sort(key=lambda sd: sd.name)
 
     enrollments_with_other_special_diets = enrollments.exclude(

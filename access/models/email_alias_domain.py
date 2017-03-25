@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -23,7 +23,7 @@ class EmailAliasDomain(models.Model):
 
         return cls.objects.get_or_create(domain_name=domain_name, defaults=dict(organization=organization))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.domain_name
 
     class Meta:

@@ -16,7 +16,7 @@ def sms_admin_required(view_func):
         meta = event.sms_event_meta
 
         if not meta:
-            messages.error(request, u"Tämä tapahtuma ei käytä Kompassia tekstiviestien lähetykseen.")
+            messages.error(request, "Tämä tapahtuma ei käytä Kompassia tekstiviestien lähetykseen.")
             return redirect('core_event_view', event.slug)
 
         if not meta.is_user_admin(request.user):
@@ -26,7 +26,7 @@ def sms_admin_required(view_func):
             event=event,
             meta=meta,
             admin_menu_items=sms_admin_menu_items(request, event),
-            admin_title=u'Tekstiviestit'
+            admin_title='Tekstiviestit'
         )
 
         return view_func(request, vars, event, *args, **kwargs)

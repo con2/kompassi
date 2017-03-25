@@ -13,26 +13,26 @@ from tickets.utils import format_price
 
 
 class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
-    organization = models.OneToOneField(Organization, primary_key=True, verbose_name=u'Organisaatio')
-    admin_group = models.ForeignKey(Group, verbose_name=u'Ylläpitäjäryhmä', related_name='admin_group_for')
-    members_group = models.ForeignKey(Group, verbose_name=u'Jäsenryhmä', related_name='members_group_for')
+    organization = models.OneToOneField(Organization, primary_key=True, verbose_name='Organisaatio')
+    admin_group = models.ForeignKey(Group, verbose_name='Ylläpitäjäryhmä', related_name='admin_group_for')
+    members_group = models.ForeignKey(Group, verbose_name='Jäsenryhmä', related_name='members_group_for')
     receiving_applications = models.BooleanField(
         default=True,
-        verbose_name=u'Ottaa vastaan hakemuksia',
-        help_text=u'Tämä asetus kontrolloi, voiko yhdistyksen jäseneksi hakea suoraan Kompassin kautta.',
+        verbose_name='Ottaa vastaan hakemuksia',
+        help_text='Tämä asetus kontrolloi, voiko yhdistyksen jäseneksi hakea suoraan Kompassin kautta.',
     )
     membership_requirements = models.TextField(
         blank=True,
-        verbose_name=u'Kuka voi hakea jäsenyyttä?',
-        help_text=u'Esim. copy-paste säännöistä.'
+        verbose_name='Kuka voi hakea jäsenyyttä?',
+        help_text='Esim. copy-paste säännöistä.'
     )
 
-    def __unicode__(self):
-        return self.organization.name if self.organization is not None else u'None'
+    def __str__(self):
+        return self.organization.name if self.organization is not None else 'None'
 
     class Meta:
-        verbose_name = u'Jäsenrekisterin asetukset'
-        verbose_name = u'Jäsenrekisterien asetukset'
+        verbose_name = 'Jäsenrekisterin asetukset'
+        verbose_name = 'Jäsenrekisterien asetukset'
 
     def get_group(self, suffix):
         group_name = self.make_group_name(self.organization, suffix)
@@ -50,10 +50,10 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
 
 
 STATE_CHOICES = [
-    (u'approval', u'Odottaa hyväksyntää'),
-    (u'in_effect', u'Voimassa'),
-    (u'discharged', u'Erotettu'),
-    (u'declined', u'Hylätty'),
+    ('approval', 'Odottaa hyväksyntää'),
+    ('in_effect', 'Voimassa'),
+    ('discharged', 'Erotettu'),
+    ('declined', 'Hylätty'),
 ]
 
 STATE_CSS = dict(
@@ -64,21 +64,21 @@ STATE_CSS = dict(
 )
 
 PAYMENT_TYPE_CHOICES = [
-    (u'bank_transfer', u'Tilisiirto'),
+    ('bank_transfer', 'Tilisiirto'),
 ]
 
 
 class Membership(models.Model, CsvExportMixin):
-    organization = models.ForeignKey(Organization, verbose_name=u'Yhdistys', related_name='memberships')
-    person = models.ForeignKey(Person, verbose_name=u'Henkilö', related_name='memberships')
+    organization = models.ForeignKey(Organization, verbose_name='Yhdistys', related_name='memberships')
+    person = models.ForeignKey(Person, verbose_name='Henkilö', related_name='memberships')
     state = models.CharField(
         max_length=max(len(key) for (key, val) in STATE_CHOICES),
         choices=STATE_CHOICES,
-        verbose_name=u'Tila',
+        verbose_name='Tila',
     )
     message = models.TextField(
         blank=True,
-        verbose_name=u'Viesti hakemuksen käsittelijälle',
+        verbose_name='Viesti hakemuksen käsittelijälle',
     )
 
     @property
@@ -111,14 +111,14 @@ class Membership(models.Model, CsvExportMixin):
         return []
 
     def to_html_print(self):
-        return u'{surname}, {official_first_names}, {muncipality}'.format(
+        return '{surname}, {official_first_names}, {muncipality}'.format(
             surname=self.person.surname,
             official_first_names=self.person.official_first_names,
             muncipality=self.person.muncipality,
         )
 
-    def __unicode__(self):
-        return u"{organization}/{person}".format(
+    def __str__(self):
+        return "{organization}/{person}".format(
             organization=self.organization.name if self.organization else None,
             person=self.person.official_name if self.person else None,
         )
@@ -192,85 +192,85 @@ class Membership(models.Model, CsvExportMixin):
         GroupEmailAliasGrant.ensure_aliases(self.person)
 
     class Meta:
-        verbose_name = u'Jäsenyys'
-        verbose_name_plural = u'Jäsenyydet'
+        verbose_name = 'Jäsenyys'
+        verbose_name_plural = 'Jäsenyydet'
 
 
 class Term(models.Model):
     organization = models.ForeignKey(Organization,
-        verbose_name=u'Yhdistys',
+        verbose_name='Yhdistys',
         related_name='terms'
     )
-    title = models.CharField(max_length=63, verbose_name=u'Otsikko', help_text=u'Yleensä vuosiluku')
-    start_date = models.DateField(verbose_name=u'Alkamispäivä', help_text=u'Yleensä vuoden ensimmäinen päivä')
-    end_date = models.DateField(verbose_name=u'Päättymispäivä', help_text=u'Yleensä vuoden viimeinen päivä')
+    title = models.CharField(max_length=63, verbose_name='Otsikko', help_text='Yleensä vuosiluku')
+    start_date = models.DateField(verbose_name='Alkamispäivä', help_text='Yleensä vuoden ensimmäinen päivä')
+    end_date = models.DateField(verbose_name='Päättymispäivä', help_text='Yleensä vuoden viimeinen päivä')
 
     entrance_fee_cents = models.PositiveIntegerField(
         default=0,
         null=True,
         blank=True,
-        verbose_name=u'Liittymismaksu (snt)',
-        help_text=u'Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella liittymismaksua. '
-            u'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.',
+        verbose_name='Liittymismaksu (snt)',
+        help_text='Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella liittymismaksua. '
+            'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.',
     )
 
     membership_fee_cents = models.PositiveIntegerField(
         default=0,
         null=True,
         blank=True,
-        verbose_name=u'Jäsenmaksu (snt)',
-        help_text=u'Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella jäsenmaksua. '
-            u'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.',
+        verbose_name='Jäsenmaksu (snt)',
+        help_text='Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella jäsenmaksua. '
+            'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.',
     )
 
     payment_type = models.CharField(
         max_length=max(len(key) for (key, val) in PAYMENT_TYPE_CHOICES),
         choices=PAYMENT_TYPE_CHOICES,
-        verbose_name=u'Maksutapa',
-        default=u'bank_transfer',
+        verbose_name='Maksutapa',
+        default='bank_transfer',
     )
 
     @property
     def formatted_entrance_fee(self):
         if self.entrance_fee_cents is None:
-            return u'Liittymismaksu ei ole tiedossa.'
+            return 'Liittymismaksu ei ole tiedossa.'
         elif self.entrance_fee_cents == 0:
-            return u'Ei liittymismaksua.'
+            return 'Ei liittymismaksua.'
         else:
             return format_price(self.entrance_fee_cents)
 
     @property
     def formatted_membership_fee(self):
         if self.membership_fee_cents is None:
-            return u'Jäsenmaksu ei ole tiedossa.'
+            return 'Jäsenmaksu ei ole tiedossa.'
         elif self.membership_fee_cents == 0:
-            return u'Ei jäsenmaksua kaudella {title}.'.format(title=self.title,)
+            return 'Ei jäsenmaksua kaudella {title}.'.format(title=self.title,)
         else:
-            return u'{money} (voimassa {end_date} asti).'.format(
+            return '{money} (voimassa {end_date} asti).'.format(
                 money=format_price(self.membership_fee_cents),
                 end_date=format_date(self.end_date),
             )
     def save(self, *args, **kwargs):
         if self.start_date and not self.title:
-            self.title = unicode(self.start_date.year)
+            self.title = str(self.start_date.year)
 
         return super(Term, self).save(*args, **kwargs)
 
     @property
     def display_payment_type(self):
       if self.payment_type is None:
-        return u'Maksutapa ei ole tiedossa.'
+        return 'Maksutapa ei ole tiedossa.'
       elif self.payment_type == 'bank_transfer':
-        return u'Tilisiirrolla. Yhdistyksen hallitus ohjeistaa jäsenmaksun maksamisen sähköpostitse liittymisen jälkeen.'
+        return 'Tilisiirrolla. Yhdistyksen hallitus ohjeistaa jäsenmaksun maksamisen sähköpostitse liittymisen jälkeen.'
       else:
-        return u'Maksutapa ei ole tiedossa.'
+        return 'Maksutapa ei ole tiedossa.'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
-        verbose_name = u'Toimikausi'
-        verbose_name_plural = u'Toimikaudet'
+        verbose_name = 'Toimikausi'
+        verbose_name_plural = 'Toimikaudet'
 
 
 class MembershipFeePayment(models.Model):
@@ -279,19 +279,19 @@ class MembershipFeePayment(models.Model):
 
     payment_date = models.DateField(auto_now_add=True)
 
-    def __unicode__(self):
-        return self.term.title if self.term else u'None'
+    def __str__(self):
+        return self.term.title if self.term else 'None'
 
     class Meta:
-        verbose_name = u'Jäsenmaksusuoritus'
-        verbose_name_plural = u'Jäsenmaksusuoritukset'
+        verbose_name = 'Jäsenmaksusuoritus'
+        verbose_name_plural = 'Jäsenmaksusuoritukset'
 
     def admin_get_organization(self):
         return self.term.organization if self.term else None
-    admin_get_organization.short_description = u'Yhdistys'
+    admin_get_organization.short_description = 'Yhdistys'
     admin_get_organization.admin_order_field = 'organization'
 
     def admin_get_official_name(self):
         return self.member.person.official_name if self.member else None
-    admin_get_official_name.short_description = u'Jäsen'
-    admin_get_official_name.admin_order_field = u'member'
+    admin_get_official_name.short_description = 'Jäsen'
+    admin_get_official_name.admin_order_field = 'member'

@@ -19,43 +19,43 @@ RETRY_DELAY_SECONDS = 0.4
 class Hotword(models.Model):
     hotword = models.CharField(
         max_length=255,
-        verbose_name=u"Avainsanan kuvaus",
-        help_text=u"Tällä nimellä erotat avainsanan muista, esim. toisen tapahtuman AMV-äänestyksestä"
+        verbose_name="Avainsanan kuvaus",
+        help_text="Tällä nimellä erotat avainsanan muista, esim. toisen tapahtuman AMV-äänestyksestä"
     )
     slug = models.SlugField(
-        verbose_name=u"Avainsana",
-        help_text=u"Tämä tekstinpätkä on varsinainen avainsana, joka tulee löytyä tekstiviestistä. Kirjoita pienillä!"
+        verbose_name="Avainsana",
+        help_text="Tämä tekstinpätkä on varsinainen avainsana, joka tulee löytyä tekstiviestistä. Kirjoita pienillä!"
     )
     valid_from = models.DateTimeField()
     valid_to = models.DateTimeField()
     assigned_event = models.ForeignKey('core.Event')
 
-    def __unicode__(self):
-        return u'%s' % (self.hotword)
+    def __str__(self):
+        return '%s' % (self.hotword)
 
     class Meta:
-        verbose_name = u'Avainsana'
-        verbose_name_plural = u'Avainsanat'
+        verbose_name = 'Avainsana'
+        verbose_name_plural = 'Avainsanat'
 
 
 class VoteCategory(models.Model):
     category = models.CharField(
         max_length=255,
-        verbose_name=u'Kategorian kuvaus'
+        verbose_name='Kategorian kuvaus'
     )
     slug = models.SlugField(
         max_length=20,
-        verbose_name=u'Avainsana'
+        verbose_name='Avainsana'
     )
     hotword = models.ForeignKey(Hotword)
     primary = models.BooleanField(default=False)
 
-    def __unicode__(self):
-        return u'%s' % (self.category)
+    def __str__(self):
+        return '%s' % (self.category)
 
     class Meta:
-        verbose_name = u'Kategoria'
-        verbose_name_plural = u'Kategoriat'
+        verbose_name = 'Kategoria'
+        verbose_name_plural = 'Kategoriat'
 
 
 class Nominee(models.Model):
@@ -67,12 +67,12 @@ class Nominee(models.Model):
         null=True
     )
 
-    def __unicode__(self):
-        return u'%s - %s' % (self.number, self.name)
+    def __str__(self):
+        return '%s - %s' % (self.number, self.name)
 
     class Meta:
-        verbose_name = u'Osallistuja'
-        verbose_name_plural = u'Osallistujat'
+        verbose_name = 'Osallistuja'
+        verbose_name_plural = 'Osallistujat'
 
 
 class Vote(models.Model):
@@ -81,8 +81,8 @@ class Vote(models.Model):
     message = models.ForeignKey('nexmo.InboundMessage')
 
     class Meta:
-        verbose_name = u'Ääni'
-        verbose_name_plural = u'Äänet'
+        verbose_name = 'Ääni'
+        verbose_name_plural = 'Äänet'
 
 
 class SMSEventMeta(EventMetaBase):
@@ -109,7 +109,7 @@ class SMSEventMeta(EventMetaBase):
     def is_current(self):
         return self.current is not None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.event.name
 
     @classmethod
@@ -120,20 +120,20 @@ class SMSEventMeta(EventMetaBase):
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
     class Meta:
-        verbose_name = u'Tekstiviestejä käyttävä tapahtuma'
-        verbose_name_plural = u'Tekstiviestejä käyttävät tapahtumat'
+        verbose_name = 'Tekstiviestejä käyttävä tapahtuma'
+        verbose_name_plural = 'Tekstiviestejä käyttävät tapahtumat'
 
 
 class SMSMessageIn(models.Model):
     message = models.ForeignKey('nexmo.InboundMessage')
     SMSEventMeta = models.ForeignKey(SMSEventMeta)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.message.message
 
     class Meta:
-        verbose_name = u'Vastaanotettu viesti'
-        verbose_name_plural = u'Vastaanotetut viestit'
+        verbose_name = 'Vastaanotettu viesti'
+        verbose_name_plural = 'Vastaanotetut viestit'
 
 
 class SMSMessageOut(models.Model):
@@ -158,9 +158,9 @@ class SMSMessageOut(models.Model):
         if to is None:
             return False
         if to[0].startswith('0'):
-            actual_to = u'+358' + to[0][1:]
+            actual_to = '+358' + to[0][1:]
         else:
-            actual_to = u'+' + to[0]
+            actual_to = '+' + to[0]
 
         nexmo_message = OutboundMessage(message=self.message, to=actual_to)
         nexmo_message.save()
@@ -170,7 +170,7 @@ class SMSMessageOut(models.Model):
         self.save()
 
         succeeded = False
-        for i in xrange(MAX_TRIES):
+        for i in range(MAX_TRIES):
             try:
                 sent_message = self.ref._send()
             except RetryError:
@@ -203,8 +203,8 @@ class SMSMessageOut(models.Model):
         return True
 
     class Meta:
-        verbose_name = u'Lähetetty viesti'
-        verbose_name_plural = u'Lähetetyt viestit'
+        verbose_name = 'Lähetetty viesti'
+        verbose_name_plural = 'Lähetetyt viestit'
 
 
 from . import signal_handlers

@@ -78,7 +78,7 @@ Field2Transport = {
 
 
 def add_prefix(prefix, iterable):
-    return map(lambda item: prefix + item, iterable)
+    return [prefix + item for item in iterable]
 
 
 class QueryBuilder(object):
@@ -485,7 +485,7 @@ class QueryBuilder(object):
             # Add choices as tuples to preserve ordering
             select_def = dict(
                 multiple="or",
-                order=list(map(lambda entry: entry[0], field_object.choices)),
+                order=list([entry[0] for entry in field_object.choices]),
                 values=dict(field_object.choices),
             )
             self._fields[full_name] = select_def
@@ -519,7 +519,7 @@ class QueryBuilder(object):
 
     def _object_title(self, key, obj):
         # Verbose_name may be a string, or translation proxy which need to be converted.
-        self._field_titles[key] = unicode(obj.verbose_name)
+        self._field_titles[key] = str(obj.verbose_name)
 
     # noinspection PyProtectedMember
     def _find_sub_selection(self, field_object, model, prefix):
@@ -544,7 +544,7 @@ class QueryBuilder(object):
         for value in related_results:
             value_pk = getattr(value, primary_key_name)
             order.append(value_pk)
-            values[value_pk] = unicode(value)
+            values[value_pk] = str(value)
 
         select_def["values"] = values
         select_def["order"] = order

@@ -19,20 +19,20 @@ class Connection(models.Model):
     # no auto-increment
     id = models.IntegerField(
         primary_key=True,
-        verbose_name=u'Desuprofiilin numero',
+        verbose_name='Desuprofiilin numero',
     )
 
     desuprofile_username = models.CharField(
         max_length=30,
         blank=True,
-        verbose_name=u'Desuprofiilin käyttäjänimi',
+        verbose_name='Desuprofiilin käyttäjänimi',
     )
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
-        verbose_name=u'Käyttäjä',
+        verbose_name='Käyttäjä',
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.user.username
 
 
@@ -42,7 +42,7 @@ class ConfirmationCode(OneTimeCode):
     desuprofile_username = models.CharField(
         max_length=30,
         blank=True,
-        verbose_name=u'Desuprofiilin käyttäjänimi',
+        verbose_name='Desuprofiilin käyttäjänimi',
     )
 
     next_url = models.CharField(max_length=1023, blank=True, default='')
@@ -51,7 +51,7 @@ class ConfirmationCode(OneTimeCode):
         return json.loads(desuprofile_json)
 
     def render_message_subject(self, request):
-        return u'{settings.KOMPASSI_INSTALLATION_NAME}: Desuprofiilin yhdistäminen'.format(settings=settings)
+        return '{settings.KOMPASSI_INSTALLATION_NAME}: Desuprofiilin yhdistäminen'.format(settings=settings)
 
     def render_message_body(self, request):
         vars = dict(

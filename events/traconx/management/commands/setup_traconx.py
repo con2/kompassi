@@ -102,23 +102,23 @@ class Setup(object):
             event=self.event,
             slug='kaatajaiset',
             defaults=dict(
-                name=u'Kaatajaiset',
+                name='Kaatajaiset',
             ),
         )
 
         fmh = PersonnelClass.objects.filter(event=self.event, slug='ylivankari')
         if fmh.exists():
-            fmh.update(name=u'Vuorovastaava', slug='vuorovastaava')
+            fmh.update(name='Vuorovastaava', slug='vuorovastaava')
 
         for pc_name, pc_slug, pc_app_label, pc_afterparty in [
-            (u'Conitea', 'conitea', 'labour', True),
-            (u'Vuorovastaava', 'vuorovastaava', 'labour', True),
-            (u'Työvoima', 'tyovoima', 'labour', True),
-            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme', True),
-            (u'Guest of Honour', 'goh', 'programme', False), # tervetullut muttei kutsuta automaattiviestillä
-            (u'Media', 'media', 'badges', False),
-            (u'Myyjä', 'myyja', 'badges', False),
-            (u'Vieras', 'vieras', 'badges', False),
+            ('Conitea', 'conitea', 'labour', True),
+            ('Vuorovastaava', 'vuorovastaava', 'labour', True),
+            ('Työvoima', 'tyovoima', 'labour', True),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme', True),
+            ('Guest of Honour', 'goh', 'programme', False), # tervetullut muttei kutsuta automaattiviestillä
+            ('Media', 'media', 'badges', False),
+            ('Myyjä', 'myyja', 'badges', False),
+            ('Vieras', 'vieras', 'badges', False),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -140,24 +140,24 @@ class Setup(object):
         ohjelma = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
         for name, description, pcs in [
-            (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen', [conitea]),
+            ('Conitea', 'Tapahtuman järjestelytoimikunnan eli conitean jäsen', [conitea]),
 
-            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, vuorovastaava]),
-            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [tyovoima, vuorovastaava]),
-            (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima, vuorovastaava]),
-            (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.', [tyovoima, vuorovastaava]),
-            (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima, vuorovastaava]),
-            (u'Myynti', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, vuorovastaava]),
-            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [tyovoima, vuorovastaava]),
-            (u'Ohjelma-avustaja', u'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.', [tyovoima, vuorovastaava]),
-            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Edellyttää hygieniapassia.', [tyovoima, vuorovastaava]),
-            (u'Taltiointi', u'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.', [tyovoima, vuorovastaava]),
-            (u'Tekniikka', u'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä ongelmanratkaisua.', [tyovoima, vuorovastaava]),
-            (u'Valokuvaus', u'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.', [tyovoima, vuorovastaava]),
-            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima, vuorovastaava]),
-            (u'Info', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, vuorovastaava]),
+            ('Erikoistehtävä', 'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.', [tyovoima, vuorovastaava]),
+            ('Järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [tyovoima, vuorovastaava]),
+            ('Kasaus ja purku', 'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima, vuorovastaava]),
+            ('Logistiikka', 'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.', [tyovoima, vuorovastaava]),
+            ('Majoitusvalvoja', 'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima, vuorovastaava]),
+            ('Myynti', 'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.', [tyovoima, vuorovastaava]),
+            ('Narikka', 'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.', [tyovoima, vuorovastaava]),
+            ('Ohjelma-avustaja', 'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.', [tyovoima, vuorovastaava]),
+            ('Green room', 'Työvoiman ruokahuolto green roomissa. Edellyttää hygieniapassia.', [tyovoima, vuorovastaava]),
+            ('Taltiointi', 'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.', [tyovoima, vuorovastaava]),
+            ('Tekniikka', 'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä ongelmanratkaisua.', [tyovoima, vuorovastaava]),
+            ('Valokuvaus', 'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.', [tyovoima, vuorovastaava]),
+            ('Yleisvänkäri', 'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.', [tyovoima, vuorovastaava]),
+            ('Info', 'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.', [tyovoima, vuorovastaava]),
 
-            (u'Ohjelmanpitäjä', u'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
+            ('Ohjelmanpitäjä', 'Luennon tai muun vaativan ohjelmanumeron pitäjä', [ohjelma]),
         ]:
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
@@ -174,13 +174,13 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Conitea']:
+        for name in ['Conitea']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            (u'Järjestyksenvalvoja', u'JV-kortti'),
-            (u'Logistiikka', u'Henkilöauton ajokortti (B)'),
-            (u'Green room', u'Hygieniapassi'),
+            ('Järjestyksenvalvoja', 'JV-kortti'),
+            ('Logistiikka', 'Henkilöauton ajokortti (B)'),
+            ('Green room', 'Hygieniapassi'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
@@ -215,25 +215,25 @@ class Setup(object):
                 work_period.save()
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         for night in [
-            u'Perjantain ja lauantain välinen yö',
-            u'Lauantain ja sunnuntain välinen yö',
+            'Perjantain ja lauantain välinen yö',
+            'Lauantain ja sunnuntain välinen yö',
         ]:
             Night.objects.get_or_create(name=night)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'conitea',
+            slug='conitea',
             defaults=dict(
-                title=u'Conitean ilmoittautumislomake',
+                title='Conitean ilmoittautumislomake',
                 signup_form_class_path='events.traconx.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.traconx.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2014, 11, 15, 12, 0, 0, tzinfo=self.tz),
@@ -277,15 +277,15 @@ class Setup(object):
             shipping_and_handling_cents=0,
             reference_number_template="2015{:05d}",
             contact_email='Traconin lipunmyynti <liput@tracon.fi>',
-            ticket_free_text=u"Tämä on sähköinen lippusi Tracon X -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
-                u"lipunvaihtopisteessä.\n\n"
-                u"Tervetuloa Traconiin!",
-            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Tracon X -tapahtumaan!</h2>"
-                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                u"<p>Lue lisää tapahtumasta <a href='http://2015.tracon.fi'>Traconin kotisivuilta</a>.</p>",
+            ticket_free_text="Tämä on sähköinen lippusi Tracon X -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
+                "lipunvaihtopisteessä.\n\n"
+                "Tervetuloa Traconiin!",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Tracon X -tapahtumaan!</h2>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://2015.tracon.fi'>Traconin kotisivuilta</a>.</p>",
         )
 
         if self.test:
@@ -318,9 +318,9 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name=u'Joulupaketti - 2 kpl viikonloppulippu ja 1 kpl kalenteri',
-                description=u'Paketti sisältää kaksi viikonloppulippua ja yhden Tracon 2015 -seinäkalenterin. Tuotteet toimitetaan antamaasi osoitteeseen postitse, ja postikulut sisältyvät hintaan.',
-                internal_description=u'HUOM! Järjestelmä ei tue lippukiintiöiden kuluttamista kahdella per myyty paketti, joten lippukiintiöt täytyy korjata käsin kun joulupaketit on myyty.',
+                name='Joulupaketti - 2 kpl viikonloppulippu ja 1 kpl kalenteri',
+                description='Paketti sisältää kaksi viikonloppulippua ja yhden Tracon 2015 -seinäkalenterin. Tuotteet toimitetaan antamaasi osoitteeseen postitse, ja postikulut sisältyvät hintaan.',
+                internal_description='HUOM! Järjestelmä ei tue lippukiintiöiden kuluttamista kahdella per myyty paketti, joten lippukiintiöt täytyy korjata käsin kun joulupaketit on myyty.',
                 limit_groups=[
                     # limit_group('Lauantain liput', 5000, 2),
                     # limit_group('Sunnuntain liput', 5000, 2),
@@ -333,8 +333,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Joulupaketti - 1 kpl viikonloppulippu ja 1 kpl kalenteri',
-                description=u'Paketti sisältää yhden viikonloppulipun ja yhden Tracon 2015 -seinäkalenterin. Tuotteet toimitetaan antamaasi osoitteeseen postitse, ja postikulut sisältyvät hintaan.',
+                name='Joulupaketti - 1 kpl viikonloppulippu ja 1 kpl kalenteri',
+                description='Paketti sisältää yhden viikonloppulipun ja yhden Tracon 2015 -seinäkalenterin. Tuotteet toimitetaan antamaasi osoitteeseen postitse, ja postikulut sisältyvät hintaan.',
                 limit_groups=[
                     limit_group('Lauantain liput', 3525),
                     limit_group('Sunnuntain liput', 3525),
@@ -347,8 +347,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Viikonloppulippu',
-                description=u'Viikonloppulippu Tracon 2015 -tapahtumaan. Voimassa koko viikonlopun ajan la klo 10 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                name='Viikonloppulippu',
+                description='Viikonloppulippu Tracon 2015 -tapahtumaan. Voimassa koko viikonlopun ajan la klo 10 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
                 limit_groups=[
                     limit_group('Lauantain liput', 3525),
                     limit_group('Sunnuntain liput', 3525),
@@ -360,8 +360,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Lauantailippu',
-                description=u'Lauantailippu Tracon 2015 -tapahtumaan. Voimassa koko lauantaipäivän ajan la klo 10 – su klo 08. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                name='Lauantailippu',
+                description='Lauantailippu Tracon 2015 -tapahtumaan. Voimassa koko lauantaipäivän ajan la klo 10 – su klo 08. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
                 limit_groups=[
                     limit_group('Lauantain liput', 3525),
                 ],
@@ -372,8 +372,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Sunnuntailippu',
-                description=u'Lauantailippu Tracon 2015 -tapahtumaan. Voimassa koko sunnuntaipäivän ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                name='Sunnuntailippu',
+                description='Lauantailippu Tracon 2015 -tapahtumaan. Voimassa koko sunnuntaipäivän ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
                 limit_groups=[
                     limit_group('Sunnuntain liput', 3525),
                 ],
@@ -384,11 +384,11 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Konserttipaketti Traconin kävijälle',
-                description=u'Sisältää liput The Super Sound of Videogames 2 -konserttiin sekä Traconin iltabileisiin.</p><p>'
-                    u'The Super Sound of Videogames 2 -konsertti perjantaina 4. syyskuuta klo 19 Tampere-talossa. Esiintymässä QUINSONITUS ja TAKOMO PERCUSSION. Lisätietoja <a href="http://www.tampere-talo.fi/supersound" target="_blank">Tampere-talon sivuilta</a> (avautuu uuteen ikkunaan).</p><p>'
-                    u'Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2015 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
-                    u'HUOM! Tämä lippu oikeuttaa pääsyyn tilaisuuksiin vain yhdessä Tracon-rannekkeen kanssa (lauantai, sunnuntai tai koko viikonloppu).',
+                name='Konserttipaketti Traconin kävijälle',
+                description='Sisältää liput The Super Sound of Videogames 2 -konserttiin sekä Traconin iltabileisiin.</p><p>'
+                    'The Super Sound of Videogames 2 -konsertti perjantaina 4. syyskuuta klo 19 Tampere-talossa. Esiintymässä QUINSONITUS ja TAKOMO PERCUSSION. Lisätietoja <a href="http://www.tampere-talo.fi/supersound" target="_blank">Tampere-talon sivuilta</a> (avautuu uuteen ikkunaan).</p><p>'
+                    'Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2015 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
+                    'HUOM! Tämä lippu oikeuttaa pääsyyn tilaisuuksiin vain yhdessä Tracon-rannekkeen kanssa (lauantai, sunnuntai tai koko viikonloppu).',
                 limit_groups=[
                     limit_group('Iltabileliput', 1200),
                     limit_group('The Super Sound of Videogames 2', 500),
@@ -400,9 +400,9 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Iltabilelippu Traconin kävijälle',
-                description=u'Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2015 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
-                    u'HUOM! Tämä lippu oikeuttaa pääsyyn Traconin iltabileisiin vain yhdessä Tracon-rannekkeen kanssa (lauantai, sunnuntai tai koko viikonloppu).',
+                name='Iltabilelippu Traconin kävijälle',
+                description='Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2015 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
+                    'HUOM! Tämä lippu oikeuttaa pääsyyn Traconin iltabileisiin vain yhdessä Tracon-rannekkeen kanssa (lauantai, sunnuntai tai koko viikonloppu).',
                 limit_groups=[
                     limit_group('Iltabileliput', 1200),
                 ],
@@ -413,9 +413,9 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Iltabilelippu ei-kävijälle',
-                description=u'Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2015 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
-                    u'Tämä lippu oikeuttaa pääsyyn Traconin iltabileisiin ilman Tracon-ranneketta.',
+                name='Iltabilelippu ei-kävijälle',
+                description='Traconin iltabileet Pakkahuoneella lauantaina 5. syyskuuta 2015 kello 19–01. Esiintymässä MACHINAE SUPREMACY (SWE) sekä YOHIO (SWE) + DJ:t Klubilla. Ei sisällä narikkamaksua 2 €.</p><p>'
+                    'Tämä lippu oikeuttaa pääsyyn Traconin iltabileisiin ilman Tracon-ranneketta.',
                 limit_groups=[
                     limit_group('Iltabileliput', 1200),
                 ],
@@ -426,8 +426,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Lattiamajoitus 1 yö pe-la - Aleksanterin koulu (sis. makuualusta)',
-                description=u'Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
+                name='Lattiamajoitus 1 yö pe-la - Aleksanterin koulu (sis. makuualusta)',
+                description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
                 limit_groups=[
                     limit_group('Majoitus Aleksanteri pe-la', 80),
                 ],
@@ -439,8 +439,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Lattiamajoitus 1 yö la-su - Aleksanterin koulu (sis. makuualusta)',
-                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
+                name='Lattiamajoitus 1 yö la-su - Aleksanterin koulu (sis. makuualusta)',
+                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
                 limit_groups=[
                     limit_group('Majoitus Aleksanteri la-su', 130),
                 ],
@@ -452,8 +452,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Lattiamajoitus 1 yö pe-la - Pyynikin koulu (ei sis. makuualustaa)',
-                description=u'Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                name='Lattiamajoitus 1 yö pe-la - Pyynikin koulu (ei sis. makuualustaa)',
+                description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
                 limit_groups=[
                     limit_group('Majoitus Pyynikki pe-la', 120),
                 ],
@@ -465,8 +465,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Lattiamajoitus 1 yö la-su - Pyynikin koulu (ei sis. makuualustaa)',
-                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                name='Lattiamajoitus 1 yö la-su - Pyynikin koulu (ei sis. makuualustaa)',
+                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
                 limit_groups=[
                     limit_group('Majoitus Pyynikki la-su', 120),
                 ],
@@ -492,7 +492,7 @@ class Setup(object):
                 product.save()
 
         if not meta.receipt_footer:
-            meta.receipt_footer = u"Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi"
+            meta.receipt_footer = "Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi"
             meta.save()
 
 
@@ -522,26 +522,26 @@ class Setup(object):
         ))
 
         for room_name in [
-            u'Aaria',
-            u'Iso sali',
-            u'Pieni sali',
+            'Aaria',
+            'Iso sali',
+            'Pieni sali',
             # u'Sopraano', # Ei luento-ohjelmakäytössä
-            u'Rondo',
-            u'Studio',
-            u'Sonaatti 1',
-            u'Sonaatti 2',
-            u'Basso',
+            'Rondo',
+            'Studio',
+            'Sonaatti 1',
+            'Sonaatti 2',
+            'Basso',
             #u'Opus 1', # No longer in use
-            u'Opus 2',
-            u'Opus 3',
-            u'Opus 4',
-            u'Talvipuutarha',
-            u'Puistolava',
-            u'Pieni ulkolava',
-            u'Puisto - Iso miittiteltta',
-            u'Puisto - Pieni miittiteltta',
-            u'Puisto - Bofferiteltta',
-            u'Muualla ulkona',
+            'Opus 2',
+            'Opus 3',
+            'Opus 4',
+            'Talvipuutarha',
+            'Puistolava',
+            'Pieni ulkolava',
+            'Puisto - Iso miittiteltta',
+            'Puisto - Pieni miittiteltta',
+            'Puisto - Bofferiteltta',
+            'Muualla ulkona',
         ]:
             order = self.get_ordering_number() + 80000 # XXX
 
@@ -559,7 +559,7 @@ class Setup(object):
         personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
         role, unused = Role.objects.get_or_create(
             personnel_class=personnel_class,
-            title=u'Ohjelmanjärjestäjä',
+            title='Ohjelmanjärjestäjä',
             defaults=dict(
                 is_default=True,
                 require_contact_info=True,
@@ -569,11 +569,11 @@ class Setup(object):
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
             for title, style in [
-                (u'Animeohjelma', u'anime'),
-                (u'Cosplayohjelma', u'cosplay'),
-                (u'Miitti', u'miitti'),
-                (u'Muu ohjelma', u'muu'),
-                (u'Roolipeliohjelma', u'rope'),
+                ('Animeohjelma', 'anime'),
+                ('Cosplayohjelma', 'cosplay'),
+                ('Miitti', 'miitti'),
+                ('Muu ohjelma', 'muu'),
+                ('Roolipeliohjelma', 'rope'),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
@@ -619,26 +619,26 @@ class Setup(object):
         have_views = View.objects.filter(event=self.event).exists()
         if not have_views:
             for view_name, room_names in [
-                (u'Pääohjelmatilat', [
-                    u'Iso sali',
-                    u'Pieni sali',
-                    u'Studio',
-                    u'Sonaatti 1',
-                    u'Sonaatti 2',
+                ('Pääohjelmatilat', [
+                    'Iso sali',
+                    'Pieni sali',
+                    'Studio',
+                    'Sonaatti 1',
+                    'Sonaatti 2',
                 ]),
-                (u'Toissijaiset ohjelmatilat', [
-                    u'Aaria',
-                    u'Rondo',
-                    u'Opus 2',
-                    u'Opus 3',
-                    u'Opus 4',
-                    u'Talvipuutarha',
+                ('Toissijaiset ohjelmatilat', [
+                    'Aaria',
+                    'Rondo',
+                    'Opus 2',
+                    'Opus 3',
+                    'Opus 4',
+                    'Talvipuutarha',
                 ]),
-                (u'Ulko-ohjelma', [
-                    u'Puistolava',
-                    u'Puisto - Iso miittiteltta',
-                    u'Puisto - Pieni miittiteltta',
-                    u'Muualla ulkona',
+                ('Ulko-ohjelma', [
+                    'Puistolava',
+                    'Puisto - Iso miittiteltta',
+                    'Puisto - Pieni miittiteltta',
+                    'Muualla ulkona',
                 ]),
             ]:
                 rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)

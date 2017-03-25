@@ -9,16 +9,16 @@ from core.utils import SLUG_FIELD_PARAMS
 class Qualification(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
 
-    name = models.CharField(max_length=63, verbose_name=u'pätevyyden nimi')
-    description = models.TextField(blank=True, verbose_name=u'kuvaus')
+    name = models.CharField(max_length=63, verbose_name='pätevyyden nimi')
+    description = models.TextField(blank=True, verbose_name='kuvaus')
 
     qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', null=True, blank=True)
 
     class Meta:
-        verbose_name = _(u'qualification')
-        verbose_name_plural = _(u'qualifications')
+        verbose_name = _('qualification')
+        verbose_name_plural = _('qualifications')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property
@@ -46,14 +46,14 @@ class Qualification(models.Model):
 
 
 class PersonQualification(models.Model):
-    person = models.ForeignKey('core.Person', verbose_name=u'henkilö')
-    qualification = models.ForeignKey(Qualification, verbose_name=u'pätevyys')
+    person = models.ForeignKey('core.Person', verbose_name='henkilö')
+    qualification = models.ForeignKey(Qualification, verbose_name='pätevyys')
 
     class Meta:
-        verbose_name = _(u'qualification holder')
-        verbose_name_plural = _(u'qualification holders')
+        verbose_name = _('qualification holder')
+        verbose_name_plural = _('qualification holders')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.qualification.name if self.qualification else 'None'
 
     @property

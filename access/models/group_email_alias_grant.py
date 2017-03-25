@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import logging
 
@@ -14,12 +14,12 @@ logger = logging.getLogger('kompassi')
 
 
 class GroupEmailAliasGrant(models.Model):
-    group = models.ForeignKey('auth.Group', verbose_name=u'Ryhmä')
-    type = models.ForeignKey('access.EmailAliasType', verbose_name=u'Tyyppi')
+    group = models.ForeignKey('auth.Group', verbose_name='Ryhmä')
+    type = models.ForeignKey('access.EmailAliasType', verbose_name='Tyyppi')
     active_until = models.DateTimeField(null=True, blank=True)
 
-    def __unicode__(self):
-        return u'{group_name}: {type}'.format(
+    def __str__(self):
+        return '{group_name}: {type}'.format(
             group_name=self.group.name if self.group else None,
             type=self.type,
         )

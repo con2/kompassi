@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.db import models, transaction
@@ -81,7 +81,7 @@ class Badge(models.Model, CsvExportMixin):
 
     job_title = models.CharField(max_length=63,
         blank=True,
-        default=u'',
+        default='',
         verbose_name=_('Job title'),
         help_text=_('Please stay civil with the job title field.'),
     )
@@ -165,7 +165,7 @@ class Badge(models.Model, CsvExportMixin):
 
             if existing_badge:
                 # There is an existing un-revoked badge. Check that its information is correct.
-                if any(getattr(existing_badge, key) != value for key, value in expected_badge_opts.iteritems()):
+                if any(getattr(existing_badge, key) != value for key, value in expected_badge_opts.items()):
                     existing_badge.revoke()
                 else:
                     return existing_badge, False
@@ -230,7 +230,7 @@ class Badge(models.Model, CsvExportMixin):
 
     @property
     def personnel_class_name(self):
-        return self.personnel_class.name if self.personnel_class else u''
+        return self.personnel_class.name if self.personnel_class else ''
 
     @property
     def event(self):
@@ -266,10 +266,10 @@ class Badge(models.Model, CsvExportMixin):
 
     @property
     def event_name(self):
-        return self.personnel_class.event.name if self.personnel_class else u''
+        return self.personnel_class.event.name if self.personnel_class else ''
 
     def get_printable_text(self, fields):
-        return '\n'.join(unicode(value) for value in self.get_csv_row(self.event, fields, 'comma_separated'))
+        return '\n'.join(str(value) for value in self.get_csv_row(self.event, fields, 'comma_separated'))
 
     def to_html_print(self):
         def format_name_field(value, is_visible):
@@ -329,7 +329,7 @@ class Badge(models.Model, CsvExportMixin):
     admin_get_full_name.short_description = _('Name')
     admin_get_full_name.admin_order_field = ('surname', 'first_name', 'nick')
 
-    def __unicode__(self):
+    def __str__(self):
         return "{person_name} ({personnel_class_name}, {event_name})".format(
             person_name=self.admin_get_full_name(),
             personnel_class_name=self.personnel_class_name,

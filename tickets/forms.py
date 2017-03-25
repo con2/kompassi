@@ -28,7 +28,7 @@ class AccommodationInformationForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-        for field_name, field in self.fields.iteritems():
+        for field_name, field in self.fields.items():
             if field_name != 'email':
                 field.required = True
 
@@ -50,7 +50,7 @@ class AccommodationInformationForm(forms.ModelForm):
 
 
 class OrderProductForm(forms.ModelForm):
-    count = forms.IntegerField(label=u"Määrä", min_value=0, max_value=99)
+    count = forms.IntegerField(label="Määrä", min_value=0, max_value=99)
 
     def __init__(self, *args, **kwargs):
         super(OrderProductForm, self).__init__(*args, **kwargs)
@@ -119,7 +119,7 @@ class CustomerForm(forms.ModelForm):
 
 
 class SinglePaymentForm(forms.Form):
-    ref_number = forms.CharField(max_length=19, label=u"Viitenumero")
+    ref_number = forms.CharField(max_length=19, label="Viitenumero")
 
 
 class ConfirmSinglePaymentForm(forms.Form):
@@ -127,10 +127,10 @@ class ConfirmSinglePaymentForm(forms.Form):
 
 
 class SearchForm(forms.Form):
-    id = forms.IntegerField(label=u"Tilausnumero", required=False)
-    first_name = forms.CharField(label=u"Etunimi", required=False)
-    last_name = forms.CharField(label=u"Sukunimi", required=False)
-    email = forms.CharField(label=u"Sähköpostiosoite", required=False)
+    id = forms.IntegerField(label="Tilausnumero", required=False)
+    first_name = forms.CharField(label="Etunimi", required=False)
+    last_name = forms.CharField(label="Sukunimi", required=False)
+    email = forms.CharField(label="Sähköpostiosoite", required=False)
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
@@ -141,7 +141,7 @@ class SearchForm(forms.Form):
             'first_name',
             'last_name',
             'email',
-            indented_without_label(Submit('submit', u'Hae tilauksia', css_class='btn-primary')),
+            indented_without_label(Submit('submit', 'Hae tilauksia', css_class='btn-primary')),
         )
 
 
@@ -174,13 +174,13 @@ class AdminOrderForm(forms.ModelForm):
 
 
 class CreateBatchForm(forms.Form):
-    max_items = forms.IntegerField(label=u"Kuinka monta tilausta (enintään)?", initial=100)
+    max_items = forms.IntegerField(label="Kuinka monta tilausta (enintään)?", initial=100)
     product = forms.ModelChoiceField(
         queryset=Product.objects.all(),
         required=False,
-        label=u"Tuote",
-        help_text=u"Jos valitset tästä kentästä tuotteen, saat erän jossa on ainoastaan sellaisia "
-            u"tilauksia jotka sisältävät vähintään yhden kappaleen valittua tuotetta.",
+        label="Tuote",
+        help_text="Jos valitset tästä kentästä tuotteen, saat erän jossa on ainoastaan sellaisia "
+            "tilauksia jotka sisältävät vähintään yhden kappaleen valittua tuotetta.",
     )
 
     def __init__(self, *args, **kwargs):

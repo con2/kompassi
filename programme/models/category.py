@@ -16,14 +16,14 @@ class Category(models.Model):
     notes = models.TextField(blank=True)
     public = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
         ordering = ['title']
         unique_together = [('event', 'slug')]
-        verbose_name = _(u'category')
-        verbose_name_plural = _(u'categories')
+        verbose_name = _('category')
+        verbose_name_plural = _('categories')
 
     @classmethod
     def get_or_create_dummy(cls):

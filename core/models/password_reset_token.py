@@ -16,7 +16,7 @@ class PasswordResetToken(OneTimeCode):
     ip_address = models.CharField(max_length=45, blank=True) # IPv6
 
     def render_message_subject(self, request):
-        return u'{settings.KOMPASSI_INSTALLATION_NAME}: Salasanan vaihto'.format(settings=settings)
+        return '{settings.KOMPASSI_INSTALLATION_NAME}: Salasanan vaihto'.format(settings=settings)
 
     def render_message_body(self, request):
         vars = dict(

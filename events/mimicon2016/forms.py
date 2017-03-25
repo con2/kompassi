@@ -22,7 +22,7 @@ class SignupExtraForm(forms.ModelForm):
             indented_without_label('construction'),
             indented_without_label('want_certificate'),
 
-            Fieldset(u'Lisätiedot',
+            Fieldset('Lisätiedot',
                 'special_diet',
                 'special_diet_other',
                 'lodging_needs',
@@ -66,12 +66,12 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Tehtävän tiedot',
+            Fieldset('Tehtävän tiedot',
                 'job_title',
             ),
         )
 
-        self.fields['job_title'].help_text = u"Mikä on tehtäväsi coniteassa? Printataan badgeen."
+        self.fields['job_title'].help_text = "Mikä on tehtäväsi coniteassa? Printataan badgeen."
         self.fields['job_title'].required = True
 
     class Meta:
@@ -94,7 +94,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Lisätiedot',
+            Fieldset('Lisätiedot',
                 'special_diet',
                 'special_diet_other',
             ),
@@ -118,8 +118,8 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             total_work='yli12h',
             construction=False,
             want_certificate=False,
-            prior_experience=u'',
-            free_text=u'Syötetty käyttäen coniitin ilmoittautumislomaketta',
+            prior_experience='',
+            free_text='Syötetty käyttäen coniitin ilmoittautumislomaketta',
         )
 
     def get_excluded_m2m_field_defaults(self):

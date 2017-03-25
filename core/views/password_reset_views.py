@@ -52,20 +52,20 @@ def core_password_reset_view(request, code):
         if form.is_valid():
             try:
                 PasswordResetToken.reset_password(code, form.cleaned_data['new_password'])
-            except PasswordResetError, e:
+            except PasswordResetError as e:
                 messages.error(request,
-                    u'Salasanan nollaus epäonnistui. Ole hyvä ja yritä uudestaan. Tarvittaessa voit '
-                    u'ottaa yhteyttä osoitteeseen {settings.DEFAULT_FROM_EMAIL}.'
+                    'Salasanan nollaus epäonnistui. Ole hyvä ja yritä uudestaan. Tarvittaessa voit '
+                    'ottaa yhteyttä osoitteeseen {settings.DEFAULT_FROM_EMAIL}.'
                     .format(settings=settings)
                 )
                 return redirect('core_frontpage_view')
 
             messages.success(request,
-                u'Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi.'
+                'Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi.'
             )
             return redirect('core_login_view')
         else:
-            messages.error(request, u'Ole hyvä ja korjaa lomakkeen virheet.')
+            messages.error(request, 'Ole hyvä ja korjaa lomakkeen virheet.')
 
     vars = dict(
         form=form,
@@ -97,10 +97,10 @@ def core_password_reset_request_view(request):
                 person.setup_password_reset(request)
 
             messages.success(request,
-                u'Ohjeet salasanan vaihtamiseksi on lähetetty antamaasi sähköpostiosoitteeseen.'
+                'Ohjeet salasanan vaihtamiseksi on lähetetty antamaasi sähköpostiosoitteeseen.'
             )
         else:
-            messages.error(request, u'Ole hyvä ja korjaa lomakkeen virheet.')
+            messages.error(request, 'Ole hyvä ja korjaa lomakkeen virheet.')
 
     vars = dict(
         form=form,

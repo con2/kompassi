@@ -22,7 +22,7 @@ def http_basic_auth(func):
     @wraps(func)
     def _decorator(request, *args, **kwargs):
         from django.contrib.auth import authenticate, login
-        if request.META.has_key('HTTP_AUTHORIZATION'):
+        if 'HTTP_AUTHORIZATION' in request.META:
             authmeth, auth = request.META['HTTP_AUTHORIZATION'].split(' ', 1)
             if authmeth.lower() == 'basic':
                 auth = auth.strip().decode('base64')
@@ -120,7 +120,7 @@ class JSONSchemaObject(object):
     @classmethod
     def from_dict(cls, d):
         validate(d, cls.schema)
-        attrs = [d.get(key, u'') for key in cls._fields]
+        attrs = [d.get(key, '') for key in cls._fields]
         return cls(*attrs)
 
     @classmethod

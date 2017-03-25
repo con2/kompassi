@@ -17,7 +17,7 @@ def access_admin_required(view_func):
         meta = organization.access_organization_meta
 
         if not meta:
-            messages.error(request, u"Tämä organisaatio ei käytä Kompassia pääsyoikeuksien hallintaan.")
+            messages.error(request, "Tämä organisaatio ei käytä Kompassia pääsyoikeuksien hallintaan.")
             return redirect('core_organization_view', organization.slug)
 
         if not organization.access_organization_meta.is_user_admin(request.user):
@@ -26,7 +26,7 @@ def access_admin_required(view_func):
         vars = dict(
             organization=organization,
             admin_menu_items=organization_admin_menu_items(request, organization),
-            admin_title=u'Yhdistyksen ylläpito'
+            admin_title='Yhdistyksen ylläpito'
         )
 
         return view_func(request, vars, organization, *args, **kwargs)
@@ -42,7 +42,7 @@ def access_organization_required(view_func):
         meta = organization.access_organization_meta
 
         if not meta:
-            messages.error(request, u"Tämä organisaatio ei käytä Kompassia pääsyoikeuksien hallintaan.")
+            messages.error(request, "Tämä organisaatio ei käytä Kompassia pääsyoikeuksien hallintaan.")
             return redirect('core_organization_view', organization.slug)
 
         return view_func(request, organization, *args, **kwargs)

@@ -1,4 +1,4 @@
-FROM python:2.7
+FROM python:3.6
 WORKDIR /usr/src/app
 COPY requirements.txt requirements-production.txt /usr/src/app/
 RUN groupadd -r kompassi && useradd -r -g kompassi kompassi && \

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import os
 from datetime import datetime, timedelta
@@ -159,7 +159,7 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Conitea']:
+        for name in ['Conitea']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for diet_name in [

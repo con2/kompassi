@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='signupextra',
             name='total_work',
-            field=models.CharField(help_text='Kuinka paljon haluat tehd\xe4 t\xf6it\xe4 yhteens\xe4 tapahtuman aikana?', max_length=15, verbose_name='Toivottu kokonaisty\xf6m\xe4\xe4r\xe4', choices=[('minimi', b'Haluan tehd\xc3\xa4 vain minimity\xc3\xb6panoksen (JV: 10h, muut: 8h)'), ('ekstra', b'Olen valmis tekem\xc3\xa4\xc3\xa4n lis\xc3\xa4tunteja')]),
+            field=models.CharField(help_text='Kuinka paljon haluat tehd\xe4 t\xf6it\xe4 yhteens\xe4 tapahtuman aikana?', max_length=15, verbose_name='Toivottu kokonaisty\xf6m\xe4\xe4r\xe4', choices=[('minimi', 'Haluan tehd\xc3\xa4 vain minimity\xc3\xb6panoksen (JV: 10h, muut: 8h)'), ('ekstra', 'Olen valmis tekem\xc3\xa4\xc3\xa4n lis\xc3\xa4tunteja')]),
         ),
     ]

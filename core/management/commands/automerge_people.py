@@ -11,6 +11,6 @@ class Command(BaseCommand):
 
             people = Person.objects.filter(email=email)
             if people.count() > 1:
-                print email
+                print(email)
                 for person_to_spare, people_to_merge in possible_merges(people):
                     merge_people(people_to_merge, into=person_to_spare)

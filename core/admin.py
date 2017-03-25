@@ -34,7 +34,7 @@ def merge_selected_people(modeladmin, request, queryset):
 
     person_to_spare, people_to_merge = find_best_candidate(queryset)
     merge_people(people_to_merge, into=person_to_spare)
-merge_selected_people.short_description = u'Yhdistä valitut henkilöt'
+merge_selected_people.short_description = 'Yhdistä valitut henkilöt'
 
 
 class PersonAdmin(admin.ModelAdmin):

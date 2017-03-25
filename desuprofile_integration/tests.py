@@ -26,7 +26,7 @@ class DesuprofileValidationTestCase(TestCase):
             birth_date='2014-04-24',
         )
 
-        self.assertEquals(Desuprofile.from_dict(valid_profile)._asdict(), valid_profile)
+        self.assertEqual(Desuprofile.from_dict(valid_profile)._asdict(), valid_profile)
 
     def test_desuprofile_without_required_attributes(self):
         blank_email = dict(
@@ -115,13 +115,13 @@ class DesuprogrammeImportTestCase(TestCase):
         payload = [
             dict(
                 identifier='katsot-animea-vaarin',
-                title=u'Katsot animea väärin',
-                description=u'Niidel vertaa syksyn 2011 DesuTalksissa Helsingin Glorialla animeharrastusta parisuhteeseen, osoittaa kriittisimmät virheet juuri sinun.',
+                title='Katsot animea väärin',
+                description='Niidel vertaa syksyn 2011 DesuTalksissa Helsingin Glorialla animeharrastusta parisuhteeseen, osoittaa kriittisimmät virheet juuri sinun.',
             ),
             dict(
                 identifier='todellisuusopas-komeroille',
-                title=u'Todellisuusopas komeroille',
-                description=u'Oletko kyllästynyt valittamaan laudoilla kuinka haluaisit vain paijata? Olisiko vihdoinkin aika tulla ulos komerosta? Tämä itsensäkehittämisluento yrittää auttaa juuri sinua joka olet suunnittelemassa todellisuudelle avautumista. Opit mitä sinun tulisi tietää todellisuudesta ja saat vinkkejä sinne siirtymiseen. Tai jos olet vielä epävarma ulostautumisestasi, saat tietää mitä todellisuudella on tarjota ja syitä vaivautumiseen. Todellisuusopas painottuu parisuhteisiin, ja antaa sinulle konkreettisen kaavan jolla nörtti saa tyttö-/poikaystävän. Luentoa värittävät havainnot animen ja todellisuuden eroavaisuuksista ja mahdollisista yhtäläisyyksistä. Kaikki nämä elintärkeät tiedonjyvät esitetään nautinnollisen helpostisulatettavalla, humoristisella tavalla.',
+                title='Todellisuusopas komeroille',
+                description='Oletko kyllästynyt valittamaan laudoilla kuinka haluaisit vain paijata? Olisiko vihdoinkin aika tulla ulos komerosta? Tämä itsensäkehittämisluento yrittää auttaa juuri sinua joka olet suunnittelemassa todellisuudelle avautumista. Opit mitä sinun tulisi tietää todellisuudesta ja saat vinkkejä sinne siirtymiseen. Tai jos olet vielä epävarma ulostautumisestasi, saat tietää mitä todellisuudella on tarjota ja syitä vaivautumiseen. Todellisuusopas painottuu parisuhteisiin, ja antaa sinulle konkreettisen kaavan jolla nörtti saa tyttö-/poikaystävän. Luentoa värittävät havainnot animen ja todellisuuden eroavaisuuksista ja mahdollisista yhtäläisyyksistä. Kaikki nämä elintärkeät tiedonjyvät esitetään nautinnollisen helpostisulatettavalla, humoristisella tavalla.',
             ),
         ]
 
@@ -148,8 +148,8 @@ class DesuprogrammeImportTestCase(TestCase):
 
         # Change something
         programme = Programme.objects.get(slug='todellisuusopas-komeroille')
-        assert programme.title == u'Todellisuusopas komeroille'
-        payload[1]['title'] = u'Todellisuusopas komeroille 2.0'
+        assert programme.title == 'Todellisuusopas komeroille'
+        payload[1]['title'] = 'Todellisuusopas komeroille 2.0'
         import_programme(self.event, payload)
         programme = Programme.objects.get(slug='todellisuusopas-komeroille')
-        assert programme.title == u'Todellisuusopas komeroille 2.0'
+        assert programme.title == 'Todellisuusopas komeroille 2.0'

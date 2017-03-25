@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -8,10 +8,10 @@ def populate_name_genitive(apps, schema_editor):
     Organization = apps.get_model('core', 'organization')
     for organization in Organization.objects.all():
         if organization.name and not organization.name_genitive:
-            if organization.name.endswith(u' ry'):
-                organization.name_genitive = organization.name + u':n'
+            if organization.name.endswith(' ry'):
+                organization.name_genitive = organization.name + ':n'
             else:
-                organization.name_genitive = organization.name + u'n'
+                organization.name_genitive = organization.name + 'n'
 
         organization.save()
 

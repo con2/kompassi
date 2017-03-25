@@ -19,7 +19,7 @@ class SignupCertificateProxy(Signup):
 
         contains_name = self.person.firstname_surname.lower() in address.lower()
 
-        address = address.replace(u',', u'\n')
+        address = address.replace(',', '\n')
         address_lines = address.split('\n')
 
         if not contains_name:
@@ -27,7 +27,7 @@ class SignupCertificateProxy(Signup):
 
         address_lines = [line.strip() for line in address_lines if line.strip()]
 
-        return u"\n".join(address_lines)
+        return "\n".join(address_lines)
 
     class Meta:
         proxy = True

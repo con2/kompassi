@@ -17,7 +17,7 @@ class Room(models.Model):
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def programme_continues_at(self, the_time, **conditions):
@@ -35,8 +35,8 @@ class Room(models.Model):
 
     class Meta:
         ordering = ['venue', 'order']
-        verbose_name = u'tila'
-        verbose_name_plural = u'tilat'
+        verbose_name = 'tila'
+        verbose_name_plural = 'tilat'
         unique_together = [
             ('venue', 'slug'),
         ]
@@ -47,7 +47,7 @@ class Room(models.Model):
         venue, unused = Venue.get_or_create_dummy()
         return cls.objects.get_or_create(
             venue=venue,
-            name=u'Dummy room',
+            name='Dummy room',
             defaults=dict(
                 order=0,
             )

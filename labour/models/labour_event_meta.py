@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import re
 from datetime import datetime, timedelta
@@ -76,7 +76,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         verbose_name = _('labour event meta')
         verbose_name_plural = _('labour event metas')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.event.name if self.event else 'None'
 
     @property
@@ -128,7 +128,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
     @classmethod
     def get_or_create_groups(cls, event, job_categories_or_suffixes):
         suffixes = [
-            jc_or_suffix if isinstance(jc_or_suffix, basestring) else jc_or_suffix.slug
+            jc_or_suffix if isinstance(jc_or_suffix, str) else jc_or_suffix.slug
             for jc_or_suffix in job_categories_or_suffixes
         ]
 

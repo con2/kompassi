@@ -1,16 +1,16 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
 STATE_CHOICES = [
-    ('pending', u'Odottaa hyväksyntää'),
-    ('approved', u'Hyväksytty, odottaa toteutusta'),
-    ('granted', u'Myönnetty'),
-    ('rejected', u'Hylätty'),
+    ('pending', 'Odottaa hyväksyntää'),
+    ('approved', 'Hyväksytty, odottaa toteutusta'),
+    ('granted', 'Myönnetty'),
+    ('rejected', 'Hylätty'),
 ]
 STATE_CSS = dict(
     pending='label-warning',
@@ -31,8 +31,8 @@ class GrantedPrivilege(models.Model):
     def state_css(self):
         return STATE_CSS[self.state]
 
-    def __unicode__(self):
-        return u'{person_name} - {privilege_title}'.format(
+    def __str__(self):
+        return '{person_name} - {privilege_title}'.format(
             person_name=self.person.full_name if self.person else None,
             privilege_title=self.privilege.title if self.privilege else None,
         )

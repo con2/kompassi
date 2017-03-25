@@ -54,15 +54,15 @@ class Setup(object):
             shipping_and_handling_cents=0,
             reference_number_template="2015{:05d}",
             contact_email='Mimicon <lipunmyynti@mimicon.fi>',
-            ticket_free_text=u"Tämä on sähköinen lippusi Mimicon 2015 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
-                u"lipunvaihtopisteessä.\n\n"
-                u"Tervetuloa Mimiconiin!",
-            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Mimicon 2015 -tapahtumaan!</h2>"
-                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                u"<p>Lue lisää tapahtumasta <a href='http://www.mimicon.fi'>Mimiconin kotisivuilta</a>.</p>",
+            ticket_free_text="Tämä on sähköinen lippusi Mimicon 2015 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
+                "lipunvaihtopisteessä.\n\n"
+                "Tervetuloa Mimiconiin!",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Mimicon 2015 -tapahtumaan!</h2>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://www.mimicon.fi'>Mimiconin kotisivuilta</a>.</p>",
             print_logo_path = mkpath('static', 'images', 'Mimicon2015_logo.png'),
             print_logo_width_mm = 30,
             print_logo_height_mm = 30,
@@ -98,8 +98,8 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name=u'Mimicon 2015 -pääsylippu',
-                description=u'Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
+                name='Mimicon 2015 -pääsylippu',
+                description='Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
                 limit_groups=[
                     limit_group('Pääsyliput', 500),
                 ],
@@ -110,8 +110,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Lattiamajoituspaikka',
-                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Tarvitset oman makuupussin ja -alustan. Lattiamajoituksesta ei lähetetä erillistä lippua, vaan lattiamajoitus toimii nimi listaan -periaatteella.',
+                name='Lattiamajoituspaikka',
+                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Tarvitset oman makuupussin ja -alustan. Lattiamajoituksesta ei lähetetä erillistä lippua, vaan lattiamajoitus toimii nimi listaan -periaatteella.',
                 limit_groups=[
                     limit_group('Lattiamajoitus', 80),
                 ],
@@ -122,8 +122,8 @@ class Setup(object):
                 ordering=ordering(),
             ),
             dict(
-                name=u'Lounaslippu',
-                description=u'Tällä lipukkeella saat herkullisen lounaan ravintola Napostellasta kumpana tahansa tapahtumapäivänä. Lounasliput toimitetaan samalla PDF-lipulla pääsylippujesi kanssa.',
+                name='Lounaslippu',
+                description='Tällä lipukkeella saat herkullisen lounaan ravintola Napostellasta kumpana tahansa tapahtumapäivänä. Lounasliput toimitetaan samalla PDF-lipulla pääsylippujesi kanssa.',
                 limit_groups=[
                     limit_group('Lounas', 100),
                 ],

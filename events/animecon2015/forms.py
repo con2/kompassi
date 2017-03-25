@@ -25,14 +25,14 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             'total_work',
-            Fieldset(u'Kortittomien järjestyksenvalvojien lisätiedot',
+            Fieldset('Kortittomien järjestyksenvalvojien lisätiedot',
                 'personal_identification_number',
             ),
-            Fieldset(u'Työtodistus',
+            Fieldset('Työtodistus',
                 indented_without_label('want_certificate'),
                 'certificate_delivery_address',
             ),
-            Fieldset(u'Lisätiedot',
+            Fieldset('Lisätiedot',
                 'special_diet',
                 'special_diet_other',
                 'lodging_needs',
@@ -65,16 +65,16 @@ class SignupExtraForm(forms.ModelForm):
         personal_identification_number = self.cleaned_data['personal_identification_number']
         kortiton_jv = JobCategory.objects.get(
             event__slug='animecon2015',
-            name=u'Kortiton järjestyksenvalvoja',
+            name='Kortiton järjestyksenvalvoja',
         )
 
         # XXX HORRIBLE HACK job_categories is in signupform, this is signupextraform
         # Cannot use self.instance.signup.job_categories because it is not necessarily saved yet.
-        if unicode(kortiton_jv.pk) in self.data.getlist('signup-job_categories', []):
+        if str(kortiton_jv.pk) in self.data.getlist('signup-job_categories', []):
             if not personal_identification_number:
-                raise forms.ValidationError(u'Koska haet kortittomaksi järjestyksenvalvojaksi, on henkilötunnus annettava.')
+                raise forms.ValidationError('Koska haet kortittomaksi järjestyksenvalvojaksi, on henkilötunnus annettava.')
         elif personal_identification_number:
-            raise forms.ValidationError(u'Koska et hae kortittomaksi järjestyksenvalvojaksi, tulee henkilötunnuskenttä jättää tyhjäksi.')
+            raise forms.ValidationError('Koska et hae kortittomaksi järjestyksenvalvojaksi, tulee henkilötunnuskenttä jättää tyhjäksi.')
 
         return personal_identification_number
 
@@ -83,8 +83,8 @@ class SignupExtraForm(forms.ModelForm):
         certificate_delivery_address = self.cleaned_data['certificate_delivery_address']
 
         if want_certificate and not certificate_delivery_address:
-            raise forms.ValidationError(u'Koska olet valinnut haluavasi työtodistuksen, on '
-                u'työtodistuksen toimitusosoite täytettävä.')
+            raise forms.ValidationError('Koska olet valinnut haluavasi työtodistuksen, on '
+                'työtodistuksen toimitusosoite täytettävä.')
 
         return certificate_delivery_address
 
@@ -101,12 +101,12 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Tehtävän tiedot',
+            Fieldset('Tehtävän tiedot',
                 'job_title',
             ),
         )
 
-        self.fields['job_title'].help_text = u"Mikä on tehtäväsi coniteassa? Printataan badgeen."
+        self.fields['job_title'].help_text = "Mikä on tehtäväsi coniteassa? Printataan badgeen."
         # self.fields['job_title'].required = True
 
     class Meta:
@@ -129,7 +129,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Lisätiedot',
+            Fieldset('Lisätiedot',
                 'special_diet',
                 'special_diet_other',
             ),
@@ -151,9 +151,9 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict(
             total_work='ekstra',
             want_certificate=False,
-            certificate_delivery_address=u'',
-            prior_experience=u'',
-            free_text=u'Syötetty käyttäen coniitin ilmoittautumislomaketta',
+            certificate_delivery_address='',
+            prior_experience='',
+            free_text='Syötetty käyttäen coniitin ilmoittautumislomaketta',
         )
 
     def get_excluded_m2m_field_defaults(self):

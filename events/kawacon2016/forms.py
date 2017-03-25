@@ -17,7 +17,7 @@ class SignupExtraForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Lisätiedot',
+            Fieldset('Lisätiedot',
                 'shirt_size',
                 'needs_lodging',
                 'special_diet',
@@ -57,12 +57,12 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Tehtävän tiedot',
+            Fieldset('Tehtävän tiedot',
                 'job_title',
             ),
         )
 
-        self.fields['job_title'].help_text = u"Mikä on tehtäväsi coniteassa?"
+        self.fields['job_title'].help_text = "Mikä on tehtäväsi coniteassa?"
 
     class Meta:
         model = Signup

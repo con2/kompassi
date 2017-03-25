@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 from django.conf import settings
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(unique=True, max_length=63)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('used_at', models.DateTimeField(null=True, blank=True)),
-                ('state', models.CharField(default=b'valid', max_length=8, choices=[(b'valid', 'Kelvollinen'), (b'used', 'K\xe4ytetty'), (b'revoked', 'Mit\xe4t\xf6ity')])),
+                ('state', models.CharField(default='valid', max_length=8, choices=[('valid', 'Kelvollinen'), ('used', 'K\xe4ytetty'), ('revoked', 'Mit\xe4t\xf6ity')])),
                 ('desuprofile_id', models.IntegerField()),
                 ('person', models.ForeignKey(to='core.Person')),
             ],

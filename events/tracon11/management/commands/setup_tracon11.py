@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from datetime import datetime, timedelta
 
@@ -520,7 +520,7 @@ class Setup(object):
                 product.save()
 
         if not meta.receipt_footer:
-            meta.receipt_footer = u"Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi"
+            meta.receipt_footer = "Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi"
             meta.save()
 
 

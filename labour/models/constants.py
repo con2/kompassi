@@ -3,73 +3,73 @@
 # FIXME this shit must die
 
 SIGNUP_STATE_NAMES = dict(
-    new=u'Uusi',
-    accepted=u'Hyväksytty, odottaa vuoroja',
-    confirmation=u'Hyväksytty, odottaa vahvistusta',
-    finished=u'Hyväksytty, vuorot lähetetty',
-    complained=u'Hyväksytty, vuoroista reklamoitu',
+    new='Uusi',
+    accepted='Hyväksytty, odottaa vuoroja',
+    confirmation='Hyväksytty, odottaa vahvistusta',
+    finished='Hyväksytty, vuorot lähetetty',
+    complained='Hyväksytty, vuoroista reklamoitu',
 
-    rejected=u'Hylätty',
-    cancelled=u'Peruutettu',
+    rejected='Hylätty',
+    cancelled='Peruutettu',
 
-    arrived=u'Saapunut tapahtumaan',
+    arrived='Saapunut tapahtumaan',
 
-    honr_discharged=u'Työpanos suoritettu hyväksytysti',
-    dish_discharged=u'Työpanoksessa moitittavaa',
-    no_show=u'Jätti saapumatta paikalle',
-    relieved=u'Vapautettu tehtävästään',
+    honr_discharged='Työpanos suoritettu hyväksytysti',
+    dish_discharged='Työpanoksessa moitittavaa',
+    no_show='Jätti saapumatta paikalle',
+    relieved='Vapautettu tehtävästään',
 
-    beyond_logic=u'Perätilassa',
+    beyond_logic='Perätilassa',
 )
 
 NUM_FIRST_CATEGORIES = 8
 
 SIGNUP_STATE_CLASSES = dict(
-    new=u'default',
-    accepted=u'info',
-    confirmation=u'warning',
-    finished=u'success',
-    complained=u'warning',
-    rejected=u'danger',
-    cancelled=u'danger',
-    arrived=u'success',
-    honr_discharged=u'success',
-    dish_discharged=u'danger',
-    no_show=u'danger',
-    beyond_logic=u'danger',
-    relieved=u'danger',
+    new='default',
+    accepted='info',
+    confirmation='warning',
+    finished='success',
+    complained='warning',
+    rejected='danger',
+    cancelled='danger',
+    arrived='success',
+    honr_discharged='success',
+    dish_discharged='danger',
+    no_show='danger',
+    beyond_logic='danger',
+    relieved='danger',
 )
 
 SIGNUP_STATE_LABEL_CLASSES = dict(
     (state_name, "label-{generic_class}".format(generic_class=generic_class))
-    for (state_name, generic_class) in SIGNUP_STATE_CLASSES.iteritems()
+    for (state_name, generic_class) in SIGNUP_STATE_CLASSES.items()
 )
 
 SIGNUP_STATE_BUTTON_CLASSES = dict(
     (state_name, "btn-{generic_class}".format(generic_class=generic_class))
-    for (state_name, generic_class) in SIGNUP_STATE_CLASSES.iteritems()
+    for (state_name, generic_class) in SIGNUP_STATE_CLASSES.items()
 )
 
 SIGNUP_STATE_DESCRIPTIONS = dict(
-    new=u'Hakemuksesi on vastaanotettu, ja työvoimavastaavat käsittelevät sen lähiaikoina. Saat tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sähköpostitse.',
-    accepted=u'Työvoimavastaavat ovat alustavasti hyväksyneet sinut vapaaehtoistyöhön tähän tapahtumaan, mutta sinulle ei ole vielä määritelty työvuoroja. Saat tiedon työvuoroistasi myöhemmin sähköpostitse.',
-    confirmation=u'Sinua pyydetään vahvistamaan osallistumisesi tapahtumaan. Mikäli et vahvista osallistumistasi määräaikaan mennessä, ilmoittautumisesi perutaan ja tilallesi otetaan toinen hakija.',
+    new='Hakemuksesi on vastaanotettu, ja työvoimavastaavat käsittelevät sen lähiaikoina. Saat tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sähköpostitse.',
+    accepted='Työvoimavastaavat ovat alustavasti hyväksyneet sinut vapaaehtoistyöhön tähän tapahtumaan, mutta sinulle ei ole vielä määritelty työvuoroja. Saat tiedon työvuoroistasi myöhemmin sähköpostitse.',
+    confirmation='Sinua pyydetään vahvistamaan osallistumisesi tapahtumaan. Mikäli et vahvista osallistumistasi määräaikaan mennessä, ilmoittautumisesi perutaan ja tilallesi otetaan toinen hakija.',
 )
 
 SIGNUP_STATE_IMPERATIVES = dict(
-    new=u'Palauta tilaan Uusi',
-    accepted=u'Hyväksy hakemus',
-    confirmation=u'Vaadi vahvistusta',
-    finished=u'Lähetä vuorot',
-    arrived=u'Merkitse saapuneeksi',
-    complained=u'Kirjaa reklamaatio vuoroista',
-    honr_discharged=u'Teki työnsä hyväksytysti',
-    dish_discharged=u'Teki työnsä moitittavasti',
-    no_show=u'Ei saapunut paikalle',
-    relieved=u'Vapauta tehtävästään',
-    rejected=u'Hylkää',
-    cancelled=u'Merkitse peruutetuksi',
-    beyond_logic=u'Aseta perätilaan',
+    new='Palauta tilaan Uusi',
+    accepted='Hyväksy hakemus',
+    confirmation='Vaadi vahvistusta',
+    finished='Lähetä vuorot',
+    arrived='Merkitse saapuneeksi',
+    complained='Kirjaa reklamaatio vuoroista',
+    honr_discharged='Teki työnsä hyväksytysti',
+    dish_discharged='Teki työnsä moitittavasti',
+    no_show='Ei saapunut paikalle',
+    relieved='Vapauta tehtävästään',
+    rejected='Hylkää',
+    cancelled='Merkitse peruutetuksi',
+    beyond_logic='Aseta perätilaan',
 )
 
 # Flags need to be in the Grand Order
@@ -90,7 +90,7 @@ STATE_FLAGS_BY_NAME = dict(
     beyond_logic=   (False, False, False, False, False, False, False, False, False, False),
 )
 
-STATE_NAME_BY_FLAGS = dict((flags, name) for (name, flags) in STATE_FLAGS_BY_NAME.iteritems())
+STATE_NAME_BY_FLAGS = dict((flags, name) for (name, flags) in STATE_FLAGS_BY_NAME.items())
 
 # These need to be in the Grand Order (with created_at substituted for is_active)
 STATE_TIME_FIELDS = [
@@ -107,19 +107,19 @@ STATE_TIME_FIELDS = [
 ]
 
 GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
-    admins=u'Työvoimavastaavat',
-    applicants=u'Aktiiviset',
-    new=u'Uudet hakijat',
-    processed=u'Käsitellyt',
-    accepted=u'Hyväksytyt',
-    confirmation=u'Vahvistusta odottavat',
-    finished=u'Työvuorotetut',
-    complained=u'Reklamoidut',
-    cancelled=u'Peruutetut',
-    rejected=u'Hylätyt',
-    arrived=u'Saapuneet',
-    workaccepted=u'Työnsä hyväksytysti suorittaneet',
-    reprimanded=u'Työnsä moitittavasti suorittaneet',
+    admins='Työvoimavastaavat',
+    applicants='Aktiiviset',
+    new='Uudet hakijat',
+    processed='Käsitellyt',
+    accepted='Hyväksytyt',
+    confirmation='Vahvistusta odottavat',
+    finished='Työvuorotetut',
+    complained='Reklamoidut',
+    cancelled='Peruutetut',
+    rejected='Hylätyt',
+    arrived='Saapuneet',
+    workaccepted='Työnsä hyväksytysti suorittaneet',
+    reprimanded='Työnsä moitittavasti suorittaneet',
 )
 
 SIGNUP_STATE_GROUPS = [

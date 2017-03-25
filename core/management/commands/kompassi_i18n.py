@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import StringIO
+import io
 import logging
 
 import os
@@ -23,7 +23,7 @@ def extract_template(fileobj, keywords, comment_tags, options):
     src = templatize(src, "")
     if "gettext" in src:
         src = re.sub(r"\n\s+", "\n", src)  # Remove indentation
-        return extract_python(StringIO.StringIO(src.encode("utf8")), keywords, comment_tags, options)
+        return extract_python(io.StringIO(src.encode("utf8")), keywords, comment_tags, options)
     return ()
 
 
@@ -153,14 +153,15 @@ class Command(BaseCommand):
         for dirpath, dirnames, filenames in filtered_walk(os.path.join(app.path, "locale")):
             for filename in filenames:
                 filename = os.path.join(dirpath, filename)
+                print(filename)
                 if filename.endswith(".po"):
                     with open(filename, "r") as infp:
                         catalog = pofile.read_po(infp)
                     if not len(catalog):
                         continue
-                    sio = StringIO.StringIO()
-                    mofile.write_mo(sio, catalog)
+                    bio = io.BytesIO()
+                    mofile.write_mo(bio, catalog)
                     mo_file = filename.replace(".po", ".mo")
                     with open(mo_file, "wb") as outfp:
-                        outfp.write(sio.getvalue())
+                        outfp.write(bio.getvalue())
                     self.log.info("%s compiled to %s", filename, mo_file)

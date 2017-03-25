@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import logging
 from datetime import timedelta
@@ -455,7 +455,7 @@ class Programme(models.Model, CsvExportMixin):
     def is_blank(self):
         return False
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @property
@@ -495,7 +495,7 @@ class Programme(models.Model, CsvExportMixin):
         )
 
     @classmethod
-    def get_or_create_dummy(cls, title=u'Dummy program', state='published'):
+    def get_or_create_dummy(cls, title='Dummy program', state='published'):
         from .category import Category
         from .room import Room
 
@@ -517,7 +517,7 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def formatted_times(self):
-        return u'{start_time} – {end_time}'.format(
+        return '{start_time} – {end_time}'.format(
             start_time=format_datetime(self.start_time),
             end_time=format_datetime(self.end_time),
         )

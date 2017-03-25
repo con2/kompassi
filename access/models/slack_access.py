@@ -66,7 +66,7 @@ class SlackAccess(models.Model):
             return result
         except (HTTPError, KeyError, IndexError, ValueError) as e:
             unused, unused, trace = sys.exc_info()
-            raise SlackError(e), None, trace
+            raise SlackError(e).with_traceback(trace)
 
     class Meta:
         verbose_name = _('Slack invite automation')

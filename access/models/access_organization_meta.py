@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.contrib.auth.models import Group
 from django.db import models
@@ -15,7 +15,7 @@ class AccessOrganizationMeta(models.Model, GroupManagementMixin):
     organization = models.OneToOneField(Organization, primary_key=True, verbose_name=_('organization'))
     admin_group = models.ForeignKey(Group, verbose_name=_('administrator group'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.organization.name if self.organization is not None else 'None'
 
     class Meta:

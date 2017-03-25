@@ -30,7 +30,7 @@ class Setup(object):
                 name='Tracon ry',
                 homepage_url='https://ry.tracon.fi',
                 logo_url='https://media.tracon.fi/ry/vaakuna-vari.png',
-                description=u"""
+                description="""
 Tracon ry on tamperelainen yhdistys, jonka tarkoituksena on edistää, kehittää ja tehdä tunnetuksi roolipeli-, korttipeli-, lautapeli-, miniatyyripeli-, animaatio-, elokuva- ja sarjakuvaharrastuksia, sekä näihin liittyviä alakulttuureita.
 
 Yhdistyksen keskeisintä toimintaa on roolipeli- ja animetapahtuma Traconin järjestäminen. Yhdistyksen jäseniä ovat tapahtuman järjestämiseen osallistuvat aktiivit.
@@ -43,7 +43,7 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
         )
 
         # v10
-        self.organization.muncipality = u'Tampere'
+        self.organization.muncipality = 'Tampere'
         self.organization.public = True
         self.organization.save()
 
@@ -55,7 +55,7 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
             admin_group=membership_admin_group,
             members_group=members_group,
             receiving_applications=True,
-            membership_requirements=u"""
+            membership_requirements="""
 Yhdistyksen varsinaiseksi jäseneksi voi liittyä jokainen yksityinen henkilö tai oikeuskelpoinen yhdistys, joka hyväksyy yhdistyksen tarkoituksen ja säännöt ja osallistuu sen toimintaan.
 
 Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksymättä hakemusta, mikäli siihen on selvät perusteet.
@@ -96,8 +96,8 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
         )
 
         for type_code, type_metavar in [
-            ('access.email_aliases:firstname_surname', u'etunimi.sukunimi'),
-            ('events.tracon11.email_aliases:requested_alias_or_nick', u'nick'),
+            ('access.email_aliases:firstname_surname', 'etunimi.sukunimi'),
+            ('events.tracon11.email_aliases:requested_alias_or_nick', 'nick'),
         ]:
             alias_type, created = EmailAliasType.objects.get_or_create(
                 domain=domain,

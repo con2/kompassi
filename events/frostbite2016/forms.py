@@ -21,7 +21,7 @@ class SignupExtraForm(forms.ModelForm):
             # 'shirt_size',
 
             Fieldset(
-                u'Lisätiedot',
+                'Lisätiedot',
                 'desu_amount',
                 indented_without_label('night_work'),
                 'prior_experience',
@@ -53,12 +53,12 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(u'Tehtävän tiedot',
+            Fieldset('Tehtävän tiedot',
                 'job_title',
             ),
         )
 
-        self.fields['job_title'].help_text = u"Mikä on tehtäväsi vastaavana? Printataan badgeen."
+        self.fields['job_title'].help_text = "Mikä on tehtäväsi vastaavana? Printataan badgeen."
         # self.fields['job_title'].required = True
 
     class Meta:
@@ -82,7 +82,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(
-                u'Lisätiedot',
+                'Lisätiedot',
                 'shirt_size',
             ),
         )
@@ -95,16 +95,16 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            shift_type=u'none',
+            shift_type='none',
             desu_amount=666,
-            free_text=u'Syötetty käyttäen vastaavan ilmoittautumislomaketta',
+            free_text='Syötetty käyttäen vastaavan ilmoittautumislomaketta',
         )
 
 
 class LatecomerSignupForm(SignupForm, AlternativeFormMixin):
     def get_excluded_field_defaults(self):
         return dict(
-            notes=u'Syötetty käyttäen jälki-ilmoittautumislomaketta',
+            notes='Syötetty käyttäen jälki-ilmoittautumislomaketta',
         )
 
 

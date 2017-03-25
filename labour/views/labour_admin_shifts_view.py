@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.shortcuts import render
 from django.utils.timezone import now
@@ -73,7 +73,7 @@ def labour_admin_shifts_view(request, vars, event, format='screen'):
     if active_filter:
         title = _('{event_name}: Shift list – {job_category_name}').format(
             event_name=event.name,
-            job_category_name=active_filter.name if active_filter else u'Nimilista',
+            job_category_name=active_filter.name if active_filter else 'Nimilista',
         )
     else:
         title = _('{event_name}: Shift list').format(

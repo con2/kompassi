@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect

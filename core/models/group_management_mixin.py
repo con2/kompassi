@@ -23,7 +23,7 @@ class GroupManagementMixin(object):
     def make_group_name(cls, host, suffix):
         # to avoid cases where someone calls .get_or_create_groups(foo, 'admins')
         # and would otherwise get groups a, d, m, i, n, s...
-        assert isinstance(suffix, basestring) and len(suffix) > 1
+        assert isinstance(suffix, str) and len(suffix) > 1
 
         from django.contrib.contenttypes.models import ContentType
 

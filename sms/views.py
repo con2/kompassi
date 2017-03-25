@@ -40,11 +40,11 @@ def sms_admin_received_view(request, vars, event):
 def sms_admin_menu_items(request, event):
     votes_url = url('sms_admin_votes_view', event.slug)
     votes_active = request.path == votes_url
-    votes_text = u'Äänestykset'
+    votes_text = 'Äänestykset'
 
     received_url = url('sms_admin_received_view', event.slug)
     received_active = request.path == received_url
-    received_text = u'Vastaanotetut viestit'
+    received_text = 'Vastaanotetut viestit'
 
     return [
         (votes_active, votes_url, votes_text),

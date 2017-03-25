@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from datetime import datetime, timedelta
 
@@ -48,7 +48,7 @@ class UtilsTestCase(TestCase):
                 min_classes=2,
             )
             assert False
-        except ValidationError, e:
+        except ValidationError as e:
             pass
 
         try:
@@ -57,7 +57,7 @@ class UtilsTestCase(TestCase):
                 min_classes=3,
             )
             assert False
-        except ValidationError, e:
+        except ValidationError as e:
             pass
 
     def test_full_hours_between(self):

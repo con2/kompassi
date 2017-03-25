@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(*args, **options):
       for programme in Programme.objects.all():
-        if u' - ' in programme.title or u' - ' in programme.description:
-          programme.title = programme.title.replace(u' - ', u' – ')
-          programme.description = programme.description.replace(u' - ', u' – ')
+        if ' - ' in programme.title or ' - ' in programme.description:
+          programme.title = programme.title.replace(' - ', ' – ')
+          programme.description = programme.description.replace(' - ', ' – ')
           programme.save()

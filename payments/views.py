@@ -37,11 +37,11 @@ def payments_redirect_view(request, event):
         raise ValueError('Bogus Checkout merchant configured for event {}'.format(event.slug))
 
     if not order.is_confirmed:
-        messages.error(request, u'Ole hyvä ja tee tilauksesi ensin valmiiksi.')
+        messages.error(request, 'Ole hyvä ja tee tilauksesi ensin valmiiksi.')
         return redirect('tickets_confirm_view', event.slug)
 
     if order.is_paid:
-        messages.error(request, u'Tilaus on jo maksettu. Klikkaa "Uusi tilaus", jos haluat tilata lisää lippuja.')
+        messages.error(request, 'Tilaus on jo maksettu. Klikkaa "Uusi tilaus", jos haluat tilata lisää lippuja.')
         return redirect('tickets_thanks_view', event.slug)
 
     vars = dict(
@@ -63,28 +63,28 @@ def payments_process_view(request, event):
     event = order.event
 
     if not order.is_confirmed:
-        messages.error(request, u"Yritetty maksaa keskeneräinen tilaus.")
+        messages.error(request, "Yritetty maksaa keskeneräinen tilaus.")
         return redirect('tickets_confirm_view', event.slug)
 
     if order.is_paid:
-        messages.error(request, u"Tilaus on jo maksettu.")
+        messages.error(request, "Tilaus on jo maksettu.")
         return redirect('tickets_thanks_view', event.slug)
 
     try:
         payment_info = Payment(event=event)
         payment_info = PaymentForm(request.GET, instance=payment_info).save()
     except ValueError:
-        messages.error(request, u"Maksu epäonnistui.")
+        messages.error(request, "Maksu epäonnistui.")
         return redirect('tickets_confirm_view', event.slug)
 
     if payment_info.STATUS in PaymentStatus.CANCELLED_STATUSES:
-        messages.warning(request, u"Maksu peruttiin.")
+        messages.warning(request, "Maksu peruttiin.")
         return redirect('tickets_confirm_view', event.slug)
 
     if payment_info.STATUS == PaymentStatus.OK:
         order.confirm_payment() # send_email=True
         return redirect('tickets_thanks_view', event.slug)
     else:
-        messages.error(request, u"Emme saaneet maksuoperaattorilta vahvistusta maksustasi.")
+        messages.error(request, "Emme saaneet maksuoperaattorilta vahvistusta maksustasi.")
         return redirect('tickets_thanks_view', event.slug)
 

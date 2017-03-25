@@ -27,11 +27,11 @@ class MemberForm(PersonForm):
             'email',
         )
 
-        self.fields['muncipality'].help_text = u'Yhdistyslaki vaatii yhdistystä pitämään jäsenistään luetteloa, josta ilmenevät jäsenen täydellinen nimi ja kotikunta.'
+        self.fields['muncipality'].help_text = 'Yhdistyslaki vaatii yhdistystä pitämään jäsenistään luetteloa, josta ilmenevät jäsenen täydellinen nimi ja kotikunta.'
         self.fields['phone'].help_text = None
-        self.fields['email'].help_text = self.fields['email'].help_text.replace(u'tapahtumaan', u'yhdistykseen')
+        self.fields['email'].help_text = self.fields['email'].help_text.replace('tapahtumaan', 'yhdistykseen')
 
-        for field_name, field in self.fields.iteritems():
+        for field_name, field in self.fields.items():
             field.required = field_name in ['first_name', 'surname']
 
     class Meta:

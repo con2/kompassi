@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='signup',
             name='personnel_classes',
-            field=models.ManyToManyField(help_text='Mihin henkil\xf6st\xf6ryhmiin t\xe4m\xe4 henkil\xf6 kuuluu? Henkil\xf6 saa valituista ryhmist\xe4 ylimm\xe4n mukaisen badgen. L\xe4ht\xf6kohtaisesti t\xe4t\xe4 tietoa ei tulisi muokata k\xe4sin.', to=b'labour.PersonnelClass', verbose_name='Yhteiskuntaluokat', blank=True),
+            field=models.ManyToManyField(help_text='Mihin henkil\xf6st\xf6ryhmiin t\xe4m\xe4 henkil\xf6 kuuluu? Henkil\xf6 saa valituista ryhmist\xe4 ylimm\xe4n mukaisen badgen. L\xe4ht\xf6kohtaisesti t\xe4t\xe4 tietoa ei tulisi muokata k\xe4sin.', to='labour.PersonnelClass', verbose_name='Yhteiskuntaluokat', blank=True),
         ),
     ]

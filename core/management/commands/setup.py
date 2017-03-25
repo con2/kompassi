@@ -42,6 +42,6 @@ class Command(BaseCommand):
         management_commands.append((('access_create_internal_aliases',), dict()))
 
         for pargs, opts in management_commands:
-            print "** Running:", pargs[0]
+            print("** Running:", pargs[0])
             with (atomic() if pargs[0].startswith("setup") else noop_context()):
                 call_command(*pargs, **opts)

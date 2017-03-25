@@ -45,7 +45,7 @@ def access_profile_privileges_view(request):
 @require_POST
 def access_profile_request_privilege_view(request, privilege_slug):
     if not request.user.person.is_email_verified:
-        messages.error(request, u'Käyttöoikeuden pyytäminen edellyttää vahvistettua sähköpostiosoitetta.')
+        messages.error(request, 'Käyttöoikeuden pyytäminen edellyttää vahvistettua sähköpostiosoitetta.')
         return redirect('access_profile_privileges_view')
 
     # People belonging to both Hitpoint and Tracon concoms were getting MultipleObjectsReturned here.
@@ -63,7 +63,7 @@ def access_profile_request_privilege_view(request, privilege_slug):
     if privilege.request_success_message:
         success_message = privilege.request_success_message
     else:
-        success_message = u'Käyttöoikeuden pyytäminen onnistui.'
+        success_message = 'Käyttöoikeuden pyytäminen onnistui.'
 
     messages.success(request, success_message)
     return redirect('access_profile_privileges_view')
@@ -106,7 +106,7 @@ def access_profile_aliases_view(request):
 def access_profile_menu_items(request):
     privileges_url = reverse('access_profile_privileges_view')
     privileges_active = request.path.startswith(privileges_url)
-    privileges_text = u"Käyttöoikeudet"
+    privileges_text = "Käyttöoikeudet"
 
     items = [
         (privileges_active, privileges_url, privileges_text),
@@ -120,7 +120,7 @@ def access_profile_menu_items(request):
     if aliases_visible:
         aliases_url = reverse('access_profile_aliases_view')
         aliases_active = request.path == aliases_url
-        aliases_text = u'Sähköpostialiakset'
+        aliases_text = 'Sähköpostialiakset'
 
         items.append((aliases_active, aliases_url, aliases_text))
 
@@ -135,10 +135,10 @@ def access_admin_aliases_api(request, domain_name):
 
     # Personal aliases
     for person in Person.objects.filter(email_aliases__domain=domain).distinct():
-        lines.append(u'# {name}'.format(name=person.full_name))
+        lines.append('# {name}'.format(name=person.full_name))
 
         for alias in person.email_aliases.filter(domain=domain):
-            lines.append(u'{alias.account_name}: {person.email}'.format(
+            lines.append('{alias.account_name}: {person.email}'.format(
                 alias=alias,
                 person=person,
             ))
@@ -148,7 +148,7 @@ def access_admin_aliases_api(request, domain_name):
     # Technical aliases
     for alias in InternalEmailAlias.objects.filter(domain=domain):
         if alias.normalized_target_emails:
-            lines.append(u'{alias.account_name}: {alias.normalized_target_emails}'.format(alias=alias))
+            lines.append('{alias.account_name}: {alias.normalized_target_emails}'.format(alias=alias))
         else:
             logger.warn('Internal alias %s does not have target emails', alias)
 
@@ -163,7 +163,7 @@ def access_admin_smtppasswd_api(request, smtp_server_hostname):
     lines = []
 
     for smtp_password in smtp_server.smtp_passwords.all():
-        lines.append(u'{username}:{password_hash}:{full_name}'.format(
+        lines.append('{username}:{password_hash}:{full_name}'.format(
             username=smtp_password.person.user.username,
             password_hash=smtp_password.password_hash,
             full_name=smtp_password.person.full_name,
@@ -189,7 +189,7 @@ def access_admin_group_emails_api(request, group_name):
     group = get_object_or_404(Group, name=group_name)
 
     return HttpResponse(
-        u'\n'.join(user.email for user in group.user_set.all() if user.email),
+        '\n'.join(user.email for user in group.user_set.all() if user.email),
         content_type='text/plain; charset=UTF-8'
     )
 
@@ -197,6 +197,6 @@ def access_admin_group_emails_api(request, group_name):
 def access_admin_menu_items(request, organization):
     aliases_url = url('access_admin_aliases_view', organization.slug)
     aliases_active = request.path == aliases_url
-    aliases_text = u'Sähköpostialiakset'
+    aliases_text = 'Sähköpostialiakset'
 
     return [(aliases_active, aliases_url, aliases_text)]

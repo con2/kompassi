@@ -1,9 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
-
 from django.db import models, transaction
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
@@ -23,14 +20,13 @@ def contains_moon_runes(unicode_str):
         return False
 
 
-@python_2_unicode_compatible
 class Batch(models.Model):
     event = models.ForeignKey('core.Event', related_name='badge_batch_set')
 
     personnel_class = models.ForeignKey('labour.PersonnelClass', null=True, blank=True)
 
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_(u'Created at'))
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=_(u'Updated at'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Updated at'))
     printed_at = models.DateTimeField(null=True, blank=True)
 
     is_printed = time_bool_property('printed_at')

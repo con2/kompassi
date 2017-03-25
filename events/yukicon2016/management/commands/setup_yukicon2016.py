@@ -63,15 +63,15 @@ class Setup(object):
             shipping_and_handling_cents=0,
             reference_number_template="2016{:05d}",
             contact_email='Yukicon <yukicon@yukicon.fi>',
-            ticket_free_text=u"Tämä on sähköinen lippusi Yukicon 3.0 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
-                u"lipunvaihtopisteessä.\n\n"
-                u"Tervetuloa Yukiconiin!",
-            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Yukicon 3.0 -tapahtumaan!</h2>"
-                u"<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                u"<p>Lue lisää tapahtumasta <a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>",
+            ticket_free_text="Tämä on sähköinen lippusi Yukicon 3.0 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
+                "lipunvaihtopisteessä.\n\n"
+                "Tervetuloa Yukiconiin!",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Yukicon 3.0 -tapahtumaan!</h2>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>",
             print_logo_path=mkpath('static', 'images', 'yukicon_436_test.jpg'),
             print_logo_width_mm=50,
             print_logo_height_mm=10
@@ -102,8 +102,8 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name=u'Yukicon 3.0 -pääsylippu',
-                description=u'Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
+                name='Yukicon 3.0 -pääsylippu',
+                description='Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
                 limit_groups=[
                     limit_group('Pääsyliput', 2400),
                 ],
@@ -179,12 +179,12 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            (u'Conitea', 'conitea', 'labour'),
-            (u'Työvoima', 'tyovoima', 'labour'),
-            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            (u'Media', 'media', 'badges'),
-            (u'Myyjä', 'myyja', 'badges'),
-            (u'Vieras', 'vieras', 'badges'),
+            ('Conitea', 'conitea', 'labour'),
+            ('Työvoima', 'tyovoima', 'labour'),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            ('Media', 'media', 'badges'),
+            ('Myyjä', 'myyja', 'badges'),
+            ('Vieras', 'vieras', 'badges'),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -201,81 +201,81 @@ class Setup(object):
 
         for jc_data in [
             (
-                u'Conitea',
-                u'Tapahtuman järjestelytoimikunnan eli conitean jäsen',
+                'Conitea',
+                'Tapahtuman järjestelytoimikunnan eli conitean jäsen',
                 [conitea]
             ),
             (
-                u'Erikoistehtävä',
-                u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, '
-                u'valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut '
-                u'on valittu.',
+                'Erikoistehtävä',
+                'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, '
+                'valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut '
+                'on valittu.',
                 [tyovoima]
             ),
             (
-                u'Info',
-                u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman '
-                u'aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.',
+                'Info',
+                'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman '
+                'aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.',
                 [tyovoima]
             ),
             (
-                u'Järjestyksenvalvoja',
-                u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa '
-                u'JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole '
-                u'täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).',
+                'Järjestyksenvalvoja',
+                'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa '
+                'JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole '
+                'täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).',
                 [tyovoima]
             ),
             (
-                u'Lipuntarkastaja',
-                u'Lipuntarkastajana hoidat e-lippujen vaihtoa rannekkeiksi ja tarkistat lippuja ovella. Tehtävä '
-                u'edellyttää asiakaspalveluasennetta.',
+                'Lipuntarkastaja',
+                'Lipuntarkastajana hoidat e-lippujen vaihtoa rannekkeiksi ja tarkistat lippuja ovella. Tehtävä '
+                'edellyttää asiakaspalveluasennetta.',
                 [tyovoima]
             ),
             (
-                u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan '
-                u'ajokortti vaaditaan. Työvuoroja myös perjantaille.',
+                'Logistiikka', 'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan '
+                'ajokortti vaaditaan. Työvuoroja myös perjantaille.',
                 [tyovoima]
             ),
             (
-                u'Narikka',
-                u'Narikassa  säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.',
+                'Narikka',
+                'Narikassa  säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.',
                 [tyovoima]
             ),
             (
-                u'Pukuhuoneet',
-                u'KUVAUS PUUTTUU',
+                'Pukuhuoneet',
+                'KUVAUS PUUTTUU',
                 [tyovoima]
             ),
             (
-                u'Salivänkäri',
-                u'Luennoitsijoiden ja muiden ohjelmanpitäjien avustamista ohjelmanumeroiden yhteydessä.',
+                'Salivänkäri',
+                'Luennoitsijoiden ja muiden ohjelmanpitäjien avustamista ohjelmanumeroiden yhteydessä.',
                 [tyovoima]
             ),
             (
-                u'Siivous',
-                u'Siivousvänkärit ovat vastuussa tapahtuman yleisestä siisteydestä. He kulkevat ympäriinsä '
-                u'tehtävänään roskakorien tyhjennys, vesipisteiden täyttö, vessoihin papereiden lisääminen '
-                u'ja monet muut pienet askareet. Työ tehdään pääsääntöisesti vänkäripareittain.',
+                'Siivous',
+                'Siivousvänkärit ovat vastuussa tapahtuman yleisestä siisteydestä. He kulkevat ympäriinsä '
+                'tehtävänään roskakorien tyhjennys, vesipisteiden täyttö, vessoihin papereiden lisääminen '
+                'ja monet muut pienet askareet. Työ tehdään pääsääntöisesti vänkäripareittain.',
                 [tyovoima]
             ),
             (
-                u'Tekniikka',
-                u'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä '
-                u'ongelmanratkaisua.',
+                'Tekniikka',
+                'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä '
+                'ongelmanratkaisua.',
                 [tyovoima]
             ),
             (
-                u'Valokuvaus',
-                u'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla '
-                u'studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta '
-                u'valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit '
-                u'tapahtumassa valokuvata.',
+                'Valokuvaus',
+                'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla '
+                'studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta '
+                'valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit '
+                'tapahtumassa valokuvata.',
                 [tyovoima]
             ),
             (
-                u'Yleisvänkäri',
-                u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi '
-                u'kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.',
+                'Yleisvänkäri',
+                'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi '
+                'kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.',
                 [tyovoima]
             ),
 
@@ -316,12 +316,12 @@ class Setup(object):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Conitea']:
+        for name in ['Conitea']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            (u'Järjestyksenvalvoja', u'JV-kortti'),
-            (u'Logistiikka', u'Henkilöauton ajokortti (B)'),
+            ('Järjestyksenvalvoja', 'JV-kortti'),
+            ('Logistiikka', 'Henkilöauton ajokortti (B)'),
             # (u'Green room', u'Hygieniapassi'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
@@ -331,19 +331,19 @@ class Setup(object):
                 jc.save()
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'conitea',
+            slug='conitea',
             defaults=dict(
-                title=u'Conitean ilmoittautumislomake',
+                title='Conitean ilmoittautumislomake',
                 signup_form_class_path='events.yukicon2016.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.yukicon2016.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2015, 11, 7, 12, 0, 0, tzinfo=self.tz),

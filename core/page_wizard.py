@@ -18,7 +18,7 @@ def page_wizard_init(request, pages):
         else:
             name, title, cur_related = page
 
-        title = u"{}. {}".format(index + 1, title)
+        title = "{}. {}".format(index + 1, title)
 
         cur_related = set(cur_related)
         cur_related.add(name)

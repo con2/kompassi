@@ -9,24 +9,24 @@ from labour.models import QualificationExtraBase
 
 validate_jv_card_number = RegexValidator(
     regex=r'.+/.+/.+',
-    message=u"Tarkista JV-kortin numero"
+    message="Tarkista JV-kortin numero"
 )
 
 class JVKortti(QualificationExtraBase):
     card_number = models.CharField(
         max_length=13,
         validators=[validate_jv_card_number,],
-        verbose_name=u"JV-kortin numero",
-        help_text=u"Muoto: 0000/J0000/00 tai XX/0000/00"
+        verbose_name="JV-kortin numero",
+        help_text="Muoto: 0000/J0000/00 tai XX/0000/00"
     )
 
-    expiration_date = models.DateField(verbose_name=u"Viimeinen voimassaolopäivä")
+    expiration_date = models.DateField(verbose_name="Viimeinen voimassaolopäivä")
 
-    def __unicode__(self):
+    def __str__(self):
         n = self.card_number
         d = format_date(self.expiration_date, settings.DATE_FORMAT)
 
-        return u"{n}, voimassa {d} asti".format(**locals())
+        return "{n}, voimassa {d} asti".format(**locals())
 
     @classmethod
     def get_form_class(cls):
@@ -34,5 +34,5 @@ class JVKortti(QualificationExtraBase):
         return JVKorttiForm
 
     class Meta:
-        verbose_name = u"JV-kortti"
-        verbose_name_plural = u"JV-kortit"
+        verbose_name = "JV-kortti"
+        verbose_name_plural = "JV-kortit"

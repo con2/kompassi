@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import os
 from datetime import datetime, timedelta
@@ -217,7 +217,7 @@ class Setup(object):
                 "mahdollista, ota ylös kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva\n"
                 "Kissakoodi ja ilmoita se lipunvaihtopisteessä.\n\n"
                 "Tervetuloa Popcult Helsinkiin!",
-            front_page_text=u"<h2>Tervetuloa ostamaan pääsylippuja Popcult Helsinki 2017 -tapahtumaan!</h2>"
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Popcult Helsinki 2017 -tapahtumaan!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 "<p>Lue lisää tapahtumasta <a href='http://popcult.fi/helsinki-2017'>Popcult Helsinki 2017 -tapahtuman kotisivuilta</a>.</p>",
         )

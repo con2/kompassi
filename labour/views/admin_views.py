@@ -111,7 +111,7 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
         if 'delete' in request.POST:
             assert not message.sent_at
             message.delete()
-            messages.success(request, u'Viesti poistettiin.')
+            messages.success(request, 'Viesti poistettiin.')
             return redirect('labour_admin_mail_view', event.slug)
 
         else:
@@ -121,34 +121,34 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
                 if 'save-send' in request.POST:
                     message.save()
                     message.send()
-                    messages.success(request, u'Viesti lähetettiin. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.')
+                    messages.success(request, 'Viesti lähetettiin. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.')
 
                 elif 'save-expire' in request.POST:
                     message.save()
                     message.expire()
-                    messages.success(request, u'Viesti merkittiin vanhentuneeksi. Sitä ei lähetetä enää uusille vastaanottajille.')
+                    messages.success(request, 'Viesti merkittiin vanhentuneeksi. Sitä ei lähetetä enää uusille vastaanottajille.')
 
                 elif 'save-unexpire' in request.POST:
                     message.save()
                     message.unexpire()
-                    messages.success(request, u'Viesti otettiin uudelleen käyttöön. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.')
+                    messages.success(request, 'Viesti otettiin uudelleen käyttöön. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.')
 
                 elif 'save-return' in request.POST:
                     message.save()
-                    messages.success(request, u'Muutokset viestiin tallennettiin.')
+                    messages.success(request, 'Muutokset viestiin tallennettiin.')
                     return redirect('labour_admin_mail_view', event.slug)
 
                 elif 'save-edit' in request.POST:
                     message.save()
-                    messages.success(request, u'Muutokset viestiin tallennettiin.')
+                    messages.success(request, 'Muutokset viestiin tallennettiin.')
 
                 else:
-                    messages.error(request, u'Tuntematon toiminto.')
+                    messages.error(request, 'Tuntematon toiminto.')
 
                 return redirect('labour_admin_mail_editor_view', event.slug, message.pk)
 
             else:
-                messages.error(request, u'Ole hyvä ja tarkasta lomake.')
+                messages.error(request, 'Ole hyvä ja tarkasta lomake.')
 
     vars.update(
         message=message,

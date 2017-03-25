@@ -31,7 +31,7 @@ WORKING_DAYS_CHOICES = [
 class SpecialDiet(models.Model):
     name = models.CharField(max_length=63)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -57,8 +57,8 @@ class SignupExtra(SignupExtraBase):
     )
 
     shift_type = models.CharField(max_length=15,
-        verbose_name=u'Toivottu työvuoron pituus',
-        help_text=u'Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
+        verbose_name='Toivottu työvuoron pituus',
+        help_text='Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
         choices=SHIFT_TYPE_CHOICES,
     )
 

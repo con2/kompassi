@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -29,14 +29,14 @@ class Migration(migrations.Migration):
             name='Customer',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('first_name', models.CharField(max_length=100, verbose_name=b'Etunimi')),
-                ('last_name', models.CharField(max_length=100, verbose_name=b'Sukunimi')),
-                ('address', models.CharField(max_length=200, verbose_name=b'Katuosoite')),
-                ('zip_code', models.CharField(max_length=5, verbose_name=b'Postinumero')),
-                ('city', models.CharField(max_length=30, verbose_name=b'Postitoimipaikka')),
+                ('first_name', models.CharField(max_length=100, verbose_name='Etunimi')),
+                ('last_name', models.CharField(max_length=100, verbose_name='Sukunimi')),
+                ('address', models.CharField(max_length=200, verbose_name='Katuosoite')),
+                ('zip_code', models.CharField(max_length=5, verbose_name='Postinumero')),
+                ('city', models.CharField(max_length=30, verbose_name='Postitoimipaikka')),
                 ('email', models.EmailField(help_text='Tarkista s\xe4hk\xf6postiosoite huolellisesti. Tilausvahvistus sek\xe4 mahdolliset s\xe4hk\xf6iset liput l\xe4hetet\xe4\xe4n t\xe4h\xe4n s\xe4hk\xf6postiosoitteeseen.', max_length=75, verbose_name='S\xe4hk\xf6postiosoite')),
                 ('allow_marketing_email', models.BooleanField(default=True, verbose_name='Minulle saa l\xe4hett\xe4\xe4 Traconiin liittyvi\xe4 tiedotteita s\xe4hk\xf6postitse')),
-                ('phone_number', models.CharField(max_length=30, null=True, verbose_name=b'Puhelinnumero', blank=True)),
+                ('phone_number', models.CharField(max_length=30, null=True, verbose_name='Puhelinnumero', blank=True)),
             ],
             options={
                 'verbose_name': 'asiakas',
@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('count', models.IntegerField(default=0)),
-                ('order', models.ForeignKey(related_name=b'order_product_set', to='tickets.Order')),
+                ('order', models.ForeignKey(related_name='order_product_set', to='tickets.Order')),
             ],
             options={
                 'verbose_name': 'tilausrivi',
@@ -113,12 +113,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TicketsEventMeta',
             fields=[
-                ('event', models.OneToOneField(related_name=b'ticketseventmeta', primary_key=True, serialize=False, to='core.Event')),
+                ('event', models.OneToOneField(related_name='ticketseventmeta', primary_key=True, serialize=False, to='core.Event')),
                 ('shipping_and_handling_cents', models.IntegerField(default=0, verbose_name='Toimituskulut (senttej\xe4)')),
                 ('due_days', models.IntegerField(default=14, verbose_name='Maksuaika (p\xe4ivi\xe4)')),
                 ('ticket_sales_starts', models.DateTimeField(null=True, verbose_name='Lipunmyynnin alkuaika', blank=True)),
                 ('ticket_sales_ends', models.DateTimeField(null=True, verbose_name='Lipunmyynnin p\xe4\xe4ttymisaika', blank=True)),
-                ('reference_number_template', models.CharField(default=b'{:04d}', help_text='Paikkamerkin {} kohdalle sijoitetaan tilauksen numero. Nollilla t\xe4ytt\xe4minen esim. {:04d} (4 merkin leveydelt\xe4).', max_length=31, verbose_name='Viitenumeron formaatti')),
+                ('reference_number_template', models.CharField(default='{:04d}', help_text='Paikkamerkin {} kohdalle sijoitetaan tilauksen numero. Nollilla t\xe4ytt\xe4minen esim. {:04d} (4 merkin leveydelt\xe4).', max_length=31, verbose_name='Viitenumeron formaatti')),
                 ('contact_email', models.CharField(help_text='Ongelmatilanteissa k\xe4ytt\xe4j\xe4\xe4 kehotetaan ottamaan yhteytt\xe4 t\xe4h\xe4n osoitteeseen. Muoto: Tracon 9 -lipunmyynti &lt;liput@tracon.fi&gt;', max_length=255, verbose_name='Asiakaspalvelun s\xe4hk\xf6postiosoite selitteineen', blank=True)),
                 ('plain_contact_email', models.CharField(help_text='Ongelmatilanteissa k\xe4ytt\xe4j\xe4\xe4 kehotetaan ottamaan yhteytt\xe4 t\xe4h\xe4n osoitteeseen. Muoto: liput@tracon.fi', max_length=255, verbose_name='Asiakaspalvelun s\xe4hk\xf6postiosoite ilman selitett\xe4', blank=True)),
                 ('ticket_spam_email', models.CharField(help_text='Kaikki j\xe4rjestelm\xe4n l\xe4hett\xe4m\xe4t s\xe4hk\xf6postiviestit l\xe4hetet\xe4\xe4n my\xf6s t\xe4h\xe4n osoitteeseen.', max_length=255, verbose_name='Tarkkailus\xe4hk\xf6posti', blank=True)),
@@ -147,7 +147,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='orderproduct',
             name='product',
-            field=models.ForeignKey(related_name=b'order_product_set', to='tickets.Product'),
+            field=models.ForeignKey(related_name='order_product_set', to='tickets.Product'),
             preserve_default=True,
         ),
         migrations.AddField(

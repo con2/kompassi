@@ -80,9 +80,9 @@ def labour_signup_view(request, event, alternative_form_slug=None):
 
     if not request.user.is_authenticated():
         pages = [
-            ('core_login_view', _(u'Sign up or sign in...'), login_related()),
-            ('labour_qualifications_view', _(u'Revise qualifications'), qualifications_related()),
-            (actual_signup_url, _(u'Apply for volunteer work')),
+            ('core_login_view', _('Sign up or sign in...'), login_related()),
+            ('labour_qualifications_view', _('Revise qualifications'), qualifications_related()),
+            (actual_signup_url, _('Apply for volunteer work')),
         ]
 
         page_wizard_init(request, pages)
@@ -92,9 +92,9 @@ def labour_signup_view(request, event, alternative_form_slug=None):
         person = request.user.person
     except Person.DoesNotExist:
         pages = [
-            ('core_personify_view', _(u'Complete contact information')),
-            ('labour_qualifications_view', _(u'Revise qualifications'), qualifications_related()),
-            (actual_signup_url, _(u'Apply for volunteer work')),
+            ('core_personify_view', _('Complete contact information')),
+            ('labour_qualifications_view', _('Revise qualifications'), qualifications_related()),
+            (actual_signup_url, _('Apply for volunteer work')),
         ]
 
         page_wizard_init(request, pages)
@@ -117,7 +117,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
             signup.alternative_signup_form_used is not None and \
             signup.alternative_signup_form_used.pk != alternative_signup_form.pk
         ):
-            messages.error(request, _(u'Your application has not been submitted using this form.'))
+            messages.error(request, _('Your application has not been submitted using this form.'))
             return redirect('core_event_view', event.slug)
     elif signup.pk is not None and signup.alternative_signup_form_used is not None:
         # Alternative signup form used to sign up
@@ -130,7 +130,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
         # Using an alternative signup form
 
         if not alternative_signup_form.is_active:
-            messages.error(request, _(u'The signup form you have requested is not currently active.'))
+            messages.error(request, _('The signup form you have requested is not currently active.'))
             return redirect('core_event_view', event.slug)
 
         if alternative_signup_form.signup_message:
@@ -142,7 +142,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
         # Using default signup form
 
         if not event.labour_event_meta.is_registration_open:
-            messages.error(request, _(u'This event is not currently accepting applications.'))
+            messages.error(request, _('This event is not currently accepting applications.'))
             return redirect('core_event_view', event.slug)
 
         if event.labour_event_meta.signup_message:
@@ -153,17 +153,17 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
 
     if signup.is_processed:
         messages.error(request, _(
-            u'Your application has already been processed, so you can no longer edit it. '
-            u'Please contact the volunteer coordinator for any further changes.'
+            'Your application has already been processed, so you can no longer edit it. '
+            'Please contact the volunteer coordinator for any further changes.'
         ))
         return redirect('core_event_view', event.slug)
 
     if signup.pk is not None:
         old_state = signup.state
-        submit_text = _(u'Update application')
+        submit_text = _('Update application')
     else:
         old_state = None
-        submit_text = _(u'Submit application')
+        submit_text = _('Submit application')
 
     signup_extra = signup.signup_extra
     signup_form, signup_extra_form = initialize_signup_forms(request, event, signup,
@@ -174,9 +174,9 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
     if request.method == 'POST':
         if signup_form.is_valid() and signup_extra_form.is_valid():
             if signup.pk is None:
-                message = _(u'Thank you for your application!')
+                message = _('Thank you for your application!')
             else:
-                message = _(u'Your application has been updated.')
+                message = _('Your application has been updated.')
 
             if alternative_signup_form is not None:
                 signup.alternative_signup_form_used = alternative_signup_form
@@ -206,7 +206,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
             messages.success(request, message)
             return redirect('core_event_view', event.slug)
         else:
-            messages.error(request, _(u'Please check the form.'))
+            messages.error(request, _('Please check the form.'))
 
     available_job_categories = signup_form.get_job_categories(event=event)
     all_job_categories = JobCategory.objects.filter(event=event)
@@ -261,11 +261,11 @@ def labour_confirm_view(request, event):
     signup = get_object_or_404(Signup, event=event, person=request.user.person)
 
     if not signup.state == 'confirmation':
-        messages.error(request, _(u'Your application does not currently need to be confirmed.'))
+        messages.error(request, _('Your application does not currently need to be confirmed.'))
         return redirect('labour_profile_signups_view')
 
     signup.confirm()
-    messages.success(request, _(u'Your application has been confirmed.'))
+    messages.success(request, _('Your application has been confirmed.'))
 
     return redirect('labour_profile_signups_view')
 
@@ -326,10 +326,10 @@ def labour_person_qualification_view(request, qualification):
                 qualification_extra.personqualification = person_qualification
                 form.save()
 
-            messages.success(request, _(u'The qualification has been updated.'))
+            messages.success(request, _('The qualification has been updated.'))
             return redirect('labour_qualifications_view')
         else:
-            messages.error(request, _(u'Please check the form.'))
+            messages.error(request, _('Please check the form.'))
 
     vars.update(
         person_qualification=person_qualification,
@@ -358,7 +358,7 @@ def labour_person_qualify_view(request, qualification):
     )
 
     if created:
-        messages.success(request, _(u'The qualification has been added.'))
+        messages.success(request, _('The qualification has been added.'))
 
     return redirect('labour_qualifications_view')
 
@@ -372,7 +372,7 @@ def labour_person_disqualify_view(request, qualification):
         person_qualification = get_object_or_404(PersonQualification,
             person=person, qualification=qualification)
         person_qualification.delete()
-        messages.success(request, _(u'The qualification has been removed.'))
+        messages.success(request, _('The qualification has been removed.'))
     except:
         pass
 
@@ -382,11 +382,11 @@ def labour_person_disqualify_view(request, qualification):
 def labour_profile_menu_items(request):
     signups_url = reverse('labour_profile_signups_view')
     signups_active = request.path.startswith(signups_url)
-    signups_text = _(u'Volunteer work applications')
+    signups_text = _('Volunteer work applications')
 
     qualifications_url = reverse('labour_qualifications_view')
     qualifications_active = request.path.startswith(qualifications_url)
-    qualifications_text = _(u'Qualifications')
+    qualifications_text = _('Qualifications')
 
     return [
         (signups_active, signups_url, signups_text),

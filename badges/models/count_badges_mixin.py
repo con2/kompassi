@@ -56,10 +56,10 @@ class CountBadgesMixin(object):
         percentace_consumed_for_inflation = 0
 
         for pb_class, pb_text, pb_value in [
-            ('progress-bar-success', _(u'Printed'), self.count_printed_badges()),
-            ('progress-bar-danger', _(u'Revoked'), self.count_revoked_badges()),
-            ('progress-bar-info', _(u'Waiting in batch'), self.count_badges_waiting_in_batch()),
-            ('progress-bar-grey', _(u'Awaiting allocation into batch'), self.count_badges_awaiting_batch()),
+            ('progress-bar-success', _('Printed'), self.count_printed_badges()),
+            ('progress-bar-danger', _('Revoked'), self.count_revoked_badges()),
+            ('progress-bar-info', _('Waiting in batch'), self.count_badges_waiting_in_batch()),
+            ('progress-bar-grey', _('Awaiting allocation into batch'), self.count_badges_awaiting_batch()),
         ]:
 
             if pb_value > 0:

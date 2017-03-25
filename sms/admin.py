@@ -2,28 +2,28 @@
 
 from django.contrib import admin
 
-from models import SMSMessageOut, SMSMessageIn, SMSEventMeta, Hotword, VoteCategory, Vote, Nominee
+from .models import SMSMessageOut, SMSMessageIn, SMSEventMeta, Hotword, VoteCategory, Vote, Nominee
 
 
 def get_event(obj):
     return obj.SMSEventMeta.event
-get_event.short_description = u"Tapahtuma"
+get_event.short_description = "Tapahtuma"
 
 def get_sender(obj):
     return obj.message.sender
-get_sender.short_description = u"Lähettäjä"
+get_sender.short_description = "Lähettäjä"
 
 def get_message(obj):
     return obj.message.message
-get_message.short_description = u"Viesti"
+get_message.short_description = "Viesti"
 
 def get_send_time(obj):
     return obj.message.receive_timestamp
-get_send_time.short_description = u"Vastaanotettu"
+get_send_time.short_description = "Vastaanotettu"
 
 def format_price(obj):
-    return u"%d,%02d €" % divmod(obj.used_credit, 100)
-format_price.short_description = u"Käytetty krediitti"
+    return "%d,%02d €" % divmod(obj.used_credit, 100)
+format_price.short_description = "Käytetty krediitti"
 
 class SMSRecipientGroupAdmin(admin.ModelAdmin):
     list_display = ('app_label', 'event', 'verbose_name')

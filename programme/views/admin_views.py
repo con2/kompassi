@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import logging
 
@@ -105,7 +105,7 @@ def programme_admin_view(request, vars, event, format='screen'):
             filename=filename,
         )
     elif format == 'html':
-        title = u"{event_name}: Ohjelma".format(event_name=event.name)
+        title = "{event_name}: Ohjelma".format(event_name=event.name)
 
         if room_filters.selected_slug != None:
             room = Room.objects.get(slug=room_filters.selected_slug)

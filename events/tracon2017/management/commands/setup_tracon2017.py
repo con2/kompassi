@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from datetime import datetime, timedelta
 
@@ -162,7 +162,7 @@ class Setup(object):
                 title='Conitean ilmoittautumislomake',
                 signup_form_class_path='events.tracon2017.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.tracon2017.forms:OrganizerSignupExtraForm',
-                active_from=datetime(2016, 10, 18, 15, 05, 0, tzinfo=self.tz),
+                active_from=datetime(2016, 10, 18, 15, 0o5, 0, tzinfo=self.tz),
                 active_until=datetime(2017, 9, 10, 23, 59, 59, tzinfo=self.tz),
             ),
         )
@@ -351,7 +351,7 @@ class Setup(object):
                 product.save()
 
         if not meta.receipt_footer:
-            meta.receipt_footer = u"Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi"
+            meta.receipt_footer = "Tracon ry / Yhdrek. nro. 194.820 / hallitus@tracon.fi"
             meta.save()
 
     def setup_payments(self):

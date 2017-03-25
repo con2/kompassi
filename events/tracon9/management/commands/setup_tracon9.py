@@ -44,9 +44,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if settings.DEBUG:
-            print 'Setting up tracon9 in test mode'
+            print('Setting up tracon9 in test mode')
         else:
-            print 'Setting up tracon9 in production mode'
+            print('Setting up tracon9 in production mode')
 
         tz = tzlocal()
 
@@ -108,22 +108,22 @@ class Command(BaseCommand):
             labour_event_meta.save()
 
         for name, description in [
-            (u'Conitea', u'Tapahtuman järjestelytoimikunnan eli conitean jäsen'),
-            (u'Erikoistehtävä', u'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.'),
-            (u'Järjestyksenvalvoja', u'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).'),
-            (u'Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.'),
-            (u'Kasaus ja purku', u'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.'),
-            (u'Logistiikka', u'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.'),
-            (u'Majoitusvalvoja', u'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.'),
-            (u'Myynti', u'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.'),
-            (u'Narikka', u'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.'),
-            (u'Ohjelma-avustaja', u'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.'),
-            (u'Green room', u'Työvoiman ruokahuolto green roomissa. Hygieniapassi suositeltava.'),
-            (u'Taltiointi', u'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.'),
-            (u'Tekniikka', u'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä ongelmanratkaisua.'),
-            (u'Valokuvaus', u'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.'),
-            (u'Yleisvänkäri', u'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.'),
-            (u'Info', u'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.'),
+            ('Conitea', 'Tapahtuman järjestelytoimikunnan eli conitean jäsen'),
+            ('Erikoistehtävä', 'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.'),
+            ('Järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).'),
+            ('Ensiapu', 'Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.'),
+            ('Kasaus ja purku', 'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.'),
+            ('Logistiikka', 'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.'),
+            ('Majoitusvalvoja', 'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.'),
+            ('Myynti', 'Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.'),
+            ('Narikka', 'Narikassa ja isotavara- eli asenarikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.'),
+            ('Ohjelma-avustaja', 'Lautapelien pyörittämistä, karaoken valvontaa, cosplay-kisaajien avustamista. Kerro Vapaa alue -kohdassa tarkemmin, mitä haluaisit tehdä. Huom! Puheohjelmasalien vänkäreiltä toivotaan AV-tekniikan osaamista.'),
+            ('Green room', 'Työvoiman ruokahuolto green roomissa. Hygieniapassi suositeltava.'),
+            ('Taltiointi', 'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.'),
+            ('Tekniikka', 'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä ongelmanratkaisua.'),
+            ('Valokuvaus', 'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit tapahtumassa valokuvata.'),
+            ('Yleisvänkäri', 'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.'),
+            ('Info', 'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.'),
         ]:
             JobCategory.objects.get_or_create(
                 event=event,
@@ -136,13 +136,13 @@ class Command(BaseCommand):
 
         labour_event_meta.create_groups()
 
-        for name in [u'Conitea']:
+        for name in ['Conitea']:
             JobCategory.objects.filter(event=event, name=name).update(public=False)
 
         jvkortti = Qualification.objects.get(name='JV-kortti')
         jv = JobCategory.objects.get(
             event=event,
-            name=u'Järjestyksenvalvoja'
+            name='Järjestyksenvalvoja'
         )
         if not jv.required_qualifications.exists():
             jv.required_qualifications = [jvkortti]
@@ -151,7 +151,7 @@ class Command(BaseCommand):
         b_ajokortti = Qualification.objects.get(slug='b-ajokortti')
         logistiikka = JobCategory.objects.get(
             event=event,
-            name=u'Logistiikka',
+            name='Logistiikka',
         )
         if not logistiikka.required_qualifications.exists():
             logistiikka.required_qualifications = [b_ajokortti]
@@ -175,25 +175,25 @@ class Command(BaseCommand):
             )
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         for night in [
-            u'Perjantain ja lauantain välinen yö',
-            u'Lauantain ja sunnuntain välinen yö',
+            'Perjantain ja lauantain välinen yö',
+            'Lauantain ja sunnuntain välinen yö',
         ]:
             Night.objects.get_or_create(name=night)
 
         AlternativeSignupForm.objects.get_or_create(
             event=event,
-            slug=u'conitea',
+            slug='conitea',
             defaults=dict(
-                title=u'Conitean ilmoittautumislomake',
+                title='Conitean ilmoittautumislomake',
                 signup_form_class_path='events.tracon9.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.tracon9.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2014, 7, 7, 12, 0, 0, tzinfo=tz),
@@ -228,22 +228,22 @@ class Command(BaseCommand):
 
         room_order = 0
         for room_name in [
-            u'Iso sali',
-            u'Pieni sali',
-            u'Sopraano',
-            u'Rondo',
-            u'Studio',
-            u'Sonaatti 1',
-            u'Sonaatti 2',
-            u'Basso',
-            u'Opus 1',
-            u'Opus 2',
-            u'Opus 3',
-            u'Opus 4',
-            u'Puistolava',
-            u'Puisto - Iso miittiteltta',
-            u'Puisto - Pieni miittiteltta',
-            u'Puisto - Bofferiteltta',
+            'Iso sali',
+            'Pieni sali',
+            'Sopraano',
+            'Rondo',
+            'Studio',
+            'Sonaatti 1',
+            'Sonaatti 2',
+            'Basso',
+            'Opus 1',
+            'Opus 2',
+            'Opus 3',
+            'Opus 4',
+            'Puistolava',
+            'Puisto - Iso miittiteltta',
+            'Puisto - Pieni miittiteltta',
+            'Puisto - Bofferiteltta',
         ]:
             room_order += 100
             Room.objects.get_or_create(
@@ -264,12 +264,12 @@ class Command(BaseCommand):
             event=event,
             slug='ohjelma', defaults=dict(
                 app_label='programme',
-                name=u'Ohjelmanjärjestäjä',
+                name='Ohjelmanjärjestäjä',
             )
         )
         role, unused = Role.objects.get_or_create(
             personnel_class=personnel_class,
-            title=u'Ohjelmanjärjestäjä',
+            title='Ohjelmanjärjestäjä',
             defaults=dict(
                 is_default=True,
                 require_contact_info=True,
@@ -281,11 +281,11 @@ class Command(BaseCommand):
         role.save()
 
         for title, style in [
-            (u'Animeohjelma', u'anime'),
-            (u'Cosplayohjelma', u'cosplay'),
-            (u'Miitti', u'miitti'),
-            (u'Muu ohjelma', u'muu'),
-            (u'Roolipeliohjelma', u'rope'),
+            ('Animeohjelma', 'anime'),
+            ('Cosplayohjelma', 'cosplay'),
+            ('Miitti', 'miitti'),
+            ('Muu ohjelma', 'muu'),
+            ('Roolipeliohjelma', 'rope'),
         ]:
             Category.objects.get_or_create(
                 event=event,
@@ -330,19 +330,19 @@ class Command(BaseCommand):
         )
 
         for view_name, room_names in [
-            (u'Pääohjelmatilat', [
-                u'Iso sali',
-                u'Pieni sali',
-                u'Studio',
-                u'Sonaatti 1',
-                u'Sonaatti 2',
-                u'Sopraano',
+            ('Pääohjelmatilat', [
+                'Iso sali',
+                'Pieni sali',
+                'Studio',
+                'Sonaatti 1',
+                'Sonaatti 2',
+                'Sopraano',
             ]),
-            (u'Toissijaiset ohjelmatilat', [
-                u'Opus 1',
-                u'Puistolava',
-                u'Puisto - Iso miittiteltta',
-                u'Puisto - Pieni miittiteltta',
+            ('Toissijaiset ohjelmatilat', [
+                'Opus 1',
+                'Puistolava',
+                'Puisto - Iso miittiteltta',
+                'Puisto - Pieni miittiteltta',
             ]),
         ]:
             rooms = [Room.objects.get(name__iexact=room_name, venue=venue)
@@ -369,12 +369,12 @@ class Command(BaseCommand):
             reference_number_template='9{:05d}',
             contact_email='Tracon 9 -lipunmyynti <liput@tracon.fi>',
             ticket_spam_email='japsu@tracon.fi',
-            ticket_free_text=u"Tämä on sähköinen lippusi Tracon 9 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-                u"lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-                u"älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-                u"kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
-                u"lipunvaihtopisteessä.\n\n"
-                u"Tervetuloa Traconiin!"
+            ticket_free_text="Tämä on sähköinen lippusi Tracon 9 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
+                "lipunvaihtopisteessä.\n\n"
+                "Tervetuloa Traconiin!"
         )
 
         if settings.DEBUG:
@@ -410,8 +410,8 @@ class Command(BaseCommand):
 
         for product_info in [
             dict(
-                name=u'Koko viikonlopun lippu (e-lippu)',
-                description=u'Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona. Ei toimituskuluja.',
+                name='Koko viikonlopun lippu (e-lippu)',
+                description='Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona. Ei toimituskuluja.',
                 limit_groups=[
                     limit_group('Lauantain liput', 5000),
                     limit_group('Sunnuntain liput', 5000),
@@ -424,8 +424,8 @@ class Command(BaseCommand):
             ),
 
             dict(
-                name=u'Koko viikonlopun lippu (postitse)',
-                description=u'Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan kirjeenä kotiisi. Toimituskulut 1,00 €/tilaus.',
+                name='Koko viikonlopun lippu (postitse)',
+                description='Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan kirjeenä kotiisi. Toimituskulut 1,00 €/tilaus.',
                 limit_groups=[
                     limit_group('Lauantain liput', 5000),
                     limit_group('Sunnuntain liput', 5000),
@@ -437,8 +437,8 @@ class Command(BaseCommand):
             ),
 
             dict(
-                name=u'Lauantailippu (e-lippu)',
-                description=u'Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan sähköpostitse PDF-tiedostona. Ei toimituskuluja.',
+                name='Lauantailippu (e-lippu)',
+                description='Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan sähköpostitse PDF-tiedostona. Ei toimituskuluja.',
                 limit_groups=[
                     limit_group('Lauantain liput', 5000),
                 ],
@@ -450,8 +450,8 @@ class Command(BaseCommand):
             ),
 
             dict(
-                name=u'Lauantailippu (postitse)',
-                description=u'Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan kirjeenä kotiisi. Toimituskulut 1,00 €/tilaus.',
+                name='Lauantailippu (postitse)',
+                description='Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan kirjeenä kotiisi. Toimituskulut 1,00 €/tilaus.',
                 limit_groups=[
                     limit_group('Lauantain liput', 5000),
                 ],
@@ -462,8 +462,8 @@ class Command(BaseCommand):
             ),
 
             dict(
-                name=u'Sunnuntailippu (e-lippu)',
-                description=u'Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona. Ei toimituskuluja.',
+                name='Sunnuntailippu (e-lippu)',
+                description='Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona. Ei toimituskuluja.',
                 limit_groups=[
                     limit_group('Sunnuntain liput', 5000),
                 ],
@@ -475,8 +475,8 @@ class Command(BaseCommand):
             ),
 
             dict(
-                name=u'Sunnuntailippu (postitse)',
-                description=u'Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan kirjeenä kotiisi. Toimituskulut 1,00 €/tilaus.',
+                name='Sunnuntailippu (postitse)',
+                description='Voimassa koko sunnuntai ajan su klo 00 - su klo 18. Toimitetaan kirjeenä kotiisi. Toimituskulut 1,00 €/tilaus.',
                 limit_groups=[
                     limit_group('Sunnuntain liput', 5000),
                 ],
@@ -487,8 +487,8 @@ class Command(BaseCommand):
             ),
 
             dict(
-                name=u'Lattiamajoitus 2 yötä pe-su (Aleksanterin koulu)',
-                description=u'Lattiamajoituspaikka pe-la ja la-su välisiksi öiksi Aleksanterin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspaikoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
+                name='Lattiamajoitus 2 yötä pe-su (Aleksanterin koulu)',
+                description='Lattiamajoituspaikka pe-la ja la-su välisiksi öiksi Aleksanterin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspaikoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
                 limit_groups=[
                     limit_group('Lattiamajoitus pe-la, Aleksanterin koulu', 80),
                     limit_group('Lattiamajoitus la-su, Aleksanterin koulu', 130),
@@ -500,8 +500,8 @@ class Command(BaseCommand):
             ),
 
             dict(
-                name=u'Lattiamajoitus 1 yö la-su (Amurin koulu)',
-                description=u'Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspaikoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
+                name='Lattiamajoitus 1 yö la-su (Amurin koulu)',
+                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koululta. Majoituspaikasta ei tule erillistä lippua, vaan majoitus toimii nimilistaperiaatteella. Majoituspaikoista ei aiheudu toimituskuluja. Saat lisäohjeita majoituksesta sähköpostiisi ennen tapahtumaa.',
                 limit_groups=[
                     limit_group('Lattiamajoitus la-su, Amurin koulu', 250),
                 ],
@@ -549,17 +549,17 @@ class Command(BaseCommand):
 
         if False:  # Disabled -- where has "Template" gone?
             for template_name in [
-                u'Conitea',
-                u'Ylivänkäri',
-                u'Työvoima',
-                u'Ohjelmanjärjestäjä',
-                u'Media',
-                u'Myyjä',
-                u'Vieras',
-                u'Guest of Honour',
-                u'Viikonloppulippu',
-                u'Lauantailippu',
-                u'Sunnuntailippu',
+                'Conitea',
+                'Ylivänkäri',
+                'Työvoima',
+                'Ohjelmanjärjestäjä',
+                'Media',
+                'Myyjä',
+                'Vieras',
+                'Guest of Honour',
+                'Viikonloppulippu',
+                'Lauantailippu',
+                'Sunnuntailippu',
             ]:
                 Template.objects.get_or_create(
                     event=event,

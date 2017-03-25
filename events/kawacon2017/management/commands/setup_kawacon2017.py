@@ -96,11 +96,11 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            (u'Conitea', 'conitea', 'labour'),
-            (u'Vänkäri', 'tyovoima', 'labour'),
-            (u'Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            (u'Myyjä', 'myyja', 'badges'),
-            (u'Vieras', 'vieras', 'badges'),
+            ('Conitea', 'conitea', 'labour'),
+            ('Vänkäri', 'tyovoima', 'labour'),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            ('Myyjä', 'myyja', 'badges'),
+            ('Vieras', 'vieras', 'badges'),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -121,26 +121,26 @@ class Setup(object):
         labour_event_meta.create_groups()
 
         for diet_name in [
-            u'Gluteeniton',
-            u'Laktoositon',
-            u'Maidoton',
-            u'Vegaaninen',
-            u'Lakto-ovo-vegetaristinen',
+            'Gluteeniton',
+            'Laktoositon',
+            'Maidoton',
+            'Vegaaninen',
+            'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         for night in [
-            u'Perjantain ja lauantain välinen yö',
-            u'Lauantain ja sunnuntain välinen yö',
-            u'Sunnuntain ja maanantain välinen yö',
+            'Perjantain ja lauantain välinen yö',
+            'Lauantain ja sunnuntain välinen yö',
+            'Sunnuntain ja maanantain välinen yö',
         ]:
             Night.objects.get_or_create(name=night)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug=u'conitea',
+            slug='conitea',
             defaults=dict(
-                title=u'Conitean ilmoittautumislomake',
+                title='Conitean ilmoittautumislomake',
                 signup_form_class_path='events.kawacon2017.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.kawacon2017.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2017, 3, 15, 0, 0, 0, tzinfo=self.tz),
@@ -194,8 +194,8 @@ class Setup(object):
         for category_name, category_style in [
             # (u'Luento', u'anime'),
             # (u'Non-stop', u'miitti'),
-            (u'Työpaja', u'rope'),
-            (u'Muu ohjelma', u'muu'),
+            ('Työpaja', 'rope'),
+            ('Muu ohjelma', 'muu'),
             # (u'Show', u'cosplay'),
         ]:
             Category.objects.get_or_create(

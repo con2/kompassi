@@ -1,14 +1,11 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
-
 from collections import namedtuple, defaultdict
 from datetime import timedelta
 
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzlocal
@@ -33,7 +30,7 @@ class WorkPeriod(models.Model):
         verbose_name = _('work period')
         verbose_name_plural= _('work periods')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 
@@ -54,7 +51,7 @@ class Job(models.Model):
 
         return super(Job, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def admin_get_event(self):
@@ -139,7 +136,6 @@ class JobRequirement(models.Model):
         verbose_name_plural = _('job requirements')
 
 
-@python_2_unicode_compatible
 class Shift(models.Model, CsvExportMixin):
     job = models.ForeignKey(Job, related_name='shifts')
     start_time = models.DateTimeField()
@@ -163,7 +159,7 @@ class Shift(models.Model, CsvExportMixin):
     @property
     def work_hours(self):
         cur_time = self.start_time
-        for i in xrange(self.hours):
+        for i in range(self.hours):
             yield cur_time
             cur_time += ONE_HOUR
 

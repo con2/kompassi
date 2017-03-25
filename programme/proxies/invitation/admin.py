@@ -11,6 +11,6 @@ class InvitationAdminProxy(Invitation, ProgrammeyThingamajieAdminHelperMixin):
     """
 
     class Meta:
-        verbose_name = _(u'invitation')
-        verbose_name_plural = _(u'invitations')
+        verbose_name = _('invitation')
+        verbose_name_plural = _('invitations')
         proxy = True

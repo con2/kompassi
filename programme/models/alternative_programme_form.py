@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from django.db import models
 from django.db.models import Q
@@ -91,7 +91,7 @@ class AlternativeProgrammeForm(models.Model):
 
     order = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @property

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 import logging
 
@@ -37,10 +37,10 @@ class Command(BaseCommand):
         header_row = next(rows_iter)
 
         for row in rows_iter:
-            row_dict = dict(zip(
+            row_dict = dict(list(zip(
                 (c.value for c in header_row),
                 (c.value for c in row)
-            ))
+            )))
 
             email = row_dict['Sähköpostiosoite, johon toimitamme PDF-lipun']
             if not email:
@@ -81,4 +81,4 @@ class Command(BaseCommand):
                 send_email=True,
             )
 
-            print first_name, last_name
+            print(first_name, last_name)

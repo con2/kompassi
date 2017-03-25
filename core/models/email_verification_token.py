@@ -22,7 +22,7 @@ class EmailVerificationToken(OneTimeCode):
         return super(EmailVerificationToken, self).save(*args, **kwargs)
 
     def render_message_subject(self, request):
-        return u'{settings.KOMPASSI_INSTALLATION_NAME}: Vahvista sähköpostiosoitteesi!'.format(settings=settings)
+        return '{settings.KOMPASSI_INSTALLATION_NAME}: Vahvista sähköpostiosoitteesi!'.format(settings=settings)
 
     def render_message_body(self, request):
         vars = dict(

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import print_function
+
 
 
 from django.contrib import messages
@@ -35,8 +35,8 @@ BADGE_LIST_TEMPLATES = dict(
 
 
 class BadgesToYoinkFakePersonnelClass(object):
-    name = u'Yoinkkauslista'
-    slug = u'yoink'
+    name = 'Yoinkkauslista'
+    slug = 'yoink'
 badges_to_yoink_fake_personnel_class = BadgesToYoinkFakePersonnelClass()
 
 
@@ -51,36 +51,36 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
 
             if 'revoke-badge' in request.POST:
                 if not badge.can_revoke:
-                    messages.error(request, _(u'This badge cannot be revoked here because it is managed '
-                        u'by either the labour or the programme management system.'))
+                    messages.error(request, _('This badge cannot be revoked here because it is managed '
+                        'by either the labour or the programme management system.'))
                 elif badge.is_revoked:
-                    messages.warning(request, _(u'The badge had already been revoked.'))
+                    messages.warning(request, _('The badge had already been revoked.'))
                 else:
                     badge.revoke(user=request.user)
-                    messages.success(request, _(u'The badge has now been revoked.'))
+                    messages.success(request, _('The badge has now been revoked.'))
 
             elif 'clear-revoked' in request.POST:
                 if not badge.can_unrevoke:
-                    messages.error(request, _(u'This revoked badge cannot be un-revoked here because it is managed '
-                        u'by either the labour or the programme management system.'))
+                    messages.error(request, _('This revoked badge cannot be un-revoked here because it is managed '
+                        'by either the labour or the programme management system.'))
                 if not badge.is_revoked:
-                    message.warning(request, _(u'The badge was already valid.'))
+                    message.warning(request, _('The badge was already valid.'))
                 else:
                     badge.unrevoke()
-                    messages.success(request, _(u'The badge has been restored.'))
+                    messages.success(request, _('The badge has been restored.'))
 
             elif 'mark-printed' in request.POST:
                 badge.is_printed_separately = True
                 badge.save()
-                messages.success(request, u'Badge on merkitty erikseen tulostetuksi.')
+                messages.success(request, 'Badge on merkitty erikseen tulostetuksi.')
 
             elif 'clear-printed' in request.POST:
                 badge.is_printed_separately = False
                 badge.save()
-                messages.success(request, u'Badgesta on pyyhitty erikseen tulostettu -merkintä.')
+                messages.success(request, 'Badgesta on pyyhitty erikseen tulostettu -merkintä.')
 
             else:
-                messages.error(request, u'Kelvoton pyyntö.')
+                messages.error(request, 'Kelvoton pyyntö.')
 
             return redirect(request.path)
 
@@ -120,9 +120,9 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
         elif format in BADGE_LIST_TEMPLATES:
             page_template = BADGE_LIST_TEMPLATES[format][template_subtype]
 
-            title = u"{event.name} &ndash; {qualifier}".format(
+            title = "{event.name} &ndash; {qualifier}".format(
                 event=event,
-                qualifier=active_filter.name if active_filter else u'Nimilista',
+                qualifier=active_filter.name if active_filter else 'Nimilista',
             )
 
             filters = [

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import print_function, unicode_literals
+
 
 import csv
 from collections import defaultdict, Counter
@@ -44,7 +44,7 @@ class Command(BaseCommand):
 
         cumulative = Counter()
 
-        for days_to_event in xrange(min(stats.keys()), max(stats.keys()) + 1):
+        for days_to_event in range(min(stats.keys()), max(stats.keys()) + 1):
             row = [days_to_event]
 
             for event_slug in event_slugs:

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from __future__ import unicode_literals
+
 
 from access.email_aliases import nick
 from access.utils import emailify

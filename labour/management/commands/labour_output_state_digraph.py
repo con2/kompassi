@@ -10,7 +10,7 @@ class Command(BaseCommand):
     """
 
     def handle(self, *opts, **args):
-        print 'digraph foo {'
+        print('digraph foo {')
         for originating_state in SIGNUP_STATE_NAMES.keys():
             if originating_state == 'beyond_logic':
                 continue
@@ -21,9 +21,9 @@ class Command(BaseCommand):
                 if destination_state == 'beyond_logic':
                     continue
 
-                print u'    "{src}" -> "{dest}";'.format(
+                print('    "{src}" -> "{dest}";'.format(
                     src=SIGNUP_STATE_NAMES[originating_state],
                     dest=SIGNUP_STATE_NAMES[destination_state],
-                ).encode('UTF-8')
-            print
-        print '}'
+                ).encode('UTF-8'))
+            print()
+        print('}')

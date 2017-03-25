@@ -48,7 +48,7 @@ def default_badge_factory(event, person):
         personnel_class, job_title = personnel_classes[0]
     else:
         personnel_class = None
-        job_title = u'THIS BADGE SHOULD NOT PRINT' # This should never get printed.
+        job_title = 'THIS BADGE SHOULD NOT PRINT' # This should never get printed.
 
     meta = event.badges_event_meta
 
