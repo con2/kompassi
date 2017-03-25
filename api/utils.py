@@ -1,6 +1,6 @@
+import base64
 import json
 import logging
-from datetime import datetime, date
 from functools import wraps
 
 from jsonschema import (
@@ -25,7 +25,7 @@ def http_basic_auth(func):
         if 'HTTP_AUTHORIZATION' in request.META:
             authmeth, auth = request.META['HTTP_AUTHORIZATION'].split(' ', 1)
             if authmeth.lower() == 'basic':
-                auth = auth.strip().decode('base64')
+                auth = base64.decodestring(auth)
                 username, password = auth.split(':', 1)
                 user = authenticate(username=username, password=password)
                 if user:
