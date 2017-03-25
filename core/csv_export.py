@@ -2,6 +2,7 @@
 from collections import namedtuple
 
 import csv
+from io import BytesIO
 
 from django.http import HttpResponse
 from django.db import models
@@ -171,14 +172,15 @@ CONTENT_TYPES = dict(
 def csv_response(*args, **kwargs):
     filename = kwargs.pop('filename')
     dialect = kwargs.get('dialect', 'excel')
+    bio = BytesIO()
 
-    response = HttpResponse(content_type=CONTENT_TYPES.get(dialect, 'text/csv'))
+    kwargs['output_file'] = bio
+
+    export_csv(*args, **kwargs)
+
+    response = HttpResponse(bio.getvalue(), content_type=CONTENT_TYPES.get(dialect, 'text/csv'))
     response['Content-Disposition'] = 'attachment; filename="{filename}"'.format(
         filename=filename
     )
-
-    kwargs['output_file'] = response
-
-    export_csv(*args, **kwargs)
 
     return response
