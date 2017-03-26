@@ -5,10 +5,6 @@ from collections import namedtuple
 from django.db import models
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.template import RequestContext
-from django.contrib.auth import get_user_model
-
-from jsonschema import validate
 
 from api.utils import JSONSchemaObject
 from core.models import OneTimeCode
@@ -47,18 +43,15 @@ class ConfirmationCode(OneTimeCode):
 
     next_url = models.CharField(max_length=1023, blank=True, default='')
 
-    def get_desuprofile(self):
-        return json.loads(desuprofile_json)
-
     def render_message_subject(self, request):
         return '{settings.KOMPASSI_INSTALLATION_NAME}: Desuprofiilin yhdistäminen'.format(settings=settings)
 
     def render_message_body(self, request):
-        vars = dict(
+        context = dict(
             link=request.build_absolute_uri(url('desuprofile_integration_confirmation_view', self.code))
         )
 
-        return render_to_string('desuprofile_integration_confirmation_message.eml', vars, context_instance=RequestContext(request, {}))
+        return render_to_string('desuprofile_integration_confirmation_message.eml', context=context, request=request)
 
 
 DesuprofileBase = namedtuple('Desuprofile', 'id username first_name last_name nickname email phone birth_date')
