@@ -8,8 +8,6 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from core.utils import slugify
-
 
 class Setup(object):
     def __init__(self):
@@ -25,6 +23,8 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         # self.setup_programme()
+        self.setup_tickets()
+        self.setup_payments()
 
     def setup_core(self):
         from core.models import Organization, Venue, Event
@@ -154,7 +154,7 @@ class Setup(object):
             'Sunnuntaina',
             'Sunnuntai-iltana ja maanantaina',
         ]:
-            Shift.objects.get_or_create(name=shift_name)        
+            Shift.objects.get_or_create(name=shift_name)
 
     def setup_programme(self):
         from programme.models import Room, ProgrammeEventMeta, Category, TimeBlock, View, SpecialStartTime
@@ -232,6 +232,89 @@ class Setup(object):
                     start_time=hour_start_time.replace(minute=30)
                 )
 
+    def setup_tickets(self):
+        from tickets.models import TicketsEventMeta, LimitGroup, Product
+
+        tickets_admin_group, = TicketsEventMeta.get_or_create_groups(self.event, ['admins'])
+
+        defaults = dict(
+            admin_group=tickets_admin_group,
+            due_days=14,
+            shipping_and_handling_cents=120,
+            reference_number_template="2017{:05d}",
+            contact_email='Kawacon -lipunmyynti <kawacon.myynti@gmail.comi>',
+            ticket_free_text=(
+                "Tämä on sähköinen lippusi Kawaconiin. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+                "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+                "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+                "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
+                "lipunvaihtopisteessä.\n\n"
+                "Tervetuloa Kawaconiin!"
+            ),
+            front_page_text=(
+                "<h2>Tervetuloa ostamaan pääsylippuja Kawacon 2017 -tapahtumaan!</h2>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://kawacon.info'>Kawaconin kotisivuilta</a>.</p>"
+            ),
+        )
+
+        if self.test:
+            t = now()
+            defaults.update(
+                ticket_sales_starts=t - timedelta(days=60),
+                ticket_sales_ends=t + timedelta(days=60),
+            )
+        else:
+            defaults.update(
+                ticket_sales_starts=datetime(2017, 31, 3, 0, 0, 0, tzinfo=self.tz),
+                ticket_sales_ends=datetime(2017, 6, 30, 23, 59, 59, tzinfo=self.tz),
+            )
+
+        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+
+        def limit_group(description, limit):
+            limit_group, unused = LimitGroup.objects.get_or_create(
+                event=self.event,
+                description=description,
+                defaults=dict(limit=limit),
+            )
+
+            return limit_group
+
+        for product_info in [
+            dict(
+                name='Viikonloppulippu',
+                description=(
+                    'Viikonloppulippu Kawacon 2017 -tapahtumaan. Voimassa koko viikonlopun '
+                    'ajan. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia '
+                    'vastaan saat rannekkeen tapahtumaan saapuessasi.'
+                ),
+                limit_groups=[
+                    limit_group('Pääsyliput', 10000),
+                ],
+                price_cents=1300,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+        ]:
+            name = product_info.pop('name')
+            limit_groups = product_info.pop('limit_groups')
+
+            product, unused = Product.objects.get_or_create(
+                event=self.event,
+                name=name,
+                defaults=product_info
+            )
+
+            if not product.limit_groups.exists():
+                product.limit_groups = limit_groups
+                product.save()
+
+    def setup_payments(self):
+        from payments.models import PaymentsEventMeta
+        PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
 class Command(BaseCommand):
     args = ''
