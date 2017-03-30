@@ -266,7 +266,7 @@ class Setup(object):
             )
         else:
             defaults.update(
-                ticket_sales_starts=datetime(2017, 31, 3, 0, 0, 0, tzinfo=self.tz),
+                ticket_sales_starts=datetime(2017, 3, 31, 0, 0, 0, tzinfo=self.tz),
                 ticket_sales_ends=datetime(2017, 6, 30, 23, 59, 59, tzinfo=self.tz),
             )
 
