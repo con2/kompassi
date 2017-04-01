@@ -22,7 +22,7 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        # self.setup_programme()
+        self.setup_programme()
         self.setup_tickets()
         self.setup_payments()
 
@@ -157,16 +157,29 @@ class Setup(object):
             Shift.objects.get_or_create(name=shift_name)
 
     def setup_programme(self):
-        from programme.models import Room, ProgrammeEventMeta, Category, TimeBlock, View, SpecialStartTime
         from core.utils import full_hours_between
+        from labour.models import PersonnelClass
+        from programme.models import (
+            AlternativeProgrammeForm,
+            Category,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            TimeBlock,
+            View,
+        )
 
         room_order = 0
         for room_name in [
-            # u'Auditorio',
-            # u'Pääsali',
-            # u'E-rakennus, luokat',
-            # u'Kawaplay, G-rakennus',
-            # u'Elokuvateatteri Tapio',
+            'Auditorio',
+            'Yläkerran aula',
+            'Piha',
+            'Pokemonhuone',
+            'Miittiluokka',
+            'Työpajaluokka',
+            'Karaokeluokka',
+            'Artemisluokka',
         ]:
             room_order += 100
             Room.objects.get_or_create(
@@ -180,6 +193,8 @@ class Setup(object):
         admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
             admin_group=admin_group,
+            schedule_layout='full_width',
+            contact_email='Kawacon ohjelma <mitro.makkonen@gmail.com>',
         ))
 
         view, unused = View.objects.get_or_create(
@@ -191,12 +206,29 @@ class Setup(object):
             view.rooms = Room.objects.filter(venue=self.venue, active=True)
             view.save()
 
+        for pc_slug, role_title, role_is_default in [
+            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+        ]:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                )
+            )
+
         for category_name, category_style in [
-            # (u'Luento', u'anime'),
-            # (u'Non-stop', u'miitti'),
-            ('Työpaja', 'rope'),
-            ('Muu ohjelma', 'muu'),
-            # (u'Show', u'cosplay'),
+            ('Puheohjelma', 'color1'),
+            ('Viihdeohjelma', 'color2'),
+            ('Jatkuva ohjelma', 'color3'),
+            ('Mitti', 'color4'),
+            ('Muu ohjelma', 'color5'),
+            ('Ulko-ohjelma', 'color6'),
+            ('Peliohjelma', 'color7'),
+            ('Työpaja', 'color4'),
+            ('Pokemonohjelma', 'color7'),
+            ('Cosplayohjelma', 'color5'),
         ]:
             Category.objects.get_or_create(
                 event=self.event,
@@ -231,6 +263,19 @@ class Setup(object):
                     event=self.event,
                     start_time=hour_start_time.replace(minute=30)
                 )
+
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='default',
+            defaults=dict(
+                title='Tarjoa puhe- tai muuta ohjelmaa',
+                short_description='Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole pöytäroolipeli.',
+                programme_form_code='events.kawacon2017.forms:ProgrammeOfferForm',
+                active_from=datetime(2017, 4, 2, 0, 7, tzinfo=self.tz),
+                num_extra_invites=3,
+                order=30,
+            )
+        )
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product

@@ -6,9 +6,13 @@ from django import forms
 
 from crispy_forms.layout import Layout, Fieldset
 
-from core.utils import horizontal_form_helper, indented_without_label
+from core.utils import horizontal_form_helper
 from labour.forms import AlternativeFormMixin
-from labour.models import Signup, JobCategory, WorkPeriod
+from labour.models import Signup, JobCategory
+from programme.forms import (
+    ProgrammeOfferForm as BaseProgrammeOfferForm,
+    AlternativeProgrammeFormMixin,
+)
 
 from .models import SignupExtra
 
@@ -56,7 +60,7 @@ class SignupExtraForm(forms.ModelForm):
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
         admin = kwargs.pop('admin')
 
         assert not admin
@@ -89,3 +93,38 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
 class OrganizerSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
     pass
+
+
+class ProgrammeOfferForm(BaseProgrammeOfferForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super(ProgrammeOfferForm, self).__init__(*args, **kwargs)
+
+        del self.fields['rerun']
+        del self.fields['encumbered_content']
+
+
+class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super(ProgrammeSignupExtraForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'needs_lodging',
+            'special_diet',
+            'special_diet_other',
+            'afterparty',
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            'needs_lodging',
+            'special_diet',
+            'special_diet_other',
+            'afterparty',
+        )
+
+        widgets = dict(
+            needs_lodging=forms.CheckboxSelectMultiple,
+            special_diet=forms.CheckboxSelectMultiple,
+        )
