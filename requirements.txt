@@ -8,7 +8,7 @@ dj-static~=0.0.6
 django-babel~=0.5.1
 django-cors-headers>=1.1,<1.2
 django-crispy-forms>=1.6,<1.7
-django-environ~=0.4.0
+django-environ==0.4.1
 django-ipware>=1.1,<1.2
 django-localflavor~=1.4.1
 django-oauth-toolkit~=0.12.0
