@@ -15,10 +15,10 @@ block content
     .alert.alert-danger {% trans "JavaScript is required to answer this survey." %}
 
 block extra_scripts
-  link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/survey-jquery/0.12.4/survey.min.css')
-  script(src='https://cdnjs.cloudflare.com/ajax/libs/survey-jquery/0.12.4/survey.jquery.min.js')
+  link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/survey-jquery/0.12.8/survey.min.css')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/survey-jquery/0.12.8/survey.jquery.min.js')
   script.
-    // Setup CSRF protection  
+    // Setup CSRF protection
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -48,7 +48,7 @@ block extra_scripts
         contentType: 'application/json',
         data: JSON.stringify(survey.data),
       });
-    }    
+    }
 
     // Construct and show our current survey
     var survey = new Survey.Model({{ model_json|safe }});
