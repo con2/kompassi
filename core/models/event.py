@@ -150,7 +150,7 @@ class Event(models.Model):
         return ' '.join(headline_parts)
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, name='Dummy event'):
         from .venue import Venue
         from .organization import Organization
 
@@ -163,12 +163,12 @@ class Event(models.Model):
         t = timezone.now()
 
         return cls.objects.get_or_create(
-            name='Dummy event',
+            name=name,
             defaults=dict(
                 venue=venue,
                 start_time=t + timedelta(days=60),
                 end_time=t + timedelta(days=61),
-                slug='dummy',
+                slug=slugify(name),
                 organization=organization,
             ),
         )

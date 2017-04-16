@@ -37,7 +37,7 @@ ADMINS = [parseaddr(addr) for addr in env('ADMINS', default='').split(',') if ad
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': env.db(default='sqlite:///db.sqlite3'),
+    'default': env.db(default='postgresql://localhost/kompassi_dev'),
 }
 
 CACHES = {
@@ -105,7 +105,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            mkpath('kompassi','templates'),
+            mkpath('kompassi', 'templates'),
         ],
         'OPTIONS': {
             'context_processors': [
@@ -165,6 +165,7 @@ INSTALLED_APPS = (
     'enrollment',
     'feedback',
     'event_log',
+    'surveys',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -393,10 +394,3 @@ if 'desuprofile_integration' in INSTALLED_APPS:
     KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/'.format(**locals())
     KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/'.format(**locals())
     KOMPASSI_DESUPROFILE_API_URL = '{KOMPASSI_DESUPROFILE_HOST}/api/user/me/'.format(**locals())
-
-
-# PostgreSQL required for surveys app (uses django.contrib.postgres.fields.JSONField)
-if DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql_psycopg2':
-    INSTALLED_APPS = INSTALLED_APPS + ('surveys',)
-else:
-    warnings.warn(UserWarning('surveys app disabled (PostgreSQL required)'))

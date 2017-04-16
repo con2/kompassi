@@ -1,12 +1,10 @@
-# encoding: utf-8
-
-
-
 from django.conf import settings
 from django.core.mail import EmailMessage
 
 
 def send_update_for_entry(subscription, entry):
+    assert subscription.channel == 'email'
+
     subject = entry.email_subject
     body = entry.email_body
 

@@ -1,9 +1,6 @@
-# encoding: utf-8
-
-
-
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
@@ -26,13 +23,22 @@ class Entry(models.Model):
     entry_type = models.CharField(max_length=255)
 
     # various target fkeys, sparse
+    event = models.ForeignKey('core.Event', **TARGET_FKEY_ATTRS)
     feedback_message = models.ForeignKey('feedback.FeedbackMessage', **TARGET_FKEY_ATTRS)
+    event_survey_result = models.ForeignKey('surveys.EventSurveyResult', **TARGET_FKEY_ATTRS)
+    global_survey_result = models.ForeignKey('surveys.GlobalSurveyResult', **TARGET_FKEY_ATTRS)
 
     def send_updates(self):
         from .subscription import Subscription
 
-        subscriptions = Subscription.objects.filter(entry_type=self.entry_type, active=True)
-        for subscription in subscriptions:
+        q = Q(entry_type=self.entry_type, active=True)
+
+        if self.event:
+            # Implement the event filter. Subscriptions without event_filter receive updates from
+            # all events. Subscriptions with event_filter receive only updates from that event.
+            q &= Q(event_filter=self.event) | Q(event_filter__isnull=True)
+
+        for subscription in Subscription.objects.filter(q):
             subscription.send_update_for_entry(self)
 
     @property

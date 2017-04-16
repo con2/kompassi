@@ -6,9 +6,9 @@ from .models import EntryTypeMetadata
 entry_types = dict()
 
 
-def register(**kwargs):
-    name = kwargs['name']
-    entry_types[name] = EntryTypeMetadata(**kwargs)
+def register(name, **kwargs):
+    entry_types[name] = EntryTypeMetadata(name=name, **kwargs)
+    return entry_types[name]
 
 
 def get(entry_type_name):

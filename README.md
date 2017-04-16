@@ -12,6 +12,14 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
     docker-compose up
     iexplore http://localhost:8000
 
+Run tests:
+
+    docker-compose -f docker-compose.test.yml up --exit-code-from test
+
+Or if you're running a pre-1.2.0 Docker Compose:
+
+    docker-compose -f docker-compose.test.yml up --abort-on-container-exit
+
 ### The Hard Way
 
 **NOTE:** Python 3.6 or greater is required. Python 2.7 is not supported.
