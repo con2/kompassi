@@ -9,8 +9,13 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
 
 ### The Easy Way
 
+Provided you have Docker (tested: 17.03 CE) and Docker Compose (tested: 0.11.2), you should get up and running by simply executing
+
     docker-compose up
-    iexplore http://localhost:8000
+
+Now open http://localhost:8000 in your browser. A superuser `mahti` with password `mahti` has been created for you.
+
+When the dependencies change, you need to add `--build` to `docker-compose up` to rebuild the Docker image.
 
 Run tests:
 

@@ -28,6 +28,13 @@ class Entry(models.Model):
     event_survey_result = models.ForeignKey('surveys.EventSurveyResult', **TARGET_FKEY_ATTRS)
     global_survey_result = models.ForeignKey('surveys.GlobalSurveyResult', **TARGET_FKEY_ATTRS)
 
+    @property
+    def survey_result(self):
+        """
+        Shortcut for templates etc. that apply to both GlobalSurveyResults and EventSurveyResults.
+        """
+        return self.event_survey_result if self.event_survey_result else self.global_survey_result
+
     def send_updates(self):
         from .subscription import Subscription
 

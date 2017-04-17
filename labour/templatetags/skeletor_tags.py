@@ -1,9 +1,3 @@
-# encoding: utf-8
-
-
-
-from datetime import datetime
-
 from django.template import Library
 
 from babel.dates import format_skeleton
