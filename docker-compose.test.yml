@@ -3,8 +3,6 @@ services:
   test:
     build: .
     command: python manage.py test --keepdb
-    ports:
-      - 8000:8000
     links:
       # - rabbitmq
       - postgres
