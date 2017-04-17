@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 import logging
 from datetime import date, datetime
 
@@ -13,7 +9,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
-from django.utils.dateformat import format as format_date
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.utils import timezone

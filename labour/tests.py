@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from core.models import Event, Person
+from core.models import Person
 
 from .models import LabourEventMeta, Qualification, JobCategory, Signup
 

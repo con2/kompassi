@@ -1,23 +1,19 @@
-# encoding: utf-8
-
-
-
 import os
 import warnings
-from datetime import datetime, timedelta
 from email.utils import parseaddr
 
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.messages import constants as messages
 
 import environ
 
 
-env = environ.Env(DEBUG=(bool, False),) # set default values and casting
+env = environ.Env(DEBUG=(bool, False),)  # set default values and casting
 
 # silence warning from .env not existing
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
-    environ.Env.read_env() # reading .env file
+    environ.Env.read_env()  # reading .env file
 
 
 def mkpath(*parts):
@@ -77,7 +73,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 SECRET_KEY = env.str('SECRET_KEY', default=('' if not DEBUG else 'xxx'))
@@ -203,6 +199,7 @@ INSTALLED_APPS = (
     'events.desucon2017',
     'events.ropecon2017',
     'events.kawacon2017',
+    'events.worldcon75',
 )
 
 LOGGING = {
@@ -227,7 +224,7 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
-        'console':{
+        'console': {
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
@@ -261,7 +258,6 @@ LOGIN_URL = '/login'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
@@ -309,7 +305,7 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='spam@example.com')
 
 
 if 'payments' in INSTALLED_APPS:
-    from payments.defaults import CHECKOUT_PARAMS
+    from payments.defaults import CHECKOUT_PARAMS  # noqafoo
 
 
 if 'lippukala' in INSTALLED_APPS:
@@ -332,7 +328,7 @@ if env('BROKER_URL', default=''):
     BROKER_URL = env('BROKER_URL')
     CELERY_ACCEPT_CONTENT = ['json']
 
-    #EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+    # EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 
     CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
     SERVER_EMAIL = DEFAULT_FROM_EMAIL

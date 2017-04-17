@@ -1,12 +1,7 @@
-# encoding: utf-8
-
-
-
 from django.db import models
 
 from enrollment.models import SimpleChoice, SpecialDiet
 from labour.models import SignupExtraBase
-from labour.querybuilder import QueryBuilder, add_prefix
 
 from core.utils import validate_slug
 

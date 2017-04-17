@@ -1,11 +1,6 @@
-# encoding: utf-8
-
-
-
 from django.db import models
 
 from labour.models import SignupExtraBase
-from labour.querybuilder import QueryBuilder, add_prefix
 
 
 class SignupExtra(SignupExtraBase):
@@ -18,15 +13,17 @@ class SignupExtra(SignupExtraBase):
         'enrollment.SpecialDiet',
         blank=True,
         verbose_name='Erikoisruokavalio',
-        related_name='+',
+        related_name='%(app_label)s_%(class)s',
     )
 
     special_diet_other = models.TextField(
         blank=True,
         verbose_name='Muu erikoisruokavalio',
-        help_text='Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
+        help_text=(
+            'Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
             'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
             'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+        ),
     )
 
     y_u = models.TextField(

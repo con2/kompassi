@@ -14,7 +14,8 @@ class Enrollment(models.Model):
     special_diet = models.ManyToManyField(
         'enrollment.SpecialDiet',
         blank=True,
-        verbose_name=_("Diet")
+        verbose_name=_("Diet"),
+        related_name='enrollments',
     )
 
     special_diet_other = models.TextField(
