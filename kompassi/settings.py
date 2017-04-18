@@ -33,7 +33,9 @@ ADMINS = [parseaddr(addr) for addr in env('ADMINS', default='').split(',') if ad
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': env.db(default='postgresql://localhost/kompassi_dev'),
+    # NOTE: sqlite NOT supported! PostgreSQL is required.
+    # This is just for collectstatic etc. to work without database.
+    'default': env.db(default='sqlite://db.sqlite3'),
 }
 
 CACHES = {
@@ -79,6 +81,7 @@ STATICFILES_FINDERS = (
 SECRET_KEY = env.str('SECRET_KEY', default=('' if not DEBUG else 'xxx'))
 
 MIDDLEWARE_CLASSES = (
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -90,6 +93,7 @@ MIDDLEWARE_CLASSES = (
     'core.middleware.PageWizardMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django_babel.middleware.LocaleMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 )
 
 ROOT_URLCONF = 'kompassi.urls'
@@ -140,6 +144,7 @@ INSTALLED_APPS = (
     'oauth2_provider',
     'nexmo',
     'django_babel',
+    'django_prometheus',
 
     'core',
     'programme',

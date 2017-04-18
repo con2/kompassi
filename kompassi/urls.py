@@ -14,6 +14,7 @@ urlpatterns = [
 ]
 
 for app_name in [
+    'django_prometheus',
     'labour',
     'programme',
     'tickets',
