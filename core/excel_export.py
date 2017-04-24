@@ -1,5 +1,7 @@
+import io
+
 import xlsxwriter
-import io as StringIO
+
 
 class XlsxWriter(object):
     """
@@ -12,7 +14,7 @@ class XlsxWriter(object):
     def __init__(self, output_stream):
         self.row = 0
         self.output_stream = output_stream
-        self.buf = StringIO.StringIO()
+        self.buf = io.BytesIO()
         self.workbook = xlsxwriter.Workbook(self.buf)
         self.worksheet = self.workbook.add_worksheet()
         self.must_close = True

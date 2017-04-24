@@ -172,15 +172,14 @@ CONTENT_TYPES = dict(
 def csv_response(*args, **kwargs):
     filename = kwargs.pop('filename')
     dialect = kwargs.get('dialect', 'excel')
-    bio = BytesIO()
 
-    kwargs['output_file'] = bio
-
-    export_csv(*args, **kwargs)
-
-    response = HttpResponse(bio.getvalue(), content_type=CONTENT_TYPES.get(dialect, 'text/csv'))
+    response = HttpResponse(content_type=CONTENT_TYPES.get(dialect, 'text/csv'))
     response['Content-Disposition'] = 'attachment; filename="{filename}"'.format(
         filename=filename
     )
+
+    kwargs['output_file'] = response
+
+    export_csv(*args, **kwargs)
 
     return response
