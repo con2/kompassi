@@ -28,6 +28,7 @@ regex~=2017.2.8
 reportlab~=3.4.0
 requests-oauthlib~=0.8.0
 requests~=2.13.0
+unicodecsv~=0.14.1
 vobject~=0.9.3
 XlsxWriter~=0.9.6
 PyYAML~=3.12

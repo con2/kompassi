@@ -1,8 +1,7 @@
 # encoding: utf-8
 from collections import namedtuple
 
-import csv
-from io import BytesIO
+import unicodecsv as csv
 
 from django.http import HttpResponse
 from django.db import models
