@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -245,7 +241,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            category=Category.objects.get(event__slug='hitpoint2017', slug='roolipeli'),
+            category=Category.objects.get(event__slug='tracon2017', slug='roolipeliohjelma'),
         )
 
 

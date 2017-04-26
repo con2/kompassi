@@ -1,15 +1,10 @@
-# encoding: utf-8
-
-
-
 from django.db import transaction
 from django.contrib import messages
-from django.forms.models import modelformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 
 from core.helpers import person_required
-from core.utils import initialize_form, initialize_form_set, set_defaults, set_attrs
+from core.utils import initialize_form, set_attrs
 
 from ..forms import ProgrammeOfferForm, get_sired_invitation_formset
 from ..helpers import programme_event_required
