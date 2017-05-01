@@ -37,8 +37,15 @@ class Subscription(models.Model):
         null=True,
         blank=True,
         verbose_name=_('Event filter'),
-        help_text=_('When specified, only entries related to this event will match the subscription.')
+        help_text=_('When specified, only entries related to this event will match the subscription.'),
     )
+    event_survey_filter = models.ForeignKey('surveys.EventSurvey',
+        null=True,
+        blank=True,
+        verbose_name=_('Event survey filter'),
+        help_text=_('When specified, only entries related to this EventSurvey will match the subscription.'),
+    )
+
     callback_code = models.CharField(max_length=255,
         blank=True,
         default='',
@@ -78,15 +85,18 @@ class Subscription(models.Model):
             return self.user.email
 
     @classmethod
-    def get_or_create_dummy(cls, **kwargs):
+    def get_or_create_dummy(cls, entry_type=None, **kwargs):
         from .entry_type_metadata import EntryTypeMetadata
         from core.models import Person
 
-        entry_type, unused = EntryTypeMetadata.get_or_create_dummy()
+        if entry_type is None:
+            entry_type, unused = EntryTypeMetadata.get_or_create_dummy()
+            entry_type = entry_type.name
+
         person, unused = Person.get_or_create_dummy()
 
         attrs = dict(
-            entry_type=entry_type.name,
+            entry_type=entry_type,
             user=person.user,
         )
 

@@ -40,10 +40,20 @@ class Entry(models.Model):
 
         q = Q(entry_type=self.entry_type, active=True)
 
+        # TODO need a more flexible filter solution that does not hard-code these
+        # One option would be to specify filter = JSONField in Subscription.
+        # Implementing this filter would require a client-side check or one SQL query
+        # per Subscription, however, as we query Subscriptions by Entry and not vice versa.
+
         if self.event:
             # Implement the event filter. Subscriptions without event_filter receive updates from
             # all events. Subscriptions with event_filter receive only updates from that event.
             q &= Q(event_filter=self.event) | Q(event_filter__isnull=True)
+
+        if self.event_survey_result:
+            # Implement event survey filter.
+            survey = self.event_survey_result.survey
+            q &= Q(event_survey_filter=survey) | Q(event_survey_filter__isnull=True)
 
         for subscription in Subscription.objects.filter(q):
             subscription.send_update_for_entry(self)
