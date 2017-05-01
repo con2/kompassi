@@ -61,4 +61,3 @@ class EventSurveyFilterTestCase(TestCase):
         EventSurveyResult(survey=survey2, model=dict()).save()
 
         assert len(notifications) == 3
-
