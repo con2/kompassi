@@ -1,11 +1,5 @@
-# encoding: utf-8
-
-
-
 import json
 import logging
-import sys
-from datetime import datetime
 
 from django.conf import settings
 
@@ -26,7 +20,6 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
 }
-
 
 
 class CrowdError(RuntimeError):
@@ -91,7 +84,7 @@ def ensure_group_exists(group_name):
         '/group',
         {},
         body,
-        ignore_status_codes=[400,],
+        ignore_status_codes=[400],
     )
 
 
@@ -108,7 +101,7 @@ def ensure_user_is_member_of_group(user, group_name):
         '/user/group/direct',
         {'username': user.username},
         {'name': group_name},
-        ignore_status_codes=[409,]
+        ignore_status_codes=[409],
     )
 
 
@@ -117,7 +110,7 @@ def ensure_user_is_not_member_of_group(user, group_name):
         'DELETE',
         '/user/group/direct',
         {'username': user.username, 'groupname': group_name},
-        ignore_status_codes=[404,]
+        ignore_status_codes=[404],
     )
 
 

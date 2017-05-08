@@ -8,16 +8,17 @@ block admin_content
   form.form-horizontal(method='POST')
     .panel.panel-default
       .panel-heading: strong
-        if form.instance.pk
+        if team_member_form.instance.pk
           {% trans "Edit team member" %}
         else
           {% trans "Add a member to a team" %}
       .panel-body
-        {% crispy form %}
+        {% crispy team_member_form %}
+        {% crispy privileges_form %}
       .panel-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-default(href='{% url "intra_organizer_view" event.slug %}') {% trans "Cancel and return" %}
-          if form.instance.pk
+          if team_member_form.instance.pk
             button.btn.btn-danger(type='submit', name='action', value='delete')
               i.fa.fa-trash.kompassi-icon-space-right
               {% trans "Remove team member" %}

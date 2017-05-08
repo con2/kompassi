@@ -1,17 +1,11 @@
-# encoding: utf-8
-
 from itertools import groupby
 from random import randint
 import re
 
-from django import forms
 from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.contenttypes.models import ContentType
 from django.forms import ValidationError
-from django.utils.http import urlencode
-
-from dateutil.tz import tzlocal
 
 
 CHARACTER_CLASSES = [re.compile(r) for r in [
@@ -232,6 +226,7 @@ def mutate_query_params(request, mutations):
 class class_property(object):
     def __init__(self, f):
         self.f = f
+
     def __get__(self, obj, owner):
         return self.f(owner)
 

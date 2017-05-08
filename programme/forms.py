@@ -1,21 +1,10 @@
-# encoding: utf-8
-
-
-
 from django import forms
-from django.db.models import Q
 from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset
-
-from core.models import Person
 from core.utils import (
     format_datetime,
     horizontal_form_helper,
-    indented_without_label,
-    make_horizontal_form_helper,
     initialize_form_set,
 )
 
@@ -75,7 +64,7 @@ class ProgrammeAdminCreateForm(forms.ModelForm):
 
 class ProgrammeSelfServiceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
 
         super(ProgrammeSelfServiceForm, self).__init__(*args, **kwargs)
 
@@ -151,7 +140,7 @@ class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
 class ProgrammeInternalForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
 
         super(ProgrammeInternalForm, self).__init__(*args, **kwargs)
 
@@ -321,31 +310,16 @@ class ChangeInvitationRoleForm(forms.ModelForm):
 
 
 class PublishForm(forms.ModelForm):
-    # XXX get a date picker
     public_from = forms.DateTimeField(
         required=False,
         label=_("Public from"),
     )
-    # public_until = forms.DateTimeField(
-    #     required=False,
-    #     label=_("Public until"),
-    #     help_text=_("Format: YYYY-MM-DD HH:MM:SS"),
-    # )
 
     def __init__(self, *args, **kwargs):
         super(PublishForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
-
-    # def clean_registration_closes(self):
-    #     accepting_cold_offers_from = self.cleaned_data.get('accepting_cold_offers_from')
-    #     accepting_cold_offers_until = self.cleaned_data.get('accepting_cold_offers_until')
-
-    #     if accepting_cold_offers_from and accepting_cold_offers_until and accepting_cold_offers_from >= accepting_cold_offers_until:
-    #         raise forms.ValidationError(_("The registration closing time must be after the registration opening time."))
-
-    #     return accepting_cold_offers_until
 
     class Meta:
         model = ProgrammeEventMeta
@@ -365,7 +339,10 @@ class ProgrammeFeedbackForm(forms.ModelForm):
 
         if is_own_programme:
             self.fields['is_anonymous'].disabled = True
-            self.fields['is_anonymous'].help_text = _('Because you are the host of this programme, you cannot leave your feedback anonymously.')
+            self.fields['is_anonymous'].help_text = _(
+                'Because you are the host of this programme, you cannot leave '
+                'your feedback anonymously.'
+            )
 
     class Meta:
         model = ProgrammeFeedback
@@ -397,7 +374,11 @@ class ColdOffersForm(forms.ModelForm):
         accepting_cold_offers_from = self.cleaned_data.get('accepting_cold_offers_from')
         accepting_cold_offers_until = self.cleaned_data.get('accepting_cold_offers_until')
 
-        if accepting_cold_offers_from and accepting_cold_offers_until and accepting_cold_offers_from >= accepting_cold_offers_until:
+        if (
+            accepting_cold_offers_from and
+            accepting_cold_offers_until and
+            accepting_cold_offers_from >= accepting_cold_offers_until
+        ):
             raise forms.ValidationError(_("The closing time must be after the opening time."))
 
         return accepting_cold_offers_until

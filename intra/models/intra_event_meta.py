@@ -1,11 +1,6 @@
-# encoding: utf-8
-
-
-
 from collections import namedtuple
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 
 from core.models import EventMetaBase, Person
 from labour.models import Signup
