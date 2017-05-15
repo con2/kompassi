@@ -1,40 +1,24 @@
-# encoding: utf-8
-
-
-
-from collections import defaultdict, namedtuple, OrderedDict
-from datetime import date, datetime, timedelta
+from collections import OrderedDict
 
 from django.conf import settings
 from django.db import models
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
-from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-import jsonschema
 from six import text_type
 
 from core.csv_export import CsvExportMixin
-from core.models import EventMetaBase
 from core.utils import (
     alias_property,
     ensure_user_group_membership,
-    full_hours_between,
     get_previous_and_next,
-    is_within_period,
-    NONUNIQUE_SLUG_FIELD_PARAMS,
-    ONE_HOUR,
-    pick_attrs,
-    SLUG_FIELD_PARAMS,
-    slugify,
     time_bool_property,
 )
 
 from .constants import (
     SIGNUP_STATE_NAMES,
     NUM_FIRST_CATEGORIES,
-    SIGNUP_STATE_CLASSES,
     SIGNUP_STATE_LABEL_CLASSES,
     SIGNUP_STATE_BUTTON_CLASSES,
     SIGNUP_STATE_DESCRIPTIONS,
@@ -42,7 +26,6 @@ from .constants import (
     STATE_FLAGS_BY_NAME,
     STATE_NAME_BY_FLAGS,
     STATE_TIME_FIELDS,
-    GROUP_VERBOSE_NAMES_BY_SUFFIX,
     SIGNUP_STATE_GROUPS,
 )
 
@@ -119,8 +102,10 @@ class Signup(models.Model, CsvExportMixin):
     notes = models.TextField(
         blank=True,
         verbose_name='Käsittelijän merkinnät',
-        help_text='Tämä kenttä ei normaalisti näy henkilölle itselleen, mutta jos tämä '
+        help_text=(
+            'Tämä kenttä ei normaalisti näy henkilölle itselleen, mutta jos tämä '
             'pyytää henkilörekisteriotetta, kentän arvo on siihen sisällytettävä.'
+        ),
     )
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Luotu')
@@ -150,17 +135,21 @@ class Signup(models.Model, CsvExportMixin):
         null=True,
         default="",
         verbose_name="Työvuorot",
-        help_text="Tämä tekstikenttä on väliaikaisratkaisu, jolla vänkärin työvuorot voidaan "
+        help_text=(
+            "Tämä tekstikenttä on väliaikaisratkaisu, jolla vänkärin työvuorot voidaan "
             "merkitä Kompassiin ja lähettää vänkärille työvoimaviestissä jo ennen kuin "
             "lopullinen työvuorotyökalu on käyttökunnossa."
+        ),
     )
 
     alternative_signup_form_used = models.ForeignKey('labour.AlternativeSignupForm',
         blank=True,
         null=True,
         verbose_name="Ilmoittautumislomake",
-        help_text="Tämä kenttä ilmaisee, mitä ilmoittautumislomaketta hakemuksen täyttämiseen käytettiin. "
-            "Jos kenttä on tyhjä, käytettiin oletuslomaketta.",
+        help_text=(
+            "Tämä kenttä ilmaisee, mitä ilmoittautumislomaketta hakemuksen täyttämiseen käytettiin. "
+            "Jos kenttä on tyhjä, käytettiin oletuslomaketta."
+        ),
     )
 
     job_title = models.CharField(
@@ -168,7 +157,10 @@ class Signup(models.Model, CsvExportMixin):
         blank=True,
         default='',
         verbose_name="Tehtävänimike",
-        help_text="Printataan badgeen ym. Asetetaan automaattisesti hyväksyttyjen tehtäväalueiden perusteella, mikäli kenttä jätetään tyhjäksi.",
+        help_text=(
+            "Printataan badgeen ym. Asetetaan automaattisesti hyväksyttyjen tehtäväalueiden perusteella, "
+            "mikäli kenttä jätetään tyhjäksi."
+        ),
     )
 
     is_active = models.BooleanField(verbose_name='Aktiivinen', default=True)
@@ -235,11 +227,11 @@ class Signup(models.Model, CsvExportMixin):
     is_rejected = time_bool_property('time_rejected')
     is_arrived = time_bool_property('time_arrived')
     is_work_accepted = time_bool_property('time_work_accepted')
-    is_workaccepted = alias_property('is_work_accepted') # for automagic groupiness
+    is_workaccepted = alias_property('is_work_accepted')  # for automagic groupiness
     is_reprimanded = time_bool_property('time_reprimanded')
 
     is_new = property(lambda self: self.state == 'new')
-    is_applicants = alias_property('is_active') # group is called applicants for historical purposes
+    is_applicants = alias_property('is_active')  # group is called applicants for historical purposes
     is_confirmation = alias_property('is_confirmation_requested')
     is_processed = property(lambda self: self.state != 'new')
 
@@ -316,7 +308,6 @@ class Signup(models.Model, CsvExportMixin):
 
     @property
     def personnel_class_labels(self):
-        state = self.state
         label_texts = [pc.name for pc in self.personnel_classes.all()]
         return [('label-default', label_text, None) for label_text in label_texts]
 
@@ -598,7 +589,10 @@ class Signup(models.Model, CsvExportMixin):
         elif cur_state == 'arrived':
             states.extend(('honr_discharged', 'dish_discharged', 'relieved'))
         elif cur_state == 'beyond_logic':
-            states.extend(('new', 'accepted', 'finished', 'complained', 'rejected', 'cancelled', 'arrived', 'honr_discharged', 'no_show'))
+            states.extend((
+                'new', 'accepted', 'finished', 'complained', 'rejected', 'cancelled', 'arrived',
+                'honr_discharged', 'no_show',
+            ))
 
         if cur_state != 'beyond_logic':
             states.append('beyond_logic')
@@ -690,7 +684,7 @@ class Signup(models.Model, CsvExportMixin):
     @property
     def formatted_personnel_classes(self):
         from .job_category import format_job_categories
-        return format_job_categories(self.personnel_classes.all(()))
+        return format_job_categories(self.personnel_classes.all())
 
     @property
     def formatted_job_categories_accepted(self):
@@ -734,7 +728,7 @@ class Signup(models.Model, CsvExportMixin):
         email_alias = EmailAlias.objects.filter(
             type__domain__organization=self.event.organization,
             person=self.person,
-        ).order_by('type__priority').first() # TODO order
+        ).order_by('type__priority').first()  # TODO order
 
         return email_alias.email_address if email_alias else self.person.email
 
