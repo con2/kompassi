@@ -532,7 +532,7 @@ class Person(models.Model):
         vcard.email.type_param = 'INTERNET'
 
         vcard.add('tel')
-        vcard.tel.value = self.phone
+        vcard.tel.value = self.normalized_phone_number
         vcard.tel.type_param = 'cell'
 
         return vcard.serialize()
