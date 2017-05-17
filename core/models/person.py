@@ -510,7 +510,15 @@ class Person(models.Model):
         for group in self.user.groups.all():
             ensure_user_group_membership(self.user, group.name)
 
-    def as_vcard(self):
+    def get_email_for_event(self, event):
+        from labour.models import Signup
+
+        try:
+            return Signup.objects.get(event=event, person=self).email_address
+        except Signup.DoesNotExist:
+            return self.email
+
+    def as_vcard(self, event=None):
         vcard = vobject.vCard()
 
         vcard.add('n')
@@ -520,7 +528,7 @@ class Person(models.Model):
         vcard.fn.value = self.firstname_surname
 
         vcard.add('email')
-        vcard.email.value = self.email
+        vcard.email.value = self.get_email_for_event(event) if event is not None else self.email
         vcard.email.type_param = 'INTERNET'
 
         vcard.add('tel')

@@ -38,7 +38,7 @@ def intra_organizer_view(request, vars, event, format='screen'):
         return render(request, template, vars)
     elif format == 'vcf':
         return HttpResponse(
-            ''.join(user.person.as_vcard() for user in meta.organizer_group.user_set.all()),
+            ''.join(user.person.as_vcard(event=event) for user in meta.organizer_group.user_set.all()),
             content_type='text/vcard',
         )
     elif format in CSV_EXPORT_FORMATS:
