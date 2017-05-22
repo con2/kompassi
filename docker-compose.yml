@@ -12,6 +12,7 @@ services:
     volumes:
       - .:/usr/src/app
     environment:
+      PYTHONUNBUFFERED: 1
       DEBUG: 1
       DATABASE_URL: psql://kompassi:secret@postgres/kompassi
       BROKER_URL: amqp://guest:guest@rabbitmq/
@@ -28,6 +29,7 @@ services:
     volumes:
       - .:/usr/src/app:ro
     environment:
+      PYTHONUNBUFFERED: 1
       DEBUG: 1
       DATABASE_URL: psql://kompassi:secret@postgres/kompassi
       BROKER_URL: amqp://guest:guest@rabbitmq/
