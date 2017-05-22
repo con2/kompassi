@@ -1,12 +1,6 @@
-# encoding: utf-8
-
-
-
 from django.db import models
 
-from labour.models import ObsoleteSignupExtraBaseV1, SignupExtraBase
-
-from core.utils import validate_slug
+from labour.models import SignupExtraBase
 
 
 SHIFT_TYPE_CHOICES = [
@@ -62,18 +56,22 @@ class SignupExtra(SignupExtraBase):
     prior_experience = models.TextField(
         blank=True,
         verbose_name='Työkokemus',
-        help_text='Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
+        help_text=(
+            'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
             'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
             'hakemassasi tehtävässä.'
+        ),
     )
 
     free_text = models.TextField(
         blank=True,
         verbose_name='Vapaa alue',
-        help_text='Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
-                  'omaa kenttää yllä, käytä tätä kenttää. '
-                  'Jos haet valokuvaajaksi, kerro lisäksi millaista kuvauskalustoa sinulla on käytettävissäsi ja listaa'
-                  'muutamia gallerialinkkejä, joista pääsemme ihailemaan ottamiasi kuvia. '
+        help_text=(
+            'Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
+            'omaa kenttää yllä, käytä tätä kenttää. '
+            'Jos haet valokuvaajaksi, kerro lisäksi millaista kuvauskalustoa sinulla on käytettävissäsi ja listaa'
+            'muutamia gallerialinkkejä, joista pääsemme ihailemaan ottamiasi kuvia. '
+        ),
     )
 
     special_diet = models.ManyToManyField(
@@ -86,26 +84,31 @@ class SignupExtra(SignupExtraBase):
     special_diet_other = models.TextField(
         blank=True,
         verbose_name='Muu erikoisruokavalio',
-        help_text='Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
+        help_text=(
+            'Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
             'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
             'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+        ),
     )
 
     shirt_size = models.CharField(
         max_length=8,
         choices=SHIRT_SIZES,
-        # default='NO_SHIRT',
+        default='NO_SHIRT',
         verbose_name='Paidan koko',
-        help_text='Ajoissa ilmoittautuneet saavat maksuttoman työvoimapaidan. '
-                  'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
-                  'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
-                  'target="_blank">ladyfit-paita</a>',
+        help_text=(
+            'Ajoissa ilmoittautuneet saavat maksuttoman työvoimapaidan. '
+            'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
+            'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
+            'target="_blank">ladyfit-paita</a>'
+        ),
     )
 
     shirt_type = models.CharField(
         max_length=8,
         choices=SHIRT_TYPES,
-        default='STAFF',
+        # default='STAFF',
+        default='TOOLATE',
         verbose_name='Paidan tyyppi',
     )
 

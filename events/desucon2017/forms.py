@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from django import forms
 from django.db.models import Q
 
@@ -9,7 +5,7 @@ from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin, SignupForm
-from labour.models import Signup, JobCategory, WorkPeriod
+from labour.models import Signup, JobCategory
 from programme.models import AlternativeProgrammeFormMixin
 from programme.forms import ProgrammeSelfServiceForm
 
@@ -26,7 +22,7 @@ class SignupExtraForm(forms.ModelForm):
             indented_without_label('night_work'),
 
             Fieldset('Lisätiedot',
-                'shirt_size',
+                # 'shirt_size',
                 'special_diet',
                 'special_diet_other',
                 'prior_experience',
@@ -38,7 +34,7 @@ class SignupExtraForm(forms.ModelForm):
         model = SignupExtra
         fields = (
             'shift_type',
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
             'night_work',
@@ -53,7 +49,7 @@ class SignupExtraForm(forms.ModelForm):
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
         admin = kwargs.pop('admin')
 
         assert not admin
@@ -93,7 +89,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset('Lisätiedot',
-                'shirt_size',
+                # 'shirt_size',
                 'special_diet',
                 'special_diet_other',
             ),
@@ -102,7 +98,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
         )
@@ -124,7 +120,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
         )
@@ -132,7 +128,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
         )
@@ -170,7 +166,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
             indented_without_label('night_work'),
 
             Fieldset('Lisätiedot',
-                'shirt_size',
+                # 'shirt_size',
                 'special_diet',
                 'special_diet_other',
                 'prior_experience',
@@ -182,7 +178,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
         model = SignupExtra
         fields = (
             'shift_type',
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
             'night_work',
@@ -198,13 +194,6 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
 class ProgrammeForm(ProgrammeSelfServiceForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         super(ProgrammeForm, self).__init__(*args, **kwargs)
-
-        # self.fields['title'].disabled = True
-        # self.fields['title'].help_text = None
-        # self.fields['title'].required = False
-        # self.fields['description'].disabled = True
-        # self.fields['description'].help_text = 'Et voi muuttaa ohjelman otsikkoa tai kuvausta tässä, sillä ne päivittyvät Kompassiin suoraan Desusaitin ohjelmakartasta. Jos otsikkoa tai kuvausta on tarpeen muuttaa, ota yhteyttä ohjelmavastaavaan.'
-        # self.fields['description'].required = False
 
     def get_excluded_field_defaults(self):
         return dict()
