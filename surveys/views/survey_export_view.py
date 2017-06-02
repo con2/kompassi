@@ -1,7 +1,7 @@
-from django.contrib.auth.views.decorators import superuser_required
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404
-from django.views.decorators.http import require_safe
 from django.utils.timezone import now
+from django.views.decorators.http import require_safe
 
 from core.csv_export import CSV_EXPORT_FORMATS, csv_response
 from core.models import Event
@@ -10,7 +10,7 @@ from ..models import EventSurvey, EventSurveyResult, GlobalSurvey, GlobalSurveyR
 
 
 # TODO: more finer grained access control
-@superuser_required
+@user_passes_test(lambda u: u.is_superuser)
 @require_safe
 def survey_export_view(request, event_slug='', survey_slug='', format='xlsx'):
     if event_slug:
