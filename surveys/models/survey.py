@@ -1,4 +1,4 @@
-# encoding: utf-8
+import logging
 
 from django.db import models
 from django.contrib.postgres.fields import JSONField
@@ -6,6 +6,9 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS, slugify
+
+
+logger = logging.getLogger('kompassi')
 
 
 class Survey(models.Model):
@@ -26,6 +29,18 @@ class Survey(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def field_names(self):
+        if not self.model:
+            return []
+
+        def _generator():
+            for page in self.model['pages']:
+                for element in page['elements']:
+                    yield element['name']
+
+        return list(_generator())
 
     class Meta:
         abstract = True

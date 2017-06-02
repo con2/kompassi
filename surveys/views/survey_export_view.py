@@ -29,4 +29,11 @@ def survey_export_view(request, event_slug='', survey_slug='', format='xlsx'):
 
     filename = f'{slug}-results-{timestamp}.{format}'
 
-    return csv_response(event, SurveyResult, results, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
+    return csv_response(
+        event,
+        SurveyResult,
+        results,
+        filename=filename,
+        dialect=CSV_EXPORT_FORMATS[format],
+        m2m_mode='comma_separated'
+    )

@@ -1,3 +1,5 @@
+from collections import Iterable
+
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -24,18 +26,20 @@ class SurveyResult(CsvExportMixin, models.Model):
 
     def get_csv_fields(self, event):
         assert event == self.event
+        return [(self.__class__, field_name) for field_name in self.survey.field_names]
+
+    def get_csv_row(self, event, fields, m2m_mode='comma_separated'):
+        assert event == self.event
+        assert m2m_mode == 'comma_separated'
 
         def _generator():
-            for page in self.survey.model['pages']:
-                for element in page['elements']:
-                    yield (self.__class__, element['name'])
+            for (cls, field_name) in fields:
+                value = self.model.get(field_name)
+                if isinstance(value, Iterable) and not isinstance(value, str):
+                    value = ', '.join(str(value))
+                yield value
 
         return list(_generator())
-
-    def get_csv_row(self, event, fields, m2m_mode='separate_columns'):
-        assert event == self.event
-
-        return [self.model.get(field_name) for (cls, field_name) in fields]
 
     class Meta:
         abstract = True
