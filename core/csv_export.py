@@ -131,6 +131,8 @@ def get_m2m_choices(event, field):
         get_m2m_choices.cache[cache_key] = choices.order_by('pk')
 
     return get_m2m_choices.cache[cache_key]
+
+
 get_m2m_choices.cache = {}
 
 
@@ -148,7 +150,13 @@ def make_writer(output_stream, dialect):
 
 
 def export_csv(event, model, model_instances, output_file, m2m_mode='separate_columns', dialect='excel-tab'):
-    fields = model.get_csv_fields(event)
+    # XXX Horrible hack.
+    try:
+        # EventSurveys force us to get this from an instance instead of the model class because they may differ
+        fields = model_instances[0].get_csv_fields(event)
+    except IndexError:
+        # empty set, use the old way
+        fields = model.get_csv_fields(event)
     writer = make_writer(output_file, dialect)
 
     write_header_row(event, writer, fields, m2m_mode)

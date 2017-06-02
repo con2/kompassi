@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 import json
 
 from django.shortcuts import get_object_or_404, render

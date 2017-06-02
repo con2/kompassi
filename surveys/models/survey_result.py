@@ -3,8 +3,10 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from core.csv_export import CsvExportMixin
 
-class SurveyResult(models.Model):
+
+class SurveyResult(CsvExportMixin, models.Model):
     # Subclasses must provide a `survey` field
     # survey = models.ForeignKey(...)
 
@@ -19,6 +21,21 @@ class SurveyResult(models.Model):
         default='',
         verbose_name=_('IP address'),
     )
+
+    def get_csv_fields(self, event):
+        assert event == self.event
+
+        def _generator():
+            for page in self.survey.model['pages']:
+                for element in page['elements']:
+                    yield (self.__class__, element['name'])
+
+        return list(_generator())
+
+    def get_csv_row(self, event, fields, m2m_mode='separate_columns'):
+        assert event == self.event
+
+        return [self.model.get(field_name) for (cls, field_name) in fields]
 
     class Meta:
         abstract = True
