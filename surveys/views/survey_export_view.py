@@ -1,3 +1,4 @@
+from django.contrib.auth.views.decorators import superuser_required
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_safe
 from django.utils.timezone import now
@@ -8,6 +9,8 @@ from core.models import Event
 from ..models import EventSurvey, EventSurveyResult, GlobalSurvey, GlobalSurveyResult
 
 
+# TODO: more finer grained access control
+@superuser_required
 @require_safe
 def survey_export_view(request, event_slug='', survey_slug='', format='xlsx'):
     if event_slug:
