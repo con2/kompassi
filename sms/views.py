@@ -32,7 +32,7 @@ def sms_admin_votes_view(request, vars, event):
 @require_safe
 def sms_admin_received_view(request, vars, event):
     vars.update(
-        received_messages=SMSMessageIn.objects.all(),
+        received_messages=SMSMessageIn.objects.filter(SMSEventMeta__event=event),
     )
     return render(request, 'sms_admin_received_view.jade', vars)
 
