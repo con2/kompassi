@@ -18,10 +18,10 @@ from .helpers import sms_admin_required
 @require_safe
 def sms_admin_votes_view(request, vars, event):
     vars.update(
-        hotwords=Hotword.objects.all(),
-        categories=VoteCategory.objects.all(),
-        nominees=Nominee.objects.values('category','name','number').annotate(votes=Count('vote__vote__category')).order_by('-votes'),
-        total_votes=Vote.objects.values('category').annotate(votes=Count('vote')),
+        hotwords=Hotword.objects.filter(assigned_event=event),
+        categories=VoteCategory.objects.filter(hotword__assigned_event=event),
+        nominees=Nominee.objects.filter(category__hotword__assigned_event=event).values('category','name','number').annotate(votes=Count('vote__vote__category')).order_by('-votes'),
+        total_votes=Vote.objects.filter(category__hotword__assigned_event=event).values('category').annotate(votes=Count('vote')),
         number=settings.NEXMO_FROM
     )
 
