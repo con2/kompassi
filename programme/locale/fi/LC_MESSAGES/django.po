@@ -784,7 +784,7 @@ msgstr "Joku toinen on kutsunut jonkun, mutta tämä ei ole vielä hyväksynyt k
 
 #: templates/programme_admin_cold_offers_view.jade
 msgid "Start now"
-msgstr "Avaa ohjelmahaku välittömästi"
+msgstr "Avaa heti"
 
 #: models/programme.py
 msgid "Starting time"

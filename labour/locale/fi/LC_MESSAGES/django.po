@@ -72,7 +72,7 @@ msgstr "Muokkaa tehtäväaluetta"
 
 #: templates/labour_admin_startstop_view.jade
 msgid "End now"
-msgstr "Sulje työvoimahaku välittömästi"
+msgstr "Sulje heti"
 
 #: templates/labour_admin_signup_views/shifts_tab.jade
 msgid "Ending time"
@@ -287,7 +287,7 @@ msgstr "Tyypilliset erikoisruokavaliot"
 
 #: templates/labour_admin_startstop_view.jade
 msgid "Start now"
-msgstr "Avaa työvoimahaku välittömästi"
+msgstr "Avaa heti"
 
 #: templates/labour_admin_signup_views/shifts_tab.jade
 msgid "Starting time"
