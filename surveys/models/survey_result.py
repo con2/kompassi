@@ -60,3 +60,5 @@ class EventSurveyResult(SurveyResult):
 
 class GlobalSurveyResult(SurveyResult):
     survey = models.ForeignKey('surveys.GlobalSurvey')
+
+    event = None
