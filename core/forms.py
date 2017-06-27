@@ -1,20 +1,14 @@
-# encoding: utf-8
-
-
-
 from django import forms
 from django.conf import settings
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
 from django.utils.translation import ugettext_lazy as _
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
+from crispy_forms.layout import Layout, Fieldset, Submit
 
 from core.utils import DateField, indented_without_label
 
-from .models import Person, EMAIL_LENGTH, PHONE_NUMBER_LENGTH, BIRTH_DATE_HELP_TEXT
+from .models import Person, EMAIL_LENGTH, BIRTH_DATE_HELP_TEXT
 from .utils import horizontal_form_helper, check_password_strength
 
 
@@ -54,6 +48,14 @@ class LoginForm(forms.Form):
             'username',
             'password',
         )
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+        if username:
+            username = username.lower().strip()
+
+        return username
 
 
 class PersonForm(forms.ModelForm):

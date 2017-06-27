@@ -3,46 +3,19 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.timezone import now
-from django.views.decorators.http import require_http_methods, require_safe
+from django.shortcuts import render, redirect
+from django.views.decorators.http import require_http_methods
 from django.views.decorators.debug import sensitive_post_parameters
 
-from ..models import (
-    EmailVerificationError,
-    EmailVerificationToken,
-    Event,
-    Organization,
-    PasswordResetError,
-    PasswordResetToken,
-    Person,
-)
-from ..forms import (
-    LoginForm,
-    PasswordForm,
-    PasswordResetForm,
-    PasswordResetRequestForm,
-    PersonForm,
-    RegistrationForm,
-)
-from ..utils import (
-    get_next,
-    groups_of_n,
-    initialize_form,
-    next_redirect,
-    url,
-)
-from ..helpers import person_required
+from ..models import Person
+from ..forms import LoginForm
+from ..utils import get_next, initialize_form
 from ..page_wizard import page_wizard_clear, page_wizard_vars
 from .email_verification_views import remind_email_verification_if_needed
 
 
 @sensitive_post_parameters('password')
-@require_http_methods(['GET','POST'])
+@require_http_methods(['GET', 'POST'])
 def core_login_view(request):
     next = get_next(request, 'core_frontpage_view')
     form = initialize_form(LoginForm, request, initial=dict(next=next))
