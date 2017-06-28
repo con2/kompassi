@@ -306,6 +306,15 @@ class PasswordResetRequestForm(forms.Form):
             indented_without_label(Submit('submit', _('Submit'), css_class='btn-success'))
         )
 
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        if email:
+            email = email.lower().strip()
+
+        return email
+
+
 class PasswordResetForm(forms.Form):
     # XXX BEGIN UGLY COPYPASTA
     new_password = forms.CharField(
