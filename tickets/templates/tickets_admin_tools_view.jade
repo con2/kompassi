@@ -5,7 +5,7 @@ block admin_content
   .panel.panel-default
     .panel-heading: strong Peru maksamattomia tilauksia
     .panel-body
-        p Peruu tilauksia, jotka ovat olleet maksamattomina {{ UNPAID_CANCEL_DAYS }} {{ UNPAID_CANCEL_DAYS|pluralize:"vuorokauden,vuorokautta" }}.
+        p Peruu tilauksia, jotka ovat olleet maksamattomina {{ unpaid_cancel_hours }} {{ unpaid_cancel_hours|pluralize:"tunnin,tuntia" }}.
         p Tällä hetkellä tilauksia peruttaisiin {{ num_unpaid_orders_to_cancel }} kappale{{ num_unpaid_orders_to_cancel|pluralize:"tta" }}.
     .panel-footer.clearfix
       .btn-group.pull-right

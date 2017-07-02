@@ -45,7 +45,7 @@ from ..models import (
     ShirtOrder,
     ShirtSize,
     ShirtType,
-    UNPAID_CANCEL_DAYS,
+    UNPAID_CANCEL_HOURS,
 )
 
 
@@ -308,9 +308,15 @@ def tickets_admin_etickets_view(request, vars, event, order_id):
 @tickets_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def tickets_admin_tools_view(request, vars, event):
+    unpaid_cancel_hours = request.GET.get('hours', UNPAID_CANCEL_HOURS)
+    try:
+        unpaid_cancel_hours = int(unpaid_cancel_hours)
+    except ValueError:
+        return HttpResponse('invalid hours', status_code=400)
+
     if request.method == 'POST':
         if 'cancel-unpaid' in request.POST:
-            num_cancelled_orders = Order.cancel_unpaid_orders(event=event)
+            num_cancelled_orders = Order.cancel_unpaid_orders(event=event, hours=unpaid_cancel_hours)
             messages.success(request,
                 '{num_cancelled_orders} tilausta peruttiin.'.format(**locals())
             )
@@ -320,7 +326,7 @@ def tickets_admin_tools_view(request, vars, event):
         return redirect('tickets_admin_tools_view', event.slug)
 
     vars.update(
-        UNPAID_CANCEL_DAYS=UNPAID_CANCEL_DAYS,
+        unpaid_cancel_hours=unpaid_cancel_hours,
         num_unpaid_orders_to_cancel=Order.get_unpaid_orders_to_cancel(event).count(),
     )
 

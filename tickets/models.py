@@ -23,7 +23,7 @@ from .receipt import render_receipt
 
 
 LOW_AVAILABILITY_THRESHOLD = 10
-UNPAID_CANCEL_DAYS = 1
+UNPAID_CANCEL_HOURS = 24
 
 
 class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
@@ -996,8 +996,8 @@ class Order(models.Model):
         )
 
     @classmethod
-    def get_unpaid_orders_to_cancel(cls, event, days=UNPAID_CANCEL_DAYS):
-        deadline = timezone.now() - timedelta(days=days)
+    def get_unpaid_orders_to_cancel(cls, event, hours=UNPAID_CANCEL_HOURS):
+        deadline = timezone.now() - timedelta(hours=hours)
         return cls.objects.filter(
             event=event,
             confirm_time__lte=deadline,
@@ -1006,8 +1006,8 @@ class Order(models.Model):
         )
 
     @classmethod
-    def cancel_unpaid_orders(cls, event, days=UNPAID_CANCEL_DAYS, send_email=False):
-        orders = cls.get_unpaid_orders_to_cancel(event=event, days=days)
+    def cancel_unpaid_orders(cls, event, hours=UNPAID_CANCEL_HOURS, send_email=False):
+        orders = cls.get_unpaid_orders_to_cancel(event=event, hours=hours)
         count = orders.count()
 
         for order in orders:
