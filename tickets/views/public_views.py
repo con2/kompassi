@@ -1,5 +1,8 @@
+# encoding: utf-8
+
+
+
 from django.contrib import messages
-from django.db import transaction
 from django.http import HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
@@ -72,57 +75,56 @@ class Phase(object):
         if request.method not in self.methods:
             return HttpResponseNotAllowed(self.methods)
 
-        with transaction.atomic():
-            order = get_order(request, event)
+        order = get_order(request, event)
 
-            if not self.available(request, event):
-                if order.is_confirmed:
-                    if order.is_paid:
-                        return redirect('tickets_thanks_view', event.slug)
-                    else:
-                        return redirect('tickets_confirm_view', event.slug)
+        if not self.available(request, event):
+            if order.is_confirmed:
+                if order.is_paid:
+                    return redirect('tickets_thanks_view', event.slug)
                 else:
-                    return redirect('tickets_welcome_view', event.slug)
+                    return redirect('tickets_confirm_view', event.slug)
+            else:
+                return redirect('tickets_welcome_view', event.slug)
 
-            form = self.make_form(request, event)
-            errors = []
+        form = self.make_form(request, event)
+        errors = []
 
-            if request.method == "POST":
-                # Which button was clicked?
-                action = request.POST.get("action", "cancel")
+        if request.method == "POST":
+            # Which button was clicked?
+            action = request.POST.get("action", "cancel")
 
-                # On "Cancel" there's no need to do form validation, just bail out
-                # right away.
-                if action == "cancel":
-                    return self.cancel(request, event)
+            # On "Cancel" there's no need to do form validation, just bail out
+            # right away.
+            if action == "cancel":
+                return self.cancel(request, event)
 
-                if action not in ("next", "prev"):
-                    # TODO the user is manipulating the POST data
-                    raise NotImplementedError("evil user")
+            if action not in ("next", "prev"):
+                # TODO the user is manipulating the POST data
+                raise NotImplementedError("evil user")
 
-                # Data validity is checked before even attempting save.
-                errors = self.validate(request, event, form)
+            # Data validity is checked before even attempting save.
+            errors = self.validate(request, event, form)
 
-                if not errors:
-                    self.save(request, event, form)
+            if not errors:
+                self.save(request, event, form)
 
-                    # The "Next" button should only proceed with valid data.
-                    if action == "next":
-                        if not self.delay_complete:
-                            complete_phase(request, event, self.name)
+                # The "Next" button should only proceed with valid data.
+                if action == "next":
+                    if not self.delay_complete:
+                        complete_phase(request, event, self.name)
 
-                        return self.next(request, event)
+                    return self.next(request, event)
 
-                # The "Previous" button should work regardless of form validity.
-                if action == "prev":
-                    # Clear any nastygrams left behind by validate
-                    for message in messages.get_messages(request):
-                        pass
+            # The "Previous" button should work regardless of form validity.
+            if action == "prev":
+                # Clear any nastygrams left behind by validate
+                for message in messages.get_messages(request):
+                    pass
 
-                    return self.prev(request, event)
+                return self.prev(request, event)
 
-            # POST with invalid data and GET are handled the same.
-            return self.get(request, event, form, errors)
+        # POST with invalid data and GET are handled the same.
+        return self.get(request, event, form, errors)
 
     def available(self, request, event):
         order = get_order(request, event)

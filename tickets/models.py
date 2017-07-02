@@ -1,8 +1,10 @@
+# encoding: utf-8
+
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
-from time import mktime
+from time import time, mktime
 
-from django.db import models
+from django.db import models, IntegrityError
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -13,7 +15,7 @@ from dateutil.tz import tzlocal
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
-from core.utils import url, slugify, NONUNIQUE_SLUG_FIELD_PARAMS, phone_number_validator
+from core.utils import url, code_property, slugify, NONUNIQUE_SLUG_FIELD_PARAMS, phone_number_validator
 from payments.utils import compute_payment_request_mac
 
 from .utils import format_date, format_price
@@ -71,10 +73,7 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
 
     reservation_seconds = models.IntegerField(
         verbose_name=_('Reservation period (seconds)'),
-        help_text=_(
-            'This is how long the customer has after confirmation to complete the payment.'
-            'NOTE: Currently unimplemented.'
-        ),
+        help_text=_('This is how long the customer has after confirmation to complete the payment. NOTE: Currently unimplemented.'),
         default=1800,
     )
 
