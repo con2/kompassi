@@ -96,34 +96,6 @@ def complete_phase(request, event, phase):
     request.session[phase_key] = list(completed_phases)
 
 
-PAYMENT_REGEX = re.compile(
-    # Date field
-    r'(?P<day>\d+)\.(?P<month>\d+)\.(?P<year>\d+)\s+' +
-
-    # Payer name field
-    r'(?P<name>.+?)\s+' +
-
-    # The word "VIITESIIRTO", marking this as a reference number payment
-    r'VIITESIIRTO\s+' +
-
-    # Reference number field
-    r'(?P<ref>(\d+\s)*\d+)\s+' +
-
-    # Sum of the payment
-    r'(?P<euros>\d+),(?P<cents>\d+)'
-)
-
-
-class ParseResult(object):
-    OK = "ok"
-
-    NO_MATCH = "no_match"
-    ORDER_NOT_FOUND = "order_not_found"
-    ORDER_NOT_CONFIRMED = "order_not_confirmed"
-    PAYMENT_ALREADY_CONFIRMED = "payment_already_confirmed"
-    SUM_MISMATCH = "sum_mismatch"
-
-
 SEARCH_CRITERIA_MAP = dict(
     id="id",
     first_name="customer__first_name__icontains",
