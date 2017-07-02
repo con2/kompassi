@@ -1046,6 +1046,7 @@ class OrderProduct(models.Model):
     class Meta:
         verbose_name = 'tilausrivi'
         verbose_name_plural = 'tilausrivit'
+        unique_together = [('order', 'product')]
 
 
 class AccommodationInformation(models.Model, CsvExportMixin):
