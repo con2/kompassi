@@ -312,7 +312,7 @@ def tickets_admin_tools_view(request, vars, event):
     try:
         unpaid_cancel_hours = int(unpaid_cancel_hours)
     except ValueError:
-        return HttpResponse('invalid hours', status_code=400)
+        return HttpResponse('invalid hours', status=400)
 
     if request.method == 'POST':
         if 'cancel-unpaid' in request.POST:
@@ -327,7 +327,7 @@ def tickets_admin_tools_view(request, vars, event):
 
     vars.update(
         unpaid_cancel_hours=unpaid_cancel_hours,
-        num_unpaid_orders_to_cancel=Order.get_unpaid_orders_to_cancel(event).count(),
+        num_unpaid_orders_to_cancel=Order.get_unpaid_orders_to_cancel(event, hours=unpaid_cancel_hours).count(),
     )
 
     return render(request, 'tickets_admin_tools_view.jade', vars)
