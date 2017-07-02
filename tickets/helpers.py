@@ -34,14 +34,19 @@ def set_order(request, event, order):
     request.session[order_key] = order.pk
 
 
-def get_order(request, event):
+def get_order(request, event, for_update=True):
     order_key = ORDER_KEY_TEMPLATE.format(event=event)
     order_id = request.session.get(order_key)
 
     if order_id is not None:
         # There is an order in the session; return it
+        qs = Order.objects.all()
+
+        if for_update:
+            qs = qs.select_for_update()
+
         try:
-            return Order.objects.get(
+            return qs.get(
                 id=order_id,
                 event=event,
                 cancellation_time__isnull=True,
