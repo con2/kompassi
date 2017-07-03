@@ -57,6 +57,7 @@ class Setup(object):
             LabourEventMeta,
             Perk,
             PersonnelClass,
+            Survey,
         )
         from ...models import SignupExtra, Night
         from django.contrib.contenttypes.models import ContentType
@@ -169,6 +170,24 @@ class Setup(object):
                     group=labour_event_meta.get_group(link_group),
                 )
             )
+
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug='tyovuorotoiveet',
+            defaults=dict(
+                title='Työvuorotoiveet',
+                description=(
+                    'Tässä vaiheessa voit vaikuttaa työvuoroihisi. Jos saavut tapahtumaan vasta sen alkamisen '
+                    'jälkeen tai sinun täytyy lähteä ennen tapahtuman loppumista, kerro se tässä. Lisäksi jos '
+                    'tiedät ettet ole käytettävissä tiettyihin aikoihin tapahtuman aikana tai haluat esimerkiksi '
+                    'nähdä jonkun ohjelmanumeron, kerro siitäkin. Työvuorotoiveiden toteutumista täysin ei voida '
+                    'taata.'
+                ),
+                form_class_path='events.tracon2017.forms:ShiftWishesSurvey',
+                active_from=datetime(2017, 7, 3, 18, 50, 0, tzinfo=self.tz),
+                active_until=datetime(2017, 8, 4, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
