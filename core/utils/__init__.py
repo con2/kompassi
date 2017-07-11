@@ -62,7 +62,6 @@ from .model_utils import (
 from .view_utils import (
     get_next,
     login_redirect,
-    next_redirect,
     url,
 )
 

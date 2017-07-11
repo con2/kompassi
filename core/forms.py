@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -58,6 +60,29 @@ class LoginForm(forms.Form):
         return username
 
 
+PERSON_FORM_LAYOUT_PARTS = OrderedDict([
+    ('basic', Fieldset(_('Basic information'),
+        'first_name',
+        'surname',
+        'nick',
+        'preferred_name_display_style',
+        'birth_date',
+    )),
+    ('membership', Fieldset(_('Membership roster information'),
+        'official_first_names',
+        'muncipality',
+    )),
+    ('contact', Fieldset(_('Contact information'),
+        'phone',
+        'email',
+    )),
+    ('privacy', Fieldset(_('Privacy'),
+        'may_send_info',
+        'allow_work_history_sharing',
+    )),
+])
+
+
 class PersonForm(forms.ModelForm):
     birth_date = DateField(required=True, label=_('Birth date'), help_text=BIRTH_DATE_HELP_TEXT)
 
@@ -73,29 +98,7 @@ class PersonForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-        layout_parts = [
-            Fieldset(_('Basic information'),
-                'first_name',
-                'surname',
-                'nick',
-                'preferred_name_display_style',
-                'birth_date',
-            ),
-            Fieldset(_('Membership roster information'),
-                'official_first_names',
-                'muncipality',
-            ),
-            Fieldset(_('Contact information'),
-                'phone',
-                'email',
-            ),
-            Fieldset(_('Privacy'),
-                'may_send_info',
-                'allow_work_history_sharing',
-            )
-        ]
-
-        self.helper.layout = Layout(*layout_parts)
+        self.helper.layout = Layout(*PERSON_FORM_LAYOUT_PARTS.values())
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -156,6 +159,36 @@ PASSWORD_HELP_TEXT = _(
     min_classes=settings.KOMPASSI_PASSWORD_MIN_CLASSES,
     min_length=settings.KOMPASSI_PASSWORD_MIN_LENGTH,
 )
+
+
+class RegistrationPersonForm(PersonForm):
+    """
+    Strip PersonForm of fields not useful at registration time, namely muncipality and official first names.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrationPersonForm, self).__init__(*args, **kwargs)
+
+        layout_parts = OrderedDict(PERSON_FORM_LAYOUT_PARTS)
+        del layout_parts['membership']
+
+        self.helper.layout = Layout(*layout_parts.values())
+
+    class Meta:
+        model = Person
+        fields = (
+            'allow_work_history_sharing',
+            'birth_date',
+            'email',
+            'first_name',
+            'may_send_info',
+            # 'muncipality',
+            'nick',
+            'phone',
+            # 'official_first_names',
+            'preferred_name_display_style',
+            'surname',
+        )
 
 
 class RegistrationForm(forms.Form):

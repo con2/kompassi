@@ -22,8 +22,3 @@ def get_next(request, default='/'):
         raise NotImplementedError(request.method)
 
     return next if next else default
-
-
-def next_redirect(request, default='/'):
-    next = get_next(request, default)
-    return redirect(next)

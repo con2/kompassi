@@ -1,53 +1,22 @@
-# encoding: utf-8
-
-
-
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
-from django.views.decorators.http import require_http_methods, require_safe
+from django.shortcuts import render, redirect
+from django.views.decorators.http import require_http_methods
 from django.views.decorators.debug import sensitive_post_parameters
 
-from ..models import (
-    EmailVerificationError,
-    EmailVerificationToken,
-    Event,
-    Organization,
-    PasswordResetError,
-    PasswordResetToken,
-    Person,
-)
-from ..forms import (
-    LoginForm,
-    PasswordForm,
-    PasswordResetForm,
-    PasswordResetRequestForm,
-    PersonForm,
-    RegistrationForm,
-    TermsAndConditionsForm,
-)
-from ..utils import (
-    get_next,
-    groups_of_n,
-    initialize_form,
-    next_redirect,
-    url,
-)
+from ..models import Person
+from ..forms import RegistrationPersonForm, RegistrationForm, TermsAndConditionsForm
+from ..utils import get_next, initialize_form
 from ..page_wizard import page_wizard_vars
-from ..helpers import person_required
 from .login_views import do_login
 
 
 @sensitive_post_parameters('registration-password', 'registration-password_again')
-@require_http_methods(['GET','POST'])
+@require_http_methods(['GET', 'HEAD', 'POST'])
 def core_registration_view(request):
     vars = page_wizard_vars(request)
     next = vars['next']
@@ -55,7 +24,7 @@ def core_registration_view(request):
     if request.user.is_authenticated():
         return redirect(next)
 
-    person_form = initialize_form(PersonForm, request, prefix='person')
+    person_form = initialize_form(RegistrationPersonForm, request, prefix='person')
     registration_form = initialize_form(RegistrationForm, request, prefix='registration')
     terms_and_conditions_form = initialize_form(TermsAndConditionsForm, request, prefix='terms')
 
@@ -63,9 +32,6 @@ def core_registration_view(request):
         if person_form.is_valid() and registration_form.is_valid() and terms_and_conditions_form.is_valid():
             username = registration_form.cleaned_data['username']
             password = registration_form.cleaned_data['password']
-            first_name = person_form.cleaned_data['first_name']
-            surname = person_form.cleaned_data['surname']
-            email = person_form.cleaned_data['email']
 
             with transaction.atomic():
                 person = person_form.save(commit=False)
@@ -125,7 +91,7 @@ def core_personify_view(request):
         email=request.user.email,
     )
 
-    form = initialize_form(PersonForm, request, initial=initial, prefix='person')
+    form = initialize_form(RegistrationPersonForm, request, initial=initial, prefix='person')
     next = get_next(request)
 
     if request.method == 'POST':

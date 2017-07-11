@@ -32,7 +32,6 @@ from ..utils import (
     get_next,
     groups_of_n,
     initialize_form,
-    next_redirect,
     url,
 )
 from ..helpers import person_required, public_organization_required

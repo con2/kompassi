@@ -36,7 +36,6 @@ from ..utils import (
     get_next,
     groups_of_n,
     initialize_form,
-    next_redirect,
     url,
     change_user_password,
 )
