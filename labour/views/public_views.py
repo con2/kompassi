@@ -37,7 +37,7 @@ from .view_helpers import initialize_signup_forms
 
 
 def login_related():
-    related = []
+    related = ['core_registration_view']
 
     if 'desuprofile_integration' in settings.INSTALLED_APPS:
         related.extend([
