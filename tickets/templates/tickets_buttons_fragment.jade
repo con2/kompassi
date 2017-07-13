@@ -7,7 +7,7 @@ p
   else
     a.btn.btn-primary.btn-block.btn-large(href='{{ event.homepage_url }}') {% trans "Return to event home page" %} &rarr;
 p
-  if phase.prev_phase
+  if phase.can_go_back
     button.btn(type='submit', name='action', value='prev') &larr; {% trans "Previous" %}
   else
     button.btn.disabled(type='submit', name='action', value='prev', disabled='disabled') &larr; {% trans "Previous" %}

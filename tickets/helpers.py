@@ -68,12 +68,14 @@ def destroy_order(request, event):
     if order.pk is None:
         return
 
-    order.order_product_set.all().delete()
+    if order.is_confirmed:
+        order.cancel(send_email=False)
+    else:
+        if order.customer:
+            order.customer.delete()
+        order.order_product_set.all().delete()
+        order.delete()
 
-    if order.customer:
-        order.customer.delete()
-
-    order.delete()
     clear_order(request, event)
 
 

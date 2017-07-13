@@ -154,6 +154,7 @@ class Phase(object):
             next_phase=bool(self.next_phase),
             prev_phase=bool(self.prev_phase),
             can_cancel=self.can_cancel,
+            can_go_back=self.can_go_back(request, event),
             payment_phase=self.payment_phase,
             name=self.name
         )
@@ -190,6 +191,9 @@ class Phase(object):
 
     def vars(self, request, event, form):
         return {}
+
+    def can_go_back(self, request, event):
+        return self.prev_phase is not None
 
 
 class WelcomePhase(Phase):
@@ -448,19 +452,17 @@ class ConfirmPhase(Phase):
         order = get_order(request, event)
         return is_phase_completed(request, event, self.prev_phase) and not order.is_paid
 
-    def prev(self, request, event):
-        order = get_order(request, event)
-
-        if order.is_confirmed:
-            order.deconfirm_order()
-
-        return super(ConfirmPhase, self).prev(request, event)
-
     def save(self, request, event, form):
         order = get_order(request, event)
+        action = request.POST.get("action", "cancel")
 
-        if not order.is_confirmed:
+        if action == 'next' and not order.is_confirmed:
             order.confirm_order()
+
+    def can_go_back(self, request, event):
+        order = get_order(request, event)
+        print('confirmed', order.is_confirmed)
+        return not order.is_confirmed
 
 
 tickets_confirm_phase = ConfirmPhase()

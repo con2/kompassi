@@ -692,13 +692,6 @@ class Order(models.Model):
         self.confirm_time = timezone.now()
         self.save()
 
-    def deconfirm_order(self):
-        assert self.is_confirmed
-
-        self.reference_number = self._make_reference_number()
-        self.confirm_time = None
-        self.save()
-
     def confirm_payment(self, payment_date=None, send_email=True):
         assert self.is_confirmed and not self.is_paid
 
