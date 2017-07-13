@@ -134,7 +134,7 @@ msgstr "Ohjelmahaun ajastaminen"
 msgid "Computer use"
 msgstr "Tietokoneen käyttö"
 
-#: templates/programme_contact_information_panel.jade
+#: templates/core_contact_information_panel.jade
 msgid "Contact information"
 msgstr "Yhteystiedot"
 
@@ -166,7 +166,7 @@ msgstr "Hylkää muutokset ja palaa ohjelmakarttaan"
 msgid "Do you have tech requirements that are not covered by the previous questions?"
 msgstr "Onko ohjelmallasi tekniikkatarpeita joita edeltävät kysymykset eivät kata?"
 
-#: templates/programme_admin_detail_views/change_invitation_role_modals.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade templates/programme_contact_information_panel.jade
+#: templates/programme_admin_detail_views/change_invitation_role_modals.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade templates/core_contact_information_panel.jade
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -214,7 +214,7 @@ msgstr "Palaute"
 msgid "Filter organizers"
 msgstr "Suodata ohjelmanjärjestäjiä"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/core_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "First name"
 msgstr "Etunimi"
 
@@ -323,7 +323,7 @@ msgstr "Jos skenaarion on kirjoittanut joku muu kuin sen tässä tapahtumassa ve
 msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
 msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
 
-#: templates/programme_contact_information_panel.jade
+#: templates/core_contact_information_panel.jade
 msgid "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile."
 msgstr "Jos nimesi näytetään julkisesti tämän ohjelman järjestäjänä, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
 
@@ -451,7 +451,7 @@ msgstr "Ohjelmanumeroni saa videoida ja julkaista"
 msgid "Name"
 msgstr "Nimi"
 
-#: templates/programme_contact_information_panel.jade
+#: templates/core_contact_information_panel.jade
 msgid "Name as displayed"
 msgstr "Nimen esittäminen"
 
@@ -467,7 +467,7 @@ msgstr "Uusi ohjelmanumero"
 msgid "Nick"
 msgstr "Nick"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/core_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "Nick name"
 msgstr "Nick"
 
@@ -570,7 +570,7 @@ msgstr "Menneet ohjelmanumerot"
 msgid "Personnel class"
 msgstr "Henkilöstöluokka"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_contact_information_panel.jade
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/core_contact_information_panel.jade
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
@@ -586,7 +586,7 @@ msgstr "Muistathan, että ohjelmakartassa näytetään vain ohjelmanumerot jotka
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
-#: templates/programme_contact_information_panel.jade
+#: templates/core_contact_information_panel.jade
 msgid "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number."
 msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman ohjelmavastaaville. Mikäli ohjelmanumerollasi on muitakin järjestäjiä, he näkevät nimesi mutteivät sähköpostiosoitettasi tai puhelinnumeroasi."
 
@@ -798,7 +798,7 @@ msgstr "Tila"
 msgid "Submit feedback"
 msgstr "Lähetä palaute"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/core_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -1016,7 +1016,7 @@ msgstr "Palauta ei-julkaistuksi"
 msgid "Unless you choose to give feedback anonymously, your name and e-mail address will be shared with the programme host and programme manager. Please note that even if you choose to leave feedback anonymously, abusive feedback can be traced back to you by the administrator of the system."
 msgstr "Ellet päätä jättää palautettasi anonyymisti, nimesi ja sähköpostiosoitteesi näytetään ohjelmanjärjestäjälle ja ohjelmavastaaville. Huomaathan, että mikäli palautteesi on asiaton, järjestelmän ylläpitäjä pystyy yhdistämään sen sinuun vaikka antaisit sen anonyymisti."
 
-#: templates/programme_contact_information_panel.jade
+#: templates/core_contact_information_panel.jade
 msgid "Update profile..."
 msgstr "Päivitä profiilia..."
 

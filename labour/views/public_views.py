@@ -218,11 +218,12 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
     ]
 
     vars.update(
-        event=event,
-        signup_form=signup_form,
-        signup_extra_form=signup_extra_form,
-        submit_text=submit_text,
         alternative_signup_form=alternative_signup_form,
+        event=event,
+        signup_extra_form=signup_extra_form,
+        signup_form=signup_form,
+        signup=signup,
+        submit_text=submit_text,
 
         # XXX HACK descriptions injected using javascript
         job_descriptions_json=json.dumps(dict((cat.pk, cat.description) for cat in all_job_categories)),

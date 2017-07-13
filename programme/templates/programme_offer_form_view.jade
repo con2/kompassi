@@ -14,7 +14,7 @@ block content
   else
     p {% trans "Using this form you can offer programme to the event. Please note that filling in the form does not guarantee automatic admittance into the event. You will be contacted by the programme manager and notified of the decision whether to accept the programme or not." %}
 
-  include programme_contact_information_panel.jade
+  include core_contact_information_panel.jade
 
   form.form-horizontal(method='POST')
     {{ sired_invitation_formset.management_form }}

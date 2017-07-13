@@ -7,7 +7,7 @@ block content
   h2 {% trans "Invitation to organize programme" %}
   p {% trans "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details." %}
 
-  include programme_contact_information_panel.jade
+  include core_contact_information_panel.jade
 
   form.form-horizontal(method='POST')
     {{ sired_invitation_formset.management_form }}

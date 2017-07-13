@@ -19,7 +19,6 @@
         label.control-label.col-md-2 {% trans "Name as displayed" %}
         .col-md-10
           div= request.user.person.display_name
-          .help-block {% trans "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile." %}
     .row
       .control-group
         label.control-label.col-md-2 {% trans "Phone number" %}
@@ -34,4 +33,4 @@
         i.fa.fa-edit.kompassi-icon-space-right
         | {% trans "Update profile..." %}
 
-    .text-muted {% trans "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number." %}
+    .text-muted {% trans "Please check your contact information and update your profile if necessary. By submitting this form you agree that this contact information will be shared with the organizer of the event." %}

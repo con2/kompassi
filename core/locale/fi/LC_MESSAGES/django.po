@@ -303,3 +303,6 @@ msgstr "Salasana väärin."
 msgid "Yes"
 msgstr "Kyllä"
 
+#: templates/core_contact_information_panel.jade
+msgid "Please check your contact information and update your profile if necessary. By submitting this form you agree that this contact information will be shared with the organizer of the event."
+msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Täyttämällä tämän lomakkeen annat luvan luovuttaa nämä yhteystiedot tapahtuman järjestäjille."

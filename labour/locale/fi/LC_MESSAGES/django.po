@@ -645,3 +645,8 @@ msgstr "{event_name}: Työvuorolista – {job_category_name}"
 #~ msgid "You have not signed up for this event."
 #~ msgstr "Et ole ilmoittautunut tähän tapahtumaan."
 
+msgid "Volunteer work application"
+msgstr "Vapaaehtoistyöhakemus"
+
+msgid "Update qualifications…"
+msgstr "Päivitä pätevyydet…"
