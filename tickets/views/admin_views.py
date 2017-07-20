@@ -24,7 +24,7 @@ except ImportError:
     warn('Failed to import ReportLab. Generating receipts will fail.')
 
 from core.batches_view import batches_view
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS
+from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
 from core.utils import url, initialize_form, slugify
 
 from ..forms import (
@@ -420,7 +420,7 @@ def tickets_admin_accommodation_create_view(request, vars, event, limit_group_id
 
 @tickets_admin_required
 @require_safe
-def tickets_admin_shirts_view(request, vars, event):
+def tickets_admin_shirts_view(request, vars, event, format='screen'):
     shirt_sizes = ShirtSize.objects.filter(type__event=event).annotate(count=Sum(
         Case(
             When(
@@ -441,14 +441,28 @@ def tickets_admin_shirts_view(request, vars, event):
         order__cancellation_time__isnull=True,
     ).order_by('order__customer__last_name', 'order__customer__first_name', 'size__type__id', 'size__id')
 
-    vars.update(
-        shirt_sizes=shirt_sizes,
-        shirt_sizes_total=shirt_sizes.aggregate(Sum('count'))['count__sum'] or 0,
-        shirt_orders=shirt_orders,
-        shirt_orders_total=shirt_orders.aggregate(Sum('count'))['count__sum'] or 0,
-    )
+    if format == 'screen':
+        vars.update(
+            export_formats=EXPORT_FORMATS,
+            shirt_sizes=shirt_sizes,
+            shirt_sizes_total=shirt_sizes.aggregate(Sum('count'))['count__sum'] or 0,
+            shirt_orders=shirt_orders,
+            shirt_orders_total=shirt_orders.aggregate(Sum('count'))['count__sum'] or 0,
+        )
 
-    return render(request, 'tickets_admin_shirts_view.jade', vars)
+        return render(request, 'tickets_admin_shirts_view.jade', vars)
+    elif format in CSV_EXPORT_FORMATS:
+        filename = "{event.slug}_shirts_{timestamp}.{format}".format(
+            event=event,
+            timestamp=now().strftime('%Y%m%d%H%M%S'),
+            format=format,
+        )
+
+        return csv_response(event, ShirtOrder, shirt_orders,
+            dialect=CSV_EXPORT_FORMATS[format],
+            filename=filename,
+            m2m_mode='comma_separated',
+        )
 
 
 if 'lippukala' in settings.INSTALLED_APPS:

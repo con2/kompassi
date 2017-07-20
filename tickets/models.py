@@ -1,10 +1,9 @@
-# encoding: utf-8
-
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
-from time import time, mktime
+from time import mktime
+import logging
 
-from django.db import models, IntegrityError
+from django.db import models
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -12,16 +11,24 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from dateutil.tz import tzlocal
+import phonenumbers
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
-from core.utils import url, code_property, slugify, NONUNIQUE_SLUG_FIELD_PARAMS, phone_number_validator
+from core.utils import (
+    format_phone_number,
+    NONUNIQUE_SLUG_FIELD_PARAMS,
+    phone_number_validator,
+    slugify,
+    url,
+)
 from payments.utils import compute_payment_request_mac
 
 from .utils import format_date, format_price
 from .receipt import render_receipt
 
 
+logger = logging.getLogger('kompassi')
 LOW_AVAILABILITY_THRESHOLD = 10
 UNPAID_CANCEL_HOURS = 24
 
@@ -501,6 +508,26 @@ class Customer(models.Model):
         validators=[phone_number_validator],
         verbose_name=_('phone number')
     )
+
+    def get_normalized_phone_number(
+        self,
+        region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION,
+        format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
+    ):
+        """
+        Returns the phone number of this Customer in a normalized format. If the phone number is invalid,
+        this is logged, and the invalid phone number is returned as-is.
+        """
+
+        try:
+            return format_phone_number(self.phone_number, region=region, format=format)
+        except phonenumbers.NumberParseException:
+            logger.exception('Customer %s has invalid phone number: %s', self, self.phone_number)
+            return self.phone_number
+
+    @property
+    def normalized_phone_number(self):
+        return self.get_normalized_phone_number()
 
     def __str__(self):
         return self.name
@@ -1116,7 +1143,7 @@ class AccommodationInformation(models.Model, CsvExportMixin):
         verbose_name_plural = 'majoittujan tiedot'
 
 
-class ShirtOrder(models.Model):
+class ShirtOrder(models.Model, CsvExportMixin):
     order = models.ForeignKey(Order, related_name='shirt_orders')
     size = models.ForeignKey(ShirtSize, related_name='shirt_orders')
     count = models.PositiveIntegerField(default=0)
@@ -1130,3 +1157,28 @@ class ShirtOrder(models.Model):
     @property
     def target(self):
         return self.size
+
+    @property
+    def csv_type(self):
+        return self.size.type.name if self.size and self.size.type else None
+
+    @property
+    def csv_size(self):
+        return self.size.name if self.size else None
+
+    @classmethod
+    def get_csv_fields(cls, event):
+        return (
+            (Customer, 'last_name'),
+            (Customer, 'first_name'),
+            (Customer, 'email'),
+            (Customer, 'normalized_phone_number'),
+            (cls, 'csv_type'),
+            (cls, 'csv_size'),
+            (cls, 'count'),
+        )
+
+    def get_csv_related(self):
+        return {
+            Customer: self.order.customer,
+        }

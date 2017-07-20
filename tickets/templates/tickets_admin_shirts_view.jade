@@ -38,5 +38,17 @@ block admin_content
             td= shirt_order.size.type
             td= shirt_order.size
             td= shirt_order.count
-    .panel-footer
-      {% blocktrans count num_shirts=shirt_orders_total %}One shirt.{% plural %}{{ num_shirts }} shirts.{% endblocktrans %}
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        button.btn.btn-default.dropdown-toggle#tickets-admin-export-dropdown(type='button',
+                                                                                data-toggle='dropdown',
+                                                                                data-target='tickets-admin-export-dropdown-menu'
+                                                                                aria-haspopup='true',
+                                                                                aria-expanded='true') Vie
+          i.fa.fa-caret-down.kompassi-icon-space-left
+        ul.dropdown-menu#tickets-admin-export-dropdown-menu(aria-labelledby='tickets-admin-export-dropdown')
+          for export_format in export_formats
+            li: a(href='{% url "tickets_admin_shirts_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+              i.fa.fa-cloud-download.kompassi-icon-space-right
+              |{{ export_format.name }}
+      p.text-muted {% blocktrans count num_shirts=shirt_orders_total %}One shirt.{% plural %}{{ num_shirts }} shirts.{% endblocktrans %}

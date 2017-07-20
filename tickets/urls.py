@@ -49,7 +49,7 @@ urlpatterns = [
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/accommodation/(?P<limit_group_id>\d+)/new/?$', tickets_admin_accommodation_create_view, name="tickets_admin_accommodation_create_view"),
 
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/shirts/?$', tickets_admin_shirts_view, name="tickets_admin_shirts_view"),
-
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/shirts\.(?P<format>csv|tsv|xlsx)$', tickets_admin_shirts_view, name="tickets_admin_shirts_export_view"),
 
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/tools$', tickets_admin_tools_view, name="tickets_admin_tools_view"),
 ]

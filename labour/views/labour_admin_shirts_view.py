@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from collections import Counter
 
 from django.contrib import messages
