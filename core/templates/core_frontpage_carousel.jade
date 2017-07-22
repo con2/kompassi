@@ -1,0 +1,20 @@
+- load i18n
+if carousel_slides.exists
+  .carousel.slide#core-frontpage-carousel(data-ride='carousel', style='margin-top: -25px')
+    ol.carousel-indicators
+      for slide in carousel_slides
+        if forloop.first
+          li.active(data-target='#core-frontpage-carousel', data-slide-to='{{ forloop.counter0 }}')
+        else
+          li(data-target='#core-frontpage-carousel', data-slide-to='{{ forloop.counter0 }}')
+
+    .carousel-inner(role="listbox")
+      for slide in carousel_slides
+        a.item(href="{{ slide.href }}"
+               target="{{ slide.target }}"
+               class="{% if forloop.first %}active{% endif %}"
+               style="background-image: url({{ slide.image_file.url }})")
+          .carousel-caption
+            if slide.image_credit
+              .slide-image-credit {% trans "Picture:" %} {{ slide.image_credit }}
+            .slide-title {{ slide.title }}

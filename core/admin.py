@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.models import User, Group
 
-from .models import Organization, Event, Person, Venue
+from .models import Organization, Event, Person, Venue, CarouselSlide
 
 
 organization_admin_inlines = []
@@ -154,6 +154,7 @@ admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Venue)
+admin.site.register(CarouselSlide)
 
 
 # override GroupAdmin for users of group support in admin

@@ -1,14 +1,10 @@
-# encoding: utf-8
-
-
-
 from django.db.models import Q
 from django.shortcuts import render
 from django.utils.timezone import now
 
 from core.utils import groups_of_n, groupby_strict
 
-from ..models import Event, Organization
+from ..models import Event, Organization, CarouselSlide
 
 
 def get_year(event):
@@ -39,10 +35,11 @@ def core_frontpage_view(request):
     past_events_rows_by_year = [(year, list(groups_of_n(year_events, 4))) for (year, year_events) in groupby_strict(past_events, get_year)]
 
     vars = dict(
-        future_events_rows=list(groups_of_n(future_events, 4)),
+        carousel_slides=CarouselSlide.get_active_slides(),
         current_events_rows=list(groups_of_n(current_events, 4)),
+        future_events_rows=list(groups_of_n(future_events, 4)),
+        organizations_rows=list(groups_of_n(organizations, 4)),
         past_events_rows_by_year=past_events_rows_by_year,
-        organizations_rows = list(groups_of_n(organizations, 4)),
     )
 
     return render(request, 'core_frontpage_view.jade', vars)

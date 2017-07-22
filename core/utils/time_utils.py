@@ -1,10 +1,7 @@
-# encoding: utf-8
-
-
-
 import sys
 from datetime import date, datetime, timedelta
 
+from django.db.models import Q
 from django.utils.timezone import now
 from django.template import defaultfilters
 
@@ -52,6 +49,33 @@ def is_within_period(period_start, period_end, t=None):
 
     return period_start and period_start <= t and \
         not (period_end and period_end <= t)
+
+
+def get_objects_within_period(
+    Model,
+    t=None,
+    start_field_name='active_from',
+    end_field_name='active_until',
+    **extra_criteria
+):
+    """
+    Given a Model with an activity period, return only those instances that are within the
+    activity period and match any given extra criteria.
+
+    If the activity period start is not set, the object will never be returned.
+
+    If the activity period end is unset, the object will never expire, ie. will always be
+    returned if its activity period start has passed.
+    """
+
+    if t is None:
+        t = now()
+
+    q = Q(**{f'{start_field_name}__lte': t})
+    q &= Q(**{f'{end_field_name}__gt': t}) | Q(**{f'{end_field_name}__isnull': True})
+    q &= Q(**extra_criteria)
+
+    return Model.objects.filter(q)
 
 
 def format_date_range(start_date, end_date):

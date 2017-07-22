@@ -1,0 +1,31 @@
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
+from core.utils import get_objects_within_period
+
+
+TARGET_CHOICES = [
+    ('', _('Same window')),
+    ('_blank', _('New window')),
+]
+
+
+class CarouselSlide(models.Model):
+    active_from = models.DateTimeField(blank=True, null=True)
+    active_until = models.DateTimeField(blank=True, null=True)
+    href = models.CharField(max_length=512, blank=True, default='')
+    title = models.CharField(max_length=512, blank=True, default='')
+    image_file = models.FileField(upload_to='carousel_slides', blank=True)
+    image_credit = models.CharField(max_length=512, blank=True, default='')
+    target = models.CharField(
+        choices=TARGET_CHOICES,
+        max_length=max(len(key) for (key, label) in TARGET_CHOICES),
+        default=TARGET_CHOICES[0][0],
+    )
+
+    @classmethod
+    def get_active_slides(cls, t=None, **extra_criteria):
+        return get_objects_within_period(cls, t=t, **extra_criteria)
+
+    def __str__(self):
+        return self.title

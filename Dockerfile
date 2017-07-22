@@ -1,7 +1,7 @@
 FROM python:3.6
 WORKDIR /usr/src/app
 COPY requirements.txt requirements-production.txt /usr/src/app/
-RUN groupadd -r kompassi && useradd -r -g kompassi kompassi && \
+RUN groupadd -g 998 -r kompassi && useradd -r -g kompassi -u 998 kompassi && \
     pip install -U pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt -r requirements-production.txt
 COPY . /usr/src/app

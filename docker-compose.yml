@@ -11,6 +11,7 @@ services:
       - memcache
     volumes:
       - .:/usr/src/app
+      - web-media:/usr/src/app/media
     environment:
       PYTHONUNBUFFERED: 1
       DEBUG: 1
@@ -49,5 +50,5 @@ services:
   memcache:
     image: memcached
 volumes:
-  postgres-data:
-    driver: local
+  postgres-data: {}
+  web-media: {}

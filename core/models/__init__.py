@@ -1,4 +1,5 @@
 # encoding: utf-8
+# flake8: noqa
 
 from .constants import (
     EMAIL_LENGTH,
@@ -7,13 +8,15 @@ from .constants import (
     NAME_DISPLAY_STYLE_CHOICES,
     NAME_DISPLAY_STYLE_FORMATS,
 )
-from .organization import Organization
-from .venue import Venue
-from .event import Event
-from .group_management_mixin import GroupManagementMixin
-from .event_meta_base import EventMetaBase
-from .person import Person, birth_date_validator
-from .one_time_code import OneTimeCodeMixin, OneTimeCode, OneTimeCodeLite
-from .password_reset_token import PasswordResetToken, PasswordResetError
-from .email_verification_token import EmailVerificationToken, EmailVerificationError
+
+from .carousel_slide import CarouselSlide
 from .contact_email_mixin import contact_email_validator, ContactEmailMixin
+from .email_verification_token import EmailVerificationToken, EmailVerificationError
+from .event import Event
+from .event_meta_base import EventMetaBase
+from .group_management_mixin import GroupManagementMixin
+from .one_time_code import OneTimeCodeMixin, OneTimeCode, OneTimeCodeLite
+from .organization import Organization
+from .password_reset_token import PasswordResetToken, PasswordResetError
+from .person import Person, birth_date_validator
+from .venue import Venue

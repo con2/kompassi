@@ -1,8 +1,9 @@
 extends base
 block full_title
   | {{ settings.KOMPASSI_INSTALLATION_NAME }}
-block content
-  if "branding" in settings.INSTALLED_APPS
-    include branding_frontpage.jade
-  include core_event_boxen.jade
-  include core_organization_boxen.jade
+block content_full_width
+  include core_frontpage_carousel.jade
+
+  .container
+    include core_event_boxen.jade
+    include core_organization_boxen.jade
