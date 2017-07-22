@@ -34,4 +34,4 @@ class CarouselSlide(models.Model):
     class Meta:
         verbose_name = _('carousel slide')
         verbose_name_plural = _('carousel slides')
-        ordering = ('order', 'active_from')
+        ordering = ('order', '-active_from')
