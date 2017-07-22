@@ -310,3 +310,19 @@ msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliis
 #:
 msgid "Picture:"
 msgstr "Kuva:"
+
+#:
+msgid "Same window"
+msgstr "Samassa ikkunassa"
+
+#:
+msgid "New window"
+msgstr "Uudessa ikkunassa"
+
+#:
+msgid "carousel slide"
+msgstr "Etusivun kuva"
+
+#:
+msgid "carousel slides"
+msgstr "Etusivun kuvat"

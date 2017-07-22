@@ -22,6 +22,7 @@ class CarouselSlide(models.Model):
         max_length=max(len(key) for (key, label) in TARGET_CHOICES),
         default=TARGET_CHOICES[0][0],
     )
+    order = models.IntegerField(default=0)
 
     @classmethod
     def get_active_slides(cls, t=None, **extra_criteria):
@@ -29,3 +30,8 @@ class CarouselSlide(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        verbose_name = _('carousel slide')
+        verbose_name_plural = _('carousel slides')
+        ordering = ('order', 'active_from')
