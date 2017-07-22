@@ -36,22 +36,13 @@ html
               include core_navbar_user.jade
 
     #wrap
-      .messages.container
-        include core_language_warning.jade
-
-        for message in messages
-          if message.tags
-            .alert(class="alert-{{ message.tags }}") {{ message|safe }}
-          else
-            .alert {{ message|safe }}
-
-
       include core_page_wizard_progress_bar.jade
 
       block content_full_width
+        .container.content
+          include core_messages.jade
 
-      .container.content
-        block content
+          block content
 
       #push
 
