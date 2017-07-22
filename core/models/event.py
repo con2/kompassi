@@ -89,6 +89,21 @@ class Event(models.Model):
         help_text='Muutaman kappaleen mittainen kuvaus tapahtumasta. Näkyy tapahtumasivulla.',
     )
 
+    panel_css_class = models.CharField(
+        blank=True,
+        max_length=255,
+        default='panel-default',
+        verbose_name='Etusivun paneelin väri',
+        choices=[
+            ('panel-default', 'Harmaa'),
+            ('panel-primary', 'Kompassi (turkoosi)'),
+            ('panel-success', 'Desucon (vihreä)'),
+            ('panel-info', 'Yukicon (vaaleansininen)'),
+            ('panel-warning', 'Popcult (oranssi)'),
+            ('panel-danger', 'Tracon (punainen)'),
+        ]
+    )
+
     class Meta:
         verbose_name = 'Tapahtuma'
         verbose_name_plural = 'Tapahtumat'

@@ -1,5 +1,5 @@
 - load trans from i18n
-.panel.panel-default
+.panel(class="{{ event.panel_css_class }}")
   .panel-heading: strong: a(href='{% url "core_event_view" event.slug %}') {{ event.name }}
   .panel-body
     p {{ event.venue.name }}
