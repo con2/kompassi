@@ -17,6 +17,12 @@ Now open http://localhost:8000 in your browser. A superuser `mahti` with passwor
 
 When the dependencies change, you need to add `--build` to `docker-compose up` to rebuild the Docker image.
 
+The first time you run this you may notice internalization is broken. This is because your working copy is bind-mounted into the container in order to facilitate code reload, and your working copy probably does not contain compiled translation files unless you have done development without Docker as well.
+
+To fix this, and to update the translations when you change them (`django.po` files under `appname/locale`), run this in another terminal (with the app running under Docker Compose):
+
+    docker-compose exec --user root web python manage.py kompassi_i18n -acv2
+
 Run tests:
 
     docker-compose -f docker-compose.test.yml up --exit-code-from test
