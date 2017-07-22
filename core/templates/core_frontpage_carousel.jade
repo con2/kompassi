@@ -15,6 +15,6 @@ if carousel_slides.exists
                class="{% if forloop.first %}active{% endif %}"
                style="background-image: url({{ slide.image_file.url }})")
           .carousel-caption
+            .slide-title {{ slide.title }}
             if slide.image_credit
               .slide-image-credit {% trans "Picture:" %} {{ slide.image_credit }}
-            .slide-title {{ slide.title }}
