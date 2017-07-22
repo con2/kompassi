@@ -752,8 +752,7 @@ class Signup(models.Model, CsvExportMixin):
 
             for model in related_models:
                 for field in model._meta.fields:
-                    if not isinstance(field, models.ForeignKey):
-                        event._signup_csv_fields.append((model, field))
+                    event._signup_csv_fields.append((model, field))
 
                 for field in model._meta.many_to_many:
                     event._signup_csv_fields.append((model, field))

@@ -37,8 +37,7 @@ class CsvExportMixin(object):
         fields = []
 
         for field in cls._meta.fields:
-            if not isinstance(field, models.ForeignKey):
-                fields.append((cls, field))
+            fields.append((cls, field))
 
         for field in cls._meta.many_to_many:
             fields.append((cls, field))
@@ -82,6 +81,8 @@ class CsvExportMixin(object):
             elif field_type is models.DateTimeField and field_value is not None:
                 from django.utils.timezone import localtime
                 result_row.append(localtime(field_value).replace(tzinfo=None))
+            elif field_type is models.ForeignKey:
+                result_row.append(str(field_value))
             else:
                 result_row.append(field_value)
 
