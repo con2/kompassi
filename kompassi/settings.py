@@ -161,7 +161,6 @@ INSTALLED_APPS = (
     'membership',
     'intra',
     'lippukala',
-    'branding',
     'desuprofile_integration',
     'enrollment',
     'feedback',
@@ -369,14 +368,6 @@ if 'nexmo' in INSTALLED_APPS:
     NEXMO_PASSWORD = env('NEXMO_PASSWORD', default='password')
     NEXMO_FROM = env('NEXMO_FROM', default='358505551234')
     NEXMO_INBOUND_KEY = env('NEXMO_INBOUND_KEY', default='deadbeef')
-
-
-if 'branding' in INSTALLED_APPS:
-    KOMPASSI_ACCOUNT_BRANDING = 'Kompassi-tunnus'
-    KOMPASSI_ACCOUNT_BRANDING_PARTITIVE = 'Kompassi-tunnusta'
-    KOMPASSI_ACCOUNT_BRANDING_GENITIVE = 'Kompassi-tunnuksen (ent. Tracon-tunnuksen)'
-    KOMPASSI_ACCOUNT_BRANDING_ADESSIVE = 'Kompassi-tunnuksella'
-    KOMPASSI_ACCOUNT_BRANDING_2ND_PERSON_ADESSIVE = 'Kompassi-tunnuksellasi'
 
 
 if env('KOMPASSI_CROWD_APPLICATION_PASSWORD', default=''):
