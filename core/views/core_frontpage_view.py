@@ -23,10 +23,14 @@ def events(*args, **kwargs):
     )
 
 
-def core_frontpage_view(request):
+def core_frontpage_view(request, template='core_frontpage_view.jade', include_past_events=False):
     t = now()
 
-    past_events = events(public=True, end_time__lte=t)
+    if include_past_events:
+        past_events = events(public=True, end_time__lte=t)
+    else:
+        past_events = Event.objects.none()
+
     current_events = events(public=True, start_time__lte=t, end_time__gt=t)
     future_events = events((Q(start_time__gt=t) | Q(start_time__isnull=True)) & Q(public=True)).order_by('start_time')
 
@@ -42,4 +46,4 @@ def core_frontpage_view(request):
         past_events_rows_by_year=past_events_rows_by_year,
     )
 
-    return render(request, 'core_frontpage_view.jade', vars)
+    return render(request, template, vars)

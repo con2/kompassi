@@ -1,6 +1,6 @@
 - load i18n
 if carousel_slides.exists
-  .carousel.slide#core-frontpage-carousel(data-ride='carousel', style='margin-top: -25px')
+  .carousel.slide#core-frontpage-carousel(data-ride='carousel', style='position: relative; top: -25px')
     ol.carousel-indicators
       for slide in carousel_slides
         if forloop.first

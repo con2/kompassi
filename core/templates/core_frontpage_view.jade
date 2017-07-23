@@ -1,4 +1,5 @@
 extends base
+- load i18n
 block full_title
   | {{ settings.KOMPASSI_INSTALLATION_NAME }}
 block content_full_width
@@ -7,4 +8,5 @@ block content_full_width
   .container
     include core_messages.jade
     include core_event_boxen.jade
-    include core_organization_boxen.jade
+
+    p.text-muted: a(href='{% url "core_events_view" %}') {% trans "Browse all events" %} &raquo;

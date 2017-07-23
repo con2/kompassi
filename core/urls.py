@@ -23,6 +23,12 @@ from .views import (
 
 urlpatterns = [
     url(r'^$', core_frontpage_view, name='core_frontpage_view'),
+    url(
+        r'^events/?$',
+        core_frontpage_view,
+        dict(template='core_events_view.jade', include_past_events=True),
+        name='core_events_view',
+    ),
 
     url(
         r'^organizations/(?P<organization_slug>[a-z0-9-]+)/?$',
