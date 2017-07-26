@@ -9,10 +9,6 @@ from django.core.management.base import BaseCommand
 from tickets.models import Product
 
 
-def u(unicode_str):
-    return unicode_str.encode('UTF-8')
-
-
 class Command(BaseCommand):
     args = '<id>'
     help = 'Print orders that include the given product'
@@ -34,8 +30,8 @@ class Command(BaseCommand):
         ).order_by('order__customer__last_name', 'order__customer__first_name'):
             customer = op.order.customer
             writer.writerow([
-                u(customer.last_name),
-                u(customer.first_name),
-                u(customer.email),
+                customer.last_name,
+                customer.first_name,
+                customer.email,
                 op.count,
             ])
