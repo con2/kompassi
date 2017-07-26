@@ -6,7 +6,7 @@ import csv
 import sys
 
 from django.core.management.base import BaseCommand
-from tickets.models import *
+from tickets.models import Product
 
 
 def u(unicode_str):
@@ -17,8 +17,11 @@ class Command(BaseCommand):
     args = '<id>'
     help = 'Print orders that include the given product'
 
+    def add_arguments(self, parser):
+        parser.add_argument('product', type=int, help='product id')
+
     def handle(*args, **options):
-        product_id = int(args[1])
+        product_id = int(options['product'])
         writer = csv.writer(sys.stdout)
         writer.writerow(['last_name', 'first_name', 'email', 'count'])
 
