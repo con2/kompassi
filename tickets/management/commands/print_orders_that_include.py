@@ -27,6 +27,7 @@ class Command(BaseCommand):
             count__gt=0,
             order__confirm_time__isnull=False,
             order__payment_date__isnull=False,
+            order__cancellation_time__isnull=True,
         ).order_by('order__customer__last_name', 'order__customer__first_name'):
             customer = op.order.customer
             writer.writerow([
