@@ -35,9 +35,6 @@ html
             if not login_page
               include core_navbar_user.jade
 
-    if 'feedback' in settings.INSTALLED_APPS
-      include feedback_widget.jade
-
     #wrap
       include core_page_wizard_progress_bar.jade
 
@@ -48,6 +45,9 @@ html
           block content
 
       #push
+
+    if 'feedback' in settings.INSTALLED_APPS
+      include feedback_widget.jade
 
     footer
       .container
