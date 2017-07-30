@@ -1,0 +1,5 @@
+//- Use this template in case that you have to combine filters and a GET search form.
+//- Including this template for each type of filters will ensure filters will not be lost when changing search term.
+for item, active in filters
+  if active
+    input(type='hidden', name='{{ item.owner.request_param }}', value='{{ item.slug }}')

@@ -28,6 +28,7 @@ block content
           .col-md-9
             - with event_filters as filters
               include core_filter_labels.jade
+              include core_filter_hidden_input.jade
 
   .panel.panel-default
     .panel-heading: strong {% trans "Search results" %}
