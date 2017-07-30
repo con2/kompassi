@@ -330,3 +330,7 @@ msgstr "Etusivun kuvat"
 #:
 msgid "Browse all events"
 msgstr "Selaa kaikkia tapahtumia"
+
+#:
+msgid "Browse organizations"
+msgstr "Selaa yhdistyksiä"

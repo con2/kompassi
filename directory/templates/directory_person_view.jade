@@ -5,7 +5,7 @@ block title
 block content
   - url "directory_view" organization.slug as directory_url
 
-  h1
+  h2
     | {{ person.full_name }}
     small.text-muted.kompassi-icon-space-left {% blocktrans with organization=organization directory_url=directory_url %}in the <a href="{{ directory_url }}">{{ organization }} directory</a>{% endblocktrans %}
 
@@ -40,13 +40,13 @@ block content
       .text-muted {% trans "Only the person themselves can edit their contact information." %}
 
   if involvement_in_current_events
-    h2 Involvement in current events
+    h3 Involvement in current events
 
   if involvement_in_future_events
-    h2 Involvement in future events
+    h3 Involvement in future events
 
   if involvement_in_past_events
-    h2 Involvement in past events
+    h3 Involvement in past events
 
   if membership
     .panel.panel-default

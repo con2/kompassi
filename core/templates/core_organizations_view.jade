@@ -1,0 +1,22 @@
+extends base
+- load trans from i18n
+block title
+  | {% trans "Organizations" %}
+block content
+  h2 {% trans "Organizations" %}
+  for organizations_row in organizations_rows
+    .row
+      for organization in organizations_row
+        .col-md-3
+          .panel.panel-default
+            .panel-heading
+              strong
+                a(href='{% url "core_organization_view" organization.slug %}')= organization.name
+            .panel-body
+              p= organization.muncipality
+              if organization.membership_organization_meta
+                if organization.membership_organization_meta.receiving_applications
+                  .label.label-primary
+                    a(href='{% url "membership_apply_view" organization.slug %}') {% trans "Accepting applications" %}
+                else
+                  .label.label-default {% trans "Membership roster" %}
