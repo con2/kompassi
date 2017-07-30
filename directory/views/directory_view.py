@@ -16,7 +16,7 @@ HIDE_WARNING_SESSION_KEY = 'directory.directory_view.hide_warning'
 @directory_access_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def directory_view(request, vars, organization):
-    people = organization.directory_organization_meta.people
+    people = organization.people
     num_total_people = people.count()
 
     events = organization.events.all()

@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.db.models import Q
 
 from ..utils import SLUG_FIELD_PARAMS, slugify, pick_attrs
 
@@ -98,6 +98,24 @@ class Organization(models.Model):
             return self.directoryorganizationmeta
         except DirectoryOrganizationMeta.DoesNotExist:
             return None
+
+    @property
+    def people(self):
+        """
+        Returns people with involvement in events of the current organization
+        """
+        from .person import Person
+
+        # have signups
+        q = Q(signups__event__organization=self)
+
+        # or programmes
+        q |= Q(programme_roles__programme__category__event__organization=self)
+
+        # or are members
+        q |= Q(memberships__organization=self)
+
+        return Person.objects.filter(q).distinct()
 
     def as_dict(self):
         return pick_attrs(self,

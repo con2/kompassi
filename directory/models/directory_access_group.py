@@ -3,6 +3,10 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class DirectoryAccessGroup(models.Model):
+    """
+    Grants expiring group access to the personnel directory.
+    """
+
     organization = models.ForeignKey('core.Organization')
     group = models.ForeignKey('auth.Group')
     active_from = models.DateTimeField(blank=True, null=True)

@@ -1,0 +1,58 @@
+extends base
+- load i18n
+block title
+  | {{ person.full_name }}
+block content
+  - url "directory_view" organization.slug as directory_url
+
+  h1
+    | {{ person.full_name }}
+    small.text-muted.kompassi-icon-space-left {% blocktrans with organization=organization directory_url=directory_url %}in the <a href="{{ directory_url }}">{{ organization }} directory</a>{% endblocktrans %}
+
+  .panel.panel-default
+    .panel-heading: strong {% trans "Contact information" %}
+    .panel-body
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Surname" %}
+          .col-md-10 {{ person.surname }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "First name" %}
+          .col-md-10 {{ person.first_name }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Nick name" %}
+          .col-md-10 {{ person.nick }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Name as displayed" %}
+          .col-md-10 {{ person.display_name }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Phone number" %}
+          .col-md-10 {{ person.phone }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "E-mail address" %}
+          .col-md-10 {{ person.email }}
+    .panel-footer
+      .text-muted {% trans "Only the person themselves can edit their contact information." %}
+
+  if involvement_in_current_events
+    h2 Involvement in current events
+
+  if involvement_in_future_events
+    h2 Involvement in future events
+
+  if involvement_in_past_events
+    h2 Involvement in past events
+
+  if membership
+    .panel.panel-default
+      .panel-heading: strong Organization membership
+      .panel-body
+        p This person is a member of {{ organization }}.
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-primary(href='{% url "membership_admin_member_view" organization.slug person.id %}') Go to membership administration…
