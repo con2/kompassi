@@ -108,6 +108,7 @@ class Badge(models.Model, CsvExportMixin):
         db_index=True,
         verbose_name=_('Printing batch'),
         on_delete=models.SET_NULL,
+        related_name='badges',
     )
 
     is_revoked = time_bool_property('revoked_at')
