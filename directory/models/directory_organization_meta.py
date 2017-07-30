@@ -35,4 +35,7 @@ class DirectoryOrganizationMeta(models.Model, GroupManagementMixin):
         # or programmes
         q |= Q(programme_roles__programme__category__event__organization=self.organization)
 
+        # or are members
+        q |= Q(memberships__organization=self.organization)
+
         return Person.objects.filter(q).distinct()
