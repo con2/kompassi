@@ -18,7 +18,7 @@ class DirectoryOrganizationMeta(models.Model, GroupManagementMixin):
         from .directory_access_group import DirectoryAccessGroup
         return get_objects_within_period(
             DirectoryAccessGroup,
-            organization=self,
+            organization=self.organization,
         ).values_list('group', flat=True)
 
     def is_user_allowed_to_access(self, user):
@@ -27,7 +27,7 @@ class DirectoryOrganizationMeta(models.Model, GroupManagementMixin):
     @property
     def people(self):
         """
-        Returns people with badges in events of the current organization
+        Returns people with involvement in events of the current organization
         """
         # have signups
         q = Q(signups__event__organization=self.organization)
