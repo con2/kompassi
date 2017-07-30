@@ -1,10 +1,9 @@
-# encoding: utf-8
-
 import logging
 from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 from ..utils import (
@@ -24,7 +23,7 @@ class Event(models.Model):
 
     name = models.CharField(max_length=63, verbose_name='Tapahtuman nimi')
 
-    organization = models.ForeignKey('core.Organization', verbose_name='Järjestäjätaho')
+    organization = models.ForeignKey('core.Organization', verbose_name='Järjestäjätaho', related_name='events')
 
     name_genitive = models.CharField(
         max_length=63,
@@ -186,6 +185,21 @@ class Event(models.Model):
                 organization=organization,
             ),
         )
+
+    @property
+    def people(self):
+        """
+        Returns people associated with this event
+        """
+        from .person import Person
+
+        # have signups
+        q = Q(signups__event=self)
+
+        # or programmes
+        q |= Q(programme_roles__programme__category__event=self)
+
+        return Person.objects.filter(q).distinct()
 
     labour_event_meta = event_meta_property('labour')
     programme_event_meta = event_meta_property('programme')

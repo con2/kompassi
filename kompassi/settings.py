@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     'feedback',
     'event_log',
     'surveys',
+    'directory',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',

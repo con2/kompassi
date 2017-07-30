@@ -239,9 +239,9 @@ def labour_profile_signups_view(request):
 
     t = now()
 
-    signups_past_events = person.signup_set.filter(event__end_time__lte=t).order_by('-event__start_time')
-    signups_current_events = person.signup_set.filter(event__start_time__lte=t, event__end_time__gt=t).order_by('-event__start_time')
-    signups_future_events = person.signup_set.filter(event__start_time__gt=t).order_by('-event__start_time')
+    signups_past_events = person.signups.filter(event__end_time__lte=t).order_by('-event__start_time')
+    signups_current_events = person.signups.filter(event__start_time__lte=t, event__end_time__gt=t).order_by('-event__start_time')
+    signups_future_events = person.signups.filter(event__start_time__gt=t).order_by('-event__start_time')
 
     vars = dict(
         person=person,
@@ -249,7 +249,7 @@ def labour_profile_signups_view(request):
         signups_current_events=signups_current_events,
         signups_future_events=signups_future_events,
         no_signups=not any(signups.exists() for signups in [signups_past_events, signups_current_events, signups_future_events]),
-        all_signups=person.signup_set.all(),
+        all_signups=person.signups.all(),
     )
 
     return render(request, 'labour_profile_signups_view.jade', vars)

@@ -26,6 +26,7 @@ class Setup(object):
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
+        self.setup_directory()
         # self.setup_sms()
 
     def setup_core(self):
@@ -636,6 +637,18 @@ class Setup(object):
             # if not team.email:
             #     team.email = email
             #     team.save()
+
+    def setup_directory(self):
+        from directory.models import DirectoryAccessGroup
+
+        labour_admin_group = self.event.labour_event_meta.get_group('admins')
+
+        DirectoryAccessGroup.objects.get_or_create(
+            organization=self.event.organization,
+            group=labour_admin_group,
+            active_from=datetime(2017, 7, 30, 12, 37, 0, tzinfo=self.tz),
+            active_until=self.event.end_time + timedelta(days=30),
+        )
 
 
 class Command(BaseCommand):

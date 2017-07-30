@@ -22,6 +22,7 @@ class Setup(object):
         self.setup_core()
         self.setup_membership()
         self.setup_access()
+        self.setup_directory()
 
     def setup_core(self):
         self.organization, unused = Organization.objects.get_or_create(
@@ -131,6 +132,11 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
 
             if created:
                 smtp_server.domains.add(domain)
+
+    def setup_directory(self):
+        from directory.models import DirectoryOrganizationMeta
+
+        DirectoryOrganizationMeta.objects.get_or_create(organization=self.organization)
 
 
 class Command(BaseCommand):

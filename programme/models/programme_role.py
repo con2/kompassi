@@ -9,7 +9,7 @@ from core.csv_export import CsvExportMixin
 
 
 class ProgrammeRole(models.Model, CsvExportMixin):
-    person = models.ForeignKey('core.Person')
+    person = models.ForeignKey('core.Person', related_name='programme_roles')
     programme = models.ForeignKey('programme.Programme')
     role = models.ForeignKey('programme.Role')
     invitation = models.ForeignKey('programme.Invitation', null=True, blank=True)

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import logging
 
 from django.conf import settings
@@ -87,6 +85,18 @@ class Organization(models.Model):
         try:
             return self.accessorganizationmeta
         except AccessOrganizationMeta.DoesNotExist:
+            return None
+
+    @property
+    def directory_organization_meta(self):
+        if 'directory' not in settings.INSTALLED_APPS:
+            return None
+
+        from directory.models import DirectoryOrganizationMeta
+
+        try:
+            return self.directoryorganizationmeta
+        except DirectoryOrganizationMeta.DoesNotExist:
             return None
 
     def as_dict(self):

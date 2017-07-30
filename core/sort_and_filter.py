@@ -1,4 +1,3 @@
-# -- encoding: UTF-8 --
 from collections import OrderedDict
 
 from django.utils.translation import ugettext_lazy as _
@@ -38,6 +37,7 @@ class Definition(object):
         :return: str
         """
         return mutate_query_params(self.owner.request, {self.owner.request_param: None})
+
 
 class SortAndFilterBase(object):
     default_to_first_added = False

@@ -18,6 +18,7 @@ class Badge(models.Model, CsvExportMixin):
         null=True,
         blank=True,
         verbose_name=_('Person'),
+        related_name='badges',
     )
 
     personnel_class = models.ForeignKey('labour.PersonnelClass',

@@ -80,7 +80,7 @@ class StateTransition(object):
 
 
 class Signup(models.Model, CsvExportMixin):
-    person = models.ForeignKey('core.Person')
+    person = models.ForeignKey('core.Person', related_name='signups')
     event = models.ForeignKey('core.Event')
 
     personnel_classes = models.ManyToManyField('labour.PersonnelClass',

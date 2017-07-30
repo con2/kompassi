@@ -21,12 +21,7 @@ def make_form_readonly(form):
         make_field_readonly(field)
 
 
-def initialize_form(FormClass, request, **kwargs):
-    if 'readonly' in kwargs:
-        readonly = kwargs.pop('readonly')
-    else:
-        readonly = False
-
+def initialize_form(FormClass, request, readonly=False, **kwargs):
     if not readonly and request.method == 'POST':
         form = FormClass(request.POST, **kwargs)
     else:
