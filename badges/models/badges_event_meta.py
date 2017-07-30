@@ -42,6 +42,6 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
 
     # for CountBadgesMixin
     @property
-    def badge_set(self):
+    def badges(self):
         from .badge import Badge
         return Badge.objects.filter(personnel_class__event=self.event)

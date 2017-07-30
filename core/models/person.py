@@ -433,7 +433,7 @@ class Person(models.Model):
         from badges.models import Badge
 
         # Only touch badges for events in the future
-        for badge in self.badge_set.filter(personnel_class__event__start_time__gte=now()):
+        for badge in self.badges.filter(personnel_class__event__start_time__gte=now()):
             Badge.ensure(person=self, event=badge.personnel_class.event)
 
     def apply_state_async(self):

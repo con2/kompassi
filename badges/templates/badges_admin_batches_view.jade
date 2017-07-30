@@ -26,7 +26,7 @@ block admin_content
                     button.btn.btn-success(type='submit', name='confirm-batch', value='confirm-batch') Merkitse tulostetuksi
                     a.btn.btn-primary(href='{% url "badges_admin_export_view" event.slug batch.pk "xlsx" %}', target='_blank') Lataa Excel-tiedosto
             .pull-right
-              .text-muted {{ batch.badge_set.count }} badge{{ batch.badge_set.count|pluralize:"a"}}&emsp;
+              .text-muted {{ batch.badges.count }} badge{{ batch.badges.count|pluralize:"a"}}&emsp;
 
     else
       .panel-body

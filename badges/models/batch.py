@@ -75,7 +75,7 @@ class Batch(models.Model):
         self.save()
 
     def cancel(self):
-        self.badge_set.update(batch=None)
+        self.badges.update(batch=None)
         self.delete()
 
     def can_cancel(self):
@@ -93,7 +93,7 @@ class Batch(models.Model):
     admin_get_number.admin_order_field = 'id'
 
     def admin_get_num_badges(self):
-        return self.badge_set.count()
+        return self.badges.count()
     admin_get_num_badges.short_description = _('Number of badges')
 
     class Meta:

@@ -23,21 +23,21 @@ class Progress(object):
 
 class CountBadgesMixin(object):
     def count_printed_badges(self):
-        return self.badge_set.filter(
+        return self.badges.filter(
             Q(batch__isnull=False, batch__printed_at__isnull=False) | Q(printed_separately_at__isnull=False)
         ).distinct().count()
 
     def count_badges_waiting_in_batch(self):
-        return self.badge_set.filter(batch__isnull=False, batch__printed_at__isnull=True, revoked_at__isnull=True).count()
+        return self.badges.filter(batch__isnull=False, batch__printed_at__isnull=True, revoked_at__isnull=True).count()
 
     def count_badges_awaiting_batch(self):
-        return self.badge_set.filter(**BADGE_ELIGIBLE_FOR_BATCHING).count()
+        return self.badges.filter(**BADGE_ELIGIBLE_FOR_BATCHING).count()
 
     def count_badges(self):
-        return self.badge_set.count()
+        return self.badges.count()
 
     def count_revoked_badges(self):
-        return self.badge_set.filter(revoked_at__isnull=False).count()
+        return self.badges.filter(revoked_at__isnull=False).count()
 
     def get_progress(self):
         """

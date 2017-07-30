@@ -25,8 +25,8 @@ class PersonnelClassProxy(CountBadgesMixin):
         self.target = target
 
     @property
-    def badge_set(self):
-        return self.target.badge_set
+    def badges(self):
+        return self.target.badges
 
     @property
     def name(self):
@@ -71,7 +71,7 @@ def badges_admin_export_view(request, vars, event, batch_id, format='csv'):
         raise NotImplemented(format)
 
     batch = get_object_or_404(Batch, pk=int(batch_id), event=event)
-    badges = batch.badge_set.all()
+    badges = batch.badges.all()
 
     filename = "{event.slug}-badges-batch{batch.pk}.{format}".format(
         event=event,
