@@ -132,6 +132,23 @@ class Setup(object):
                 personnel_class.perks = [self.afterparty_perk]
                 personnel_class.save()
 
+        # v33
+        PersonnelClass.objects.filter(
+            event=self.event,
+            slug='coniitti',
+            icon_css_class='fa-user',
+        ).update(
+            icon_css_class='fa-check-square'
+        )
+
+        PersonnelClass.objects.filter(
+            event=self.event,
+            slug='duniitti',
+            icon_css_class='fa-user',
+        ).update(
+            icon_css_class='fa-check-square-o'
+        )
+
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
                 source_event=Event.objects.get(slug='tracon11'),

@@ -246,6 +246,13 @@ class Signup(models.Model, CsvExportMixin):
         return '{p} / {e}'.format(**locals())
 
     @property
+    def personnel_class(self):
+        """
+        The highest personnel class of this Signup (possibly None).
+        """
+        return self.personnel_classes.first()
+
+    @property
     def signup_extra_model(self):
         return self.event.labour_event_meta.signup_extra_model
 

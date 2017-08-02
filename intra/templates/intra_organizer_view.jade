@@ -27,7 +27,11 @@ block admin_content
               td= unassigned_organizer.person.surname
               td= unassigned_organizer.person.first_name
               td= unassigned_organizer.person.nick
-              td= unassigned_organizer.signup.job_title
+              td
+                if unassigned_organizer.signup.personnel_class.icon_css_class
+                  i.fa.kompassi-icon-space-right(class="{{ unassigned_organizer.signup.personnel_class.icon_css_class }}"
+                                                  title="{{ unassigned_organizer.signup.personnel_class }}")
+                | {{ unassigned_organizer.signup.some_job_title }}
               td= unassigned_organizer.signup.email_address
               td= unassigned_organizer.person.normalized_phone_number
               if is_intra_admin
@@ -74,7 +78,11 @@ block admin_content
                 td= team_member.person.surname
                 td= team_member.person.first_name
                 td= team_member.person.nick
-                td= team_member.signup.job_title
+                td
+                  if team_member.signup.personnel_class.icon_css_class
+                    i.fa.kompassi-icon-space-right(class="{{ team_member.signup.personnel_class.icon_css_class }}"
+                                                   title="{{ team_member.signup.personnel_class }}")
+                  | {{ team_member.signup.some_job_title }}
                 td= team_member.signup.email_address
                 td= team_member.person.normalized_phone_number
                 if is_intra_admin

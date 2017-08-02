@@ -22,6 +22,7 @@ class PersonnelClass(models.Model):
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     perks = models.ManyToManyField('labour.Perk', blank=True)
     priority = models.IntegerField(default=0)
+    icon_css_class = models.CharField(max_length=63, default='fa-user', blank=True)
 
     class Meta:
         verbose_name = _('personnel class')
