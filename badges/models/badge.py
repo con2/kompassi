@@ -23,6 +23,7 @@ class Badge(models.Model, CsvExportMixin):
 
     personnel_class = models.ForeignKey('labour.PersonnelClass',
         verbose_name=_('Personnel class'),
+        related_name='badges',
     )
 
     printed_separately_at = models.DateTimeField(
