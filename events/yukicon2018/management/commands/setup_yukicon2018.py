@@ -49,6 +49,7 @@ class Setup(object):
             start_time=datetime(2018, 2, 17, 10, 0, tzinfo=self.tz),
             end_time=datetime(2018, 2, 18, 18, 0, tzinfo=self.tz),
             venue=self.venue,
+            panel_css_class='panel-info',
         ))
 
     def setup_tickets(self):
