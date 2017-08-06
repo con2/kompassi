@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 import os
 from datetime import datetime, timedelta
 
@@ -66,15 +62,20 @@ class Setup(object):
             shipping_and_handling_cents=0,
             reference_number_template="2018{:05d}",
             contact_email='Yukicon <yukicon@yukicon.fi>',
-            ticket_free_text="Tämä on sähköinen lippusi. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+            ticket_free_text=(
+                "Tämä on sähköinen lippusi. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
                 "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva sanakoodi ja ilmoita se\n"
                 "lipunvaihtopisteessä.\n\n"
-                "Tervetuloa tapahtumaan!",
-            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Yukicon 5.0-tapahtumaan!</h2>"
+                "Tervetuloa tapahtumaan!"
+            ),
+            front_page_text=(
+                "<h2>Tervetuloa ostamaan pääsylippuja Yukicon 5.0-tapahtumaan!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                "<p>Lue lisää tapahtumasta <a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>",
+                "<p>Lue lisää tapahtumasta "
+                "<a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>"
+            ),
             print_logo_path=mkpath('static', 'images', 'Yukicon_logo_taustaton.jpg'),
             print_logo_width_mm=50,
             print_logo_height_mm=16
@@ -106,7 +107,11 @@ class Setup(object):
         for product_info in [
             dict(
                 name='Yukicon 5.0 – Early Access',
-                description='Early Access -lipulla pääset Yukiconiin 17.–18.2.2018. Lippu oikeuttaa Early Access -etuuksien lunastuksen. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
+                description=(
+                    'Early Access -lipulla pääset Yukiconiin 17.–18.2.2018. Lippu oikeuttaa Early Access '
+                    '-etuuksien lunastuksen. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, '
+                    'jota vastaan saat rannekkeen tapahtuman ovelta.'
+                ),
                 limit_groups=[
                     limit_group('Early Access', 200),
                 ],
@@ -138,7 +143,6 @@ class Setup(object):
         from labour.models import PersonnelClass
         from programme.models import (
             Category,
-            Programme,
             ProgrammeEventMeta,
             Role,
             Room,
@@ -265,10 +269,8 @@ class Setup(object):
             Job,
             JobCategory,
             LabourEventMeta,
-            Perk,
             PersonnelClass,
             Qualification,
-            WorkPeriod,
         )
         from ...models import SignupExtra, SpecialDiet, EventDay
         from django.contrib.contenttypes.models import ContentType
@@ -276,7 +278,6 @@ class Setup(object):
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
 
         if self.test:
-            from core.models import Person
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
