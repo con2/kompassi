@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from django.conf import settings
 from django.db import models, transaction
 from django.utils.html import escape
@@ -186,8 +182,6 @@ class Badge(models.Model, CsvExportMixin):
 
     @classmethod
     def get_csv_fields(cls, event):
-        from labour.models import PersonnelClass
-
         meta = event.badges_event_meta
         if meta.badge_layout == 'trad':
             # Chief Technology Officer
@@ -218,8 +212,6 @@ class Badge(models.Model, CsvExportMixin):
             raise NotImplementedError(meta.badge_layout)
 
     def get_csv_related(self):
-        from core.models import Person
-
         return {
             BadgePrivacyAdapter: BadgePrivacyAdapter(self),
         }

@@ -1,8 +1,3 @@
-# encoding: utf-8
-
-
-
-
 class BadgePrivacyAdapter(object):
     """
     Our CSV infrastructure has a nasty reversion of control: it getattrs us for the fields instead of
