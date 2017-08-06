@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import os
 import warnings
 from email.utils import parseaddr
@@ -206,6 +208,7 @@ INSTALLED_APPS = (
     'events.kawacon2017',
     'events.worldcon75',
     'events.frostbite2018',
+    'events.yukicon2018',
 )
 
 LOGGING = {
