@@ -156,7 +156,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
         )
@@ -164,7 +164,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
-            'shirt_size',
+            # 'shirt_size',
             'special_diet',
             'special_diet_other',
         )
@@ -175,8 +175,9 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            shift_type='kaikkikay',
             free_text='Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta',
+            shift_type='kaikkikay',
+            shirt_size='NO_SHIRT',
         )
 
 
