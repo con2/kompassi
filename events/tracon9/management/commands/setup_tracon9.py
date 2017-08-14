@@ -38,18 +38,13 @@ from badges.models import BadgesEventMeta
 
 from ...models import SignupExtra, SpecialDiet, Night
 
+
 class Command(BaseCommand):
     args = ''
     help = 'Setup tracon9 specific stuff'
 
     def handle(self, *args, **options):
-        if settings.DEBUG:
-            print('Setting up tracon9 in test mode')
-        else:
-            print('Setting up tracon9 in production mode')
-
         tz = tzlocal()
-
 
         #
         # Core
