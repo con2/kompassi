@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import logging
 
 from django.db import models
@@ -9,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.utils import ensure_user_is_member_of_group, pick_attrs
 from core.models.constants import NAME_DISPLAY_STYLE_CHOICES
+from labour.models.constants import JOB_TITLE_LENGTH
 
 
 NAME_DISPLAY_STYLE_CHOICES = [
@@ -20,8 +19,18 @@ logger = logging.getLogger('kompassi')
 
 
 class TeamMember(models.Model):
-    team = models.ForeignKey('intra.Team', related_name='members')
-    person = models.ForeignKey('core.Person', related_name='team_memberships')
+    team = models.ForeignKey('intra.Team', verbose_name=_('Team'), related_name='members')
+    person = models.ForeignKey('core.Person', verbose_name=_('Person'), related_name='team_memberships')
+    override_job_title = models.CharField(
+        max_length=JOB_TITLE_LENGTH,
+        blank=True,
+        default='',
+        verbose_name=_('Job title in this team'),
+        help_text=_(
+            'If set, this will override the job title of this person for the purposes of this team only. '
+            'If unset, the above job title field will be used. This field will not affect badge printing.'
+        ),
+    )
 
     is_primary_team = models.BooleanField(
         default=True,
@@ -106,13 +115,20 @@ class TeamMember(models.Model):
         else:
             return self.person.display_name
 
+    @property
+    def job_title(self):
+        if self.override_job_title:
+            return self.override_job_title
+        else:
+            return self.signup.some_job_title
+
     def as_dict(self):
         return pick_attrs(self,
             'is_team_leader',
             'display_name',
+            'job_title',
 
             email=self.signup.email_address,
-            job_title=self.signup.job_title,
         )
 
     class Meta:

@@ -74,5 +74,7 @@ class Team(models.Model):
         return result
 
     class Meta:
+        verbose_name = _('Team')
+        verbose_name_plural = _('Teams')
         ordering = ('event', 'order', 'name')
-        unique_together = [('event', 'slug'),]
+        unique_together = [('event', 'slug')]

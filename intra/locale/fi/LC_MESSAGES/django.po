@@ -219,3 +219,30 @@ msgstr "Sinulla ei ole tämän tapahtuman järjestäjäintranetin ylläpito-oike
 msgid "You have access to the organizer intranet."
 msgstr "Sinulla on pääsy järjestäjien intranetiin."
 
+#:
+msgid "This corresponds to the job title field in the volunteer worker management. This is what is printed in this person's badge, if they will receive one. If unset, a default value based on the job category will be used for the badge."
+msgstr "Tämä vastaa työvoimanhallinnan tehtävänimikekenttää. Tämän kentän arvo painetaan badgeen, mikäli tämä henkilö saa sellaisen. Mikäli tätä kenttää ei ole asetettu, badgeen painetaan tehtävänimikkeeksi tehtäväalueen nimi."
+
+#:
+msgid "If set, this will override the job title of this person for the purposes of this team only. If unset, the above job title field will be used. This field will not affect badge printing."
+msgstr "Mikäli tämä kenttä on asetettu, se korvaa yllä olevan tehtävänimikekentän tämän tiimin listauksissa. Mikäli tätä kenttää ei ole asetettu, käytetään yllä olevan tehtävänimikekentän arvoa. Tämä kenttä ei vaikuta badgetulostukseen."
+
+#:
+msgid "Job title in this team"
+msgstr "Tehtävänimike tässä tiimissä"
+
+#:
+msgid "Team"
+msgstr "Tiimi"
+
+#:
+msgid "Presentation"
+msgstr "Esitysasetukset"
+
+#:
+msgid "Additional options"
+msgstr "Lisäasetukset"
+
+#:
+msgid "Privileges"
+msgstr "Käyttöoikeudet"

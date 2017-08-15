@@ -17,6 +17,7 @@ from core.utils import (
 )
 
 from .constants import (
+    JOB_TITLE_LENGTH,
     SIGNUP_STATE_NAMES,
     NUM_FIRST_CATEGORIES,
     SIGNUP_STATE_LABEL_CLASSES,
@@ -153,7 +154,7 @@ class Signup(models.Model, CsvExportMixin):
     )
 
     job_title = models.CharField(
-        max_length=63,
+        max_length=JOB_TITLE_LENGTH,
         blank=True,
         default='',
         verbose_name="Tehtävänimike",

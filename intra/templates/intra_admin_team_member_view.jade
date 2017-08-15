@@ -6,6 +6,7 @@ block title
 block admin_content
   h3 {% trans "Teams and organizers" %}
   form.form-horizontal(method='POST')
+    button.sr-only(type='submit', name='action', value='save-return') {% trans "Save changes" %}
     .panel.panel-default
       .panel-heading: strong
         if team_member_form.instance.pk

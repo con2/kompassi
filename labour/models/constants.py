@@ -136,3 +136,5 @@ SIGNUP_STATE_GROUPS = [
     'workaccepted',
     'reprimanded',
 ]
+
+JOB_TITLE_LENGTH = 63

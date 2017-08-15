@@ -51,9 +51,16 @@ def intra_admin_team_member_view(request, vars, event, team_slug=None, person_id
         action = request.POST.get('action')
         if action == 'save-return':
             if all(form.is_valid() for form in forms):
+                creating_new = not team_member_form.instance.pk
+
                 team_member = team_member_form.save()
                 privileges_form.save(team_member)
-                messages.success(request, _('The member was added to the team.'))
+
+                if creating_new:
+                    messages.success(request, _('The member was added to the team.'))
+                else:
+                    messages.success(request, _('The team member was updated.'))
+
                 return redirect('intra_organizer_view', event.slug)
             else:
                 messages.error(request, _('Please check the team_member_form.'))
