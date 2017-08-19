@@ -312,6 +312,7 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='spam@example.com')
+GOOGLE_ANALYTICS_TOKEN = env('GOOGLE_ANALYTICS_TOKEN', default='')
 
 
 if 'payments' in INSTALLED_APPS:
