@@ -26,6 +26,7 @@ class Setup(object):
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
+        self.setup_directory()
         # self.setup_sms()
 
     def setup_core(self):
@@ -59,7 +60,7 @@ class Setup(object):
             PersonnelClass,
             Survey,
         )
-        from ...models import SignupExtra, Night, GODWorkshopChoice
+        from ...models import SignupExtra, Night
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -131,24 +132,29 @@ class Setup(object):
                 personnel_class.perks = [self.afterparty_perk]
                 personnel_class.save()
 
+        # v33
+        PersonnelClass.objects.filter(
+            event=self.event,
+            slug='coniitti',
+            icon_css_class='fa-user',
+        ).update(
+            icon_css_class='fa-check-square'
+        )
+
+        PersonnelClass.objects.filter(
+            event=self.event,
+            slug='duniitti',
+            icon_css_class='fa-user',
+        ).update(
+            icon_css_class='fa-check-square-o'
+        )
+
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
                 source_event=Event.objects.get(slug='tracon11'),
                 target_event=self.event,
                 remap_personnel_classes=dict(conitea='coniitti')
             )
-
-        god_jc, created = JobCategory.objects.get_or_create(
-            event=self.event,
-            slug='god',
-            defaults=dict(
-                name='Peliä pyynnöstä',
-                description='Peliä pyynnöstä -pisteen pelauttaja ja/tai sisäänheittäjä',
-            ),
-        )
-        if created:
-            god_jc.personnel_classes = PersonnelClass.objects.filter(event=self.event, slug='tyovoima')
-            god_jc.save()
 
         labour_event_meta.create_groups()
 
@@ -165,28 +171,10 @@ class Setup(object):
                 title='Conitean ilmoittautumislomake',
                 signup_form_class_path='events.tracon2017.forms:OrganizerSignupForm',
                 signup_extra_form_class_path='events.tracon2017.forms:OrganizerSignupExtraForm',
-                active_from=datetime(2016, 10, 18, 15, 5, 0, tzinfo=self.tz),
+                active_from=datetime(2016, 10, 18, 15, 0o5, 0, tzinfo=self.tz),
                 active_until=datetime(2017, 9, 10, 23, 59, 59, tzinfo=self.tz),
             ),
         )
-
-        AlternativeSignupForm.objects.get_or_create(
-            event=self.event,
-            slug='god',
-            defaults=dict(
-                title='Ilmoittautuminen Peliä pyynnöstä -pelinjohtajaksi',
-                signup_form_class_path='events.tracon2017.forms:GODSignupForm',
-                signup_extra_form_class_path='events.tracon2017.forms:GODSignupExtraForm',
-                active_from=datetime(2017, 7, 18, 15, 5, 0, tzinfo=self.tz),
-                active_until=datetime(2017, 9, 10, 23, 59, 59, tzinfo=self.tz),
-            ),
-        )
-
-        for god_choice_name in [
-            'Livenä Tampereella',
-            'Internetissä',
-        ]:
-            GODWorkshopChoice.objects.get_or_create(name=god_choice_name)
 
         for wiki_space, link_title, link_group in [
             ('TERA', 'Työvoimawiki', 'accepted'),
@@ -666,6 +654,18 @@ class Setup(object):
             # if not team.email:
             #     team.email = email
             #     team.save()
+
+    def setup_directory(self):
+        from directory.models import DirectoryAccessGroup
+
+        labour_admin_group = self.event.labour_event_meta.get_group('admins')
+
+        DirectoryAccessGroup.objects.get_or_create(
+            organization=self.event.organization,
+            group=labour_admin_group,
+            active_from=datetime(2017, 7, 30, 12, 37, 0, tzinfo=self.tz),
+            active_until=self.event.end_time + timedelta(days=30),
+        )
 
 
 class Command(BaseCommand):
