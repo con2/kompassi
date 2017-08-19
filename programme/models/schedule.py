@@ -88,8 +88,8 @@ class ViewMethodsMixin(object):
 
         if programme:
             result = [
-                i for i in result if
-                    programme.start_time <= i < programme.end_time
+                i for i in result
+                if programme.start_time <= i < programme.end_time
             ]
 
         return sorted(set(result))
