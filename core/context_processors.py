@@ -19,7 +19,7 @@ def core_context(request):
     current_language_code = get_language_from_request(request)
     other_language_code, other_language_name = get_other_language(current_language_code)
 
-    vars = dict(
+    return dict(
         current_language_code=current_language_code,
         settings=settings,
         core_profile_menu_items=core_profile_menu_items(request),
@@ -30,14 +30,3 @@ def core_context(request):
         # google analytics deactivated on admin pages for privacy
         is_admin_page='/admin' in request.path,
     )
-
-    for key in [
-        'KOMPASSI_APPLICATION_NAME',
-        'DEFAULT_FROM_EMAIL',
-        'KOMPASSI_INSTALLATION_NAME',
-        'KOMPASSI_INSTALLATION_NAME_GENITIVE',
-        'KOMPASSI_INSTALLATION_NAME_ILLATIVE',
-    ]:
-        vars[key] = getattr(settings, key, key)
-
-    return vars
