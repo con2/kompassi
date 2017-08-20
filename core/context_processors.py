@@ -26,10 +26,12 @@ def core_context(request):
         other_language_code=other_language_code,
         other_language_name=other_language_name,
         show_language_warning=(other_language_code == 'fi'),
+
+        # google analytics deactivated on admin pages for privacy
+        is_admin_page='/admin' in request.path,
     )
 
     for key in [
-        'ANALYTICS_ACCOUNT',
         'KOMPASSI_APPLICATION_NAME',
         'DEFAULT_FROM_EMAIL',
         'KOMPASSI_INSTALLATION_NAME',
