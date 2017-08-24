@@ -31,6 +31,7 @@ class Setup(object):
         self.setup_labour()
         self.setup_programme()
         self.setup_badges()
+        self.setup_intra()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -510,6 +511,41 @@ class Setup(object):
                 badge_layout='nick',
             )
         )
+
+    def setup_intra(self):
+        from intra.models import IntraEventMeta, Team
+
+        admin_group, = IntraEventMeta.get_or_create_groups(self.event, ['admins'])
+        organizer_group = self.event.labour_event_meta.get_group('conitea')
+        meta, unused = IntraEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                organizer_group=organizer_group,
+            )
+        )
+
+        for team_slug, team_name in [
+            ('pirut', 'Pirut'),
+            ('ohjelma', 'Ohjelma'),
+            ('tuotanto', 'Tuotanto'),
+            ('talous', 'Talous'),
+            ('tiedotus', 'Tiedotus'),
+        ]:
+            team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            email = '{}@yukicon.fi'.format(team_slug)
+
+            team, created = Team.objects.get_or_create(
+                event=self.event,
+                slug=team_slug,
+                defaults=dict(
+                    name=team_name,
+                    order=self.get_ordering_number(),
+                    group=team_group,
+                    email=email
+                )
+            )
+
 
 
 class Command(BaseCommand):

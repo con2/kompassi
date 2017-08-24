@@ -12,25 +12,25 @@ from labour.querybuilder import QueryBuilder, add_prefix
 #     (u'ei', u'En vaan voi työskennellä yövuorossa'),
 # ]
 
-# SHIRT_SIZES = [
-#     (u'NO_SHIRT', u'Ei paitaa'),
-#
-#     (u'XS', u'XS Unisex'),
-#     (u'S', u'S Unisex'),
-#     (u'M', u'M Unisex'),
-#     (u'L', u'L Unisex'),
-#     (u'XL', u'XL Unisex'),
-#     (u'XXL', u'XXL Unisex'),
-#     # (u'3XL', u'3XL Unisex'),
-#     # (u'4XL', u'4XL Unisex'),
-#     # (u'5XL', u'5XL Unisex'),
-#
-#     # (u'LF_XS', u'XS Ladyfit'),
-#     (u'LF_S', u'S Ladyfit'),
-#     (u'LF_M', u'M Ladyfit'),
-#     (u'LF_L', u'L Ladyfit'),
-#     # (u'LF_XL', u'XL Ladyfit'),
-# ]
+SHIRT_SIZES = [
+    (u'NO_SHIRT', u'Ei paitaa'),
+
+    (u'XS', u'XS Unisex'),
+    (u'S', u'S Unisex'),
+    (u'M', u'M Unisex'),
+    (u'L', u'L Unisex'),
+    (u'XL', u'XL Unisex'),
+    (u'XXL', u'XXL Unisex'),
+    (u'3XL', u'3XL Unisex'),
+    (u'4XL', u'4XL Unisex'),
+    (u'5XL', u'5XL Unisex'),
+
+    # (u'LF_XS', u'XS Ladyfit'),
+    # (u'LF_S', u'S Ladyfit'),
+    # (u'LF_M', u'M Ladyfit'),
+    # (u'LF_L', u'L Ladyfit'),
+    # (u'LF_XL', u'XL Ladyfit'),
+]
 
 
 SHIFT_TYPE_CHOICES = [
@@ -40,8 +40,8 @@ SHIFT_TYPE_CHOICES = [
 ]
 
 TOTAL_WORK_CHOICES = [
-    ('8h', 'Minimi - 8 tuntia'),
-    ('12h', '10–12 tuntia'),
+    ('10h', 'Minimi - 10 tuntia'),
+    ('12h', '10-12 tuntia'),
     ('yli12h', 'Työn Sankari! Yli 12 tuntia!'),
 ]
 
@@ -106,15 +106,13 @@ class SignupExtra(SignupExtraBase):
     #         u'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
     # )
 
-    # shirt_size = models.CharField(
-    #     max_length=8,
-    #     choices=SHIRT_SIZES,
-    #     verbose_name=u'Paidan koko',
-    #     help_text=u'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. '
-    #         u'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
-    #         u'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
-    #         u'target="_blank">ladyfit-paita</a>',
-    # )
+    shirt_size = models.CharField(
+        max_length=8,
+        choices=SHIRT_SIZES,
+        verbose_name=u'Paidan koko',
+        help_text=u'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan.',
+        default='NO_SHIRT',
+    )
 
     special_diet = models.ManyToManyField(
         SpecialDiet,
