@@ -764,9 +764,11 @@ class Signup(models.Model, CsvExportMixin):
             if 'labour_common_qualifications' in settings.INSTALLED_APPS:
                 from labour_common_qualifications.models import JVKortti
                 related_models.append(JVKortti)
+                fields_to_skip.append((JVKortti, 'personqualification'))
 
             for model in related_models:
                 for field in model._meta.fields:
+                    print (model, field.name)
                     if (model, field.name) in fields_to_skip:
                         continue
 
