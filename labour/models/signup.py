@@ -749,9 +749,16 @@ class Signup(models.Model, CsvExportMixin):
 
             related_models = [Person, Signup]
 
+            # useless & non-serializable
+            fields_to_skip = [(Person, 'user'), (Signup, 'person')]
+
             SignupExtra = event.labour_event_meta.signup_extra_model
             if SignupExtra is not None:
                 related_models.append(SignupExtra)
+                fields_to_skip.extend([
+                    (SignupExtra, 'event'),
+                    (SignupExtra, 'person'),
+                ])
 
             # XXX HACK jv-kortin numero
             if 'labour_common_qualifications' in settings.INSTALLED_APPS:
@@ -760,6 +767,9 @@ class Signup(models.Model, CsvExportMixin):
 
             for model in related_models:
                 for field in model._meta.fields:
+                    if (model, field.name) in fields_to_skip:
+                        continue
+
                     event._signup_csv_fields.append((model, field))
 
                 for field in model._meta.many_to_many:
@@ -779,7 +789,7 @@ class Signup(models.Model, CsvExportMixin):
         if 'labour_common_qualifications' in settings.INSTALLED_APPS:
             from labour_common_qualifications.models import JVKortti
             try:
-                jv_kortti = JVKortti.objects.get(personqualification__person__signup=self)
+                jv_kortti = JVKortti.objects.get(personqualification__person=self.person)
                 related[JVKortti] = jv_kortti
             except JVKortti.DoesNotExist:
                 related[JVKortti] = None
