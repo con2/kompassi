@@ -749,8 +749,15 @@ class Signup(models.Model, CsvExportMixin):
 
             related_models = [Person, Signup]
 
-            # useless & non-serializable
-            fields_to_skip = [(Person, 'user'), (Signup, 'person')]
+            fields_to_skip = [
+                # useless & non-serializable
+                (Person, 'user'),
+                (Signup, 'person'),
+
+                # too official
+                (Person, 'official_first_names'),
+                (Person, 'muncipality'),
+            ]
 
             SignupExtra = event.labour_event_meta.signup_extra_model
             if SignupExtra is not None:
