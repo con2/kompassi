@@ -101,6 +101,7 @@ class EventAdmin(admin.ModelAdmin):
             'end_time',
             'description',
             'homepage_url',
+            'logo_file',
             'logo_url',
             'organization',
         ))),

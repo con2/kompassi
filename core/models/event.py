@@ -73,6 +73,13 @@ class Event(models.Model):
         help_text='Julkiset tapahtumat näytetään etusivulla.'
     )
 
+    logo_file = models.FileField(
+        upload_to='event_logos',
+        blank=True,
+        verbose_name='Tapahtuman logo',
+        help_text='Näkyy tapahtumasivulla. Jos sekä tämä että logon URL -kenttä on täytetty, käytetään tätä.'
+    )
+
     logo_url = models.CharField(
         blank=True,
         max_length=255,
@@ -200,6 +207,13 @@ class Event(models.Model):
         q |= Q(programme_roles__programme__category__event=self)
 
         return Person.objects.filter(q).distinct()
+
+    @property
+    def either_logo_url(self):
+        if self.logo_file:
+            return self.logo_file.url
+        else:
+            return self.logo_url
 
     labour_event_meta = event_meta_property('labour')
     programme_event_meta = event_meta_property('programme')

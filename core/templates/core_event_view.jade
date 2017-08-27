@@ -18,9 +18,9 @@ block content
           a.btn.btn-primary(href='{{ event.homepage_url }}', target='_blank') {% trans "Go to event home page…" %}
 
       .col-md-4.hidden-sm.hidden-xs
-        if event.logo_url
+        if event.either_logo_url
           a(href='{{ event.homepage_url }}', target='_blank')
-            img(src='{{ event.logo_url }}', alt='{{ event.name }}', width='100%')
+            img(src='{{ event.either_logo_url }}', alt='{{ event.name }}', width='100%')
 
     if event.enrollment_event_meta
       include enrollment_event_box.jade
