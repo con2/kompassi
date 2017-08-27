@@ -18,6 +18,7 @@ class CarouselSlide(models.Model):
     image_file = models.FileField(upload_to='carousel_slides', blank=True)
     image_credit = models.CharField(max_length=512, blank=True, default='')
     target = models.CharField(
+        blank=True,
         choices=TARGET_CHOICES,
         max_length=max(len(key) for (key, label) in TARGET_CHOICES),
         default=TARGET_CHOICES[0][0],
