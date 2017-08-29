@@ -399,6 +399,7 @@ class Setup(object):
             Role,
             Room,
             SpecialStartTime,
+            Tag,
             TimeBlock,
             View,
         )
@@ -506,12 +507,16 @@ class Setup(object):
 
         for start_time, end_time in [
             (
-                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
-                self.event.end_time.replace(hour=1, minute=0, tzinfo=self.tz),
+                datetime(2017, 9, 8, 16, 0, tzinfo=self.tz),
+                datetime(2017, 9, 8, 21, 0, tzinfo=self.tz),
             ),
             (
-                self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),
-                self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),
+                datetime(2017, 9, 9, 9, 0, tzinfo=self.tz),
+                datetime(2017, 9, 10, 1, 0, tzinfo=self.tz),
+            ),
+            (
+                datetime(2017, 9, 10, 9, 0, tzinfo=self.tz),
+                datetime(2017, 9, 10, 18, 0, tzinfo=self.tz),
             ),
         ]:
             TimeBlock.objects.get_or_create(
@@ -547,6 +552,21 @@ class Setup(object):
                 view, created = View.objects.get_or_create(event=self.event, name=view_name)
                 view.rooms = rooms
                 view.save()
+
+        for tag_title, tag_class in [
+            ('Suositeltu', 'hilight'),
+            ('Musiikki', 'label-info'),
+            ('In English', 'label-success'),
+            ('K-18', 'label-danger'),
+            ('Paikkaliput', 'label-warning'),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    style=tag_class,
+                ),
+            )
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
