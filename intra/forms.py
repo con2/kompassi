@@ -68,6 +68,7 @@ class TeamMemberForm(forms.ModelForm):
             signup = self.instance.signup
             signup.job_title = self.cleaned_data['job_title']
             signup.save()
+            signup.apply_state()
 
         return ret
 
