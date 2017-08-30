@@ -20,7 +20,6 @@ services:
       KOMPAQ_URL: amqp://guest:guest@rabbitmq/
       CACHE_URL: memcache://memcache
       ALLOWED_HOSTS: '*'
-      GOOGLE_ANALYTICS_TOKEN: 'foo'
   celery:
     build: .
     command: celery -A kompassi.celery_app:app worker
