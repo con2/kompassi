@@ -219,6 +219,10 @@ class Setup(object):
             )
         )
 
+        # NOTE remove for tracon 2018
+        meta.is_using_fuzzy_reissuance_hack = True
+        meta.save()
+
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 

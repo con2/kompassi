@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.db import models, transaction
 from django.utils.html import escape
@@ -7,6 +9,9 @@ from core.csv_export import CsvExportMixin
 from core.utils import time_bool_property
 
 from ..proxies.badge.privacy import BadgePrivacyAdapter
+
+
+logger = logging.getLogger('kompassi')
 
 
 class Badge(models.Model, CsvExportMixin):
@@ -161,19 +166,38 @@ class Badge(models.Model, CsvExportMixin):
                 existing_badge = None
 
             expected_badge_opts = default_badge_factory(event=event, person=person)
+            new_badge_opts = dict(expected_badge_opts)
+
+            if event.badges_event_meta.is_using_fuzzy_reissuance_hack:
+                # The fuzzy reissuance hack is documented at
+                # badges.models.badges_event_meta:Badge.is_using_fuzzy_reissuance_hack
+                expected_badge_opts.pop('is_first_name_visible', None)
+                expected_badge_opts.pop('is_surname_visible', None)
+                expected_badge_opts.pop('is_nick_visible', None)
 
             if existing_badge:
                 # There is an existing un-revoked badge. Check that its information is correct.
-                if any(getattr(existing_badge, key) != value for key, value in expected_badge_opts.items()):
-                    existing_badge.revoke()
-                else:
+                for key, expected_value in expected_badge_opts.items():
+                    old_value = getattr(existing_badge, key)
+                    if old_value != expected_value:
+                        logger.debug(
+                            'Revoking %s due to %s mismatch. Found: %s, expected: %s',
+                            existing_badge,
+                            key,
+                            old_value,
+                            expected_value,
+                        )
+                        existing_badge.revoke()
+                        break
+
+                if not existing_badge.is_revoked:
                     return existing_badge, False
 
             if expected_badge_opts.get('personnel_class') is None:
                 # They should not have a badge.
                 return None, False
 
-            badge_opts = dict(expected_badge_opts, person=person)
+            badge_opts = dict(new_badge_opts, person=person)
 
             badge = cls(**badge_opts)
             badge.save()

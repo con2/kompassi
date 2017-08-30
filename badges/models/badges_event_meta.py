@@ -33,6 +33,17 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         )
     )
 
+    is_using_fuzzy_reissuance_hack = models.BooleanField(
+        default=False,
+        verbose_name=_('Use fuzzy reissuance hack'),
+        help_text=_(
+            'In Tracon 2017, Japsu forgot to re-issue badges when he flipped the "Real name must be visible" '
+            'setting. This caused lots of printed badges to be revoked and re-issued. When the fuzzy reissuance hack '
+            'is active, badges will not get re-issued if the only change is which fields are visible. '
+            'Combine this with python manage.py rescue_wrongly_revoked_badges.'
+        )
+    )
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
