@@ -181,7 +181,7 @@ class Badge(models.Model, CsvExportMixin):
                     old_value = getattr(existing_badge, key)
                     if old_value != expected_value:
                         logger.debug(
-                            'Revoking %s due to %s mismatch. Found: %s, expected: %s',
+                            'Reissuing %s due to %s mismatch. Found: %s, expected: %s',
                             existing_badge,
                             key,
                             old_value,
