@@ -177,20 +177,9 @@ class Badge(models.Model, CsvExportMixin):
 
             if existing_badge:
                 # There is an existing un-revoked badge. Check that its information is correct.
-                for key, expected_value in expected_badge_opts.items():
-                    old_value = getattr(existing_badge, key)
-                    if old_value != expected_value:
-                        logger.debug(
-                            'Reissuing %s due to %s mismatch. Found: %s, expected: %s',
-                            existing_badge,
-                            key,
-                            old_value,
-                            expected_value,
-                        )
-                        existing_badge.revoke()
-                        break
-
-                if not existing_badge.is_revoked:
+                if any(getattr(existing_badge, key) != value for (key, value) in expected_badge_opts.items()):
+                    existing_badge.revoke()
+                else:
                     return existing_badge, False
 
             if expected_badge_opts.get('personnel_class') is None:
