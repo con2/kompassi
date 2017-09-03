@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 import logging
 
 from django.http import HttpResponse
@@ -37,11 +33,11 @@ logger = logging.getLogger('kompassi')
 def programme_admin_view(request, vars, event, format='screen'):
     programmes = (
         Programme.objects.filter(category__event=event)
-            .select_related('category__event')
-            .select_related('room')
+        .select_related('category__event')
+        .select_related('room')
 
-            # Does not do the needful due to formatted_organizers operating on the "through" model
-            # .prefetch_related('organizers')
+        # Does not do the needful due to formatted_organizers operating on the "through" model
+        # .prefetch_related('organizers')
     )
 
     categories = Category.objects.filter(event=event)
@@ -56,7 +52,8 @@ def programme_admin_view(request, vars, event, format='screen'):
     state_filters.filter_queryset(programmes)
     programmes = state_filters.filter_queryset(programmes)
 
-    video_permission_filters = Filter(request, 'video_permission').add_choices('video_permission', VIDEO_PERMISSION_CHOICES)
+    video_permission_filters = Filter(request, 'video_permission')
+    video_permission_filters.add_choices('video_permission', VIDEO_PERMISSION_CHOICES)
     video_permission_filters.filter_queryset(programmes)
     programmes = video_permission_filters.filter_queryset(programmes)
 
@@ -74,8 +71,8 @@ def programme_admin_view(request, vars, event, format='screen'):
     if format != 'html':
         sorter = Sorter(request, 'sort')
         sorter.add('title', name='Otsikko', definition=('title',))
-        sorter.add('start_time', name='Alkuaika', definition=('start_time','room'))
-        sorter.add('room', name='Sali', definition=('room','start_time'))
+        sorter.add('start_time', name='Alkuaika', definition=('start_time', 'room'))
+        sorter.add('room', name='Sali', definition=('room', 'start_time'))
         sorter.add('created_at', name='Uusin ensin', definition=('-created_at',))
         programmes = sorter.order_queryset(programmes)
 
@@ -107,11 +104,11 @@ def programme_admin_view(request, vars, event, format='screen'):
     elif format == 'html':
         title = "{event_name}: Ohjelma".format(event_name=event.name)
 
-        if room_filters.selected_slug != None:
+        if room_filters.selected_slug is not None:
             room = Room.objects.get(venue=event.venue, slug=room_filters.selected_slug)
             title += ' – {room.name}'.format(room=room)
 
-        if state_filters.selected_slug != None:
+        if state_filters.selected_slug is not None:
             state_name = next(name for (slug, name) in STATE_CHOICES if slug == state_filters.selected_slug)
             title += ' ({state_name})'.format(state_name=state_name)
 
@@ -162,9 +159,9 @@ def programme_admin_special_view(request, vars, event):
 def programme_admin_email_list_view(request, vars, event):
     addresses = (
         Person.objects.filter(programme__category__event=event)
-            .order_by('email')
-            .values_list('email', flat=True)
-            .distinct()
+        .order_by('email')
+        .values_list('email', flat=True)
+        .distinct()
     )
 
     return HttpResponse("\n".join(addr for addr in addresses if addr), content_type='text/plain')

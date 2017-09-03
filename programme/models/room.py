@@ -1,10 +1,7 @@
-# encoding: utf-8
-
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from django.utils.translation import ugettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
