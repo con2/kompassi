@@ -46,7 +46,7 @@ html
 
       #push
 
-    if 'feedback' in settings.INSTALLED_APPS
+    if 'feedback' in settings.INSTALLED_APPS and not login_page
       include feedback_widget.jade
 
     footer
