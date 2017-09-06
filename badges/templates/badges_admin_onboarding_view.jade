@@ -14,7 +14,9 @@ block admin_content
       thead
         tr
           th
-          th {% trans "Name" %}
+          th
+            span.kompassi-icon-space-right {% trans "Name" %}
+            small.kompassi-icon-space-left.text-muted(style='font-weight: normal') Badgessa näkyvät tiedot <strong>lihavoitu</strong>.
           th {% trans "Personnel class" %}
           th {% trans "Job title" %}
           if shirt_type_field
@@ -27,7 +29,21 @@ block admin_content
             td.status.fa-fw
               i.fa.fa-spinner.fa-pulse.status__loading
               i.fa.fa-check.status__success
-            td.name= badge.admin_get_full_name
+            td.name
+              if badge.is_first_name_visible
+                strong {{ badge.first_name }}
+              else
+                span.text-muted {{ badge.first_name }}
+              if badge.is_nick_visible
+                | &#32;
+                strong ”{{ badge.nick }}”
+              if badge.is_surname_visible
+                | &#32;
+                strong {{ badge.surname }}
+              else
+                | &#32;
+                span.text-muted {{ badge.surname }}
+
             td.personnel_class= badge.personnel_class
             td.title= badge.job_title
             if shirt_type_field
@@ -41,6 +57,29 @@ block admin_content
               else
                 td.shirt
 
+  //- for badge in badges
+  //-   .modal.fade(tabindex="-1", role="dialog")#badge-modal
+  //-     .modal-dialog(role="document")
+  //-       .modal-content
+  //-         .modal-header
+  //-           button(type="button", class="close", data-dismiss="modal", aria-label="{% trans 'Close' %}")
+  //-             span(aria-hidden="true") &times;
+  //-           h4.modal-title Saapuneeksi kirjaaminen
+  //-         .modal-body
+  //-           {{ badge }}
+  //-           .text-center
+  //-             if event.badges_event_meta.is_traditional_layout
+  //-               h4 {{ badge.job_title }}
+  //-               h3 {{ badge.with_privacy.first_name }} {{ badge.with_privacy.surname }}
+  //-               h4 {{ badge.with_privacy.nick }}
+  //-             else
+  //-               h4 {{ badge.job_title }}
+  //-               h3 {{ badge.with_privacy.first_name_or_nick }}
+  //-               h4 {{ badge.with_privacy.surname_or_full_name }}
+  //-         .modal-footer
+  //-           button.btn.btn-default(data-dismiss="modal") {% trans 'Close' %}
+  //-           button.btn.btn-primary(class='{% if badge.is_arrived %}hidden{% endif %}') Merkitse saapuneeksi
+  //-           button.btn.btn-danger(class='{% if not badge.is_arrived %}hidden{% endif %}') Peru saapuneeksi merkintä
 
 block extra_head
   style.
