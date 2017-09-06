@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import sys
 
 from django.contrib.auth import get_user_model
