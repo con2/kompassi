@@ -7,7 +7,7 @@ html
     title {{ event.name }}: Mobiiliohjelmakartta – {{ settings.KOMPASSI_INSTALLATION_NAME }}
     link(rel='stylesheet', href='{% static "programme/css/moe_tracon.css" %}')
   body
-    script
+    script.
       var C = {
         starred_url: null,
         schedule_url: "{% url 'programme_moe_view' event.slug %}",
