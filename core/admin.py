@@ -20,6 +20,11 @@ if 'access' in settings.INSTALLED_APPS:
     organization_admin_inlines.append(InlineAccessOrganizationMetaAdmin)
 
 
+if 'directory' in settings.INSTALLED_APPS:
+    from directory.admin import InlineDirectoryOrganizationMetaAdmin
+    organization_admin_inlines.append(InlineDirectoryOrganizationMetaAdmin)
+
+
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'homepage_url')
     ordering = ('name',)
