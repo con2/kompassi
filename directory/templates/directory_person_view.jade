@@ -36,23 +36,30 @@ block content
         .control-group
           label.control-label.col-md-2 {% trans "E-mail address" %}
           .col-md-10 {{ person.email }}
-    .panel-footer
-      .text-muted {% trans "Only the person themselves can edit their contact information." %}
 
   if involvement_in_current_events
-    h3 Involvement in current events
+    h3 {% trans "Involvement in current events" %}
+    for involvement in involvement_in_current_events
+      include directory_event_involvement_box.jade
 
   if involvement_in_future_events
-    h3 Involvement in future events
+    h3 {% trans "Involvement in future events" %}
+    for involvement in involvement_in_future_events
+      include directory_event_involvement_box.jade
 
   if involvement_in_past_events
-    h3 Involvement in past events
+    h3 {% trans "Involvement in past events" %}
+    for involvement in involvement_in_past_events
+      include directory_event_involvement_box.jade
 
   if membership
+    h3 {% trans "Organization membership" %}
     .panel.panel-default
-      .panel-heading: strong Organization membership
+      .panel-heading
+        strong.kompassi-space-after {{ organization.name }}
+        small.text-muted {{ organization.muncipality }}
       .panel-body
         p This person is a member of {{ organization }}.
       .panel-footer.clearfix
         .btn-group.pull-right
-          a.btn.btn-primary(href='{% url "membership_admin_member_view" organization.slug person.id %}') Go to membership administration…
+          a.btn.btn-primary(href='{% url "membership_admin_member_view" organization.slug person.id %}') {% trans "Go to membership administration…" %}

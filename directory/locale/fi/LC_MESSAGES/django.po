@@ -1,0 +1,20 @@
+msgid "Involvement in current events"
+msgstr "Parhaillaan käynnissä olevissa tapahtumissa"
+
+msgid "Involvement in future events"
+msgstr "Tulevissa tapahtumissa"
+
+msgid "Involvement in past events"
+msgstr "Menneissä tapahtumissa"
+
+msgid "Organization membership"
+msgstr "Yhdistyksen jäsenyys"
+
+msgid "Go to membership administration…"
+msgstr "Siirry jäsenrekisterin hallintanäkymään…"
+
+msgid "Volunteer work"
+msgstr "Vapaaehtoistyöskentely"
+
+msgid "Programme item"
+msgstr "Ohjelmanumero"

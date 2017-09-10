@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.utils import timezone
@@ -373,6 +374,19 @@ class Person(models.Model):
     @property
     def age_now(self):
         return self.get_age_at(date.today())
+
+    def get_events(self, **kwargs):
+        from .event import Event
+
+        # have programmes
+        q = Q(category__programme__organizers=self)
+
+        # or signups
+        q |= Q(signup__person=self)
+
+        q &= Q(**kwargs)
+
+        return Event.objects.filter(q).distinct()
 
     def get_age_at(self, the_date):
         if self.birth_date is None:
