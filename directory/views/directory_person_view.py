@@ -39,8 +39,8 @@ def directory_person_view(request, vars, organization, person_id):
 
     t = now()
     past_events = person.get_events(end_time__lt=t, organization=organization).order_by('-start_time')
-    current_events = person.get_events(start_time__lte=t, end_time__gt=t)
-    future_events = person.get_events(start_time__gte=t)
+    current_events = person.get_events(start_time__lte=t, end_time__gt=t, organization=organization)
+    future_events = person.get_events(start_time__gte=t, organization=organization)
 
     involvement_in_past_events = [get_involvement(request, event, person) for event in past_events]
     involvement_in_current_events = [get_involvement(request, event, person) for event in current_events]
