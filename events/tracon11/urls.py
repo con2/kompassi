@@ -1,8 +1,4 @@
-# encoding: utf-8
-
-
-
-from django.conf.urls import include, url
+from django.conf.urls import url
 
 from .views import tracon11_afterparty_participants_view
 

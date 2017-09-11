@@ -27,7 +27,7 @@ for app_name in [
     'sms',
     'desuprofile_integration',
     'membership',
-    'events.tracon11',
+    'events.tracon2017',
     'enrollment',
     'intra',
     'feedback',

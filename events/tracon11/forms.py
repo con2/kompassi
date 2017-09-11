@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from datetime import date
 
 from django import forms
@@ -10,7 +6,7 @@ from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin
-from labour.models import Signup, JobCategory, WorkPeriod
+from labour.models import Signup, JobCategory
 
 from .models import SignupExtraV2
 
@@ -46,7 +42,6 @@ class SignupExtraForm(forms.ModelForm):
                 'afterparty_coaches_changed',
             )
         )
-
 
     class Meta:
         model = SignupExtraV2
@@ -89,7 +84,7 @@ class SignupExtraForm(forms.ModelForm):
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
         admin = kwargs.pop('admin')
 
         assert not admin
@@ -134,7 +129,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
                 'email_alias',
             ),
         )
-
 
     class Meta:
         model = SignupExtraV2
@@ -198,7 +192,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
 class ShiftWishesSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
 
         super(ShiftWishesSurvey, self).__init__(*args, **kwargs)
 
@@ -218,7 +212,7 @@ class ShiftWishesSurvey(forms.ModelForm):
 
 class LodgingNeedsSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
 
         super(LodgingNeedsSurvey, self).__init__(*args, **kwargs)
 
@@ -241,7 +235,7 @@ class LodgingNeedsSurvey(forms.ModelForm):
 
 class AfterpartyParticipationSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        kwargs.pop('event')
 
         super(AfterpartyParticipationSurvey, self).__init__(*args, **kwargs)
 

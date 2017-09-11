@@ -1,3 +1,5 @@
+from datetime import date
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -286,4 +288,51 @@ class LodgingNeedsSurvey(forms.ModelForm):
         )
         widgets = dict(
             lodging_needs=forms.CheckboxSelectMultiple,
+        )
+
+
+class AfterpartyParticipationSurvey(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('event')
+
+        super(AfterpartyParticipationSurvey, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        # Ban most popular bus choices… unless they have already signed up for it
+        # if self.instance.outward_coach_departure_time != '16:00':
+        #     self.fields['outward_coach_departure_time'].choices = [
+        #         (id, text)
+        #         for id, text in self.fields['outward_coach_departure_time'].choices
+        #         if id != '16:00'
+        #     ]
+
+        # if self.instance.return_coach_departure_time != '01:00':
+        #     self.fields['return_coach_departure_time'].choices = [
+        #         (id, text)
+        #         for id, text in self.fields['return_coach_departure_time'].choices
+        #         if id != '01:00'
+        #     ]
+
+    @classmethod
+    def get_instance_for_event_and_person(cls, event, person):
+        return SignupExtra.objects.get(
+            event=event,
+            person=person,
+            person__birth_date__lte=date(1999, 9, 23),
+            is_active=True,
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            'afterparty_participation',
+            'outward_coach_departure_time',
+            'return_coach_departure_time',
+            'special_diet',
+            'special_diet_other',
+        )
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
         )
