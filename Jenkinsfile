@@ -1,9 +1,20 @@
-def image = "tracon/kompassi:build-${env.BUILD_NUMBER}"
+def imageMap = [
+  "development": "staging",
+  "master": "latest"
+]
+
+def deploymentTagMap = [
+  "development": "kompassi-staging",
+  "master": "kompassi-deploy"
+]
+
+def tempImage = "tracon/kompassi:build-${env.BUILD_NUMBER}"
+def finalImage = "tracon/kompassi:${imageMap[env.BRANCH_NAME]}"
 
 stage("Build") {
   node {
     checkout scm
-    sh "docker build --tag ${image} ."
+    sh "docker build --tag ${tempImage} ."
   }
 }
 
@@ -14,7 +25,7 @@ stage("Test") {
         --rm \
         --link jenkins.tracon.fi-postgres:postgres \
         --env-file ~/.kompassi.env \
-        ${image} \
+        ${tempImage} \
         python manage.py test --keepdb
     """
   }
@@ -22,7 +33,7 @@ stage("Test") {
 
 stage("Push") {
   node {
-    sh "docker tag ${image} tracon/kompassi:latest && docker push tracon/kompassi:latest && docker rmi ${image}"
+    sh "docker tag ${tempImage} ${finalImage} && docker push ${finalImage} && docker rmi ${tempImage}"
   }
 }
 
@@ -34,7 +45,7 @@ stage("Deploy") {
         --vault-password-file=~/.vault_pass.txt \
         --user root \
         --limit neula.kompassi.eu \
-        --tags kompassi-deploy \
+        --tags ${deploymentTagMap[env.BRANCH_NAME]} \
         tracon.yml
     """
   }
