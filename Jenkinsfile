@@ -8,7 +8,7 @@ def deploymentTagMap = [
   "master": "kompassi-deploy"
 ]
 
-def tempImage = "tracon/kompassi:build-${env.BUILD_NUMBER}"
+def tempImage = "tracon/kompassi:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 def finalImage = "tracon/kompassi:${imageMap[env.BRANCH_NAME]}"
 
 stage("Build") {
