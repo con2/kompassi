@@ -43,6 +43,10 @@ class Night(SimpleChoice):
     pass
 
 
+class Poison(SimpleChoice):
+    pass
+
+
 class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(max_length=15,
         verbose_name='Toivottu työvuoron pituus',
@@ -209,6 +213,18 @@ class SignupExtra(SignupExtraBase):
 
     afterparty_coaches_changed = models.BooleanField(
         default=False,
+    )
+
+    pick_your_poison = models.ManyToManyField(
+        Poison,
+        blank=True,
+        verbose_name='Mitä tykkäät juoda?',
+        help_text=(
+            'Pyrimme siihen, että kaikki löytäisivät kaadon tarjoiluista jotain itselleen sopivaa. Ruksaa '
+            'kaikki ne juomat, mitä saattaisit kuvitella nauttivasi kaadon aikana, niin yritämme arvioida '
+            'määriä jotenkin sinne päin. Huomaathan, että haluamme kuitenkin pitää kaadon kaikille mukavana '
+            'ja turvallisena, eikä kaadossa ole tarkoitus juoda itseään örveltäväksi idiootiksi.'
+        )
     )
 
     @classmethod

@@ -332,7 +332,9 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
             'return_coach_departure_time',
             'special_diet',
             'special_diet_other',
+            'pick_your_poison',
         )
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
+            pick_your_poison=forms.CheckboxSelectMultiple,
         )

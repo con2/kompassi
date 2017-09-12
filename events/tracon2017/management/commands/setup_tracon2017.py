@@ -60,7 +60,7 @@ class Setup(object):
             PersonnelClass,
             Survey,
         )
-        from ...models import SignupExtra, Night
+        from ...models import SignupExtra, Night, Poison
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -201,6 +201,18 @@ class Setup(object):
                 active_until=datetime(2017, 9, 17, 23, 59, 59, tzinfo=self.tz),
             ),
         )
+
+        for poison_name in [
+            'Olut',
+            'Siideri, kuiva',
+            'Siideri, makea',
+            'Lonkero',
+            'Punaviini',
+            'Valkoviini',
+            'Cocktailit',
+            'Alkoholittomat juomat',
+        ]:
+            Poison.objects.get_or_create(name=poison_name)
 
         for wiki_space, link_title, link_group in [
             ('TERA', 'Työvoimawiki', 'accepted'),

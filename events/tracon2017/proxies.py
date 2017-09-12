@@ -46,6 +46,7 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
             (cls, 'return_coach_departure_time'),
             (cls, 'formatted_special_diet'),
             (cls, 'special_diet_other'),
+            (SignupExtra, 'pick_your_poison'),
         ]
 
     def get_csv_related(self):
@@ -53,4 +54,5 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
 
         return {
             Person: self.person,
+            SignupExtra: SignupExtra.objects.get(event=self.event, person=self.person),
         }
