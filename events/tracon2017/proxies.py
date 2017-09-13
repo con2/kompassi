@@ -41,7 +41,7 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
             (Person, 'first_name'),
             (Person, 'nick'),
             (Person, 'email'),
-            (Person, 'phone'),
+            (Person, 'normalized_phone_number'),
             (cls, 'outward_coach_departure_time'),
             (cls, 'return_coach_departure_time'),
             (cls, 'formatted_special_diet'),
