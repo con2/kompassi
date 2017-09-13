@@ -43,10 +43,6 @@ class Night(SimpleChoice):
     pass
 
 
-class GODWorkshopChoice(SimpleChoice):
-    pass
-
-
 class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(max_length=15,
         verbose_name='Toivottu työvuoron pituus',
@@ -56,14 +52,20 @@ class SignupExtra(SignupExtraBase):
 
     total_work = models.CharField(max_length=15,
         verbose_name='Toivottu kokonaistyömäärä',
-        help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
+        help_text=(
+            'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi '
+            'on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. '
+            'majoitusvalvonta 6 h).'
+        ),
         choices=TOTAL_WORK_CHOICES,
     )
 
     overseer = models.BooleanField(
         default=False,
         verbose_name='Olen kiinnostunut vuorovastaavan tehtävistä',
-        help_text='Vuorovastaavat ovat kokeneempia conityöläisiä, jotka toimivat oman tehtäväalueensa tiiminvetäjänä.',
+        help_text=(
+            'Vuorovastaavat ovat kokeneempia conityöläisiä, jotka toimivat oman tehtäväalueensa tiiminvetäjänä.'
+        ),
     )
 
     want_certificate = models.BooleanField(
@@ -74,8 +76,10 @@ class SignupExtra(SignupExtraBase):
     certificate_delivery_address = models.TextField(
         blank=True,
         verbose_name='Työtodistuksen toimitusosoite',
-        help_text='Jos haluat työtodistuksen, täytä tähän kenttään postiosoite (katuosoite, '
-            'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
+        help_text=(
+            'Jos haluat työtodistuksen, täytä tähän kenttään postiosoite (katuosoite, '
+            'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.'
+        ),
     )
 
     shirt_size = models.CharField(
@@ -83,53 +87,66 @@ class SignupExtra(SignupExtraBase):
         choices=SHIRT_SIZES,
         default='NO_SHIRT',
         verbose_name='Paidan koko',
-        help_text='Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. '
+        help_text=(
+            'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. '
             'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
             'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
-            'target="_blank">ladyfit-paita</a>',
+            'target="_blank">ladyfit-paita</a>'
+        ),
     )
 
     special_diet = models.ManyToManyField(
         SpecialDiet,
         blank=True,
-        verbose_name='Erikoisruokavalio'
+        verbose_name='Erikoisruokavalio',
+        related_name='+'
     )
 
     special_diet_other = models.TextField(
         blank=True,
         verbose_name='Muu erikoisruokavalio',
-        help_text='Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
+        help_text=(
+            'Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
             'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
             'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+        ),
     )
 
     lodging_needs = models.ManyToManyField(Night,
         blank=True,
         verbose_name='Tarvitsen lattiamajoitusta',
-        help_text='Ruksaa ne yöt, joille tarvitset lattiamajoitusta. Lattiamajoitus sijaitsee '
-            'kävelymatkan päässä tapahtumapaikalta.',
+        help_text=(
+            'Ruksaa ne yöt, joille tarvitset lattiamajoitusta. Lattiamajoitus sijaitsee '
+            'kävelymatkan päässä tapahtumapaikalta.'
+        ),
     )
 
     prior_experience = models.TextField(
         blank=True,
         verbose_name='Työkokemus',
-        help_text='Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
+        help_text=(
+            'Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
             'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
             'hakemassasi tehtävässä.'
+        )
     )
 
     free_text = models.TextField(
         blank=True,
         verbose_name='Vapaa alue',
-        help_text='Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
+        help_text=(
+            'Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
             'omaa kenttää yllä, käytä tätä kenttää.'
+        )
     )
 
     shift_wishes = models.TextField(
         blank=True,
         verbose_name='Työvuorotoiveet',
-        help_text='Jos tiedät, ettet pääse paikalle johonkin tiettyyn aikaan tai haluat esimerkiksi '
+        help_text=(
+            'Jos tiedät, ettet pääse paikalle johonkin tiettyyn aikaan tai haluat esimerkiksi '
             'osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.'
+        )
     )
 
     email_alias = models.CharField(
@@ -137,43 +154,13 @@ class SignupExtra(SignupExtraBase):
         default='',
         max_length=32,
         verbose_name='Sähköpostialias',
-        help_text='Coniitit saavat käyttöönsä nick@tracon.fi-tyyppisen sähköpostialiaksen, joka '
-            'ohjataan coniitin omaan sähköpostilaatikkoon. Tässä voit toivoa haluamaasi sähköpostialiaksen alkuosaa eli sitä, joka tulee ennen @tracon.fi:tä. '
-            'Sallittuja merkkejä ovat pienet kirjaimet a-z, numerot 0-9 sekä väliviiva.',
+        help_text=(
+            'Coniitit saavat käyttöönsä nick@tracon.fi-tyyppisen sähköpostialiaksen, joka '
+            'ohjataan coniitin omaan sähköpostilaatikkoon. Tässä voit toivoa haluamaasi '
+            'sähköpostialiaksen alkuosaa eli sitä, joka tulee ennen @tracon.fi:tä. '
+            'Sallittuja merkkejä ovat pienet kirjaimet a-z, numerot 0-9 sekä väliviiva.'
+        ),
         validators=[validate_slug]
-    )
-
-    # Begin games on demand fields
-    god_prior_experience = models.TextField(
-        verbose_name='Aiempi kokemus alle tunnin mittaisista roolipeleistä',
-        help_text='Voit kertoa myös muusta pelinjohtamiskokemuksestasi',
-        blank=True,
-        default='',
-    )
-
-    god_workshop = models.ManyToManyField(
-        GODWorkshopChoice,
-        verbose_name='Jos elokuussa järjestetään työpaja minipelien valmistelusta ja vetämisestä, olisitko kiinnostunut osallistumaan siihen',
-        help_text='Tarkka ajankohta valitaan Doodlella myöhemmin. Työpaja on tarkoitettu erityisesti niille, joilla ei ole paljoa kokemusta lyhyistä roolipeleistä, mutta kaikki saavat osallistua.',
-        blank=True,
-    )
-
-    god_scenarios = models.TextField(
-        verbose_name='Tarjoamasi minipelien tai -skenaarioiden kuvaukset',
-        help_text='Mainitse jokaisesta vähintään pelisysteemi, arvioitu kesto, toimivat pelaajamäärät ja lyhyt kuvaus. Voit varautua yhdellä tai useammalla minipelillä tai -skenaariolla. Parasta on, jos voit tarjota pelaajille ainakin kaksi vaihtoehtoa.',
-        default='',
-        blank=True,
-    )
-
-    god_time_wishes = models.ManyToManyField('hitpoint2017.TimeSlot',
-        verbose_name='Aikatoiveet',
-        help_text='Mihin aikaan haluaisit olla työvuorossa? Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, kerro niistä avoimessa kentässä.',
-    )
-
-    god_bouncer = models.BooleanField(
-        default=False,
-        verbose_name='Haluan tehdä pelinjohtamisen lisäksi sisäänheittoa',
-        help_text='Jos haluat tehdä pelinjohtamisen lisäksi sisäänheittoa, voit olettaa sen osuudeksi puolet työajasta ellet toisin toivo.',
     )
 
     @classmethod

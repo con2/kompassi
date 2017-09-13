@@ -37,16 +37,17 @@ class Setup(object):
             homepage_url='https://ry.tracon.fi',
         ))
         self.venue, unused = Venue.objects.get_or_create(name='Tampere-talo')
-        self.event, unused = Event.objects.get_or_create(slug='tracon2017', defaults=dict(
-            name='Tracon (2017)',
+        self.event, unused = Event.objects.get_or_create(slug='tracon2018', defaults=dict(
+            name='Tracon (2018)',
             name_genitive='Traconin',
             name_illative='Traconiin',
             name_inessive='Traconissa',
-            homepage_url='http://2017.tracon.fi',
+            homepage_url='http://2018.tracon.fi',
             organization=self.organization,
-            start_time=datetime(2017, 9, 9, 10, 0, tzinfo=self.tz),
-            end_time=datetime(2017, 9, 10, 18, 0, tzinfo=self.tz),
+            start_time=datetime(2018, 9, 8, 10, 0, tzinfo=self.tz),
+            end_time=datetime(2018, 9, 9, 18, 0, tzinfo=self.tz),
             venue=self.venue,
+            panel_css_class='panel-danger',
         ))
 
     def setup_labour(self):
@@ -73,8 +74,8 @@ class Setup(object):
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-            work_begins=datetime(2017, 9, 8, 8, 0, tzinfo=self.tz),
-            work_ends=datetime(2017, 9, 10, 22, 0, tzinfo=self.tz),
+            work_begins=datetime(2018, 9, 7, 8, 0, tzinfo=self.tz),
+            work_ends=datetime(2018, 9, 9, 22, 0, tzinfo=self.tz),
             admin_group=labour_admin_group,
             contact_email='Traconin työvoimatiimi <tyovoima@tracon.fi>',
         )
@@ -113,7 +114,7 @@ class Setup(object):
             ('Ohjelma', 'ohjelma', 'programme', True),
             ('Ohjelma 2. luokka', 'ohjelma-2lk', 'programme', False),
             ('Ohjelma 3. luokka', 'ohjelma-3lk', 'programme', False),
-            ('Guest of Honour', 'goh', 'programme', False), # tervetullut muttei kutsuta automaattiviestillä
+            ('Guest of Honour', 'goh', 'programme', False),  # tervetullut muttei kutsuta automaattiviestillä
             ('Media', 'media', 'badges', False),
             ('Myyjä', 'myyja', 'badges', False),
             ('Vieras', 'vieras', 'badges', False),
@@ -151,9 +152,8 @@ class Setup(object):
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug='tracon11'),
+                source_event=Event.objects.get(slug='tracon2017'),
                 target_event=self.event,
-                remap_personnel_classes=dict(conitea='coniitti')
             )
 
         labour_event_meta.create_groups()
@@ -169,10 +169,10 @@ class Setup(object):
             slug='conitea',
             defaults=dict(
                 title='Conitean ilmoittautumislomake',
-                signup_form_class_path='events.tracon2017.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='events.tracon2017.forms:OrganizerSignupExtraForm',
-                active_from=datetime(2016, 10, 18, 15, 0o5, 0, tzinfo=self.tz),
-                active_until=datetime(2017, 9, 10, 23, 59, 59, tzinfo=self.tz),
+                signup_form_class_path='events.tracon2018.forms:OrganizerSignupForm',
+                signup_extra_form_class_path='events.tracon2018.forms:OrganizerSignupExtraForm',
+                active_from=datetime(2017, 9, 16, 23, 8, 0, tzinfo=self.tz),
+                active_until=datetime(2018, 9, 9, 23, 59, 59, tzinfo=self.tz),
             ),
         )
 
@@ -189,23 +189,23 @@ class Setup(object):
                 )
             )
 
-        Survey.objects.get_or_create(
-            event=self.event,
-            slug='tyovuorotoiveet',
-            defaults=dict(
-                title='Työvuorotoiveet',
-                description=(
-                    'Tässä vaiheessa voit vaikuttaa työvuoroihisi. Jos saavut tapahtumaan vasta sen alkamisen '
-                    'jälkeen tai sinun täytyy lähteä ennen tapahtuman loppumista, kerro se tässä. Lisäksi jos '
-                    'tiedät ettet ole käytettävissä tiettyihin aikoihin tapahtuman aikana tai haluat esimerkiksi '
-                    'nähdä jonkun ohjelmanumeron, kerro siitäkin. Työvuorotoiveiden toteutumista täysin ei voida '
-                    'taata.'
-                ),
-                form_class_path='events.tracon2017.forms:ShiftWishesSurvey',
-                active_from=datetime(2017, 7, 3, 18, 50, 0, tzinfo=self.tz),
-                active_until=datetime(2017, 8, 4, 23, 59, 59, tzinfo=self.tz),
-            ),
-        )
+        # Survey.objects.get_or_create(
+        #     event=self.event,
+        #     slug='tyovuorotoiveet',
+        #     defaults=dict(
+        #         title='Työvuorotoiveet',
+        #         description=(
+        #             'Tässä vaiheessa voit vaikuttaa työvuoroihisi. Jos saavut tapahtumaan vasta sen alkamisen '
+        #             'jälkeen tai sinun täytyy lähteä ennen tapahtuman loppumista, kerro se tässä. Lisäksi jos '
+        #             'tiedät ettet ole käytettävissä tiettyihin aikoihin tapahtuman aikana tai haluat esimerkiksi '
+        #             'nähdä jonkun ohjelmanumeron, kerro siitäkin. Työvuorotoiveiden toteutumista täysin ei voida '
+        #             'taata.'
+        #         ),
+        #         form_class_path='events.tracon2018.forms:ShiftWishesSurvey',
+        #         active_from=datetime(2018, 7, 3, 18, 50, 0, tzinfo=self.tz),
+        #         active_until=datetime(2018, 8, 4, 23, 59, 59, tzinfo=self.tz),
+        #     ),
+        # )
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
@@ -228,7 +228,7 @@ class Setup(object):
             admin_group=tickets_admin_group,
             due_days=14,
             shipping_and_handling_cents=0,
-            reference_number_template="2017{:05d}",
+            reference_number_template="2018{:05d}",
             contact_email='Traconin lipunmyynti <liput@tracon.fi>',
             ticket_free_text=(
                 "Tämä on sähköinen lippusi Traconiin. Sähköinen lippu vaihdetaan rannekkeeseen\n"
@@ -241,7 +241,7 @@ class Setup(object):
             front_page_text=(
                 "<h2>Tervetuloa ostamaan pääsylippuja Traconiin!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                "<p>Lue lisää tapahtumasta <a href='http://2017.tracon.fi'>Traconin kotisivuilta</a>.</p>"
+                "<p>Lue lisää tapahtumasta <a href='http://2018.tracon.fi'>Traconin kotisivuilta</a>.</p>"
             ),
         )
 
@@ -266,60 +266,60 @@ class Setup(object):
             return limit_group
 
         for product_info in [
-            dict(
-                name='Viikonloppulippu',
-                description='Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
-                limit_groups=[
-                    limit_group('Lauantain liput', 4300),
-                    limit_group('Sunnuntain liput', 4300),
-                ],
-                price_cents=2800,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name='Lauantailippu',
-                description='Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan sähköpostitse PDF-tiedostona.',
-                limit_groups=[
-                    limit_group('Lauantain liput', 4300),
-                ],
-                price_cents=2000,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name='Sunnuntailippu',
-                description='Voimassa koko sunnuntaipäivän ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
-                limit_groups=[
-                    limit_group('Sunnuntain liput', 4300),
-                ],
-                price_cents=1800,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name='Iltabilelippu',
-                description='Pääsylippu maksullisiin K18-iltabileisiin Pakkahuoneella. Lisää tietoa iltabileistä lähempänä tapahtumaa. Toimitetaan sähköpostitse PDF-tiedostona.',
-                limit_groups=[
-                    limit_group('Iltabileliput', 1100),
-                ],
-                price_cents=500,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
+            # dict(
+            #     name='Viikonloppulippu',
+            #     description='Voimassa koko viikonlopun ajan la klo 10 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
+            #     limit_groups=[
+            #         limit_group('Lauantain liput', 4300),
+            #         limit_group('Sunnuntain liput', 4300),
+            #     ],
+            #     price_cents=2800,
+            #     requires_shipping=False,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name='Lauantailippu',
+            #     description='Voimassa koko lauantaipäivän ajan la klo 10 - su klo 08. Toimitetaan sähköpostitse PDF-tiedostona.',
+            #     limit_groups=[
+            #         limit_group('Lauantain liput', 4300),
+            #     ],
+            #     price_cents=2000,
+            #     requires_shipping=False,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name='Sunnuntailippu',
+            #     description='Voimassa koko sunnuntaipäivän ajan su klo 00 - su klo 18. Toimitetaan sähköpostitse PDF-tiedostona.',
+            #     limit_groups=[
+            #         limit_group('Sunnuntain liput', 4300),
+            #     ],
+            #     price_cents=1800,
+            #     requires_shipping=False,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name='Iltabilelippu',
+            #     description='Pääsylippu maksullisiin K18-iltabileisiin Pakkahuoneella. Lisää tietoa iltabileistä lähempänä tapahtumaa. Toimitetaan sähköpostitse PDF-tiedostona.',
+            #     limit_groups=[
+            #         limit_group('Iltabileliput', 1100),
+            #     ],
+            #     price_cents=500,
+            #     requires_shipping=False,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
             # dict(
             #     name='Lattiamajoitus 1 yö pe-la - Aleksanterin koulu (sis. makuualusta)',
             #     description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
             #     limit_groups=[
-            #         limit_group('Majoitus Aleksanteri pe-la', 130),
+            #         limit_group('Majoitus Aleksanteri pe-la', 100),
             #     ],
             #     price_cents=1300,
             #     requires_shipping=False,
@@ -332,7 +332,7 @@ class Setup(object):
             #     name='Lattiamajoitus 1 yö la-su - Aleksanterin koulu (sis. makuualusta)',
             #     description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
             #     limit_groups=[
-            #         limit_group('Majoitus Aleksanteri la-su', 130),
+            #         limit_group('Majoitus Aleksanteri la-su', 100),
             #     ],
             #     price_cents=1300,
             #     requires_shipping=False,
@@ -399,6 +399,7 @@ class Setup(object):
             Role,
             Room,
             SpecialStartTime,
+            Tag,
             TimeBlock,
             View,
         )
@@ -506,12 +507,16 @@ class Setup(object):
 
         for start_time, end_time in [
             (
-                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
-                self.event.end_time.replace(hour=1, minute=0, tzinfo=self.tz),
+                datetime(2018, 9, 7, 16, 0, tzinfo=self.tz),
+                datetime(2018, 9, 7, 21, 0, tzinfo=self.tz),
             ),
             (
-                self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),
-                self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),
+                datetime(2018, 9, 8, 9, 0, tzinfo=self.tz),
+                datetime(2018, 9, 9, 1, 0, tzinfo=self.tz),
+            ),
+            (
+                datetime(2018, 9, 9, 9, 0, tzinfo=self.tz),
+                datetime(2018, 9, 9, 18, 0, tzinfo=self.tz),
             ),
         ]:
             TimeBlock.objects.get_or_create(
@@ -535,10 +540,10 @@ class Setup(object):
                     'Pieni sali',
                     'Sonaatti 1',
                     'Sonaatti 2',
-                    'Puisto - Iso miittiteltta',
-                    'Puisto - Pieni miittiteltta',
                     'Duetto 2',
                     'Maestro',
+                    'Puisto - Iso miittiteltta',
+                    'Puisto - Pieni miittiteltta',
                 ]),
             ]:
                 rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
@@ -548,14 +553,27 @@ class Setup(object):
                 view.rooms = rooms
                 view.save()
 
+        for tag_title, tag_class in [
+            ('Suositeltu', 'hilight'),
+            ('Musiikki', 'label-info'),
+            ('In English', 'label-success'),
+            ('K-18', 'label-danger'),
+            ('Paikkaliput', 'label-warning'),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    style=tag_class,
+                ),
+            )
+
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='rpg',
             defaults=dict(
                 title='Tarjoa pöytäroolipeliä',
-                programme_form_code='events.tracon2017.forms:RpgForm',
-                active_from=datetime(2017, 2, 2, 22, 47, tzinfo=self.tz),
-                active_until=None,
+                programme_form_code='events.tracon2018.forms:RpgForm',
                 num_extra_invites=0,
                 order=10,
             )
@@ -568,7 +586,6 @@ class Setup(object):
                 title='Tarjoa puhe- tai muuta ohjelmaa',
                 short_description='Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole pöytäroolipeli.',
                 programme_form_code='programme.forms:ProgrammeOfferForm',
-                active_from=datetime(2017, 2, 2, 22, 47, tzinfo=self.tz),
                 num_extra_invites=3,
                 order=30,
             )
@@ -650,11 +667,6 @@ class Setup(object):
                 )
             )
 
-            # TODO once mailing lists exist
-            # if not team.email:
-            #     team.email = email
-            #     team.save()
-
     def setup_directory(self):
         from directory.models import DirectoryAccessGroup
 
@@ -663,14 +675,14 @@ class Setup(object):
         DirectoryAccessGroup.objects.get_or_create(
             organization=self.event.organization,
             group=labour_admin_group,
-            active_from=datetime(2017, 7, 30, 12, 37, 0, tzinfo=self.tz),
+            active_from=datetime(2017, 9, 16, 23, 12, 0, tzinfo=self.tz),
             active_until=self.event.end_time + timedelta(days=30),
         )
 
 
 class Command(BaseCommand):
     args = ''
-    help = 'Setup tracon2017 specific stuff'
+    help = 'Setup tracon2018 specific stuff'
 
     def handle(self, *args, **opts):
         Setup().setup(test=settings.DEBUG)

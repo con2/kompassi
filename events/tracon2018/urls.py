@@ -1,16 +1,12 @@
-# encoding: utf-8
+from django.conf.urls import url
 
-
-
-from django.conf.urls import include, url
-
-from .views import tracon2017_afterparty_participants_view
+from .views import tracon2018_afterparty_participants_view
 
 
 urlpatterns = [
     url(
-        r'^events/(?P<event_slug>tracon2017)/survey/kaatoilmo/results.xlsx$',
-        tracon2017_afterparty_participants_view,
-        name='tracon2017_afterparty_participants_view',
+        r'^events/(?P<event_slug>tracon2018)/labour/surveys/kaatoilmo/results.xlsx$',
+        tracon2018_afterparty_participants_view,
+        name='tracon2018_afterparty_participants_view',
     ),
 ]
