@@ -308,12 +308,12 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
                 if id != '16:00'
             ]
 
-        # if self.instance.return_coach_departure_time != '01:00':
-        #     self.fields['return_coach_departure_time'].choices = [
-        #         (id, text)
-        #         for id, text in self.fields['return_coach_departure_time'].choices
-        #         if id != '01:00'
-        #     ]
+        if self.instance.return_coach_departure_time != '01:00':
+            self.fields['return_coach_departure_time'].choices = [
+                (id, text)
+                for id, text in self.fields['return_coach_departure_time'].choices
+                if id != '01:00'
+            ]
 
     @classmethod
     def get_instance_for_event_and_person(cls, event, person):
