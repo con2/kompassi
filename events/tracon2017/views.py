@@ -1,9 +1,13 @@
+from django.db.models import Count, IntegerField, Case, When
 from django.utils.timezone import now
+from django.shortcuts import render
 
 from core.csv_export import csv_response
+from core.models import Event
 from labour.helpers import labour_admin_required
 
 from .proxies import SignupExtraAfterpartyProxy
+from .models import SignupExtra, Poison
 
 
 @labour_admin_required
@@ -23,3 +27,32 @@ def tracon2017_afterparty_participants_view(request, vars, event):
         filename=filename,
         m2m_mode='separate_columns',
     )
+
+
+def count_passengers(signup_extras, field_name):
+    return signup_extras.values_list(field_name).annotate(
+        passengers=Case(
+            When(afterparty_participation=True, then=1),
+            default=0,
+            output_field=IntegerField(),
+        ),
+    )
+
+
+def tracon2017_afterparty_summary_view(request, event_slug):
+    assert event_slug == 'tracon2017'
+    event = Event.objects.get(slug=event_slug)
+
+    poisons = Poison.objects.all().annotate(victims=Count('signupextra'))
+    signup_extras = SignupExtra.objects.filter(afterparty_participation=True)
+    outward_coaches = count_passengers(signup_extras, 'outward_coach_departure_time')
+    return_coaches = count_passengers(signup_extras, 'return_coach_departure_time')
+
+    vars = dict(
+        event=event,
+        poisons=poisons,
+        outward_coaches=outward_coaches,
+        return_coaches=return_coaches,
+    )
+
+    return render(request, 'tracon2017_afterparty_summary_view.jade', vars)

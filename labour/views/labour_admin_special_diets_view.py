@@ -1,11 +1,6 @@
-# encoding: utf-8
-
-
-
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 
 from django.contrib import messages
-from django.db.models import Count, Case, When
 from django.shortcuts import render, redirect
 from django.utils.translation import ugettext_lazy as _
 
@@ -36,12 +31,12 @@ class SpecialDiets(defaultdict):
 def labour_admin_special_diets_view(request, vars, event):
     meta = event.labour_event_meta
     SignupExtra = meta.signup_extra_model
-    SpecialDiet = SignupExtra.get_special_diet_model()
     special_diet_field = SignupExtra.get_special_diet_field()
     special_diet_other_field = SignupExtra.get_special_diet_other_field()
 
     if not any((special_diet_field, special_diet_other_field)):
         messages.error(request, _('This event does not record special diets.'))
+        return redirect('labour_admin_dashboard_view', event.slug)
 
     # XXX Tracon 11 afterparty participation hack
     if request.GET.get('afterparty_participation'):
