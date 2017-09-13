@@ -1,3 +1,5 @@
+from collections import Counter
+
 from django.db.models import Count, IntegerField, Case, When
 from django.utils.timezone import now
 from django.shortcuts import render
@@ -30,13 +32,16 @@ def tracon2017_afterparty_participants_view(request, vars, event):
 
 
 def count_passengers(signup_extras, field_name):
-    return signup_extras.values_list(field_name).annotate(
-        passengers=Case(
-            When(afterparty_participation=True, then=1),
-            default=0,
-            output_field=IntegerField(),
-        ),
-    )
+    # wrong: returns one row per SignupExtra
+    # return signup_extras.values_list(field_name).annotate(
+    #     passengers=Case(
+    #         When(afterparty_participation=True, then=1),
+    #         default=0,
+    #         output_field=IntegerField(),
+    #     ),
+    # )
+
+    return list(Counter(signup_extras.values_list(field_name, flat=True)).items())
 
 
 def tracon2017_afterparty_summary_view(request, event_slug):
