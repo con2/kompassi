@@ -28,6 +28,13 @@ class Entry(models.Model):
         verbose_name=_('Context'),
         help_text=_('The URL of the view in which the event occurred.'),
     )
+    ip_address = models.CharField(
+        max_length=48,
+        blank=True,
+        default='',
+        verbose_name=_('IP address'),
+        help_text=_('The IP address this action was performed from.'),
+    )
 
     # various target fkeys, sparse
     event = models.ForeignKey('core.Event', **TARGET_FKEY_ATTRS)

@@ -3,6 +3,8 @@ import logging
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
+from ipware.ip import get_ip
+
 from .models import Entry
 
 
@@ -52,7 +54,8 @@ def attrs_from_request(request):
     # Caveat: What if the target does not exist?
     return dict(
         created_by=request.user if request.user.is_authenticated() else None,
-        context=request.build_absolute_uri(request.get_full_path())
+        context=request.build_absolute_uri(request.get_full_path()),
+        ip_address=get_ip(request),
     )
 
 

@@ -8,6 +8,7 @@ from .models import Entry, Subscription
 ENTRY_READ_ONLY_FIELDS = (
     'created_at',
     'created_by',
+    'ip_address',
     'entry_type',
     'message',
     'context',
