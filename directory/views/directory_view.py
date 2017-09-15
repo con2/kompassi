@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext_lazy as _
 
 from core.sort_and_filter import Filter
+from event_log.utils import emit
 
 from ..forms import SearchForm
 from ..helpers import directory_access_required
@@ -53,5 +54,10 @@ def directory_view(request, vars, organization):
         search_form=search_form,
         show_warning=not hide_warning,
     )
+
+    if search_form.is_valid() and query:
+        emit('directory.search.performed', search_term=query, request=request, organization=organization)
+    else:
+        emit('directory.viewed', request=request, organization=organization)
 
     return render(request, 'directory_view.jade', vars)

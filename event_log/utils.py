@@ -47,6 +47,28 @@ def log_creations(model, **extra_kwargs_for_emit):
     return on_save_emit_event_log_entry
 
 
+def attrs_from_request(request):
+    # TODO: Should we try to deduce `organization` and `event` from URL?
+    # Caveat: What if the target does not exist?
+    return dict(
+        created_by=request.user if request.user.is_authenticated() else None,
+        context=request.build_absolute_uri(request.get_full_path())
+    )
+
+
 def emit(entry_type_name, **kwargs):
+    """
+    Records a log entry into the event log.
+
+    `kwargs` are passed to the Entry constructor with the exception of the following special kwargs:
+
+    * `request`: If present, sets fields that can be deduced from the request.
+    """
+    request = kwargs.pop('request', None)
+    if request is not None:
+        kwargs = dict(attrs_from_request(request), **kwargs)
+
+    logger.debug('event_log.utils.emit %s', entry_type_name)
+
     entry = Entry(entry_type=entry_type_name, **kwargs)
     entry.save()

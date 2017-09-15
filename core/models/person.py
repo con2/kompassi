@@ -551,7 +551,7 @@ class Person(models.Model):
 
         return vcard.serialize()
 
-    def log_view(self, request):
+    def log_view(self, request, **extra_attrs):
         """
         Logs an instance of this persons' Personally Identifiable Information being viewed by
         another user.
@@ -560,6 +560,6 @@ class Person(models.Model):
         emit(
             'core.person.viewed',
             person=self,
-            context=request.build_absolute_uri(request.path),
-            created_by=request.user,
+            request=request,
+            **extra_attrs
         )

@@ -32,9 +32,11 @@ class Entry(models.Model):
     # various target fkeys, sparse
     event = models.ForeignKey('core.Event', **TARGET_FKEY_ATTRS)
     person = models.ForeignKey('core.Person', **TARGET_FKEY_ATTRS)
+    organization = models.ForeignKey('core.Organization', **TARGET_FKEY_ATTRS)
     feedback_message = models.ForeignKey('feedback.FeedbackMessage', **TARGET_FKEY_ATTRS)
     event_survey_result = models.ForeignKey('surveys.EventSurveyResult', **TARGET_FKEY_ATTRS)
     global_survey_result = models.ForeignKey('surveys.GlobalSurveyResult', **TARGET_FKEY_ATTRS)
+    search_term = models.CharField(max_length=255, blank=True, default='')
 
     @property
     def survey_result(self):
