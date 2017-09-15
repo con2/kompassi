@@ -54,4 +54,6 @@ def directory_person_view(request, vars, organization, person_id):
         involvement_in_future_events=involvement_in_future_events,
     )
 
+    person.log_view(request)
+
     return render(request, 'directory_person_view.jade', vars)

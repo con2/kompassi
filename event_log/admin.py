@@ -6,10 +6,11 @@ from .models import Entry, Subscription
 
 
 class EntryAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'entry_type', 'created_by')
+    list_display = ('created_at', 'entry_type', 'message')
+    list_filter = ('entry_type',)
     raw_id_fields = ('created_by',)
-    fields = ('created_at', 'entry_type', 'message', 'created_by')
-    readonly_fields = ('created_at', 'entry_type', 'message', 'created_by')
+    fields = ('created_at', 'entry_type', 'message', 'context', 'created_by')
+    readonly_fields = ('created_at', 'entry_type', 'message', 'context', 'created_by')
 
     def has_add_permission(self, *args, **kwargs):
         return False

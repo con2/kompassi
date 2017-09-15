@@ -21,9 +21,17 @@ class Entry(models.Model):
         blank=True,
     )
     entry_type = models.CharField(max_length=255)
+    context = models.CharField(
+        max_length=1024,
+        blank=True,
+        default='',
+        verbose_name=_('Context'),
+        help_text=_('The URL of the view in which the event occurred.'),
+    )
 
     # various target fkeys, sparse
     event = models.ForeignKey('core.Event', **TARGET_FKEY_ATTRS)
+    person = models.ForeignKey('core.Person', **TARGET_FKEY_ATTRS)
     feedback_message = models.ForeignKey('feedback.FeedbackMessage', **TARGET_FKEY_ATTRS)
     event_survey_result = models.ForeignKey('surveys.EventSurveyResult', **TARGET_FKEY_ATTRS)
     global_survey_result = models.ForeignKey('surveys.GlobalSurveyResult', **TARGET_FKEY_ATTRS)

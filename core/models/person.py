@@ -550,3 +550,16 @@ class Person(models.Model):
         vcard.tel.type_param = 'cell'
 
         return vcard.serialize()
+
+    def log_view(self, request):
+        """
+        Logs an instance of this persons' Personally Identifiable Information being viewed by
+        another user.
+        """
+        from event_log.utils import emit
+        emit(
+            'core.person.viewed',
+            person=self,
+            context=request.build_absolute_uri(request.path),
+            created_by=request.user,
+        )

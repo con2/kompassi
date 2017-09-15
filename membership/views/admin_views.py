@@ -155,6 +155,8 @@ def membership_admin_member_view(request, vars, organization, person_id):
         tabs=tabs,
     )
 
+    membership.person.log_view(request)
+
     return render(request, 'membership_admin_member_view.jade', vars)
 
 
