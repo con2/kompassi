@@ -24,6 +24,8 @@ def log_creations(model, **extra_kwargs_for_emit):
 
     For examples on usage, see `feedback/handlers/feedback_message.py`.
     """
+    # TODO Register the corresponding event type automatically. Now it needs to be registered by the caller.
+
     meta = model._meta
     entry_type_name = '{app_label}.{model_name}.created'.format(
         app_label=meta.app_label,
