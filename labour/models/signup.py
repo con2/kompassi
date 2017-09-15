@@ -775,7 +775,6 @@ class Signup(models.Model, CsvExportMixin):
 
             for model in related_models:
                 for field in model._meta.fields:
-                    print (model, field.name)
                     if (model, field.name) in fields_to_skip:
                         continue
 

@@ -1,11 +1,12 @@
 from collections import Counter
 
-from django.db.models import Count, IntegerField, Case, When
+from django.db.models import Count
 from django.utils.timezone import now
 from django.shortcuts import render
 
 from core.csv_export import csv_response
 from core.models import Event
+from event_log.utils import emit
 from labour.helpers import labour_admin_required
 
 from .proxies import SignupExtraAfterpartyProxy
@@ -23,6 +24,8 @@ def tracon2017_afterparty_participants_view(request, vars, event):
         timestamp=now().strftime('%Y%m%d%H%M%S'),
         format=format,
     )
+
+    emit('core.person.exported', request=request, event=event)
 
     return csv_response(event, SignupExtraAfterpartyProxy, participants,
         dialect='xlsx',

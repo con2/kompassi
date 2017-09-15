@@ -1,16 +1,12 @@
-# encoding: utf-8
-
-
-
 from collections import OrderedDict, namedtuple
 
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
 
 from core.sort_and_filter import Sorter, Filter
 from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, csv_response
+from event_log.utils import emit
 
 from ..helpers import labour_admin_required
 from ..filters import SignupStateFilter
@@ -143,6 +139,8 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
             timestamp=now().strftime('%Y%m%d%H%M%S'),
             format=format,
         )
+
+        emit('core.person.exported', request=request, event=event)
 
         return csv_response(event, SignupClass, signups,
             dialect=CSV_EXPORT_FORMATS[format],
