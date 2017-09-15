@@ -10,6 +10,7 @@ from core.models import Organization
 from core.sort_and_filter import Filter
 from core.tabs import Tab
 from core.utils import url, initialize_form
+from event_log.utils import emit
 
 from ..forms import MemberForm, MembershipForm
 from ..helpers import membership_admin_required
@@ -95,6 +96,8 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
             timestamp=now().strftime('%Y%m%d%H%M%S'),
             format=format,
         )
+
+        emit('core.person.exported', request=request, organization=organization)
 
         return csv_response(organization, Membership, memberships,
             dialect=format,

@@ -1,20 +1,14 @@
-# encoding: utf-8
-
 import datetime
-from time import mktime
 from collections import defaultdict
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.messages import add_message, INFO, WARNING, ERROR
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.core.urlresolvers import reverse
-from django.db.models import Sum, Q, F, Case, When, Value, IntegerField
-from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
+from django.db.models import Sum, Q, Case, When, IntegerField
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.template import RequestContext
 from django.utils.timezone import now
-from django.views.decorators.http import require_POST, require_safe, require_http_methods
+from django.views.decorators.http import require_safe, require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 
 try:
@@ -26,6 +20,7 @@ except ImportError:
 from core.batches_view import batches_view
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
 from core.utils import url, initialize_form, slugify
+from event_log.utils import emit
 
 from ..forms import (
     AccommodationInformationForm,
@@ -44,7 +39,6 @@ from ..models import (
     Order,
     ShirtOrder,
     ShirtSize,
-    ShirtType,
     UNPAID_CANCEL_HOURS,
 )
 
@@ -212,7 +206,7 @@ def tickets_admin_orders_view(request, vars, event):
 
 
 @tickets_admin_required
-@require_http_methods(["GET","POST"])
+@require_http_methods(["GET", "POST"])
 def tickets_admin_order_view(request, vars, event, order_id):
     order = get_object_or_404(Order, id=int(order_id), event=event)
 
@@ -294,6 +288,10 @@ def tickets_admin_order_view(request, vars, event, order_id):
         form=order_product_forms,
     )
 
+    # Slightly abusing the core.person.view entry type as there is no Person.
+    # But the context field provides enough clue.
+    emit('core.person.viewed', request=request, event=event)
+
     return render(request, 'tickets_admin_order_view.jade', vars)
 
 
@@ -347,7 +345,7 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
                 # Accommodation information is manually added
                 order_product__isnull=True
             ) | Q(
-            # Order is confirmed
+                # Order is confirmed
                 order_product__order__confirm_time__isnull=False,
 
                 # Order is paid
@@ -372,6 +370,8 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
             timestamp=now().strftime('%Y%m%d%H%M%S'),
             format=format,
         )
+
+        emit('core.person.exported', request=request, event=event)
 
         return csv_response(event, AccommodationInformation, accommodees, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
     elif format == 'screen':
