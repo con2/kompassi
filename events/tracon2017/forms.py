@@ -301,7 +301,7 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
         self.helper.form_tag = False
 
         # Ban most popular bus choices… unless they have already signed up for it
-        if self.instance.outward_coach_departure_time in ['16:00', '17:00']:
+        if self.instance.outward_coach_departure_time not in ['16:00', '17:00']:
             self.fields['outward_coach_departure_time'].choices = [
                 (id, text)
                 for id, text in self.fields['outward_coach_departure_time'].choices
