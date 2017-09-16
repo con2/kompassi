@@ -8,6 +8,7 @@ Our strategy to database security in production deployments is as follows:
 ## Restricted tables
 
 * `django_migrations` – Why have anything else than `SELECT` here if you are not running migrations?
+* `django_admin_log` – Contains actions performed in the Django Admin UI. No deleting or changing rows.
 * `event_log_entry` – Contains the audit log. Read & append only. No deleting or changing rows.
 
 ## Scripts

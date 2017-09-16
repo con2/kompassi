@@ -12,4 +12,7 @@ GRANT SELECT, INSERT ON event_log_entry TO kompassi;
 
 REVOKE ALL ON django_migrations FROM kompassi;
 GRANT SELECT ON django_migrations TO kompassi;
+
+REVOKE ALL ON django_admin_log FROM kompassi;
+GRANT SELECT, INSERT on django_admin_log TO kompassi;
 COMMIT;
