@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from access.email_aliases import nick
 from access.utils import emailify
 from labour.models import Signup
