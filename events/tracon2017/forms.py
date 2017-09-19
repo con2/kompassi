@@ -308,11 +308,11 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
                 if id not in ['16:00', '17:00']
             ]
 
-        if self.instance.return_coach_departure_time != '01:00':
+        if self.instance.return_coach_departure_time not in ['00:00', '01:00']:
             self.fields['return_coach_departure_time'].choices = [
                 (id, text)
                 for id, text in self.fields['return_coach_departure_time'].choices
-                if id != '01:00'
+                if id not in ['00:00', '01:00']
             ]
 
     @classmethod
