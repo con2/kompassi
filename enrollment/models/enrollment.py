@@ -72,7 +72,8 @@ class Enrollment(models.Model):
         help_text=(
             'Mikäli edustat jotain tapahtumaorganisaatiota, voit kertoa siitä tässä. '
             'Conconiin ovat tervetulleita osallistumaan kaikki kiinnostuneet, eli minkään '
-            'tapahtumaorganisaation edustaminen ei ole edellytys osallistumiselle.'
+            'tapahtumaorganisaation edustaminen ei ole edellytys osallistumiselle. '
+            'Jos annat julkaista nimesi osallistujalistassa, myös tämä kenttä näytetään siinä.'
         ),
     )
 
