@@ -115,6 +115,9 @@ class Organization(models.Model):
         # or are members
         q |= Q(memberships__organization=self)
 
+        # or have enrolled
+        q |= Q(enrollment__event__organization=self)
+
         return Person.objects.filter(q).distinct()
 
     def as_dict(self):

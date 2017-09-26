@@ -7,6 +7,7 @@ from django.utils.timezone import now
 from labour.models import Signup
 from membership.models import Membership
 from programme.models import ProgrammeRole
+from enrollment.models import Enrollment
 
 from ..helpers import directory_access_required
 
@@ -14,9 +15,11 @@ from ..helpers import directory_access_required
 Involvement = namedtuple('Involvement', [
     'event',
     'signup',
+    'enrollment',
     'programme_roles',
     'current_user_is_labour_admin',
     'current_user_is_programme_admin',
+    'current_user_is_enrollment_admin',
 ])
 
 
@@ -24,10 +27,20 @@ def get_involvement(request, event, person):
     return Involvement(
         event=event,
         signup=Signup.objects.filter(person=person, event=event).first(),
+        enrollment=Enrollment.objects.filter(person=person, event=event).first(),
         programme_roles=ProgrammeRole.objects.filter(person=person, programme__category__event=event),
-        current_user_is_labour_admin=event.labour_event_meta.is_user_admin(request.user),
-        current_user_is_programme_admin=event.programme_event_meta.is_user_admin(request.user),
-
+        current_user_is_labour_admin=(
+            event.labour_event_meta and
+            event.labour_event_meta.is_user_admin(request.user)
+        ),
+        current_user_is_programme_admin=(
+            event.programme_event_meta and
+            event.programme_event_meta.is_user_admin(request.user)
+        ),
+        current_user_is_enrollment_admin=(
+            event.enrollment_event_meta and
+            event.enrollment_event_meta.is_user_admin(request.user)
+        ),
     )
 
 

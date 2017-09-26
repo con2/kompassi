@@ -1,12 +1,14 @@
-# encoding: utf-8
-
-
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from core.models import EventMetaBase
 from core.utils import alias_property, is_within_period
+
+
+INITIAL_STATE_CHOICES = [
+    ('NEW', _('New')),
+    ('ACCEPTED', _('Accepted')),
+]
 
 
 class EnrollmentEventMeta(EventMetaBase):
@@ -16,7 +18,7 @@ class EnrollmentEventMeta(EventMetaBase):
     form_class_path = models.CharField(
         max_length=63,
         help_text=_("Reference to form class. Example: events.yukicon2016.forms:EnrollmentForm"),
-    );
+    )
 
     enrollment_opens = models.DateTimeField(
         null=True,
@@ -42,6 +44,23 @@ class EnrollmentEventMeta(EventMetaBase):
         )
     )
 
+    is_participant_list_public = models.BooleanField(
+        default=False,
+        verbose_name=_('Participant list is public'),
+        help_text=_(
+            'If this option is selected, the names of participants who have given the permission to do so '
+            'will be published.'
+        )
+    )
+
+    initial_state = models.CharField(
+        default='ACCEPTED',
+        choices=INITIAL_STATE_CHOICES,
+        max_length=max(len(key) for (key, label) in INITIAL_STATE_CHOICES),
+        verbose_name=_('Initial state'),
+        help_text=_('Change this to New to require approval for new enrollments.'),
+    )
+
     @property
     def form_class(self):
         if not getattr(self, '_form_class', None):
@@ -56,12 +75,11 @@ class EnrollmentEventMeta(EventMetaBase):
 
     @property
     def enrollment_form_message(self):
-        if self.override_enrollment_form_message:
-            return self.override_enrollment_form_message
-        else:
-            return _(
-                'Using this form you can enroll in the event. Please note that filling in the form '
-                'does not guarantee automatic admittance into the event. You will be contacted by '
-                'the event organizer and notified of the decision whether to accept your enrollment '
-                'or not.'
-            )
+        return self.override_enrollment_form_message
+        # else:
+        #     return _(
+        #         'Using this form you can enroll in the event. Please note that filling in the form '
+        #         'does not guarantee automatic admittance into the event. You will be contacted by '
+        #         'the event organizer and notified of the decision whether to accept your enrollment '
+        #         'or not.'
+        #     )

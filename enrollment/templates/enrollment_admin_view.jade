@@ -3,40 +3,14 @@ extends core_admin_base
 block title
   | {% trans "Enrolled people" %}
 block admin_content
-  //-   .panel.panel-default
-  //-     .panel-heading: strong {% trans "Filter enrolled" %}
-  //-     .panel-body.signup-filters
-  //-       .row
-  //-         .col-md-3: strong {% trans "Active" %}
-  //-         .col-md-9
-  //-           for it, active in active_filters
-  //-             if active
-  //-               span.label.label-brand.kompassi-space-after
-  //-                 a(href='?{{ it.qs_del }}') {{ it.name }}
-  //-             else
-  //-               span.label.label-default.kompassi-space-after
-  //-                 a(href='?{{ it.qs_add }}') {{ it.name }}
-  //-       .row
-  //-         .col-md-3: strong {% trans "Personnel class" %}
-  //-         .col-md-9
-  //-           for it, active in personnel_class_filters
-  //-             if active
-  //-               span.label.label-brand.kompassi-space-after
-  //-                 a(href='?{{ it.qs_del }}') {{ it.name }}
-  //-             else
-  //-               span.label.label-default.kompassi-space-after
-  //-                 a(href='?{{ it.qs_add }}') {{ it.name }}
-  //- hr
-  //- .row
-  //-   .col-md-3: strong Luettelojärjestys
-  //-   .col-md-9
-  //-     for so, active in sorter
-  //-       if active
-  //-         span.label.label-brand.kompassi-space-after
-  //-           a(href='?{{ so.qs_add }}') {{ so.name }}
-  //-       else
-  //-         span.label.label-default.kompassi-space-after
-  //-           a(href='?{{ so.qs_add }}') {{ so.name }}
+  .panel.panel-default
+    .panel-heading: strong {% trans "Filter enrolled" %}
+    .panel-body
+      .row
+        .col-md-3: strong {% trans "State" %}
+        .col-md-9
+          - with state_filters as filters
+            include core_filter_labels.jade
 
   .panel.panel-default
     .panel-heading: strong {% trans "Enrolled people" %}
@@ -48,6 +22,7 @@ block admin_content
           th {% trans "Nick" %}
           th {% trans "E-mail address" %}
           th {% trans "Phone number" %}
+          th {% trans "State" %}
       tbody
         for enrollment in enrollments
           tr
@@ -56,6 +31,7 @@ block admin_content
             td= enrollment.person.nick
             td= enrollment.person.email
             td= enrollment.person.phone
+            td: span.label(class="{{ enrollment.state_label_class }}") {{ enrollment.get_state_display }}
     .panel-footer.clearfix
       if num_enrolled
         //- .btn-group.pull-right

@@ -182,3 +182,23 @@ msgstr "Olet jo ilmoittautunut tähän tapahtumaan"
 msgid "You have enrollment admin privileges for this event"
 msgstr "Sinulla on ylläpitäjän oikeudet tähän tapahtumaan"
 
+msgid "The participant list of this event is public"
+msgstr "Tapahtuman osallistujalista on julkinen."
+
+msgid "See participant list…"
+msgstr "Katsele osallistujalistaa…"
+
+msgid "Change or cancel your enrollment…"
+msgstr "Muokkaa ilmoittautumistasi tai peru se…"
+
+msgid "One does not simply cancel an enrollment that has not yet been made."
+msgstr "Ilmoittautumista, jota ei ole vielä tehty, ei noin vain peruta."
+
+msgid "You can no longer change your enrollment yourself."
+msgstr "Et voi enää muokata ilmoittautumistasi itse."
+
+msgid "Filter enrolled"
+msgstr "Suodata ilmoittautuneita"
+
+msgid "New"
+msgstr "Uusi"

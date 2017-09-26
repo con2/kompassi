@@ -4,7 +4,12 @@ extends base.jade
 block title
   | {% trans "Enroll" %}
 block content
-  h2 {% trans "Enroll" %}
+  h2
+    if already_enrolled
+      | {{ event.name }}: Muokkaa ilmoittautumistasi
+    else
+      | {{ event.name }}: {% trans "Enroll" %}
+
   {{ event.enrollment_event_meta.enrollment_form_message|safe|linebreaks }}
 
   .panel.panel-default
@@ -45,12 +50,29 @@ block content
       .text-muted {% trans "Please check your contact information and update your profile if necessary. By submitting this form you agree to these contact details being shared with the event organizer." %}
 
   form(method='POST', role='form').form-horizontal
+    //- Capture Enter presses
+    button.hidden(type='submit', name='action', value='save-return')
+
     .panel.panel-default
-      .panel-heading: strong {% trans "Additional information" %}
+      .panel-heading
+        if already_enrolled
+          .pull-right
+            span.label(class="{{ enrollment.state_label_class }}") {{ enrollment.get_state_display }}
+        strong {% trans "Enrollment" %}
       .panel-body
         - crispy form
       .panel-footer.clearfix
         .btn-group.pull-right
-          button.btn.btn-success(type='submit')
+          a.btn.btn-default(href='{% url "core_event_view" event.slug %}')
+            i.fa.fa-undo.kompassi-icon-space-right
+            | Palaa tapahtumasivulle
+          if already_enrolled
+            button.btn.btn-danger(type='submit', name='action', value='cancel-enrollment')
+              i.fa.fa-trash.kompassi-icon-space-right
+              | Peru ilmoittautuminen
+          button.btn.btn-success(type='submit', name='action', value='save-return')
             i.fa.fa-check.kompassi-icon-space-right
-            | {% trans "Enroll" %}
+            if already_enrolled
+              | Tallenna muutokset
+            else
+              | {% trans "Enroll" %}

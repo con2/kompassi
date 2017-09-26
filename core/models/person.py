@@ -384,6 +384,9 @@ class Person(models.Model):
         # or signups
         q |= Q(signup__person=self)
 
+        # or enrollments
+        q |= Q(enrollment__person=self)
+
         q &= Q(**kwargs)
 
         return Event.objects.filter(q).distinct()
@@ -563,3 +566,11 @@ class Person(models.Model):
             request=request,
             **extra_attrs
         )
+
+    @property
+    def with_privacy(self):
+        if not hasattr(self, '_privacy_adapter'):
+            # XXX generify
+            from badges.proxies.badge.privacy import BadgePrivacyAdapter
+            self._privacy_adapter = BadgePrivacyAdapter(self)
+        return self._privacy_adapter

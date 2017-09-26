@@ -4,12 +4,33 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
+STATE_CHOICES = [
+    ('NEW', _('New')),
+    ('ACCEPTED', _('Accepted')),
+    ('REJECTED', _('Rejected')),
+    ('CANCELLED', _('Cancelled')),
+]
+
+STATE_LABEL_CLASSES = dict(
+    NEW='label-info',
+    ACCEPTED='label-success',
+    REJECTED='label-danger',
+    CANCELLED='label-danger',
+)
+
+
 class Enrollment(models.Model):
     """
     Holds all the possible fields an enrollment instance may have
     """
     event = models.ForeignKey('core.event')
     person = models.ForeignKey('core.person')
+    state = models.CharField(
+        max_length=max(len(key) for (key, label) in STATE_CHOICES),
+        choices=STATE_CHOICES,
+        default='ACCEPTED',
+        verbose_name=_('State'),
+    )
 
     special_diet = models.ManyToManyField(
         'enrollment.SpecialDiet',
@@ -29,6 +50,44 @@ class Enrollment(models.Model):
         )
     )
 
+    is_public = models.NullBooleanField(
+        blank=False,
+        verbose_name='Näkyminen osallistujalistassa',
+        choices=[
+            (True, 'Sallin nimeni julkaisemisen osallistujalistassa'),
+            (False, 'Kiellän nimeni julkaisemisen osallistujalistassa'),
+        ],
+        help_text=(
+            'Tästä tapahtumasta julkistetaan osallistujalista, jossa näkyvät niiden osallistujien nimet, '
+            'jotka ovat antaneet siihen luvan. Nimesi näytetään valitsemassasi muodossa, jonka voit '
+            'tarkistaa ja muuttaa <a href="/profile" target="_blank">profiilissasi</a>.'
+        ),
+    )
+
+    concon_event_affiliation = models.CharField(
+        max_length=512,
+        blank=True,
+        default='',
+        verbose_name='Mitä tapahtumia edustat?',
+        help_text=(
+            'Mikäli edustat jotain tapahtumaorganisaatiota, voit kertoa siitä tässä. '
+            'Conconiin ovat tervetulleita osallistumaan kaikki kiinnostuneet, eli minkään '
+            'tapahtumaorganisaation edustaminen ei ole edellytys osallistumiselle.'
+        ),
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('created at'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('updated at'))
+
+    def cancel(self):
+        assert self.state in ['NEW', 'ACCEPTED']
+        self.state = 'CANCELLED'
+        self.save()
+
+    @property
+    def is_active(self):
+        return self.state == 'ACCEPTED'
+
     @property
     def formatted_special_diet(self):
         return ', '.join(sd.name for sd in self.special_diet.all())
@@ -38,3 +97,7 @@ class Enrollment(models.Model):
             event=self.event,
             person=self.person,
         )
+
+    @property
+    def state_label_class(self):
+        return STATE_LABEL_CLASSES.get(self.state, 'label-default')

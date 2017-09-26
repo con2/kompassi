@@ -1,13 +1,24 @@
 - load trans from i18n
 h3 {% trans "Enrollment" %}
 if enrollment
-  h4 {% trans "You have already signed up for this event" %}
+  if enrollment.is_active
+    h4 {% trans "You have already signed up for this event" %}
+  else
+    h4 {% trans "Your enrollment for this event is awaiting approval" %}
+  if event.enrollment_event_meta.is_enrollment_open
+    a(href='{% url "enrollment_enroll_view" event.slug %}').btn.btn-primary {% trans "Change or cancel your enrollment…" %}
+  else
+    p {% trans "Enrollment for this event is not currently open." %} {% trans "You can no longer change your enrollment yourself." %}
 else
   if event.enrollment_event_meta.is_enrollment_open
     h4 {% trans "You can enroll for this event" %}
-    a(href='{% url "enrollment_enroll_view" event.slug %}').btn.btn-primary {% trans "Enroll for this event" %}
+    a(href='{% url "enrollment_enroll_view" event.slug %}').btn.btn-primary {% trans "Enroll for this event…" %}
   else
     h4 {% trans "Enrollment for this event is not currently open." %}
+
+if event.enrollment_event_meta.is_participant_list_public
+  h4 {% trans "The participant list of this event is public" %}
+  a(href='{% url "enrollment_list_view" event.slug %}').btn.btn-primary {% trans "See participant list…" %}
 
 if is_enrollment_admin
   h4 {% trans "You have enrollment admin privileges for this event" %}
