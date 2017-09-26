@@ -5,7 +5,7 @@ def imageMap = [
 
 def deploymentTagMap = [
   "development": "kompassi-staging",
-  "master": "kompassi-deploy"
+  "master": "kompassi-production"
 ]
 
 def tempImage = "tracon/kompassi:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
