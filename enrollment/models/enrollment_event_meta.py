@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import now
 
 from core.models import EventMetaBase
 from core.utils import alias_property, is_within_period
@@ -25,14 +26,12 @@ class EnrollmentEventMeta(EventMetaBase):
         blank=True,
         verbose_name=_("Enrollment opens"),
     )
-    public_from = alias_property('enrollment_opens')
 
     enrollment_closes = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name=_("Enrollment closes"),
     )
-    public_until = alias_property('enrollment_closes')
 
     override_enrollment_form_message = models.TextField(
         blank=True,
@@ -74,6 +73,13 @@ class EnrollmentEventMeta(EventMetaBase):
         return is_within_period(self.enrollment_opens, self.enrollment_closes)
 
     @property
+    def is_public(self):
+        """
+        Alias used by generic_start_stop_view
+        """
+        return self.is_enrollment_open
+
+    @property
     def enrollment_form_message(self):
         return self.override_enrollment_form_message
         # else:
@@ -83,3 +89,28 @@ class EnrollmentEventMeta(EventMetaBase):
         #         'the event organizer and notified of the decision whether to accept your enrollment '
         #         'or not.'
         #     )
+
+    def publish(self):
+        """
+        Used by the start/stop enrollment period view to start the enrollment period. Returns True
+        if the user needs to be warned about a certain corner case where information was lost.
+        """
+        warn = False
+        t = now()
+
+        if self.enrollment_closes and self.enrollment_closes <= t:
+            self.enrollment_closes = None
+            warn = True
+
+        self.enrollment_opens = t
+        self.save()
+
+        return warn
+
+    def unpublish(self):
+        """
+        Used by the start/stop enrollment period view to end the enrollment period. We prefer setting
+        enrollment_closes to clearing enrollment_opens because this causes less information loss.
+        """
+        self.enrollment_closes = now()
+        self.save()

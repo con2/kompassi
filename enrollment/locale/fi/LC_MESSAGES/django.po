@@ -202,3 +202,27 @@ msgstr "Suodata ilmoittautuneita"
 
 msgid "New"
 msgstr "Uusi"
+
+msgid "The enrollment period is currently underway."
+msgstr "Ilmoittautumislomake on parhaillaan auki."
+
+msgid "Here you can set the starting and ending times for the enrollment period. The enrollment form will automatically open at the beginning and close at the end of the enrollment period."
+msgstr "Tässä voit asettaa ilmoittautumisajan alun ja lopun. Ilmoittautumislomake aukeaa automaattisesti ilmoittautumisajan lopussa ja sulkeutuu ilmoittautumisajan lopussa."
+
+msgid "If the <em>Registration starts</em> field is empty, the enrollment form will stay closed. If the <em>Registration starts</em> is set but the <em>Registration closes</em> field is empty, the enrollment form will stay open once the beginning of the enrollment period has been reached."
+msgstr "Jos <em>Ilmoittautumisaika alkaa</em> -kenttä on tyhjä, ilmoittautumislomake pysyy suljettuna. Mikäli <em>Ilmoittautumisaika alkaa</em> -kenttä on asetettu mutta <em>Ilmoittautumisaika päättyy</em> -kenttä on tyhjä, ilmoittautumislomake pysyy auettuaan auki."
+
+msgid "You can also start or stop the enrollment period immediately."
+msgstr "Voit myös avata tai sulkea ilmoittautumislomakkeen heti."
+
+msgid "The enrollment period was started."
+msgstr "Ilmoittautumislomake on nyt avattu."
+
+msgid "The enrollment period was ended."
+msgstr "Ilmoittautumislomake on nyt suljettu."
+
+msgid "The enrollment period is not currently underway."
+msgstr "Ilmoittautumislomake ei ole tällä hetkellä auki."
+
+msgid "Enrollment period"
+msgstr "Ilmoittautumisaika"
