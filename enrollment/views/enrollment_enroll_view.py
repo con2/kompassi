@@ -17,8 +17,14 @@ def enrollment_enroll_view(request, event):
     meta = event.enrollment_event_meta
 
     if not meta.is_enrollment_open:
-        messages.error(request, _("Enrollment for this event is not currently open."))
-        return redirect('core_event_view', event.slug)
+        if meta.is_user_admin(request.user):
+            messages.warning(request, _(
+                "Enrollment for this event is not currently open. "
+                "You are only seeing this page because you are an event admin."
+            ))
+        else:
+            messages.error(request, _("Enrollment for this event is not currently open."))
+            return redirect('core_event_view', event.slug)
 
     try:
         enrollment = Enrollment.objects.get(event=event, person=request.user.person)
