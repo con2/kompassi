@@ -3,8 +3,6 @@ extends "core_admin_base.jade"
 block title
   {% trans "Teams and organizers" %}
 block admin_content
-  h3 {% trans "Teams and organizers" %}
-
   if unassigned_organizers
     .panel.panel-danger
       .panel-heading: strong {% trans "Unassigned organizers" %}
