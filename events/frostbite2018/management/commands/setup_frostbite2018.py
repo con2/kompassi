@@ -25,6 +25,7 @@ class Setup(object):
         self.setup_programme()
         self.setup_access()
         self.setup_badges()
+        self.setup_intra()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -330,6 +331,36 @@ class Setup(object):
             self.event.programme_event_meta.get_group('hosts'),
         ]:
             GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+
+    def setup_intra(self):
+        from intra.models import IntraEventMeta, Team
+
+        admin_group, = IntraEventMeta.get_or_create_groups(self.event, ['admins'])
+        organizer_group = self.event.labour_event_meta.get_group('vastaava')
+        meta, unused = IntraEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                organizer_group=organizer_group,
+            )
+        )
+
+        for team_slug, team_name in [
+            ('desucon', 'Vastaavat'),
+        ]:
+            team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            email = '{}@desucon.fi'.format(team_slug)
+
+            team, created = Team.objects.get_or_create(
+                event=self.event,
+                slug=team_slug,
+                defaults=dict(
+                    name=team_name,
+                    order=self.get_ordering_number(),
+                    group=team_group,
+                    email=email
+                )
+            )
 
 
 class Command(BaseCommand):
