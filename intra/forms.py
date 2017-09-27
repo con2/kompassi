@@ -9,6 +9,7 @@ from core.utils import horizontal_form_helper, indented_without_label, ensure_us
 from labour.models.constants import JOB_TITLE_LENGTH
 
 from .models import TeamMember, Team
+from .models.intra_event_meta import SUPPORTED_APPS
 
 
 class TeamMemberForm(forms.ModelForm):
@@ -34,8 +35,12 @@ class TeamMemberForm(forms.ModelForm):
         super(TeamMemberForm, self).__init__(*args, **kwargs)
 
         if not instance:
-            del self.fields['job_title']
-            del self.fields['override_job_title']
+            # simplify form for new users
+            for field_name in [
+                'job_title',
+                'override_job_title',
+            ]:
+                del self.fields[field_name]
 
         self.fields['team'].queryset = Team.objects.filter(event=event)
         self.fields['person'].queryset = Person.objects.filter(
@@ -44,22 +49,29 @@ class TeamMemberForm(forms.ModelForm):
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
-        self.helper.layout = Layout(
+
+        layout_parts = [
             'team',
             'person',
-            Fieldset(_('Presentation'),
-                'job_title', # not part of the model
+        ]
+
+        if instance:
+            layout_parts.append(Fieldset(_('Presentation'),
+                'job_title',
                 'override_job_title',
-                'override_name_display_style',
-            ),
-            Fieldset(_('Additional options'),
-                'is_primary_team',
+            ))
+
+            layout_parts.append(Fieldset(_('Additional options'),
                 'is_team_leader',
-                'is_shown_internally',
                 'is_shown_publicly',
-                'is_group_member',
-            ),
-        )
+            ))
+        else:
+            layout_parts.extend((
+                'is_team_leader',
+                'is_shown_publicly',
+            ))
+
+        self.helper.layout = Layout(*layout_parts)
 
     def save(self, *args, **kwargs):
         ret = super(TeamMemberForm, self).save(*args, **kwargs)
@@ -78,22 +90,9 @@ class TeamMemberForm(forms.ModelForm):
             'team',
             'person',
             'override_job_title',
-            'is_primary_team',
             'is_team_leader',
-            'is_shown_internally',
             'is_shown_publicly',
-            'is_group_member',
-            'override_name_display_style',
         )
-
-
-SUPPORTED_APPS = [
-    'labour',
-    'programme',
-    'tickets',
-    'badges',
-    'intra',
-]
 
 
 class PrivilegesForm(forms.Form):
@@ -130,17 +129,16 @@ class PrivilegesForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
-        self.active_apps = self.get_active_apps(event)
+        assert 'initial' not in kwargs
 
-        if 'instance' in kwargs:
-            assert 'initial' not in kwargs
-            team_member = kwargs.pop('instance')
-            initial = dict(
-                (app_label, event.app_event_meta(app_label).is_user_in_admin_group(team_member.person.user))
-                for app_label in self.active_apps
-            )
-            kwargs['initial'] = initial
+        self.event = kwargs.pop('event')
+        self.user = kwargs.pop('user')
+        self.active_apps = self.event.intra_event_meta.get_active_apps()
+
+        kwargs['initial'] = dict(
+            (app_label, self.event.app_event_meta(app_label).is_user_in_admin_group(self.user))
+            for app_label in self.active_apps
+        )
 
         super(PrivilegesForm, self).__init__(*args, **kwargs)
 
@@ -154,26 +152,23 @@ class PrivilegesForm(forms.Form):
         layout_fields = [indented_without_label(app_label) for app_label in self.active_apps]
         self.helper.layout = Layout(Fieldset(_('Privileges'), *layout_fields))
 
-    @staticmethod
-    def get_active_apps(event):
-        return [app_label for app_label in SUPPORTED_APPS if event.app_event_meta(app_label)]
-
-    def save(self, team_member):
+    def save(self):
         if 'background_tasks' in settings.INSTALLED_APPS:
             from .tasks import privileges_form_save
-            privileges_form_save.delay(team_member.id, self.cleaned_data)
+            privileges_form_save.delay(self.event.id, self.user.id, self.cleaned_data)
         else:
-            self._save(team_member, self.cleaned_data)
+            self._save(self.event, self.user, self.cleaned_data)
 
     @classmethod
-    def _save(cls, team_member, cleaned_data):
-        event = team_member.event
-
-        for app_label in cls.get_active_apps(event):
+    def _save(cls, event, user, cleaned_data):
+        for app_label in event.intra_event_meta.get_active_apps():
             ensure_user_is_member_of_group(
-                team_member.person.user,
+                user,
                 event.app_event_meta(app_label).admin_group,
                 cleaned_data[app_label]
             )
 
-        return team_member
+    @property
+    def signup(self):
+        from labour.models import Signup
+        return Signup.objects.filter(event=self.event, person=self.user.person).first()

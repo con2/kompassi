@@ -2,9 +2,13 @@ from celery import shared_task
 
 
 @shared_task(ignore_result=True)
-def privileges_form_save(team_member_id, cleaned_data):
-    from .models import TeamMember
+def privileges_form_save(event_id, user_id, cleaned_data):
+    from core.models import Event
+    from django.contrib.auth import get_user_model
     from .forms import PrivilegesForm
 
-    team_member = TeamMember.objects.get(id=team_member_id)
-    PrivilegesForm._save(team_member, cleaned_data)
+    User = get_user_model()
+    event = Event.objects.get(id=event_id)
+    user = User.objects.get(id=user_id)
+
+    PrivilegesForm._save(event, user, cleaned_data)

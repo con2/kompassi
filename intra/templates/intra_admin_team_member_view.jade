@@ -6,7 +6,7 @@ block title
 block admin_content
   h3 {% trans "Teams and organizers" %}
   form.form-horizontal(method='POST')
-    button.sr-only(type='submit', name='action', value='save-return') {% trans "Save changes" %}
+    button.sr-only(type='submit', name='action', value='save-return') {% trans "Save and return" %}
     .panel.panel-default
       .panel-heading: strong
         if team_member_form.instance.pk
@@ -15,7 +15,6 @@ block admin_content
           {% trans "Add a member to a team" %}
       .panel-body
         {% crispy team_member_form %}
-        {% crispy privileges_form %}
       .panel-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-default(href='{% url "intra_organizer_view" event.slug %}') {% trans "Cancel and return" %}
@@ -23,10 +22,9 @@ block admin_content
             button.btn.btn-danger(type='submit', name='action', value='delete')
               i.fa.fa-trash.kompassi-icon-space-right
               {% trans "Remove team member" %}
-            button.btn.btn-success(type='submit', name='action', value='save-return')
-              i.fa.fa-floppy-o.kompassi-icon-space-right
-              {% trans "Save changes" %}
-          else
-            button.btn.btn-success(type='submit', name='action', value='save-return')
-              i.fa.fa-plus.kompassi-icon-space-right
-              {% trans "Add member" %}
+          button.btn.btn-success(type='submit', name='action', value='save-continue')
+            i.fa.fa-floppy-o.kompassi-icon-space-right
+            {% trans "Save and continue" %}
+          button.btn.btn-success(type='submit', name='action', value='save-return')
+            i.fa.fa-floppy-o.kompassi-icon-space-right
+            {% trans "Save and return" %}

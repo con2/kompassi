@@ -39,29 +39,28 @@ def intra_admin_team_member_view(request, vars, event, team_slug=None, person_id
             pass
         else:
             team_member_form = initialize_form(TeamMemberForm, request, event=event, instance=team_member)
-            privileges_form = initialize_form(PrivilegesForm, request, event=event, instance=team_member)
 
     if not team_member_form:
         team_member_form = initialize_form(TeamMemberForm, request, event=event, initial=initial_data)
-        privileges_form = initialize_form(PrivilegesForm, request, event=event)
-
-    forms = [team_member_form, privileges_form]
 
     if request.method == 'POST':
         action = request.POST.get('action')
-        if action == 'save-return':
-            if all(form.is_valid() for form in forms):
+        if action in ['save-return', 'save-continue']:
+            if team_member_form.is_valid():
                 creating_new = not team_member_form.instance.pk
 
                 team_member = team_member_form.save()
-                privileges_form.save(team_member)
 
                 if creating_new:
                     messages.success(request, _('The member was added to the team.'))
                 else:
                     messages.success(request, _('The team member was updated.'))
 
-                return redirect('intra_organizer_view', event.slug)
+                if action == 'save-return':
+                    return redirect('intra_organizer_view', event.slug)
+                elif action == 'save-continue':
+                    return redirect('intra_admin_team_member_view',
+                        event.slug, team_member.team.slug, team_member.person.id)
             else:
                 messages.error(request, _('Please check the team_member_form.'))
         elif action == 'delete':
@@ -76,7 +75,6 @@ def intra_admin_team_member_view(request, vars, event, team_slug=None, person_id
 
     vars.update(
         team_member_form=team_member_form,
-        privileges_form=privileges_form,
     )
 
     return render(request, 'intra_admin_team_member_view.jade', vars)

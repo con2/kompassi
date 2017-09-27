@@ -1,12 +1,30 @@
 from collections import namedtuple
 
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from core.models import EventMetaBase, Person
 from labour.models import Signup
 
 
 UnassignedOrganizer = namedtuple('UnassignedOrganizer', 'person signup')
+
+
+SUPPORTED_APPS = [
+    'labour',
+    'programme',
+    'tickets',
+    'badges',
+    'intra',
+]
+
+APP_NAMES = dict(
+    labour=_('Volunteers'),
+    programme=_('Programme'),
+    tickets=_('Tickets'),
+    badges=_('Badges'),
+    intra=_('Intra'),
+)
 
 
 class IntraEventMeta(EventMetaBase):
@@ -49,3 +67,6 @@ class IntraEventMeta(EventMetaBase):
             ]
 
         return self._unassigned_organizers
+
+    def get_active_apps(self):
+        return [app_label for app_label in SUPPORTED_APPS if self.event.app_event_meta(app_label)]

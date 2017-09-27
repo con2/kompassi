@@ -246,3 +246,9 @@ msgstr "Lisäasetukset"
 #:
 msgid "Privileges"
 msgstr "Käyttöoikeudet"
+
+msgid "Programme"
+msgstr "Ohjelma"
+
+msgid "Badges"
+msgstr "Badget"
