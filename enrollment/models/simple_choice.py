@@ -19,3 +19,7 @@ class SimpleChoice(models.Model):
 
 class SpecialDiet(SimpleChoice):
     pass
+
+
+class ConconPart(SimpleChoice):
+    pass

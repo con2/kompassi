@@ -2,4 +2,4 @@
 
 from .enrollment_event_meta import EnrollmentEventMeta
 from .enrollment import Enrollment
-from .special_diet import SimpleChoice, SpecialDiet
+from .simple_choice import SimpleChoice, SpecialDiet, ConconPart

@@ -17,10 +17,12 @@ class EnrollmentForm(forms.ModelForm):
         fields = (
             'is_public',
             'concon_event_affiliation',
+            'concon_parts',
             'special_diet',
             'special_diet_other',
         )
 
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
+            concon_parts=forms.CheckboxSelectMultiple,
         )

@@ -47,6 +47,7 @@ class Setup(object):
         from enrollment.models import (
             EnrollmentEventMeta,
             SpecialDiet,
+            ConconPart,
         )
 
         enrollment_admin_group, = EnrollmentEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -76,6 +77,12 @@ class Setup(object):
             'Lakto-ovo-vegetaristinen',
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
+
+        for part_name in [
+            'Luento-ohjelma',
+            'Sauna',
+        ]:
+            ConconPart.objects.get_or_create(name=part_name)
 
 
 class Command(BaseCommand):

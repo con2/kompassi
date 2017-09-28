@@ -77,6 +77,13 @@ class Enrollment(models.Model):
         ),
     )
 
+    concon_parts = models.ManyToManyField(
+        'enrollment.ConconPart',
+        blank=True,
+        verbose_name='Mihin osiin tilaisuudesta osallistut?',
+        help_text='Concon koostuu päivän luento- ja keskusteluohjelmasta sekä jatkosaunasta illalla.',
+    )
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('created at'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('updated at'))
 
