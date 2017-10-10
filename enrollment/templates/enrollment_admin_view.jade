@@ -30,7 +30,7 @@ block admin_content
             td= enrollment.person.first_name
             td= enrollment.person.nick
             td= enrollment.person.email
-            td= enrollment.person.phone
+            td= enrollment.person.normalized_phone_number
             td: span.label(class="{{ enrollment.state_label_class }}") {{ enrollment.get_state_display }}
     .panel-footer.clearfix
       if num_enrolled
