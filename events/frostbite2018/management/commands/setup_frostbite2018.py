@@ -26,6 +26,7 @@ class Setup(object):
         self.setup_access()
         self.setup_badges()
         self.setup_intra()
+        self.setup_directory()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -361,6 +362,18 @@ class Setup(object):
                     email=email
                 )
             )
+
+    def setup_directory(self):
+        from directory.models import DirectoryAccessGroup
+
+        labour_admin_group = self.event.labour_event_meta.get_group('admins')
+
+        DirectoryAccessGroup.objects.get_or_create(
+            organization=self.event.organization,
+            group=labour_admin_group,
+            active_from=datetime(2017, 10, 11, 18, 42, 0, tzinfo=self.tz),
+            active_until=self.event.end_time + timedelta(days=30),
+        )
 
 
 class Command(BaseCommand):
