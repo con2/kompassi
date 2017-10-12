@@ -364,7 +364,9 @@ class Setup(object):
             )
 
     def setup_directory(self):
-        from directory.models import DirectoryAccessGroup
+        from directory.models import DirectoryAccessGroup, DirectoryOrganizationMeta
+
+        DirectoryOrganizationMeta.objects.get_or_create(organization=self.event.organization)
 
         labour_admin_group = self.event.labour_event_meta.get_group('admins')
 
