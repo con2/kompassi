@@ -9,7 +9,7 @@ from access.models import SlackAccess, GroupPrivilege, Privilege
 from labour.models import Signup
 
 from .utils import next_full_hour
-from .models import ProgrammeEventMeta, ProgrammeRole
+from .models import ProgrammeEventMeta, ProgrammeRole, Programme
 
 
 class UtilsTestCase(TestCase):
@@ -17,13 +17,13 @@ class UtilsTestCase(TestCase):
         tz = tzlocal()
 
         self.assertEqual(
-          next_full_hour(datetime(2013, 8, 15, 19, 4, 25, tzinfo=tz)),
-          datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz)
+            next_full_hour(datetime(2013, 8, 15, 19, 4, 25, tzinfo=tz)),
+            datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz)
         )
 
         self.assertEqual(
-          next_full_hour(datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)),
-          datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)
+            next_full_hour(datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)),
+            datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)
         )
 
     def test_schedule_is_public(self):
@@ -120,3 +120,25 @@ class ProgrammeSlackAccessTestCase(TestCase):
         group = meta.get_group('hosts')
         assert person.user not in group.user_set.all()
         assert privilege not in Privilege.get_potential_privileges(person)
+
+
+class ProgrammeTestCase(TestCase):
+    def test_programmes_without_end_time_showing_as_past(self):
+        t = now()
+
+        pr, unused = ProgrammeRole.get_or_create_dummy()
+
+        programme = pr.programme
+        programme.start_time = None
+        programme.length = None
+        programme.save()
+
+        event = programme.category.event
+        event.start_time = t - timedelta(days=20)
+        event.end_time = t - timedelta(days=17)
+        event.save()
+
+        person = pr.person
+
+        assert not Programme.get_future_programmes(person).exists()
+        assert Programme.get_past_programmes(person).exists()

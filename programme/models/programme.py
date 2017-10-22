@@ -682,8 +682,8 @@ class Programme(models.Model, CsvExportMixin):
 
         return (
             cls.objects.filter(q)
-                .distinct()
-                .order_by('category__event__start_time', 'start_time', 'title')
+            .distinct()
+            .order_by('category__event__start_time', 'start_time', 'title')
         )
 
     @classmethod
@@ -691,14 +691,22 @@ class Programme(models.Model, CsvExportMixin):
         if t is None:
             t = now()
 
-        return cls._get_in_states(person, PROGRAMME_STATES_ACTIVE, Q(end_time__gt=t) | Q(end_time__isnull=True))
+        return cls._get_in_states(
+            person,
+            PROGRAMME_STATES_ACTIVE,
+            Q(end_time__gt=t) | Q(end_time__isnull=True) & Q(category__event__end_time__gt=t)
+        )
 
     @classmethod
     def get_past_programmes(cls, person, t=None):
         if t is None:
             t = now()
 
-        return cls._get_in_states(person, PROGRAMME_STATES_ACTIVE, end_time__lte=t)
+        return cls._get_in_states(
+            person,
+            PROGRAMME_STATES_ACTIVE,
+            Q(end_time__lte=t) | Q(end_time__isnull=True) & Q(category__event__end_time__lte=t)
+        )
 
     @classmethod
     def get_rejected_programmes(cls, person):
