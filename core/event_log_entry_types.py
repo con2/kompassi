@@ -13,3 +13,9 @@ registry.register(
     name='core.person.exported',
     message=_('User {entry.created_by} exported personally identifiable information'),
 )
+
+
+registry.register(
+    name='core.person.impersonated',
+    message=_('User {entry.created_by} administratively impersonated {entry.person}'),
+)

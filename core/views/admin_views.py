@@ -1,14 +1,14 @@
-# encoding: utf-8
-
-
-
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_safe
 
+from event_log.utils import emit
+
 from ..backends import YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN
+from ..models import Person
 from ..utils import get_next
 from .login_views import do_login
 
@@ -16,6 +16,15 @@ from .login_views import do_login
 @user_passes_test(lambda user: user.is_superuser)
 @require_safe
 def core_admin_impersonate_view(request, username):
+    user = get_object_or_404(get_user_model(), username=username)
+
+    try:
+        person = user.person
+    except Person.DoesNotExist:
+        person = None
+
+    emit('core.person.impersonated', request=request, person=person)
+
     next = get_next(request)
     user = authenticate(username=username, allow_passwordless_login=YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN)
 
