@@ -80,7 +80,7 @@ class Setup(object):
 
         for part_name in [
             'Luento-ohjelma',
-            'Sauna',
+            'Jatkot',
         ]:
             ConconPart.objects.get_or_create(name=part_name)
 
