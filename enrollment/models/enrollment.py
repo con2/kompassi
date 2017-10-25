@@ -1,7 +1,9 @@
 # encoding: utf-8
 
+from django import forms
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 
 
 STATE_CHOICES = [
@@ -109,3 +111,24 @@ class Enrollment(models.Model):
     @property
     def state_label_class(self):
         return STATE_LABEL_CLASSES.get(self.state, 'label-default')
+
+    def get_form_field_values(self):
+        FormClass = self.event.enrollment_event_meta.form_class
+
+        return [
+            # FIXME hideous hack
+            ', '.join(str(opt) for opt in getattr(self, field_name).all())
+            if isinstance(getattr(self.__class__, field_name, None), ManyToManyDescriptor)
+            else getattr(self, f'get_{field_name}_display', lambda: '')()
+
+            for field_name in FormClass._meta.fields
+        ]
+
+    @classmethod
+    def get_form_field_header(cls, field_name):
+        try:
+            field = next(field for field in cls._meta.fields if field.name == field_name)
+        except StopIteration:
+            field = next(field for field in cls._meta.many_to_many if field.name == field_name)
+
+        return field.verbose_name

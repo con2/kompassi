@@ -47,9 +47,10 @@ def enrollment_admin_required(view_func):
             return redirect('core_event_view', event.slug)
 
         vars = dict(
-            event=event,
             admin_menu_items=enrollment_admin_menu_items(request, event),
-            admin_title=_('Manage enrollment')
+            admin_title=_('Manage enrollment'),
+            event=event,
+            meta=meta,
         )
 
         return view_func(request, vars, event, *args, **kwargs)

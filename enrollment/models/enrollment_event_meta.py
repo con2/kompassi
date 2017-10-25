@@ -114,3 +114,8 @@ class EnrollmentEventMeta(EventMetaBase):
         """
         self.enrollment_closes = now()
         self.save()
+
+    def get_form_field_headers(self):
+        from .enrollment import Enrollment
+
+        return [Enrollment.get_form_field_header(field_name) for field_name in self.form_class._meta.fields]
