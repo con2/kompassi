@@ -652,6 +652,7 @@ class Setup(object):
             ('tyovoima', 'Työvoima'),
             ('tekniikka', 'Tekniikka'),
             ('turva', 'Turva'),
+            ('video', 'Videotuotanto'),
         ]:
             team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
             email = '{}@tracon.fi'.format(team_slug)
