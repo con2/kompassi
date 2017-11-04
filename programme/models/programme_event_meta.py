@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
@@ -27,7 +23,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     contact_email = models.CharField(
         max_length=255,
         blank=True,
-        validators=[contact_email_validator,],
+        validators=[contact_email_validator],
         verbose_name='yhteysosoite',
         help_text='Kaikki ohjelmajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
             'osoitteesta, ja tämä osoite näytetään ohjelmanjärjestäjälle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',

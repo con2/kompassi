@@ -6,6 +6,8 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
+from core.utils import full_hours_between
+
 
 class Setup(object):
     def __init__(self):
@@ -20,6 +22,7 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
+        # self.setup_programme()
         self.setup_badges()
         self.setup_intra()
 
@@ -155,6 +158,135 @@ class Setup(object):
                     url='https://confluence.tracon.fi/display/{wiki_space}'.format(wiki_space=wiki_space),
                     group=labour_event_meta.get_group(link_group),
                 )
+            )
+
+    def setup_programme(self):
+        from labour.models import PersonnelClass
+        from programme.models import (
+            Category,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            Tag,
+            TimeBlock,
+            View,
+        )
+
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Tampere Kuplii -ohjelmatiimi <ohjelma@tamperekuplii.fi>',
+            schedule_layout='reasonable',
+        ))
+
+        if settings.DEBUG:
+            programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
+            programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
+            programme_event_meta.save()
+
+        for pc_slug, role_title, role_is_default in [
+            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+        ]:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                )
+            )
+
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                ('Ohjelma', 'muu'),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    style=style,
+                    defaults=dict(
+                        title=title,
+                    )
+                )
+
+        saturday_start = datetime(2018, 3, 24, 10, 0, tzinfo=self.tz)
+        saturday_end = datetime(2018, 3, 24, 18, 0, tzinfo=self.tz)
+        sunday_start = datetime(2018, 3, 25, 10, 0, tzinfo=self.tz)
+        sunday_end = datetime(2018, 3, 25, 18, 0, tzinfo=self.tz)
+
+        for start_time, end_time in [
+            (saturday_start, saturday_end),
+            (sunday_start, sunday_end),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+        for time_block in TimeBlock.objects.filter(event=self.event):
+            # Half hours
+            # [:-1] – discard 18:30
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30)  # look, no tz
+                )
+
+        have_views = View.objects.filter(event=self.event).exists()
+        if not have_views:
+            for view_name, start_time, end_time, room_names in [
+                ('Lauantain ohjelma', saturday_start, saturday_end, [
+                    'Pieni sali',
+                    'Duetto 1',
+                    'Duetto 2',
+                    'Sopraano',
+                ]),
+                ('Sunnuntain ohjelma', sunday_start, sunday_end, [
+                    'Pieni sali',
+                    'Duetto 1',
+                    'Duetto 2',
+                    'Sopraano',
+                ]),
+            ]:
+                for room_name in room_names:
+                    Room.objects.get_or_create(
+                        venue=self.event.venue,
+                        name=room_name,
+                        defaults=dict(
+                            order=max(r.order for r in Room.objects.filter(venue=self.event.venue)) + 10
+                        )
+                    )
+
+                rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
+                    for room_name in room_names]
+
+                view, created = View.objects.get_or_create(
+                    event=self.event,
+                    name=view_name,
+                    defaults=dict(
+                        start_time=start_time,
+                        end_time=end_time,
+                    )
+                )
+                view.rooms = rooms
+                view.save()
+
+        for tag_title, tag_class in [
+            ('Suositeltu', 'hilight'),
+            ('In English', 'label-success'),
+            ('Paikkaliput', 'label-warning'),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    style=tag_class,
+                ),
             )
 
     def setup_badges(self):

@@ -3,8 +3,8 @@
     ul.categories
       for category in categories
         li(class='{{ category.style }}') {{ category.title }}
-  h2 Ohjelmakartta
   for view in views
+    h2 {{ view.name }}
     table.table.table-bordered
       thead
         tr

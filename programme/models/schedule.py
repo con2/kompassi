@@ -87,10 +87,13 @@ class ViewMethodsMixin(object):
                 cur += ONE_HOUR
 
         if programme:
-            result = [
-                i for i in result
-                if programme.start_time <= i < programme.end_time
-            ]
+            result = [i for i in result if programme.start_time <= i < programme.end_time]
+
+        if self.start_time:
+            result = [i for i in result if i >= self.start_time]
+
+        if self.end_time:
+            result = [i for i in result if i < self.end_time]
 
         return sorted(set(result))
 
@@ -104,6 +107,8 @@ class View(models.Model, ViewMethodsMixin):
     public = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
     rooms = models.ManyToManyField('programme.Room')
+    start_time = models.DateTimeField(null=True)
+    end_time = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.name
@@ -123,6 +128,8 @@ class AllRoomsPseudoView(ViewMethodsMixin):
         self.order = 0
         self.rooms = Room.objects.filter(venue=event.venue, view__event=event)
         self.event = event
+        self.start_time = None
+        self.end_time = None
 
 
 class TimeBlock(models.Model):
