@@ -23,7 +23,7 @@ def populate_room_event(apps, schema_editor):
         # room is not a copy but one of the original pre-copy rooms
         q &= Q(event__isnull=True)
 
-        for room in event.venue.room_set.filter(q).distinct():
+        for room in Room.objects.filter(q).distinct():
             original_room_id = room.id
 
             room.id = None
@@ -32,7 +32,10 @@ def populate_room_event(apps, schema_editor):
 
             new_room_id = room.id
 
-            Programme.objects.filter(room=original_room_id).update(room=new_room_id)
+            Programme.objects.filter(
+                category__event=event,
+                room=original_room_id
+            ).update(room=new_room_id)
 
         for view in event.view_set.all():
             view.rooms.set([Room.objects.get(event=event, slug=r.slug) for r in view.rooms.all()], clear=True)

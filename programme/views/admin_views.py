@@ -105,7 +105,7 @@ def programme_admin_view(request, vars, event, format='screen'):
         title = "{event_name}: Ohjelma".format(event_name=event.name)
 
         if room_filters.selected_slug is not None:
-            room = Room.objects.get(venue=event.venue, slug=room_filters.selected_slug)
+            room = Room.objects.get(event=event, slug=room_filters.selected_slug)
             title += ' – {room.name}'.format(room=room)
 
         if state_filters.selected_slug is not None:

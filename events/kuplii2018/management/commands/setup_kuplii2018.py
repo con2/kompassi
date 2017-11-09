@@ -47,6 +47,7 @@ class Setup(object):
 
     def setup_labour(self):
         from core.models import Person, Event
+        from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
@@ -107,13 +108,35 @@ class Setup(object):
                 ),
             )
 
-        if not JobCategory.objects.filter(event=self.event).exists():
-            JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug='kuplii2017'),
-                target_event=self.event
+        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
+        kuplitea = PersonnelClass.objects.get(event=self.event, slug='kuplitea')
+
+        for name, description, pcs in [
+            (
+                'Kuplitea',
+                'Tapahtuman järjestelytoimikunnan eli kuplitean jäsen',
+                [kuplitea]
+            ),
+            (
+                'Järjestyksenvalvoja',
+                'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa '
+                'JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole '
+                'täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).',
+                [tyovoima]
+            ),
+        ]:
+            job_category, created = JobCategory.objects.get_or_create(
+                event=self.event,
+                slug=slugify(name),
+                defaults=dict(
+                    name=name,
+                    description=description,
+                )
             )
 
-        labour_event_meta.create_groups()
+            if created:
+                job_category.personnel_classes = pcs
+                job_category.save()
 
         for name in ['Kuplitea']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
@@ -126,6 +149,8 @@ class Setup(object):
 
             jc.required_qualifications = [qual]
             jc.save()
+
+        labour_event_meta.create_groups()
 
         for diet_name in [
             'Gluteeniton',
@@ -254,15 +279,9 @@ class Setup(object):
                 ]),
             ]:
                 for room_name in room_names:
-                    Room.objects.get_or_create(
-                        venue=self.event.venue,
-                        name=room_name,
-                        defaults=dict(
-                            order=max(r.order for r in Room.objects.filter(venue=self.event.venue)) + 10
-                        )
-                    )
+                    Room.objects.get_or_create(event=self.event, name=room_name)
 
-                rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
+                rooms = [Room.objects.get(name__iexact=room_name, event=self.event)
                     for room_name in room_names]
 
                 view, created = View.objects.get_or_create(

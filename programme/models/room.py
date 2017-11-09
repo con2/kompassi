@@ -1,9 +1,8 @@
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
+from django.db.models import Max
 from django.utils.translation import ugettext_lazy as _
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 
 
 class Room(models.Model):
@@ -50,8 +49,7 @@ class Room(models.Model):
             )
         )
 
-
-@receiver(pre_save, sender=Room)
-def populate_room_slug(sender, instance, **kwargs):
-    if instance.name and not instance.slug:
-        instance.slug = slugify(instance.name)
+    @classmethod
+    def get_next_order(cls, event):
+        cur_max_value = event.rooms.all().aggregate(Max('order'))['order__max'] or 0
+        return cur_max_value + 10

@@ -51,7 +51,8 @@ class Setup(object):
         ))
 
     def setup_labour(self):
-        from core.models import Person, Event
+        from core.models import Person
+        from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
@@ -59,7 +60,7 @@ class Setup(object):
             LabourEventMeta,
             Perk,
             PersonnelClass,
-            Survey,
+            Qualification,
         )
         from ...models import SignupExtra, Night
         from django.contrib.contenttypes.models import ContentType
@@ -153,11 +154,53 @@ class Setup(object):
             icon_css_class='fa-check-square-o'
         )
 
-        if not JobCategory.objects.filter(event=self.event).exists():
-            JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug='tracon2017'),
-                target_event=self.event,
+        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
+        coniitti = PersonnelClass.objects.get(event=self.event, slug='coniitti')
+
+        for name, description, pcs in [
+            (
+                'Conitea',
+                'Tapahtuman järjestelytoimikunnan jäsen eli coniitti',
+                [coniitti]
+            ),
+            (
+                'Järjestyksenvalvoja',
+                'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa '
+                'JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole '
+                'täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).',
+                [tyovoima]
+            ),
+            (
+                'Info',
+                'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman '
+                'aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.',
+                [tyovoima]
+            ),
+        ]:
+            job_category, created = JobCategory.objects.get_or_create(
+                event=self.event,
+                slug=slugify(name),
+                defaults=dict(
+                    name=name,
+                    description=description,
+                )
             )
+
+            if created:
+                job_category.personnel_classes = pcs
+                job_category.save()
+
+        for name in ['Conitea']:
+            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+
+        for jc_name, qualification_name in [
+            ('Järjestyksenvalvoja', 'JV-kortti'),
+        ]:
+            jc = JobCategory.objects.get(event=self.event, name=jc_name)
+            qual = Qualification.objects.get(name=qualification_name)
+
+            jc.required_qualifications = [qual]
+            jc.save()
 
         labour_event_meta.create_groups()
 
@@ -421,53 +464,6 @@ class Setup(object):
             programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
             programme_event_meta.save()
 
-        for room_name in [
-            # 'Aaria',
-            # 'Iso sali',
-            # 'Pieni sali',
-            # # 'Sopraano', # Not in programme use
-            # 'Rondo',
-            # 'Studio',
-            # 'Sonaatti 1',
-            # 'Sonaatti 2',
-            # # 'Basso', # No longer exists
-            # # 'Opus 1', # No longer exists
-            # 'Opus 2',
-            # 'Opus 3',
-            # 'Opus 4',
-            # 'Talvipuutarha',
-            # 'Puistolava',
-            # 'Pieni ulkolava',
-            # 'Puisto - Iso miittiteltta',
-            # 'Puisto - Pieni miittiteltta',
-            # 'Puisto - Bofferiteltta',
-            # 'Muualla ulkona',
-            # 'Duetto 2',
-            # 'Riffi',
-            # 'Maestro',
-        ]:
-            order = self.get_ordering_number() + 90000 # XXX
-
-            room, created = Room.objects.get_or_create(
-                venue=self.venue,
-                name=room_name,
-                defaults=dict(
-                    order=order
-                )
-            )
-
-            room.order = order
-            room.save()
-
-        for room_name in [
-            # 'Sopraano',
-            # 'Basso',
-            # 'Opus 1',
-        ]:
-            room = Room.objects.get(venue=self.venue, name=room_name)
-            room.active = False
-            room.save()
-
         for pc_slug, role_title, role_is_default in [
             ('ohjelma', 'Ohjelmanjärjestäjä', True),
             ('ohjelma-2lk', 'Ohjelmanjärjestäjä (2. luokka)', False),
@@ -550,7 +546,10 @@ class Setup(object):
                     'Puisto - Pieni miittiteltta',
                 ]),
             ]:
-                rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
+                for room_name in room_names:
+                    Room.objects.get_or_create(event=self.event, name=room_name)
+
+                rooms = [Room.objects.get(name__iexact=room_name, event=self.event)
                     for room_name in room_names]
 
                 view, created = View.objects.get_or_create(event=self.event, name=view_name)

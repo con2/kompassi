@@ -49,12 +49,14 @@ class Setup(object):
         ))
 
     def setup_labour(self):
-        from core.models import Person, Event
+        from core.models import Person
+        from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
             JobCategory,
             LabourEventMeta,
             PersonnelClass,
+            Qualification,
         )
         from ...models import SignupExtra, SpecialDiet
         from django.contrib.contenttypes.models import ContentType
@@ -107,11 +109,47 @@ class Setup(object):
                 ),
             )
 
-        if not JobCategory.objects.filter(event=self.event).exists():
-            JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug='desucon2017'),
-                target_event=self.event
+        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
+        vastaava = PersonnelClass.objects.get(event=self.event, slug='vastaava')
+
+        for name, description, pcs in [
+            (
+                'Vastaava',
+                'Tapahtuman järjestelytoimikunnan jäsen eli vastaava',
+                [vastaava]
+            ),
+            (
+                'Järjestyksenvalvoja',
+                'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa '
+                'JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole '
+                'täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).',
+                [tyovoima]
+            ),
+        ]:
+            job_category, created = JobCategory.objects.get_or_create(
+                event=self.event,
+                slug=slugify(name),
+                defaults=dict(
+                    name=name,
+                    description=description,
+                )
             )
+
+            if created:
+                job_category.personnel_classes = pcs
+                job_category.save()
+
+        for name in ['Vastaava']:
+            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+
+        for jc_name, qualification_name in [
+            ('Järjestyksenvalvoja', 'JV-kortti'),
+        ]:
+            jc = JobCategory.objects.get(event=self.event, name=jc_name)
+            qual = Qualification.objects.get(name=qualification_name)
+
+            jc.required_qualifications = [qual]
+            jc.save()
 
         labour_event_meta.create_groups()
 
@@ -193,7 +231,6 @@ class Setup(object):
 
         personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
-        room_order = 0
         for room_name in [
             'Pääsali',
             'Kuusi',
@@ -202,13 +239,9 @@ class Setup(object):
             'Honka',
         ]:
             Room.objects.get_or_create(
-                venue=self.event.venue,
+                event=self.event,
                 name=room_name,
-                defaults=dict(
-                    order=room_order,
-                ),
             )
-            room_order += 10
 
         role_priority = 0
         for role_title in [
@@ -299,7 +332,7 @@ class Setup(object):
             name='Ohjelmakartta',
         )
         if created:
-            view.rooms = self.event.venue.room_set.all()
+            view.rooms = self.event.rooms.all()
             view.save()
 
         tag_order = 0

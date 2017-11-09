@@ -92,11 +92,6 @@ class Setup(object):
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
 
-        if 'yukicon_436_test' in meta.print_logo_path or 'png' in meta.print_logo_path:
-            meta.print_logo_path = mkpath('static', 'images', 'Yukicon_logo_taustaton.jpg')
-            meta.print_logo_height_mm = 16
-            meta.save()
-
         def limit_group(description, limit):
             limit_group, unused = LimitGroup.objects.get_or_create(
                 event=self.event,
@@ -162,13 +157,7 @@ class Setup(object):
             '205',
             'Iso sali',
         ]:
-            Room.objects.get_or_create(
-                venue=self.venue,
-                name=room_name,
-                defaults=dict(
-                    order=self.get_ordering_number(),
-                )
-            )
+            Room.objects.get_or_create(event=self.event, name=room_name)
 
         admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
@@ -202,7 +191,7 @@ class Setup(object):
         )
 
         if not view.rooms.exists():
-            view.rooms = Room.objects.filter(venue=self.venue, active=True)
+            view.rooms = Room.objects.filter(event=self.event, active=True)
             view.save()
 
         for category_name, category_style in [
@@ -268,7 +257,6 @@ class Setup(object):
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
-            Job,
             JobCategory,
             LabourEventMeta,
             PersonnelClass,
@@ -328,24 +316,11 @@ class Setup(object):
         tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
         conitea = PersonnelClass.objects.get(event=self.event, slug='conitea')
 
-        for jc_data in [
+        for name, description, pcs in [
             (
                 'Conitea',
-                'Tapahtuman järjestelytoimikunnan eli conitean jäsen',
+                'Tapahtuman järjestelytoimikunnan jäsen eli conitea',
                 [conitea]
-            ),
-            (
-                'Erikoistehtävä',
-                'Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, '
-                'valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut '
-                'on valittu.',
-                [tyovoima]
-            ),
-            (
-                'Info',
-                'Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman '
-                'aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.',
-                [tyovoima]
             ),
             (
                 'Järjestyksenvalvoja',
@@ -354,74 +329,7 @@ class Setup(object):
                 'täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).',
                 [tyovoima]
             ),
-            (
-                'Lipuntarkastaja',
-                'Lipuntarkastajana hoidat e-lippujen vaihtoa rannekkeiksi ja tarkistat lippuja ovella. Tehtävä '
-                'edellyttää asiakaspalveluasennetta.',
-                [tyovoima]
-            ),
-            (
-                'Logistiikka', 'Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan '
-                'ajokortti vaaditaan. Työvuoroja myös perjantaille.',
-                [tyovoima]
-            ),
-            (
-                'Narikka',
-                'Narikassa säilytetään tapahtuman aikana kävijöiden omaisuutta. Tehtävä ei vaadi erikoisosaamista.',
-                [tyovoima]
-            ),
-            (
-                'Pukuhuoneet',
-                'Pukuhuonevänkärit vastaavat pukuhuoneiden siisteydestä ja viihtyvyydestä ja tarvittaessa auttavat '
-                'cosplayaajia pukujensa kanssa.',
-                [tyovoima]
-            ),
-            (
-                'Salivänkäri',
-                'Luennoitsijoiden ja muiden ohjelmanpitäjien avustamista ohjelmanumeroiden yhteydessä.',
-                [tyovoima]
-            ),
-            (
-                'Siivous',
-                'Siivousvänkärit ovat vastuussa tapahtuman yleisestä siisteydestä. He kulkevat ympäriinsä '
-                'tehtävänään roskakorien tyhjennys, vesipisteiden täyttö, vessoihin papereiden lisääminen '
-                'ja monet muut pienet askareet. Työ tehdään pääsääntöisesti vänkäripareittain.',
-                [tyovoima]
-            ),
-            (
-                'Tekniikka',
-                'Salitekniikan (AV) ja tietotekniikan (tulostimet, lähiverkot, WLAN) nopeaa MacGyver-henkistä '
-                'ongelmanratkaisua.',
-                [tyovoima]
-            ),
-            (
-                'Valokuvaus',
-                'Valokuvaus tapahtuu pääasiassa kuvaajien omilla järjestelmäkameroilla. Tehtäviä voivat olla '
-                'studiokuvaus, salikuvaus sekä yleinen valokuvaus. Kerro Työkokemus-kentässä aiemmasta '
-                'valokuvauskokemuksestasi (esim. linkkejä kuvagallerioihisi) sekä mitä/missä haluaisit '
-                'tapahtumassa valokuvata.',
-                [tyovoima]
-            ),
-            (
-                'Yleisvänkäri',
-                'Sekalaisia tehtäviä laidasta laitaan, jotka eivät vaadi erikoisosaamista. Voit halutessasi '
-                'kirjata lisätietoihin, mitä osaat ja haluaisit tehdä.',
-                [tyovoima]
-            ),
-
-            # ('Kasaus ja purku', 'Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.', [tyovoima]),
-            # ('Majoitusvalvoja', 'Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.', [tyovoima]),
-            # ('Green room', 'Työvoiman ruokahuolto green roomissa. Edellyttää hygieniapassia.', [tyovoima]),
-            # ('Taltiointi', 'Taltioinnin keskeisiin tehtäviin kuuluvat mm. saleissa esitettävien ohjelmanumeroiden videointi tapahtumassa ja editointi tapahtuman jälkeen. Lisäksi videoidaan dokumentaarisella otteella myös yleisesti tapahtumaa. Kerro Työkokemus-kentässä aiemmasta videokuvauskokemuksestasi (esim. linkkejä videogallerioihisi) sekä mitä haluaisit taltioinnissa tehdä.', [tyovoima]),
         ]:
-            if len(jc_data) == 3:
-                name, description, pcs = jc_data
-                job_names = []
-            elif len(jc_data) == 4:
-                name, description, pcs, job_names = jc_data
-            else:
-                raise ValueError("Length of jc_data must be 3 or 4")
-
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
                 slug=slugify(name),
@@ -435,30 +343,19 @@ class Setup(object):
                 job_category.personnel_classes = pcs
                 job_category.save()
 
-            for job_name in job_names:
-                job, created = Job.objects.get_or_create(
-                    job_category=job_category,
-                    slug=slugify(job_name),
-                    defaults=dict(
-                        title=job_name,
-                    )
-                )
-
-        labour_event_meta.create_groups()
-
         for name in ['Conitea']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
             ('Järjestyksenvalvoja', 'JV-kortti'),
-            ('Logistiikka', 'Henkilöauton ajokortti (B)'),
-            # ('Green room', 'Hygieniapassi'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
-            if not jc.required_qualifications.exists():
-                jc.required_qualifications = [qual]
-                jc.save()
+
+            jc.required_qualifications = [qual]
+            jc.save()
+
+        labour_event_meta.create_groups()
 
         for diet_name in [
             'Gluteeniton',
