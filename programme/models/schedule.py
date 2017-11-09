@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 import logging
 from datetime import timedelta
 
@@ -121,12 +117,10 @@ class View(models.Model, ViewMethodsMixin):
 
 class AllRoomsPseudoView(ViewMethodsMixin):
     def __init__(self, event):
-        from .room import Room
-
         self.name = _('All rooms')
         self.public = True
         self.order = 0
-        self.rooms = Room.objects.filter(venue=event.venue, view__event=event)
+        self.rooms = event.rooms.all()
         self.event = event
         self.start_time = None
         self.end_time = None

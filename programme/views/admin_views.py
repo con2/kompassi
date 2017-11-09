@@ -44,7 +44,7 @@ def programme_admin_view(request, vars, event, format='screen'):
     category_filters = Filter(request, 'category').add_objects('category__slug', categories)
     programmes = category_filters.filter_queryset(programmes)
 
-    rooms = Room.get_rooms_for_event(event)
+    rooms = event.rooms.all()
     room_filters = Filter(request, 'room').add_objects('room__slug', rooms)
     programmes = room_filters.filter_queryset(programmes)
 

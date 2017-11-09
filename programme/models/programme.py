@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 import logging
 from datetime import timedelta
 
@@ -400,7 +396,13 @@ class Programme(models.Model, CsvExportMixin):
             'host request a record of their own personal details, this field will be included in that record.'
         ),
     )
-    room = models.ForeignKey('programme.Room', blank=True, null=True, verbose_name=_('Room'))
+    room = models.ForeignKey(
+        'programme.Room',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        verbose_name=_('Room'),
+    )
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
     tags = models.ManyToManyField('programme.Tag', blank=True, verbose_name=_('Tags'))
 

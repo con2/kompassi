@@ -1,5 +1,3 @@
-import datetime
-
 from django import forms
 from django.contrib import admin
 from django.utils.timezone import now
@@ -8,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from .models import (
     AlternativeProgrammeForm,
     Category,
-    FreeformOrganizer,
     Programme,
     ProgrammeEventMeta,
     ProgrammeFeedback,
@@ -64,8 +61,8 @@ class ViewAdmin(admin.ModelAdmin):
 
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('venue', 'name', 'active')
-    list_filter = ('venue', 'active')
+    list_display = ('event', 'name', 'active')
+    list_filter = ('event', 'active')
     actions = (activate_selected_items, deactivate_selected_items)
 
 

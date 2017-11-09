@@ -1,18 +1,18 @@
 from django.db import models
-from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 
 class Room(models.Model):
-    venue = models.ForeignKey('core.Venue')
+    event = models.ForeignKey('core.Event', null=True, blank=True, related_name='rooms')
     name = models.CharField(max_length=1023)
     order = models.IntegerField()
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(default=True)  # TODO kill with fire
 
     def __str__(self):
         return self.name
@@ -31,29 +31,24 @@ class Room(models.Model):
             return False
 
     class Meta:
-        ordering = ['venue', 'order']
-        verbose_name = 'tila'
-        verbose_name_plural = 'tilat'
+        ordering = ['event', 'order']
+        verbose_name = _('Room')
+        verbose_name_plural = _('Rooms')
         unique_together = [
-            ('venue', 'slug'),
+            ('event', 'slug'),
         ]
 
     @classmethod
     def get_or_create_dummy(cls):
-        from core.models import Venue
-        venue, unused = Venue.get_or_create_dummy()
+        from core.models import Event
+        event, unused = Event.get_or_create_dummy()
         return cls.objects.get_or_create(
-            venue=venue,
+            event=event,
             name='Dummy room',
             defaults=dict(
                 order=0,
             )
         )
-
-    @classmethod
-    def get_rooms_for_event(cls, event):
-        rooms_q = Q(venue=event.venue) & (Q(active=True) | Q(programme__category__event=event))
-        return cls.objects.filter(rooms_q).distinct()
 
 
 @receiver(pre_save, sender=Room)
