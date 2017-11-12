@@ -219,6 +219,7 @@ class Setup(object):
             defaults=dict(
                 admin_group=badge_admin_group,
                 badge_layout='nick',
+                real_name_must_be_visible=True,
             )
         )
 
