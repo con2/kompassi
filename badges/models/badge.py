@@ -118,6 +118,13 @@ class Badge(models.Model, CsvExportMixin):
     is_printed_separately = time_bool_property('printed_separately_at')
     is_arrived = time_bool_property('arrived_at')
 
+    notes = models.TextField(
+        default='',
+        blank=True,
+        verbose_name=_('Internal notes'),
+        help_text=_('Internal notes are only visible to the event organizer. However, if the person in question requests a transcript of records, this field is also disclosed.'),
+    )
+
     @property
     def printed_at(self):
         if self.printed_separately_at:

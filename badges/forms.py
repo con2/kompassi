@@ -74,6 +74,7 @@ class BadgeForm(forms.ModelForm):
             'surname',
             'nick',
             'job_title',
+            'notes',
         ]
 
 
