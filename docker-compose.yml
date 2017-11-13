@@ -1,7 +1,8 @@
-version: '2'
+version: '2.2'
 services:
   web:
     build: .
+    init: true
     command: python manage.py docker_start
     ports:
       - 8000:8000
@@ -22,6 +23,7 @@ services:
       ALLOWED_HOSTS: '*'
   celery:
     build: .
+    init: true
     command: celery -A kompassi.celery_app:app worker
     links:
       - rabbitmq
@@ -37,7 +39,9 @@ services:
       KOMPAQ_URL: amqp://guest:guest@rabbitmq/
       CACHE_URL: memcache://memcache
   postgres:
-    image: postgres
+    # image: postgres
+    build: ./kompassi/sql/
+    init: true
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
@@ -46,10 +50,13 @@ services:
       POSTGRES_DB: kompassi
   rabbitmq:
     image: rabbitmq
+    init: true
     ports:
       - 5672:5672
   memcache:
     image: memcached
+    init: true
+
 volumes:
   postgres-data: {}
   web-media: {}

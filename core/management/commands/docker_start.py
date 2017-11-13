@@ -24,8 +24,11 @@ class Command(BaseCommand):
             raise ValueError('Should run with DEBUG=true')
 
         try:
-            Event.objects.first()
+            event = Event.objects.first()
         except ProgrammingError:
+            pass
+
+        if event is None:
             call_command('setup')
 
         call_command('runserver', '0.0.0.0:8000')

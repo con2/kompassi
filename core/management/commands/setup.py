@@ -29,7 +29,7 @@ class Command(BaseCommand):
         management_commands = [
             # (('kompassi_i18n', '-acv2'), dict()),
             # (('collectstatic',), dict(interactive=False)),
-            (('migrate',), dict()),
+            (('migrate',), dict(interactive=False)),
             (('setup_core',), dict(test=test)),
             (('setup_labour_common_qualifications',), dict(test=test)),
             (('setup_api_v2',), dict(test=test)),

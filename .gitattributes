@@ -4,3 +4,4 @@
 *.css.map -diff
 labour/static/labour/js/roster.js -diff
 core/static/kompassi.css -diff
+kompassi/sql/00-schema.sql -diff
