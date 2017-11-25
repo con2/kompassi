@@ -43,9 +43,6 @@ class Room(models.Model):
         return cls.objects.get_or_create(
             event=event,
             name='Dummy room',
-            defaults=dict(
-                order=0,
-            )
         )
 
     @property
