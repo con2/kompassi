@@ -231,18 +231,6 @@ class Setup(object):
 
         personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
 
-        for room_name in [
-            'Pääsali',
-            'Kuusi',
-            'Puuseppä',
-            'Koivu',
-            'Honka',
-        ]:
-            Room.objects.get_or_create(
-                event=self.event,
-                name=room_name,
-            )
-
         role_priority = 0
         for role_title in [
             'Ohjelmanjärjestäjä',
@@ -332,7 +320,16 @@ class Setup(object):
             name='Ohjelmakartta',
         )
         if created:
-            view.rooms = self.event.rooms.all()
+            view.rooms = [Room.objects.get_or_create(
+                event=self.event,
+                name=room_name,
+            )[0] for room_name in [
+                'Pääsali',
+                'Kuusi',
+                'Puuseppä',
+                'Koivu',
+                'Honka',
+            ]]
             view.save()
 
         tag_order = 0

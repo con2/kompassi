@@ -15,6 +15,7 @@ from .models import (
     Tag,
     TimeBlock,
     View,
+    ViewRoom,
 )
 from .proxies.freeform_organizer.admin import FreeformOrganizerAdminProxy
 from .proxies.invitation.admin import InvitationAdminProxy
@@ -64,6 +65,11 @@ class RoomAdmin(admin.ModelAdmin):
     list_display = ('event', 'name', 'active')
     list_filter = ('event', 'active')
     actions = (activate_selected_items, deactivate_selected_items)
+
+
+class ViewRoomAdmin(admin.ModelAdmin):
+    list_display = ('admin_get_event', 'view', 'room', 'order')
+    list_filter = ('view__event',)
 
 
 class RoleAdmin(admin.ModelAdmin):
@@ -179,15 +185,16 @@ class AlternativeProgrammeFormAdmin(admin.ModelAdmin):
     list_filter = ('event',)
 
 
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(Room, RoomAdmin)
-admin.site.register(Role, RoleAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Programme, ProgrammeAdmin)
-admin.site.register(View, ViewAdmin)
-admin.site.register(TimeBlock, TimeBlockAdmin)
-admin.site.register(SpecialStartTime, SpecialStartTimeAdmin)
-admin.site.register(InvitationAdminProxy, InvitationAdmin)
-admin.site.register(FreeformOrganizerAdminProxy, FreeformOrganizerAdmin)
-admin.site.register(ProgrammeFeedback, ProgrammeFeedbackAdmin)
 admin.site.register(AlternativeProgrammeForm, AlternativeProgrammeFormAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(FreeformOrganizerAdminProxy, FreeformOrganizerAdmin)
+admin.site.register(InvitationAdminProxy, InvitationAdmin)
+admin.site.register(Programme, ProgrammeAdmin)
+admin.site.register(ProgrammeFeedback, ProgrammeFeedbackAdmin)
+admin.site.register(Role, RoleAdmin)
+admin.site.register(Room, RoomAdmin)
+admin.site.register(SpecialStartTime, SpecialStartTimeAdmin)
+admin.site.register(Tag, TagAdmin)
+admin.site.register(TimeBlock, TimeBlockAdmin)
+admin.site.register(View, ViewAdmin)
+admin.site.register(ViewRoom, ViewRoomAdmin)

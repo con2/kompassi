@@ -42,7 +42,7 @@ class ViewMethodsMixin(object):
 
             results.append((start_time, incontinuity, cur_row))
             for room in self.rooms.all():
-                programmes = room.programme_set.filter(**criteria)
+                programmes = room.programmes.filter(**criteria)
                 num_programmes = programmes.count()
                 if num_programmes == 0:
                     if room.programme_continues_at(start_time, **cont_criteria):
@@ -102,9 +102,23 @@ class View(models.Model, ViewMethodsMixin):
     name = models.CharField(max_length=32)
     public = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
-    rooms = models.ManyToManyField('programme.Room')
     start_time = models.DateTimeField(null=True)
     end_time = models.DateTimeField(null=True)
+
+    @property
+    def rooms(self):
+        from .room import Room
+        return Room.objects.filter(view_rooms__view=self).order_by('view_rooms__order')
+
+    @rooms.setter
+    def rooms(self, rooms):
+        self.view_rooms.all().delete()
+        for order, room in enumerate(rooms, 1):
+            ViewRoom.objects.create(
+                view=self,
+                room=room,
+                order=order * 10,
+            )
 
     def __str__(self):
         return self.name
@@ -113,6 +127,32 @@ class View(models.Model, ViewMethodsMixin):
         verbose_name = _('schedule view')
         verbose_name_plural = _('schedule views')
         ordering = ['event', 'order']
+
+
+class ViewRoom(models.Model):
+    view = models.ForeignKey('programme.View', related_name='view_rooms')
+    room = models.ForeignKey('programme.Room', related_name='view_rooms')
+    order = models.IntegerField(default=0)
+
+    @property
+    def event(self):
+        return self.view.event if self.view is not None else None
+
+    @classmethod
+    def get_next_order(cls, view):
+        cur_max_value = ViewRoom.objects.filter(view=view).aggregate(Max('order'))['order__max'] or 0
+        return cur_max_value + 10
+
+    def admin_get_event(self):
+        return self.event
+    admin_get_event.short_description = _('Event')
+    admin_get_event.admin_order_field = 'view__event'
+
+    def __str__(self):
+        return f'{self.view} / {self.room}'
+
+    class Meta:
+        ordering = ['view', 'order']
 
 
 class AllRoomsPseudoView(ViewMethodsMixin):

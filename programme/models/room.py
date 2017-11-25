@@ -8,7 +8,6 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 class Room(models.Model):
     event = models.ForeignKey('core.Event', null=True, blank=True, related_name='rooms')
     name = models.CharField(max_length=1023)
-    order = models.IntegerField()
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     active = models.BooleanField(default=True)  # TODO kill with fire
@@ -23,14 +22,14 @@ class Room(models.Model):
             **conditions
         )
 
-        latest_programme = self.programme_set.filter(**criteria).order_by('-start_time')[:1]
+        latest_programme = self.programmes.filter(**criteria).order_by('-start_time')[:1]
         if latest_programme:
             return the_time < latest_programme[0].end_time
         else:
             return False
 
     class Meta:
-        ordering = ['event', 'order']
+        ordering = ['event', 'name']
         verbose_name = _('Room')
         verbose_name_plural = _('Rooms')
         unique_together = [
@@ -49,7 +48,6 @@ class Room(models.Model):
             )
         )
 
-    @classmethod
-    def get_next_order(cls, event):
-        cur_max_value = event.rooms.all().aggregate(Max('order'))['order__max'] or 0
-        return cur_max_value + 10
+    @property
+    def admin_can_remove(self):
+        return not self.programmes.exists()

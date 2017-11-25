@@ -402,6 +402,7 @@ class Programme(models.Model, CsvExportMixin):
         null=True,
         on_delete=models.PROTECT,
         verbose_name=_('Room'),
+        related_name='programmes',
     )
     organizers = models.ManyToManyField('core.Person', through='ProgrammeRole', blank=True)
     tags = models.ManyToManyField('programme.Tag', blank=True, verbose_name=_('Tags'))

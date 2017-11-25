@@ -16,5 +16,6 @@ from .schedule import (
     TimeBlock,
     View,
     ViewMethodsMixin,
+    ViewRoom,
 )
 from .alternative_programme_form import AlternativeProgrammeForm, AlternativeProgrammeFormMixin
