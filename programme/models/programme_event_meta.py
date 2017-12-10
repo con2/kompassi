@@ -64,7 +64,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         from .room import Room
         from .programme import Programme
 
-        schedule_rooms = Room.objects.filter(view__event=self.event).only('id')
+        schedule_rooms = Room.objects.filter(view_rooms__view__event=self.event).only('id')
         criteria = dict(category__event=self.event, **extra_criteria)
         if not include_unpublished:
             criteria.update(state='published')
