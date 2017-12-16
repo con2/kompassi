@@ -26,24 +26,24 @@ from ..helpers import (
 )
 
 
-def get_timetable_tabs(request, event):
-    timetable_url = url('programme_timetable_view', event.slug)
-    timetable_active = request.path == timetable_url
-    timetable_text = 'Ohjelmakartta'
+def get_schedule_tabs(request, event):
+    schedule_url = url('programme_schedule_view', event.slug)
+    schedule_active = request.path == schedule_url
+    schedule_text = 'Ohjelmakartta'
 
     special_url = url('programme_special_view', event.slug)
     special_active = request.path == special_url
     special_text = 'Ohjelmakartan ulkopuolinen ohjelma'
 
     return [
-        Tab(timetable_url, timetable_text, timetable_active, 0),
+        Tab(schedule_url, schedule_text, schedule_active, 0),
         Tab(special_url, special_text, special_active, 0),
     ]
 
 
 SCHEDULE_TEMPLATES = dict(
-    reasonable='programme_timetable_view.jade',
-    full_width='programme_full_width_timetable_view.jade',
+    reasonable='programme_schedule_view.jade',
+    full_width='programme_full_width_schedule_view.jade',
 )
 
 
@@ -51,7 +51,7 @@ SCHEDULE_TEMPLATES = dict(
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60)  # XXX remove once nginx cache is in place
 @require_safe
-def programme_timetable_view(
+def programme_schedule_view(
     request,
     event,
     internal_programmes=False,
@@ -61,10 +61,10 @@ def programme_timetable_view(
     vars = dict(
         # hide the user menu to prevent it getting cached
         login_page=True,
-        tabs=get_timetable_tabs(request, event),
+        tabs=get_schedule_tabs(request, event),
     )
 
-    return actual_timetable_view(request, event,
+    return actual_schedule_view(request, event,
         internal_programmes=internal_programmes,
         template=template,
         vars=vars,
@@ -75,17 +75,17 @@ def programme_timetable_view(
 # look, no cache
 @programme_event_required
 @require_safe
-def programme_internal_timetable_view(
+def programme_internal_schedule_view(
     request,
     event,
     internal_programmes=True,
     template=None,
 ):
     vars = dict(
-        tabs=get_timetable_tabs(request, event),
+        tabs=get_schedule_tabs(request, event),
     )
 
-    return actual_timetable_view(request, event,
+    return actual_schedule_view(request, event,
         internal_programmes=internal_programmes,
         template=template,
         vars=vars,
@@ -93,7 +93,7 @@ def programme_internal_timetable_view(
     )
 
 
-def actual_timetable_view(
+def actual_schedule_view(
     request,
     event,
     internal_programmes=False,
@@ -173,7 +173,7 @@ def actual_special_view(
         event=event,
         programmes_by_start_time=programmes_by_start_time,
         show_programme_actions=show_programme_actions,
-        tabs=get_timetable_tabs(request, event),
+        tabs=get_schedule_tabs(request, event),
     )
 
     return render(request, template, vars)
@@ -197,17 +197,17 @@ def programme_internal_dumpdata_view(request):
 @cache_page(1 * 60)  # XXX remove once nginx cache is in place
 @public_programme_required
 @require_safe
-def programme_mobile_timetable_view(request, event):
+def programme_mobile_schedule_view(request, event):
     vars = dict(event=event)
 
-    return render(request, 'programme_mobile_timetable.jade', vars)
+    return render(request, 'programme_mobile_schedule.jade', vars)
 
 
 @programme_event_required
 @require_safe
 def programme_internal_adobe_taggedtext_view(request, event):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).get_programmes_by_start_time(request=request))
-    data = render_to_string('programme_timetable.taggedtext', vars, request=request)
+    data = render_to_string('programme_schedule.taggedtext', vars, request=request)
 
     # force all line endings to CRLF (Windows)
     data = data.replace('\r\n', '\n').replace('\n', '\r\n')

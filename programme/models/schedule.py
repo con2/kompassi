@@ -3,16 +3,42 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.db import models
+from django.db.models import Max
 from django.utils.translation import ugettext_lazy as _
 
 from dateutil.tz import tzlocal
 
-from core.utils import format_datetime
+from core.utils import format_datetime, get_previous_and_next
 
 
 logger = logging.getLogger('kompassi')
 
 ONE_HOUR = timedelta(hours=1)
+
+
+class OrderingMixin(object):
+    @classmethod
+    def get_next_order(cls, **kwargs):
+        cur_max_value = cls.objects.filter(**kwargs).aggregate(Max('order'))['order__max'] or 0
+        return cur_max_value + 10
+
+    def move(self, queryset, direction):
+        try:
+            if direction in ['left', 'up', 'previous', 'back']:
+                swappee, unused = get_previous_and_next(queryset, self)
+            elif direction in ['right', 'down', 'next', 'forward']:
+                unused, swappee = get_previous_and_next(queryset, self)
+            else:
+                raise AssertionError(f'Invalid direction: {direction}')
+        except self.__class__.DoesNotExist:
+            raise IndexError(f'Cannot go {direction} from here')
+
+        if self.order == swappee.order:
+            raise ValueError(f'Unable to swap because {self} and {swappee} have same order: {self.order}')
+
+        self.order, swappee.order = swappee.order, self.order
+        self.save()
+        swappee.save()
 
 
 class ViewMethodsMixin(object):
@@ -97,13 +123,26 @@ class ViewMethodsMixin(object):
         return len(self.start_times(programme=programme))
 
 
-class View(models.Model, ViewMethodsMixin):
-    event = models.ForeignKey('core.Event')
-    name = models.CharField(max_length=32)
+class View(models.Model, ViewMethodsMixin, OrderingMixin):
+    event = models.ForeignKey('core.Event', related_name='views')
+    name = models.CharField(max_length=32, verbose_name=_('Title'))
     public = models.BooleanField(default=True)
-    order = models.IntegerField(default=0)
-    start_time = models.DateTimeField(null=True)
-    end_time = models.DateTimeField(null=True)
+    order = models.IntegerField(help_text=_('This will be automatically filled in if not provided.'))
+    start_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('Start time'),
+    )
+    end_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_('End time'),
+        help_text=_(
+            'If the start and end times are set, this view will be constrained to those times. '
+            'Use this for eg. day-specific views. If these are not set, the whole event will be '
+            'displayed in a single view.'
+        )
+    )
 
     @property
     def rooms(self):
@@ -123,25 +162,28 @@ class View(models.Model, ViewMethodsMixin):
     def __str__(self):
         return self.name
 
+    def get_form(self, *args, **kwargs):
+        from ..forms import ViewForm
+        return ViewForm(*args, **kwargs, instance=self)
+
+    def get_add_room_form(self, *args, **kwargs):
+        from ..forms import AddRoomForm
+        return AddRoomForm(*args, **kwargs, instance=self)
+
     class Meta:
         verbose_name = _('schedule view')
         verbose_name_plural = _('schedule views')
         ordering = ['event', 'order']
 
 
-class ViewRoom(models.Model):
+class ViewRoom(models.Model, OrderingMixin):
     view = models.ForeignKey('programme.View', related_name='view_rooms')
     room = models.ForeignKey('programme.Room', related_name='view_rooms')
-    order = models.IntegerField(default=0)
+    order = models.IntegerField(help_text=_('This will be automatically filled in if not provided.'))
 
     @property
     def event(self):
         return self.view.event if self.view is not None else None
-
-    @classmethod
-    def get_next_order(cls, view):
-        cur_max_value = ViewRoom.objects.filter(view=view).aggregate(Max('order'))['order__max'] or 0
-        return cur_max_value + 10
 
     def admin_get_event(self):
         return self.event

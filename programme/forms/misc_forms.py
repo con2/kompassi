@@ -8,7 +8,7 @@ from core.utils import (
     initialize_form_set,
 )
 
-from .models import (
+from ..models import (
     AllRoomsPseudoView,
     AlternativeProgrammeForm,
     AlternativeProgrammeFormMixin,
@@ -23,8 +23,8 @@ from .models import (
     Room,
     Tag,
 )
-from .proxies.programme_event_meta.cold_offers import ColdOffersProgrammeEventMetaProxy
-from .models.programme import START_TIME_LABEL
+from ..proxies.programme_event_meta.cold_offers import ColdOffersProgrammeEventMetaProxy
+from ..models.programme import START_TIME_LABEL
 
 
 class ProgrammeAdminCreateForm(forms.ModelForm):

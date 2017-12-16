@@ -1,0 +1,34 @@
+extends core_admin_base
+- load trans from i18n
+- load crispy from crispy_forms_tags
+block title
+  {% trans "Edit rooms" %}
+block admin_content
+  form(role='form', method='POST').form-horizontal
+    {% csrf_token %}
+    .panel.panel-default
+      .panel-heading: strong {% trans "Edit rooms" %}
+      table.table.table-striped
+        thead
+          tr
+            th {% trans "Room" %}
+            th
+        tbody
+          for room in rooms
+            tr
+              td: {{ room.name }}
+                //- a(href='{% url "programme_admin_room_view" event.slug room.slug %}')= room.name
+              td
+                .btn-group
+                  if room.can_remove
+                    button.btn.btn-xs.btn-danger(type='submit', name='room_id', value='{{ room.id }}', title='{% trans "Remove" %}')
+                      i.fa.fa-1.fa-trash
+                  else
+                    button.btn.btn-xs.btn-danger(type='button', disabled, title='{% trans "This Room cannot be removed because it is either added to a schedule view or programmes have been added to it or both." %}')
+                      i.fa.fa-1.fa-trash
+
+    //-   .panel-footer.clearfix
+    //-     .btn-group.pull-right
+    //-       a.btn.btn-success(href='{% url "programme_admin_add_room_view" event.slug %}')
+    //-         i.fa.fa-plus.kompassi-icon-space-right
+    //-         {% trans "Add room" %}

@@ -18,7 +18,7 @@
           span.label.label-default.kompassi-space-after {% trans "Volunteers" %}
       if event.programme_event_meta
         if event.programme_event_meta.is_public
-          span.label.label-primary.kompassi-space-after: a(href='{% url "programme_timetable_view" event.slug %}') {% trans "Schedule published" %}
+          span.label.label-primary.kompassi-space-after: a(href='{% url "programme_schedule_view" event.slug %}') {% trans "Schedule published" %}
         else
           if event.programme_event_meta.is_accepting_cold_offers
             span.label.label-primary.kompassi-space-after: a(href='{% url "programme_offer_view" event.slug %}') {% trans "Accepting programme" %}
