@@ -12,7 +12,6 @@ from .public_views import (
 
 from .admin_views import (
     labour_admin_dashboard_view,
-    labour_admin_mail_editor_view,
     labour_admin_mail_view,
     labour_admin_roster_view,
 )
@@ -27,6 +26,7 @@ from .labour_admin_signups_view import labour_admin_signups_view
 from .labour_admin_special_diets_view import labour_admin_special_diets_view
 from .labour_admin_startstop_view import labour_admin_startstop_view
 from .labour_survey_view import labour_survey_view
+from .labour_mail_editor_view import labour_admin_mail_editor_view
 
 from .query_views import (
     query_index,

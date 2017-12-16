@@ -10,6 +10,9 @@ block admin_content
         p Tämä viesti on jo lähetetty vastaanottajille. Mikäli muokkaat viestiä, muokkaukset vaikuttavat vain niihin vastaan&shy;ottajiin, joille tämä viesti lähetetään muokkauksen jälkeen.
 
   form(role='form', method='POST').form-horizontal
+    //- Catch enter presses
+    button(type='submit', name='action', value='save-edit').sr-only Tallenna ja jatka
+
     .panel.panel-default
       .panel-heading: strong Työvoima&shy;viestin muokkaus
       .panel-body
@@ -17,8 +20,8 @@ block admin_content
       .panel-footer.clearfix
         .btn-group.pull-right
           a(href='{% url "labour_admin_mail_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa
-          button(type='submit', name='save-return', value='save-return').btn.btn-primary Tallenna ja palaa
-          button(type='submit', name='save-edit', value='save-edit').btn.btn-primary Tallenna ja jatka
+          button(type='submit', name='action', value='save-return').btn.btn-primary Tallenna ja palaa
+          button(type='submit', name='action', value='save-edit').btn.btn-primary Tallenna ja jatka
 
     .panel.panel-default
       .panel-heading: strong Lähetys ja vanhentaminen
@@ -33,12 +36,12 @@ block admin_content
         .btn-group.pull-right
           if message.sent_at
             if message.expired_at
-              button(type='submit', name='save-unexpire', value='save-unexpire').btn.btn-primary Ota uudelleen käyttöön
+              button(type='submit', name='action', value='save-unexpire').btn.btn-primary Ota uudelleen käyttöön
             else
-              button(type='submit', name='save-expire', value='save-expire').btn.btn-danger Merkitse vanhentuneeksi
+              button(type='submit', name='action', value='save-expire').btn.btn-danger Merkitse vanhentuneeksi
           else
             if message.pk
-              button(type='submit', name='delete', value='delete').btn.btn-danger Poista luonnos
-            button(type='submit', name='save-send', value='save-send').btn.btn-success Lähetä viesti
+              button(type='submit', name='action', value='delete').btn.btn-danger Poista luonnos
+            button(type='submit', name='action', value='save-send').btn.btn-success Lähetä viesti
         p.text-muted Myös nämä toiminnot tallentavat viestiin tehdyt muutokset.
 
