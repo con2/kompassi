@@ -16,20 +16,21 @@ from .views import (
     programme_admin_publish_view,
     programme_admin_cold_offers_view,
     programme_admin_special_view,
-    programme_admin_timetable_view,
+    programme_admin_schedule_view,
+    programme_admin_schedule_update_view_view,
     programme_admin_view,
     programme_feedback_view,
     programme_internal_adobe_taggedtext_view,
-    programme_internal_timetable_view,
+    programme_internal_schedule_view,
     programme_json_view,
-    programme_mobile_timetable_view,
+    programme_mobile_schedule_view,
     programme_offer_view,
     programme_offer_form_view,
     programme_profile_detail_view,
     programme_profile_feedback_view,
     programme_profile_view,
     programme_special_view,
-    programme_timetable_view,
+    programme_schedule_view,
 )
 
 urlpatterns = [
@@ -41,9 +42,9 @@ urlpatterns = [
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/?$',
-        programme_timetable_view,
+        programme_schedule_view,
         dict(show_programme_actions=True),
-        name='programme_timetable_view'
+        name='programme_schedule_view'
     ),
 
     url(
@@ -62,21 +63,21 @@ urlpatterns = [
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/fragment/?$',
-        programme_timetable_view,
-        dict(template='programme_timetable_fragment.jade'),
-        name='programme_timetable_fragment'
+        programme_schedule_view,
+        dict(template='programme_schedule_fragment.jade'),
+        name='programme_schedule_fragment'
     ),
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/mobile/?$',
-        programme_mobile_timetable_view,
-        name='programme_mobile_timetable_view'
+        programme_mobile_schedule_view,
+        name='programme_mobile_schedule_view'
     ),
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/full/?$',
-        programme_internal_timetable_view,
-        name='programme_internal_timetable_view'
+        programme_internal_schedule_view,
+        name='programme_internal_schedule_view'
     ),
 
     url(
@@ -177,9 +178,15 @@ urlpatterns = [
     ),
 
     url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/timetable/?$',
-        programme_admin_timetable_view,
-        name='programme_admin_timetable_view'
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/schedule/?$',
+        programme_admin_schedule_view,
+        name='programme_admin_schedule_view'
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/schedule/view/(?P<view_id>\d+)/?$',
+        programme_admin_schedule_update_view_view,
+        name='programme_admin_schedule_update_view_view'
     ),
 
     url(

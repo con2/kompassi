@@ -1,17 +1,16 @@
 from .public_views import (
     programme_event_box_context,
     programme_internal_adobe_taggedtext_view,
-    programme_internal_timetable_view,
+    programme_internal_schedule_view,
     programme_json_view,
-    programme_mobile_timetable_view,
+    programme_mobile_schedule_view,
     programme_profile_menu_items,
+    programme_schedule_view,
     programme_special_view,
-    programme_timetable_view,
 )
 
 from .admin_views import (
     programme_admin_email_list_view,
-    programme_admin_timetable_view,
     programme_admin_view,
     programme_admin_email_list_view,
     programme_admin_special_view,
@@ -32,6 +31,10 @@ from .programme_admin_invitations_view import programme_admin_invitations_view
 from .programme_admin_menu_items import programme_admin_menu_items
 from .programme_admin_organizers_view import programme_admin_organizers_view
 from .programme_admin_publish_view import programme_admin_publish_view
+from .programme_admin_schedule_view import (
+    programme_admin_schedule_view,
+    programme_admin_schedule_update_view_view,
+)
 from .programme_feedback_view import programme_feedback_view
 from .programme_offer_view import programme_offer_view, programme_offer_form_view
 from .programme_profile_detail_view import programme_profile_detail_view

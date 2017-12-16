@@ -5,9 +5,12 @@ from django.utils.translation import ugettext_lazy as _
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 
 
+ROOM_NAME_MAX_LENGTH = 1023
+
+
 class Room(models.Model):
     event = models.ForeignKey('core.Event', null=True, blank=True, related_name='rooms')
-    name = models.CharField(max_length=1023)
+    name = models.CharField(max_length=ROOM_NAME_MAX_LENGTH)
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     active = models.BooleanField(default=True)  # TODO kill with fire

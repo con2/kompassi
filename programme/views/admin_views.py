@@ -128,21 +128,6 @@ def programme_admin_view(request, vars, event, format='screen'):
 
 @programme_admin_required
 @require_safe
-def programme_admin_timetable_view(request, vars, event):
-    from .public_views import actual_timetable_view
-
-    return actual_timetable_view(
-        request,
-        event,
-        internal_programmes=True,
-        template='programme_admin_timetable_view.jade',
-        vars=vars,
-        show_programme_actions=True,
-    )
-
-
-@programme_admin_required
-@require_safe
 def programme_admin_special_view(request, vars, event):
     from .public_views import actual_special_view
 

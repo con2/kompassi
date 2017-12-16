@@ -1286,3 +1286,23 @@ msgstr "näkyvissä"
 #~ msgid "Public information"
 #~ msgstr "Julkiset tiedot"
 
+msgid "The schedule change was successful."
+msgstr "Ohjelmakartan muutos onnistui."
+
+msgid "Start time"
+msgstr "Alkuaika"
+
+msgid "End time"
+msgstr "Loppuaika"
+
+msgid "Edit schedule"
+msgstr "Ohjelmakartan muokkaus"
+
+msgid "If the start and end times are set, this view will be constrained to those times. Use this for eg. day-specific views. If these are not set, the whole event will be displayed in a single view."
+msgstr "Jos alku- ja loppuaika on asetettu, tämä näkymä näyttää vain näiden välisen ajan. Tätä voit käyttää esim. erottamaan eri tapahtumapäivien ohjelman omiin ohjelmakarttanäkymiinsä. Jos näitä ei ole asetettu, koko tapahtuma-aika näytetään samassa ohjelmakarttanäkymässä."
+
+msgid "Existing room"
+msgstr "Olemassaoleva sali"
+
+msgid "New room name"
+msgstr "Uuden salin nimi"

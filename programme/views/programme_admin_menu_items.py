@@ -25,9 +25,9 @@ def programme_admin_menu_items(request, event):
     invitations_text = _('Open invitations')
     invitations_notifications = Invitation.objects.filter(programme__category__event=event, state='valid').count()
 
-    timetable_url = url('programme_admin_timetable_view', event.slug)
-    timetable_active = request.path == timetable_url
-    timetable_text = 'Ohjelmakartan esikatselu'
+    schedule_url = url('programme_admin_schedule_view', event.slug)
+    schedule_active = request.path == schedule_url
+    schedule_text = _('Edit schedule')
 
     special_url = url('programme_admin_special_view', event.slug)
     special_active = request.path == special_url
@@ -58,7 +58,7 @@ def programme_admin_menu_items(request, event):
         cold_offers_active,
         publish_active,
         special_active,
-        timetable_active,
+        schedule_active,
     ))
     index_text = 'Ohjelmaluettelo'
 
@@ -67,7 +67,7 @@ def programme_admin_menu_items(request, event):
         AdminMenuItem(is_active=organizers_active, href=organizers_url, text=organizers_text),
         AdminMenuItem(is_active=offers_active, href=offers_url, text=offers_text, notifications=offers_notifications),
         AdminMenuItem(is_active=invitations_active, href=invitations_url, text=invitations_text, notifications=invitations_notifications),
-        AdminMenuItem(is_active=timetable_active, href=timetable_url, text=timetable_text),
+        AdminMenuItem(is_active=schedule_active, href=schedule_url, text=schedule_text),
         AdminMenuItem(is_active=special_active, href=special_url, text=special_text),
         AdminMenuItem(is_active=cold_offers_active, href=cold_offers_url, text=cold_offers_text),
         AdminMenuItem(is_active=publish_active, href=publish_url, text=publish_text),
