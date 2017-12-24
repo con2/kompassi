@@ -83,8 +83,9 @@ STATICFILES_FINDERS = (
 SECRET_KEY = env.str('SECRET_KEY', default=('' if not DEBUG else 'xxx'))
 
 MIDDLEWARE_CLASSES = (
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
+    # 'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'csp.middleware.CSPMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -95,7 +96,7 @@ MIDDLEWARE_CLASSES = (
     'core.middleware.PageWizardMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django_babel.middleware.LocaleMiddleware',
-    'django_prometheus.middleware.PrometheusAfterMiddleware',
+    # 'django_prometheus.middleware.PrometheusAfterMiddleware',
 )
 
 ROOT_URLCONF = 'kompassi.urls'
@@ -270,6 +271,16 @@ LOGGING = {
 LOGIN_URL = '/login'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# TODO script-src unsafe-inline needed at least by feedback.js. unsafe-eval needed by Knockout (roster.js).
+# XXX style-src unsafe-inline is just basic plebbery and should be eradicated.
+CSP_DEFAULT_SRC = "'none'"
+CSP_SCRIPT_SRC = "'self' 'unsafe-inline' 'unsafe-eval'"
+CSP_CONNECT_SRC = "'self'"
+CSP_IMG_SRC = "'self'"
+CSP_STYLE_SRC = "'self' 'unsafe-inline'"
+CSP_FONT_SRC = "'self'"
+
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',

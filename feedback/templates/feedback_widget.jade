@@ -1,5 +1,6 @@
 - load i18n
 - load crispy_forms_tags
+- load staticfiles
 
 .panel-group#kompassi-feedback-widget
   .panel.panel-primary
@@ -22,19 +23,4 @@
           p.help-block
             a(href='{{ settings.FEEDBACK_PRIVACY_POLICY_URL }}', target='_blank') {% trans "Feedback privacy policy…" %}
 
-script.
-  function sendKompassiFeedback(event) {
-    event.preventDefault();
-
-    var $form = $('#kompassi-feedback-widget-form');
-
-    $.ajax({
-      type: 'POST',
-      url: '{% url "feedback_view" %}',
-      data: $form.serialize()
-    }).then(function() {
-      alert("{% trans 'Thank you for your feedback!' %}");
-      $form[0].reset();
-      $('#kompassi-feedback-widget-collapse').collapse('hide');
-    });
-  }
+script(src='{% url "feedback_js_view" %}')

@@ -33,3 +33,4 @@ requests~=2.13.0
 unicodecsv~=0.14.1
 vobject~=0.9.3
 XlsxWriter~=0.9.6
+django_csp~=3.3
