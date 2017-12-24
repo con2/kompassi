@@ -86,6 +86,7 @@ MIDDLEWARE_CLASSES = (
     # 'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'csp.middleware.CSPMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -280,6 +281,9 @@ CSP_CONNECT_SRC = "'self'"
 CSP_IMG_SRC = "'self'"
 CSP_STYLE_SRC = "'self' 'unsafe-inline'"
 CSP_FONT_SRC = "'self'"
+CSP_FORM_ACTION = "'self'"
+CSP_FRAME_ANCESTORS = "'none'"
+X_FRAME_OPTIONS = 'DENY'
 
 
 MESSAGE_TAGS = {
