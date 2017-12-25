@@ -107,8 +107,8 @@ class SignupExtra(SignupExtraBase):
     shirt_type = models.CharField(
         max_length=8,
         choices=SHIRT_TYPES,
-        default='STAFF',
-        # default='TOOLATE',
+        # default='STAFF',
+        default='TOOLATE',
         verbose_name='Paidan tyyppi',
     )
 
