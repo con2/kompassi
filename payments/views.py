@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET
 
+from csp.decorators import csp_update
+
 from tickets.helpers import get_order, tickets_event_required
 from core.utils import url
 
@@ -28,6 +30,7 @@ class PaymentStatus:
 
 
 @tickets_event_required
+@csp_update(FORM_ACTION='payment.checkout.fi')
 @require_GET
 def payments_redirect_view(request, event):
     order = get_order(request, event)
