@@ -1306,3 +1306,6 @@ msgstr "Olemassaoleva sali"
 
 msgid "New room name"
 msgstr "Uuden salin nimi"
+
+msgid "Edit rooms"
+msgstr "Ohjelmasalien muokkaus"

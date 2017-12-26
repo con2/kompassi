@@ -13,7 +13,6 @@ class Room(models.Model):
     name = models.CharField(max_length=ROOM_NAME_MAX_LENGTH)
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    active = models.BooleanField(default=True)  # TODO kill with fire
 
     def __str__(self):
         return self.name
@@ -49,5 +48,5 @@ class Room(models.Model):
         )
 
     @property
-    def admin_can_remove(self):
-        return not self.programmes.exists()
+    def can_delete(self):
+        return not self.programmes.exists() and not self.view_rooms.exists()

@@ -191,7 +191,7 @@ class Setup(object):
         )
 
         if not view.rooms.exists():
-            view.rooms = Room.objects.filter(event=self.event, active=True)
+            view.rooms = Room.objects.filter(event=self.event)
             view.save()
 
         for category_name, category_style in [

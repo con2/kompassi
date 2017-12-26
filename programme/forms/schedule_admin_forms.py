@@ -143,3 +143,23 @@ class AddRoomForm(forms.Form):
 
         view_room = ViewRoom.objects.create(view=self.view, room=room)
         return view_room
+
+
+class RoomIdForm(forms.Form):
+    room_id = forms.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        self.event = kwargs.pop('event')
+        super(RoomIdForm, self).__init__(*args, **kwargs)
+
+    def get_room(self):
+        return get_object_or_404(Room, id=self.cleaned_data['room_id'], event=self.event)
+
+
+class DeleteRoomForm(RoomIdForm):
+    def save(self):
+        room = self.get_room()
+        if not room.can_delete:
+            raise ValueError(f'Cannot delete Room: {room}')
+
+        room.delete()

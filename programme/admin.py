@@ -62,8 +62,8 @@ class ViewAdmin(admin.ModelAdmin):
 
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('event', 'name', 'active')
-    list_filter = ('event', 'active')
+    list_display = ('event', 'name')
+    list_filter = ('event',)
     actions = (activate_selected_items, deactivate_selected_items)
 
 
