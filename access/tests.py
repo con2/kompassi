@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from unittest import TestCase as NonDatabaseTestCase
 
 from django.test import TestCase

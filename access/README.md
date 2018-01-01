@@ -36,7 +36,7 @@ However, this has been rejected by our mail service provider, and a simpler acti
 
 ### Slack invitation management
 
-The `Privilege` model is a generic facility for granting specific privileges by request to people who belong to one of the groups that grant access.
+The `Privilege` model is a generic facility for granting specific privileges by request to people who belong to one of the groups that grant access. A `Privilege` that is granted to a user is represented as `GrantedPrivilege`.
 
 The only practical use so far has been self-service invitations to Slack for event volunteers. This is done using `Privilege`s that have their `grant_code` set to `access.privileges:invite_to_slack`. A `GroupPrivilege` connects a group of users to a `Privilege`, enabling them to request the said privilege using the `/profile/privileges` view.
 

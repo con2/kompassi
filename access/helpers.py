@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from functools import wraps
 
 from django.contrib import messages

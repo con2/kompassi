@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 import re
 from random import randint
 
