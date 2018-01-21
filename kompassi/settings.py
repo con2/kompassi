@@ -215,6 +215,7 @@ INSTALLED_APPS = (
     'events.kuplii2018',
     'events.tracon2018',
     'events.concon15',
+    'events.aicon2018',
 )
 
 LOGGING = {
