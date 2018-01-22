@@ -84,10 +84,7 @@ def do_login(request, user, password=None, next='core_frontpage_view'):
 
     remind_email_verification_if_needed(request, next)
 
-    # FIXME CSP breaks login redirects to OAuth2 enabled sites. Find a way to make them co-exist.
-    response = redirect(next)
-    response._csp_exempt = True
-    return response
+    return redirect(next)
 
 
 @require_http_methods(['GET', 'HEAD', 'POST'])
