@@ -1,10 +1,8 @@
-# encoding: utf-8
-
-
-
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
+
+from csp.decorators import csp_update
 
 from labour.proxies.signup.onboarding import SignupOnboardingProxy
 
@@ -14,6 +12,7 @@ from ..models import Badge
 
 @badges_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
+@csp_update(SCRIPT_SRC=['cdn.jsdelivr.net'])
 def badges_admin_onboarding_view(request, vars, event):
     if request.method in ('GET', 'HEAD'):
         badges = Badge.objects.filter(

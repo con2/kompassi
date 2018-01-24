@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse
 
+from csp.decorators import csp_update
 from ipware.ip import get_ip
 
 from core.models import Event
@@ -12,6 +13,7 @@ from ..models import EventSurvey, EventSurveyResult, GlobalSurvey, GlobalSurveyR
 
 
 @require_http_methods(['GET', 'HEAD', 'POST'])
+@csp_update(SCRIPT_SRC=['cdnjs.cloudflare.com'])
 def survey_view(request, event_slug='', survey_slug=''):
     if event_slug:
         event = get_object_or_404(Event, slug=event_slug)
