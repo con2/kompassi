@@ -3,6 +3,16 @@ from django.db import models
 from labour.models import SignupExtraBase
 
 
+SHIRT_SIZES = [
+    ('NO_SHIRT', 'En halua paitaa'),
+    ('S', 'S'),
+    ('M', 'M'),
+    ('L', 'L'),
+    ('XL', 'XL'),
+    ('OTHER', 'Muu koko (kerro Vapaa sana -kentässä)'),
+]
+
+
 class SignupExtra(SignupExtraBase):
     want_certificate = models.BooleanField(
         default=False,
@@ -26,19 +36,38 @@ class SignupExtra(SignupExtraBase):
         ),
     )
 
+    night_work = models.BooleanField(
+        verbose_name='Olen valmis tekemään yötyötä (jos valitsit työn, joka sellaista sisältää)',
+        default=False,
+    )
+
+    need_lodging = models.BooleanField(
+        verbose_name='Tarvitsen majoituksen (lattiamajoitus)',
+        default=False,
+    )
+
+    more_info = models.TextField(
+        blank=True,
+        default='',
+        verbose_name='Lisätietoja osaamisestasi',
+        help_text=(
+            'Jos valitsit työn, joka tarvitsee selvennystä osaamisestasi (ensiapukortti, linkki '
+            'portfolioon jne.), kirjoita siitä tähän.'
+        )
+    )
+
     prior_experience = models.TextField(
         blank=True,
         verbose_name='Työkokemus',
         help_text=(
-            'Kerro aikaisemmasta työkokemuksestasi tapahtuman työvoimana tai muusta kokemuksesta, '
-            'josta koet olevan hyötyä haetussa/haetuissa työtehtävissä.'
+            'Oletko tehnyt vastaavaa työtä aikaisemmin? Muuta hyödyllistä työkokemusta? Kerro itsestäsi!'
         ),
     )
 
     free_text = models.TextField(
         blank=True,
-        verbose_name='Lisätietoja',
-        help_text='Tässä kentässä voit kertoa jotain minkä koet tarpeelliseksi, jota ei ole vielä mainittu.',
+        verbose_name='Vapaa sana',
+        help_text='Muuta kerrottavaa? Kysyttävää? Kirjoita se tähän.',
     )
 
     @classmethod

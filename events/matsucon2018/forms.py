@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from django import forms
 
 from crispy_forms.layout import Layout, Fieldset
@@ -20,11 +16,14 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset('Lisätiedot',
+                indented_without_label('night_work'),
+                indented_without_label('need_lodging'),
+                indented_without_label('want_certificate'),
                 'special_diet',
                 'special_diet_other',
+                'more_info',
                 'prior_experience',
                 'free_text',
-                indented_without_label('want_certificate'),
             )
         )
 
@@ -33,9 +32,12 @@ class SignupExtraForm(forms.ModelForm):
         fields = (
             'special_diet',
             'special_diet_other',
+            'night_work',
+            'need_lodging',
+            'more_info',
+            'want_certificate',
             'prior_experience',
             'free_text',
-            'want_certificate',
         )
 
         widgets = dict(
