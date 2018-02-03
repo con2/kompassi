@@ -19,6 +19,7 @@ class SignupExtraForm(forms.ModelForm):
                 indented_without_label('night_work'),
                 indented_without_label('need_lodging'),
                 indented_without_label('want_certificate'),
+                'shirt_size',
                 'special_diet',
                 'special_diet_other',
                 'more_info',
@@ -30,6 +31,7 @@ class SignupExtraForm(forms.ModelForm):
     class Meta:
         model = SignupExtra
         fields = (
+            'shirt_size',
             'special_diet',
             'special_diet_other',
             'night_work',
@@ -82,6 +84,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset('Lisätiedot',
+                'shirt_size',
                 'special_diet',
                 'special_diet_other',
             ),
@@ -91,6 +94,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
+            'shirt_size',
             'special_diet',
             'special_diet_other',
         )

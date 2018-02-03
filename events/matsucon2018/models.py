@@ -19,6 +19,13 @@ class SignupExtra(SignupExtraBase):
         verbose_name='Haluan todistuksen työskentelystäni Matsuconissa',
     )
 
+    shirt_size = models.CharField(
+        max_length=8,
+        choices=SHIRT_SIZES,
+        default='NO_SHIRT',
+        verbose_name='Työvoiman T-paidan koko',
+    )
+
     special_diet = models.ManyToManyField(
         'enrollment.SpecialDiet',
         blank=True,
