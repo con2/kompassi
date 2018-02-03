@@ -15,8 +15,10 @@ class SignupExtraForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
+            'shift_type',
+            indented_without_label('night_work'),
+
             Fieldset('Lisätiedot',
-                indented_without_label('night_work'),
                 indented_without_label('need_lodging'),
                 indented_without_label('want_certificate'),
                 'shirt_size',
@@ -31,6 +33,7 @@ class SignupExtraForm(forms.ModelForm):
     class Meta:
         model = SignupExtra
         fields = (
+            'shift_type',
             'shirt_size',
             'special_diet',
             'special_diet_other',

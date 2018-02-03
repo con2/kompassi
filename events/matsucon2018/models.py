@@ -12,6 +12,13 @@ SHIRT_SIZES = [
     ('OTHER', 'Muu koko (kerro Vapaa sana -kentässä)'),
 ]
 
+SHIFT_TYPE_CHOICES = [
+    ('lb', 'Pitkät vuorot molempina päivinä (4h/vuoro/päivä)'),
+    ('sb', 'Lyhyitä vuoroja molempina päivinä (2h/vuoro, 4h/päivä)'),
+    ('as', 'Kaikki vuorot lauantaina'),
+    ('au', 'Kaikki vuorot sunnuntaina'),
+]
+
 
 class SignupExtra(SignupExtraBase):
     want_certificate = models.BooleanField(
@@ -40,6 +47,17 @@ class SignupExtra(SignupExtraBase):
             'Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
             'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
             'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+        ),
+    )
+
+    shift_type = models.CharField(
+        max_length=2,
+        choices=SHIFT_TYPE_CHOICES,
+        verbose_name='Valitse toivomasi työvuoro',
+        help_text=(
+            'Jokaisen työvoimaan kuuluvan on tehtävä vähintään 8 tuntia töitä. Työvuorotoiveet '
+            'yritetään huomioida vuoroja jaettaessa. Jos haluat kaikki vuorot samalle päivälle, vuorot '
+            'jaetaan niin että pääset pitämään taukoa välissä.'
         ),
     )
 
