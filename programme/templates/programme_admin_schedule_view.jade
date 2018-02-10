@@ -159,7 +159,7 @@ block content
           form.modal-content.form-horizontal(method='POST',
                                              action='{% url "programme_admin_schedule_update_view_view" event.slug view.id %}')
             //- Catch Enter
-            button.sr-only(type='submit', name='action', value='update-view') Lisää
+            button.sr-only(type='submit', name='action', value='add-room') Lisää
 
             .modal-header
               h4(id="view-{{ view.id }}-add-room-modal-title") Lisää sali näkymään <strong>{{ view.name }}</strong>
