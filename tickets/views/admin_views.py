@@ -11,6 +11,8 @@ from django.utils.timezone import now
 from django.views.decorators.http import require_safe, require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 
+from csp.decorators import csp_exempt
+
 try:
     from reportlab.pdfgen import canvas
 except ImportError:
@@ -297,6 +299,7 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
 @tickets_admin_required
 @require_safe
+@csp_exempt
 def tickets_admin_etickets_view(request, vars, event, order_id):
     order = get_object_or_404(Order, id=int(order_id), event=event)
 

@@ -7,6 +7,8 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.debug import sensitive_post_parameters
 
+from csp.decorators import csp_exempt
+
 from ..models import Person
 from ..forms import LoginForm
 from ..utils import get_next, initialize_form
@@ -16,6 +18,7 @@ from .email_verification_views import remind_email_verification_if_needed
 
 @sensitive_post_parameters('password')
 @require_http_methods(['GET', 'POST'])
+@csp_exempt  # FIXME
 def core_login_view(request):
     next = get_next(request, 'core_frontpage_view')
     form = initialize_form(LoginForm, request, initial=dict(next=next))
@@ -88,6 +91,7 @@ def do_login(request, user, password=None, next='core_frontpage_view'):
 
 
 @require_http_methods(['GET', 'HEAD', 'POST'])
+@csp_exempt  # FIXME
 def core_logout_view(request):
     next = get_next(request)
     logout(request)
