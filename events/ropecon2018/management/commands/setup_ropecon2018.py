@@ -674,7 +674,7 @@ Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, k
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
-                price_cents=1900,
+                price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
