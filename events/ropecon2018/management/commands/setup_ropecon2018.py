@@ -641,7 +641,7 @@ Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, k
         else:
             defaults.update(
                 ticket_sales_starts=datetime(2018, 2, 14, 12, 0, tzinfo=self.tz),
-                ticket_sales_ends=datetime(2018, 8, 1, 0, 0, tzinfo=self.tz),
+                ticket_sales_ends=datetime(2018, 7, 1, 0, 0, tzinfo=self.tz),
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
