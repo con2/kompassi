@@ -10,7 +10,7 @@ from crispy_forms.layout import Layout, Fieldset
 from core.utils import horizontal_form_helper
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory, WorkPeriod
-from programme.models import AlternativeProgrammeFormMixin, Programme, Category
+from programme.models import AlternativeProgrammeFormMixin, ProgrammeFormMixin, Programme, Category
 
 from .models import SignupExtra
 
@@ -529,7 +529,7 @@ class LautapeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             category=Category.objects.get(event__slug='ropecon2018', slug='lautapeli'),
         )
 
-class PuheohjelmaForm(forms.ModelForm, programme.forms.ProgrammeForm):
+class PuheohjelmaForm(forms.ModelForm, ProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
 
