@@ -566,7 +566,6 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         fields = (
             'title',
             'approximate_length',
-            'three_word_description',
             'description',
             'category',
             'computer',
@@ -578,11 +577,6 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'photography',
             'ropecon2018_preferred_time_slots',
             'notes_from_host',
-            'is_english_ok',
-            'is_children_friendly',
-            'is_age_restricted',
-            'is_beginner_friendly',
-            'is_intended_for_experienced_participants',
         )
 
         widgets = dict(
