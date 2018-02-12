@@ -625,9 +625,10 @@ Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, k
                 "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
                 "lipunvaihtopisteessä.\n\n"
                 "Tervetuloa Ropeconiin!",
-            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Ropecon 2018 -tapahtumaan!</h2>"
-                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                "<p>Lue lisää tapahtumasta <a href='http://2018.ropecon.fi'>Ropecon 2018 -tapahtuman kotisivuilta</a>.</p>"
+            front_page_text="<h2>Tervetuloa Ropeconin lippukauppaan!</h2>"
+                "<p>Liput maksetaan tilauksen yhteydessä käyttämällä suomalaia verkkopankkipalveluja.</p>"
+                "<p>Maksetut liput toimitetaan e-lippuina sähköpostitse asiakkaan antamaan osoitteeseen. E-liput vaihdetaan rannekkeiksi tapahtuman lipunmyyntipisteillä 27.–29.7.2018.</p>"
+                "<p>Lisätietoja lipuista saat tapahtuman verkkosivuilta. <a href='https://2018.ropecon.fi/liput/'>Siirry takaisin tapahtuman verkkosivuille</a>.</p>"
                 "<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
                 "toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>lipunmyynti@ropecon.fi</em>"
         )
@@ -640,8 +641,8 @@ Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, k
             )
         else:
             defaults.update(
-                ticket_sales_starts=datetime(2018, 2, 14, 12, 0, tzinfo=self.tz),
-                ticket_sales_ends=datetime(2018, 7, 1, 0, 0, tzinfo=self.tz),
+                ticket_sales_starts=datetime(2018, 2, 14, 10, 0, tzinfo=self.tz),
+                ticket_sales_ends=datetime(2018, 7, 2, 0, 0, tzinfo=self.tz),
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -657,8 +658,8 @@ Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, k
 
         for product_info in [
             dict(
-                name='Ropecon 2018 -pääsylippu',
-                description='Viikonloppulippu Ropecon 2018-tapahtumaan. Voimassa koko viikonlopun ajan pe klo 15 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                name='Ropecon 2018 viikonloppulippu pe-su, aikuiset',
+                description='Ropecon 2018-tapahtuman pääsylippu 27.-29.7.2018.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
@@ -669,8 +670,8 @@ Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, k
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2018 -lastenlippu',
-                description='Lasten (alle 12-v) viikonloppulippu Ropecon 2018-tapahtumaan. Voimassa koko viikonlopun ajan pe klo 15 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                name='Ropecon 2018 viikonloppulippu pe-su, lapset',
+                description='7-12-vuotiaat lapset aikuisen seurassa.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
@@ -681,8 +682,8 @@ Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, k
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2018 -kannatuslippu',
-                description='Viikonloppulippu Ropecon 2018-tapahtumaan ja ulkojäsenyys Ropecon ry:ssä vuodelle 2018. Voimassa koko viikonlopun ajan pe klo 15 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                name='Ropecon 2018 -tapahtuman kannatusranneke',
+                description='Sisältää pääsylipun Ropecon 2018 -tapahtumaan 27.–29.7.2018 sekä Ropecon ry:n jäsenyyden vuodelle 2018.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
