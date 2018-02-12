@@ -146,9 +146,20 @@ DESCRIPTION_HELP_TEXT = _(
     'shocking themes. Recommended length is 300–500 characters. We reserve the right '
     'to edit this as necessary (including but not limited to shortening).'
 )
+
+TALK_DESCRIPTION_HELP_TEXT = _(
+    'Advertise your programme to potential participants. Be extra sure to inform about potentially '
+    'shocking themes. Recommended length is 300–500 characters. We reserve the right '
+    'to edit this as necessary (including but not limited to shortening).'
+)
+
 APPROXIMATE_LENGTH_HELP_TEXT = _(
     'In order to gain free entry, you are required to run at in total least four '
     'hours of games.'
+)
+
+TALK_APPROXIMATE_LENGTH_HELP_TEXT = _(
+    'Programmes can be either 45 or 105 minutes in length.'
 )
 
 
@@ -530,24 +541,24 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'title',
             'approximate_length',
             'description',
-            'three_word_description',
+            'category',
+            'computer',
+            'use_audio',
+            'use_video',
+            'number_of_microphones'
+            'tech_requirements',
+            'video_permission',
+            'photography',
             'ropecon2018_preferred_time_slots',
             'notes_from_host',
 
-            Fieldset(_('Whom is the game for?'),
-                'is_english_ok',
-                'is_children_friendly',
-                'is_age_restricted',
-                'is_beginner_friendly',
-                'is_intended_for_experienced_participants',
-            ),
         )
 
-        self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields['approximate_length'].help_text = TALK_APPROXIMATE_LENGTH_HELP_TEXT
 
         self.fields['three_word_description'].required = True
 
-        self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
+        self.fields['description'].help_text = TALK_DESCRIPTION_HELP_TEXT
         self.fields['description'].required = True
 
     class Meta:
