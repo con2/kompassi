@@ -556,8 +556,6 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.fields['approximate_length'].help_text = TALK_APPROXIMATE_LENGTH_HELP_TEXT
 
-        self.fields['three_word_description'].required = True
-
         self.fields['description'].help_text = TALK_DESCRIPTION_HELP_TEXT
         self.fields['description'].required = True
 
