@@ -162,6 +162,11 @@ TALK_APPROXIMATE_LENGTH_HELP_TEXT = _(
     'Programmes can be either 45 or 105 minutes in length.'
 )
 
+TALK_TIMESLOT_HELP_TEXT = _(
+    'When would you like to hold your programme? The time slots are intentionally '
+    'vague. If you have more specific needs regarding the time, please explain them '
+    'below.'
+)
 
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
@@ -558,6 +563,8 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.fields['description'].help_text = TALK_DESCRIPTION_HELP_TEXT
         self.fields['description'].required = True
+
+        self.fields['ropecon2018_preferred_time_slots'].help_text = TALK_TIMESLOT_HELP_TEXT
 
     class Meta:
         model = Programme
