@@ -572,7 +572,7 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'computer',
             'use_audio',
             'use_video',
-            'number_of_microphones'
+            'number_of_microphones',
             'tech_requirements',
             'video_permission',
             'photography',
