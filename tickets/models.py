@@ -381,6 +381,8 @@ class Product(models.Model):
     event = models.ForeignKey('core.Event')
 
     name = models.CharField(max_length=100)
+    override_electronic_ticket_title = models.CharField(max_length=100, default='', blank=True)
+
     internal_description = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField()
     mail_description = models.TextField(null=True, blank=True)
@@ -390,12 +392,20 @@ class Product(models.Model):
     requires_accommodation_information = models.BooleanField(default=False)
     requires_shirt_size = models.BooleanField(default=False)
     electronic_ticket = models.BooleanField(default=False)
+    electronic_tickets_per_product = models.PositiveIntegerField(default=1)
     available = models.BooleanField(default=True)
     notify_email = models.CharField(max_length=100, null=True, blank=True)
     ordering = models.IntegerField(default=0)
 
     class Meta:
         ordering = ('ordering', 'id')
+
+    @property
+    def electronic_ticket_title(self):
+        if self.override_electronic_ticket_title:
+            return self.override_electronic_ticket_title
+        else:
+            return self.name
 
     @property
     def sell_limit(self):
@@ -866,8 +876,8 @@ class Order(models.Model):
             codes = [Code.objects.create(
                 order=lippukala_order,
                 prefix=self.lippukala_prefix,
-                product_text=op.product.name,
-            ) for i in range(op.count)]
+                product_text=op.product.electronic_ticket_title,
+            ) for i in range(op.count * op.product.electronic_tickets_per_product)]
 
         return lippukala_order, codes
 
