@@ -420,7 +420,7 @@ Tule pöytäpelinjohtajaksi Ropeconiin! Voit testata kehittämiäsi seikkailuja 
 Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautuksella tai päivärannekkeen neljän tunnin pelautuksella. Lisäksi pelinjohtajat palkitaan sunnuntaina jaettavalla lootilla, eli ilmaisella roolipelitavaralla. Mitä useamman pelin pidät, sitä korkeammalle kohoat loottiasteikossa!
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:RpgForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 7, 1, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=20,
@@ -439,7 +439,7 @@ Ropecon etsii innokkaita larpinjärjestäjiä! Nyt on tilaisuutesi tulla mukaan 
 Kiinnostaako freeform? Freeform-pelit ovat larpin kaltaisia pelejä, jotka pelataan yhdessä huoneessa vähäisellä proppauksella. Pelit ovat yleensä vahvasti tarinankerronnallisia. Freeform-pelien järjestäjäksi ilmoittaudutaan pöytäroolipelien lomakkeella. Lue lisää pöytäroolipelien kuvauksesta!
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:LarpForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 7, 1, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=30,
@@ -458,7 +458,7 @@ Muhiiko mielessäsi hullu tai tuiki tavallinen lautapeleihin liittyvä idea? Ker
 Ohjelman lisäksi haemme työvoimaa lautapelitiskille, joka huolehtii pelien lainaamisesta ja kunnossa pysymisestä. Ilmoittaudu lautapelitiskin työntekijäksi täyttämällä työvoimalomake.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:LautapeliForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=60,
@@ -475,7 +475,7 @@ Ohjelman lisäksi haemme työvoimaa lautapelitiskille, joka huolehtii pelien lai
 Ropecon hakee järjestäjiä korttipeliturnauksille ja korttipeliaiheiselle ohjelmalle. Tarvitsemme myös työntekijöitä korttipelitiskille vastaanottamaan turnausilmoittautumisia ja pitämään huolta siitä, että ohjelma etenee suunnitelmien mukaisesti. Kaikkea ei tarvitse tietää etukäteen, sillä neuvoja ja ohjeita työskentelyyn sekä ohjelman suunnitteluun saat korttipelivastaavalta ja kokeneemmilta turnausten järjestäjiltä. Myös korttipelitiskin työntekijät perehdytetään tehtävään.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:KorttipeliForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=40,
@@ -494,7 +494,7 @@ Heilutatko sivellintä kuin säilää? Pyöritätkö noppaa kuin puolijumala? Ta
 Figuohjelma hakee puhujia miniatyyriaiheiseen puheohjelmaan, innostuneita keskustelijoita paneelikeskusteluihin, vetäjiä työpajoihin sekä peluuttajia eri pelimuotoihin. Ideoilla – olivat ne sitten viimeisen päälle hiottua timanttia tai vasta aihioita – voit lähestyä figuvastaavaa sähköpostitse.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:FigupeliForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=50,
@@ -515,7 +515,7 @@ Kokemuspisteellä kävijä pääsee tutustumaan uusiin peleihin peliesittelijän
 Huomaathan, että Kokemuspiste on vain peliesittelyä varten. Tuotteiden myyntiä varten tulee varata osasto Ropeconin myyntialueelta.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:KokemuspisteForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=70,
@@ -544,7 +544,7 @@ Tänä vuonna Ropeconissa on myös akateemista ohjelmaa. Akateemiseen ohjelmaan 
 Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista tiloista ovat käytössä ainakin salit 201 sekä 204 - 207. Uutena puheohjelman käyttöön tulee ainakin sali 103. Voit tutustua tiloihin etukäteen virtuaaliesittelyn avulla.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:PuheohjelmaForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=10,
@@ -561,7 +561,8 @@ Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista 
 Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, kuten taistelunäytöksiä ja muita esityksiä. Jos sinulla on luova idea siitä, millaista ohjelmaa haluaisit järjestää, ota meihin yhteyttä!
                 '''.strip(),
                 programme_form_code='programme.forms:ProgrammeOfferForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
+                active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=90,
             )
