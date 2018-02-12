@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 import os
 from datetime import datetime, timedelta
 
@@ -16,6 +12,10 @@ from core.utils import slugify, full_hours_between
 
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *parts))
+
+def dprint(arg):
+    print(arg)
+    return arg
 
 
 class Setup(object):
@@ -34,7 +34,6 @@ class Setup(object):
         self.setup_intra()
         self.setup_tickets()
         self.setup_programme()
-        self.setup_access()
         self.setup_payments()
         self.setup_badges()
 
@@ -43,6 +42,9 @@ class Setup(object):
 
         self.venue, unused = Venue.objects.get_or_create(
             name='Messukeskus',
+            defaults=dict(
+                name_inessive='Messukeskuksessa',
+            ),
         )
         self.event, unused = Event.objects.get_or_create(slug='ropecon2018', defaults=dict(
             name='Ropecon 2018',
@@ -246,19 +248,6 @@ class Setup(object):
             ),
         )
 
-        for wiki_space, link_title, link_group in [
-            ('HTPTWORK', 'Työvoimawiki', 'accepted'),
-            ('HTPTINFO', 'Infowiki', 'info'),
-        ]:
-            InfoLink.objects.get_or_create(
-                event=self.event,
-                title=link_title,
-                defaults=dict(
-                    url='https://confluence.tracon.fi/display/{wiki_space}'.format(wiki_space=wiki_space),
-                    group=labour_event_meta.get_group(link_group),
-                )
-            )
-
     def setup_programme(self):
         from labour.models import PersonnelClass
         from programme.models import (
@@ -287,70 +276,52 @@ class Setup(object):
             programme_event_meta.save()
 
         for room_name in [
-                'Halli 3',
-                'Halli 3 Bofferialue',
-                'Halli 1 Myyntialue',
-                'Halli 3 Näyttelyalue'
-                'Halli 3 Korttipelialue',
-                'Halli 3 Figupelialue',
-                'Halli 3 Pukukilpailutiski',
-                'Halli 3 Ohjelmalava',
-                'Halli 3 Puhesali',
-                'Halli 3 Ohjelmasali',
-                'Ylä-Galleria',
-                'Ala-Galleria',
-                'Larp-tiski',
-                'Messuaukio',
-                'Klubiravintola',
-                'Sali 103',
-                'Sali 201',
-                'Sali 202',
-                'Sali 203a',
-                'Sali 203b',
-                'Sali 204',
-                'Sali 205',
-                'Sali 206',
-                'Sali 207',
-                'Sali 211',
-                'Sali 212',
-                'Sali 213',
-                'Sali 214',
-                'Sali 215',
-                'Sali 216',
-                'Sali 216a',
-                'Sali 217',
-                'Sali 218',
-                'Sali 301',
-                'Sali 302',
-                'Sali 303',
-                'Sali 304',
-                'Sali 305',
-                'Sali 306',
-                'Sali 307',
-                'Salin 203 aula',
+            'Halli 3',
+            'Halli 3 Bofferialue',
+            'Halli 1 Myyntialue',
+            'Halli 3 Näyttelyalue',
+            'Halli 3 Korttipelialue',
+            'Halli 3 Figupelialue',
+            'Halli 3 Pukukilpailutiski',
+            'Halli 3 Ohjelmalava',
+            'Halli 3 Puhesali',
+            'Halli 3 Ohjelmasali',
+            'Ylä-Galleria',
+            'Ala-Galleria',
+            'Larp-tiski',
+            'Messuaukio',
+            'Klubiravintola',
+            'Sali 103',
+            'Sali 201',
+            'Sali 202',
+            'Sali 203a',
+            'Sali 203b',
+            'Sali 204',
+            'Sali 205',
+            'Sali 206',
+            'Sali 207',
+            'Sali 211',
+            'Sali 212',
+            'Sali 213',
+            'Sali 214',
+            'Sali 215',
+            'Sali 216',
+            'Sali 216a',
+            'Sali 217',
+            'Sali 218',
+            'Sali 301',
+            'Sali 302',
+            'Sali 303',
+            'Sali 304',
+            'Sali 305',
+            'Sali 306',
+            'Sali 307',
+            'Salin 203 aula',
         ]:
-            order = self.get_ordering_number() + 90000 # XXX
-
             room, created = Room.objects.get_or_create(
-                venue=self.venue,
-                # event=self.event
+                event=self.event,
                 name=room_name,
-                defaults=dict(
-                    order=order
-                )
             )
-
-            room.order = order
-            room.save()
-
-        for room_name in [
-            # 'Sopraano',
-            # 'Basso',
-            # 'Opus 1',
-        ]:
-            room = Room.objects.get(venue=self.venue, name=room_name)
-            room.active = False
-            room.save()
 
         for pc_slug, role_title, role_is_default in [
             ('ohjelma', 'Ohjelmanjärjestäjä', True),
@@ -418,9 +389,7 @@ class Setup(object):
                     start_time=hour_start_time.replace(minute=30)
                 )
 
-        # XXX
-        have_views = True
-        # have_views = View.objects.filter(event=self.event).exists()
+        have_views = View.objects.filter(event=self.event).exists()
         if not have_views:
             for view_name, room_names in [
                 ('Pääohjelmatilat', [
@@ -429,12 +398,16 @@ class Setup(object):
                     'Halli 3 Figupelialue',
                 ]),
             ]:
-                rooms = [Room.objects.get(name__iexact=room_name, venue=self.venue)
-                    for room_name in room_names]
-
                 view, created = View.objects.get_or_create(event=self.event, name=view_name)
-                view.rooms = rooms
-                view.save()
+
+                if created:
+                    rooms = [
+                        Room.objects.get(name__iexact=dprint(room_name), event=self.event)
+                        for room_name in room_names
+                    ]
+
+                    view.rooms = rooms
+                    view.save()
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
@@ -499,7 +472,7 @@ Ohjelman lisäksi haemme työvoimaa lautapelitiskille, joka huolehtii pelien lai
                 title='Tarjoa korttipeliturnausta',
                 short_description='Korttipeliturnaukset',
                 description='''
-Ropecon hakee järjestäjiä korttipeliturnauksille ja korttipeliaiheiselle ohjelmalle. Tarvitsemme myös työntekijöitä korttipelitiskille vastaanottamaan turnausilmoittautumisia ja pitämään huolta siitä, että ohjelma etenee suunnitelmien mukaisesti. Kaikkea ei tarvitse tietää etukäteen, sillä neuvoja ja ohjeita työskentelyyn sekä ohjelman suunnitteluun saat korttipelivastaavalta ja kokeneemmilta turnausten järjestäjiltä. Myös korttipelitiskin työntekijät perehdytetään tehtävään.                
+Ropecon hakee järjestäjiä korttipeliturnauksille ja korttipeliaiheiselle ohjelmalle. Tarvitsemme myös työntekijöitä korttipelitiskille vastaanottamaan turnausilmoittautumisia ja pitämään huolta siitä, että ohjelma etenee suunnitelmien mukaisesti. Kaikkea ei tarvitse tietää etukäteen, sillä neuvoja ja ohjeita työskentelyyn sekä ohjelman suunnitteluun saat korttipelivastaavalta ja kokeneemmilta turnausten järjestäjiltä. Myös korttipelitiskin työntekijät perehdytetään tehtävään.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:KorttipeliForm',
                 active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
@@ -516,9 +489,9 @@ Ropecon hakee järjestäjiä korttipeliturnauksille ja korttipeliaiheiselle ohje
                 title='Tarjoa figupeliturnausta',
                 short_description='Figut eli miniatyyripelit',
                 description='''
-Heilutatko sivellintä kuin säilää? Pyöritätkö noppaa kuin puolijumala? Taipuuko foamboard käsissäsi upeiksi palatseiksi? Haluaisitko jakaa erikoistaitosi conikansan syville riveille?                
+Heilutatko sivellintä kuin säilää? Pyöritätkö noppaa kuin puolijumala? Taipuuko foamboard käsissäsi upeiksi palatseiksi? Haluaisitko jakaa erikoistaitosi conikansan syville riveille?
 
-Figuohjelma hakee puhujia miniatyyriaiheiseen puheohjelmaan, innostuneita keskustelijoita paneelikeskusteluihin, vetäjiä työpajoihin sekä peluuttajia eri pelimuotoihin. Ideoilla – olivat ne sitten viimeisen päälle hiottua timanttia tai vasta aihioita – voit lähestyä figuvastaavaa sähköpostitse. 
+Figuohjelma hakee puhujia miniatyyriaiheiseen puheohjelmaan, innostuneita keskustelijoita paneelikeskusteluihin, vetäjiä työpajoihin sekä peluuttajia eri pelimuotoihin. Ideoilla – olivat ne sitten viimeisen päälle hiottua timanttia tai vasta aihioita – voit lähestyä figuvastaavaa sähköpostitse.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:FigupeliForm',
                 active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
@@ -593,6 +566,13 @@ Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, k
                 order=90,
             )
         )
+
+        if settings.DEBUG:
+            AlternativeProgrammeForm.objects.filter(
+                event=self.event,
+            ).update(
+                active_from=now(),
+            )
 
         for time_slot_name in [
             'Perjantaina iltapäivällä',
@@ -706,29 +686,6 @@ Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, k
             if not product.limit_groups.exists():
                 product.limit_groups = limit_groups
                 product.save()
-
-    def setup_access(self):
-        from access.models import Privilege, GroupPrivilege, EmailAliasType, GroupEmailAliasGrant
-
-        # Grant accepted workers access to Tracon Slack
-#        group = self.event.labour_event_meta.get_group('accepted')
-#        privilege = Privilege.objects.get(slug='ropecon-slack')
-#        GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
-
-#        cc_group = self.event.labour_event_meta.get_group('conitea')
-
-#        for metavar in [
-#            'etunimi.sukunimi',
-#            'nick',
-#        ]:
-#            alias_type = EmailAliasType.objects.get(domain__domain_name='ropecon.fi', metavar=metavar)
-#            GroupEmailAliasGrant.objects.get_or_create(
-#                group=cc_group,
-#                type=alias_type,
-#                defaults=dict(
-#                    active_until=self.event.end_time,
-#                )
-#            )
 
     def setup_payments(self):
         from payments.models import PaymentsEventMeta

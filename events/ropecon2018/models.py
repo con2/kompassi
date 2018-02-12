@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from django.db import models
 
 from labour.models import ObsoleteSignupExtraBaseV1
@@ -36,26 +32,12 @@ class SimpleChoice(models.Model):
 
 
 class SpecialDiet(SimpleChoice):
-    id = models.AutoField(auto_created=True, 
-        primary_key=True, 
-        serialize=False, 
-        verbose_name='ID')
-    
-    name = models.CharField(max_length=63)
+    pass
 
-    class Meta:
-        abstract = False
 
 class TimeSlot(SimpleChoice):
-    id = models.AutoField(auto_created=True, 
-        primary_key=True, 
-        serialize=False, 
-        verbose_name='ID')
-    
-    name = models.CharField(max_length=63)
+    pass
 
-    class Meta:
-        abstract = False
 
 class SignupExtra(ObsoleteSignupExtraBaseV1):
     shift_type = models.CharField(max_length=15,
@@ -125,7 +107,7 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
     )
 
     is_active = models.BooleanField(default=True)
-    
+
     @classmethod
     def get_form_class(cls):
         from .forms import SignupExtraForm
