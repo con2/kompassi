@@ -529,7 +529,7 @@ class LautapeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             category=Category.objects.get(event__slug='ropecon2018', slug='lautapeli'),
         )
 
-class PuheohjelmaForm(forms.ModelForm, ProgrammeFormMixin):
+class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
 
@@ -568,6 +568,14 @@ class PuheohjelmaForm(forms.ModelForm, ProgrammeFormMixin):
             'approximate_length',
             'three_word_description',
             'description',
+            'category',
+            'computer',
+            'use_audio',
+            'use_video',
+            'number_of_microphones'
+            'tech_requirements',
+            'video_permission',
+            'photography',
             'ropecon2018_preferred_time_slots',
             'notes_from_host',
             'is_english_ok',
