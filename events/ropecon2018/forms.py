@@ -10,7 +10,7 @@ from crispy_forms.layout import Layout, Fieldset
 from core.utils import horizontal_form_helper
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory, WorkPeriod
-from programme.models import AlternativeProgrammeFormMixin, ProgrammeFormMixin, Programme, Category
+from programme.models import AlternativeProgrammeFormMixin, Programme, Category
 
 from .models import SignupExtra
 
