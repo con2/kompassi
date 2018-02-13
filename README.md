@@ -1,6 +1,5 @@
 # Kompassi Event Management System
 
-[![Build Status](https://travis-ci.org/tracon/kompassi.svg?branch=master)](https://travis-ci.org/tracon/kompassi)
 [![Sponsored by Leonidas](https://img.shields.io/badge/sponsored%20by-leonidas-389fc1.svg)](https://leonidasoy.fi/opensource)
 
 Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. Work in progress.
@@ -55,6 +54,7 @@ A Docker image is available as [tracon/kompassi](https://hub.docker.com/r/tracon
     The MIT License (MIT)
 
     Copyright © 2009–2018 Santtu Pajukanta
+    Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö
     Copyright © 2015–2017 Miika Ojamo
     Copyright © 2015–2016 Aarni Koskela, Santeri Hiltunen
