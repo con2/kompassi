@@ -348,7 +348,14 @@ class Setup(object):
                 ('Korttipelit', 'korttipeli', 'color5'),
                 ('Figupelit', 'figupeli', 'color6'),
                 ('Kokemuspiste', 'kokemuspiste', 'color8'),
-                ('Muu ohjelma', 'muu-ohjelma', 'color7'),
+                ('Panel', 'puhe-paneeli', 'color3'),
+                ('Workshop', 'puhe-tyopaja', 'color3'),
+                ('Dance program', 'puhe-tanssi', 'color3'),
+                ('Presentation', 'puhe-esitelma', 'color3'),
+                ('Experience point', 'puhe-kp', 'color3'),
+                ('Larps', 'puhe-larpit', 'color3'),
+                ('Freeform', 'puhe-freeform', 'color3'),
+                ('Other program', 'puhe-muu', 'color3'),
                 ('Sisäinen ohjelma', 'sisainen-ohjelma', 'sisainen'),
             ]:
                 Category.objects.get_or_create(
@@ -450,7 +457,7 @@ Kiinnostaako freeform? Freeform-pelit ovat larpin kaltaisia pelejä, jotka pelat
             event=self.event,
             slug='lautapeli',
             defaults=dict(
-                title='Tarjoa lautapeliturnausta',
+                title='Tarjoa lautapeliohjelmaa',
                 short_description='Lautapelit',
                 description='''
 Muhiiko mielessäsi hullu tai tuiki tavallinen lautapeleihin liittyvä idea? Kerro se meille! Ropeconissa käsitellään lautapelaamista niin pelisuunnittelutyöpajojen, omituisia teemoja käsittelevien luentojen kuin erikoisten turnausformaattienkin muodossa. Jos vielä epäröit, lautapelivastaava vastaa mielellään kysymyksiisi.
@@ -537,8 +544,6 @@ Etsimme taiteisiin, käsitöihin ja muuhun roolipelaamisen ympärillä tapahtuva
 
 Puheohjelman pituus on 45 minuuttia tai 105 minuuttia. Jos ilmoitat ohjelmaan työpajan, toivomme että se järjestetään kahdesti tapahtuman aikana.
 
-Jatkamme viime vuodesta tuttua CrossGames-ohjelmasarjaa. Sarjaan voit tarjota pelisuunnitteluun, kirjoittamiseen sekä digipelien ja roolipelien rajapintaan keskittyviä ohjelmanumeroita. Otamme vastaan myös ideoita ja toiveita tähän kokonaisuuteen sopivista ohjelmista sähköpostitse!
-
 Tänä vuonna Ropeconissa on myös akateemista ohjelmaa. Akateemiseen ohjelmaan on erillinen haku.
 
 Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista tiloista ovat käytössä ainakin salit 201 sekä 204 - 207. Uutena puheohjelman käyttöön tulee ainakin sali 103. Voit tutustua tiloihin etukäteen virtuaaliesittelyn avulla.
@@ -548,23 +553,6 @@ Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista 
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=10,
-            )
-        )
-
-        AlternativeProgrammeForm.objects.get_or_create(
-            event=self.event,
-            slug='muu-ohjelma',
-            defaults=dict(
-                title='Tarjoa muuta ohjelmaa',
-                short_description='Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole peli eikä puheohjelmaa.',
-                description='''
-Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, kuten taistelunäytöksiä ja muita esityksiä. Jos sinulla on luova idea siitä, millaista ohjelmaa haluaisit järjestää, ota meihin yhteyttä!
-                '''.strip(),
-                programme_form_code='programme.forms:ProgrammeOfferForm',
-                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
-                active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
-                num_extra_invites=0,
-                order=90,
             )
         )
 

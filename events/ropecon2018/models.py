@@ -2,6 +2,7 @@ from django.db import models
 
 from labour.models import ObsoleteSignupExtraBaseV1
 from labour.querybuilder import QueryBuilder, add_prefix
+from programme.models import AlternativeProgrammeForm
 
 
 TOTAL_WORK_CHOICES = [
@@ -19,6 +20,16 @@ SHIFT_TYPE_CHOICES = [
     ('yksipitka', 'Yksi pitkä vuoro'),
     ('montalyhytta', 'Monta lyhyempää vuoroa'),
     ('kaikkikay', 'Kumpi tahansa käy'),
+]
+
+AUDIENCE_SIZE_CHOICES = [
+    ('eitietoa', 'En tiedä'),
+    ('alle50', 'Alle 50'),
+    ('alle100', '50-100'),
+    ('alle150', '100-150'),
+    ('alle200', '150-200'),
+    ('alle250', '200-250'),
+    ('yli250', 'Yli 250'),
 ]
 
 class SimpleChoice(models.Model):
@@ -116,3 +127,4 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
     @staticmethod
     def get_query_class():
         raise NotImplementedError()
+

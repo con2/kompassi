@@ -159,13 +159,7 @@ APPROXIMATE_LENGTH_HELP_TEXT = _(
 )
 
 TALK_APPROXIMATE_LENGTH_HELP_TEXT = _(
-    'Programmes can be either 45 or 105 minutes in length.'
-)
-
-TALK_TIMESLOT_HELP_TEXT = _(
-    'When would you like to hold your programme? The time slots are intentionally '
-    'vague. If you have more specific needs regarding the time, please explain them '
-    'below.'
+    'Talk programmes can be either 45 or 105 minutes in length.'
 )
 
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
@@ -544,19 +538,18 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.helper.layout = Layout(
             'title',
-            'approximate_length',
             'description',
             'category',
-            'computer',
-            'use_audio',
-            'use_video',
-            'number_of_microphones',
-            'tech_requirements',
-            'video_permission',
-            'photography',
-            'ropecon2018_preferred_time_slots',
+            'approximate_length',
+            'is_english_ok',
+            'is_children_friendly',
+            'is_beginner_friendly',
+            'ropecon2018_is_no_language',
+            'ropecon2018_audience_size',
             'notes_from_host',
-
+            'ropecon2018_is_panel_attendance_ok',
+            'ropecon2018_speciality',
+            'video_permission',
         )
 
         self.fields['approximate_length'].help_text = TALK_APPROXIMATE_LENGTH_HELP_TEXT
@@ -564,28 +557,30 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields['description'].help_text = TALK_DESCRIPTION_HELP_TEXT
         self.fields['description'].required = True
 
-        self.fields['ropecon2018_preferred_time_slots'].help_text = TALK_TIMESLOT_HELP_TEXT
+        self.fields['approximate_length'].initial = 105
+        
+        self.fields['ropecon2018_audience_size'].required = False
+        self.fields['ropecon2018_is_panel_attendance_ok'].required = False
+        self.fields['ropecon2018_speciality'].required = False
+
+        self.fields['category'].queryset = Category.objects.filter(event__slug='ropecon2018', slug__iregex=r'^puhe.+')
 
     class Meta:
         model = Programme
         fields = (
             'title',
-            'approximate_length',
             'description',
             'category',
-            'computer',
-            'use_audio',
-            'use_video',
-            'number_of_microphones',
-            'tech_requirements',
-            'video_permission',
-            'photography',
-            'ropecon2018_preferred_time_slots',
+            'approximate_length',
+            'is_english_ok',
+            'is_children_friendly',
+            'is_beginner_friendly',
+            'ropecon2018_is_no_language',
+            'ropecon2018_audience_size',
             'notes_from_host',
-        )
-
-        widgets = dict(
-            ropecon2018_preferred_time_slots=forms.CheckboxSelectMultiple,
+            'ropecon2018_is_panel_attendance_ok',
+            'ropecon2018_speciality',
+            'video_permission',
         )
 
     def get_excluded_field_defaults(self):

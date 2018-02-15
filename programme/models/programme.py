@@ -386,6 +386,45 @@ class Programme(models.Model, CsvExportMixin):
         ),
     )
 
+    ROPECON2018_AUDIENCE_SIZE_CHOICES = [
+        ('unknown', _('No estimate')),
+        ('lt50', _('Less than 50')),
+        ('50-100', _('50 - 100')),
+        ('100-150', _('100 - 150')),
+        ('150-200', _('150 - 200')),
+        ('200-250', _('200 - 250')),
+        ('gt250', _('Over 250')),
+    ]
+
+    ropecon2018_audience_size = models.CharField(
+        default='unknown',
+        null=True,
+        choices=ROPECON2018_AUDIENCE_SIZE_CHOICES,
+        max_length=max(len(key) for (key, label) in ROPECON2018_AUDIENCE_SIZE_CHOICES),
+        verbose_name=_('Audience estimate'),
+        help_text=_('Estimate of audience size for talk/presentation, if you have previous experience.'),
+    )
+
+    ropecon2018_is_no_language = models.BooleanField(
+        verbose_name=_('No language'),
+        help_text=_('No Finnish language needed to participate.'),
+        default=False,
+    )
+
+    ropecon2018_is_panel_attendance_ok = models.BooleanField(
+        verbose_name=_('Panel talk'),
+        help_text=_('I can participate in a panel discussion related to my field of expertise.'),
+        default=False,
+    )
+
+    ropecon2018_speciality = models.CharField(
+        verbose_name=_('My field(s) of expertise'),
+        max_length=100,
+        blank=True,
+        null=True,
+        default='',
+    )
+
     other_author = models.CharField(
         max_length=1023,
         blank=True,

@@ -1,4 +1,8 @@
 #: forms.py
+msgid "<p>If you wish to organize a program item at Ropecon, you can sign up using this form.</p><p>Tell us briefly who you are, what kind of program item you would like to organize, and whether you have organized program items before at Ropecon or at other conventions. The more you can tell us about your program idea, the better we can avoid overlapping program items. Please fill the form only if you have a clear idea about what you would like to do. You can email ohjelma@ropecon.fi if you have any questions or unfinished ideas you need help with. Note that you will be able to make adjustments to the duration and the content of the program item even after signing up.</p><p>Please make sure that your contact information, especially the email address, is correct!</p><p>The Program team will contact you as soon as they can to ask for additional information, if needed, and to confirm the inclusion of your program item at Ropecon.</p>"
+msgstr "<p>Vuoden 2018 Ropeconiin etsitään kiinnostavia ja mukaansatempaavia esitelmiä, työpajoja sekä paneelikeskusteluja erityisesti teemalla elämä ja yhteisö. Toivomme tänä vuonna lisää englanninkielistä ohjelmaa. Mainitsethan, jos pystyt vetämään ohjelmanumerosi sekä suomeksi että englanniksi.\nPuheohjelma voi olla esitelmä, keskustelu, paneeli tai työpaja, ja se voi olla aloittelijaystävällinen tai kokeneille konkareille.</p><p>Etsimme taiteisiin, käsitöihin ja muuhun roolipelaamisen ympärillä tapahtuvaan luovaan harrastamiseen liittyvää ohjelmaa. Haemme myös lauta-, figu- ja pöytäroolipeliaiheista puheohjelmaa ja työpajoja.</p><p>Puheohjelman pituus on 45 minuuttia tai 105 minuuttia. Jos ilmoitat ohjelmaan työpajan, toivomme että se järjestetään kahdesti tapahtuman aikana.</p><p>Jatkamme viime vuodesta tuttua CrossGames-ohjelmasarjaa. Sarjaan voit tarjota pelisuunnitteluun, kirjoittamiseen sekä digipelien ja roolipelien rajapintaan keskittyviä ohjelmanumeroita. Otamme vastaan myös ideoita ja toiveita tähän kokonaisuuteen sopivista ohjelmista sähköpostitse!</p><p>Tänä vuonna Ropeconissa on myös akateemista ohjelmaa. Akateemiseen ohjelmaan on erillinen haku.</p><p>Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista tiloista ovat käytössä ainakin salit 201 sekä 204 - 207. Uutena puheohjelman käyttöön tulee ainakin sali 103. Voit tutustua tiloihin etukäteen virtuaaliesittelyn avulla.</p>"
+
+#: forms.py
 msgid "Advertise your game to potential players. Also explain, what is expected of players and what kind of themes are involved. Be extra sure to inform about potentially shocking themes. Recommended length is 300–500 characters. We reserve the right to edit this as necessary (including but not limited to shortening)."
 msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
@@ -11,8 +15,8 @@ msgid "Advertise your programme to potential participants. Be extra sure to info
 msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
 #: forms.py
-msgid "Programmes can be either 45 or 105 minutes in length."
-msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia."
+msgid "Talk programmes can be either 45 or 105 minutes in length."
+msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia. Muut ohjelmat voivat arvioida keston tai jättää kentän nollaksi."
 
 #: forms.py
 msgid "When would you like to hold your programme? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them below."
@@ -21,4 +25,42 @@ msgstr "Koska haluat pitää ohjelmasi? Aikavaihtoehdot ovat tarkoituksella laaj
 #: forms.py
 msgid "Whom is the game for?"
 msgstr "Kenelle peli on tarkoitettu?"
+
+#: forms.py
+msgid "Audience estimate"
+msgstr "Yleisöarvio"
+
+#: forms.py
+msgid "Estimate of audience size for talk/presentation, if you have previous experience."
+msgstr "Arvio puheohjelman yleisön koosta, jos aiempaa kokemusta."
+
+#: forms.py
+msgid "No language"
+msgstr "Kielivapaa"
+
+#: forms.py
+msgid "No Finnish language needed to participate."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmaan osallistuminen ei vaadi suomen kielen osaamista."
+
+#: forms.py
+msgid "Panel talk"
+msgstr "Paneelikeskustelu"
+
+#: forms.py
+msgid "I can participate in a panel discussion related to my field of expertise."
+msgstr "Voin osallistua erikoisalaani sivuavaan paneelikeskusteluun."
+
+#: forms.py
+msgid "My field(s) of expertise"
+msgstr "Erikoisalani"
+
+#: forms.py
+msgid "No estimate"
+msgstr "Ei arviota"
+
+msgid "Less than 50"
+msgstr "Alle 50"
+
+msgid "Over 250"
+msgstr "Yli 250"
 
