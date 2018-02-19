@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
-from events.hitpoint2017.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT
+from events.hitpoint2017.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory
 from programme.models import Category, Programme, AlternativeProgrammeFormMixin
@@ -181,6 +181,59 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
 
+class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(ProgrammeForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        for field_name in [
+            'title',
+            'description',
+            'long_description',
+            'length_from_host',
+        ]:
+            self.fields[field_name].required = True
+
+        self.fields['category'].queryset = Category.objects.filter(event=event, public=True)
+
+        self.fields['description'].help_text = (
+            'Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen '
+            'tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä '
+            'markkinoida ohjelmaasi. Pidä kuvaus kuitenkin ytimekkäänä, jotta se mahtuisi ohjelmalehteen. '
+            'Ohjelmakuvauksen maksimipituus ohjelmalehteä varten on 720 merkkiä. Varaamme oikeuden muokata kuvausta.'
+        )
+        self.fields['description'].max_length = 720
+
+    def get_excluded_field_defaults(self):
+        return dict()
+
+    class Meta:
+        model = Programme
+        fields = (
+            'title',
+            'description',
+            'long_description',
+            'length_from_host',
+            'category',
+            'computer',
+            'use_audio',
+            'use_video',
+            'number_of_microphones',
+            'tech_requirements',
+            'video_permission',
+            'encumbered_content',
+            'photography',
+            'rerun',
+            'room_requirements',
+            'requested_time_slot',
+            'notes_from_host',
+        )
+
+
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
@@ -214,7 +267,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields['three_word_description'].required = True
         self.fields['rpg_system'].required = True
 
-        self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
+        self.fields['description'].help_text = RPG_DESCRIPTION_HELP_TEXT
         self.fields['description'].required = True
 
     class Meta:
