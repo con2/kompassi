@@ -141,6 +141,16 @@ class Programme(models.Model, CsvExportMixin):
             'description.'
         ),
     )
+    long_description = models.TextField(
+        blank=True,
+        default='',
+        verbose_name='Tarkempi kuvaus',
+        help_text=(
+            'Kuvaile ohjelmaasi tarkemmin ohjelmavastaavalle. Minkälaista rakennetta olet ohjelmallesi '
+            'suunnitellut? Millaisia asioita tulisit käsittelemään? Kerro myös onko ohjelmasi suunnattu '
+            'aloittevammille vai kokeneemmille harrastajille.'
+        ),
+    )
     three_word_description = models.CharField(
         max_length=1023,
         blank=True,
@@ -296,6 +306,16 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_(
             'In order to be displayed in the schedule, the programme must have a start time and a length and '
             'must be assigned into a room.'
+        ),
+    )
+    length_from_host = models.CharField(
+        max_length=127,
+        blank=True,
+        null=True,
+        verbose_name='Ohjelman pituus',
+        help_text=(
+            'Huomaathan, että emme voi taata juuri toivomasi pituista ohjelmapaikkaa. Ohjelmavastaava vahvistaa '
+            'ohjelmasi pituuden.'
         ),
     )
 
