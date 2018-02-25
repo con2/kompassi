@@ -58,9 +58,107 @@ msgstr "Erikoisalani"
 msgid "No estimate"
 msgstr "Ei arviota"
 
+#: forms.py
 msgid "Less than 50"
 msgstr "Alle 50"
 
+#: forms.py
 msgid "Over 250"
 msgstr "Yli 250"
+
+#: forms.py
+msgid "Game title."
+msgstr "Pelin nimi."
+
+#: forms.py
+msgid "Please tick this box if the game is hosted in English."
+msgstr "Valitse tämä jos peli pelataan englanniksi."
+
+#: forms.py
+msgid "Check this if the game requires knowledge of the world or the rules of the game."
+msgstr "Valitse tämä jos peli vaatii pelin maailman tai sääntöjen tuntemusta."
+
+#: forms.py
+msgid "Consider the minimum number of players carefully: you will maximize your chances of running the game by setting the number as low as possible."
+msgstr "Harkitse pelaajien vähimmäismäärä tarkkaan: maksimoit pelin toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
+
+#: forms.py
+msgid "If there is anything else you wish to say to the RPG manager that is not covered by the above questions, please enter it here."
+msgstr "Jos haluat kertoa roolipelivastaavalle jotakin joka ei sisälly ylläoleviin kenttiin, kirjoita se tähän."
+
+#: forms.py
+msgid "Game genre (Choose all that apply)"
+msgstr "Pelin genre (Valitse kaikki soveltuvat)"
+
+#: forms.py
+msgid "Fantasy"
+msgstr "Fantasia"
+
+#: forms.py
+msgid "Historical"
+msgstr "Historiallinen"
+
+#: forms.py
+msgid "Modern"
+msgstr "Moderni"
+
+#: forms.py
+msgid "War"
+msgstr "Sota"
+
+#: forms.py
+msgid "Horror"
+msgstr "Kauhu"
+
+#: forms.py
+msgid "Exploration"
+msgstr "Seikkailu"
+
+#: forms.py
+msgid "Mystery"
+msgstr "Mysteeri"
+
+#: forms.py
+msgid "Drama"
+msgstr "Draama"
+
+#: forms.py
+msgid "Humor"
+msgstr "Huumori"
+
+#: forms.py
+msgid "Game style (Choose any that apply)"
+msgstr "Pelin tyyli (Valitse soveltuvat)"
+
+#: forms.py
+msgid "Serious game style"
+msgstr "Vakava pelityyli"
+
+#: forms.py
+msgid "Light game style"
+msgstr "Kevyt pelityyli"
+
+#: forms.py
+msgid "Rules heavy"
+msgstr "Raskaat säännöt"
+
+#: forms.py
+msgid "Rules light"
+msgstr "Kevyet säännöt"
+
+#: forms.py
+msgid "Story driven"
+msgstr "Tarinavetoinen"
+
+#: forms.py
+msgid "Character driven"
+msgstr "Hahmovetoinen"
+
+#: forms.py
+msgid "Combat driven"
+msgstr "Taisteluvetoinen"
+
+#: forms.py
+msgid "Basic game information"
+msgstr "Pelin perustiedot"
 

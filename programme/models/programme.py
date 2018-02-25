@@ -425,6 +425,91 @@ class Programme(models.Model, CsvExportMixin):
         default='',
     )
 
+    ropecon2018_genre_fantasy = models.BooleanField(
+        verbose_name=_('Fantasy'),
+        default=False,
+    )
+
+    ropecon2018_genre_scifi = models.BooleanField(
+        verbose_name=_('Sci-fi'),
+        default=False,
+    )
+
+    ropecon2018_genre_historical = models.BooleanField(
+        verbose_name=_('Historical'),
+        default=False,
+    )
+
+    ropecon2018_genre_modern = models.BooleanField(
+        verbose_name=_('Modern'),
+        default=False,
+    )
+
+    ropecon2018_genre_war = models.BooleanField(
+        verbose_name=_('War'),
+        default=False,
+    )
+
+    ropecon2018_genre_horror = models.BooleanField(
+        verbose_name=_('Horror'),
+        default=False,
+    )
+
+    ropecon2018_genre_exploration = models.BooleanField(
+        verbose_name=_('Exploration'),
+        default=False,
+    )
+
+    ropecon2018_genre_mystery = models.BooleanField(
+        verbose_name=_('Mystery'),
+        default=False,
+    )
+
+    ropecon2018_genre_drama = models.BooleanField(
+        verbose_name=_('Drama'),
+        default=False,
+    )
+
+    ropecon2018_genre_humor = models.BooleanField(
+        verbose_name=_('Humor'),
+        default=False,
+    )
+
+    ropecon2018_style_serious = models.BooleanField(
+        verbose_name=_('Serious game style'),
+        default=False,
+    )
+
+    ropecon2018_style_light = models.BooleanField(
+        verbose_name=_('Light game style'),
+        default=False,
+    )
+
+    ropecon2018_style_rules_heavy = models.BooleanField(
+        verbose_name=_('Rules heavy'),
+        default=False,
+    )
+
+    ropecon2018_style_rules_light = models.BooleanField(
+        verbose_name=_('Rules light'),
+        default=False,
+    )
+
+    ropecon2018_style_story_driven = models.BooleanField(
+        verbose_name=_('Story driven'),
+        default=False,
+    )
+
+    ropecon2018_style_character_driven = models.BooleanField(
+        verbose_name=_('Character driven'),
+        default=False,
+    )
+
+    ropecon2018_style_combat_driven = models.BooleanField(
+        verbose_name=_('Combat driven'),
+        default=False,
+    )
+
     other_author = models.CharField(
         max_length=1023,
         blank=True,
