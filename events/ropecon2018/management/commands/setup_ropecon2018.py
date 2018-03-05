@@ -13,10 +13,6 @@ from core.utils import slugify, full_hours_between
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *parts))
 
-def dprint(arg):
-    print(arg)
-    return arg
-
 
 class Setup(object):
     def __init__(self):
@@ -409,7 +405,7 @@ class Setup(object):
 
                 if created:
                     rooms = [
-                        Room.objects.get(name__iexact=dprint(room_name), event=self.event)
+                        Room.objects.get(name__iexact=room_name, event=self.event)
                         for room_name in room_names
                     ]
 
