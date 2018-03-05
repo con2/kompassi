@@ -162,3 +162,53 @@ msgstr "Taisteluvetoinen"
 msgid "Basic game information"
 msgstr "Pelin perustiedot"
 
+#: forms.py
+msgid "number of sessions"
+msgstr "peluutusten lukumäärä"
+
+#: forms.py
+msgid "This is your preference only. Due to the limited space we are not able to accommodate all requests. One four hour session gives you one weekend ticket. A second session gives you an additional day ticket."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi peluuttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita. Yhdellä neljän tunnin pelautuksella saat yhden viikonloppurannekkeen. Toisella pelautuksella saat lisäksi päivärannekkeen."
+
+#: forms.py
+msgid "number of characters"
+msgstr "hahmojen lukumäärä"
+
+#: forms.py
+msgid "If the game design requires characters with a specific gender let us know in the notes."
+msgstr "Jos pelin design vaatii sukupuolitettuja hahmoja, kerro siitä vapaamuotoisissa terveisissä."
+
+#: forms.py
+msgid "Do you make your own signup sheet"
+msgstr "Teetkö itse ilmoittautumislistan vai tekeekö larp-tiski sen"
+
+#: forms.py
+msgid "A self-made signup sheet allows you to ask more detailed player preferences. Larp-desk-made signup sheet is a list of participant names."
+msgstr "Itse tehdyssä ilmoittautumislistassa voit kysyä tarkemmin pelaajien mieltymyksiä. Larp-tiskin tekemä lista on nimilista peliin tulevista ihmisistä."
+
+#: forms.py
+msgid "Space requirements"
+msgstr "Tilatoiveet"
+
+#: forms.py
+msgid "Let us know of your requirements. Fully dark, separate rooms, water outlet, etc."
+msgstr "Kerro tässä millaisessa tilassa toivot larppisi järjestettävän. Täysin pimennettävä, erilliset huoneet, vesipiste, jne."
+
+#: forms.py
+msgid "Prop requirements"
+msgstr "Pelin tarvitsemat tarvikkeet"
+
+#: forms.py
+msgid "Let us know what props and other equipment you need. Not all requests can be accommodated. Water and glasses are always provided."
+msgstr "Kerro tässä mitä tarvikkeita ja proppeja pelisi tarvitsee ja mitä niistä voit tuoda itse. Valitettavasti emme pysty toteuttamaan kaikkein villeimpiä toiveita. Kaikille peleille tuodaan vettä ja vesilaseja."
+
+#: forms.py
+msgid "I will make my own signup sheet"
+msgstr "Teen itse"
+
+#: forms.py
+msgid "Desk will make the signup sheet"
+msgstr "Tiski tekee"
+
+
+

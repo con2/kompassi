@@ -396,6 +396,11 @@ class Programme(models.Model, CsvExportMixin):
         ('gt250', _('Over 250')),
     ]
 
+    ROPECON2018_SIGNUP_LIST_CHOICES = [
+        ('itse', _('I will make my own signup sheet')),
+        ('tiski', _('Desk will make the signup sheet')),
+    ]
+
     ropecon2018_audience_size = models.CharField(
         default='unknown',
         null=True,
@@ -508,6 +513,49 @@ class Programme(models.Model, CsvExportMixin):
     ropecon2018_style_combat_driven = models.BooleanField(
         verbose_name=_('Combat driven'),
         default=False,
+    )
+
+    ropecon2018_sessions = models.PositiveIntegerField(
+        verbose_name=_('number of sessions'),
+        help_text=_('This is your preference only. Due to the limited space we are not able to accommodate all requests. One four hour session gives you one weekend ticket. A second session gives you an additional day ticket.'),
+        default=2,
+        validators=[MinValueValidator(1), MaxValueValidator(999)],
+        null=True,
+    )
+    
+    ropecon2018_characters = models.PositiveIntegerField(
+        verbose_name=_('number of characters'),
+        help_text=_('If the game design requires characters with a specific gender let us know in the notes.'),
+        default=10,
+        validators=[MinValueValidator(1), MaxValueValidator(999)],
+        null=True,
+    )
+
+    ropecon2018_signuplist = models.CharField(
+        max_length=15,
+        choices=ROPECON2018_SIGNUP_LIST_CHOICES,
+        default=ROPECON2018_SIGNUP_LIST_CHOICES[0][0],
+        verbose_name=_('Do you make your own signup sheet'),
+        help_text=_('A self-made signup sheet allows you to ask more detailed player preferences. Larp-desk-made signup sheet is a list of participant names.'),
+        null=True,
+    )
+
+    ropecon2018_space_requirements = models.CharField(
+        verbose_name=_('Space requirements'),
+        help_text=_('Let us know of your requirements. Fully dark, separate rooms, water outlet, etc.'),
+        max_length=200,
+        blank=True,
+        null=True,
+        default='',
+    )
+
+    ropecon2018_prop_requirements = models.CharField(
+        verbose_name=_('Prop requirements'),
+        help_text=_('Let us know what props and other equipment you need. Not all requests can be accommodated. Water and glasses are always provided.'),
+        max_length=200,
+        blank=True,
+        null=True,
+        default='',
     )
 
     other_author = models.CharField(

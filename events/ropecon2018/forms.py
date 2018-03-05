@@ -317,12 +317,15 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.helper.layout = Layout(
             'title',
             'approximate_length',
+            'ropecon2018_sessions',
+            'ropecon2018_characters',
             'min_players',
-            'max_players',
             'description',
             'three_word_description',
             'other_author',
-
+            'ropecon2018_signuplist',
+            'ropecon2018_space_requirements',
+            'ropecon2018_prop_requirements',
             'ropecon2018_preferred_time_slots',
             'notes_from_host',
 
@@ -340,17 +343,22 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields['description'].required = True
         self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
 
+        self.fields['min_players'].initial = 6
+
     class Meta:
         model = Programme
         fields = (
             'title',
             'approximate_length',
+            'ropecon2018_sessions',
+            'ropecon2018_characters',
             'min_players',
-            'max_players',
             'description',
             'three_word_description',
             'other_author',
-
+            'ropecon2018_signuplist',
+            'ropecon2018_space_requirements',
+            'ropecon2018_prop_requirements',
             'ropecon2018_preferred_time_slots',
             'notes_from_host',
 
