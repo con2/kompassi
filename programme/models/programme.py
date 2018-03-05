@@ -406,6 +406,178 @@ class Programme(models.Model, CsvExportMixin):
         ),
     )
 
+    ROPECON2018_AUDIENCE_SIZE_CHOICES = [
+        ('unknown', _('No estimate')),
+        ('lt50', _('Less than 50')),
+        ('50-100', _('50 - 100')),
+        ('100-150', _('100 - 150')),
+        ('150-200', _('150 - 200')),
+        ('200-250', _('200 - 250')),
+        ('gt250', _('Over 250')),
+    ]
+
+    ROPECON2018_SIGNUP_LIST_CHOICES = [
+        ('itse', _('I will make my own signup sheet')),
+        ('tiski', _('Desk will make the signup sheet')),
+    ]
+
+    ropecon2018_audience_size = models.CharField(
+        default='unknown',
+        null=True,
+        choices=ROPECON2018_AUDIENCE_SIZE_CHOICES,
+        max_length=max(len(key) for (key, label) in ROPECON2018_AUDIENCE_SIZE_CHOICES),
+        verbose_name=_('Audience estimate'),
+        help_text=_('Estimate of audience size for talk/presentation, if you have previous experience.'),
+    )
+
+    ropecon2018_is_no_language = models.BooleanField(
+        verbose_name=_('No language'),
+        help_text=_('No Finnish language needed to participate.'),
+        default=False,
+    )
+
+    ropecon2018_is_panel_attendance_ok = models.BooleanField(
+        verbose_name=_('Panel talk'),
+        help_text=_('I can participate in a panel discussion related to my field of expertise.'),
+        default=False,
+    )
+
+    ropecon2018_speciality = models.CharField(
+        verbose_name=_('My field(s) of expertise'),
+        max_length=100,
+        blank=True,
+        null=True,
+        default='',
+    )
+
+    ropecon2018_genre_fantasy = models.BooleanField(
+        verbose_name=_('Fantasy'),
+        default=False,
+    )
+
+    ropecon2018_genre_scifi = models.BooleanField(
+        verbose_name=_('Sci-fi'),
+        default=False,
+    )
+
+    ropecon2018_genre_historical = models.BooleanField(
+        verbose_name=_('Historical'),
+        default=False,
+    )
+
+    ropecon2018_genre_modern = models.BooleanField(
+        verbose_name=_('Modern'),
+        default=False,
+    )
+
+    ropecon2018_genre_war = models.BooleanField(
+        verbose_name=_('War'),
+        default=False,
+    )
+
+    ropecon2018_genre_horror = models.BooleanField(
+        verbose_name=_('Horror'),
+        default=False,
+    )
+
+    ropecon2018_genre_exploration = models.BooleanField(
+        verbose_name=_('Exploration'),
+        default=False,
+    )
+
+    ropecon2018_genre_mystery = models.BooleanField(
+        verbose_name=_('Mystery'),
+        default=False,
+    )
+
+    ropecon2018_genre_drama = models.BooleanField(
+        verbose_name=_('Drama'),
+        default=False,
+    )
+
+    ropecon2018_genre_humor = models.BooleanField(
+        verbose_name=_('Humor'),
+        default=False,
+    )
+
+    ropecon2018_style_serious = models.BooleanField(
+        verbose_name=_('Serious game style'),
+        default=False,
+    )
+
+    ropecon2018_style_light = models.BooleanField(
+        verbose_name=_('Light game style'),
+        default=False,
+    )
+
+    ropecon2018_style_rules_heavy = models.BooleanField(
+        verbose_name=_('Rules heavy'),
+        default=False,
+    )
+
+    ropecon2018_style_rules_light = models.BooleanField(
+        verbose_name=_('Rules light'),
+        default=False,
+    )
+
+    ropecon2018_style_story_driven = models.BooleanField(
+        verbose_name=_('Story driven'),
+        default=False,
+    )
+
+    ropecon2018_style_character_driven = models.BooleanField(
+        verbose_name=_('Character driven'),
+        default=False,
+    )
+
+    ropecon2018_style_combat_driven = models.BooleanField(
+        verbose_name=_('Combat driven'),
+        default=False,
+    )
+
+    ropecon2018_sessions = models.PositiveIntegerField(
+        verbose_name=_('number of sessions'),
+        help_text=_('This is your preference only. Due to the limited space we are not able to accommodate all requests. One four hour session gives you one weekend ticket. A second session gives you an additional day ticket.'),
+        default=2,
+        validators=[MinValueValidator(1), MaxValueValidator(999)],
+        null=True,
+    )
+    
+    ropecon2018_characters = models.PositiveIntegerField(
+        verbose_name=_('number of characters'),
+        help_text=_('If the game design requires characters with a specific gender let us know in the notes.'),
+        default=10,
+        validators=[MinValueValidator(1), MaxValueValidator(999)],
+        null=True,
+    )
+
+    ropecon2018_signuplist = models.CharField(
+        max_length=15,
+        choices=ROPECON2018_SIGNUP_LIST_CHOICES,
+        default=ROPECON2018_SIGNUP_LIST_CHOICES[0][0],
+        verbose_name=_('Do you make your own signup sheet'),
+        help_text=_('A self-made signup sheet allows you to ask more detailed player preferences. Larp-desk-made signup sheet is a list of participant names.'),
+        null=True,
+    )
+
+    ropecon2018_space_requirements = models.CharField(
+        verbose_name=_('Space requirements'),
+        help_text=_('Let us know of your requirements. Fully dark, separate rooms, water outlet, etc.'),
+        max_length=200,
+        blank=True,
+        null=True,
+        default='',
+    )
+
+    ropecon2018_prop_requirements = models.CharField(
+        verbose_name=_('Prop requirements'),
+        help_text=_('Let us know what props and other equipment you need. Not all requests can be accommodated. Water and glasses are always provided.'),
+        max_length=200,
+        blank=True,
+        null=True,
+        default='',
+    )
+
     other_author = models.CharField(
         max_length=1023,
         blank=True,
