@@ -278,6 +278,8 @@ class Setup(object):
         )
 
         for wiki_space, link_title, link_group in [
+            ('FINNCONWORK', 'Finnconin työvoimawiki', 'accepted'),
+            ('FINNCON2018', 'Finnconin coniteawiki', 'conitea'),
         ]:
             InfoLink.objects.get_or_create(
                 event=self.event,
