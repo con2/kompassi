@@ -210,5 +210,62 @@ msgstr "Teen itse"
 msgid "Desk will make the signup sheet"
 msgstr "Tiski tekee"
 
+#: forms.py
+msgid "How long do you present your game"
+msgstr "Kuinka kauan esittelet peliäsi"
+
+#: forms.py
+msgid "Presenters get a weekend ticket for 8 hours of presenting or a day ticket for 4 hours."
+msgstr "Pelinesittelijät saavat viikonloppurannekkeen kahdeksan tunnin pelinesittelyllä tai päivärannekkeen neljän tunnin pelinesittelyllä."
+
+#: forms.py
+msgid "Game difficulty and complexity"
+msgstr "Pelin vaikeus ja vaativuus"
+
+#: forms.py
+msgid "How many tables do you need"
+msgstr "Kuinka monta pöytää tarvitset"
+
+#: forms.py
+msgid "Table size is about 140 x 80 cm."
+msgstr "Pöydän koko on todennäköisesti 140 x 80 cm."
+
+#: forms.py
+msgid "4 hours"
+msgstr "4 tuntia"
+
+#: forms.py
+msgid "8 hours"
+msgstr "8 tuntia"
+
+#: forms.py
+msgid "Simple"
+msgstr "Helppo"
+
+#: forms.py
+msgid "Advanced"
+msgstr "Vaativa"
+
+#: forms.py
+msgid "Highly Advanced"
+msgstr "Vaikea"
+
+#: forms.py
+msgid "1 table"
+msgstr "1 pöytä"
+
+#: forms.py
+msgid "2 tables"
+msgstr "2 pöytää"
+
+#: forms.py
+msgid "3 tables"
+msgstr "3 pöytää"
+
+#: forms.py
+msgid "4+ tables"
+msgstr "4+ pöytää"
+
+
 
 

@@ -509,10 +509,12 @@ class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.helper.layout = Layout(
             'title',
-            'approximate_length',
             'description',
             'three_word_description',
             'ropecon2018_preferred_time_slots',
+            'ropecon2018_kp_length',
+            'ropecon2018_kp_difficulty',
+            'ropecon2018_kp_tables',
             'notes_from_host',
 
             Fieldset(_('Whom is the game for?'),
@@ -520,8 +522,6 @@ class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 'is_children_friendly',
             ),
         )
-
-        self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
 
         self.fields['three_word_description'].required = True
 
@@ -532,10 +532,12 @@ class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         model = Programme
         fields = (
             'title',
-            'approximate_length',
             'three_word_description',
             'description',
             'ropecon2018_preferred_time_slots',
+            'ropecon2018_kp_length',
+            'ropecon2018_kp_difficulty',
+            'ropecon2018_kp_tables',
             'notes_from_host',
             'is_english_ok',
             'is_children_friendly',
