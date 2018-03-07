@@ -421,6 +421,24 @@ class Programme(models.Model, CsvExportMixin):
         ('tiski', _('Desk will make the signup sheet')),
     ]
 
+    ROPECON2018_KP_LENGTH_CHOICES = [
+        ('4h', _('4 hours')),
+        ('8h', _('8 hours')),
+    ]
+
+    ROPECON2018_KP_DIFFICULTY_CHOICES = [
+        ('simple', _('Simple')),
+        ('advanced', _('Advanced')),
+        ('high', _('Highly Advanced')),
+    ]
+
+    ROPECON2018_KP_TABLE_COUNT_CHOICES = [
+        ('1', _('1 table')),
+        ('2', _('2 tables')),
+        ('3', _('3 tables')),
+        ('4+', _('4+ tables')),
+    ]
+
     ropecon2018_audience_size = models.CharField(
         default='unknown',
         null=True,
@@ -560,10 +578,9 @@ class Programme(models.Model, CsvExportMixin):
         null=True,
     )
 
-    ropecon2018_space_requirements = models.CharField(
-        verbose_name=_('Space requirements'),
-        help_text=_('Let us know of your requirements. Fully dark, separate rooms, water outlet, etc.'),
-        max_length=200,
+    ropecon2018_space_requirements = models.TextField(
+        verbose_name=_('Space and technical requirements'),
+        help_text=_('Let us know of your requirements. Fully dark, separate rooms, water outlet, sound, light, etc. Not all requests can be accommodated so please give reasons how your request improves the game.'),
         blank=True,
         null=True,
         default='',
@@ -576,6 +593,32 @@ class Programme(models.Model, CsvExportMixin):
         blank=True,
         null=True,
         default='',
+    )
+
+    ropecon2018_kp_length = models.CharField(
+        max_length=2,
+        choices=ROPECON2018_KP_LENGTH_CHOICES,
+        default=ROPECON2018_KP_LENGTH_CHOICES[0][0],
+        verbose_name=_('How long do you present your game'),
+        help_text=_('Presenters get a weekend ticket for 8 hours of presenting or a day ticket for 4 hours.'),
+        null=True,
+    )
+
+    ropecon2018_kp_difficulty = models.CharField(
+        max_length=15,
+        choices=ROPECON2018_KP_DIFFICULTY_CHOICES,
+        default=ROPECON2018_KP_DIFFICULTY_CHOICES[0][0],
+        verbose_name=_('Game difficulty and complexity'),
+        null=True,
+    )
+
+    ropecon2018_kp_tables = models.CharField(
+        max_length=5,
+        choices=ROPECON2018_KP_TABLE_COUNT_CHOICES,
+        default=ROPECON2018_KP_TABLE_COUNT_CHOICES[0][0],
+        verbose_name=_('How many tables do you need'),
+        help_text=_('Table size is about 140 x 80 cm.'),
+        null=True,
     )
 
     other_author = models.CharField(

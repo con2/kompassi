@@ -163,8 +163,48 @@ msgid "Basic game information"
 msgstr "Pelin perustiedot"
 
 #: forms.py
+msgid "Think of a short title for your game. We reserve the right to alter the title."
+msgstr "Keksi ytimekäs otsikko pelillesi. Varaamme oikeuden muokata otsikkoa."
+
+#: forms.py
 msgid "number of sessions"
 msgstr "peluutusten lukumäärä"
+
+#: forms.py
+msgid "You get one weekend ticket for one 4h session. This includes setup, briefing, defriefing and game time."
+msgstr "Yhdestä neljän tunnin (240 minuuttia) pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän neljään tuntiin sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+
+#: forms.py
+msgid "Advertise your game to potential players. Let the players know what is expected of them and what kinds of themes your game has. Do mention any difficult themes such as physical or mental violence. A good length for the description is 300-500 characters. We reserve the right to alter the description and the title."
+msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos pelissäsi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+#: forms.py
+msgid "Describe your game in three words, eg. genre, theme and mood."
+msgstr "Kuvaile peliäsi kolmella sanalla, esim. genre, teema ja tunnelma."
+
+#: forms.py
+msgid "If the game has been written by somebody else than a GM running it in Ropecon, the name must be mentioned here."
+msgstr "Jos pelin on kirjoittanut joku muu kuin sen tässä tapahtumassa vetävä pelinjohtaja, on kirjoittaja ilmoitettava tässä."
+
+#: forms.py
+msgid "When do you want to run your game? Time slots are intentionally vague. If you have detailed requests, let us know of them in the notes field."
+msgstr "Milloin haluaisit pitää pelisi? Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä vapaamuotoisissa terveisissä."
+
+#: forms.py
+msgid "Any comments to the larp team that is not applicable in any other field. Do let us know if your game design requires some of the characters to be of a certain sex/gender. We attempt to have all games playable by everybody, even if all players do not want to play a certain sex/gender."
+msgstr "Haluatko sanoa larp-coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä? Mainitse tässä, jos pelisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät). Pyrimme, että kokonaisuudessaan conissa olevissa peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois."
+
+#: forms.py
+msgid "Check this box if your game includes themes requiring the players to be at least 18 years of age."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä."
+
+#: forms.py
+msgid "Check this box if your game does not require prior larping experience."
+msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa larppikokemusta olisi hyvin vähän tai ei lainkaan."
+
+#: forms.py
+msgid "Check this box if you are capable, prepared and interested in running your game in English."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
 
 #: forms.py
 msgid "This is your preference only. Due to the limited space we are not able to accommodate all requests. One four hour session gives you one weekend ticket. A second session gives you an additional day ticket."
@@ -187,12 +227,12 @@ msgid "A self-made signup sheet allows you to ask more detailed player preferenc
 msgstr "Itse tehdyssä ilmoittautumislistassa voit kysyä tarkemmin pelaajien mieltymyksiä. Larp-tiskin tekemä lista on nimilista peliin tulevista ihmisistä."
 
 #: forms.py
-msgid "Space requirements"
-msgstr "Tilatoiveet"
+msgid "Space and technical requirements"
+msgstr "Tilatoiveet ja tekniikka"
 
 #: forms.py
-msgid "Let us know of your requirements. Fully dark, separate rooms, water outlet, etc."
-msgstr "Kerro tässä millaisessa tilassa toivot larppisi järjestettävän. Täysin pimennettävä, erilliset huoneet, vesipiste, jne."
+msgid "Let us know of your requirements. Fully dark, separate rooms, water outlet, sound, light, etc. Not all requests can be accommodated so please give reasons how your request improves the game."
+msgstr "Kerro tässä millaisessa tilassa (täysin pimennettävä, erilliset huoneet, vesipiste jne.) toivot pelisi järjestettävän ja tarvitsetko erityistä tekniikkaa (esim. valot, ääni). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee pelin kulkua."
 
 #: forms.py
 msgid "Prop requirements"
@@ -209,6 +249,63 @@ msgstr "Teen itse"
 #: forms.py
 msgid "Desk will make the signup sheet"
 msgstr "Tiski tekee"
+
+#: forms.py
+msgid "How long do you present your game"
+msgstr "Kuinka kauan esittelet peliäsi"
+
+#: forms.py
+msgid "Presenters get a weekend ticket for 8 hours of presenting or a day ticket for 4 hours."
+msgstr "Pelinesittelijät saavat viikonloppurannekkeen kahdeksan tunnin pelinesittelyllä tai päivärannekkeen neljän tunnin pelinesittelyllä."
+
+#: forms.py
+msgid "Game difficulty and complexity"
+msgstr "Pelin vaikeus ja vaativuus"
+
+#: forms.py
+msgid "How many tables do you need"
+msgstr "Kuinka monta pöytää tarvitset"
+
+#: forms.py
+msgid "Table size is about 140 x 80 cm."
+msgstr "Pöydän koko on todennäköisesti 140 x 80 cm."
+
+#: forms.py
+msgid "4 hours"
+msgstr "4 tuntia"
+
+#: forms.py
+msgid "8 hours"
+msgstr "8 tuntia"
+
+#: forms.py
+msgid "Simple"
+msgstr "Helppo"
+
+#: forms.py
+msgid "Advanced"
+msgstr "Vaativa"
+
+#: forms.py
+msgid "Highly Advanced"
+msgstr "Vaikea"
+
+#: forms.py
+msgid "1 table"
+msgstr "1 pöytä"
+
+#: forms.py
+msgid "2 tables"
+msgstr "2 pöytää"
+
+#: forms.py
+msgid "3 tables"
+msgstr "3 pöytää"
+
+#: forms.py
+msgid "4+ tables"
+msgstr "4+ pöytää"
+
 
 
 
