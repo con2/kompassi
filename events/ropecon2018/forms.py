@@ -146,11 +146,58 @@ DESCRIPTION_HELP_TEXT = _(
     'shocking themes. Recommended length is 300–500 characters. We reserve the right '
     'to edit this as necessary (including but not limited to shortening).'
 )
+
+TALK_DESCRIPTION_HELP_TEXT = _(
+    'Advertise your programme to potential participants. Be extra sure to inform about potentially '
+    'shocking themes. Recommended length is 300–500 characters. We reserve the right '
+    'to edit this as necessary (including but not limited to shortening).'
+)
+
 APPROXIMATE_LENGTH_HELP_TEXT = _(
     'In order to gain free entry, you are required to run at in total least four '
     'hours of games.'
 )
 
+TALK_APPROXIMATE_LENGTH_HELP_TEXT = _(
+    'Talk programmes can be either 45 or 105 minutes in length.'
+)
+
+RPG_TITLE_HELP_TEXT = _(
+    'Game title.'
+)
+
+RPG_ENGLISH_NAME = _(
+    'Played in English'
+)
+RPG_ENGLISH_HELP_TEXT = _(
+    'Please tick this box if the game is hosted in English.'
+)
+RPG_EXPERIENCED_NAME = _(
+    'For experienced players'
+)
+RPG_EXPERIENCED_HELP_TEXT = _(
+    'Check this if the game requires knowledge of the world or the rules of the game.'
+)
+RPG_MIN_PLAYERS_HELP_TEXT = _(
+    'Consider the minimum number of players carefully: you will maximize your chances of running the game by setting the number as low as possible.'
+)
+RPG_NOTES_HELP_TEXT = _(
+    'If there is anything else you wish to say to the RPG manager that is not covered by the above questions, please enter it here.'
+)
+
+LARP_TITLE_HELP_TEXT = _('Think of a short title for your game. We reserve the right to alter the title.')
+LARP_APPROXIMATE_LENGTH_HELP_TEXT = _('You get one weekend ticket for one 4h session. This includes setup, briefing, defriefing and game time.')
+LARP_DESCRIPTION_HELP_TEXT = _(
+    'Advertise your game to potential players. Let the players know what is expected of them and what kinds of themes your game has. Do mention any difficult themes such as physical or mental violence. A good length for the description is 300-500 characters. We reserve the right to alter the description and the title.'
+)
+LARP_THREE_WORD_HELP_TEXT = _('Describe your game in three words, eg. genre, theme and mood.')
+LARP_OTHER_AUTHOR_HELP_TEXT = _('If the game has been written by somebody else than a GM running it in Ropecon, the name must be mentioned here.')
+LARP_TIMESLOTS_HELP_TEXT = _('When do you want to run your game? Time slots are intentionally vague. If you have detailed requests, let us know of them in the notes field.')
+LARP_NOTES_HELP_TEXT = _('Any comments to the larp team that is not applicable in any other field. Do let us know if your game design requires some of the characters to be of a certain sex/gender. We attempt to have all games playable by everybody, even if all players do not want to play a certain sex/gender.')
+LARP_ENGLISH_OK_VERBOSE_NAME = _('Game can be run in English')
+LARP_ENGLISH_OK_HELP_TEXT = _('Check this box if you are capable, prepared and interested in running your game in English.')
+LARP_AGE_RESTRICTED_HELP_TEXT = _('Check this box if your game includes themes requiring the players to be at least 18 years of age.')
+LARP_BEGINNER_FRIENDLY_HELP_TEXT = _('Check this box if your game does not require prior larping experience.')
 
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
@@ -163,13 +210,6 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.helper.layout = Layout(
             'title',
             'rpg_system',
-            'approximate_length',
-            'min_players',
-            'max_players',
-            'description',
-            'three_word_description',
-            'ropecon2018_preferred_time_slots',
-            'notes_from_host',
 
             Fieldset(_('Whom is the game for?'),
                 'is_english_ok',
@@ -178,33 +218,93 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 'is_beginner_friendly',
                 'is_intended_for_experienced_participants',
             ),
+
+            Fieldset(_('Game genre (Choose all that apply)'),
+                'ropecon2018_genre_fantasy',
+                'ropecon2018_genre_scifi',
+                'ropecon2018_genre_historical',
+                'ropecon2018_genre_modern',
+                'ropecon2018_genre_war',
+                'ropecon2018_genre_horror',
+                'ropecon2018_genre_exploration',
+                'ropecon2018_genre_mystery',
+                'ropecon2018_genre_drama',
+                'ropecon2018_genre_humor',
+            ),
+
+            Fieldset(_('Game style (Choose any that apply)'),
+                'ropecon2018_style_serious',
+                'ropecon2018_style_light',
+                'ropecon2018_style_rules_heavy',
+                'ropecon2018_style_rules_light',
+                'ropecon2018_style_story_driven',
+                'ropecon2018_style_character_driven',
+                'ropecon2018_style_combat_driven',
+            ),
+
+            Fieldset(_('Basic game information'),
+                'approximate_length',
+                'min_players',
+                'max_players',
+
+                'ropecon2018_preferred_time_slots',
+                'description',
+                'notes_from_host',
+            ),
         )
 
-        self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields['title'].help_text = RPG_TITLE_HELP_TEXT
 
-        self.fields['three_word_description'].required = True
+        self.fields['is_english_ok'].verbose_name = RPG_ENGLISH_NAME
+        self.fields['is_english_ok'].help_text = RPG_ENGLISH_HELP_TEXT
+                    
+        self.fields['is_intended_for_experienced_participants'].verbose_name = RPG_EXPERIENCED_NAME
+        self.fields['is_intended_for_experienced_participants'].help_text = RPG_EXPERIENCED_HELP_TEXT
+                    
+        self.fields['approximate_length'].initial = 240
+
         self.fields['rpg_system'].required = True
 
+        self.fields['min_players'].help_text = RPG_MIN_PLAYERS_HELP_TEXT
+        
         self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
         self.fields['description'].required = True
+
+        self.fields['notes_from_host'].help_text = RPG_NOTES_HELP_TEXT
 
     class Meta:
         model = Programme
         fields = (
             'title',
             'rpg_system',
-            'approximate_length',
-            'min_players',
-            'max_players',
-            'three_word_description',
-            'description',
-            'ropecon2018_preferred_time_slots',
-            'notes_from_host',
             'is_english_ok',
             'is_children_friendly',
             'is_age_restricted',
             'is_beginner_friendly',
             'is_intended_for_experienced_participants',
+            'ropecon2018_genre_fantasy',
+            'ropecon2018_genre_scifi',
+            'ropecon2018_genre_historical',
+            'ropecon2018_genre_modern',
+            'ropecon2018_genre_war',
+            'ropecon2018_genre_horror',
+            'ropecon2018_genre_exploration',
+            'ropecon2018_genre_mystery',
+            'ropecon2018_genre_drama',
+            'ropecon2018_genre_humor',
+            'ropecon2018_style_serious',
+            'ropecon2018_style_light',
+            'ropecon2018_style_rules_heavy',
+            'ropecon2018_style_rules_light',
+            'ropecon2018_style_story_driven',
+            'ropecon2018_style_character_driven',
+            'ropecon2018_style_combat_driven',
+            'approximate_length',
+            'min_players',
+            'max_players',
+            'ropecon2018_preferred_time_slots',
+            'description',
+            'notes_from_host',
         )
 
         widgets = dict(
@@ -232,12 +332,15 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.helper.layout = Layout(
             'title',
             'approximate_length',
+            'ropecon2018_sessions',
+            'ropecon2018_characters',
             'min_players',
-            'max_players',
             'description',
             'three_word_description',
             'other_author',
-
+            'ropecon2018_signuplist',
+            'ropecon2018_space_requirements',
+            'ropecon2018_prop_requirements',
             'ropecon2018_preferred_time_slots',
             'notes_from_host',
 
@@ -248,24 +351,43 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ),
         )
 
-        self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields['title'].help_text = LARP_TITLE_HELP_TEXT
+        
+        self.fields['approximate_length'].help_text = LARP_APPROXIMATE_LENGTH_HELP_TEXT
 
         self.fields['three_word_description'].required = True
 
         self.fields['description'].required = True
-        self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
+        self.fields['description'].help_text = LARP_DESCRIPTION_HELP_TEXT
+
+        self.fields['min_players'].initial = 6
+
+        self.fields['other_author'].help_text = LARP_OTHER_AUTHOR_HELP_TEXT
+        
+        self.fields['ropecon2018_preferred_time_slots'].help_text = LARP_TIMESLOTS_HELP_TEXT
+        
+        self.fields['notes_from_host'].help_text = LARP_NOTES_HELP_TEXT
+        
+        self.fields['is_english_ok'].help_text = LARP_ENGLISH_OK_HELP_TEXT
+        
+        self.fields['is_age_restricted'].help_text = LARP_AGE_RESTRICTED_HELP_TEXT
+        
+        self.fields['is_beginner_friendly'].help_text = LARP_BEGINNER_FRIENDLY_HELP_TEXT
 
     class Meta:
         model = Programme
         fields = (
             'title',
             'approximate_length',
+            'ropecon2018_sessions',
+            'ropecon2018_characters',
             'min_players',
-            'max_players',
             'description',
             'three_word_description',
             'other_author',
-
+            'ropecon2018_signuplist',
+            'ropecon2018_space_requirements',
+            'ropecon2018_prop_requirements',
             'ropecon2018_preferred_time_slots',
             'notes_from_host',
 
@@ -416,10 +538,12 @@ class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.helper.layout = Layout(
             'title',
-            'approximate_length',
             'description',
             'three_word_description',
             'ropecon2018_preferred_time_slots',
+            'ropecon2018_kp_length',
+            'ropecon2018_kp_difficulty',
+            'ropecon2018_kp_tables',
             'notes_from_host',
 
             Fieldset(_('Whom is the game for?'),
@@ -427,8 +551,6 @@ class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 'is_children_friendly',
             ),
         )
-
-        self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
 
         self.fields['three_word_description'].required = True
 
@@ -439,10 +561,12 @@ class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         model = Programme
         fields = (
             'title',
-            'approximate_length',
             'three_word_description',
             'description',
             'ropecon2018_preferred_time_slots',
+            'ropecon2018_kp_length',
+            'ropecon2018_kp_difficulty',
+            'ropecon2018_kp_tables',
             'notes_from_host',
             'is_english_ok',
             'is_children_friendly',
@@ -528,46 +652,49 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.helper.layout = Layout(
             'title',
-            'approximate_length',
             'description',
-            'three_word_description',
-            'ropecon2018_preferred_time_slots',
+            'category',
+            'approximate_length',
+            'is_english_ok',
+            'is_children_friendly',
+            'is_beginner_friendly',
+            'ropecon2018_is_no_language',
+            'ropecon2018_audience_size',
             'notes_from_host',
-
-            Fieldset(_('Whom is the game for?'),
-                'is_english_ok',
-                'is_children_friendly',
-                'is_age_restricted',
-                'is_beginner_friendly',
-                'is_intended_for_experienced_participants',
-            ),
+            'ropecon2018_is_panel_attendance_ok',
+            'ropecon2018_speciality',
+            'video_permission',
         )
 
-        self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields['approximate_length'].help_text = TALK_APPROXIMATE_LENGTH_HELP_TEXT
 
-        self.fields['three_word_description'].required = True
-
-        self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
+        self.fields['description'].help_text = TALK_DESCRIPTION_HELP_TEXT
         self.fields['description'].required = True
+
+        self.fields['approximate_length'].initial = 105
+        
+        self.fields['ropecon2018_audience_size'].required = False
+        self.fields['ropecon2018_is_panel_attendance_ok'].required = False
+        self.fields['ropecon2018_speciality'].required = False
+
+        self.fields['category'].queryset = Category.objects.filter(event__slug='ropecon2018', slug__iregex=r'^puhe.+')
 
     class Meta:
         model = Programme
         fields = (
             'title',
-            'approximate_length',
-            'three_word_description',
             'description',
-            'ropecon2018_preferred_time_slots',
-            'notes_from_host',
+            'category',
+            'approximate_length',
             'is_english_ok',
             'is_children_friendly',
-            'is_age_restricted',
             'is_beginner_friendly',
-            'is_intended_for_experienced_participants',
-        )
-
-        widgets = dict(
-            ropecon2018_preferred_time_slots=forms.CheckboxSelectMultiple,
+            'ropecon2018_is_no_language',
+            'ropecon2018_audience_size',
+            'notes_from_host',
+            'ropecon2018_is_panel_attendance_ok',
+            'ropecon2018_speciality',
+            'video_permission',
         )
 
     def get_excluded_field_defaults(self):

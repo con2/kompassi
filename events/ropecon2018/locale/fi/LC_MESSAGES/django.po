@@ -1,4 +1,8 @@
 #: forms.py
+msgid "<p>If you wish to organize a program item at Ropecon, you can sign up using this form.</p><p>Tell us briefly who you are, what kind of program item you would like to organize, and whether you have organized program items before at Ropecon or at other conventions. The more you can tell us about your program idea, the better we can avoid overlapping program items. Please fill the form only if you have a clear idea about what you would like to do. You can email ohjelma@ropecon.fi if you have any questions or unfinished ideas you need help with. Note that you will be able to make adjustments to the duration and the content of the program item even after signing up.</p><p>Please make sure that your contact information, especially the email address, is correct!</p><p>The Program team will contact you as soon as they can to ask for additional information, if needed, and to confirm the inclusion of your program item at Ropecon.</p>"
+msgstr "<p>Vuoden 2018 Ropeconiin etsitään kiinnostavia ja mukaansatempaavia esitelmiä, työpajoja sekä paneelikeskusteluja erityisesti teemalla elämä ja yhteisö. Toivomme tänä vuonna lisää englanninkielistä ohjelmaa. Mainitsethan, jos pystyt vetämään ohjelmanumerosi sekä suomeksi että englanniksi.\nPuheohjelma voi olla esitelmä, keskustelu, paneeli tai työpaja, ja se voi olla aloittelijaystävällinen tai kokeneille konkareille.</p><p>Etsimme taiteisiin, käsitöihin ja muuhun roolipelaamisen ympärillä tapahtuvaan luovaan harrastamiseen liittyvää ohjelmaa. Haemme myös lauta-, figu- ja pöytäroolipeliaiheista puheohjelmaa ja työpajoja.</p><p>Puheohjelman pituus on 45 minuuttia tai 105 minuuttia. Jos ilmoitat ohjelmaan työpajan, toivomme että se järjestetään kahdesti tapahtuman aikana.</p><p>Jatkamme viime vuodesta tuttua CrossGames-ohjelmasarjaa. Sarjaan voit tarjota pelisuunnitteluun, kirjoittamiseen sekä digipelien ja roolipelien rajapintaan keskittyviä ohjelmanumeroita. Otamme vastaan myös ideoita ja toiveita tähän kokonaisuuteen sopivista ohjelmista sähköpostitse!</p><p>Tänä vuonna Ropeconissa on myös akateemista ohjelmaa. Akateemiseen ohjelmaan on erillinen haku.</p><p>Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista tiloista ovat käytössä ainakin salit 201 sekä 204 - 207. Uutena puheohjelman käyttöön tulee ainakin sali 103. Voit tutustua tiloihin etukäteen virtuaaliesittelyn avulla.</p>"
+
+#: forms.py
 msgid "Advertise your game to potential players. Also explain, what is expected of players and what kind of themes are involved. Be extra sure to inform about potentially shocking themes. Recommended length is 300–500 characters. We reserve the right to edit this as necessary (including but not limited to shortening)."
 msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
@@ -7,6 +11,301 @@ msgid "In order to gain free entry, you are required to run at in total least fo
 msgstr "Saadaksesi maksuttoman sisäänpääsyn, sinun tulee pitää pelejä vähintään neljän tunnin edestä."
 
 #: forms.py
+msgid "Advertise your programme to potential participants. Be extra sure to inform about potentially shocking themes. Recommended length is 300–500 characters. We reserve the right to edit this as necessary (including but not limited to shortening)."
+msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+#: forms.py
+msgid "Talk programmes can be either 45 or 105 minutes in length."
+msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia. Muut ohjelmat voivat arvioida keston tai jättää kentän nollaksi."
+
+#: forms.py
+msgid "When would you like to hold your programme? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them below."
+msgstr "Koska haluat pitää ohjelmasi? Aikavaihtoehdot ovat tarkoituksella laajoja. Jos sinulla on täsmällinen vaatimus, kerro se alempana."
+
+#: forms.py
 msgid "Whom is the game for?"
 msgstr "Kenelle peli on tarkoitettu?"
+
+#: forms.py
+msgid "Audience estimate"
+msgstr "Yleisöarvio"
+
+#: forms.py
+msgid "Estimate of audience size for talk/presentation, if you have previous experience."
+msgstr "Arvio puheohjelman yleisön koosta, jos aiempaa kokemusta."
+
+#: forms.py
+msgid "No language"
+msgstr "Kielivapaa"
+
+#: forms.py
+msgid "No Finnish language needed to participate."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmaan osallistuminen ei vaadi suomen kielen osaamista."
+
+#: forms.py
+msgid "Panel talk"
+msgstr "Paneelikeskustelu"
+
+#: forms.py
+msgid "I can participate in a panel discussion related to my field of expertise."
+msgstr "Voin osallistua erikoisalaani sivuavaan paneelikeskusteluun."
+
+#: forms.py
+msgid "My field(s) of expertise"
+msgstr "Erikoisalani"
+
+#: forms.py
+msgid "No estimate"
+msgstr "Ei arviota"
+
+#: forms.py
+msgid "Less than 50"
+msgstr "Alle 50"
+
+#: forms.py
+msgid "Over 250"
+msgstr "Yli 250"
+
+#: forms.py
+msgid "Game title."
+msgstr "Pelin nimi."
+
+#: forms.py
+msgid "Please tick this box if the game is hosted in English."
+msgstr "Valitse tämä jos peli pelataan englanniksi."
+
+#: forms.py
+msgid "Check this if the game requires knowledge of the world or the rules of the game."
+msgstr "Valitse tämä jos peli vaatii pelin maailman tai sääntöjen tuntemusta."
+
+#: forms.py
+msgid "Consider the minimum number of players carefully: you will maximize your chances of running the game by setting the number as low as possible."
+msgstr "Harkitse pelaajien vähimmäismäärä tarkkaan: maksimoit pelin toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
+
+#: forms.py
+msgid "If there is anything else you wish to say to the RPG manager that is not covered by the above questions, please enter it here."
+msgstr "Jos haluat kertoa roolipelivastaavalle jotakin joka ei sisälly ylläoleviin kenttiin, kirjoita se tähän."
+
+#: forms.py
+msgid "Game genre (Choose all that apply)"
+msgstr "Pelin genre (Valitse kaikki soveltuvat)"
+
+#: forms.py
+msgid "Fantasy"
+msgstr "Fantasia"
+
+#: forms.py
+msgid "Historical"
+msgstr "Historiallinen"
+
+#: forms.py
+msgid "Modern"
+msgstr "Moderni"
+
+#: forms.py
+msgid "War"
+msgstr "Sota"
+
+#: forms.py
+msgid "Horror"
+msgstr "Kauhu"
+
+#: forms.py
+msgid "Exploration"
+msgstr "Seikkailu"
+
+#: forms.py
+msgid "Mystery"
+msgstr "Mysteeri"
+
+#: forms.py
+msgid "Drama"
+msgstr "Draama"
+
+#: forms.py
+msgid "Humor"
+msgstr "Huumori"
+
+#: forms.py
+msgid "Game style (Choose any that apply)"
+msgstr "Pelin tyyli (Valitse soveltuvat)"
+
+#: forms.py
+msgid "Serious game style"
+msgstr "Vakava pelityyli"
+
+#: forms.py
+msgid "Light game style"
+msgstr "Kevyt pelityyli"
+
+#: forms.py
+msgid "Rules heavy"
+msgstr "Raskaat säännöt"
+
+#: forms.py
+msgid "Rules light"
+msgstr "Kevyet säännöt"
+
+#: forms.py
+msgid "Story driven"
+msgstr "Tarinavetoinen"
+
+#: forms.py
+msgid "Character driven"
+msgstr "Hahmovetoinen"
+
+#: forms.py
+msgid "Combat driven"
+msgstr "Taisteluvetoinen"
+
+#: forms.py
+msgid "Basic game information"
+msgstr "Pelin perustiedot"
+
+#: forms.py
+msgid "Think of a short title for your game. We reserve the right to alter the title."
+msgstr "Keksi ytimekäs otsikko pelillesi. Varaamme oikeuden muokata otsikkoa."
+
+#: forms.py
+msgid "number of sessions"
+msgstr "peluutusten lukumäärä"
+
+#: forms.py
+msgid "You get one weekend ticket for one 4h session. This includes setup, briefing, defriefing and game time."
+msgstr "Yhdestä neljän tunnin (240 minuuttia) pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän neljään tuntiin sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+
+#: forms.py
+msgid "Advertise your game to potential players. Let the players know what is expected of them and what kinds of themes your game has. Do mention any difficult themes such as physical or mental violence. A good length for the description is 300-500 characters. We reserve the right to alter the description and the title."
+msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos pelissäsi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+#: forms.py
+msgid "Describe your game in three words, eg. genre, theme and mood."
+msgstr "Kuvaile peliäsi kolmella sanalla, esim. genre, teema ja tunnelma."
+
+#: forms.py
+msgid "If the game has been written by somebody else than a GM running it in Ropecon, the name must be mentioned here."
+msgstr "Jos pelin on kirjoittanut joku muu kuin sen tässä tapahtumassa vetävä pelinjohtaja, on kirjoittaja ilmoitettava tässä."
+
+#: forms.py
+msgid "When do you want to run your game? Time slots are intentionally vague. If you have detailed requests, let us know of them in the notes field."
+msgstr "Milloin haluaisit pitää pelisi? Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä vapaamuotoisissa terveisissä."
+
+#: forms.py
+msgid "Any comments to the larp team that is not applicable in any other field. Do let us know if your game design requires some of the characters to be of a certain sex/gender. We attempt to have all games playable by everybody, even if all players do not want to play a certain sex/gender."
+msgstr "Haluatko sanoa larp-coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä? Mainitse tässä, jos pelisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät). Pyrimme, että kokonaisuudessaan conissa olevissa peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois."
+
+#: forms.py
+msgid "Check this box if your game includes themes requiring the players to be at least 18 years of age."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä."
+
+#: forms.py
+msgid "Check this box if your game does not require prior larping experience."
+msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa larppikokemusta olisi hyvin vähän tai ei lainkaan."
+
+#: forms.py
+msgid "Check this box if you are capable, prepared and interested in running your game in English."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+
+#: forms.py
+msgid "This is your preference only. Due to the limited space we are not able to accommodate all requests. One four hour session gives you one weekend ticket. A second session gives you an additional day ticket."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi peluuttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita. Yhdellä neljän tunnin pelautuksella saat yhden viikonloppurannekkeen. Toisella pelautuksella saat lisäksi päivärannekkeen."
+
+#: forms.py
+msgid "number of characters"
+msgstr "hahmojen lukumäärä"
+
+#: forms.py
+msgid "If the game design requires characters with a specific gender let us know in the notes."
+msgstr "Jos pelin design vaatii sukupuolitettuja hahmoja, kerro siitä vapaamuotoisissa terveisissä."
+
+#: forms.py
+msgid "Do you make your own signup sheet"
+msgstr "Teetkö itse ilmoittautumislistan vai tekeekö larp-tiski sen"
+
+#: forms.py
+msgid "A self-made signup sheet allows you to ask more detailed player preferences. Larp-desk-made signup sheet is a list of participant names."
+msgstr "Itse tehdyssä ilmoittautumislistassa voit kysyä tarkemmin pelaajien mieltymyksiä. Larp-tiskin tekemä lista on nimilista peliin tulevista ihmisistä."
+
+#: forms.py
+msgid "Space and technical requirements"
+msgstr "Tilatoiveet ja tekniikka"
+
+#: forms.py
+msgid "Let us know of your requirements. Fully dark, separate rooms, water outlet, sound, light, etc. Not all requests can be accommodated so please give reasons how your request improves the game."
+msgstr "Kerro tässä millaisessa tilassa (täysin pimennettävä, erilliset huoneet, vesipiste jne.) toivot pelisi järjestettävän ja tarvitsetko erityistä tekniikkaa (esim. valot, ääni). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee pelin kulkua."
+
+#: forms.py
+msgid "Prop requirements"
+msgstr "Pelin tarvitsemat tarvikkeet"
+
+#: forms.py
+msgid "Let us know what props and other equipment you need. Not all requests can be accommodated. Water and glasses are always provided."
+msgstr "Kerro tässä mitä tarvikkeita ja proppeja pelisi tarvitsee ja mitä niistä voit tuoda itse. Valitettavasti emme pysty toteuttamaan kaikkein villeimpiä toiveita. Kaikille peleille tuodaan vettä ja vesilaseja."
+
+#: forms.py
+msgid "I will make my own signup sheet"
+msgstr "Teen itse"
+
+#: forms.py
+msgid "Desk will make the signup sheet"
+msgstr "Tiski tekee"
+
+#: forms.py
+msgid "How long do you present your game"
+msgstr "Kuinka kauan esittelet peliäsi"
+
+#: forms.py
+msgid "Presenters get a weekend ticket for 8 hours of presenting or a day ticket for 4 hours."
+msgstr "Pelinesittelijät saavat viikonloppurannekkeen kahdeksan tunnin pelinesittelyllä tai päivärannekkeen neljän tunnin pelinesittelyllä."
+
+#: forms.py
+msgid "Game difficulty and complexity"
+msgstr "Pelin vaikeus ja vaativuus"
+
+#: forms.py
+msgid "How many tables do you need"
+msgstr "Kuinka monta pöytää tarvitset"
+
+#: forms.py
+msgid "Table size is about 140 x 80 cm."
+msgstr "Pöydän koko on todennäköisesti 140 x 80 cm."
+
+#: forms.py
+msgid "4 hours"
+msgstr "4 tuntia"
+
+#: forms.py
+msgid "8 hours"
+msgstr "8 tuntia"
+
+#: forms.py
+msgid "Simple"
+msgstr "Helppo"
+
+#: forms.py
+msgid "Advanced"
+msgstr "Vaativa"
+
+#: forms.py
+msgid "Highly Advanced"
+msgstr "Vaikea"
+
+#: forms.py
+msgid "1 table"
+msgstr "1 pöytä"
+
+#: forms.py
+msgid "2 tables"
+msgstr "2 pöytää"
+
+#: forms.py
+msgid "3 tables"
+msgstr "3 pöytää"
+
+#: forms.py
+msgid "4+ tables"
+msgstr "4+ pöytää"
+
+
+
 

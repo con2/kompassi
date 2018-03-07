@@ -582,16 +582,28 @@ class Setup(object):
             )
         )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        default_form, created = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='default',
             defaults=dict(
                 title='Tarjoa puhe- tai muuta ohjelmaa',
                 short_description='Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole pöytäroolipeli.',
-                programme_form_code='programme.forms:ProgrammeOfferForm',
+                programme_form_code='events.tracon2018.forms:ProgrammeForm',
                 num_extra_invites=3,
                 order=30,
             )
+        )
+        if default_form.programme_form_code == 'programme.forms:ProgrammeOfferForm':
+            default_form.programme_form_code = 'events.tracon2018.forms:ProgrammeForm'
+            default_form.save()
+
+        AlternativeProgrammeForm.objects.filter(
+            event=self.event,
+            active_from__isnull=True,
+            active_until__isnull=True,
+        ).update(
+            active_from=now(),
+            active_until=self.event.end_time,
         )
 
     def setup_access(self):

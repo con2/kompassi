@@ -28,8 +28,8 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
-        # self.setup_tickets()
-        # self.setup_payments()
+        self.setup_tickets()
+        self.setup_payments()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -244,14 +244,29 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name='Popcult Day 2018 -pääsylippu',
-                description='Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
+                name='Popcult Day 2018 -lippu',
+                description='Yksi pääsylippu Popcult Day -tapahtumaan lauantaille 12.5.2018. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.',
                 limit_groups=[
-                    limit_group('Pääsyliput', 2000),
+                    limit_group('Pääsyliput', 800),
                 ],
-                price_cents=2600,
+                price_cents=1400,
                 requires_shipping=False,
                 electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
+
+            dict(
+                name='Kahden lipun tarjouspaketti Popcult Dayhin 2018',
+                override_electronic_ticket_title='Popcult Day 2018 -tarjouslippu',
+                description='Kaksi pääsylippua Popcult Day -tapahtumaan lauantaille 12.5.2018. Osta liput edullisemmin itsellesi ja vaikka lahjaksi kaverille! Sisältää kaksi sähköistä lippua, jotka vaihdetaan rannekkeisiin tapahtumapaikalla. Rajoitettu tarjous, myynnissä su 18.2. klo 23:59 asti.',
+                limit_groups=[
+                    limit_group('Kahden lipun tarjouspaketit', 100),
+                ],
+                price_cents=2500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                electronic_tickets_per_product=2,
                 available=True,
                 ordering=ordering(),
             ),

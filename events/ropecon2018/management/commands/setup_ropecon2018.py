@@ -13,10 +13,6 @@ from core.utils import slugify, full_hours_between
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *parts))
 
-def dprint(arg):
-    print(arg)
-    return arg
-
 
 class Setup(object):
     def __init__(self):
@@ -348,7 +344,14 @@ class Setup(object):
                 ('Korttipelit', 'korttipeli', 'color5'),
                 ('Figupelit', 'figupeli', 'color6'),
                 ('Kokemuspiste', 'kokemuspiste', 'color8'),
-                ('Muu ohjelma', 'muu-ohjelma', 'color7'),
+                ('Panel', 'puhe-paneeli', 'color3'),
+                ('Workshop', 'puhe-tyopaja', 'color3'),
+                ('Dance program', 'puhe-tanssi', 'color3'),
+                ('Presentation', 'puhe-esitelma', 'color3'),
+                ('Experience point', 'puhe-kp', 'color3'),
+                ('Larps', 'puhe-larpit', 'color3'),
+                ('Freeform', 'puhe-freeform', 'color3'),
+                ('Other program', 'puhe-muu', 'color3'),
                 ('Sisäinen ohjelma', 'sisainen-ohjelma', 'sisainen'),
             ]:
                 Category.objects.get_or_create(
@@ -402,7 +405,7 @@ class Setup(object):
 
                 if created:
                     rooms = [
-                        Room.objects.get(name__iexact=dprint(room_name), event=self.event)
+                        Room.objects.get(name__iexact=room_name, event=self.event)
                         for room_name in room_names
                     ]
 
@@ -420,7 +423,7 @@ Tule pöytäpelinjohtajaksi Ropeconiin! Voit testata kehittämiäsi seikkailuja 
 Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautuksella tai päivärannekkeen neljän tunnin pelautuksella. Lisäksi pelinjohtajat palkitaan sunnuntaina jaettavalla lootilla, eli ilmaisella roolipelitavaralla. Mitä useamman pelin pidät, sitä korkeammalle kohoat loottiasteikossa!
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:RpgForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 7, 1, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=20,
@@ -439,7 +442,7 @@ Ropecon etsii innokkaita larpinjärjestäjiä! Nyt on tilaisuutesi tulla mukaan 
 Kiinnostaako freeform? Freeform-pelit ovat larpin kaltaisia pelejä, jotka pelataan yhdessä huoneessa vähäisellä proppauksella. Pelit ovat yleensä vahvasti tarinankerronnallisia. Freeform-pelien järjestäjäksi ilmoittaudutaan pöytäroolipelien lomakkeella. Lue lisää pöytäroolipelien kuvauksesta!
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:LarpForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 7, 1, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=30,
@@ -450,7 +453,7 @@ Kiinnostaako freeform? Freeform-pelit ovat larpin kaltaisia pelejä, jotka pelat
             event=self.event,
             slug='lautapeli',
             defaults=dict(
-                title='Tarjoa lautapeliturnausta',
+                title='Tarjoa lautapeliohjelmaa',
                 short_description='Lautapelit',
                 description='''
 Muhiiko mielessäsi hullu tai tuiki tavallinen lautapeleihin liittyvä idea? Kerro se meille! Ropeconissa käsitellään lautapelaamista niin pelisuunnittelutyöpajojen, omituisia teemoja käsittelevien luentojen kuin erikoisten turnausformaattienkin muodossa. Jos vielä epäröit, lautapelivastaava vastaa mielellään kysymyksiisi.
@@ -458,7 +461,7 @@ Muhiiko mielessäsi hullu tai tuiki tavallinen lautapeleihin liittyvä idea? Ker
 Ohjelman lisäksi haemme työvoimaa lautapelitiskille, joka huolehtii pelien lainaamisesta ja kunnossa pysymisestä. Ilmoittaudu lautapelitiskin työntekijäksi täyttämällä työvoimalomake.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:LautapeliForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=60,
@@ -475,7 +478,7 @@ Ohjelman lisäksi haemme työvoimaa lautapelitiskille, joka huolehtii pelien lai
 Ropecon hakee järjestäjiä korttipeliturnauksille ja korttipeliaiheiselle ohjelmalle. Tarvitsemme myös työntekijöitä korttipelitiskille vastaanottamaan turnausilmoittautumisia ja pitämään huolta siitä, että ohjelma etenee suunnitelmien mukaisesti. Kaikkea ei tarvitse tietää etukäteen, sillä neuvoja ja ohjeita työskentelyyn sekä ohjelman suunnitteluun saat korttipelivastaavalta ja kokeneemmilta turnausten järjestäjiltä. Myös korttipelitiskin työntekijät perehdytetään tehtävään.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:KorttipeliForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=40,
@@ -494,7 +497,7 @@ Heilutatko sivellintä kuin säilää? Pyöritätkö noppaa kuin puolijumala? Ta
 Figuohjelma hakee puhujia miniatyyriaiheiseen puheohjelmaan, innostuneita keskustelijoita paneelikeskusteluihin, vetäjiä työpajoihin sekä peluuttajia eri pelimuotoihin. Ideoilla – olivat ne sitten viimeisen päälle hiottua timanttia tai vasta aihioita – voit lähestyä figuvastaavaa sähköpostitse.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:FigupeliForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=50,
@@ -515,7 +518,7 @@ Kokemuspisteellä kävijä pääsee tutustumaan uusiin peleihin peliesittelijän
 Huomaathan, että Kokemuspiste on vain peliesittelyä varten. Tuotteiden myyntiä varten tulee varata osasto Ropeconin myyntialueelta.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:KokemuspisteForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=70,
@@ -537,33 +540,15 @@ Etsimme taiteisiin, käsitöihin ja muuhun roolipelaamisen ympärillä tapahtuva
 
 Puheohjelman pituus on 45 minuuttia tai 105 minuuttia. Jos ilmoitat ohjelmaan työpajan, toivomme että se järjestetään kahdesti tapahtuman aikana.
 
-Jatkamme viime vuodesta tuttua CrossGames-ohjelmasarjaa. Sarjaan voit tarjota pelisuunnitteluun, kirjoittamiseen sekä digipelien ja roolipelien rajapintaan keskittyviä ohjelmanumeroita. Otamme vastaan myös ideoita ja toiveita tähän kokonaisuuteen sopivista ohjelmista sähköpostitse!
-
 Tänä vuonna Ropeconissa on myös akateemista ohjelmaa. Akateemiseen ohjelmaan on erillinen haku.
 
 Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista tiloista ovat käytössä ainakin salit 201 sekä 204 - 207. Uutena puheohjelman käyttöön tulee ainakin sali 103. Voit tutustua tiloihin etukäteen virtuaaliesittelyn avulla.
                 '''.strip(),
                 programme_form_code='events.ropecon2018.forms:PuheohjelmaForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
+                active_from=datetime(2018, 4, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2018, 5, 31, 23, 59, 59, tzinfo=self.tz),
                 num_extra_invites=0,
                 order=10,
-            )
-        )
-
-        AlternativeProgrammeForm.objects.get_or_create(
-            event=self.event,
-            slug='muu-ohjelma',
-            defaults=dict(
-                title='Tarjoa muuta ohjelmaa',
-                short_description='Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole peli eikä puheohjelmaa.',
-                description='''
-Otamme vastaan myös roolipelaamista tukevien harrasteiden ohjelmasisältöä, kuten taistelunäytöksiä ja muita esityksiä. Jos sinulla on luova idea siitä, millaista ohjelmaa haluaisit järjestää, ota meihin yhteyttä!
-                '''.strip(),
-                programme_form_code='programme.forms:ProgrammeOfferForm',
-                active_from=datetime(2018, 2, 14, 15, 47, tzinfo=self.tz),
-                num_extra_invites=0,
-                order=90,
             )
         )
 

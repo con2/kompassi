@@ -3,6 +3,7 @@
     The MIT License (MIT)
 
     Copyright © 2009–2018 Santtu Pajukanta
+    Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö
     Copyright © 2015–2017 Miika Ojamo
     Copyright © 2015–2016 Aarni Koskela, Santeri Hiltunen
