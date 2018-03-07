@@ -578,10 +578,9 @@ class Programme(models.Model, CsvExportMixin):
         null=True,
     )
 
-    ropecon2018_space_requirements = models.CharField(
-        verbose_name=_('Space requirements'),
-        help_text=_('Let us know of your requirements. Fully dark, separate rooms, water outlet, etc.'),
-        max_length=200,
+    ropecon2018_space_requirements = models.TextField(
+        verbose_name=_('Space and technical requirements'),
+        help_text=_('Let us know of your requirements. Fully dark, separate rooms, water outlet, sound, light, etc. Not all requests can be accommodated so please give reasons how your request improves the game.'),
         blank=True,
         null=True,
         default='',
