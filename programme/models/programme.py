@@ -554,8 +554,8 @@ class Programme(models.Model, CsvExportMixin):
     )
 
     ropecon2018_sessions = models.PositiveIntegerField(
-        verbose_name=_('number of sessions'),
-        help_text=_('This is your preference only. Due to the limited space we are not able to accommodate all requests. One four hour session gives you one weekend ticket. A second session gives you an additional day ticket.'),
+        verbose_name=_('number of times you want to run the game'),
+        help_text=_('Please let us know your preference. Due to the limited space we are not able to accommodate all requests. One four hour session gives you one weekend ticket. A second session gives you an additional day ticket.'),
         default=2,
         validators=[MinValueValidator(1), MaxValueValidator(999)],
         null=True,
@@ -573,14 +573,14 @@ class Programme(models.Model, CsvExportMixin):
         max_length=15,
         choices=ROPECON2018_SIGNUP_LIST_CHOICES,
         default=ROPECON2018_SIGNUP_LIST_CHOICES[0][0],
-        verbose_name=_('Do you make your own signup sheet'),
+        verbose_name=_('Will you make your own signup sheet'),
         help_text=_('A self-made signup sheet allows you to ask more detailed player preferences. Larp-desk-made signup sheet is a list of participant names.'),
         null=True,
     )
 
     ropecon2018_space_requirements = models.TextField(
         verbose_name=_('Space and technical requirements'),
-        help_text=_('Let us know of your requirements. Fully dark, separate rooms, water outlet, sound, light, etc. Not all requests can be accommodated so please give reasons how your request improves the game.'),
+        help_text=_('Let us know of your requirements. Fully dark, separate rooms, water outlet, sound, light, etc. Not all requests can be accommodated so please explain how your request improves the game.'),
         blank=True,
         null=True,
         default='',
@@ -588,7 +588,7 @@ class Programme(models.Model, CsvExportMixin):
 
     ropecon2018_prop_requirements = models.CharField(
         verbose_name=_('Prop requirements'),
-        help_text=_('Let us know what props and other equipment you need. Not all requests can be accommodated. Water and glasses are always provided.'),
+        help_text=_('Let us know what props and other equipment you need and if you can provide some of them yourself. Not all requests can be accommodated. Water and glasses are always provided.'),
         max_length=200,
         blank=True,
         null=True,

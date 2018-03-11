@@ -186,17 +186,17 @@ RPG_NOTES_HELP_TEXT = _(
 )
 
 LARP_TITLE_HELP_TEXT = _('Think of a short title for your game. We reserve the right to alter the title.')
-LARP_APPROXIMATE_LENGTH_HELP_TEXT = _('You get one weekend ticket for one 4h session. This includes setup, briefing, defriefing and game time.')
+LARP_APPROXIMATE_LENGTH_HELP_TEXT = _('You get one weekend ticket for one 4h game. The time includes setup, briefing, defriefing and game time.')
 LARP_DESCRIPTION_HELP_TEXT = _(
-    'Advertise your game to potential players. Let the players know what is expected of them and what kinds of themes your game has. Do mention any difficult themes such as physical or mental violence. A good length for the description is 300-500 characters. We reserve the right to alter the description and the title.'
+    'Advertise your game to potential players. Let the players know what is expected of them and what types of themes your game deals with. Please mention if your game deals with any difficult themes such as physical or mental violence. A good length for the description is 300-500 characters. We reserve the right to alter the description and the title if needed.'
 )
 LARP_THREE_WORD_HELP_TEXT = _('Describe your game in three words, eg. genre, theme and mood.')
-LARP_OTHER_AUTHOR_HELP_TEXT = _('If the game has been written by somebody else than a GM running it in Ropecon, the name must be mentioned here.')
-LARP_TIMESLOTS_HELP_TEXT = _('When do you want to run your game? Time slots are intentionally vague. If you have detailed requests, let us know of them in the notes field.')
-LARP_NOTES_HELP_TEXT = _('Any comments to the larp team that is not applicable in any other field. Do let us know if your game design requires some of the characters to be of a certain sex/gender. We attempt to have all games playable by everybody, even if all players do not want to play a certain sex/gender.')
+LARP_OTHER_AUTHOR_HELP_TEXT = _('If the game has been written by somebody else than a GM running it in Ropecon, the writer must be mentioned here.')
+LARP_TIMESLOTS_HELP_TEXT = _('When would you like to run your game? Time slots are intentionally vague. If you have detailed requests about the time slots, please let us know in the notes field.')
+LARP_NOTES_HELP_TEXT = _('If you have any other comments to the larp team please write them here. Please mention if your game requires any of the characters to be of a certain gender/sex. Regardless of their gender/sex all characters should be playable by all players.')
 LARP_ENGLISH_OK_VERBOSE_NAME = _('Game can be run in English')
 LARP_ENGLISH_OK_HELP_TEXT = _('Check this box if you are capable, prepared and interested in running your game in English.')
-LARP_AGE_RESTRICTED_HELP_TEXT = _('Check this box if your game includes themes requiring the players to be at least 18 years of age.')
+LARP_AGE_RESTRICTED_HELP_TEXT = _('Check this box if your game includes themes that require the players to be at least 18 years of age.')
 LARP_BEGINNER_FRIENDLY_HELP_TEXT = _('Check this box if your game does not require prior larping experience.')
 
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
