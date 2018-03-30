@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 from core.utils import SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
@@ -18,6 +19,8 @@ class Survey(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default='')
     is_active = models.BooleanField(default=True)
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

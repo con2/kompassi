@@ -560,7 +560,7 @@ class Programme(models.Model, CsvExportMixin):
         validators=[MinValueValidator(1), MaxValueValidator(999)],
         null=True,
     )
-    
+
     ropecon2018_characters = models.PositiveIntegerField(
         verbose_name=_('number of characters'),
         help_text=_('If the game design requires characters with a specific gender let us know in the notes.'),
@@ -994,6 +994,34 @@ class Programme(models.Model, CsvExportMixin):
     @property
     def visible_feedback(self):
         return self.feedback.filter(hidden_at__isnull=True).select_related('author').order_by('-created_at')
+
+    def duplicate(self):
+        """
+        Makes a deep copy of this Programme. ProgrammeRoles are duplicated as well.
+
+        Schedule information (room, start time) is cleared in order to avoid schedule clashes.
+
+        When duplicating a published Programme, the copy will not be published.
+
+        The duplicate is returned.
+        """
+        # fresh object to mutate to avoid mucking with self
+        programme = Programme.objects.get(pk=self.pk)
+
+        programme.pk = None
+        programme.room = None
+        programme.start_time = None
+
+        programme.save()
+
+        for programme_role in ProgrammeRole.objects.filter(programme=self, is_active=True):
+            ProgrammeRole.objects.create(
+                person=programme_role.person,
+                programme=programme,
+                role=programme_role.role,
+            )
+
+        return programme
 
     class Meta:
         verbose_name = _('programme')

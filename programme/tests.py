@@ -142,3 +142,16 @@ class ProgrammeTestCase(TestCase):
 
         assert not Programme.get_future_programmes(person).exists()
         assert Programme.get_past_programmes(person).exists()
+
+    def test_duplicate(self):
+        pr, unused = ProgrammeRole.get_or_create_dummy()
+
+        programme_id = pr.programme.id
+        duplicate = programme.duplicate()
+
+        assert duplicate.id != programme_id
+
+        assert (
+            ProgrammeRole.objects.filter(programme_id=programme_id)
+            == ProgrammeRole.objects.filter(programme_id=duplicate.id)
+        )
