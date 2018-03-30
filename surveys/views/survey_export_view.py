@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from django.views.decorators.http import require_safe
+from django.http import HttpResponseForbidden
 
 from core.csv_export import CSV_EXPORT_FORMATS, csv_response
 from core.models import Event
@@ -9,8 +10,6 @@ from core.models import Event
 from ..models import EventSurvey, EventSurveyResult, GlobalSurvey, GlobalSurveyResult
 
 
-# TODO: more finer grained access control
-@user_passes_test(lambda u: u.is_superuser)
 @require_safe
 def survey_export_view(request, event_slug='', survey_slug='', format='xlsx'):
     if event_slug:
@@ -23,6 +22,9 @@ def survey_export_view(request, event_slug='', survey_slug='', format='xlsx'):
         survey = get_object_or_404(GlobalSurvey, slug=survey_slug, is_active=True)
         SurveyResult = GlobalSurveyResult
         slug = survey.slug
+
+    if not (request.user.is_superuser or request.user == survey.owner):
+        return HttpResponseForbidden()
 
     results = SurveyResult.objects.filter(survey=survey).order_by('created_at')
     timestamp = now().strftime('%Y%m%d%H%M%S')
