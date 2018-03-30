@@ -16,12 +16,14 @@ class EventSurveyAdmin(admin.ModelAdmin):
     model = EventSurvey
     list_display = ('event', 'title', 'is_active')
     list_filter = ('event', 'is_active')
+    raw_id_fields = ('owner',)
 
 
 class GlobalSurveyAdmin(admin.ModelAdmin):
     model = GlobalSurvey
     list_display = ('title', 'is_active')
     list_filter = ('is_active',)
+    raw_id_fields = ('owner',)
 
 
 class EventSurveyResultAdmin(admin.ModelAdmin):
