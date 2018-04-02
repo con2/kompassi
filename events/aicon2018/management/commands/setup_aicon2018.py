@@ -101,6 +101,18 @@ class Setup(object):
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
+            dict(
+                name='Pääsylippu',
+                description='Koko viikonlopun lippu Aiconiin.',
+                limit_groups=[
+                    limit_group('Viikonloppuliput', 800),
+                ],
+                price_cents=1500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=False,
+                ordering=self.get_ordering_number(),
+            ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
