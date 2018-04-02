@@ -29,6 +29,7 @@ class Setup(object):
         # self.setup_tickets()
         # self.setup_payments()
         self.setup_labour()
+        self.setup_programme()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -322,6 +323,100 @@ class Setup(object):
                 )
             )
 
+    def setup_programme(self):
+        from labour.models import PersonnelClass
+        from programme.models import (
+            AlternativeProgrammeForm,
+            Category,
+            Programme,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            Tag,
+            TimeBlock,
+            View,
+        )
+
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Mimiconin ohjelmavastaava <ohjelma@mimicon.moe>',
+            schedule_layout='reasonable',
+        ))
+
+        if settings.DEBUG:
+            programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
+            programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
+            programme_event_meta.save()
+
+        for pc_slug, role_title, role_is_default in [
+            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+        ]:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                )
+            )
+
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                ('Luento', 'color1'),
+                ('Paneeli', 'color2'),
+                ('Esitys', 'color3'),
+                ('Työpaja', 'color4'),
+                ('Muu ohjelma', 'color5'),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    style=style,
+                    defaults=dict(
+                        title=title,
+                    )
+                )
+
+        for start_time, end_time in [
+            (
+                self.event.start_time,
+                self.event.start_time.replace(hour=18, tzinfo=self.tz),
+            ),
+            (
+                self.event.end_time.replace(hour=9, tzinfo=self.tz),
+                self.event.end_time,
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+        SpecialStartTime.objects.get_or_create(
+            event=self.event,
+            start_time=self.event.start_time.replace(hour=10, minute=30, tzinfo=self.tz),
+        )
+
+        for tag_title, tag_class in [
+            # ('Suositeltu', 'hilight'),
+            # ('Musiikki', 'label-info'),
+            # ('In English', 'label-success'),
+            # ('K-18', 'label-danger'),
+            # ('Paikkaliput', 'label-warning'),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    style=tag_class,
+                ),
+            )
 
 
 class Command(BaseCommand):
