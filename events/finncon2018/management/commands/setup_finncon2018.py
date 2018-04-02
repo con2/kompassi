@@ -27,7 +27,7 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        # self.setup_programme()
+        self.setup_programme()
         self.setup_badges()
         self.setup_intra()
 
@@ -56,17 +56,12 @@ class Setup(object):
             Category,
             ProgrammeEventMeta,
             Role,
-            Room,
             SpecialStartTime,
             Tag,
             TimeBlock,
             View,
         )
         from core.utils import full_hours_between
-
-        for room_name in [
-        ]:
-            Room.objects.get_or_create(event=self.event, name=room_name)
 
         admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
@@ -94,16 +89,9 @@ class Setup(object):
                 )
             )
 
-        view, unused = View.objects.get_or_create(
-            event=self.event,
-            name='Ohjelmakartta',
-        )
-
-        if not view.rooms.exists():
-            view.rooms = Room.objects.filter(event=self.event)
-            view.save()
-
         for category_name, category_style in [
+            ('Luento', 'color1'),
+            ('Paneeli', 'color2'),
         ]:
             Category.objects.get_or_create(
                 event=self.event,
