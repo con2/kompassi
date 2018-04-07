@@ -1,4 +1,5 @@
 from .misc_forms import (
+    AlternativeProgrammeFormMixin,
     ChangeHostRoleForm,
     ChangeInvitationRoleForm,
     ColdOffersForm,
