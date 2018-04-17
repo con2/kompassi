@@ -49,6 +49,33 @@ Run tests:
 
 A Docker image is available as [tracon/kompassi](https://hub.docker.com/r/tracon/kompassi/). More info to follow.
 
+## Kubernetes
+
+### Cluster requirements
+
+The following services are required:
+
+* [kubernetes-secret-generator](https://github.com/mittwald/kubernetes-secret-generator)
+* [ingress-nginx](https://github.com/kubernetes/ingress-nginx) or some other ingress controller
+
+Getting these deployed (eg. Docker for Mac):
+
+    # secret-generator
+    kubectl apply -f https://raw.githubusercontent.com/mittwald/kubernetes-secret-generator/master/deploy/secret-generator-rbac.yaml
+    kubectl apply -f https://raw.githubusercontent.com/mittwald/kubernetes-secret-generator/master/deploy/secret-generator.yaml
+
+    # ingress-nginx
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/cloud-generic.yaml
+
+
+To deploy in a K8s cluster:
+
+    kubectl create namespace kompassi
+    kubectl apply -n kompassi -f kubernetes.yml
+
+For production, you may want to use an external PostgreSQL (and maybe memcached and RabbitMQ).
+
 ## License
 
     The MIT License (MIT)
