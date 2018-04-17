@@ -53,6 +53,7 @@ class Setup(object):
     def setup_programme(self):
         from labour.models import PersonnelClass
         from programme.models import (
+            AlternativeProgrammeForm,
             Category,
             ProgrammeEventMeta,
             Role,
@@ -138,6 +139,17 @@ class Setup(object):
                     event=self.event,
                     start_time=hour_start_time.replace(minute=30)
                 )
+
+        default_form, created = AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='default',
+            defaults=dict(
+                title='Tarjoa ohjelmaa',
+                programme_form_code='events.finncon2018.forms:ProgrammeForm',
+                num_extra_invites=3,
+                active_from=datetime(2018, 4, 17, 22, 46, 0, tzinfo=self.tz),
+            ),
+        )
 
     def setup_labour(self):
         from core.models import Person

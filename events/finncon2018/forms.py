@@ -7,6 +7,8 @@ from crispy_forms.layout import Layout, Fieldset
 from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory, WorkPeriod
+from programme.forms.misc_forms import AlternativeProgrammeFormMixin
+from programme.models import Programme, Category
 
 from .models import SignupExtra
 
@@ -119,4 +121,48 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_m2m_field_defaults(self):
         return dict(
             lodging_needs=[],
+        )
+
+
+class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+
+        super(ProgrammeForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        for field_name in [
+            'title',
+            'description',
+            'length_from_host',
+        ]:
+            self.fields[field_name].required = True
+
+        self.fields['category'].queryset = Category.objects.filter(event=event, public=True)
+
+    def get_excluded_field_defaults(self):
+        return dict()
+
+    class Meta:
+        model = Programme
+        fields = (
+            'title',
+            'description',
+            'length_from_host',
+            'language',
+            'category',
+            'computer',
+            'use_audio',
+            'use_video',
+            'number_of_microphones',
+            'tech_requirements',
+            'video_permission',
+            'encumbered_content',
+            'photography',
+            'rerun',
+            'room_requirements',
+            'requested_time_slot',
+            'notes_from_host',
         )

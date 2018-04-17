@@ -28,12 +28,17 @@ def programme_offer_view(request, event):
         event=event,
     )
 
-    if not meta.is_accepting_cold_offers or not alternative_programme_forms.exists():
+    num_alternative_programme_forms = alternative_programme_forms.count()
+
+    if not meta.is_accepting_cold_offers or num_alternative_programme_forms == 0:
         messages.error(request, _(
             'This event is not currently accepting offers via this site. Please contact '
             'the programme managers directly.'
         ))
         return redirect('core_event_view', event.slug)
+
+    elif num_alternative_programme_forms == 1:
+        return redirect('programme_offer_form_view', event.slug, alternative_programme_forms[0].slug)
 
     vars = dict(
         event=event,

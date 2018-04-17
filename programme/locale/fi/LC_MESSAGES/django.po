@@ -1309,3 +1309,18 @@ msgstr "Uuden salin nimi"
 
 msgid "Edit rooms"
 msgstr "Ohjelmasalien muokkaus"
+
+msgid "Finnish"
+msgstr "Suomi"
+
+msgid "Swedish"
+msgstr "Ruotsi"
+
+msgid "English"
+msgstr "Englanti"
+
+msgid "What is the primary language of your programme?"
+msgstr "Mikä on ohjelmanumerosi ensisijainen kieli?"
+
+msgid "Language"
+msgstr "Kieli"

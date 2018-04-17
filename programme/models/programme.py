@@ -99,6 +99,12 @@ PHYSICAL_PLAY_CHOICES = [
 PROGRAMME_STATES_ACTIVE = ['idea', 'asked', 'offered', 'accepted', 'published']
 PROGRAMME_STATES_INACTIVE = ['rejected', 'cancelled']
 
+LANGUAGE_CHOICES = [
+    ('fi', _('Finnish')),
+    ('sv', _('Swedish')),
+    ('en', _('English')),
+]
+
 
 class Programme(models.Model, CsvExportMixin):
     """
@@ -317,6 +323,13 @@ class Programme(models.Model, CsvExportMixin):
             'Huomaathan, että emme voi taata juuri toivomasi pituista ohjelmapaikkaa. Ohjelmavastaava vahvistaa '
             'ohjelmasi pituuden.'
         ),
+    )
+    language = models.CharField(
+        max_length=2,
+        default='fi',
+        choices=LANGUAGE_CHOICES,
+        verbose_name=_('Language'),
+        help_text=_('What is the primary language of your programme?'),
     )
 
     # Originally hitpoint2017 rpg form fields
@@ -560,7 +573,7 @@ class Programme(models.Model, CsvExportMixin):
         validators=[MinValueValidator(1), MaxValueValidator(999)],
         null=True,
     )
-    
+
     ropecon2018_characters = models.PositiveIntegerField(
         verbose_name=_('number of characters'),
         help_text=_('If the game design requires characters with a specific gender let us know in the notes.'),
@@ -803,8 +816,8 @@ class Programme(models.Model, CsvExportMixin):
                 'description',
                 'start_time',
                 'end_time',
+                'language',
 
-                language='fi',  # XXX hardcoded
                 status=1 if self.is_public else 0,
                 kind=self.category.slug,
                 kind_display=self.category.title,
