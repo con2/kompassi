@@ -15,3 +15,9 @@ def api_person_view(request, username):
     person = get_object_or_404(Person, user=user)
 
     return person.as_dict()
+
+
+@require_safe
+@api_view
+def api_status_view(request):
+    return dict(status="OK")
