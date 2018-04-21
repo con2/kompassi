@@ -93,6 +93,7 @@ class Setup(object):
         for category_name, category_style in [
             ('Luento', 'color1'),
             ('Paneeli', 'color2'),
+            ('Muu', 'color3'),
         ]:
             Category.objects.get_or_create(
                 event=self.event,
