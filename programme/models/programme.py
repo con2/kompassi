@@ -335,7 +335,7 @@ class Programme(models.Model, CsvExportMixin):
         blank=True,
         default='',
         verbose_name=_('Language skills'),
-        help_text=_('Please describe your language skills relevant to the language of this programme.'),
+        help_text=_('Please describe your language skills, especially in Finnish, Swedish and English.'),
     )
 
     # Originally hitpoint2017 rpg form fields
