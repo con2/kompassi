@@ -10,11 +10,6 @@ TOTAL_WORK_CHOICES = [
     ('yli12h', 'Työn Sankari! Yli 12 tuntia!'),
 ]
 
-EXTRA_WORK_CHOICES = [
-    ('miel', 'Otan mielelläni varatyövoimavuoron'),
-    ('ei', 'En halua varatyövuoroa'),
-]
-
 SHIFT_TYPE_CHOICES = [
     ('yksipitka', 'Yksi pitkä vuoro'),
     ('montalyhytta', 'Monta lyhyempää vuoroa'),
@@ -50,12 +45,6 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         verbose_name='Toivottu kokonaistyömäärä',
         help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
         choices=TOTAL_WORK_CHOICES,
-    )
-
-    extra_work = models.CharField(max_length=5,
-        verbose_name='Haluatko päivystää varatyövoimana?',
-        help_text='Varatyövoiman päivystysvuoro on 4h, jonka aikana sinun tulee olla tavoitettavissa puhelimella Messukeskuksessa. Voit joutua mihin tahansa työpisteeseen paikkaamaan',
-        choices=EXTRA_WORK_CHOICES,
     )
 
     want_certificate = models.BooleanField(
