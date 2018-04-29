@@ -152,6 +152,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'description',
             'length_from_host',
             'language',
+            'language_skills',
             'category',
             'computer',
             'use_audio',

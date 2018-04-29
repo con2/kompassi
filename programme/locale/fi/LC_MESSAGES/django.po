@@ -1324,3 +1324,9 @@ msgstr "Mikä on ohjelmanumerosi ensisijainen kieli?"
 
 msgid "Language"
 msgstr "Kieli"
+
+msgid "Language skills"
+msgstr "Kielitaito"
+
+msgid "Please describe your language skills relevant to the language of this programme."
+msgstr "Ole hyvä ja kerro tämän ohjelman kannalta relevantista kielitaidostasi (ohjelmanumerot joissa useampi ohjelmanpitäjä: kaikkien äänessä olevien ohjelmanpitäjien)."
