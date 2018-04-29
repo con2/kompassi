@@ -22,7 +22,6 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             'shift_type',
-            'extra_work',
 
             Fieldset('Työtodistus',
                 'want_certificate',
@@ -42,7 +41,6 @@ class SignupExtraForm(forms.ModelForm):
         model = SignupExtra
         fields = (
             'shift_type',
-            'extra_work',
             'want_certificate',
             'certificate_delivery_address',
             'special_diet',
@@ -128,7 +126,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_field_defaults(self):
         return dict(
             shift_type='kaikkikay',
-            extra_work='ei',
             want_certificate=False,
             certificate_delivery_address='',
             prior_experience='',
