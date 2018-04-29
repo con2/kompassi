@@ -102,6 +102,13 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
             'hakemassasi tehtävässä.'
     )
 
+    language_skills = models.TextField(
+        blank=True,
+        default='',
+        verbose_name='Kielitaito',
+        help_text='Kerro kielitaidostasi erityisesti suomen, ruotsin ja englannin kielissä.',
+    )
+
     free_text = models.TextField(
         blank=True,
         verbose_name='Vapaa alue',

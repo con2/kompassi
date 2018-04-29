@@ -28,6 +28,7 @@ class SignupExtraForm(forms.ModelForm):
                 'special_diet',
                 'special_diet_other',
                 'prior_experience',
+                'language_skills',
                 'free_text',
             )
         )
@@ -43,6 +44,7 @@ class SignupExtraForm(forms.ModelForm):
             'special_diet',
             'special_diet_other',
             'prior_experience',
+            'language_skills',
             'free_text',
         )
 
@@ -152,7 +154,6 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'description',
             'length_from_host',
             'language',
-            'language_skills',
             'category',
             'computer',
             'use_audio',

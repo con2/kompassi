@@ -331,12 +331,6 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name=_('Language'),
         help_text=_('What is the primary language of your programme?'),
     )
-    language_skills = models.TextField(
-        blank=True,
-        default='',
-        verbose_name=_('Language skills'),
-        help_text=_('Please describe your language skills, especially in Finnish, Swedish and English.'),
-    )
 
     # Originally hitpoint2017 rpg form fields
     rpg_system = models.CharField(
