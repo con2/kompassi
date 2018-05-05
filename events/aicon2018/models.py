@@ -15,9 +15,8 @@ SHIFT_TYPE_CHOICES = [
 ]
 
 TOTAL_WORK_CHOICES = [
-    ('8h', 'Minimi - 8 tuntia'),
-    ('12h', '10–12 tuntia'),
-    ('yli12h', 'Työn Sankari! Yli 12 tuntia!'),
+    ('5h', 'Minimi - 5 tuntia'),
+    ('yli5h', 'Enemmän kuin 5 tuntia'),
 ]
 
 
