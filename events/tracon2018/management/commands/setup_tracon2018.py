@@ -122,6 +122,9 @@ class Setup(object):
             ('Vapaalippu, viikonloppu', 'vapaalippu-vkl', 'tickets', False),
             ('Vapaalippu, lauantai', 'vapaalippu-la', 'tickets', False),
             ('Vapaalippu, sunnuntai', 'vapaalippu-su', 'tickets', False),
+            ('Cosplay', 'cosplay', 'tickets', False),
+            ('Taidekuja', 'taidekuja', 'tickets', False),
+            ('Yhdistyspöydät', 'yhdistyspoydat', 'tickets', False),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
