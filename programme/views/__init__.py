@@ -4,6 +4,7 @@ from .public_views import (
     programme_internal_schedule_view,
     programme_json_view,
     programme_mobile_schedule_view,
+    programme_plaintext_view,
     programme_profile_menu_items,
     programme_schedule_view,
     programme_special_view,

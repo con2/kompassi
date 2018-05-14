@@ -220,6 +220,14 @@ def programme_internal_adobe_taggedtext_view(request, event):
 
 @programme_event_required
 @require_safe
+def programme_plaintext_view(request, event):
+    vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).get_programmes_by_start_time(request=request))
+    data = render_to_string('programme_plaintext_view.txt', vars, request=request)
+    return HttpResponse(data, 'text/plain; charset=utf-8')
+
+
+@programme_event_required
+@require_safe
 @api_view
 def programme_json_view(request, event, format='default', include_unpublished=False):
     criteria = dict(category__event=event)

@@ -27,6 +27,7 @@ from .views import (
     programme_mobile_schedule_view,
     programme_offer_form_view,
     programme_offer_view,
+    programme_plaintext_view,
     programme_profile_detail_view,
     programme_profile_feedback_view,
     programme_profile_view,
@@ -104,6 +105,12 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme\.taggedtext$',
         programme_internal_adobe_taggedtext_view,
         name='programme_internal_adobe_taggedtext_view',
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme\.txt$',
+        programme_plaintext_view,
+        name='programme_plaintext_view',
     ),
 
     url(
