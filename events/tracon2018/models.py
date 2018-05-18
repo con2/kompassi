@@ -52,9 +52,8 @@ class SignupExtra(SignupExtraBase):
     total_work = models.CharField(max_length=15,
         verbose_name='Toivottu kokonaistyömäärä',
         help_text=(
-            'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi '
-            'on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. '
-            'majoitusvalvonta 6 h).'
+            'Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti '
+            'kymmenen tuntia.'
         ),
         choices=TOTAL_WORK_CHOICES,
     )
