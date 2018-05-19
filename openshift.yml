@@ -1,0 +1,129 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: kompassi
+    name: kompassi
+  spec:
+    lookupPolicy:
+      local: false
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: kompassi
+    name: kompassi
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: kompassi:latest
+    postCommit: {}
+    resources: {}
+    source:
+      git:
+        ref: feature/kubernetes
+        uri: https://github.com/tracon/kompassi.git
+      type: Git
+    strategy:
+      dockerStrategy:
+        from:
+          kind: ImageStreamTag
+          name: python:3.6
+          namespace: openshift
+      type: Docker
+    triggers:
+    - github:
+        secret: o08lSVFSiI8UTJUCBIal
+      type: GitHub
+    - generic:
+        secret: 8dgVxpbVvOjg3CFJECP7
+      type: Generic
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+  status:
+    lastVersion: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: kompassi
+    name: kompassi
+  spec:
+    replicas: 1
+    selector:
+      app: kompassi
+      deploymentconfig: kompassi
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: kompassi
+          deploymentconfig: kompassi
+      spec:
+        containers:
+        - image: kompassi:latest
+          name: kompassi
+          ports:
+          - containerPort: 8000
+            protocol: TCP
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - kompassi
+        from:
+          kind: ImageStreamTag
+          name: kompassi:latest
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: kompassi
+    name: kompassi
+  spec:
+    ports:
+    - name: 8000-tcp
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+    selector:
+      app: kompassi
+      deploymentconfig: kompassi
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
