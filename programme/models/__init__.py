@@ -19,3 +19,4 @@ from .schedule import (
     ViewRoom,
 )
 from .alternative_programme_form import AlternativeProgrammeForm, AlternativeProgrammeFormMixin
+from .like import Like

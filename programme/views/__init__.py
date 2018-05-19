@@ -38,6 +38,7 @@ from .programme_admin_schedule_view import (
     programme_admin_schedule_update_view_view,
 )
 from .programme_feedback_view import programme_feedback_view
+from .programme_likes_view import programme_likes_view
 from .programme_offer_view import programme_offer_view, programme_offer_form_view
 from .programme_profile_detail_view import programme_profile_detail_view
 from .programme_profile_feedback_view import programme_profile_feedback_view
