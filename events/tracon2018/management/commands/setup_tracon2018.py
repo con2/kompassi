@@ -440,6 +440,7 @@ class Setup(object):
         PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
     def setup_programme(self):
+        from core.utils import full_hours_between
         from labour.models import PersonnelClass
         from programme.models import (
             AlternativeProgrammeForm,
@@ -530,10 +531,14 @@ class Setup(object):
                 )
             )
 
-        SpecialStartTime.objects.get_or_create(
-            event=self.event,
-            start_time=self.event.start_time.replace(hour=10, minute=30, tzinfo=self.tz),
-        )
+        for time_block in TimeBlock.objects.filter(event=self.event):
+            # Half hours
+            # [:-1] – discard 18:30
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30)
+                )
 
         have_views = View.objects.filter(event=self.event).exists()
         if not have_views:
