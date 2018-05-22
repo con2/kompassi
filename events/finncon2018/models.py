@@ -16,6 +16,7 @@ SHIFT_TYPE_CHOICES = [
 
 
 TOTAL_WORK_CHOICES = [
+    ('4h', '4–8 tuntia'),
     ('8h', '8 tuntia'),
     ('yli8h', 'Yli 8 tuntia'),
 ]
@@ -58,7 +59,7 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
 
     total_work = models.CharField(max_length=15,
         verbose_name='Toivottu kokonaistyömäärä',
-        help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
+        help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana?',
         choices=TOTAL_WORK_CHOICES,
     )
 
@@ -68,10 +69,7 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         max_length=8,
         choices=SHIRT_SIZES,
         verbose_name='Paidan koko',
-        help_text='Ajoissa ilmoittautuneet vänkärit saavat mahdollisesti maksuttoman työvoimapaidan. '
-            'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
-            'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
-            'target="_blank">ladyfit-paita</a>',
+        help_text='Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan, mikäli ilmoittavat työskentelevänsä vähintään 8 tuntia.',
     )
 
     dead_dog = models.BooleanField(

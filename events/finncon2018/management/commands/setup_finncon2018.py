@@ -278,9 +278,20 @@ class Setup(object):
             ),
         )
 
+        # old, wrong info links
         for wiki_space, link_title, link_group in [
             ('FINNCONWORK', 'Finnconin työvoimawiki', 'accepted'),
             ('FINNCON2018', 'Finnconin coniteawiki', 'conitea'),
+        ]:
+            InfoLink.objects.filter(
+                event=self.event,
+                title=link_title,
+                group=labour_event_meta.get_group(link_group),
+            ).delete()
+
+        # new, correct info links
+        for wiki_space, link_title, link_group in [
+            ('FINNCON2018', 'Finnconin työvoimawiki', 'accepted'),
         ]:
             InfoLink.objects.get_or_create(
                 event=self.event,
