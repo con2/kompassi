@@ -26,8 +26,8 @@ class Setup(object):
         self.test = test
         self.tz = tzlocal()
         self.setup_core()
-        # self.setup_tickets()
-        # self.setup_payments()
+        self.setup_tickets()
+        self.setup_payments()
         self.setup_labour()
         self.setup_programme()
         self.setup_badges()
@@ -71,7 +71,7 @@ class Setup(object):
             front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Mimicon 2018 -tapahtumaan!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 "<p>Lue lisää tapahtumasta <a href='http://www.mimicon.fi'>Mimiconin kotisivuilta</a>.</p>",
-            print_logo_path = mkpath('static', 'images', 'mimicon2018_logo.png'),
+            # print_logo_path = mkpath('static', 'images', 'mimicon2018_logo.png'),
             print_logo_width_mm = 30,
             print_logo_height_mm = 30,
         )
@@ -102,28 +102,28 @@ class Setup(object):
         for product_info in [
             dict(
                 name='Mimicon 2018 -pääsylippu',
-                description='Lippu kattaa koko viikonlopun. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, jota vastaan saat rannekkeen tapahtuman ovelta.',
+                description='Viikonloppulippu Mimicon 2018-tapahtumaan (la-su(. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.',
                 limit_groups=[
                     limit_group('Pääsyliput', 500),
                 ],
-                price_cents=1600,
+                price_cents=1800,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
             ),
-            dict(
-                name='Lattiamajoituspaikka',
-                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Tarvitset oman makuupussin ja -alustan. Lattiamajoituksesta ei lähetetä erillistä lippua, vaan lattiamajoitus toimii nimi listaan -periaatteella.',
-                limit_groups=[
-                    limit_group('Lattiamajoitus', 80),
-                ],
-                price_cents=500,
-                requires_shipping=False,
-                electronic_ticket=False,
-                available=True,
-                ordering=ordering(),
-            ),
+            # dict(
+            #     name='Lattiamajoituspaikka',
+            #     description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Tarvitset oman makuupussin ja -alustan. Lattiamajoituksesta ei lähetetä erillistä lippua, vaan lattiamajoitus toimii nimi listaan -periaatteella.',
+            #     limit_groups=[
+            #         limit_group('Lattiamajoitus', 80),
+            #     ],
+            #     price_cents=500,
+            #     requires_shipping=False,
+            #     electronic_ticket=False,
+            #     available=True,
+            #     ordering=ordering(),
+            # ),
             # dict(
             #     name='Lounaslippu',
             #     description='Tällä lipukkeella saat herkullisen lounaan ravintola Napostellasta kumpana tahansa tapahtumapäivänä. Lounasliput toimitetaan samalla PDF-lipulla pääsylippujesi kanssa.',
