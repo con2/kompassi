@@ -61,7 +61,7 @@ class Setup(object):
             due_days=14,
             shipping_and_handling_cents=0,
             reference_number_template="2018{:05d}",
-            contact_email='Mimicon <lipunmyynti@mimicon.fi>',
+            contact_email='Mimicon <lipunmyynti@mimicon.moe>',
             ticket_free_text="Tämä on sähköinen lippusi Mimicon 2018 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
@@ -70,7 +70,7 @@ class Setup(object):
                 "Tervetuloa Mimiconiin!",
             front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Mimicon 2018 -tapahtumaan!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                "<p>Lue lisää tapahtumasta <a href='http://www.mimicon.fi'>Mimiconin kotisivuilta</a>.</p>",
+                "<p>Lue lisää tapahtumasta <a href='http://www.mimicon.moe'>Mimiconin kotisivuilta</a>.</p>",
             # print_logo_path = mkpath('static', 'images', 'mimicon2018_logo.png'),
             print_logo_width_mm = 30,
             print_logo_height_mm = 30,
