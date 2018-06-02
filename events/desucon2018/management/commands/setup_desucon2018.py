@@ -57,6 +57,7 @@ class Setup(object):
             LabourEventMeta,
             PersonnelClass,
             Qualification,
+            Survey,
         )
         from ...models import SignupExtra, SpecialDiet
         from django.contrib.contenttypes.models import ContentType
@@ -170,6 +171,22 @@ class Setup(object):
                     'Täytä tämä lomake vain, '
                     'jos joku Desuconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella. '
                 ),
+            ),
+        )
+
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug='kaatoilmo',
+            defaults=dict(
+                title='Ilmoittautuminen kaatajaisiin',
+                description=(
+                    'Voidaksemme ilmoittaa erikoisruokavaliot mahdollisimman tarkasti pitopalvelulle '
+                    'pyydämme ilmoittamaan, aiotko osallistua kaatajaisiin Desuconin purun jälkeen '
+                    'sunnuntaina 10. kesäkuuta 2018 noin kello 19:00.'
+                ),
+                form_class_path='events.desucon2018.forms:AfterpartyParticipationSurvey',
+                active_from=datetime(2018, 6, 2, 21, 34, 0, tzinfo=self.tz),
+                active_until=datetime(2018, 6, 10, 23, 59, 59, tzinfo=self.tz),
             ),
         )
 

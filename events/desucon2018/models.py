@@ -117,6 +117,15 @@ class SignupExtra(SignupExtraBase):
         default=False,
     )
 
+    afterparty_participation = models.BooleanField(
+        default=False,
+        verbose_name='Osallistun kaatajaisiin',
+        help_text=(
+            'Ruksaa tämä ruutu, mikäli haluat osallistua kaatajaisiin. Mikäli mielesi muuttuu '
+            'tai sinulle tulee este, peru ilmoittautumisesi poistamalla rasti tästä ruudusta.'
+        ),
+    )
+
     @classmethod
     def get_form_class(cls):
         from .forms import SignupExtraForm

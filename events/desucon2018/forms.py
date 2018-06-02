@@ -197,3 +197,32 @@ class ProgrammeForm(ProgrammeSelfServiceForm, AlternativeProgrammeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict()
+
+
+class AfterpartyParticipationSurvey(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('event')
+
+        super(AfterpartyParticipationSurvey, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    @classmethod
+    def get_instance_for_event_and_person(cls, event, person):
+        return SignupExtra.objects.get(
+            event=event,
+            person=person,
+            is_active=True,
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            'afterparty_participation',
+            'special_diet',
+            'special_diet_other',
+        )
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+        )
