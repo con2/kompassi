@@ -25,6 +25,7 @@ class Setup(object):
         self.setup_payments()
         self.setup_labour()
         self.setup_badges()
+        self.setup_programme()
 
     def setup_core(self):
         from core.models import Venue, Event
@@ -291,6 +292,100 @@ class Setup(object):
                     group=labour_event_meta.get_group(link_group),
                 )
             )
+
+    def setup_programme(self):
+        from django.contrib.auth.models import Group
+        from labour.models import PersonnelClass
+        from programme.models import (
+            Category,
+            ProgrammeEventMeta,
+            Role,
+            SpecialStartTime,
+            Tag,
+            TimeBlock,
+        )
+        from core.utils import full_hours_between
+
+        admin_group, hosts_group = Group.objects.get_or_create(name='aicon-staff')
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            admin_group=admin_group,
+        ))
+
+        if not programme_event_meta.contact_email:
+            programme_event_meta.contact_email = 'Aiconin ohjelmavastaava <ohjelma@aicon.fi>'
+            programme_event_meta.save()
+
+        if settings.DEBUG:
+            programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
+            programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
+            programme_event_meta.save()
+
+        for pc_slug, role_title, role_is_default in [
+            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+        ]:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                )
+            )
+
+        for category_name, category_style in [
+            ('Esittävä ohjelma', 'color1'),
+            ('Karaoke', 'color2'),
+            ('Luento', 'color3'),
+            ('Miitti', 'color4'),
+            ('Työpaja', 'color5'),
+        ]:
+            Category.objects.get_or_create(
+                event=self.event,
+                title=category_name,
+                defaults=dict(
+                    style=category_style,
+                )
+            )
+
+        for tag_name, tag_style in [
+            ('Paikkaliput', 'label-danger'),
+            ('International', 'label-primary'),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_name,
+                defaults=dict(
+                    style=tag_style,
+                ),
+            )
+
+        if not TimeBlock.objects.filter(event=self.event).exists():
+            for start_time, end_time in [
+                (
+                    self.event.start_time,
+                    self.event.start_time.replace(hour=22, tzinfo=self.tz),
+                ),
+                (
+                    self.event.end_time.replace(hour=9, tzinfo=self.tz),
+                    self.event.end_time,
+                ),
+            ]:
+                TimeBlock.objects.get_or_create(
+                    event=self.event,
+                    start_time=start_time,
+                    defaults=dict(
+                        end_time=end_time
+                    )
+                )
+
+        for time_block in TimeBlock.objects.filter(event=self.event):
+            # Half hours
+            # [:-1] – discard 18:30
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30)
+                )
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
