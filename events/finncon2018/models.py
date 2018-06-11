@@ -40,6 +40,8 @@ SHIRT_SIZES = [
     ('LF_M', 'M Ladyfit'),
     ('LF_L', 'L Ladyfit'),
     ('LF_XL', 'XL Ladyfit'),
+    ('LF_2XL', '2XL Ladyfit'),
+    ('LF_3XL', '3XL Ladyfit'),
 ]
 
 
