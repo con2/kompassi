@@ -224,6 +224,7 @@ INSTALLED_APPS = (
     'events.mimicon2018',
     'events.yukicon2019',
     'events.concon16',
+    'events.popcultnights2018',
 )
 
 LOGGING = {
