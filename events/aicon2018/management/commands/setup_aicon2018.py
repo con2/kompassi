@@ -362,12 +362,8 @@ class Setup(object):
         if not TimeBlock.objects.filter(event=self.event).exists():
             for start_time, end_time in [
                 (
-                    self.event.start_time,
-                    self.event.start_time.replace(hour=22, tzinfo=self.tz),
-                ),
-                (
-                    self.event.end_time.replace(hour=9, tzinfo=self.tz),
-                    self.event.end_time,
+                    self.event.start_time.replace(hour=11, tzinfo=self.tz),
+                    self.event.start_time.replace(hour=17, tzinfo=self.tz),
                 ),
             ]:
                 TimeBlock.objects.get_or_create(
