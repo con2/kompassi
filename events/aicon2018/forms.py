@@ -126,7 +126,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_field_defaults(self):
         return dict(
             shift_type='kaikkikay',
-            total_work='yli12h',
+            total_work='yli5h',
             need_lodging=False,
             want_certificate=False,
             certificate_delivery_address='',
