@@ -145,10 +145,16 @@ def format_interval(start_dt, end_dt, locale=None, tz=None, date_skeletor="MEd",
 
 
 def format_date(date):
+    if date is None:
+        return ''
+
     return defaultfilters.date(date, "SHORT_DATE_FORMAT")
 
 
 def format_datetime(datetime):
+    if datetime is None:
+        return ''
+
     tz = tzlocal()
     return defaultfilters.date(datetime.astimezone(tz), "SHORT_DATETIME_FORMAT")
 
