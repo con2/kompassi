@@ -56,7 +56,7 @@ class BadgePrivacyAdapter(object):
             # Chief Technology Officer
             if self.badge.is_surname_visible:
                 if self.badge.is_first_name_visible:
-                    return "{first_name} {surname}".format(
+                    return "{first_name} {surname}".format(
                         first_name=self.badge.first_name,
                         surname=self.badge.surname,
                     )
