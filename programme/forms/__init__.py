@@ -7,7 +7,6 @@ from .misc_forms import (
     IdForm,
     InvitationForm,
     ProgrammeAdminCreateForm,
-    ProgrammeFeedbackForm,
     ProgrammeInternalForm,
     ProgrammeOfferForm,
     ProgrammeSelfServiceForm,
@@ -25,4 +24,10 @@ from .schedule_admin_forms import (
     MoveViewRoomForm,
     RemoveViewRoomForm,
     ViewForm,
+)
+
+
+from .feedback_forms import (
+    ProgrammeFeedbackForm,
+    AnonymousProgrammeFeedbackForm,
 )

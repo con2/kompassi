@@ -24,7 +24,7 @@ block content_full_width
               td
                 a(href='{% url "programme_admin_detail_view" event.slug feedback_message.programme.pk %}')= feedback_message.programme.title
               td
-                if feedback_message.is_anonymous
+                if feedback_message.is_really_anonymous
                   em.text-muted {% trans "Anonymous" %}
                 else
                   a(href='mailto:{{ feedback_message.author_email }}')= feedback_message.author

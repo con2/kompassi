@@ -1,14 +1,11 @@
-# encoding: utf-8
-
-
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import truncatewords
 
+
 class ProgrammeFeedback(models.Model):
     programme = models.ForeignKey('programme.Programme', related_name='feedback')
-    author = models.ForeignKey('core.Person')
+    author = models.ForeignKey('core.Person', null=True, blank=True)
     author_ip_address = models.CharField(
         max_length=48,
         blank=True,
@@ -40,6 +37,10 @@ class ProgrammeFeedback(models.Model):
     @property
     def author_email(self):
         return self.author.email if self.author else None
+
+    @property
+    def is_really_anonymous(self):
+        return self.author is None or self.is_anonymous
 
     @classmethod
     def get_visible_feedback_for_event(cls, event):

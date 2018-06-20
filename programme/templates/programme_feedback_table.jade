@@ -9,7 +9,7 @@ table.table.table-striped
     for feedback_message in feedback
       tr
         td
-          if feedback_message.is_anonymous
+          if feedback_message.is_really_anonymous
             em.text-muted {% trans "Anonymous" %}
           else
             a(href='mailto:{{ feedback_message.author_email }}')= feedback_message.author

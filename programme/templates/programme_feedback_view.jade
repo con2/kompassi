@@ -5,7 +5,7 @@ block title
   | {% blocktrans with programme_title=programme.title %}Give feedback: {{ programme_title }}{% endblocktrans %}
 block content
   h2 {% trans "Give feedback about a programme" %}
-  form(method='POST')
+  form(method='POST').form-horizontal
     .panel.panel-default
       .panel-heading
         strong {{ programme.title }}

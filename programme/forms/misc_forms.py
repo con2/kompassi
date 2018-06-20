@@ -328,30 +328,6 @@ class PublishForm(forms.ModelForm):
         )
 
 
-class ProgrammeFeedbackForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        is_own_programme = kwargs.pop('is_own_programme')
-
-        super(ProgrammeFeedbackForm, self).__init__(*args, **kwargs)
-
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-
-        if is_own_programme:
-            self.fields['is_anonymous'].disabled = True
-            self.fields['is_anonymous'].help_text = _(
-                'Because you are the host of this programme, you cannot leave '
-                'your feedback anonymously.'
-            )
-
-    class Meta:
-        model = ProgrammeFeedback
-        fields = (
-            'feedback',
-            'is_anonymous',
-        )
-
-
 class ColdOffersForm(forms.ModelForm):
     # XXX get a date picker
     accepting_cold_offers_from = forms.DateTimeField(
