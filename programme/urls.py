@@ -116,6 +116,12 @@ urlpatterns = [
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme\.json$',
         programme_json_view,
+        name='programme_json_view_legacy_url',
+    ),
+
+    url(
+        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme$',
+        programme_json_view,
         name='programme_json_view',
     ),
 
