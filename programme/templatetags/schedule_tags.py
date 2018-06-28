@@ -5,8 +5,8 @@ __all__ = ['programme_list_heading']
 register = Library()
 
 
-@register.inclusion_tag('programme_list_heading.jade')
-def programme_list_heading(start_time, programmes):
+@register.filter
+def programme_list_heading_should_be_rendered(programmes):
     """
     Used by programme_schedule_list.jade alone.
 
@@ -29,10 +29,7 @@ def programme_list_heading(start_time, programmes):
     unfortunately, Django templates will not let us embed in the template code
     itself due to Hitler and the Nazis.
 
-    So we use an inclusion tag itself, computing the aforementioned condition
+    So we use a filter with `if`, computing the aforementioned condition
     safely here in the Python code for the template to simply `if` on it.
     """
-    return dict(
-        start_time=start_time,
-        should_render=any(prog for (prog, rowspan) in programmes),
-    )
+    return any(prog for (prog, rowspan) in programmes)
