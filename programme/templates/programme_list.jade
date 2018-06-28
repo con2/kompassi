@@ -1,5 +1,6 @@
+- load schedule_tags
 for start_time, unused, programmes in programmes_by_start_time
-  h3 {{ start_time|date:"l H:i"|capfirst }}
+  - programme_list_heading start_time programmes
   for programme, rowspan in programmes
     if programme and programme.is_public or programme and internal_programmes
       include programme_info_fragment.jade
