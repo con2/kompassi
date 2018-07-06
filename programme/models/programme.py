@@ -839,12 +839,12 @@ class Programme(models.Model, CsvExportMixin):
                 'end_time',
                 'language',
                 'rpg_system',
-                'ropecon2018_is_no_language',
-                'is_english_ok',
-                'is_children_friendly',
-                'is_age_restricted',
-                'is_beginner_friendly',
-                              
+                                  
+                no_language=self.ropecon2018_is_no_language if self.category.slug == 'roolipeli' else None,
+                english_ok=self.is_english_ok if self.category.slug == 'roolipeli' else None,
+                children_friendly=self.is_children_friendly if self.category.slug == 'roolipeli' else None,
+                age_restricted=self.is_age_restricted if self.category.slug == 'roolipeli' else None,
+                beginner_friendly=self.is_beginner_friendly if self.category.slug == 'roolipeli' else None,
                 min_players=self.min_players if self.category.slug == 'roolipeli' else None,
                 max_players=self.max_players if self.category.slug == 'roolipeli' else None,
                 identifier='p{id}'.format(id=self.id),
