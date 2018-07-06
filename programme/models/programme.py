@@ -844,7 +844,9 @@ class Programme(models.Model, CsvExportMixin):
                 'is_children_friendly',
                 'is_age_restricted',
                 'is_beginner_friendly',
-
+                              
+                min_players=self.min_players if self.category.slug == 'roolipeli' else None,
+                max_players=self.max_players if self.category.slug == 'roolipeli' else None,
                 identifier='p{id}'.format(id=self.id),
                 tags=list(self.tags.values_list('slug', flat=True)),
                 genres=self.ropecon_genres,
