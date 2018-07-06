@@ -133,6 +133,13 @@ urlpatterns = [
     ),
 
     url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/ropecon\.json$',
+        programme_json_view,
+        dict(format='ropecon'),
+        name='programme_moe_view',
+    ),
+
+    url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/invitation/(?P<code>[a-f0-9]+)/?$',
         programme_accept_invitation_view,
         name='programme_accept_invitation_view',
