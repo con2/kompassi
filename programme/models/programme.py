@@ -827,9 +827,52 @@ class Programme(models.Model, CsvExportMixin):
                 presenter=self.formatted_hosts,
                 tags=list(self.tags.values_list('slug', flat=True)),
             )
+        elif format == 'ropecon':
+            return pick_attrs(self,
+                'title',
+                'description',
+                'category_title',
+                'formatted_hosts',
+                'room_name',
+                'length',
+                'start_time',
+                'end_time',
+                'language',
+                'rpg_system',
+                                  
+                no_language=self.ropecon2018_is_no_language if self.category.slug == 'roolipeli' else None,
+                english_ok=self.is_english_ok if self.category.slug == 'roolipeli' else None,
+                children_friendly=self.is_children_friendly if self.category.slug == 'roolipeli' else None,
+                age_restricted=self.is_age_restricted if self.category.slug == 'roolipeli' else None,
+                beginner_friendly=self.is_beginner_friendly if self.category.slug == 'roolipeli' else None,
+                intended_for_experienced_participants=self.is_intended_for_experienced_participants if self.category.slug == 'roolipeli' else None,
+                min_players=self.min_players if self.category.slug == 'roolipeli' else None,
+                max_players=self.max_players if self.category.slug == 'roolipeli' else None,
+                identifier='p{id}'.format(id=self.id),
+                tags=list(self.tags.values_list('slug', flat=True)),
+                genres=self.ropecon_genres,
+                styles=self.ropecon_styles,
+                              
+            )
         else:
             raise NotImplementedError(format)
 
+    @property
+    def ropecon_genres(self):
+        genres = []
+        for genre in ['fantasy','scifi','historical','modern','war','horror','exploration','mystery','drama','humor']:
+            if getattr(self, 'ropecon2018_genre_' + genre):
+                genres.append(genre)
+        return genres
+    
+    @property
+    def ropecon_styles(self):
+        styles = []
+        for style in ['serious','light','rules_heavy','rules_light','story_driven','character_driven','combat_driven']:
+            if getattr(self, 'ropecon2018_style_' + style):
+                styles.append(style)
+        return styles
+    
     @property
     def state_css(self):
         return STATE_CSS[self.state]
