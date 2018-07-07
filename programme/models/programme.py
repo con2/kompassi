@@ -845,6 +845,7 @@ class Programme(models.Model, CsvExportMixin):
                 children_friendly=self.is_children_friendly if self.category.slug == 'roolipeli' else None,
                 age_restricted=self.is_age_restricted if self.category.slug == 'roolipeli' else None,
                 beginner_friendly=self.is_beginner_friendly if self.category.slug == 'roolipeli' else None,
+                intended_for_experienced_participants=self.is_intended_for_experienced_participants if self.category.slug == 'roolipeli' else None,
                 min_players=self.min_players if self.category.slug == 'roolipeli' else None,
                 max_players=self.max_players if self.category.slug == 'roolipeli' else None,
                 identifier='p{id}'.format(id=self.id),
