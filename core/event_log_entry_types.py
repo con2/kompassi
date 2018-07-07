@@ -19,3 +19,9 @@ registry.register(
     name='core.person.impersonated',
     message=_('User {entry.created_by} administratively impersonated {entry.person}'),
 )
+
+
+registry.register(
+    name='core.password.changed',
+    message=_('User {entry.created_by} changed their password'),
+)

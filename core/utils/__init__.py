@@ -13,7 +13,6 @@ from .form_utils import (
 
 from .misc_utils import (
     change_user_password,
-    check_password_strength,
     class_property,
     create_temporary_password,
     ensure_groups_exist,
@@ -68,10 +67,9 @@ from .view_utils import (
     url,
 )
 
-
 from .locale_utils import (
     get_current_locale,
 )
 
-
 from .log_utils import log_get_or_create
+from .password_utils import validate_password

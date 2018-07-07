@@ -334,3 +334,15 @@ msgstr "Selaa kaikkia tapahtumia"
 #:
 msgid "Browse organizations"
 msgstr "Selaa yhdistyksiä"
+
+#:
+msgid "Password too weak. Please use a stronger password."
+msgstr "Salasana on liian heikko. Ole hyvä ja käytä vahvempaa salasanaa."
+
+#:
+msgid "Please use a strong password."
+msgstr "Ole hyvä ja käytä vahvaa salasanaa."
+
+#:
+msgid "We check passwords securely against a database of known leaked passwords. This password has been compromised in a known leak. Please use another password."
+msgstr "Tarkistamme turvallisesti uudet salasanat tunnettujen tietovuotojen tietokantaa vasten. Tämä salasana löytyy tietokannasta. Ole hyvä ja keksi uusi salasana."

@@ -11,13 +11,15 @@ from crispy_forms.layout import Layout, Fieldset, Submit
 from core.utils import DateField, indented_without_label
 
 from .models import Person, EMAIL_LENGTH, BIRTH_DATE_HELP_TEXT
-from .utils import horizontal_form_helper, check_password_strength
+from .utils import horizontal_form_helper, validate_password
 
 
 valid_username = RegexValidator(
     regex=r'^[a-z0-9_]{4,30}$',
     message=_('Invalid user name'),
 )
+
+PASSWORD_HELP_TEXT = _('Please use a strong password.')
 
 
 class LoginForm(forms.Form):
@@ -152,15 +154,6 @@ class PersonForm(forms.ModelForm):
         )
 
 
-PASSWORD_HELP_TEXT = _(
-    'The password must consist of at least %(min_length)d characters and contain '
-    '%(min_classes)d of the following: small letter, capital letter, number, special character.'
-) % dict(
-    min_classes=settings.KOMPASSI_PASSWORD_MIN_CLASSES,
-    min_length=settings.KOMPASSI_PASSWORD_MIN_LENGTH,
-)
-
-
 class RegistrationPersonForm(PersonForm):
     """
     Strip PersonForm of fields not useful at registration time, namely muncipality and official first names.
@@ -209,7 +202,7 @@ class RegistrationForm(forms.Form):
         max_length=1023,
         label=_('Password'),
         widget=forms.PasswordInput,
-        validators=[check_password_strength],
+        validators=[validate_password],
     )
     password_again = forms.CharField(
         required=True,
@@ -279,7 +272,7 @@ class PasswordForm(forms.Form):
         max_length=1023,
         label=_('New password'),
         widget=forms.PasswordInput,
-        validators=[check_password_strength],
+        validators=[validate_password],
     )
 
     new_password_again = forms.CharField(
@@ -355,7 +348,7 @@ class PasswordResetForm(forms.Form):
         max_length=1023,
         label=_('New password'),
         widget=forms.PasswordInput,
-        validators=[check_password_strength],
+        validators=[validate_password],
     )
 
     new_password_again = forms.CharField(

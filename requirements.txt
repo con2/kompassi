@@ -34,3 +34,4 @@ unicodecsv~=0.14.1
 vobject~=0.9.3
 XlsxWriter~=0.9.6
 django_csp~=3.3
+zxcvbn~=4.4.27
