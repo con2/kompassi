@@ -6,7 +6,7 @@ from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 import requests
-from requests.exceptions import Timeout
+from requests.exceptions import Timeout, HTTPError
 
 from zxcvbn import zxcvbn
 
@@ -64,10 +64,10 @@ def is_password_compromised(password):
             hash_prefix,
         )
         return None
-    except StatusError as e:
+    except HTTPError as e:
         logger.exception(
             'is_password_compromised: HIBPv2 API returned status %d while trying to query for page %s',
-            e.status_code,
+            e.response.status_code,
             hash_prefix,
         )
         return None
