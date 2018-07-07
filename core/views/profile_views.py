@@ -15,6 +15,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_safe
 from django.views.decorators.debug import sensitive_post_parameters
 
+from event_log.utils import emit
+
 from ..models import (
     EmailVerificationError,
     EmailVerificationToken,
@@ -81,7 +83,7 @@ def core_profile_view(request):
     return render(request, 'core_profile_view.jade', vars)
 
 
-@sensitive_post_parameters('new_password', 'new_password_again')
+@sensitive_post_parameters('old_password', 'new_password', 'new_password_again')
 @login_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def core_password_view(request):
@@ -100,6 +102,7 @@ def core_password_view(request):
                 return redirect('core_password_view')
             else:
                 messages.success(request, 'Salasanasi on vaihdettu. Voit nyt kirjautua uudestaan sisään uudella salasanallasi.')
+                emit('core.password.changed', request=request)
                 return redirect('core_frontpage_view')
         else:
             messages.error(request, 'Ole hyvä ja korjaa virheelliset kentät.')

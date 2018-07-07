@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from datetime import datetime, timedelta
 
 from django.forms import ValidationError
@@ -10,7 +6,7 @@ from django.test import TestCase
 from babel import Locale
 from dateutil.tz import tzlocal
 
-from .utils import check_password_strength, full_hours_between, slugify, format_interval
+from .utils import full_hours_between, slugify, format_interval
 
 
 class PersonTestCase(TestCase):
@@ -31,35 +27,6 @@ class PersonTestCase(TestCase):
 
 
 class UtilsTestCase(TestCase):
-    def test_check_password_strength(self):
-        check_password_strength('pieniISO6',
-            min_length=8,
-            min_classes=3,
-        )
-
-        check_password_strength('pieni6',
-            min_length=6,
-            min_classes=2,
-        )
-
-        try:
-            check_password_strength('pieni6',
-                min_length=8,
-                min_classes=2,
-            )
-            assert False
-        except ValidationError as e:
-            pass
-
-        try:
-            check_password_strength('pieni6',
-                min_length=6,
-                min_classes=3,
-            )
-            assert False
-        except ValidationError as e:
-            pass
-
     def test_full_hours_between(self):
         tz = tzlocal()
 

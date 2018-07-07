@@ -320,10 +320,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
-# These MUST match those in IPA
-KOMPASSI_PASSWORD_MIN_LENGTH = 8
-KOMPASSI_PASSWORD_MIN_CLASSES = 3
-
 # Default region for parsing phone numbers
 # Passed as the second argument to python-phonenumbers' .parse
 KOMPASSI_PHONENUMBERS_DEFAULT_REGION = 'FI'
