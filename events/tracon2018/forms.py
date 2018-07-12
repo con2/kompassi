@@ -105,6 +105,11 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
             job_categories=JobCategory.objects.filter(event__slug='tracon2018', name='Conitea')
         )
 
+    def get_excluded_field_defaults(self):
+        return dict(
+            total_work='yli10h',
+        )
+
 
 class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
