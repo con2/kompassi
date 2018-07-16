@@ -1,0 +1,25 @@
+extends base.jade
+- load trans from i18n
+block title
+  | {{ listing.title }}
+block content
+  h1 {{ listing.title }}
+  {{ listing.description|safe|linebreaks }}
+
+  if current_events
+    h2 {% trans "Events currently in progress" %}
+    - with current_events as events
+      include listings_event_list.jade
+
+  if future_events
+    h2 {% trans "Upcoming events" %}
+    - with future_events as events
+      include listings_event_list.jade
+
+
+  if past_events_by_year
+    h2 {% trans "Past events" %}
+    for year, past_events in past_events_by_year
+      h3= year
+      - with past_events as events
+        include listings_event_list.jade

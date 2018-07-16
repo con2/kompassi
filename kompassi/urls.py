@@ -33,6 +33,7 @@ for app_name in [
     'feedback',
     'surveys',
     'directory',
+    'listings',
 ]:
     if app_name in settings.INSTALLED_APPS:
         urlpatterns.append(url(r'', include('{app_name}.urls'.format(app_name=app_name))))
