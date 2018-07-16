@@ -25,6 +25,9 @@ class Listing(models.Model):
 
         return sorted(chain(external_events, events), key=lambda e: e.start_time)
 
+    def __str__(self):
+        return self.title
+
 
 class ExternalEvent(models.Model):
     '''
@@ -46,6 +49,9 @@ class ExternalEvent(models.Model):
 
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
+
+    def __str__(self):
+        return self.name
 
     @property
     def formatted_start_and_end_date(self):
