@@ -39,7 +39,10 @@ class Command(BaseCommand):
         management_commands.extend(((command,), dict(test=test)) for command in organization_commands)
         management_commands.extend(((command,), dict(test=test)) for command in event_commands)
 
-        management_commands.append((('access_create_internal_aliases',), dict()))
+        management_commands.extend((
+            (('setup_listings',), dict()),
+            (('access_create_internal_aliases',), dict())
+        ))
 
         for pargs, opts in management_commands:
             print("** Running:", pargs[0])

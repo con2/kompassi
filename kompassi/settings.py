@@ -171,6 +171,7 @@ INSTALLED_APPS = (
     'event_log',
     'surveys',
     'directory',
+    'listings',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',

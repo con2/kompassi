@@ -1,0 +1,5 @@
+.list-group
+  for event in events
+    a.list-group-item(href='{{ event.homepage_url }}')
+      h4= event.name
+      p= event.headline
