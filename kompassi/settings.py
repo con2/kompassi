@@ -418,3 +418,11 @@ if 'desuprofile_integration' in INSTALLED_APPS:
     KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/'.format(**locals())
     KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = '{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/'.format(**locals())
     KOMPASSI_DESUPROFILE_API_URL = '{KOMPASSI_DESUPROFILE_HOST}/api/user/me/'.format(**locals())
+
+
+if 'listings' in INSTALLED_APPS:
+    MIDDLEWARE_CLASSES = ('listings.middleware.ListingsMiddleware',) + MIDDLEWARE_CLASSES
+    KOMPASSI_LISTING_URLCONFS = {
+        'conit.fi': 'listings.site_urlconfs.conit_fi',
+        'animecon.fi': 'listings.site_urlconfs.animecon_fi',
+    }

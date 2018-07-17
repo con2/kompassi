@@ -1,8 +1,9 @@
 from itertools import chain
 
 from django.db import models
+from django.utils.timezone import now
 
-from core.utils import SLUG_FIELD_PARAMS, format_date_range
+from core.utils import SLUG_FIELD_PARAMS, format_date_range, pick_attrs
 
 
 class Listing(models.Model):
@@ -27,6 +28,16 @@ class Listing(models.Model):
 
     def __str__(self):
         return self.title
+
+    def as_dict(self):
+        t = now()
+
+        return pick_attrs(self,
+            'hostname',
+            'title',
+
+            events=[event.as_dict(format='listing') for event in self.get_events(public=True, end_time__gt=t)],
+        )
 
 
 class ExternalEvent(models.Model):
@@ -66,3 +77,16 @@ class ExternalEvent(models.Model):
         headline_parts = [part for part in headline_parts if part]
 
         return ' '.join(headline_parts)
+
+    def as_dict(self, format='listing'):
+        assert format == 'listing'
+
+        return pick_attrs(self,
+            'slug',
+            'name',
+            'headline',
+            'venue_name',
+            'homepage_url',
+            'start_time',
+            'end_time',
+        )

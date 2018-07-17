@@ -169,6 +169,10 @@ class Event(models.Model):
 
         return ' '.join(headline_parts)
 
+    @property
+    def venue_name(self):
+        return self.venue.name if self.venue else None
+
     @classmethod
     def get_or_create_dummy(cls, name='Dummy event'):
         from .venue import Venue
@@ -227,12 +231,25 @@ class Event(models.Model):
     def app_event_meta(self, app_label):
         return getattr(self, '{}_event_meta'.format(app_label))
 
-    def as_dict(self):
-        return pick_attrs(self,
-            'slug',
-            'name',
-            'homepage_url',
-            'headline',
+    def as_dict(self, format='default'):
+        if format == 'default':
+            return pick_attrs(self,
+                'slug',
+                'name',
+                'homepage_url',
+                'headline',
 
-            organization=self.organization.as_dict(),
-        )
+                organization=self.organization.as_dict(),
+            )
+        elif format == 'listing':
+            return pick_attrs(self,
+                'slug',
+                'name',
+                'headline',
+                'venue_name',
+                'homepage_url',
+                'start_time',
+                'end_time',
+            )
+        else:
+            raise NotImplementedError(format)
