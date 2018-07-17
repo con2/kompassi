@@ -21,7 +21,7 @@ html
             span(class="icon-bar")
             span(class="icon-bar")
 
-          a.navbar-brand(href='{% url "core_frontpage_view" %}') {{ settings.KOMPASSI_INSTALLATION_NAME }}
+          a.navbar-brand(href='{{ settings.KOMPASSI_PUBLIC_URL }}') {{ settings.KOMPASSI_INSTALLATION_NAME }}
 
         .collapse.navbar-collapse#base-navbar-collapse
           ul.nav.navbar-nav

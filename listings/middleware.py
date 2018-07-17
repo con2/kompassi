@@ -2,7 +2,7 @@ from django.conf import settings
 
 
 class ListingsMiddleware(object):
-    def process_view(self, request, view_func, view_args, view_kwargs):
+    def process_request(self, request):
         hostname = request.META['HTTP_HOST']
 
         if hostname in settings.KOMPASSI_LISTING_URLCONFS:
