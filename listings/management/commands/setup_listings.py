@@ -29,11 +29,13 @@ class Command(BaseCommand):
                 'tulevat ylläpitäjän tietoon.'
             ), (
                 'desucon',
+                'hypecon',
                 'kawacon',
                 'lakeuscon',
                 'matsucon',
                 'mimicon',
                 'nekocon',
+                'nippori',
                 'tracon',
                 'yukicon',
             ), (
@@ -48,11 +50,13 @@ class Command(BaseCommand):
                 'aicon',
                 'desucon',
                 'hellocon',
+                'hypecon',
                 'kawacon',
                 'lakeuscon',
                 'matsucon',
                 'mimicon',
                 'nekocon',
+                'nippori',
                 'popcult',
                 'ropecon',
                 'tampere kuplii',
