@@ -33,6 +33,7 @@ class Command(BaseCommand):
                 'lakeuscon',
                 'matsucon',
                 'mimicon',
+                'nekocon',
                 'tracon',
                 'yukicon',
             ), (
@@ -51,6 +52,7 @@ class Command(BaseCommand):
                 'lakeuscon',
                 'matsucon',
                 'mimicon',
+                'nekocon',
                 'popcult',
                 'ropecon',
                 'tampere kuplii',
