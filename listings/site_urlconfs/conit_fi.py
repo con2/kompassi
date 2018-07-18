@@ -7,7 +7,7 @@ urlpatterns = [
     url(
         r'^$',
         listings_listing_view,
-        dict(listing_hostname='animecon.fi'),
+        dict(listing_hostname='conit.fi'),
         name='listings_listing_view',
     ),
 ]
