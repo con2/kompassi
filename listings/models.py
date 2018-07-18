@@ -54,6 +54,7 @@ class ExternalEvent(models.Model):
         verbose_name='Tapahtuman kotisivu',
     )
     venue_name = models.CharField(max_length=63, blank=True)
+    logo_file = models.FileField(upload_to='external_event_logos', blank=True)
 
     # should be named is_public but due to legacy
     public = models.BooleanField(default=True)

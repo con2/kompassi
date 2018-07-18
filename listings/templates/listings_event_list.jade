@@ -1,7 +1,7 @@
 .list-group
   for event in events
     a.list-group-item(href='{{ event.homepage_url }}')
-      if event.either_logo_url
-        img.pull-right(style='height: 70px', src='{{ event.either_logo_url }}', alt='')
+      if event.logo_file
+        img.pull-right(style='height: 70px', src='{{ event.logo_file.url }}', alt='')
       h4= event.name
       p= event.headline
