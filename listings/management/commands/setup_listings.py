@@ -49,6 +49,7 @@ class Command(BaseCommand):
             ), (
                 'aicon',
                 'desucon',
+                'finncon',
                 'hellocon',
                 'hypecon',
                 'kawacon',
