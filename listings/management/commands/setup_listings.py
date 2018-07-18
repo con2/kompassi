@@ -13,6 +13,14 @@ class Command(BaseCommand):
         from core.models import Event
         from ...models import Listing, ExternalEvent
 
+        # Hide ExternalEvents for which there is an actual Event counterpart
+        ExternalEvent.objects.filter(
+            slug__in=Event.objects.filter(public=True).values_list('slug', flat=True),
+        ).update(
+            public=False,
+        )
+
+        # Setup default listings
         for hostname, title, description, keywords, exclude_keywords in [
             ('animecon.fi', 'Suomen animetapahtumat', (
                 'Tämä on listaus Suomessa järjestettävistä animetapahtumista. '
