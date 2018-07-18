@@ -11,8 +11,9 @@ block content
     - with current_events as events
       include listings_event_list.jade
 
-  if future_events
+  if show_future_events_heading
     h2 {% trans "Upcoming events" %}
+  if future_events
     - with future_events as events
       include listings_event_list.jade
 

@@ -25,6 +25,7 @@ def listings_listing_view(request, listing_hostname, include_past_events=False):
         current_events=current_events,
         future_events=future_events,
         past_events_by_year=past_events_by_year,
+        show_future_events_heading=future_events and (current_events or past_events),
         login_page=True,
     )
 
