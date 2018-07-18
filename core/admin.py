@@ -89,6 +89,10 @@ if 'intra' in settings.INSTALLED_APPS:
 
 
 class EventAdmin(admin.ModelAdmin):
+    list_display = ('name', 'organization', 'venue')
+    list_filter = ('organization', 'venue')
+    search_fields = ('name',)
+
     inlines = tuple(event_admin_inlines)
 
     fieldsets = (
