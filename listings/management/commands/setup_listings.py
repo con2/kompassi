@@ -53,6 +53,7 @@ class Command(BaseCommand):
                 'hellocon',
                 'hypecon',
                 'kawacon',
+                'k-con',
                 'lakeuscon',
                 'matsucon',
                 'mimicon',
