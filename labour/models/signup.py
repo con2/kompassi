@@ -763,8 +763,12 @@ class Signup(models.Model, CsvExportMixin):
             if SignupExtra is not None:
                 related_models.append(SignupExtra)
                 fields_to_skip.extend([
+                    # SignupExtraBase ("V2")
                     (SignupExtra, 'event'),
                     (SignupExtra, 'person'),
+
+                    # ObsoleteSignupExtraBaseV1
+                    (SignupExtra, 'signup'),
                 ])
 
             # XXX HACK jv-kortin numero
