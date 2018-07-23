@@ -32,7 +32,7 @@ from ..forms import (
     OrderProductForm,
     SearchForm,
 )
-from ..helpers import tickets_admin_required, perform_search
+from ..helpers import tickets_admin_required, tickets_event_required, perform_search
 from ..utils import format_price
 from ..models import (
     AccommodationInformation,
@@ -473,11 +473,19 @@ if 'lippukala' in settings.INSTALLED_APPS:
     lippukala_pos_view = POSView.as_view()
 
     @csrf_exempt
-    @tickets_admin_required
-    def tickets_admin_pos_view(request, vars, event):
+    @tickets_event_required
+    def tickets_admin_pos_view(request, event):
         # XXX kala expects event filter via &event=foo; we specify it via /events/foo
         request.GET = request.GET.copy()
         request.GET['event'] = event.slug
+
+        meta = event.tickets_event_meta
+        if not meta:
+            messages.error(request, "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
+            return redirect('core_event_view', event.slug)
+
+        if not meta.is_user_allowed_pos_access(request.user):
+            return login_redirect(request)
 
         return lippukala_pos_view(request)
 

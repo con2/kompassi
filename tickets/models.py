@@ -125,6 +125,14 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         help_text=_('This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended.'),
     )
 
+    pos_access_group = models.ForeignKey('auth.Group',
+        null=True,
+        blank=True,
+        verbose_name=_('POS access group'),
+        help_text=_('Members of this group are granted access to the ticket exchange view without being ticket admins.'),
+        related_name='as_pos_access_group_for',
+    )
+
     def __str__(self):
         return self.event.name
 
@@ -159,6 +167,12 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         group, unused = Group.objects.get_or_create(name='Dummy ticket admin group')
         event, unused = Event.get_or_create_dummy()
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
+
+    def is_user_allowed_pos_access(self, user):
+        if self.is_user_admin(user):
+            return True
+
+        return self.pos_access_group and self.is_user_in_group(user, self.pos_access_group)
 
     class Meta:
         verbose_name = _('ticket sales settings for event')
