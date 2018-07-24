@@ -21,7 +21,7 @@ except ImportError:
 
 from core.batches_view import batches_view
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
-from core.utils import url, initialize_form, slugify
+from core.utils import url, initialize_form, slugify, login_redirect
 from event_log.utils import emit
 
 from ..forms import (
