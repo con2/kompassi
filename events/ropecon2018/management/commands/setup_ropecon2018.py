@@ -577,7 +577,7 @@ Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, = TicketsEventMeta.get_or_create_groups(self.event, ['admins'])
+        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ['admins', 'pos'])
 
         defaults = dict(
             admin_group=tickets_admin_group,
@@ -612,6 +612,11 @@ Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista 
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+
+        # migration 0024_ticketseventmeta_pos_access_group
+        if meta.pos_access_group is None:
+            meta.pos_access_group = pos_access_group
+            meta.save()
 
         def limit_group(description, limit):
             limit_group, unused = LimitGroup.objects.get_or_create(
