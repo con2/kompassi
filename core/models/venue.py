@@ -1,6 +1,5 @@
-# encoding: utf-8
-
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 
 class Venue(models.Model):
@@ -9,6 +8,14 @@ class Venue(models.Model):
         max_length=63,
         verbose_name='Tapahtumapaikan nimi inessiivissä',
         help_text='Esimerkki: Paasitornissa',
+    )
+
+    location = models.CharField(
+        max_length=63,
+        verbose_name=_('Location'),
+        help_text=_('Name of the city or municipality'),
+        blank=True,
+        default='',
     )
 
     class Meta:
