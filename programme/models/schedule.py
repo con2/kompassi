@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 from datetime import timedelta
 
 from django.contrib import messages
@@ -9,6 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 from dateutil.tz import tzlocal
 
 from core.utils import format_datetime, get_previous_and_next
+
+from .programme import Programme
 
 
 logger = logging.getLogger('kompassi')
@@ -50,26 +53,34 @@ class ViewMethodsMixin(object):
         results = []
         prev_start_time = None
         cont_criteria = dict() if include_unpublished else dict(state='published')
+        rooms = self.rooms.all()
+
+        criteria = dict(
+            category__event=self.event,
+            length__isnull=False,
+            start_time__isnull=False,
+            room__in=rooms,
+        )
+        if not include_unpublished:
+            criteria.update(state='published')
+
+        # programme_index[start_time][room] = list of programmes
+        # TODO select_related
+        programme_index = defaultdict(lambda: defaultdict(list))
+        for programme in Programme.objects.filter(**criteria):
+            programme_index[programme.start_time][programme.room_id].append(programme)
 
         for start_time in self.start_times():
             cur_row = []
-            criteria = dict(
-                category__event=self.event,
-                start_time=start_time,
-                length__isnull=False,
-            )
-
-            if not include_unpublished:
-                criteria.update(state='published')
 
             incontinuity = prev_start_time and (start_time - prev_start_time > ONE_HOUR)
             incontinuity = 'incontinuity' if incontinuity else ''
             prev_start_time = start_time
 
             results.append((start_time, incontinuity, cur_row))
-            for room in self.rooms.all():
-                programmes = room.programmes.filter(**criteria)
-                num_programmes = programmes.count()
+            for room in rooms:
+                programmes = programme_index[start_time][room.id]
+                num_programmes = len(programmes)
                 if num_programmes == 0:
                     if room.programme_continues_at(start_time, **cont_criteria):
                         # programme still continues, handled by rowspan
@@ -78,7 +89,7 @@ class ViewMethodsMixin(object):
                         # there is no (visible) programme in the room at start_time, insert a blank
                         cur_row.append((None, None))
                 else:
-                    if programmes.count() > 1:
+                    if num_programmes > 1:
                         logger.warn('Room %s has multiple programs starting at %s', room, start_time)
 
                         if (
@@ -92,7 +103,7 @@ class ViewMethodsMixin(object):
                                 )
                             )
 
-                    programme = programmes.first()
+                    programme = programmes[0]
 
                     rowspan = self.rowspan(programme)
                     cur_row.append((programme, rowspan))
