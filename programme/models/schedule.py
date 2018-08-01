@@ -67,7 +67,13 @@ class ViewMethodsMixin(object):
         # programme_index[start_time][room] = list of programmes
         # TODO select_related
         programme_index = defaultdict(lambda: defaultdict(list))
-        for programme in Programme.objects.filter(**criteria):
+        programmes = (
+            Programme.objects.filter(**criteria)
+                .select_related('category__event')
+                .select_related('room')
+                .prefetch_related('tags')
+        )
+        for programme in programmes:
             programme_index[programme.start_time][programme.room_id].append(programme)
 
         for start_time in self.start_times():
