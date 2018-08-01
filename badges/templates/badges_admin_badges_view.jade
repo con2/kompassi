@@ -41,16 +41,16 @@ block admin_content
 
             td
               if badge.is_revoked
-                span.label.label-danger {% trans "Revoked" %} {% if badge.batch %}({{ badge.batch }}){% endif %}
+                span.label.label-danger {% trans "Revoked" %} {% if badge.batch %}({{ badge.batch }}){% endif %}
               else
                 if badge.is_printed
                   if badge.is_printed_separately
                     span.label.label-success(title='Tulostettu {{ badge.printed_separately_at }}') {% trans "Separately" %}
                   else
-                    span.label.label-success(title='Tulostettu {{ badge.batch.printed_at }}') {{ badge.batch }}
+                    span.label.label-success(title='Tulostettu {{ badge.batch.printed_at }}') {{ badge.batch }}
                 else
                   if badge.batch
-                    span.label.label-primary {{ badge.batch }}
+                    span.label.label-primary {{ badge.batch }}
                   else
                     span.label.label-default {% trans "Waiting" %}
 
@@ -134,4 +134,4 @@ block admin_content
             i.fa.fa-plus.kompassi-icon-space-right
             {% trans "Manually add a badge" %}
       p.text-muted
-        {% blocktrans count num_badges=badges.count %}One badge.{% plural %}{{ num_badges }} badges.{% endblocktrans %}
+        {% blocktrans count num_badges=badges.count %}One badge.{% plural %}{{ num_badges }} badges.{% endblocktrans %}

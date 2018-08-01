@@ -21,12 +21,12 @@ table.table.table-striped
   tbody
     for shift in shifts
       tr
-        td {{ shift.job.job_category }}
-        td {{ shift.job }}
-        td {{ shift.signup.person.full_name }}
+        td {{ shift.job.job_category }}
+        td {{ shift.job }}
+        td {{ shift.signup.person.full_name }}
         td {{ shift.start_time|skeletonfmt:"MEd" }} klo {{ shift.start_time|skeletonfmt:"Hm" }}
         td {{ shift.end_time|skeletonfmt:"MEd" }} klo {{ shift.end_time|skeletonfmt:"Hm" }}
-        td {{ shift.formatted_duration }}
+        td {{ shift.formatted_duration }}
         if show_actions
           td
             .btn-group

@@ -16,7 +16,7 @@ block admin_content
         tbody
           for room in rooms
             tr
-              td: {{ room.name }}
+              td: {{ room.name }}
                 //- a(href='{% url "programme_admin_room_view" event.slug room.slug %}')= room.name
               td
                 .btn-group

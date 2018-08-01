@@ -45,7 +45,7 @@ block content
             label.control-label.col-md-2 Sukunimi
             .col-md-10
               if request.user.person.surname
-                |{{ request.user.person.surname }}
+                |{{ request.user.person.surname }}
               else
                 .label.label-danger Sukunimi puuttuu
         .row
@@ -53,7 +53,7 @@ block content
             label.control-label.col-md-2 Viralliset etunimet
             .col-md-10
               if request.user.person.official_first_names
-                |{{ request.user.person.official_first_names }}
+                |{{ request.user.person.official_first_names }}
               else
                 .label.label-danger Etunimet puuttuvat
 
@@ -62,7 +62,7 @@ block content
             label.control-label.col-md-2 Kotikunta
             .col-md-10
               if request.user.person.muncipality
-                |{{ request.user.person.muncipality }}
+                |{{ request.user.person.muncipality }}
               else
                 .label.label-danger Kotikunta puuttuu
 
@@ -71,7 +71,7 @@ block content
             label.control-label.col-md-2 Sähköpostiosoite
             .col-md-10
               if request.user.person.email
-                |{{ request.user.person.email }}
+                |{{ request.user.person.email }}
               else
                 .label.label-danger Sähköpostiosoite puuttuu
 

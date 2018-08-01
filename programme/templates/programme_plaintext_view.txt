@@ -1,4 +1,4 @@
-{% for start_time, unused, programmes in programmes_by_start_time %}{% for programme, unused in programmes %}{% if programme and programme.is_public %}{{ programme.title|safe }}
+{% for start_time, unused, programmes in programmes_by_start_time %}{% for programme, unused in programmes %}{% if programme and programme.is_public %}{{ programme.title|safe }}
 {{ programme.start_time|date:"H:i" }}–{{ programme.end_time|date:"H:i" }}
 {{ programme.room.name|safe }}
 {{ programme.formatted_hosts| safe }}

@@ -11,7 +11,7 @@ block profile_content
             .label(class='{{ membership.state_css }}')= membership.get_state_display
           a(href='{% url "core_organization_view" membership.organization.slug %}')= membership.organization.name
   else
-    p Et ole jäsenenä yhdessäkään {{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} jäsenrekisteriä käyttävässä yhdistyksessä.
+    p Et ole jäsenenä yhdessäkään {{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} jäsenrekisteriä käyttävässä yhdistyksessä.
 
   h3 Yhdistykset, joihin voit liittyä
   if potential_organizations.exists
@@ -20,4 +20,4 @@ block profile_content
         li.list-group-item
           a(href='{% url "membership_apply_view" organization.slug %}')= organization.name
   else
-    p Et tällä hetkellä voi liittyä yhteenkään {{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} jäsenrekisteriä käyttävään yhdistykseen.
+    p Et tällä hetkellä voi liittyä yhteenkään {{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} jäsenrekisteriä käyttävään yhdistykseen.

@@ -56,6 +56,6 @@ block content
         //-         li: a(href='{% url "enrollment_admin_export_enrolled_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
         //-           i.fa.fa-cloud-download.kompassi-icon-space-right
         //-           |{{ export_format.name }}
-        .text-muted {% blocktrans with num_total_enrolled=num_total_enrolled count num_enrolled=num_enrolled %}One enrolled person visible (total {{ num_total_enrolled }}).{% plural %}{{ num_enrolled }} enrolled people visible (total {{ num_total_enrolled }}).{% endblocktrans %}
+        .text-muted {% blocktrans with num_total_enrolled=num_total_enrolled count num_enrolled=num_enrolled %}One enrolled person visible (total {{ num_total_enrolled }}).{% plural %}{{ num_enrolled }} enrolled people visible (total {{ num_total_enrolled }}).{% endblocktrans %}
       else
-        .text-muted {% blocktrans with num_total_enrolled=num_total_enrolled %}No enrolled people visible (total {{ num_total_enrolled }}).{% endblocktrans %}
+        .text-muted {% blocktrans with num_total_enrolled=num_total_enrolled %}No enrolled people visible (total {{ num_total_enrolled }}).{% endblocktrans %}

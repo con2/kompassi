@@ -12,10 +12,10 @@
         .form-group
           label.control-label.col-md-3 {% trans "Created at" %}
           .col-md-9
-            .form-control {{ programme.created_at|date:"SHORT_DATETIME_FORMAT" }}
+            .form-control {{ programme.created_at|date:"SHORT_DATETIME_FORMAT" }}
         .form-group
           label.control-label.col-md-3 {% trans "Updated at" %}
           .col-md-9
-            .form-control {{ programme.updated_at|date:"SHORT_DATETIME_FORMAT" }}
+            .form-control {{ programme.updated_at|date:"SHORT_DATETIME_FORMAT" }}
     .panel-footer.clearfix
       include programme_admin_detail_views/buttons.jade

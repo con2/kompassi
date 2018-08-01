@@ -28,10 +28,10 @@ block admin_content
               td: a(href='{% url "tickets_admin_order_view" event.slug accommodee.order_product.order_id %}')= accommodee.order_product.order.formatted_order_number
             else
               td
-            td {{ accommodee.last_name }}
-            td {{ accommodee.first_name }}
-            td {{ accommodee.email }}
-            td {{ accommodee.phone_number }}
+            td {{ accommodee.last_name }}
+            td {{ accommodee.first_name }}
+            td {{ accommodee.email }}
+            td {{ accommodee.phone_number }}
 
     .panel-footer.clearfix
       if active_filter

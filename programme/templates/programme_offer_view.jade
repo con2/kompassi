@@ -16,5 +16,5 @@ block content
     .list-group
       for alternative_programme_form in alternative_programme_forms
         a.list-group-item(href='{% url "programme_offer_form_view" event.slug alternative_programme_form.slug %}')
-          h4 {{ alternative_programme_form.title }}
-          {{ alternative_programme_form.short_description|linebreaks }}
+          h4 {{ alternative_programme_form.title }}
+          {{ alternative_programme_form.short_description|linebreaks }}

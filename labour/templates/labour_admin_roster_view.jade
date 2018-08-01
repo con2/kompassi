@@ -11,5 +11,5 @@ block content_full_width
 block extra_scripts
   link(rel='stylesheet', href='{% static "labour/css/roster.css" %}')
   script.
-    window.kompassiLabourRosterConfig = {{ config_json|safe }};
+    window.kompassiLabourRosterConfig = {{ config_json|safe }};
   script(src='{% static "labour/js/roster.js" %}')

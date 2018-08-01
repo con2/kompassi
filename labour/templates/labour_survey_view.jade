@@ -2,11 +2,11 @@ extends base.jade
 - load crispy_forms_tags
 - load i18n
 block title
-  | {{ survey.title }}
+  | {{ survey.title }}
 block content
   h2 {{ survey.title }}
 
-  {{ survey.description|linebreaks}}
+  {{ survey.description|linebreaks}}
 
   form(method='POST', role='form').form-horizontal
     .panel.panel-default

@@ -2,7 +2,7 @@ doctype html
 - load static from staticfiles
 html
   head
-    title {{ event.name }}: Työtodistukset – {{ settings.KOMPASSI_APPLICATION_NAME }}
+    title {{ event.name }}: Työtodistukset – {{ settings.KOMPASSI_APPLICATION_NAME }}
     style.
       body {
         font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
@@ -71,16 +71,16 @@ html
                 tbody
                   tr
                     td.sender-address
-                      address {{ signup.event.organization.name }}<br>{{ signup.event.organization.muncipality }}
-                    td.document-metadata TYÖTODISTUS<br>{{ now|date:"SHORT_DATE_FORMAT" }}
+                      address {{ signup.event.organization.name }}<br>{{ signup.event.organization.muncipality }}
+                    td.document-metadata TYÖTODISTUS<br>{{ now|date:"SHORT_DATE_FORMAT" }}
               address {{ signup.printable_certificate_delivery_address|linebreaks }}
             article
               heading: h3 Todistus vapaaehtoistyöstä {{ event.name_inessive }}
-              p Pyynnöstä todistan, että <strong>{{ signup.person.firstname_surname }}</strong> on tehnyt vapaaehtoistyötä {{ event.organization.name_genitive }} järjestämässä tapahtumassa:
+              p Pyynnöstä todistan, että <strong>{{ signup.person.firstname_surname }}</strong> on tehnyt vapaaehtoistyötä {{ event.organization.name_genitive }} järjestämässä tapahtumassa:
               p
-                |<strong>{{ event.name }}</strong><br>
-                |<em>{{ event.headline }}</em><br>
-                |{{ signup.formatted_job_categories_accepted }}
-              p.signature {{ event.organization.muncipality }} {{ now|date:"SHORT_DATE_FORMAT" }}
-              p.signature {{ event.labour_event_meta.work_certificate_signer|linebreaks }}
+                |<strong>{{ event.name }}</strong><br>
+                |<em>{{ event.headline }}</em><br>
+                |{{ signup.formatted_job_categories_accepted }}
+              p.signature {{ event.organization.muncipality }} {{ now|date:"SHORT_DATE_FORMAT" }}
+              p.signature {{ event.labour_event_meta.work_certificate_signer|linebreaks }}
             hr

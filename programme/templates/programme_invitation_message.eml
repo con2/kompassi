@@ -1,6 +1,6 @@
 Hyvä vastaanottaja,
 
-{{ event.name_genitive }} ohjelmavastaava on kutsunut sinut järjestämään tapahtumaan ohjelmanumeron, jonka työnimi on ”{{ programme.title }}”.
+{{ event.name_genitive }} ohjelmavastaava on kutsunut sinut järjestämään tapahtumaan ohjelmanumeron, jonka työnimi on ”{{ programme.title }}”.
 
 Hyväksy kutsu vierailemalla selaimella tässä osoitteessa ja täyttämällä sieltä löytyvä lomake:
 

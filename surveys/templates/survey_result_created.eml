@@ -1,4 +1,4 @@
-{% load survey_tags %}Kyselyyn {{ entry.survey_result.survey.title }} on tullut uusi vastaus:
+{% load survey_tags %}Kyselyyn {{ entry.survey_result.survey.title }} on tullut uusi vastaus:
 
 {{ entry.survey_result.model|to_yaml }}
 

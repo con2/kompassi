@@ -25,9 +25,9 @@ if signup.is_finished
           tr
             td {{ shift.start_time|skeletonfmt:"MEd" }} klo {{ shift.start_time|skeletonfmt:"Hm" }}
             td {{ shift.end_time|skeletonfmt:"MEd" }} klo {{ shift.end_time|skeletonfmt:"Hm" }}
-            td {{ shift.formatted_duration }}
-            td {{ shift.job.job_category }}
-            td {{ shift.job }}
+            td {{ shift.formatted_duration }}
+            td {{ shift.job.job_category }}
+            td {{ shift.job }}
           if shift.notes
             tr
               td(colspan=5) {{ shift.notes|linebreaks }}

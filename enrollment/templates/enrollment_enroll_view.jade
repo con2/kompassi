@@ -10,7 +10,7 @@ block content
     else
       | {{ event.name }}: {% trans "Enroll" %}
 
-  {{ event.enrollment_event_meta.enrollment_form_message|safe|linebreaks }}
+  {{ event.enrollment_event_meta.enrollment_form_message|safe|linebreaks }}
 
   .panel.panel-default
     .panel-heading: strong {% trans "Contact information" %}

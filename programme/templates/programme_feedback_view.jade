@@ -2,13 +2,13 @@ extends base.jade
 - load i18n
 - load crispy from crispy_forms_tags
 block title
-  | {% blocktrans with programme_title=programme.title %}Give feedback: {{ programme_title }}{% endblocktrans %}
+  | {% blocktrans with programme_title=programme.title %}Give feedback: {{ programme_title }}{% endblocktrans %}
 block content
   h2 {% trans "Give feedback about a programme" %}
   form(method='POST').form-horizontal
     .panel.panel-default
       .panel-heading
-        strong {{ programme.title }}
+        strong {{ programme.title }}
       .panel-body
         {% crispy form %}
       .panel-footer.clearfix

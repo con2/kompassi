@@ -18,7 +18,7 @@ table.table.table-striped.programme-host-table
         td: em= other_invitation.role
     for invite_form in sired_invitation_formset
       tr
-        td(colspan="3") {{ invite_form.email }}
+        td(colspan="3") {{ invite_form.email }}
         td: em= invitation.role
     for freeform_organizer in freeform_organizers
       tr

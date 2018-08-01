@@ -12,6 +12,6 @@ table.table.table-striped
           if feedback_message.is_really_anonymous
             em.text-muted {% trans "Anonymous" %}
           else
-            a(href='mailto:{{ feedback_message.author_email }}')= feedback_message.author
+            a(href='mailto:{{ feedback_message.author_email }}')= feedback_message.author
         td {{ feedback_message.created_at|date:"SHORT_DATETIME_FORMAT" }}
         td {{ feedback_message.feedback|linebreaks }}

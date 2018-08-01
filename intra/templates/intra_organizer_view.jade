@@ -59,8 +59,8 @@ block content_full_width
             .pull-right
               small.text-muted: a(href='mailto:{{ team.email }}')
                 i.fa.fa-envelope-o.kompassi-icon-space-right
-                | {{ team.email }}
-          strong.kompassi-space-after {{ team.name }}
+                | {{ team.email }}
+          strong.kompassi-space-after {{ team.name }}
 
         if team.description
           .panel-body {{ team.description|safe|linebreaks }}

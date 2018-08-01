@@ -27,7 +27,7 @@ block content_full_width
                 if feedback_message.is_really_anonymous
                   em.text-muted {% trans "Anonymous" %}
                 else
-                  a(href='mailto:{{ feedback_message.author_email }}')= feedback_message.author
+                  a(href='mailto:{{ feedback_message.author_email }}')= feedback_message.author
               td {{ feedback_message.created_at|date:"SHORT_DATETIME_FORMAT" }}
               td {{ feedback_message.feedback|linebreaks }}
       .panel-footer
@@ -35,5 +35,5 @@ block content_full_width
           .text-muted {% blocktrans count num_feedback_messages=feedback.count %}One feedback message.{% plural %}{{ num_feedback_messages }} feedback messages.{% endblocktrans %}
         else
           .text-muted {% trans "No feedback." %}
-        //- .text-muted {% blocktrans count num_max_feedback_messages=num_max_feedback_messages %}Showing max {{ num_max_feedback_messages }} feedback messages. For older feedback, see the feedback tab of each programme.{% endblocktrans %}
+        //- .text-muted {% blocktrans count num_max_feedback_messages=num_max_feedback_messages %}Showing max {{ num_max_feedback_messages }} feedback messages. For older feedback, see the feedback tab of each programme.{% endblocktrans %}
 

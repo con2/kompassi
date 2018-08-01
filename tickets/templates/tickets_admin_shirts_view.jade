@@ -18,7 +18,7 @@ block admin_content
             td= shirt_size
             td= shirt_size.count
     .panel-footer
-      {% blocktrans count num_shirts=shirt_sizes_total %}One shirt.{% plural %}{{ num_shirts }} shirts.{% endblocktrans %}
+      {% blocktrans count num_shirts=shirt_sizes_total %}One shirt.{% plural %}{{ num_shirts }} shirts.{% endblocktrans %}
 
   .panel.panel-default
     .panel-heading: strong {% trans "Shirt orders" %}
@@ -51,4 +51,4 @@ block admin_content
             li: a(href='{% url "tickets_admin_shirts_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
               i.fa.fa-cloud-download.kompassi-icon-space-right
               |{{ export_format.name }}
-      p.text-muted {% blocktrans count num_shirts=shirt_orders_total %}One shirt.{% plural %}{{ num_shirts }} shirts.{% endblocktrans %}
+      p.text-muted {% blocktrans count num_shirts=shirt_orders_total %}One shirt.{% plural %}{{ num_shirts }} shirts.{% endblocktrans %}

@@ -1157,7 +1157,7 @@ class AccommodationInformation(models.Model, CsvExportMixin):
         return {}
 
     def __str__(self):
-        return '{first_name} {last_name}'.format(
+        return '{first_name} {last_name}'.format(
             first_name=self.first_name,
             last_name=self.last_name,
         )

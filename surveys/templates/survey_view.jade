@@ -1,14 +1,14 @@
 extends base.jade
 - load i18n
 block title
-  | {{ survey.title }}
+  | {{ survey.title }}
 block content
   if event
-    h2 {{ event.name }}: {{ survey.title }}
+    h2 {{ event.name }}: {{ survey.title }}
   else
-    h2 {{ survey.title }}
+    h2 {{ survey.title }}
 
-  {{ survey.description|safe|linebreaks }}
+  {{ survey.description|safe|linebreaks }}
 
   #kompassi-survey-container
   noscript
@@ -52,7 +52,7 @@ block extra_scripts
 
     // Construct and show our current survey
     var survey = new Survey.Model({{ model_json|safe }});
-    survey.locale = '{{ current_language_code }}';
+    survey.locale = '{{ current_language_code }}';
     $('#kompassi-survey-container').Survey({
       model: survey,
       onComplete: onComplete,

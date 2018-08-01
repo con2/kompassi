@@ -5,7 +5,7 @@ block profile_content
   h3 Sähköpostialiakset
   p Perustuen työskentelyysi tapahtumissa sinulle on luotu yksi tai useampia sähköpostialiaksia. Ne kaikki ohjataan <a href='{% url "core_profile_view" %}'>profiilissasi</a> ilmoittamaasi sähköpostiosoitteeseen <em>{{ person.email }}</em>.
   p Huomaathan, että jos vaihdat sähköpostiosoitettasi tai sinulle luodaan uusia aliaksia, saattaa kestää maksimissaan noin vuorokausi ennen kuin aliakset ohjautuvat oikeaan paikkaan. Samoin lähtevän postin salasanojen käyttöönotossa voi olla viivettä.
-  p Mikäli tarvitset sähköpostialiaksiisi muutoksia, ota yhteyttä ylläpitoon: <em>{{ settings.DEFAULT_FROM_EMAIL}}</em>
+  p Mikäli tarvitset sähköpostialiaksiisi muutoksia, ota yhteyttä ylläpitoon: <em>{{ settings.DEFAULT_FROM_EMAIL}}</em>
 
   for domain, have_smtp_servers, smtp_passwords, aliases in aliases_by_domain
     .panel.panel-default

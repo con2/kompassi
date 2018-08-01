@@ -1,4 +1,4 @@
 You have requested to be notified of events of type {{ entry.entry_type }}. Such an event has occurred.
 
-Timestamp: {{ entry.created_at.isoformat }}
-Carried out by user: {{ entry.created_by }}
+Timestamp: {{ entry.created_at.isoformat }}
+Carried out by user: {{ entry.created_by }}

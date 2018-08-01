@@ -177,7 +177,7 @@ class Shift(models.Model, CsvExportMixin):
 
     @property
     def formatted_duration(self):
-        return "{hours} h".format(hours=self.hours)
+        return "{hours} h".format(hours=self.hours)
 
     def admin_get_event(self):
         return self.job.job_category.event if self.job and self.job.job_category else None
@@ -221,7 +221,7 @@ class Shift(models.Model, CsvExportMixin):
         }
 
     def __str__(self):
-        parts = ['{interval} ({hours} h): {job_category_name} ({job_name})'.format(
+        parts = ['{interval} ({hours} h): {job_category_name} ({job_name})'.format(
             interval=format_interval(self.start_time, self.end_time),
             hours=self.hours,
             job_category_name=self.job.job_category.title if self.job and self.job.job_category else None,

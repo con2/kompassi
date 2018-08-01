@@ -1,5 +1,5 @@
 li
   form(action='{% url "set_language" %}', method='POST')
     {% csrf_token %}
-    input(type='hidden', name='language', value='{{ other_language_code }}')
-    button.btn.btn-xs.btn-link(type='submit', style='margin-top: 15px') {{ other_language_name }}
+    input(type='hidden', name='language', value='{{ other_language_code }}')
+    button.btn.btn-xs.btn-link(type='submit', style='margin-top: 15px') {{ other_language_name }}

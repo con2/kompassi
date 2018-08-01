@@ -37,7 +37,7 @@ class OrderingMixin(object):
             raise IndexError(f'Cannot go {direction} from here')
 
         if self.order == swappee.order:
-            raise ValueError(f'Unable to swap because {self} and {swappee} have same order: {self.order}')
+            raise ValueError(f'Unable to swap because {self} and {swappee} have same order: {self.order}')
 
         self.order, swappee.order = swappee.order, self.order
         self.save()

@@ -16,7 +16,7 @@ block admin_content
                 a(href='?{{ state.qs_del }}') {{ state.name }}
             else
               span.label.label-default.kompassi-space-after
-                a(href='?{{ state.qs_add }}') {{ state.name }}
+                a(href='?{{ state.qs_add }}') {{ state.name }}
 
   .panel.panel-default
     .panel-heading
@@ -51,7 +51,7 @@ block admin_content
               td.danger
 
             td.text-right
-              .label(class='{{ membership.state_css }}')= membership.get_state_display
+              .label(class='{{ membership.state_css }}')= membership.get_state_display
     .panel-footer.clearfix
       form(method='POST')
         {% csrf_token %}

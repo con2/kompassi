@@ -22,7 +22,7 @@ block content_full_width
                     a(href='?{{ cf.qs_del }}') {{ cf.name }}
                 else
                   span.label.label-default.kompassi-space-after
-                    a(href='?{{ cf.qs_add }}') {{ cf.name }}
+                    a(href='?{{ cf.qs_add }}') {{ cf.name }}
           .row
             .col-md-3: strong Sali
             .col-md-9
@@ -32,7 +32,7 @@ block content_full_width
                     a(href='?{{ rf.qs_del }}') {{ rf.name }}
                 else
                   span.label.label-default.kompassi-space-after
-                    a(href='?{{ rf.qs_add }}') {{ rf.name }}
+                    a(href='?{{ rf.qs_add }}') {{ rf.name }}
           .row
             .col-md-3: strong Ohjelmanumeron tila
             .col-md-9
@@ -42,7 +42,7 @@ block content_full_width
                     a(href='?{{ sf.qs_del }}') {{ sf.name }}
                 else
                   span.label.label-default.kompassi-space-after
-                    a(href='?{{ sf.qs_add }}') {{ sf.name }}
+                    a(href='?{{ sf.qs_add }}') {{ sf.name }}
           hr
           .row
             .col-md-3: strong Luettelojärjestys
@@ -53,7 +53,7 @@ block content_full_width
                     a(href='?{{ so.qs_add }}') {{ so.name }}
                 else
                   span.label.label-default.kompassi-space-after
-                    a(href='?{{ so.qs_add }}') {{ so.name }}
+                    a(href='?{{ so.qs_add }}') {{ so.name }}
 
     .panel.panel-default
       .panel-heading: strong {% trans "Open invitations" %}
@@ -78,7 +78,7 @@ block content_full_width
               td
                 form(method='POST')
                   {% csrf_token %}
-                  input(type='hidden', name='id', value='{{ invitation.id }}')
+                  input(type='hidden', name='id', value='{{ invitation.id }}')
                   .btn-group
                     button.btn.btn-xs.btn-danger(type='submit', name='action', value='cancel-invitation', title='{% trans "Cancel invitation" %}')
                       i.fa.fa-trash
