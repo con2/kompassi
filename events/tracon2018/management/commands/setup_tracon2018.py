@@ -361,18 +361,18 @@ class Setup(object):
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
-            # dict(
-            #     name='Iltabilelippu',
-            #     description='Pääsylippu maksullisiin K18-iltabileisiin Pakkahuoneella. Lisää tietoa iltabileistä lähempänä tapahtumaa. Toimitetaan sähköpostitse PDF-tiedostona.',
-            #     limit_groups=[
-            #         limit_group('Iltabileliput', 1100),
-            #     ],
-            #     price_cents=500,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name='Iltabilelippu',
+                description='Pääsylippu maksullisiin K18-iltabileisiin Pakkahuoneella. Toimitetaan sähköpostitse PDF-tiedostona. Huomaathan, että tänä vuonna pääsy iltabileisiin edellyttää iltabilelipun lisäksi Traconin pääsylippua (lauantai-, sunnuntai- tai viikonloppulippu tai badge).',
+                limit_groups=[
+                    limit_group('Iltabileliput', 235),
+                ],
+                price_cents=500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number() + 9000, # XXX
+            ),
             dict(
                 name='Lattiamajoitus 1 yö pe-la - Aleksanterin koulu (sis. makuualusta)',
                 description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
