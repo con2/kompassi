@@ -92,7 +92,6 @@ class Command(BaseCommand):
                 q = q & ~raeducci(exclude_keywords)
 
             events = Event.objects.filter(q)
-            print('events', events)
             external_events = ExternalEvent.objects.filter(q)
 
             listing.events.set(events)
