@@ -253,34 +253,34 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: kompassi
   labels:
     stack: kompassi
-    component: gunicorn
+    component: kompassi
 spec:
   ports:
   - port: 8000
     targetPort: 8000
   selector:
     stack: kompassi
-    component: gunicorn
+    component: kompassi
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gunicorn
+  name: kompassi
 spec:
   selector:
     matchLabels:
       stack: kompassi
-      component: gunicorn
+      component: kompassi
   replicas: 1
   template:
     metadata:
       labels:
         stack: kompassi
-        component: gunicorn
+        component: kompassi
     spec:
       containers:
       - name: master
