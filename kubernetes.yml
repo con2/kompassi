@@ -285,6 +285,7 @@ spec:
       containers:
       - name: master
         image: tracon/kompassi:staging
+        imagePullPolicy: Always
         resources: {}
         ports:
         - containerPort: 8000
