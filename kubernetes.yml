@@ -309,7 +309,7 @@ spec:
               name: kompassi
               key: secretKey
         - name: ALLOWED_HOSTS
-          value: kompassi.127.0.0.1.xip.io
+          value: "*"
         volumeMounts:
         - mountPath: /usr/src/app/media
           name: kompassi-media
