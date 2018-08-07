@@ -11,6 +11,8 @@ def deploymentTagMap = [
 def tempImage = "tracon/kompassi:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 def finalImage = "tracon/kompassi:${imageMap[env.BRANCH_NAME]}"
 
+def finalStaticImage = "tracon/kompassi-static:${imageMap[env.BRANCH_NAME]}"
+
 stage("Build") {
   node {
     checkout scm
@@ -34,6 +36,18 @@ stage("Test") {
 stage("Push") {
   node {
     sh "docker tag ${tempImage} ${finalImage} && docker push ${finalImage} && docker rmi ${tempImage}"
+  }
+}
+
+stage("Static") {
+  node {
+    sh """
+      docker build \
+        --build-arg KOMPASSI_IMAGE=${finalImage} \
+        --tag ${finalStaticImage} \
+        --file Dockerfile.static . && \
+      docker push ${finalStaticImage}
+    """
   }
 }
 
