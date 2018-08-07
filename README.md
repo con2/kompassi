@@ -76,6 +76,19 @@ To deploy in a K8s cluster:
 
 For production, you may want to use an external PostgreSQL (and maybe memcached and RabbitMQ).
 
+## Conventions
+
+### The 8-8-8-8 Rule: Hostname, database, username, password
+
+All the words _hostname_, _database_, _username_ and _password_ are 8 characters in length. They are often abbreviated in wildly different ways. In Kompassi we choose to always use the 8-character versions of them where we get to choose ourselves. Hence the _8-8-8-8_ rule.
+
+| Correct | Incorrect |
+|---------|-----------|
+| `hostname` | `host` |
+| `database` | `db`, `dbname` |
+| `password` | `pass`, `passwd` |
+| `username` | `user`, `login` |
+
 ## License
 
     The MIT License (MIT)
