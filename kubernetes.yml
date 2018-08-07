@@ -440,3 +440,48 @@ spec:
       # - name: kompassi-media
       #   persistentVolumeClaim:
       #     claimName: kompassi-media
+
+
+###############################
+# NGINX (Static file serving) #
+###############################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    stack: kompassi
+    component: nginx
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    stack: kompassi
+    component: nginx
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: nginx
+    spec:
+      containers:
+      - name: master
+        image: tracon/kompassi-static:staging
+        imagePullPolicy: Always
+        resources: {}
+        ports:
+        - containerPort: 80
