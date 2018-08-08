@@ -485,3 +485,26 @@ spec:
         resources: {}
         ports:
         - containerPort: 80
+
+
+
+###########
+# INGRESS #
+###########
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kompassi
+spec:
+  rules:
+    - host: kompassi.127.0.0.1.xip.io
+      http:
+        paths:
+        - path: /static
+          backend:
+            serviceName: nginx
+            servicePort: 80
+        - path: /
+          backend:
+            serviceName: kompassi
+            servicePort: 8000
