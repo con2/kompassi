@@ -1,3 +1,51 @@
+# Kompassi deployment using Kubernetes
+# usage: emrichen kubernetes.in.yml | kubectl apply -n kompassi -f -
+
+!Defaults
+kompassi_public_hostname: kompassi.127.0.0.1.xip.io
+kompassi_tag: staging
+kompassi_image: !Format tracon/kompassi:{kompassi_tag}
+kompassi_static_image: !Format tracon/kompassi-static:{kompassi_tag}
+
+# Common environment vars for both kompassi and celery pods.
+kompassi_environment:
+  - name: KOMPASSI_POSTGRESQL_HOSTNAME
+    value: postgres
+  - name: KOMPASSI_POSTGRESQL_DATABASE
+    value: kompassi
+  - name: KOMPASSI_POSTGRESQL_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: username
+  - name: KOMPASSI_POSTGRESQL_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: password
+  - name: KOMPASSI_RABBITMQ_HOSTNAME
+    value: rabbitmq
+  - name: KOMPASSI_RABBITMQ_VHOST
+    value: kompassi
+  - name: KOMPASSI_RABBITMQ_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: rabbitmq
+        key: username
+  - name: KOMPASSI_RABBITMQ_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: rabbitmq
+        key: password
+  - name: SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: secretKey
+  - name: ALLOWED_HOSTS
+    value: "*"
+
+
 #############
 # MEMCACHED #
 #############
@@ -284,47 +332,12 @@ spec:
     spec:
       containers:
       - name: master
-        image: tracon/kompassi:staging
+        image: !Var kompassi_image
         imagePullPolicy: Always
         resources: {}
         ports:
         - containerPort: 8000
-        env:
-        - name: KOMPASSI_POSTGRESQL_HOSTNAME
-          value: postgres
-        - name: KOMPASSI_POSTGRESQL_DATABASE
-          value: kompassi
-        - name: KOMPASSI_POSTGRESQL_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: postgres
-              key: username
-        - name: KOMPASSI_POSTGRESQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres
-              key: password
-        - name: KOMPASSI_RABBITMQ_HOSTNAME
-          value: rabbitmq
-        - name: KOMPASSI_RABBITMQ_VHOST
-          value: kompassi
-        - name: KOMPASSI_RABBITMQ_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq
-              key: username
-        - name: KOMPASSI_RABBITMQ_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq
-              key: password
-        - name: SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: kompassi
-              key: secretKey
-        - name: ALLOWED_HOSTS
-          value: "*"
+        env: !Var kompassi_environment
       volumes:
       - name: kompassi-media
         persistentVolumeClaim:
@@ -380,66 +393,11 @@ spec:
     spec:
       containers:
       - name: master
-        image: tracon/kompassi:staging
-        command: ["/usr/src/app/docker-entrypoint.sh"]
+        image: !Var kompassi_image
         args: ["celery", "-A", "kompassi.celery_app:app", "worker"]
         imagePullPolicy: Always
         resources: {}
-        env:
-        - name: KOMPASSI_POSTGRESQL_HOSTNAME
-          value: postgres
-        - name: KOMPASSI_POSTGRESQL_DATABASE
-          value: kompassi
-        - name: KOMPASSI_POSTGRESQL_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: postgres
-              key: username
-        - name: KOMPASSI_POSTGRESQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres
-              key: password
-        - name: KOMPASSI_RABBITMQ_HOSTNAME
-          value: rabbitmq
-        - name: KOMPASSI_RABBITMQ_VHOST
-          value: kompassi
-        - name: KOMPASSI_RABBITMQ_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq
-              key: username
-        - name: KOMPASSI_RABBITMQ_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq
-              key: password
-        - name: SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: kompassi
-              key: secretKey
-        - name: ALLOWED_HOSTS
-          value: "*"
-        # volumeMounts:
-        # - mountPath: /usr/src/app/media
-        #   name: kompassi-media
-        # livenessProbe:
-        #   httpGet:
-        #     path: /api/v1/status
-        #     port: 8000
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
-        # readinessProbe:
-        #   httpGet:
-        #     path: /api/v1/status
-        #     port: 8000
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
-      # volumes:
-      # - name: kompassi-media
-      #   persistentVolumeClaim:
-      #     claimName: kompassi-media
+        env: !Var kompassi_environment
 
 
 ###############################
@@ -480,24 +438,24 @@ spec:
     spec:
       containers:
       - name: master
-        image: tracon/kompassi-static:staging
+        image: !Var kompassi_static_image
         imagePullPolicy: Always
         resources: {}
         ports:
         - containerPort: 80
 
 
-
 ###########
 # INGRESS #
 ###########
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: kompassi
 spec:
   rules:
-    - host: kompassi.127.0.0.1.xip.io
+    - host: !Var kompassi_public_hostname
       http:
         paths:
         - path: /static

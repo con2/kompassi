@@ -68,11 +68,12 @@ Getting these deployed (eg. Docker for Mac):
     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/cloud-generic.yaml
 
+The Kubernetes templates use [emrichen](https://github.com/japsu/emrichen) for substituting variables and reducing repetition.
 
 To deploy in a K8s cluster:
 
     kubectl create namespace kompassi
-    kubectl apply -n kompassi -f kubernetes.yml
+    emrichen kubernetes.in.yml | kubectl apply -n kompassi -f -
 
 For production, you may want to use an external PostgreSQL (and maybe memcached and RabbitMQ).
 
