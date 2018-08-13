@@ -11,6 +11,7 @@ def deploymentTagMap = [
 def tempImage = "tracon/kompassi:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 def finalImage = "tracon/kompassi:${imageMap[env.BRANCH_NAME]}"
 
+def tempStaticImage = "tracon/kompassi-static:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 def finalStaticImage = "tracon/kompassi-static:${imageMap[env.BRANCH_NAME]}"
 
 stage("Build") {
@@ -36,7 +37,7 @@ stage("Test") {
 
 stage("Push") {
   node {
-    sh "docker tag ${tempImage} ${finalImage} && docker push ${finalImage} && docker push ${tempImage} && docker rmi ${tempImage}"
+    sh "docker tag ${tempImage} ${finalImage} && docker push ${finalImage} && docker push ${tempImage}"
   }
 }
 
@@ -44,9 +45,11 @@ stage("Static") {
   node {
     sh """
       docker build \
-        --build-arg KOMPASSI_IMAGE=${finalImage} \
-        --tag ${finalStaticImage} \
+        --build-arg KOMPASSI_IMAGE=${tempImage} \
+        --tag ${tempStaticImage} \
         --file Dockerfile.static . && \
+      docker push ${tempStaticImage} && \
+      docker tag ${tempStaticImage} ${finalStaticImage} && \
       docker push ${finalStaticImage}
     """
   }
@@ -62,6 +65,15 @@ stage("Deploy") {
         --limit neula.kompassi.eu \
         --tags ${deploymentTagMap[env.BRANCH_NAME]} \
         tracon.yml
+    """
+  }
+}
+
+stage("Cleanup") {
+  node {
+    sh """
+      docker rmi ${tempStaticImage} && \
+      docker rmi ${tempImage}
     """
   }
 }
