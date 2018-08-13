@@ -36,7 +36,7 @@ stage("Test") {
 
 stage("Push") {
   node {
-    sh "docker tag ${tempImage} ${finalImage} && docker push ${finalImage} && docker rmi ${tempImage}"
+    sh "docker tag ${tempImage} ${finalImage} && docker push ${finalImage} && docker push ${tempImage} && docker rmi ${tempImage}"
   }
 }
 
