@@ -10,4 +10,5 @@ RUN env DEBUG=1 python manage.py kompassi_i18n -ac && \
     python -m compileall -q .
 USER kompassi
 EXPOSE 8000
+ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
