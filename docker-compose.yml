@@ -3,6 +3,7 @@ services:
   web:
     build: .
     init: true
+    entrypoint: []
     command: python manage.py docker_start
     ports:
       - 8000:8000
@@ -24,6 +25,7 @@ services:
   celery:
     build: .
     init: true
+    entrypoint: []
     command: celery -A kompassi.celery_app:app worker
     links:
       - rabbitmq
