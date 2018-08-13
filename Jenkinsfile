@@ -27,6 +27,7 @@ stage("Test") {
         --rm \
         --link jenkins.tracon.fi-postgres:postgres \
         --env-file ~/.kompassi.env \
+        --entrypoint "" \
         ${tempImage} \
         python manage.py test --keepdb
     """
