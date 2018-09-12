@@ -2,37 +2,37 @@
 # usage: emrichen kubernetes.in.yml | kubectl apply -n kompassi -f -
 
 !Defaults
-kompassi_public_hostname: kompassi.127.0.0.1.xip.io
-kompassi_tag: staging
-kompassi_image: !Format tracon/kompassi:{kompassi_tag}
-kompassi_static_image: !Format tracon/kompassi-static:{kompassi_tag}
+public_hostname: kompassi.127.0.0.1.xip.io
+tag: staging
+image: !Format tracon/kompassi:{tag}
+static_image: !Format tracon/kompassi-static:{tag}
 
 # Common environment vars for both kompassi and celery pods.
-kompassi_environment:
-  - name: KOMPASSI_POSTGRESQL_HOSTNAME
+environment:
+  - name: POSTGRESQL_HOSTNAME
     value: postgres
-  - name: KOMPASSI_POSTGRESQL_DATABASE
+  - name: POSTGRESQL_DATABASE
     value: kompassi
-  - name: KOMPASSI_POSTGRESQL_USERNAME
+  - name: POSTGRESQL_USERNAME
     valueFrom:
       secretKeyRef:
         name: postgres
         key: username
-  - name: KOMPASSI_POSTGRESQL_PASSWORD
+  - name: POSTGRESQL_PASSWORD
     valueFrom:
       secretKeyRef:
         name: postgres
         key: password
-  - name: KOMPASSI_RABBITMQ_HOSTNAME
+  - name: RABBITMQ_HOSTNAME
     value: rabbitmq
-  - name: KOMPASSI_RABBITMQ_VHOST
+  - name: RABBITMQ_VHOST
     value: kompassi
-  - name: KOMPASSI_RABBITMQ_USERNAME
+  - name: RABBITMQ_USERNAME
     valueFrom:
       secretKeyRef:
         name: rabbitmq
         key: username
-  - name: KOMPASSI_RABBITMQ_PASSWORD
+  - name: RABBITMQ_PASSWORD
     valueFrom:
       secretKeyRef:
         name: rabbitmq
@@ -332,12 +332,12 @@ spec:
     spec:
       containers:
       - name: master
-        image: !Var kompassi_image
+        image: !Var image
         imagePullPolicy: Always
         resources: {}
         ports:
         - containerPort: 8000
-        env: !Var kompassi_environment
+        env: !Var environment
       volumes:
       - name: kompassi-media
         persistentVolumeClaim:
@@ -393,11 +393,11 @@ spec:
     spec:
       containers:
       - name: master
-        image: !Var kompassi_image
+        image: !Var image
         args: ["celery", "-A", "kompassi.celery_app:app", "worker"]
         imagePullPolicy: Always
         resources: {}
-        env: !Var kompassi_environment
+        env: !Var environment
 
 
 ###############################
@@ -438,7 +438,7 @@ spec:
     spec:
       containers:
       - name: master
-        image: !Var kompassi_static_image
+        image: !Var static_image
         imagePullPolicy: Always
         resources: {}
         ports:
@@ -455,7 +455,7 @@ metadata:
   name: kompassi
 spec:
   rules:
-    - host: !Var kompassi_public_hostname
+    - host: !Var public_hostname
       http:
         paths:
         - path: /static
