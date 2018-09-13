@@ -42,6 +42,10 @@ class Night(SimpleChoice):
     pass
 
 
+class Poison(SimpleChoice):
+    pass
+
+
 class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(max_length=15,
         verbose_name='Toivottu työvuoron pituus',
@@ -159,6 +163,72 @@ class SignupExtra(SignupExtraBase):
             'Sallittuja merkkejä ovat pienet kirjaimet a-z, numerot 0-9 sekä väliviiva.'
         ),
         validators=[validate_slug]
+    )
+
+    afterparty_participation = models.BooleanField(
+        default=False,
+        verbose_name='Osallistun kaatajaisiin',
+        help_text=(
+            'Ruksaa tämä ruutu, mikäli haluat osallistua kaatajaisiin. Mikäli mielesi muuttuu '
+            'tai sinulle tulee este, peru ilmoittautumisesi poistamalla rasti tästä ruudusta.'
+        ),
+    )
+
+    outward_coach_departure_time = models.CharField(
+        blank=True,
+        default='',
+        max_length=5,
+        choices=[
+            ('16:00', '16:00'),
+            ('17:00', '17:00'),
+            ('18:00', '18:00'),
+            ('nobus', 'En tarvitse menokyytiä (tulen omalla kyydillä)'),
+        ],
+        verbose_name='Menobussin lähtöaika',
+    )
+
+    return_coach_departure_time = models.CharField(
+        blank=True,
+        default='',
+        max_length=5,
+        choices=[
+            ('23:00', '23:00'),
+            ('00:00', '00:00'),
+            ('01:00', '01:00'),
+            ('nobus', 'En tarvitse paluukyytiä (poistun omalla kyydillä)'),
+        ],
+        verbose_name='Paluubussin lähtöaika',
+        help_text=(
+            'Tracon tarjoaa maksuttoman bussikyydin kaatajaisiin ja takaisin Tampereen keskustorilta. '
+            'Saavuthan hyvissä ajoin ennen valitsemaasi lähtöaikaa lähtöpysäkille (Vanha kirkko), ja '
+            'huolehdithan itse siitä, että nouset oikeaan aikaan paluubussiin kaatajaispaikalla. Mikäli myöhästyt '
+            'valitsemastasi bussista, Tracon ei välttämättä pysty tarjoamaan sinulle kyytiä kaatajaisiin '
+            'tai sieltä pois. Bussit täytetään ilmoittautumisjärjestyksessä, ja mikäli jokin busseista '
+            'osoittautuu erityisen suosituksi, saatamme joutua siirtämään osallistujia bussista toiseen, '
+            'mistä ilmoitamme sähköpostitse. Meno- tai paluubussin vaihto kaatajaisilmoittautumisen sulkeuduttua '
+            'ainoastaan kaatajaisvastaavan myötävaikutuksella os. kaatajaiset@tracon.fi, ei omin päin.'
+        ),
+    )
+
+    afterparty_coaches_changed = models.BooleanField(
+        default=False,
+    )
+
+    pick_your_poison = models.ManyToManyField(
+        Poison,
+        blank=True,
+        verbose_name='Mitä tykkäät juoda?',
+        help_text=(
+            'Pyrimme siihen, että kaikki löytäisivät kaadon tarjoiluista jotain itselleen sopivaa. Ruksaa '
+            'kaikki ne juomat, mitä saattaisit kuvitella nauttivasi kaadon aikana, niin yritämme arvioida '
+            'määriä jotenkin sinne päin. Huomaathan kuitenkin, että haluamme pitää kaadon kaikille mukavana '
+            'ja turvallisena, eikä kaadossa ole tarkoitus juoda itseään örveltäväksi idiootiksi.'
+        )
+    )
+
+    willing_to_bartend = models.BooleanField(
+        default=False,
+        verbose_name='Olen halukas tekemään 1h juomienkaatonakin kaatajaisissa',
     )
 
     @classmethod

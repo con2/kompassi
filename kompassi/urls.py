@@ -28,6 +28,7 @@ for app_name in [
     'desuprofile_integration',
     'membership',
     'events.tracon2017',
+    'events.tracon2018',
     'enrollment',
     'intra',
     'feedback',

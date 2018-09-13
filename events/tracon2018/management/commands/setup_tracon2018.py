@@ -63,7 +63,7 @@ class Setup(object):
             Qualification,
             Survey,
         )
-        from ...models import SignupExtra, Night
+        from ...models import SignupExtra, Night, Poison
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -256,6 +256,44 @@ class Setup(object):
                 # active_until=datetime(2018, 8, 4, 23, 59, 59, tzinfo=self.tz),
             ),
         )
+
+        kaatoilmo_override_does_not_apply_message = (
+            'Valitettavasti et pysty ilmoittautumaan kaatoon käyttäen tätä lomaketta. Tämä '
+            'voi johtua siitä, että sinua ei ole kutsuttu kaatoon, tai teknisestä syystä. '
+            'Kaatoon osallistumaan ovat oikeutettuja kaatopäivänä 18 vuotta täyttäneet '
+            'coniitit, vuorovastaavat, vänkärit sekä badgelliset ohjelmanjärjestäjät. '
+            'Mikäli saat tämän viestin siitä huolimatta, että olet mielestäsi oikeutettu '
+            'osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen '
+            '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
+        )
+        kaatoilmo, unused = Survey.objects.get_or_create(
+            event=self.event,
+            slug='kaatoilmo',
+            defaults=dict(
+                title='Ilmoittautuminen kaatajaisiin',
+                description=(
+                    'Kiitokseksi työpanoksestasi tapahtumassa Tracon tarjoaa sinulle mahdollisuuden '
+                    'osallistua kaatajaisiin lauantaina 23. syyskuuta 2017 Hangaslahden saunalla '
+                    'Tampereen lähistöllä. Kaatajaisiin osallistuminen edellyttää ilmoittautumista. '
+                ),
+                override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
+                form_class_path='events.tracon2018.forms:AfterpartyParticipationSurvey',
+                active_from=datetime(2018, 9, 13, 7, 57, 0, tzinfo=self.tz),
+                active_until=datetime(2018, 9, 18, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
+
+        for poison_name in [
+            'Olut',
+            'Siideri, kuiva',
+            'Siideri, makea',
+            'Lonkero',
+            'Punaviini',
+            'Valkoviini',
+            'Cocktailit',
+            'Alkoholittomat juomat',
+        ]:
+            Poison.objects.get_or_create(name=poison_name)
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
