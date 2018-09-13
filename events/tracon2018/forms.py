@@ -349,7 +349,8 @@ class LodgingNeedsSurvey(forms.ModelForm):
         )
 
 
-YOINKEN_OUTWARD_BUSES = ['16:00']
+YOINKEN_OUTWARD_COACHES = ['16:00']
+YOINKEN_RETURN_COACHES = ['01:00']
 
 
 class AfterpartyParticipationSurvey(forms.ModelForm):
@@ -365,19 +366,19 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
         self.fields['return_coach_departure_time'].required = True
 
         # Ban most popular bus choices… unless they have already signed up for it
-        if self.instance.outward_coach_departure_time not in YOINKEN_OUTWARD_BUSES:
+        if self.instance.outward_coach_departure_time not in YOINKEN_OUTWARD_COACHES:
             self.fields['outward_coach_departure_time'].choices = [
                 (id, text)
                 for id, text in self.fields['outward_coach_departure_time'].choices
-                if id not in YOINKEN_OUTWARD_BUSES
+                if id not in YOINKEN_OUTWARD_COACHES
             ]
 
-        # if self.instance.return_coach_departure_time not in ['00:00', '01:00']:
-        #     self.fields['return_coach_departure_time'].choices = [
-        #         (id, text)
-        #         for id, text in self.fields['return_coach_departure_time'].choices
-        #         if id not in ['00:00', '01:00']
-        #     ]
+        if self.instance.return_coach_departure_time not in YOINKEN_RETURN_COACHES:
+            self.fields['return_coach_departure_time'].choices = [
+                (id, text)
+                for id, text in self.fields['return_coach_departure_time'].choices
+                if id not in YOINKEN_RETURN_COACHES
+            ]
 
     @classmethod
     def get_instance_for_event_and_person(cls, event, person):
