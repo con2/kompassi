@@ -273,10 +273,10 @@ class Setup(object):
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            ('Järjestyksenvalvoja', 'JV-kortti'),
-            ('Ensiapu', 'Ensiapukoulutus EA1'),
+            # ('Järjestyksenvalvoja', 'JV-kortti'),
+            # ('Ensiapu', 'Ensiapukoulutus EA1'),
             # ('Logistiikka', u'Henkilöauton ajokortti (B)'),
-            ('Green room', 'Hygieniapassi'),
+            # ('Green room', 'Hygieniapassi'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
