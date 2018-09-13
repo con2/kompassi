@@ -349,6 +349,9 @@ class LodgingNeedsSurvey(forms.ModelForm):
         )
 
 
+YOINKEN_OUTWARD_BUSES = ['16:00']
+
+
 class AfterpartyParticipationSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
@@ -362,12 +365,12 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
         self.fields['return_coach_departure_time'].required = True
 
         # Ban most popular bus choices… unless they have already signed up for it
-        # if self.instance.outward_coach_departure_time not in ['16:00', '17:00']:
-        #     self.fields['outward_coach_departure_time'].choices = [
-        #         (id, text)
-        #         for id, text in self.fields['outward_coach_departure_time'].choices
-        #         if id not in ['16:00', '17:00']
-        #     ]
+        if self.instance.outward_coach_departure_time not in YOINKEN_OUTWARD_BUSES:
+            self.fields['outward_coach_departure_time'].choices = [
+                (id, text)
+                for id, text in self.fields['outward_coach_departure_time'].choices
+                if id not in YOINKEN_OUTWARD_BUSES
+            ]
 
         # if self.instance.return_coach_departure_time not in ['00:00', '01:00']:
         #     self.fields['return_coach_departure_time'].choices = [
