@@ -1,6 +1,6 @@
 from collections import Counter
 
-from django.db.models import Count
+from django.db import models
 from django.utils.timezone import now
 from django.shortcuts import render
 
@@ -51,7 +51,13 @@ def tracon2018_afterparty_summary_view(request, event_slug):
     assert event_slug == 'tracon2018'
     event = Event.objects.get(slug=event_slug)
 
-    poisons = Poison.objects.all().annotate(victims=Count('signupextra'))
+    poisons = Poison.objects.all().annotate(victims=models.Sum(
+        models.Case(
+            models.When(signupextra__afterparty_participation=True, then=1),
+            default=0,
+            output_field=models.IntegerField()
+        )
+    ))
     signup_extras = SignupExtra.objects.filter(afterparty_participation=True)
     outward_coaches = count_passengers(signup_extras, 'outward_coach_departure_time')
     return_coaches = count_passengers(signup_extras, 'return_coach_departure_time')
