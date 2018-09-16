@@ -36,8 +36,8 @@ class Setup(object):
     def setup_core(self):
         from core.models import Venue, Event
 
-        self.venue, unused = Venue.objects.get_or_create(name='Messukeskuksen Kokoustamo', defaults=dict(
-            name_inessive='Messukeskuksen Kokoustamossa',
+        self.venue, unused = Venue.objects.get_or_create(name='Messukeskus Siipi', defaults=dict(
+            name_inessive='Messukeskus Siivessä',
         ))
         self.event, unused = Event.objects.get_or_create(slug='yukicon2019', defaults=dict(
             name='Yukicon 6.0 (2019)',
@@ -47,8 +47,8 @@ class Setup(object):
             homepage_url='http://www.yukicon.fi',
             organization_name='Yukitea ry',
             organization_url='http://www.yukicon.fi',
-            # start_time=datetime(2019, 2, 17, 10, 0, tzinfo=self.tz),
-            # end_time=datetime(2019, 2, 18, 18, 0, tzinfo=self.tz),
+            start_time=datetime(2019, 3, 9, 10, 0, tzinfo=self.tz),
+            end_time=datetime(2019, 3, 10, 18, 0, tzinfo=self.tz),
             venue=self.venue,
             panel_css_class='panel-info',
         ))
