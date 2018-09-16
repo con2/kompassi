@@ -433,7 +433,7 @@ msgstr "Moderointi"
 
 #: models/programme.py
 msgid "More than five – Please elaborate on your needs in the \"Other tech requirements\" field."
-msgstr "Enemmän kuin viisi – Ole hyvä ja selitä tarpeesi Muut tekniikkatarpeet -kentässä."
+msgstr "Enemmän kuin viisi – Ole hyvä ja selitä tarpeesi Muut tekniikkatarpeet -kentässä."
 
 #: models/programme.py
 msgid "My programme contains copyright-encumbered audio or video"
@@ -559,7 +559,7 @@ msgid "Own laptop – PC"
 msgstr "Oma PC-kannettava"
 
 #: models/programme.py
-msgid "Own laptop – Mac"
+msgid "Own laptop – Mac"
 msgstr "Oma Mac-kannettava"
 
 #: templates/programme_profile_view.jade

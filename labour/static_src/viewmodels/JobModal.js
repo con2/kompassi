@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import ko from 'knockout';
-// import $ from 'jquery';
+// import $ from 'jquery';
 // import 'bootstrap';
 
 import moment from 'moment';

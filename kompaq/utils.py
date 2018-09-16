@@ -71,5 +71,5 @@ def send_update(instance, action='created'):
     exchange = _get_exchange_for_model_instance(instance)
     body = json.dumps(_format_message(instance, action))
 
-    # routing_key='' – fanout exchange
+    # routing_key='' – fanout exchange
     channel.basic_publish(exchange=exchange, routing_key='', body=body)

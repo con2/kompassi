@@ -1,8 +1,4 @@
 import ko from 'knockout';
-// import $ from 'jquery';
-// import 'bootstrap';
-
-import moment from 'moment';
 
 
 export default class RequirementModal {

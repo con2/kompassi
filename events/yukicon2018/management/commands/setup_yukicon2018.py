@@ -103,7 +103,7 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name='Yukicon 5.0 – Early Access',
+                name='Yukicon 5.0 – Early Access',
                 description=(
                     'Early Access -lipulla pääset Yukiconiin 17.–18.2.2018. Lippu oikeuttaa Early Access '
                     '-etuuksien lunastuksen. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, '
@@ -245,7 +245,7 @@ class Setup(object):
 
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
-            # [:-1] – discard 18:30
+            # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
                 SpecialStartTime.objects.get_or_create(
                     event=self.event,
@@ -367,8 +367,8 @@ class Setup(object):
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         for event_day in [
-            'Yukicon 5.0 – Lauantai 17.2.2018',
-            'Yukicon 5.0 – Sunnuntai 18.2.2018',
+            'Yukicon 5.0 – Lauantai 17.2.2018',
+            'Yukicon 5.0 – Sunnuntai 18.2.2018',
         ]:
             EventDay.objects.get_or_create(name=event_day)
 

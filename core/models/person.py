@@ -66,7 +66,7 @@ class Person(models.Model):
         verbose_name='Kotikunta',
         help_text='Virallinen kotikuntasi eli kunta jossa olet kirjoilla. Kotikunta ja väestörekisteriin '
             'merkityt etunimesi (kaikki) ovat pakollisia tietoja, mikäli kuulut '
-            'tai haluat liittyä johonkin yhdistykseen joka käyttää tätä sivustoa jäsenrekisterin '
+            'tai haluat liittyä johonkin yhdistykseen joka käyttää tätä sivustoa jäsenrekisterin '
             'hallintaan.'
     )
 

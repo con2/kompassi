@@ -1,4 +1,4 @@
-# kompaq – Outbound AMQP notifications from Kompassi
+# kompaq – Outbound AMQP notifications from Kompassi
 
 The `kompaq` application supports outbound notifications from Kompassi using AMQP.
 

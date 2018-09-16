@@ -70,7 +70,7 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
     export_type = state_filters.selected_slug or 'all'
     export_type_verbose = EXPORT_TYPE_VERBOSE[export_type]
 
-    title = '{organization.name} – {export_type_verbose}'.format(
+    title = '{organization.name} – {export_type_verbose}'.format(
         organization=organization,
         export_type_verbose=export_type_verbose,
     )

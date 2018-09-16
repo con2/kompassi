@@ -6,7 +6,7 @@ if carousel_slides.exists
         if forloop.first
           li.active(data-target='#core-frontpage-carousel', data-slide-to='{{ forloop.counter0 }}')
         else
-          li(data-target='#core-frontpage-carousel', data-slide-to='{{ forloop.counter0 }}')
+          li(data-target='#core-frontpage-carousel', data-slide-to='{{ forloop.counter0 }}')
 
     .carousel-inner(role="listbox")
       for slide in carousel_slides

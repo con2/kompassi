@@ -237,7 +237,7 @@ class ViewSelector
 
   # Static input id generator.
   # @param i [String | Integer, optional] Index or identifier for certain input.
-  # @return [String] Id string.
+  # @return [String] Id string.
   @idGen: (i=null) ->
     return "query_view_#{ i }" unless i is null
     return "query_view"
@@ -248,13 +248,13 @@ class ViewSelector
     @container = container
     @keyToId = {}
 
-  # @param backendData [BackendData] Data from backend.
+  # @param backendData [BackendData] Data from backend.
   setViews: (backendData) ->
     @_data = backendData
 
   # Render one view selector.
   # @private
-  # @param title [String] View name / title.
+  # @param title [String] View name / title.
   # @param id [String] View identifier.
   # @param key [String] Backend view key value.
   # @return [$] Generated selector view.
@@ -341,7 +341,7 @@ class QueryBuilder
 
   # Attach add-control to the controller.
   #
-  # @param uiAddId [String] jQuery query for the control.
+  # @param uiAddId [String] jQuery query for the control.
   attachAdd: (@uiAddId) ->
     @uiAdd = $(uiAddId)
     @uiAdd.change(() => @onSelect())

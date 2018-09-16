@@ -10,7 +10,7 @@ block admin_content
       p Jos lisäät majoittujia tällä lomakkeella lipunmyynnin ollessa vielä käynnissä, pyydä ylläpitäjää pienentämään kiintiötä vastaavasti. Muutoin seurauksena voi olla ylimyynti.
   form(method='POST').form.form-horizontal
     .panel.panel-default
-      .panel-heading: strong Lisää majoittuja – {{ limit_group.description }}
+      .panel-heading: strong Lisää majoittuja – {{ limit_group.description }}
       .panel-body
         - crispy form
       .panel-footer.clearfix

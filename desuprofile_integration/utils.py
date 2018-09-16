@@ -53,7 +53,7 @@ def _import_programme(event, payload):
     # Cancel removed programmes
     known_slugs = [desuprogramme.identifier for desuprogramme in desuprogrammes]
     for removed_programme in Programme.objects.filter(category=category).exclude(slug__in=known_slugs):
-        logger.debug('Programme %s removed from Desusite, marking cancelled', removed_programme)
+        logger.debug('Programme %s removed from Desusite, marking cancelled', removed_programme)
         removed_programme.state = 'cancelled'
         removed_programme.save()
         removed_programme.apply_state()

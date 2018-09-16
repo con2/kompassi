@@ -1,9 +1,5 @@
 import ko from 'knockout';
 import _ from 'lodash';
-// import $ from 'jquery';
-// import 'bootstrap';
-
-import moment from 'moment';
 
 import '../helpers/KoHelper'; // fmap
 
@@ -22,14 +18,14 @@ export default class ShiftModal {
 
     this.shiftWishes = this.person.fmap(person => {
       if (person) {
-        return person.shiftWishes || '';
+        return person.shiftWishes || '';
       } else {
         return 'Henkilön työvuorotoiveet näkyvät tässä valittuasi henkilön...';
       }
     });
     this.shiftType = this.person.fmap(person => {
       if (person) {
-        return person.shiftType || '';
+        return person.shiftType || '';
       } else {
         return 'Henkilön toivoma vuorojen pituus näkyy tässä valittuasi henkilön...';
       }

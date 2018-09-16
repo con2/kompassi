@@ -68,7 +68,7 @@ block admin_content
                 if mass_operation.num_candidates
                   button.btn.btn-danger(type='submit', name='action', value='{{ mass_operation.name }}')
                     i.fa.fa-exclamation-triangle.kompassi-icon-space-right
-                    |Hylkää {{ mass_operation.num_candidates }} hakemus{{ mass_operation.num_candidates|pluralize:"ta" }}
+                    |Hylkää {{ mass_operation.num_candidates }} hakemus{{ mass_operation.num_candidates|pluralize:"ta" }}
                 else
                   button.btn.btn-danger(type='button', disabled)
                     i.fa.fa-exclamation-triangle.kompassi-icon-space-right

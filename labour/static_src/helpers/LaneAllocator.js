@@ -31,7 +31,7 @@ class LaneAllocator {
 
     const
       largestRequirement = _.maxBy(this.job.requirementCells, 'required'),
-      minLanes = largestRequirement ? largestRequirement.required : 0;
+      minLanes = largestRequirement ? largestRequirement.required : 0;
 
     // Ensure minimum number of lanes
     while (this.laneBuilders.length < minLanes) this.addLaneBuilder();

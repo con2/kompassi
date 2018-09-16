@@ -103,7 +103,7 @@ def get_previous_and_next(queryset, current):
 
 def _get_next_or_previous(queryset, obj, field, is_next):
     if isinstance(queryset, models.Model):
-        queryset = queryset.objects  # we cheat – manager instead of qs, but it works here so idk
+        queryset = queryset.objects  # we cheat – manager instead of qs, but it works here so idk
 
     if not obj.pk:
         raise ValueError("get_next/get_previous cannot be used on unsaved objects.")

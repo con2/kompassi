@@ -1,5 +1,5 @@
 - load trans from i18n
 .label(class="{{ programme.state_css }}")
-  | {{ programme.get_state_display }}
+  | {{ programme.get_state_display }}
   if not programme.host_can_edit
     i.fa.fa-lock.kompassi-icon-space-left(title='{% trans "Frozen" %}')
