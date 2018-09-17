@@ -350,7 +350,7 @@ class LodgingNeedsSurvey(forms.ModelForm):
 
 
 YOINKEN_OUTWARD_COACHES = ['16:00', '17:00']
-YOINKEN_RETURN_COACHES = ['01:00']
+YOINKEN_RETURN_COACHES = ['00:00', '01:00']
 
 
 class AfterpartyParticipationSurvey(forms.ModelForm):
