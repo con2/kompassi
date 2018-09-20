@@ -47,6 +47,9 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
             (cls, 'formatted_special_diet'),
             (cls, 'special_diet_other'),
             (cls, 'willing_to_bartend'),
+
+            # TODO FIX THIS IN csv_export
+            (cls, next(f for f in cls._meta.many_to_many if f.name == 'pick_your_poison')),
         ]
 
     def get_csv_related(self):
