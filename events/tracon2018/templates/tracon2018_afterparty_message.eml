@@ -1,6 +1,6 @@
 Tervehdys {{ signup_extra.person.nick_or_first_name }}!
 
-Olet ilmoittautunut Traconin kaatajaisiin 23.9. Hangaslahden saunalla (Lassinlinnankatu 24, 33610 Tampere). Pöytä on katettu conitean toimesta ja itsesi lisäksi tarvitset mukaan vain oman pyyhkeen!
+Olet ilmoittautunut Traconin kaatajaisiin 22.9. Hangaslahden saunalla (Lassinlinnankatu 24, 33610 Tampere). Pöytä on katettu conitean toimesta ja itsesi lisäksi tarvitset mukaan vain oman pyyhkeen!
 
 {% if signup_extra.afterparty_coaches_changed %}
 HUOM: Bussivuoroissa ilmenneen ylikysynnän vuoksi emme pystyneet toteuttamaan kaikkien bussivuorotoiveita. Sinun ensisijaista toivettasi ei voitu toteuttaa, ja sinut on siirretty seuraaviin bussivuoroihin:
@@ -10,12 +10,7 @@ Paluumatka: {{ signup_extra.get_return_coach_departure_time_display }}
 
 Pahoittelemme tämän aiheuttamaa haittaa. Saavuthan ajoissa yllä ilmoitetulle bussille. Bussiin ilmoittautuneet ja kyseiseen vuoroon oikeutetut pääsevät ensimmäisenä sisään.
 
-Mikäli haluat saapua saunalle eri aikaan voit kysellä kimppakyytejä Slackissa kanavalla #kyydit. Myös TKL:n bussi nro 28 kulkee vajaan kilometrin päästä juhlapaikkaa.
-
-Keskustori G - Vastarannankatu
-http://aikataulut.tampere.fi/?stop=0011&lang=&key=&showLines=28A,28B,28C,28Y
-Vastarannankatu - Keskustori G
-http://aikataulut.tampere.fi/?stop=5209&lang=&key=&showLines=28A,28B,28C,28Y
+Mikäli haluat saapua saunalle eri aikaan voit kysellä kimppakyytejä Slackissa kanavalla #kyydit. Myös TKL:n bussit nro 28 ja 90 kulkevat vajaan kilometrin päästä juhlapaikkaa (pysäkki Vastarannankatu).
 {% else %}
 Olet valinnut seuraavat kyytivaihtoehdot:
 
@@ -29,13 +24,14 @@ Bussin lähtöpaikka on pysäkki nimeltä Vanha kirkko Tampereen keskustorilla. 
 
 Päivän ohjelma on seuraava:
 17:00 Kaatajaiset alkavat
+	- Ruokailu alkaa
 17:30 Alkusanat pääjärjestäjiltä & kaatovastaavalta.
-~17:45 Alkoholitarjoilu ja ruokailu alkaa, saunat käytössä.
+	- Alkoholitarjoilu alkaa, saunat käytössä.
 20:00 Tietovisa
 00:30 Anniskelu päättyy
-01:00 Juhlat päättyneet, viimeinen bussi lähtee
+01:00 Juhlat päättyneet, viimeinen bussi lähtee.
 
-Illan menusta löytyy tällä kertaa: ruisleipää, hunajamarinoitu lanttua, yrttihaudutettu kaalia, sekä varraspossua, kasvisvaihtoehtona kasvispihvi. Cateringin puolesta juomana hunajasimaa, kotikaljaa tai marjamehua. Ruoka on maidotonta/laktoositonta, sekä ruisleipää ja kotikaljaa lukuun ottamatta gluteenitonta.
+Illan menusta löytyy tällä kertaa: vihersalaatti, juustoinen pastasalaatti, herrasväen kermainen pyttipannu ja patonkia. Ruoka on laktoositonta, kasvisvaihtoehto on myös saatavilla.
 
 Juomapuolella tarjolla on olutta, siideriä, viiniä, lonkeroa sekä valikoima cocktaileja (myös alkoholittomana), josta toivottavasti jokaiselle löytyy jotain!
 
@@ -54,3 +50,4 @@ Tervetuloa!
 
 Terveisin Traconin virkistysvastaava
 Keijo Creepo Penttilä
+
