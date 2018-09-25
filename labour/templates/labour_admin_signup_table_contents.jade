@@ -3,6 +3,7 @@ thead
     th Sukunimi
     th Etunimi
     th Nick
+    th.hidden-xs Tehtävänimike
     th.hidden-xs Tehtäväalueet
 
 tbody
@@ -11,4 +12,5 @@ tbody
       td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}') {{ signup.person.surname }}
       td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}') {{ signup.person.first_name }}
       td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}') {{ signup.person.nick }}
+      td.hidden-xs= signup.some_job_title
       td.hidden-xs: include labour_profile_job_category_labels.jade
