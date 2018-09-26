@@ -461,7 +461,6 @@ class ConfirmPhase(Phase):
 
     def can_go_back(self, request, event):
         order = get_order(request, event)
-        print('confirmed', order.is_confirmed)
         return not order.is_confirmed
 
 
