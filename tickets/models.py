@@ -724,7 +724,7 @@ class Order(models.Model):
 
     @property
     def formatted_order_number(self):
-        return "#{:05d}".format(self.pk)
+        return "#{:06d}".format(self.pk)
 
     def clean_up_order_products(self):
         self.order_product_set.filter(count__lte=0).delete()
@@ -784,6 +784,10 @@ class Order(models.Model):
             self.send_confirmation_message("uncancellation_notice")
 
     @property
+    def meta(self):
+        return self.event.tickets_event_meta
+
+    @property
     def messages(self):
         seen = set()
         result = list()
@@ -808,10 +812,8 @@ class Order(models.Model):
 
     @property
     def due_date(self):
-        meta = self.event.tickets_event_meta
-
         if self.confirm_time:
-            return datetime.combine((self.confirm_time + timedelta(days=meta.due_days)).date(), dtime(23, 59, 59)).replace(tzinfo=tzlocal())
+            return datetime.combine((self.confirm_time + timedelta(days=self.meta.due_days)).date(), dtime(23, 59, 59)).replace(tzinfo=tzlocal())
         else:
             return None
 
@@ -825,10 +827,17 @@ class Order(models.Model):
 
     @property
     def checkout_stamp(self):
-        return "{0}{1:010.0f}".format(
-            self.reference_number, # 6 digits
+        stamp = "{0}{1:010.0f}".format(
+            self.reference_number, # 6 or 7 digits
             mktime(self.start_time.timetuple()), # 10 digits
         )
+
+        # TODO horrible hack because checkout old api does not accept >20 character stamps
+        if len(stamp) > 20:
+            from hashlib import sha256
+            stamp = str(int(sha256(stamp.encode('UTF-8')).hexdigest(), 16) % 10**20)
+
+        return stamp
 
     @property
     def checkout_message(self):
