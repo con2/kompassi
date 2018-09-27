@@ -743,7 +743,10 @@ class Programme(models.Model, CsvExportMixin):
     def is_open_for_feedback(self):
         t = now()
         return (
-            (self.end_time is not None and t >= self.end_time) or
+            # Programme has started OR
+            (self.start_time is not None and t >= self.start_time) or
+
+            # The event is over
             (self.event.end_time is not None and t >= self.event.end_time)
         )
 
