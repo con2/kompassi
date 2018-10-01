@@ -62,8 +62,8 @@ class Setup(object):
             admin_group=tickets_admin_group,
             due_days=14,
             shipping_and_handling_cents=0,
-            reference_number_template="2019{:05d}",
-            contact_email='Yukicon <yukicon@yukicon.fi>',
+            reference_number_template="2019{:06d}",
+            contact_email='Yukicon <liput@yukicon.fi>',
             ticket_free_text=(
                 "Tämä on sähköinen lippusi. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
@@ -73,7 +73,7 @@ class Setup(object):
                 "Tervetuloa tapahtumaan!"
             ),
             front_page_text=(
-                "<h2>Tervetuloa ostamaan pääsylippuja Yukicon 6.0-tapahtumaan!</h2>"
+                "<h2>Tervetuloa ostamaan pääsylippuja Yukicon-tapahtumaan!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
                 "<p>Lue lisää tapahtumasta "
                 "<a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>"
@@ -105,14 +105,28 @@ class Setup(object):
             dict(
                 name='Yukicon 6.0 – Early Access',
                 description=(
-                    'Early Access -lipulla pääset Yukiconiin TODO PÄIVÄMÄÄRÄT. Lippu oikeuttaa Early Access '
+                    'Early Access -lipulla pääset Yukiconiin 9.–10.3.2019. Lippu oikeuttaa Early Access '
                     '-etuuksien lunastuksen. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, '
                     'jota vastaan saat rannekkeen tapahtuman ovelta.'
                 ),
                 limit_groups=[
-                    limit_group('Early Access', 200),
+                    limit_group('Yuki19 VIP-liput', 100),
                 ],
-                price_cents=2900,
+                price_cents=4000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Yukicon 6.0 viikonloppulippu',
+                description=(
+                    'Pääsylippu Yukicon 6.0 -tapahtumaan Helsingin Messukeskuksen Siivessä 9.-10.3.2019.'
+                ),
+                limit_groups=[
+                    limit_group('Yuki19 tavalliset liput', 2658),
+                ],
+                price_cents=3200,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
