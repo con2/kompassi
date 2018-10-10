@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from django.utils.translation import ugettext_lazy as _
 
 from ..models import Enrollment
 from ..helpers import enrollment_event_required
