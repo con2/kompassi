@@ -45,6 +45,12 @@ class Subscription(models.Model):
         verbose_name=_('Event survey filter'),
         help_text=_('When specified, only entries related to this EventSurvey will match the subscription.'),
     )
+    job_category_filter = models.ForeignKey('labour.JobCategory',
+        null=True,
+        blank=True,
+        verbose_name=_('Event survey filter'),
+        help_text=_('When specified, only entries related to this JobCategory will match the subscription.'),
+    )
 
     callback_code = models.CharField(max_length=255,
         blank=True,

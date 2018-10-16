@@ -1,8 +1,4 @@
-
-
 from celery import shared_task
-
-from core.models import Person
 
 from .models import Subscription, Entry
 
