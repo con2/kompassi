@@ -466,3 +466,27 @@ spec:
           backend:
             serviceName: kompassi
             servicePort: 8000
+
+
+##################
+# DATABASE SETUP #
+##################
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup
+spec:
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: setup
+    spec:
+      containers:
+      - name: setup
+        image: !Var image
+        command: ["python", "manage.py", "setup"]
+        env: !Var environment
+      restartPolicy: Never
+  backoffLimit: 4

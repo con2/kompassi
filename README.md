@@ -60,20 +60,14 @@ The following services are required:
 
 Getting these deployed (eg. Docker for Mac):
 
-    # secret-generator
-    kubectl apply -f https://raw.githubusercontent.com/mittwald/kubernetes-secret-generator/master/deploy/secret-generator-rbac.yaml
-    kubectl apply -f https://raw.githubusercontent.com/mittwald/kubernetes-secret-generator/master/deploy/secret-generator.yaml
-
-    # ingress-nginx
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/cloud-generic.yaml
+    kubernetes/setup_prerequisites.sh
 
 The Kubernetes templates use [emrichen](https://github.com/japsu/emrichen) for substituting variables and reducing repetition.
 
 To deploy in a K8s cluster:
 
     kubectl create namespace kompassi
-    emrichen kubernetes.in.yml | kubectl apply -n kompassi -f -
+    emrichen kubernetes/template.in.yml | kubectl apply -n kompassi -f -
 
 For production, you may want to use an external PostgreSQL (and maybe memcached and RabbitMQ).
 
