@@ -29,4 +29,3 @@ def enrollment_list_view(request, event):
         num_enrollments=enrollments.count(),
         num_total_enrollments=Enrollment.objects.filter(event=event, state='ACCEPTED').count(),
     ))
-

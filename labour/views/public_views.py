@@ -175,8 +175,10 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
         if signup_form.is_valid() and signup_extra_form.is_valid():
             if signup.pk is None:
                 message = _('Thank you for your application!')
+                event_type = 'labour.signup.created'
             else:
                 message = _('Your application has been updated.')
+                event_type = 'labour.signup.updated'
 
             if alternative_signup_form is not None:
                 signup.alternative_signup_form_used = alternative_signup_form
