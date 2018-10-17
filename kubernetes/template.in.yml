@@ -3,16 +3,35 @@
 
 !Defaults
 public_hostname: kompassi.127.0.0.1.xip.io
-tag: staging
-image: !Format tracon/kompassi:{tag}
-static_image: !Format tracon/kompassi-static:{tag}
+kompassi_tag: staging
+kompassi_image: !Format tracon/kompassi:{kompassi_tag}
+kompassi_static_image: !Format tracon/kompassi-static:{kompassi_tag}
+
+# For memcached, rabbitmq and PostgreSQL, choose between a managed (in-cluster) service or
+# an external one. For external services, set fooservice_managed: false and point
+# fooservice_hostname to the external service, overriding the other defaults if necessary.
+# Also please pin the images using a tag other than latest for production.
+memcached_managed: true
+memcached_image: memcached:alpine
+memcached_hostname: memcached
+
+rabbitmq_managed: true
+rabbitmq_image: rabbitmq
+rabbitmq_hostname: rabbitmq
+rabbitmq_vhost: kompassi
+
+# NOTE: "managed" PostgreSQL should not be considered production-ready.
+postgres_managed: true
+postgres_image: postgres
+postgres_hostname: postgres
+postgres_database: kompassi
 
 # Common environment vars for both kompassi and celery pods.
 environment:
   - name: POSTGRESQL_HOSTNAME
-    value: postgres
+    value: !Var postgres_hostname
   - name: POSTGRESQL_DATABASE
-    value: kompassi
+    value: !Var postgres_database
   - name: POSTGRESQL_USERNAME
     valueFrom:
       secretKeyRef:
@@ -24,9 +43,9 @@ environment:
         name: postgres
         key: password
   - name: RABBITMQ_HOSTNAME
-    value: rabbitmq
+    value: !Var rabbitmq_hostname
   - name: RABBITMQ_VHOST
-    value: kompassi
+    value: !Var rabbitmq_vhost
   - name: RABBITMQ_USERNAME
     valueFrom:
       secretKeyRef:
@@ -50,248 +69,276 @@ environment:
 # MEMCACHED #
 #############
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: memcached
-  labels:
-    stack: kompassi
-    component: memcached
-spec:
-  ports:
-  - port: 6379
-    targetPort: 6379
-  selector:
-    stack: kompassi
-    component: memcached
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: memcached
-spec:
-  selector:
-    matchLabels:
-      stack: kompassi
-      component: memcached
-  replicas: 1
-  template:
+!If
+  a: !Var memcached_managed
+  then:
+    apiVersion: v1
+    kind: Service
     metadata:
+      name: memcached
       labels:
         stack: kompassi
         component: memcached
     spec:
-      containers:
-      - name: master
-        image: memcached
-        resources: {}
-        ports:
-        - containerPort: 6379
+      ports:
+      - port: 6379
+        targetPort: 6379
+      selector:
+        stack: kompassi
+        component: memcached
+
+---
+!If
+  a: !Var memcached_managed
+  then:
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: memcached
+    spec:
+      selector:
+        matchLabels:
+          stack: kompassi
+          component: memcached
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            stack: kompassi
+            component: memcached
+        spec:
+          containers:
+          - name: master
+            image: !Var memcached_image
+            resources: {}
+            ports:
+            - containerPort: 6379
 
 
 ############
 # RABBITMQ #
 ############
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: rabbitmq
-  labels:
-    stack: kompassi
-    component: rabbitmq
-spec:
-  ports:
-  - port: 5672
-    targetPort: 5672
-  selector:
-    stack: kompassi
-    component: rabbitmq
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: rabbitmq
-spec:
-  selector:
-    matchLabels:
-      stack: kompassi
-      component: rabbitmq
-  replicas: 1
-  template:
+!If
+  a: !Var rabbitmq_managed
+  then:
+    apiVersion: v1
+    kind: Service
     metadata:
+      name: rabbitmq
       labels:
         stack: kompassi
         component: rabbitmq
     spec:
-      containers:
-      - name: master
-        image: rabbitmq
-        resources: {}
-        ports:
-        - containerPort: 5672
-        env:
-        - name: RABBITMQ_DEFAULT_VHOST
-          value: kompassi
-        - name: RABBITMQ_DEFAULT_PASS
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq
-              key: password
-        - name: RABBITMQ_DEFAULT_USER
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq
-              key: username
-        volumeMounts:
-        - mountPath: /var/lib/rabbitmq
-          name: rabbitmq-data
-      volumes:
-      - name: rabbitmq-data
-        persistentVolumeClaim:
-          claimName: rabbitmq-data
+      ports:
+      - port: 5672
+        targetPort: 5672
+      selector:
+        stack: kompassi
+        component: rabbitmq
 
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  labels:
-    stack: kompassi
-    component: rabbitmq
-  name: rabbitmq-data
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1000Mi
+!If
+  a: !Var rabbitmq_managed
+  then:
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: rabbitmq
+    spec:
+      selector:
+        matchLabels:
+          stack: kompassi
+          component: rabbitmq
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            stack: kompassi
+            component: rabbitmq
+        spec:
+          containers:
+          - name: master
+            image: !Var rabbitmq_image
+            resources: {}
+            ports:
+            - containerPort: 5672
+            env:
+            - name: RABBITMQ_DEFAULT_VHOST
+              value: !Var rabbitmq_vhost
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq
+                  key: password
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq
+                  key: username
+            volumeMounts:
+            - mountPath: /var/lib/rabbitmq
+              name: rabbitmq-data
+          volumes:
+          - name: rabbitmq-data
+            persistentVolumeClaim:
+              claimName: rabbitmq-data
 
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: rabbitmq
-  labels:
-    stack: kompassi
-    component: rabbitmq
-  annotations:
-    secret-generator.v1.mittwald.de/autogenerate: password
-type: Opaque
-data:
-  # username: kompassi
-  username: a29tcGFzc2k=
+!If
+  a: !Var rabbitmq_managed
+  then:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      labels:
+        stack: kompassi
+        component: rabbitmq
+      name: rabbitmq-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1000Mi
+
+---
+!If
+  a: !Var rabbitmq_managed
+  then:
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: rabbitmq
+      labels:
+        stack: kompassi
+        component: rabbitmq
+      annotations:
+        secret-generator.v1.mittwald.de/autogenerate: password
+    type: Opaque
+    data:
+      username: !Base64 kompassi
 
 
 ##############
 # POSTGRESQL #
 ##############
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres
-  labels:
-    stack: kompassi
-    component: postgres
-spec:
-  ports:
-  - port: 5432
-    targetPort: 5432
-  selector:
-    stack: kompassi
-    component: postgres
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: postgres
-spec:
-  selector:
-    matchLabels:
-      stack: kompassi
-      component: postgres
-  replicas: 1
-  template:
+!If
+  a: !Var postgres_managed
+  then:
+    apiVersion: v1
+    kind: Service
     metadata:
+      name: postgres
       labels:
         stack: kompassi
         component: postgres
     spec:
-      containers:
-      - name: master
-        image: postgres
-        resources: {}
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_DB
-          value: kompassi
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgres
-              key: username
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres
-              key: password
-        volumeMounts:
-        - mountPath: /var/lib/postgresql/data
-          name: postgres-data
-        readinessProbe:
-          exec:
-            command:
-            - pg_isready
-            - -U
-            - kompassi
-          initialDelaySeconds: 3
-          periodSeconds: 3
-        livenessProbe:
-          exec:
-            command:
-            - pg_isready
-            - -U
-            - kompassi
-          initialDelaySeconds: 30
-          periodSeconds: 30
-      volumes:
-      - name: postgres-data
-        persistentVolumeClaim:
-          claimName: postgres-data
+      ports:
+      - port: 5432
+        targetPort: 5432
+      selector:
+        stack: kompassi
+        component: postgres
 
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  labels:
-    stack: kompassi
-    component: postgres
-  name: postgres-data
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1000Mi
+!If
+  a: !Var postgres_managed
+  then:
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: postgres
+    spec:
+      selector:
+        matchLabels:
+          stack: kompassi
+          component: postgres
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            stack: kompassi
+            component: postgres
+        spec:
+          containers:
+          - name: master
+            image: !Var postgres_image
+            resources: {}
+            ports:
+            - containerPort: 5432
+            env:
+            - name: POSTGRES_DB
+              value: !Var postgres_database
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+            volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-data
+            readinessProbe:
+              exec:
+                command:
+                - pg_isready
+                - -U
+                - kompassi
+              initialDelaySeconds: 3
+              periodSeconds: 3
+            livenessProbe:
+              exec:
+                command:
+                - pg_isready
+                - -U
+                - kompassi
+              initialDelaySeconds: 30
+              periodSeconds: 30
+          volumes:
+          - name: postgres-data
+            persistentVolumeClaim:
+              claimName: postgres-data
 
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: postgres
-  labels:
-    stack: kompassi
-    component: postgres
-  annotations:
-    secret-generator.v1.mittwald.de/autogenerate: password
-type: Opaque
-data:
-  # username: kompassi
-  username: a29tcGFzc2k=
+!If
+  a: !Var postgres_managed
+  then:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      labels:
+        stack: kompassi
+        component: postgres
+      name: postgres-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1000Mi
+
+---
+!If
+  a: !Var postgres_managed
+  then:
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: postgres
+      labels:
+        stack: kompassi
+        component: postgres
+      annotations:
+        secret-generator.v1.mittwald.de/autogenerate: password
+    type: Opaque
+    data:
+      username: !Base64 kompassi
 
 
 #########################
@@ -332,8 +379,7 @@ spec:
     spec:
       containers:
       - name: master
-        image: !Var image
-        imagePullPolicy: Always
+        image: !Var kompassi_image
         resources: {}
         ports:
         - containerPort: 8000
@@ -393,9 +439,8 @@ spec:
     spec:
       containers:
       - name: master
-        image: !Var image
+        image: !Var kompassi_image
         args: ["celery", "-A", "kompassi.celery_app:app", "worker"]
-        imagePullPolicy: Always
         resources: {}
         env: !Var environment
 
@@ -438,8 +483,7 @@ spec:
     spec:
       containers:
       - name: master
-        image: !Var static_image
-        imagePullPolicy: Always
+        image: !Var kompassi_static_image
         resources: {}
         ports:
         - containerPort: 80
@@ -485,7 +529,7 @@ spec:
     spec:
       containers:
       - name: setup
-        image: !Var image
+        image: !Var kompassi_image
         args: ["python", "manage.py", "setup"]
         env: !Var environment
       restartPolicy: Never
