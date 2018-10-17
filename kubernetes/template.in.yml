@@ -486,7 +486,7 @@ spec:
       containers:
       - name: setup
         image: !Var image
-        command: ["python", "manage.py", "setup"]
+        args: ["python", "manage.py", "setup"]
         env: !Var environment
       restartPolicy: Never
   backoffLimit: 4
