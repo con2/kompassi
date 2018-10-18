@@ -62,7 +62,7 @@ environment:
         name: kompassi
         key: secretKey
   - name: ALLOWED_HOSTS
-    value: "*"
+    value: !Var public_hostname
 
 
 #############
@@ -290,8 +290,8 @@ environment:
                 - pg_isready
                 - -U
                 - kompassi
-              initialDelaySeconds: 3
-              periodSeconds: 3
+              initialDelaySeconds: 15
+              periodSeconds: 30
             livenessProbe:
               exec:
                 command:
@@ -384,6 +384,24 @@ spec:
         ports:
         - containerPort: 8000
         env: !Var environment
+        readinessProbe:
+          httpGet:
+            path: /api/v1/status
+            port: 8000
+            httpHeaders:
+              - name: Host
+                value: !Var public_hostname
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /api/v1/status
+            port: 8000
+            httpHeaders:
+              - name: Host
+                value: !Var public_hostname
+          initialDelaySeconds: 30
+          periodSeconds: 30
       volumes:
       - name: kompassi-media
         persistentVolumeClaim:
