@@ -34,7 +34,7 @@ class EntryAdmin(admin.ModelAdmin):
 
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('entry_type', 'user', 'active')
-    raw_id_fields = ('user',)
+    raw_id_fields = ('user', 'job_category_filter')
 
 
 admin.site.register(Entry, EntryAdmin)

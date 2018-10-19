@@ -454,6 +454,10 @@ msgstr "Työvoimahaun voi myös avata tai sulkea välittömästi."
 msgid "You can edit your answers via the same link until the survey expires at %(expiration_date)s."
 msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee %(expiration_date)s."
 
+#:
+msgid "{entry.person} signed up for volunteer work in {entry.event}"
+msgstr "{entry.person} ilmoittautui vapaaehtoistöihin tapahtumaan {entry.event}"
+
 #: templates/labour_survey_view.jade
 msgid "You can edit your answers via the same link until the survey is closed."
 msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee."

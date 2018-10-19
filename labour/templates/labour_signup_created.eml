@@ -1,0 +1,6 @@
+{{ entry.person }} on hakenut vapaaehtoistöihin tapahtumaan {{ entry.event }}.
+
+Haetut tehtäväalueet: {{ entry.signup.formatted_job_categories }}
+
+--
+{{ settings.DEFAULT_FROM_EMAIL }}

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import json
 
 from django.conf import settings
@@ -23,6 +21,7 @@ from core.page_wizard import (
     page_wizard_init,
     page_wizard_vars,
 )
+from event_log.utils import emit
 
 from ..models import (
     AlternativeSignupForm,
@@ -202,6 +201,8 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
                         if defaults:
                             set_attrs(obj, **defaults)
                             obj.save()
+
+            emit(event_type, request=request, person=request.user.person, event=event)
 
             signup.apply_state()
 

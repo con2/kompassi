@@ -48,7 +48,7 @@ class Subscription(models.Model):
     job_category_filter = models.ForeignKey('labour.JobCategory',
         null=True,
         blank=True,
-        verbose_name=_('Event survey filter'),
+        verbose_name=_('Job category filter'),
         help_text=_('When specified, only entries related to this JobCategory will match the subscription.'),
     )
 

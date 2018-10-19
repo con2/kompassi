@@ -52,6 +52,18 @@ class Entry(models.Model):
         """
         return self.event_survey_result if self.event_survey_result else self.global_survey_result
 
+    @property
+    def signup(self):
+        from labour.models import Signup
+
+        if not self.event or not self.person:
+            return None
+
+        try:
+            return Signup.objects.get(event=self.event, person=self.person)
+        except Signup.DoesNotExist:
+            return None
+
     def send_updates(self):
         from .subscription import Subscription
 
@@ -72,15 +84,20 @@ class Entry(models.Model):
             survey = self.event_survey_result.survey
             q &= Q(event_survey_filter=survey) | Q(event_survey_filter__isnull=True)
 
-        if self.job_category_filter:
+        if self.event and self.person:
             # Implement job category filter
             from labour.models import Signup
-            signup = Signup.objects.get(event=self.event, person=self.person)
-            q &= (
-                Q(job_category_filter__in=signup.job_categories.all()) |
-                Q(job_category_filter__in=signup.job_categories_accepted.all()) |
-                Q(job_category_filter__isnull=True)
-            )
+
+            try:
+                signup = Signup.objects.get(event=self.event, person=self.person)
+            except Signup.DoesNotExist:
+                pass
+            else:
+                q &= (
+                    Q(job_category_filter__in=signup.job_categories.all()) |
+                    Q(job_category_filter__in=signup.job_categories_accepted.all()) |
+                    Q(job_category_filter__isnull=True)
+                )
 
         for subscription in Subscription.objects.filter(q):
             subscription.send_update_for_entry(self)
