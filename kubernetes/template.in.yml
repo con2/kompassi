@@ -1,68 +1,7 @@
 # Kompassi deployment using Kubernetes
 # usage: emrichen kubernetes.in.yml | kubectl apply -n kompassi -f -
 
-!Defaults
-public_hostname: kompassi.127.0.0.1.xip.io
-kompassi_tag: staging
-kompassi_image: !Format tracon/kompassi:{kompassi_tag}
-kompassi_static_image: !Format tracon/kompassi-static:{kompassi_tag}
-
-# For memcached, rabbitmq and PostgreSQL, choose between a managed (in-cluster) service or
-# an external one. For external services, set fooservice_managed: false and point
-# fooservice_hostname to the external service, overriding the other defaults if necessary.
-# Also please pin the images using a tag other than latest for production.
-memcached_managed: true
-memcached_image: memcached:alpine
-memcached_hostname: memcached
-
-rabbitmq_managed: true
-rabbitmq_image: rabbitmq
-rabbitmq_hostname: rabbitmq
-rabbitmq_vhost: kompassi
-
-# NOTE: "managed" PostgreSQL should not be considered production-ready.
-postgres_managed: true
-postgres_image: postgres
-postgres_hostname: postgres
-postgres_database: kompassi
-
-# Common environment vars for both kompassi and celery pods.
-environment:
-  - name: POSTGRESQL_HOSTNAME
-    value: !Var postgres_hostname
-  - name: POSTGRESQL_DATABASE
-    value: !Var postgres_database
-  - name: POSTGRESQL_USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: postgres
-        key: username
-  - name: POSTGRESQL_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: postgres
-        key: password
-  - name: RABBITMQ_HOSTNAME
-    value: !Var rabbitmq_hostname
-  - name: RABBITMQ_VHOST
-    value: !Var rabbitmq_vhost
-  - name: RABBITMQ_USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: rabbitmq
-        key: username
-  - name: RABBITMQ_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: rabbitmq
-        key: password
-  - name: SECRET_KEY
-    valueFrom:
-      secretKeyRef:
-        name: kompassi
-        key: secretKey
-  - name: ALLOWED_HOSTS
-    value: !Var public_hostname
+!Include defaults.in.yml
 
 
 #############
@@ -71,48 +10,11 @@ environment:
 ---
 !If
   a: !Var memcached_managed
-  then:
-    apiVersion: v1
-    kind: Service
-    metadata:
-      name: memcached
-      labels:
-        stack: kompassi
-        component: memcached
-    spec:
-      ports:
-      - port: 6379
-        targetPort: 6379
-      selector:
-        stack: kompassi
-        component: memcached
-
+  then: !Include memcached/service.in.yml
 ---
 !If
   a: !Var memcached_managed
-  then:
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: memcached
-    spec:
-      selector:
-        matchLabels:
-          stack: kompassi
-          component: memcached
-      replicas: 1
-      template:
-        metadata:
-          labels:
-            stack: kompassi
-            component: memcached
-        spec:
-          containers:
-          - name: master
-            image: !Var memcached_image
-            resources: {}
-            ports:
-            - containerPort: 6379
+  then: !Include memcached/deployment.in.yml
 
 
 ############
@@ -121,103 +23,22 @@ environment:
 ---
 !If
   a: !Var rabbitmq_managed
-  then:
-    apiVersion: v1
-    kind: Service
-    metadata:
-      name: rabbitmq
-      labels:
-        stack: kompassi
-        component: rabbitmq
-    spec:
-      ports:
-      - port: 5672
-        targetPort: 5672
-      selector:
-        stack: kompassi
-        component: rabbitmq
+  then: !Include rabbitmq/service.in.yml
 
 ---
 !If
   a: !Var rabbitmq_managed
-  then:
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: rabbitmq
-    spec:
-      selector:
-        matchLabels:
-          stack: kompassi
-          component: rabbitmq
-      replicas: 1
-      template:
-        metadata:
-          labels:
-            stack: kompassi
-            component: rabbitmq
-        spec:
-          containers:
-          - name: master
-            image: !Var rabbitmq_image
-            resources: {}
-            ports:
-            - containerPort: 5672
-            env:
-            - name: RABBITMQ_DEFAULT_VHOST
-              value: !Var rabbitmq_vhost
-            - name: RABBITMQ_DEFAULT_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: rabbitmq
-                  key: password
-            - name: RABBITMQ_DEFAULT_USER
-              valueFrom:
-                secretKeyRef:
-                  name: rabbitmq
-                  key: username
-            volumeMounts:
-            - mountPath: /var/lib/rabbitmq
-              name: rabbitmq-data
-          volumes:
-          - name: rabbitmq-data
-            persistentVolumeClaim:
-              claimName: rabbitmq-data
+  then: !Include rabbitmq/deployment.in.yml
 
 ---
 !If
   a: !Var rabbitmq_managed
-  then:
-    apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      labels:
-        stack: kompassi
-        component: rabbitmq
-      name: rabbitmq-data
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      resources:
-        requests:
-          storage: 1000Mi
+  then: !Include rabbitmq/pvc.in.yml
 
 ---
 !If
   a: !Var rabbitmq_managed
-  then:
-    apiVersion: v1
-    kind: Secret
-    metadata:
-      name: rabbitmq
-      labels:
-        stack: kompassi
-        component: rabbitmq
-      annotations:
-        secret-generator.v1.mittwald.de/autogenerate: password
-    type: Opaque
-    data:
-      username: !Base64 kompassi
+  then: !Include rabbitmq/secret.in.yml
 
 
 ##############
@@ -226,329 +47,62 @@ environment:
 ---
 !If
   a: !Var postgres_managed
-  then:
-    apiVersion: v1
-    kind: Service
-    metadata:
-      name: postgres
-      labels:
-        stack: kompassi
-        component: postgres
-    spec:
-      ports:
-      - port: 5432
-        targetPort: 5432
-      selector:
-        stack: kompassi
-        component: postgres
+  then: !Include postgres/service.in.yml
 
 ---
 !If
   a: !Var postgres_managed
-  then:
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: postgres
-    spec:
-      selector:
-        matchLabels:
-          stack: kompassi
-          component: postgres
-      replicas: 1
-      template:
-        metadata:
-          labels:
-            stack: kompassi
-            component: postgres
-        spec:
-          containers:
-          - name: master
-            image: !Var postgres_image
-            resources: {}
-            ports:
-            - containerPort: 5432
-            env:
-            - name: POSTGRES_DB
-              value: !Var postgres_database
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: password
-            volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: postgres-data
-            readinessProbe:
-              exec:
-                command:
-                - pg_isready
-                - -U
-                - kompassi
-              initialDelaySeconds: 15
-              periodSeconds: 30
-            livenessProbe:
-              exec:
-                command:
-                - pg_isready
-                - -U
-                - kompassi
-              initialDelaySeconds: 30
-              periodSeconds: 30
-          volumes:
-          - name: postgres-data
-            persistentVolumeClaim:
-              claimName: postgres-data
+  then: !Include postgres/deployment.in.yml
 
 ---
 !If
   a: !Var postgres_managed
-  then:
-    apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      labels:
-        stack: kompassi
-        component: postgres
-      name: postgres-data
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      resources:
-        requests:
-          storage: 1000Mi
+  then: !Include postgres/pvc.in.yml
 
 ---
 !If
   a: !Var postgres_managed
-  then:
-    apiVersion: v1
-    kind: Secret
-    metadata:
-      name: postgres
-      labels:
-        stack: kompassi
-        component: postgres
-      annotations:
-        secret-generator.v1.mittwald.de/autogenerate: password
-    type: Opaque
-    data:
-      username: !Base64 kompassi
+  then: !Include postgres/secret.in.yml
 
 
 #########################
 # GUNICORN (Web server) #
 #########################
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: kompassi
-  labels:
-    stack: kompassi
-    component: kompassi
-spec:
-  ports:
-  - port: 8000
-    targetPort: 8000
-  selector:
-    stack: kompassi
-    component: kompassi
-
+!Include kompassi/service.in.yml
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: kompassi
-spec:
-  selector:
-    matchLabels:
-      stack: kompassi
-      component: kompassi
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        stack: kompassi
-        component: kompassi
-    spec:
-      containers:
-      - name: master
-        image: !Var kompassi_image
-        resources: {}
-        ports:
-        - containerPort: 8000
-        env: !Var environment
-        readinessProbe:
-          httpGet:
-            path: /api/v1/status
-            port: 8000
-            httpHeaders:
-              - name: Host
-                value: !Var public_hostname
-          initialDelaySeconds: 15
-          periodSeconds: 30
-        livenessProbe:
-          httpGet:
-            path: /api/v1/status
-            port: 8000
-            httpHeaders:
-              - name: Host
-                value: !Var public_hostname
-          initialDelaySeconds: 30
-          periodSeconds: 30
-      volumes:
-      - name: kompassi-media
-        persistentVolumeClaim:
-          claimName: kompassi-media
-
+!Include kompassi/deployment.in.yml
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  labels:
-    stack: kompassi
-    component: kompassi
-  name: kompassi-media
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1000Mi
-
+!Include kompassi/pvc.in.yml
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: kompassi
-  labels:
-    stack: kompassi
-  annotations:
-    secret-generator.v1.mittwald.de/autogenerate: secretKey
-type: Opaque
-data: {}
+!Include kompassi/secret.in.yml
 
 
 ##############################
 # CELERY (Background worker) #
 ##############################
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: celery
-spec:
-  selector:
-    matchLabels:
-      stack: kompassi
-      component: celery
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        stack: kompassi
-        component: celery
-    spec:
-      containers:
-      - name: master
-        image: !Var kompassi_image
-        args: ["celery", "-A", "kompassi.celery_app:app", "worker"]
-        resources: {}
-        env: !Var environment
+!Include celery/deployment.in.yml
 
 
 ###############################
 # NGINX (Static file serving) #
 ###############################
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-  labels:
-    stack: kompassi
-    component: nginx
-spec:
-  ports:
-  - port: 80
-    targetPort: 80
-  selector:
-    stack: kompassi
-    component: nginx
-
+!Include nginx/service.in.yml
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx
-spec:
-  selector:
-    matchLabels:
-      stack: kompassi
-      component: nginx
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        stack: kompassi
-        component: nginx
-    spec:
-      containers:
-      - name: master
-        image: !Var kompassi_static_image
-        resources: {}
-        ports:
-        - containerPort: 80
+!Include nginx/deployment.in.yml
 
 
 ###########
 # INGRESS #
 ###########
 ---
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: kompassi
-spec:
-  rules:
-    - host: !Var public_hostname
-      http:
-        paths:
-        - path: /static
-          backend:
-            serviceName: nginx
-            servicePort: 80
-        - path: /
-          backend:
-            serviceName: kompassi
-            servicePort: 8000
+!Include ingress.in.yml
 
 
 ##################
 # DATABASE SETUP #
 ##################
 ---
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: setup
-spec:
-  template:
-    metadata:
-      labels:
-        stack: kompassi
-        component: setup
-    spec:
-      containers:
-      - name: setup
-        image: !Var kompassi_image
-        args: ["python", "manage.py", "setup"]
-        env: !Var environment
-      restartPolicy: Never
-  backoffLimit: 4
+!Include jobs/setup.in.yml

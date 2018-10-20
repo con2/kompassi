@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memcached
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: memcached
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: memcached
+    spec:
+      containers:
+      - name: master
+        image: !Var memcached_image
+        resources: {}
+        ports:
+        - containerPort: 6379

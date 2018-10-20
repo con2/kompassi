@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: nginx
+    spec:
+      containers:
+      - name: master
+        image: !Var kompassi_static_image
+        resources: {}
+        ports:
+        - containerPort: 80

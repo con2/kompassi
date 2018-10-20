@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kompassi
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: kompassi
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: kompassi
+    spec:
+      containers:
+      - name: master
+        image: !Var kompassi_image
+        resources: {}
+        ports:
+        - containerPort: 8000
+        env: !Var environment
+        readinessProbe:
+          httpGet:
+            path: /api/v1/status
+            port: 8000
+            httpHeaders:
+              - name: Host
+                value: !Var public_hostname
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /api/v1/status
+            port: 8000
+            httpHeaders:
+              - name: Host
+                value: !Var public_hostname
+          initialDelaySeconds: 30
+          periodSeconds: 30
+      volumes:
+      - name: kompassi-media
+        persistentVolumeClaim:
+          claimName: kompassi-media

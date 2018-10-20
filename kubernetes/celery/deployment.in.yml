@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: celery
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: celery
+    spec:
+      containers:
+      - name: master
+        image: !Var kompassi_image
+        args: ["celery", "-A", "kompassi.celery_app:app", "worker"]
+        resources: {}
+        env: !Var environment

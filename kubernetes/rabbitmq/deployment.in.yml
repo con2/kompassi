@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: rabbitmq
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: rabbitmq
+    spec:
+      containers:
+      - name: master
+        image: !Var rabbitmq_image
+        resources: {}
+        ports:
+        - containerPort: 5672
+        env:
+        - name: RABBITMQ_DEFAULT_VHOST
+          value: !Var rabbitmq_vhost
+        - name: RABBITMQ_DEFAULT_PASS
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: password
+        - name: RABBITMQ_DEFAULT_USER
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: username
+        volumeMounts:
+        - mountPath: /var/lib/rabbitmq
+          name: rabbitmq-data
+      volumes:
+      - name: rabbitmq-data
+        persistentVolumeClaim:
+          claimName: rabbitmq-data

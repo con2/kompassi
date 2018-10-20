@@ -1,0 +1,62 @@
+!Defaults
+public_hostname: kompassi.127.0.0.1.xip.io
+kompassi_tag: staging
+kompassi_image: !Format tracon/kompassi:{kompassi_tag}
+kompassi_static_image: !Format tracon/kompassi-static:{kompassi_tag}
+
+# For memcached, rabbitmq and PostgreSQL, choose between a managed (in-cluster) service or
+# an external one. For external services, set fooservice_managed: false and point
+# fooservice_hostname to the external service, overriding the other defaults if necessary.
+# Also please pin the images using a tag other than latest for production.
+memcached_managed: true
+memcached_image: memcached:alpine
+memcached_hostname: memcached
+
+rabbitmq_managed: true
+rabbitmq_image: rabbitmq
+rabbitmq_hostname: rabbitmq
+rabbitmq_vhost: kompassi
+
+# NOTE: "managed" PostgreSQL should not be considered production-ready.
+postgres_managed: true
+postgres_image: postgres
+postgres_hostname: postgres
+postgres_database: kompassi
+
+# Common environment vars for both kompassi and celery pods.
+environment:
+  - name: POSTGRESQL_HOSTNAME
+    value: !Var postgres_hostname
+  - name: POSTGRESQL_DATABASE
+    value: !Var postgres_database
+  - name: POSTGRESQL_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: username
+  - name: POSTGRESQL_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: password
+  - name: RABBITMQ_HOSTNAME
+    value: !Var rabbitmq_hostname
+  - name: RABBITMQ_VHOST
+    value: !Var rabbitmq_vhost
+  - name: RABBITMQ_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: rabbitmq
+        key: username
+  - name: RABBITMQ_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: rabbitmq
+        key: password
+  - name: SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: secretKey
+  - name: ALLOWED_HOSTS
+    value: !Var public_hostname

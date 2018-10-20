@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup
+spec:
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: setup
+    spec:
+      containers:
+      - name: setup
+        image: !Var kompassi_image
+        args: ["python", "manage.py", "setup"]
+        env: !Var environment
+      restartPolicy: Never
+  backoffLimit: 4
