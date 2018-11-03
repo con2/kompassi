@@ -29,7 +29,7 @@ class Setup(object):
         # self.setup_tickets()
         # self.setup_payments()
         self.setup_labour()
-        # self.setup_programme()
+        self.setup_programme()
         self.setup_badges()
         self.setup_intra()
 
@@ -156,22 +156,11 @@ class Setup(object):
             Category,
             ProgrammeEventMeta,
             Role,
-            Room,
             SpecialStartTime,
             Tag,
             TimeBlock,
-            View,
         )
         from core.utils import full_hours_between
-
-        for room_name in [
-            '207',
-            '208',
-            '209',
-            '205',
-            'Iso sali',
-        ]:
-            Room.objects.get_or_create(event=self.event, name=room_name)
 
         admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
@@ -198,15 +187,6 @@ class Setup(object):
                     is_default=role_is_default,
                 )
             )
-
-        view, unused = View.objects.get_or_create(
-            event=self.event,
-            name='Ohjelmakartta',
-        )
-
-        if not view.rooms.exists():
-            view.rooms = Room.objects.filter(event=self.event)
-            view.save()
 
         for category_name, category_style in [
             ('Pelit', 'rope'),
