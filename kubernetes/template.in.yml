@@ -9,11 +9,11 @@
 #############
 ---
 !If
-  a: !Var memcached_managed
+  test: !Var memcached_managed
   then: !Include memcached/service.in.yml
 ---
 !If
-  a: !Var memcached_managed
+  test: !Var memcached_managed
   then: !Include memcached/deployment.in.yml
 
 
@@ -22,22 +22,22 @@
 ############
 ---
 !If
-  a: !Var rabbitmq_managed
+  test: !Var rabbitmq_managed
   then: !Include rabbitmq/service.in.yml
 
 ---
 !If
-  a: !Var rabbitmq_managed
+  test: !Var rabbitmq_managed
   then: !Include rabbitmq/deployment.in.yml
 
 ---
 !If
-  a: !Var rabbitmq_managed
+  test: !Var rabbitmq_managed
   then: !Include rabbitmq/pvc.in.yml
 
 ---
 !If
-  a: !Var rabbitmq_managed
+  test: !Var rabbitmq_managed
   then: !Include rabbitmq/secret.in.yml
 
 
@@ -46,22 +46,22 @@
 ##############
 ---
 !If
-  a: !Var postgres_managed
+  test: !Var postgres_managed
   then: !Include postgres/service.in.yml
 
 ---
 !If
-  a: !Var postgres_managed
+  test: !Var postgres_managed
   then: !Include postgres/deployment.in.yml
 
 ---
 !If
-  a: !Var postgres_managed
+  test: !Var postgres_managed
   then: !Include postgres/pvc.in.yml
 
 ---
 !If
-  a: !Var postgres_managed
+  test: !Var postgres_managed
   then: !Include postgres/secret.in.yml
 
 
