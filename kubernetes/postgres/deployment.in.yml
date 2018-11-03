@@ -34,7 +34,7 @@ spec:
               name: postgres
               key: password
         volumeMounts:
-        - mountPath: /var/lib/postgresql/data
+        - mountPath: /var/lib/postgresql
           name: postgres-data
         readinessProbe:
           exec:
