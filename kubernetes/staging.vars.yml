@@ -1,0 +1,6 @@
+# postgres_managed: false
+# postgres_hostname: siilo.tracon.fi
+
+rabbitmq_image: rabbitmq:3.7.8
+memcached_image: memcached:1.5.11-alpine
+kompassi_tag: development-125

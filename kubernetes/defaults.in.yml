@@ -23,6 +23,8 @@ postgres_image: postgres
 postgres_hostname: postgres
 postgres_database: kompassi
 
+setup_should_run: true
+
 # Common environment vars for both kompassi and celery pods.
 environment:
   - name: POSTGRESQL_HOSTNAME
