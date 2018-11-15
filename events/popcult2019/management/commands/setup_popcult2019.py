@@ -117,7 +117,7 @@ class Setup(object):
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug='popcult2017'),
+                source_event=Event.objects.get(slug='popcultday2018'),
                 target_event=self.event,
             )
 
