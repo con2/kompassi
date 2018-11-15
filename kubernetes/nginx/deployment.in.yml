@@ -7,7 +7,6 @@ spec:
     matchLabels:
       stack: kompassi
       component: nginx
-  replicas: 1
   template:
     metadata:
       labels:
@@ -15,8 +14,20 @@ spec:
         component: nginx
     spec:
       containers:
-      - name: master
-        image: !Var kompassi_static_image
-        resources: {}
-        ports:
-        - containerPort: 80
+        - name: master
+          image: !Var kompassi_static_image
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - !If
+                test: !Var kompassi_enable_volumes
+                then:
+                  mountPath: /usr/src/app/media
+                  name: kompassi-media
+      volumes:
+        - !If
+            test: !Var kompassi_enable_volumes
+            then:
+              name: kompassi-media
+              persistentVolumeClaim:
+                claimName: kompassi-media

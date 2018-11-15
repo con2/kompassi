@@ -7,7 +7,6 @@ spec:
     matchLabels:
       stack: kompassi
       component: kompassi
-  replicas: 1
   template:
     metadata:
       labels:
@@ -17,7 +16,6 @@ spec:
       containers:
       - name: master
         image: !Var kompassi_image
-        resources: {}
         ports:
         - containerPort: 8000
         env: !Var environment
@@ -27,7 +25,7 @@ spec:
             port: 8000
             httpHeaders:
               - name: Host
-                value: !Var public_hostname
+                value: !Var ingress_public_hostname
           initialDelaySeconds: 15
           periodSeconds: 30
         livenessProbe:
@@ -36,10 +34,19 @@ spec:
             port: 8000
             httpHeaders:
               - name: Host
-                value: !Var public_hostname
+                value: !Var ingress_public_hostname
           initialDelaySeconds: 30
           periodSeconds: 30
+        volumeMounts:
+          - !If
+              test: !Var kompassi_enable_volumes
+              then:
+                mountPath: /usr/src/app/media
+                name: kompassi-media
       volumes:
-      - name: kompassi-media
-        persistentVolumeClaim:
-          claimName: kompassi-media
+        - !If
+            test: !Var kompassi_enable_volumes
+            then:
+              name: kompassi-media
+              persistentVolumeClaim:
+                claimName: kompassi-media

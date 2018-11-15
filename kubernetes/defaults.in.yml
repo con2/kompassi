@@ -1,8 +1,12 @@
 !Defaults
-public_hostname: kompassi.127.0.0.1.xip.io
+
 kompassi_tag: staging
 kompassi_image: !Format tracon/kompassi:{kompassi_tag}
 kompassi_static_image: !Format tracon/kompassi-static:{kompassi_tag}
+kompassi_enable_volumes: true
+
+ingress_public_hostname: kompassi.127.0.0.1.xip.io
+ingress_letsencrypt_enabled: false
 
 # For memcached, rabbitmq and PostgreSQL, choose between a managed (in-cluster) service or
 # an external one. For external services, set fooservice_managed: false and point
@@ -16,6 +20,7 @@ rabbitmq_managed: true
 rabbitmq_image: rabbitmq
 rabbitmq_hostname: rabbitmq
 rabbitmq_vhost: kompassi
+rabbitmq_enable_volumes: true
 
 # NOTE: "managed" PostgreSQL should not be considered production-ready.
 postgres_managed: true
@@ -61,4 +66,4 @@ environment:
         name: kompassi
         key: secretKey
   - name: ALLOWED_HOSTS
-    value: !Var public_hostname
+    value: !Var ingress_public_hostname

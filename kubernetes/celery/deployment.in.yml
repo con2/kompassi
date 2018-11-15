@@ -7,7 +7,6 @@ spec:
     matchLabels:
       stack: kompassi
       component: celery
-  replicas: 1
   template:
     metadata:
       labels:
@@ -18,5 +17,4 @@ spec:
       - name: master
         image: !Var kompassi_image
         args: ["celery", "-A", "kompassi.celery_app:app", "worker"]
-        resources: {}
         env: !Var environment

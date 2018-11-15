@@ -4,15 +4,24 @@ def imageMap = [
 ]
 
 def deploymentTagMap = [
-  "development": "kompassi-staging",
   "master": "kompassi-production"
 ]
 
-def tempImage = "tracon/kompassi:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+def environmentNameMap = [
+  "master": "production",
+  "development": "staging"
+]
+
+def tag = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+
+def tempImage = "tracon/kompassi:${tag}"
 def finalImage = "tracon/kompassi:${imageMap[env.BRANCH_NAME]}"
 
-def tempStaticImage = "tracon/kompassi-static:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+def tempStaticImage = "tracon/kompassi-static:${tag}"
 def finalStaticImage = "tracon/kompassi-static:${imageMap[env.BRANCH_NAME]}"
+
+def environmentName = environmentNameMap[env.BRANCH_NAME]
+
 
 stage("Build") {
   node {
@@ -57,15 +66,26 @@ stage("Static") {
 
 stage("Deploy") {
   node {
-    git url: "git@github.com:tracon/ansible-tracon"
-    sh """
-      ansible-playbook \
-        --vault-password-file=~/.vault_pass.txt \
-        --user root \
-        --limit neula.kompassi.eu \
-        --tags ${deploymentTagMap[env.BRANCH_NAME]} \
-        tracon.yml
-    """
+    if (env.BRANCH_NAME == "development") {
+      // Kubernetes deployment
+      sh """
+        emrichen kubernetes/template.in.yml \
+          -f kubernetes/${environmentName}.vars.yml \
+          -D kompassi_tag=${tag} | \
+        kubectl apply -n kompassi-${environmentName} -f -
+      """
+    } else {
+      // Legacy deployment
+      git url: "git@github.com:tracon/ansible-tracon"
+      sh """
+        ansible-playbook \
+          --vault-password-file=~/.vault_pass.txt \
+          --user root \
+          --limit neula.kompassi.eu \
+          --tags ${deploymentTagMap[env.BRANCH_NAME]} \
+          tracon.yml
+      """
+    }
   }
 }
 
