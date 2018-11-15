@@ -115,50 +115,11 @@ class Setup(object):
                 ),
             )
 
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
-        vastaava = PersonnelClass.objects.get(event=self.event, slug='vastaava')
-
-        for jc_data in [
-            (
-                'Vastaava',
-                'Tapahtuman järjestelytoimikunnan jäsen eli vastaava',
-                [vastaava]
-            ),
-            (
-                'Järjestyksenvalvoja',
-                'Järjestyksenvalvojan tehtäviin kuuluvat lippujen tarkistus, kulunvalvonta sekä ihmisten ohjaus. Tehtävään vaaditaan JV-kortti.',
-                [tyovoima]
-            ),
-        ]:
-            if len(jc_data) == 3:
-                name, description, pcs = jc_data
-                job_names = []
-            elif len(jc_data) == 4:
-                name, description, pcs, job_names = jc_data
-            else:
-                raise ValueError("Length of jc_data must be 3 or 4")
-
-            job_category, created = JobCategory.objects.get_or_create(
-                event=self.event,
-                slug=slugify(name),
-                defaults=dict(
-                    name=name,
-                    description=description,
-                )
+        if not JobCategory.objects.filter(event=self.event).exists():
+            JobCategory.copy_from_event(
+                source_event=Event.objects.get(slug='popcult2017'),
+                target_event=self.event,
             )
-
-            if created:
-                job_category.personnel_classes = pcs
-                job_category.save()
-
-            for job_name in job_names:
-                job, created = Job.objects.get_or_create(
-                    job_category=job_category,
-                    slug=slugify(job_name),
-                    defaults=dict(
-                        title=job_name,
-                    )
-                )
 
         labour_event_meta.create_groups()
 
