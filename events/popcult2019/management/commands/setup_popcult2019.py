@@ -35,11 +35,11 @@ class Setup(object):
     def setup_core(self):
         from core.models import Venue, Event
 
-        self.venue, unused = Venue.objects.get_or_create(name='Kulttuuritalo (Helsinki)', defaults=dict(
-            name_inessive='Kulttuuritalossa Helsingissä',
+        self.venue, unused = Venue.objects.get_or_create(name='Scandic Marina Congress Center', defaults=dict(
+            name_inessive='Scandic Marina Congress Centerissä',
         ))
         self.event, unused = Event.objects.get_or_create(slug='popcult2019', defaults=dict(
-            name='Popcult Helsinki 2018',
+            name='Popcult Helsinki 2019',
             name_genitive='Popcult Helsingin',
             name_illative='Popcult Helsinkiin',
             name_inessive='Popcult Helsingissä',
@@ -167,18 +167,18 @@ class Setup(object):
             admin_group=tickets_admin_group,
             due_days=14,
             shipping_and_handling_cents=0,
-            reference_number_template="2018{:05d}",
+            reference_number_template="2019{:05d}",
             contact_email='Popcult Helsinki <liput@popcult.fi>',
             ticket_free_text=
-                "Tämä on sähköinen lippusi Popcult Helsinki 2018 -tapahtumaan. Sähköinen lippu vaihdetaan\n"
+                "Tämä on sähköinen lippusi Popcult Helsinki 2019 -tapahtumaan. Sähköinen lippu vaihdetaan\n"
                 "rannekkeeseen lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai\n"
                 "näyttää sen älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole\n"
                 "mahdollista, ota ylös kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva\n"
                 "Kissakoodi ja ilmoita se lipunvaihtopisteessä.\n\n"
                 "Tervetuloa Popcult Helsinkihin!",
-            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Popcult Helsinki 2018 -tapahtumaan!</h2>"
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Popcult Helsinki 2019 -tapahtumaan!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                "<p>Lue lisää tapahtumasta <a href='http://popcult.fi/helsinki-2019'>Popcult Helsinki 2018 -tapahtuman kotisivuilta</a>.</p>",
+                "<p>Lue lisää tapahtumasta <a href='http://popcult.fi/helsinki-2019'>Popcult Helsinki 2019 -tapahtuman kotisivuilta</a>.</p>",
         )
 
         if self.test:
@@ -206,7 +206,7 @@ class Setup(object):
 
         for product_info in [
             # dict(
-            #     name='Popcult Helsinki 2018 -lippu',
+            #     name='Popcult Helsinki 2019 -lippu',
             #     description='Yksi pääsylippu Popcult Helsinki -tapahtumaan lauantaille 12.5.2018. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.',
             #     limit_groups=[
             #         limit_group('Pääsyliput', 800),
@@ -220,7 +220,7 @@ class Setup(object):
 
             # dict(
             #     name='Kahden lipun tarjouspaketti Popcult Helsinkihin 2018',
-            #     override_electronic_ticket_title='Popcult Helsinki 2018 -tarjouslippu',
+            #     override_electronic_ticket_title='Popcult Helsinki 2019 -tarjouslippu',
             #     description='Kaksi pääsylippua Popcult Helsinki -tapahtumaan lauantaille 12.5.2018. Osta liput edullisemmin itsellesi ja vaikka lahjaksi kaverille! Sisältää kaksi sähköistä lippua, jotka vaihdetaan rannekkeisiin tapahtumapaikalla. Rajoitettu tarjous, myynnissä su 18.2. klo 23:59 asti.',
             #     limit_groups=[
             #         limit_group('Kahden lipun tarjouspaketit', 100),
