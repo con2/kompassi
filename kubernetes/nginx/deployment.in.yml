@@ -22,7 +22,7 @@ spec:
             - !If
                 test: !Var kompassi_enable_volumes
                 then:
-                  mountPath: /usr/src/app/media
+                  mountPath: /usr/share/nginx/html/media
                   name: kompassi-media
       volumes:
         - !If

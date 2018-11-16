@@ -5,13 +5,11 @@ postgres_hostname: siilo.tracon.fi
 postgres_database: kompassidev
 
 rabbitmq_image: rabbitmq:3.7.8
-rabbitmq_enable_volumes: false
 rabbitmq_vhost: kompassidev
 
 memcached_image: memcached:1.5.11-alpine
 
 kompassi_tag: development-125
-kompassi_enable_volumes: false
 
 setup_should_run: false
 
