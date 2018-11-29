@@ -68,8 +68,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('app_label', models.CharField(max_length=63, verbose_name='Sovellus', choices=[('labour', 'Ty\xc3\xb6voima')])),
                 ('verbose_name', models.CharField(max_length=63, verbose_name='Nimi')),
-                ('event', models.ForeignKey(verbose_name='Tapahtuma', to='core.Event')),
-                ('group', models.ForeignKey(verbose_name='K\xe4ytt\xe4j\xe4ryhm\xe4', to='auth.Group')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Tapahtuma', to='core.Event')),
+                ('group', models.ForeignKey(on_delete=models.CASCADE, verbose_name='K\xe4ytt\xe4j\xe4ryhm\xe4', to='auth.Group')),
             ],
             options={
                 'verbose_name': 'vastaanottajaryhm\xe4',
@@ -80,31 +80,31 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='personmessage',
             name='body',
-            field=models.ForeignKey(to='mailings.PersonMessageBody'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='mailings.PersonMessageBody'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='personmessage',
             name='message',
-            field=models.ForeignKey(to='mailings.Message'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='mailings.Message'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='personmessage',
             name='person',
-            field=models.ForeignKey(to='core.Person'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='core.Person'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='personmessage',
             name='subject',
-            field=models.ForeignKey(to='mailings.PersonMessageSubject'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='mailings.PersonMessageSubject'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='message',
             name='recipient',
-            field=models.ForeignKey(verbose_name='Vastaanottajaryhm\xe4', to='mailings.RecipientGroup'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Vastaanottajaryhm\xe4', to='mailings.RecipientGroup'),
             preserve_default=True,
         ),
     ]

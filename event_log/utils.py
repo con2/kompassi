@@ -55,7 +55,7 @@ def attrs_from_request(request):
     # TODO: Should we try to deduce `organization` and `event` from URL?
     # Caveat: What if the target does not exist?
     return dict(
-        created_by=request.user if request.user.is_authenticated() else None,
+        created_by=request.user if request.user.is_authenticated else None,
         context=request.build_absolute_uri(request.get_full_path()),
         ip_address=get_ip(request),
     )

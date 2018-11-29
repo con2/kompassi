@@ -30,4 +30,4 @@ def programme_profile_feedback_view(request, programme_id):
         feedback=feedback,
     )
 
-    return render(request, 'programme_profile_feedback_view.jade', vars)
+    return render(request, 'programme_profile_feedback_view.pug', vars)

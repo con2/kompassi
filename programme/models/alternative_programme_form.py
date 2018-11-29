@@ -35,7 +35,7 @@ class AlternativeProgrammeForm(models.Model):
     AlternativeProgrammeForms are specified, the default form is used.
     """
 
-    event = models.ForeignKey('core.Event', verbose_name=_('event'))
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name=_('event'))
 
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 

@@ -25,8 +25,8 @@ class Enrollment(models.Model):
     """
     Holds all the possible fields an enrollment instance may have
     """
-    event = models.ForeignKey('core.event')
-    person = models.ForeignKey('core.person')
+    event = models.ForeignKey('core.event', on_delete=models.CASCADE)
+    person = models.ForeignKey('core.person', on_delete=models.CASCADE)
     state = models.CharField(
         max_length=max(len(key) for (key, label) in STATE_CHOICES),
         choices=STATE_CHOICES,

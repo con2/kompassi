@@ -199,7 +199,7 @@ class Phase(object):
 class WelcomePhase(Phase):
     name = "tickets_welcome_view"
     friendly_name = _('Welcome')
-    template = "tickets_welcome_phase.jade"
+    template = "tickets_welcome_phase.pug"
     prev_phase = None
     next_phase = "tickets_tickets_view"
     permit_new = True
@@ -221,7 +221,7 @@ tickets_welcome_view = decorate(tickets_welcome_phase)
 class TicketsPhase(Phase):
     name = "tickets_tickets_view"
     friendly_name = _('Tickets')
-    template = "tickets_tickets_phase.jade"
+    template = "tickets_tickets_phase.pug"
     prev_phase = "tickets_welcome_view"
     next_phase = "tickets_address_view"
 
@@ -271,7 +271,7 @@ tickets_tickets_view = decorate(tickets_tickets_phase)
 class AccommodationPhase(Phase):
     name = "tickets_accommodation_view"
     friendly_name = _('Additional info')
-    template = "tickets_accommodation_phase.jade"
+    template = "tickets_accommodation_phase.pug"
     prev_phase = "tickets_tickets_view"
     next_phase = "tickets_address_view"
 
@@ -388,7 +388,7 @@ tickets_shirts_view = decorate(tickets_shirts_phase)
 class AddressPhase(Phase):
     name = "tickets_address_view"
     friendly_name = _('Delivery address')
-    template = "tickets_address_phase.jade"
+    template = "tickets_address_phase.pug"
     prev_phase = "tickets_tickets_view"
     next_phase = "tickets_confirm_view"
 
@@ -422,7 +422,7 @@ tickets_address_view = decorate(tickets_address_phase)
 class ConfirmPhase(Phase):
     name = "tickets_confirm_view"
     friendly_name = _('Confirmation')
-    template = "tickets_confirm_phase.jade"
+    template = "tickets_confirm_phase.pug"
     prev_phase = "tickets_address_view"
     next_phase = "payments_redirect_view"
     payment_phase = True
@@ -471,7 +471,7 @@ tickets_confirm_view = decorate(tickets_confirm_phase)
 class ThanksPhase(Phase):
     name = "tickets_thanks_view"
     friendly_name = _('Thank you!')
-    template = "tickets_thanks_phase.jade"
+    template = "tickets_thanks_phase.pug"
     prev_phase = None
     next_phase = "tickets_welcome_view"
     can_cancel = False

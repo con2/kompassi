@@ -33,19 +33,25 @@ class Setup(object):
         self.setup_intra()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(name='Scandic Marina Congress Center', defaults=dict(
             name_inessive='Scandic Marina Congress Centerissä',
         ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='finnish-fandom-conventions-ry',
+            defaults=dict(
+                name='Finnish Fandom Conventions ry',
+                homepage_url='http://popcult.fi',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='popcult2019', defaults=dict(
             name='Popcult Helsinki 2019',
             name_genitive='Popcult Helsingin',
             name_illative='Popcult Helsinkiin',
             name_inessive='Popcult Helsingissä',
             homepage_url='http://popcult.fi/helsinki-2019',
-            organization_name='Finnish Fandom Conventions ry',
-            organization_url='http://popcult.fi',
+            organization=self.organization,
             start_time=datetime(2019, 5, 11, 10, 0, tzinfo=self.tz),
             end_time=datetime(2019, 5, 12, 18, 0, tzinfo=self.tz),
             venue=self.venue,
@@ -131,8 +137,8 @@ class Setup(object):
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
             if not jc.required_qualifications.exists():
-                jc.required_qualifications = [qual]
-                jc.save()
+                jc.required_qualifications.set([qual])
+
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,

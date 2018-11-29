@@ -30,4 +30,4 @@ def labour_admin_jobcategories_view(request, vars, event):
 
     vars.update(job_categories=job_categories)
 
-    return render(request, 'labour_admin_jobcategories_view.jade', vars)
+    return render(request, 'labour_admin_jobcategories_view.pug', vars)

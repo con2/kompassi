@@ -34,20 +34,20 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='membershiporganizationmeta',
             name='members_group',
-            field=models.ForeignKey(related_name='members_group_for', verbose_name='J\xe4senryhm\xe4', blank=True, to='auth.Group', null=True),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='members_group_for', verbose_name='J\xe4senryhm\xe4', blank=True, to='auth.Group', null=True),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='membershiporganizationmeta',
             name='admin_group',
-            field=models.ForeignKey(related_name='admin_group_for', verbose_name='Yll\xe4pit\xe4j\xe4ryhm\xe4', to='auth.Group'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='admin_group_for', verbose_name='Yll\xe4pit\xe4j\xe4ryhm\xe4', to='auth.Group'),
             preserve_default=True,
         ),
         migrations.RunPython(populate_members_group, elidable=True),
         migrations.AlterField(
             model_name='membershiporganizationmeta',
             name='members_group',
-            field=models.ForeignKey(related_name='members_group_for', verbose_name='J\xe4senryhm\xe4', to='auth.Group'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='members_group_for', verbose_name='J\xe4senryhm\xe4', to='auth.Group'),
             preserve_default=True,
         ),
     ]

@@ -88,7 +88,7 @@ def unperson_page_wizard(*pages):
     def outer(view_func):
         @wraps(view_func)
         def inner(request, *args, **kwargs):
-            assert request.user.is_authenticated()
+            assert request.user.is_authenticated
 
             try:
                 person = request.user.person

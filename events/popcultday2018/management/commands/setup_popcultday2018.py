@@ -32,19 +32,25 @@ class Setup(object):
         self.setup_payments()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(name='Kulttuuritalo (Helsinki)', defaults=dict(
             name_inessive='Kulttuuritalossa Helsingissä',
         ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='finnish-fandom-conventions-ry',
+            defaults=dict(
+                name='Finnish Fandom Conventions ry',
+                homepage_url='http://popcult.fi',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='popcultday2018', defaults=dict(
             name='Popcult Day 2018',
             name_genitive='Popcult Day 2018 -tapahtuman',
             name_illative='Popcult Day 2018 -tapahtumaan',
             name_inessive='Popcult Day 2018 -tapahtumassa',
             homepage_url='http://popcult.fi/day-2018',
-            organization_name='Finnish Fandom Conventions ry',
-            organization_url='http://popcult.fi',
+            organization=self.organization,
             start_time=datetime(2018, 5, 12, 10, 0, tzinfo=self.tz),
             end_time=datetime(2018, 5, 12, 18, 0, tzinfo=self.tz),
             venue=self.venue,
@@ -147,8 +153,8 @@ class Setup(object):
             )
 
             if created:
-                job_category.personnel_classes = pcs
-                job_category.save()
+                job_category.personnel_classes.set(pcs)
+
 
             for job_name in job_names:
                 job, created = Job.objects.get_or_create(
@@ -169,8 +175,8 @@ class Setup(object):
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
             if not jc.required_qualifications.exists():
-                jc.required_qualifications = [qual]
-                jc.save()
+                jc.required_qualifications.set([qual])
+
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,

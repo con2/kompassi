@@ -10,7 +10,7 @@ import datetime
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q, Sum
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
@@ -133,4 +133,4 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
     person.log_view(request, event=event)
 
-    return render(request, 'labour_admin_signup_view.jade', vars)
+    return render(request, 'labour_admin_signup_view.pug', vars)

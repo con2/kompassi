@@ -10,13 +10,13 @@ from core.csv_export import CsvExportMixin
 
 class SurveyResult(CsvExportMixin, models.Model):
     # Subclasses must provide a `survey` field
-    # survey = models.ForeignKey(...)
+    # survey = models.ForeignKey(..., on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     model = JSONField()
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     author_ip_address = models.CharField(
         max_length=48,
         blank=True,
@@ -46,7 +46,7 @@ class SurveyResult(CsvExportMixin, models.Model):
 
 
 class EventSurveyResult(SurveyResult):
-    survey = models.ForeignKey('surveys.EventSurvey')
+    survey = models.ForeignKey('surveys.EventSurvey', on_delete=models.CASCADE)
 
     @property
     def event(self):
@@ -59,6 +59,6 @@ class EventSurveyResult(SurveyResult):
 
 
 class GlobalSurveyResult(SurveyResult):
-    survey = models.ForeignKey('surveys.GlobalSurvey')
+    survey = models.ForeignKey('surveys.GlobalSurvey', on_delete=models.CASCADE)
 
     event = None

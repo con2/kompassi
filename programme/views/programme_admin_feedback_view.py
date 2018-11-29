@@ -20,4 +20,4 @@ def programme_admin_feedback_view(request, vars, event):
         feedback=feedback
     )
 
-    return render(request, 'programme_admin_feedback_view.jade', vars)
+    return render(request, 'programme_admin_feedback_view.pug', vars)

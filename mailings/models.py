@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from hashlib import sha1
 import logging
 from datetime import datetime, timedelta
@@ -30,12 +26,12 @@ DELAY_PER_MESSAGE_FRAGMENT_MILLIS = 350
 
 
 class RecipientGroup(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name='Tapahtuma')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name='Tapahtuma')
     app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name='Sovellus')
-    group = models.ForeignKey('auth.Group', verbose_name='Käyttäjäryhmä')
+    group = models.ForeignKey('auth.Group', on_delete=models.CASCADE, verbose_name='Käyttäjäryhmä')
     verbose_name = models.CharField(max_length=63, verbose_name='Nimi', blank=True, default='')
-    job_category = models.ForeignKey(JobCategory, null=True, blank=True)
-    personnel_class = models.ForeignKey(PersonnelClass, null=True, blank=True)
+    job_category = models.ForeignKey(JobCategory, on_delete=models.CASCADE, null=True, blank=True)
+    personnel_class = models.ForeignKey(PersonnelClass, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         if self.job_category:
@@ -90,7 +86,7 @@ class Message(models.Model):
         default='email',
         choices=CHANNEL_CHOICES,
     )
-    recipient = models.ForeignKey(RecipientGroup, verbose_name='Vastaanottajaryhmä')
+    recipient = models.ForeignKey(RecipientGroup, on_delete=models.CASCADE, verbose_name='Vastaanottajaryhmä')
 
     subject_template = models.CharField(
         max_length=255,
@@ -239,12 +235,12 @@ class PersonMessageBody(models.Model, DedupMixin):
 
 
 class PersonMessage(models.Model):
-    message = models.ForeignKey(Message)
-    person = models.ForeignKey('core.Person')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE)
 
     # dedup
-    subject = models.ForeignKey(PersonMessageSubject)
-    body = models.ForeignKey(PersonMessageBody)
+    subject = models.ForeignKey(PersonMessageSubject, on_delete=models.CASCADE)
+    body = models.ForeignKey(PersonMessageBody, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -281,8 +277,8 @@ class PersonMessage(models.Model):
     def actually_send(self, delay=0):
         if self.message.channel == 'email':
             self._actually_send_email()
-        elif self.message.channel == 'sms':
-            self._actually_send_sms(delay)
+        # elif self.message.channel == 'sms':
+        #     self._actually_send_sms(delay)
         else:
             raise NotImplementedError(self.message.channel)
 
@@ -306,18 +302,18 @@ class PersonMessage(models.Model):
             bcc=msgbcc
         ).send(fail_silently=True)
 
-    def _actually_send_sms(self, delay=0):
-        from sms.models import SMSMessageOut, SMSEventMeta
-        try:
-            event = SMSEventMeta.objects.get(event=self.message.event, sms_enabled=True)
-        except SMSEventMeta.DoesNotExist:
-            pass
-        else:
-            if 'background_tasks' in settings.INSTALLED_APPS:
-                from sms.tasks import message_send
-                sendtime = timezone.now() + timedelta(milliseconds=delay)
-                sending = SMSMessageOut(message=self.body.text, to=self.person.phone, event=event)
-                sending.save()
-                message_send.apply_async(args=[sending.pk], eta=sendtime)
-            else:
-                SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)
+    # def _actually_send_sms(self, delay=0):
+    #     from sms.models import SMSMessageOut, SMSEventMeta
+    #     try:
+    #         event = SMSEventMeta.objects.get(event=self.message.event, sms_enabled=True)
+    #     except SMSEventMeta.DoesNotExist:
+    #         pass
+    #     else:
+    #         if 'background_tasks' in settings.INSTALLED_APPS:
+    #             from sms.tasks import message_send
+    #             sendtime = timezone.now() + timedelta(milliseconds=delay)
+    #             sending = SMSMessageOut(message=self.body.text, to=self.person.phone, event=event)
+    #             sending.save()
+    #             message_send.apply_async(args=[sending.pk], eta=sendtime)
+    #         else:
+    #             SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)

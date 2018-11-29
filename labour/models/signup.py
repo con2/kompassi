@@ -81,8 +81,8 @@ class StateTransition(object):
 
 
 class Signup(models.Model, CsvExportMixin):
-    person = models.ForeignKey('core.Person', related_name='signups')
-    event = models.ForeignKey('core.Event')
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE, related_name='signups')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
 
     personnel_classes = models.ManyToManyField('labour.PersonnelClass',
         blank=True,
@@ -143,7 +143,7 @@ class Signup(models.Model, CsvExportMixin):
         ),
     )
 
-    alternative_signup_form_used = models.ForeignKey('labour.AlternativeSignupForm',
+    alternative_signup_form_used = models.ForeignKey('labour.AlternativeSignupForm', on_delete=models.CASCADE,
         blank=True,
         null=True,
         verbose_name="Ilmoittautumislomake",

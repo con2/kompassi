@@ -14,7 +14,7 @@ def format_job_categories(job_categories):
 
 
 class JobCategory(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name=_("event"))
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name=_("event"))
     app_label = models.CharField(max_length=63, blank=True, default='labour')
 
     # TODO rename this to "title"

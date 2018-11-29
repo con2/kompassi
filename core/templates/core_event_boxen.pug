@@ -1,0 +1,25 @@
+- load trans from i18n
+.kompassi-event-boxen
+  if current_events_rows
+    h2 {% trans "Events currently in progress" %}
+    for current_events_row in current_events_rows
+      .row
+        for event in current_events_row
+          .col-md-3
+            include core_event_box.pug
+  if future_events_rows
+    h2 {% trans "Upcoming events" %}
+    for future_events_row in future_events_rows
+      .row
+        for event in future_events_row
+          .col-md-3
+            include core_event_box.pug
+  if past_events_rows_by_year
+    h2 {% trans "Past events" %}
+    for year, past_events_rows in past_events_rows_by_year
+      h3= year
+      for past_events_row in past_events_rows
+        .row
+          for event in past_events_row
+            .col-md-3
+              include core_event_box.pug

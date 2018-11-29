@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='emailalias',
             name='type',
-            field=models.ForeignKey(related_name='email_aliases', verbose_name='Tyyppi', to='access.EmailAliasType'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='email_aliases', verbose_name='Tyyppi', to='access.EmailAliasType'),
             preserve_default=True,
         ),
     ]

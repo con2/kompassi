@@ -1,0 +1,88 @@
+extends base
+- load i18n
+block title
+  | {% trans "Programme hosts" %}
+block content_full_width
+  .container
+    include core_messages.pug
+
+    .nav.nav-tabs
+      include core_admin_menu_items.pug
+
+    .panel.panel-default
+      .panel-heading: strong {% trans "Filter organizers" %}
+      .panel-body.signup-filters
+        .row
+          .col-md-3: strong {% trans "Active" %}
+          .col-md-9
+            for it, active in active_filters
+              if active
+                span.label.label-brand.kompassi-space-after
+                  a(href='?{{ it.qs_del }}') {{ it.name }}
+              else
+                span.label.label-default.kompassi-space-after
+                  a(href='?{{ it.qs_add }}') {{ it.name }}
+        .row
+          .col-md-3: strong {% trans "Personnel class" %}
+          .col-md-9
+            for it, active in personnel_class_filters
+              if active
+                span.label.label-brand.kompassi-space-after
+                  a(href='?{{ it.qs_del }}') {{ it.name }}
+              else
+                span.label.label-default.kompassi-space-after
+                  a(href='?{{ it.qs_add }}') {{ it.name }}
+        //- hr
+        //- .row
+        //-   .col-md-3: strong Luettelojärjestys
+        //-   .col-md-9
+        //-     for so, active in sorter
+        //-       if active
+        //-         span.label.label-brand.kompassi-space-after
+        //-           a(href='?{{ so.qs_add }}') {{ so.name }}
+        //-       else
+        //-         span.label.label-default.kompassi-space-after
+        //-           a(href='?{{ so.qs_add }}') {{ so.name }}
+
+    .panel.panel-default
+      .panel-heading: strong {% trans "Programme hosts" %}
+      table.table.table-striped
+        thead
+          tr
+            th {% trans "Surname" %}
+            th {% trans "First name" %}
+            th {% trans "Nick" %}
+            th {% trans "Programmes" %}
+        tbody
+          for organizer in organizers
+            tr
+              td= organizer.surname
+              td= organizer.first_name
+              td= organizer.nick
+              td
+                for pr in organizer.current_event_programme_roles
+                  div
+                    .pull-right
+                      .label(class='{{ pr.programme.state_css }}')
+                        {{ pr.role_or_status }}
+                        if not pr.programme.host_can_edit
+                          i.fa.fa-lock.kompassi-icon-space-left(title='{% trans "Frozen" %}')
+                    a(href='{% url "programme_admin_detail_view" event.slug pr.programme.pk %}') {{ pr.programme.title }}
+      .panel-footer.clearfix
+        if num_organizers
+          .btn-group.pull-right
+            .btn-group
+              button.btn.btn-default.dropdown-toggle#programme-admin-export-dropdown(type='button',
+                                                                                      data-toggle='dropdown',
+                                                                                      data-target='programme-admin-export-dropdown-menu'
+                                                                                      aria-haspopup='true',
+                                                                                      aria-expanded='true') {% trans "Export" %}
+                i.fa.fa-caret-down.kompassi-icon-space-left
+              ul.dropdown-menu#programme-admin-export-dropdown-menu(aria-labelledby='programme-admin-export-dropdown')
+                for export_format in export_formats
+                  li: a(href='{% url "programme_admin_export_organizers_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+                    i.fa.fa-cloud-download.kompassi-icon-space-right
+                    |{{ export_format.name }}
+          .text-muted {% blocktrans with num_total_organizers=num_total_organizers count num_organizers=num_organizers %}One programme host visible (total {{ num_total_organizers }}).{% plural %}{{ num_organizers }} programme hosts (total {{ num_total_organizers }}).{% endblocktrans %}
+        else
+          .text-muted {% blocktrans with num_total_organizers=num_total_organizers %}No programme hosts visible (total {{ num_total_organizers }}).{% endblocktrans %}

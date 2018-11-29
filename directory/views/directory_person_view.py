@@ -69,4 +69,4 @@ def directory_person_view(request, vars, organization, person_id):
 
     person.log_view(request, organization=organization)
 
-    return render(request, 'directory_person_view.jade', vars)
+    return render(request, 'directory_person_view.pug', vars)

@@ -12,7 +12,7 @@ from django.views.generic import View
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.views.decorators.http import require_POST

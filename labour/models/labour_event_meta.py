@@ -17,7 +17,7 @@ from .constants import GROUP_VERBOSE_NAMES_BY_SUFFIX, SIGNUP_STATE_GROUPS
 
 
 class LabourEventMeta(ContactEmailMixin, EventMetaBase):
-    signup_extra_content_type = models.ForeignKey('contenttypes.ContentType')
+    signup_extra_content_type = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE)
 
     registration_opens = models.DateTimeField(
         null=True,

@@ -125,7 +125,7 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         help_text=_('This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended.'),
     )
 
-    pos_access_group = models.ForeignKey('auth.Group',
+    pos_access_group = models.ForeignKey('auth.Group', on_delete=models.CASCADE,
         null=True,
         blank=True,
         verbose_name=_('POS access group'),
@@ -180,7 +180,7 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
 
 
 class Batch(models.Model):
-    event = models.ForeignKey('core.Event')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
 
     create_time = models.DateTimeField(auto_now=True)
     delivery_time = models.DateTimeField(null=True, blank=True)
@@ -300,7 +300,7 @@ class Batch(models.Model):
 class LimitGroup(models.Model):
     # REVERSE: product_set = ManyToMany(Product)
 
-    event = models.ForeignKey('core.Event', verbose_name=_('Event'))
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name=_('Event'))
     description = models.CharField(max_length=255, verbose_name=_('Description'))
     limit = models.IntegerField(verbose_name=_('Maximum amount to sell'))
 
@@ -354,7 +354,7 @@ class LimitGroup(models.Model):
 
 
 class ShirtType(models.Model):
-    event = models.ForeignKey('core.event')
+    event = models.ForeignKey('core.event', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     available = models.BooleanField(default=True)
@@ -373,7 +373,7 @@ class ShirtType(models.Model):
 
 
 class ShirtSize(models.Model):
-    type = models.ForeignKey(ShirtType, related_name='shirt_sizes')
+    type = models.ForeignKey(ShirtType, on_delete=models.CASCADE, related_name='shirt_sizes')
     name = models.CharField(max_length=255)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     available = models.BooleanField(default=True)
@@ -392,7 +392,7 @@ class ShirtSize(models.Model):
 
 
 class Product(models.Model):
-    event = models.ForeignKey('core.Event')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
 
     name = models.CharField(max_length=100)
     override_electronic_ticket_title = models.CharField(max_length=100, default='', blank=True)
@@ -590,9 +590,9 @@ class Customer(models.Model):
 class Order(models.Model):
     # REVERSE: order_product_set = ForeignKeyFrom(OrderProduct)
 
-    event = models.ForeignKey('core.Event')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
 
-    customer = models.OneToOneField(Customer, null=True, blank=True)
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, null=True, blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
 
     confirm_time = models.DateTimeField(
@@ -620,7 +620,7 @@ class Order(models.Model):
         verbose_name='Peruutusaika',
     )
 
-    batch = models.ForeignKey(Batch,
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE,
         null=True,
         blank=True,
         verbose_name='Toimituserä',
@@ -1070,8 +1070,8 @@ class Order(models.Model):
 
 
 class OrderProduct(models.Model):
-    order = models.ForeignKey(Order, related_name="order_product_set")
-    product = models.ForeignKey(Product, related_name="order_product_set")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_product_set")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="order_product_set")
     count = models.IntegerField(default=0)
 
     @property
@@ -1103,7 +1103,7 @@ class OrderProduct(models.Model):
 
 
 class AccommodationInformation(models.Model, CsvExportMixin):
-    order_product = models.ForeignKey(OrderProduct, blank=True, null=True, related_name="accommodation_information_set")
+    order_product = models.ForeignKey(OrderProduct, on_delete=models.CASCADE, blank=True, null=True, related_name="accommodation_information_set")
 
     # XXX ugly hack: We hijack limit groups to represent (night, accommodation centre).
     limit_groups = models.ManyToManyField(LimitGroup, blank=True, related_name="accommodation_information_set")
@@ -1177,8 +1177,8 @@ class AccommodationInformation(models.Model, CsvExportMixin):
 
 
 class ShirtOrder(models.Model, CsvExportMixin):
-    order = models.ForeignKey(Order, related_name='shirt_orders')
-    size = models.ForeignKey(ShirtSize, related_name='shirt_orders')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='shirt_orders')
+    size = models.ForeignKey(ShirtSize, on_delete=models.CASCADE, related_name='shirt_orders')
     count = models.PositiveIntegerField(default=0)
 
     def __str__(self):

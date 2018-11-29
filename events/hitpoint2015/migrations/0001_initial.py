@@ -25,7 +25,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SignupExtra',
             fields=[
-                ('signup', models.OneToOneField(related_name='+', primary_key=True, serialize=False, to='labour.Signup')),
+                ('signup', models.OneToOneField(on_delete=models.CASCADE,
+                 related_name='+', primary_key=True, serialize=False, to='labour.Signup')),
                 ('shift_type', models.CharField(help_text='Haluatko tehd\xe4 yhden pitk\xe4n ty\xf6vuoron vaiko monta lyhyemp\xe4\xe4 vuoroa?', max_length=15, verbose_name='Toivottu ty\xf6vuoron pituus', choices=[('yksipitka', 'Yksi pitk\xc3\xa4 vuoro'), ('montalyhytta', 'Monta lyhyemp\xc3\xa4\xc3\xa4 vuoroa'), ('kaikkikay', 'Kumpi tahansa k\xc3\xa4y')])),
                 ('total_work', models.CharField(help_text='Kuinka paljon haluat tehd\xe4 t\xf6it\xe4 yhteens\xe4 tapahtuman aikana? Useimmissa teht\xe4vist\xe4 minimi on kahdeksan tuntia, mutta joissain teht\xe4viss\xe4 se voi olla my\xf6s v\xe4hemm\xe4n (esim. majoitusvalvonta 6 h).', max_length=15, verbose_name='Toivottu kokonaisty\xf6m\xe4\xe4r\xe4', choices=[('8h', 'Minimi - 8 tuntia (1 l\xc3\xa4mmin ateria)'), ('12h', '12 tuntia (2 l\xc3\xa4mmint\xc3\xa4 ateriaa)'), ('yli12h', 'Ty\xc3\xb6n Sankari! Yli 12 tuntia! (2 l\xc3\xa4mmint\xc3\xa4 ateriaa)')])),
                 ('construction', models.BooleanField(default=False, help_text='Kasaustalkoisiin osallistumista ei lasketa tapahtuman aikaiseen kokonaisty\xf6m\xe4\xe4r\xe4\xe4n.', verbose_name='Voin osallistua perjantain kasaustalkoisiin')),

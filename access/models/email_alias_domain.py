@@ -9,7 +9,7 @@ class EmailAliasDomain(models.Model):
         verbose_name=_('domain'),
         help_text=_('eg. example.com'),
     )
-    organization = models.ForeignKey('core.Organization', verbose_name=_('organization'))
+    organization = models.ForeignKey('core.Organization', on_delete=models.CASCADE, verbose_name=_('organization'))
     has_internal_aliases = models.BooleanField(default=False)
 
     @classmethod

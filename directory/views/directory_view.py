@@ -60,4 +60,4 @@ def directory_view(request, vars, organization):
     else:
         emit('directory.viewed', request=request, organization=organization)
 
-    return render(request, 'directory_view.jade', vars)
+    return render(request, 'directory_view.pug', vars)

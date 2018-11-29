@@ -1,0 +1,137 @@
+extends core_admin_base.pug
+- load trans from i18n
+- load blocktrans from i18n
+block title
+  | {% trans "Admission list" %}
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong {% trans "Admission list" %}
+    .panel-body
+      p.text-muted {% trans "Filter by personnel type" %}:
+      for filter_active, personnel_class in filters
+        if filter_active
+          a.label.label-primary.kompassi-space-after(href='{% url "badges_admin_badges_view" event.slug %}') {{ personnel_class.name }}
+        else
+          a.label.label-default.kompassi-space-after(href='{% url "badges_admin_filtered_view" event.slug personnel_class.slug %}') {{ personnel_class.name }}
+    table.table.table-striped
+      thead
+        if should_display_personnel_class
+          th {% trans "Personnel class" %}
+        th {% trans "Surname" %}
+        th {% trans "First name" %}
+        th {% trans "Nick name" %}
+        if not should_display_personnel_class
+          th {% trans "Job title" %}
+        th {% trans "Status" %}
+        th
+      tbody
+        for badge in badges
+          tr
+            if should_display_personnel_class
+              td {{ badge.personnel_class.name }}
+
+            for value, is_visible in badge.get_name_fields
+              if is_visible
+                td {{ value }}
+              else
+                td.text-muted {{ value }}
+
+            if not should_display_personnel_class
+              td {{ badge.job_title }}
+
+            td
+              if badge.is_revoked
+                span.label.label-danger {% trans "Revoked" %} {% if badge.batch %}({{ badge.batch }}){% endif %}
+              else
+                if badge.is_printed
+                  if badge.is_printed_separately
+                    span.label.label-success(title='Tulostettu {{ badge.printed_separately_at }}') {% trans "Separately" %}
+                  else
+                    span.label.label-success(title='Tulostettu {{ badge.batch.printed_at }}') {{ badge.batch }}
+                else
+                  if badge.batch
+                    span.label.label-primary {{ badge.batch }}
+                  else
+                    span.label.label-default {% trans "Waiting" %}
+
+            td
+              form(method='POST', role='form')
+                {% csrf_token %}
+                input(type='hidden', name='badge_id', value='{{ badge.pk }}')
+                .btn-group.btn-group-xs
+                  if not badge.is_revoked
+                    if not badge.is_printed_separately
+                      button.btn.btn-success(type='submit', name='mark-printed', value='mark-printed', title='Merkitse erikseen tulostetuksi')
+                        i.fa.fa-1.fa-print
+                    else
+                      button.btn.btn-default(type='submit', name='clear-printed', value='clear-printed', title='Nollaa erikseen tulostettu -merkintä')
+                        i.fa.fa-1.fa-undo
+                    if badge.can_revoke
+                      button.btn.btn-danger(
+                        type='submit',
+                        name='revoke-badge',
+                        value='revoke-badge',
+                        title='{% trans "Revoke badge" %}',
+                      )
+                        i.fa.fa-1.fa-trash
+                    else
+                      button.btn.btn-danger(
+                        type='submit',
+                        title='{% trans "This badge cannot be revoked here because it is managed by either the labour or the programme management system." %}',
+                        disabled,
+                      )
+                        i.fa.fa-1.fa-trash
+
+                  else
+                    if not badge.is_printed_separately
+                      button.btn.btn-success(
+                        type='button',
+                        title='{% trans "This badge cannot be marked separately printed because it is revoked." %}',
+                        disabled,
+                      )
+                        i.fa.fa-1.fa-print
+                    else
+                      button.btn.btn-default(
+                        type='button',
+                        title='{% trans "This badge cannot be un-marked separately printed because it is revoked." %}',
+                        disabled,
+                      )
+                        i.fa.fa-1.fa-undo
+                    if badge.can_unrevoke
+                      button.btn.btn-primary(
+                        type='submit',
+                        name='clear-revoked',
+                        value='clear-revoked',
+                        title='{% trans "Un-revoke badge" %}',
+                      )
+                        i.fa.fa-1.fa-undo
+                    else
+                      button.btn.btn-primary(
+                        type='button',
+                        title='{% trans "This revoked badge cannot be un-revoked here because it is managed by either the labour or the programme management system." %}',
+                        disabled,
+                      )
+                        i.fa.fa-1.fa-undo
+
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        button.btn.btn-default(type='button', data-toggle='dropdown') {% trans "Export" %} <span class='caret'></span>
+        ul.dropdown-menu(role='menu')
+          li: a.btn.btn-link(href='?format=xlsx')
+            i.fa.fa-cloud-download.kompassi-icon-space-right
+            | XLSX
+          li: a.btn.btn-link(href='?format=csv')
+            i.fa.fa-cloud-download.kompassi-icon-space-right
+            | CSV
+          li: a.btn.btn-link(href='?format=tsv')
+            i.fa.fa-cloud-download.kompassi-icon-space-right
+            | TSV
+          li: a.btn.btn-link(href='?format=print', target='_blank')
+            i.fa.fa-print.kompassi-icon-space-right
+            | {% trans "Printable version" %}
+        if can_manually_add_badge
+          a.btn.btn-success(href='{{ request.path }}/new')
+            i.fa.fa-plus.kompassi-icon-space-right
+            {% trans "Manually add a badge" %}
+      p.text-muted
+        {% blocktrans count num_badges=badges.count %}One badge.{% plural %}{{ num_badges }} badges.{% endblocktrans %}

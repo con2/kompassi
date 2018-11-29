@@ -1,0 +1,15 @@
+extends base
+- load static from staticfiles
+block title
+  | Työvoimatarpeet ja työvuorot
+block content_full_width
+  .nav.nav-tabs
+    include core_admin_menu_items.pug
+
+  #labour-admin-roster-view
+    include labour_admin_roster_views/Roster.pug
+block extra_scripts
+  link(rel='stylesheet', href='{% static "labour/css/roster.css" %}')
+  script.
+    window.kompassiLabourRosterConfig = {{ config_json|safe }};
+  script(src='{% static "labour/js/roster.js" %}')

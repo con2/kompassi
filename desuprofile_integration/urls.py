@@ -25,7 +25,7 @@ urlpatterns = [
 
     url(
         r'^desuprofile/confirm/?$',
-        TemplateView.as_view(template_name='desuprofile_integration_confirmation_required_view.jade'),
+        TemplateView.as_view(template_name='desuprofile_integration_confirmation_required_view.pug'),
         name='desuprofile_integration_confirmation_required_view',
     ),
 

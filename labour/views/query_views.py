@@ -3,7 +3,7 @@ import datetime
 import json
 from django.contrib import messages
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
@@ -68,7 +68,7 @@ def query_index(request, vars, event):
     query_builder = query_builder_class()
     get_query_config(vars, query_builder)
 
-    return render(request, 'labour_query.jade', vars)
+    return render(request, 'labour_query.pug', vars)
 
 
 def merge_values(values):
@@ -152,4 +152,4 @@ def query_exec(request, vars, event):
             query_builder_results=j_results,
             query_builder_views=json.dumps(query_builder.views),
         )
-        return render(request, 'labour_query.jade', vars)
+        return render(request, 'labour_query.pug', vars)

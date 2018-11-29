@@ -24,12 +24,12 @@ from ..proxies.badge.management import BadgeManagementProxy
 BADGE_ORDER = ('personnel_class', 'person__surname', 'person__first_name')
 BADGE_LIST_TEMPLATES = dict(
     screen=dict(
-        normal='badges_admin_badges_view.jade',
-        yoink='badges_admin_badges_view.jade',
+        normal='badges_admin_badges_view.pug',
+        yoink='badges_admin_badges_view.pug',
     ),
     print=dict(
-        normal='badges_admin_badges_print.jade',
-        yoink='badges_admin_badges_print_yoink.jade',
+        normal='badges_admin_badges_print.pug',
+        yoink='badges_admin_badges_print_yoink.pug',
     ),
 )
 

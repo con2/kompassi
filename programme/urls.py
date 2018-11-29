@@ -60,14 +60,14 @@ urlpatterns = [
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/special/fragment/?$',
         programme_special_view,
-        dict(template='programme_list.jade'),
+        dict(template='programme_list.pug'),
         name='programme_special_fragment_view',
     ),
 
     url(
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/fragment/?$',
         programme_schedule_view,
-        dict(template='programme_schedule_fragment.jade'),
+        dict(template='programme_schedule_fragment.pug'),
         name='programme_schedule_fragment'
     ),
 

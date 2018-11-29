@@ -1,0 +1,14 @@
+h3 Työvoima
+if signup
+  h4 Työvoima&shy;hakemuksesi tähän tapahtumaan
+  include labour_profile_signup_box.pug
+else
+  if event.laboureventmeta.is_registration_open
+    h4 Voit hakea töihin tähän tapahtumaan
+    a(href='{% url "labour_signup_view" event.slug %}').btn.btn-primary Hae töihin tapahtumaan
+  else
+    h4 Työvoimahaku ei ole tällä hetkellä avoinna.
+
+if is_labour_admin
+  h4 Sinulla on työvoima&shy;vastaavan oikeudet tähän tapahtumaan
+  p: a(href='{% url "labour_admin_dashboard_view" event.slug %}').btn.btn-primary Siirry ylläpitäjän näkymään

@@ -15,13 +15,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='badge',
             name='personnel_class',
-            field=models.ForeignKey(blank=True, to='labour.PersonnelClass', null=True),
+            field=models.ForeignKey(on_delete=models.CASCADE, blank=True, to='labour.PersonnelClass', null=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='batch',
             name='personnel_class',
-            field=models.ForeignKey(blank=True, to='labour.PersonnelClass', null=True),
+            field=models.ForeignKey(on_delete=models.CASCADE, blank=True, to='labour.PersonnelClass', null=True),
             preserve_default=True,
         ),
     ]

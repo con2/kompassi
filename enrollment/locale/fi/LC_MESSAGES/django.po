@@ -1,12 +1,12 @@
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_enroll_view.pug
 msgid "Additional information"
 msgstr "Lisätiedot"
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_enroll_view.pug
 msgid "Contact information"
 msgstr "Yhteystiedot"
 
-#: templates/enrollment_admin_special_diets_view.jade
+#: templates/enrollment_admin_special_diets_view.pug
 msgid "Count"
 msgstr "Lukumäärä"
 
@@ -14,23 +14,23 @@ msgstr "Lukumäärä"
 msgid "Diet"
 msgstr "Ruokavalio"
 
-#: templates/enrollment_admin_view.jade templates/enrollment_enroll_view.jade
+#: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_enroll_view.pug
 msgid "Enroll"
 msgstr "Ilmoittaudu"
 
-#: templates/enrollment_event_box.jade
+#: templates/enrollment_event_box.pug
 msgid "Enroll for this event"
 msgstr "Ilmoittaudu tapahtumaan"
 
-#: templates/enrollment_admin_view.jade views/enrollment_admin_menu_items.py
+#: templates/enrollment_admin_view.pug views/enrollment_admin_menu_items.py
 msgid "Enrolled people"
 msgstr "Ilmoittautuneet"
 
-#: apps.py templates/enrollment_event_box.jade
+#: apps.py templates/enrollment_event_box.pug
 msgid "Enrollment"
 msgstr "Ilmoittautuminen"
 
@@ -38,7 +38,7 @@ msgstr "Ilmoittautuminen"
 msgid "Enrollment closes"
 msgstr "Ilmoittautuminen päättyy"
 
-#: templates/enrollment_event_box.jade
+#: templates/enrollment_event_box.pug
 msgid "Enrollment for this event is not currently open."
 msgstr "Ilmoittautuminen tähän tapahtumaan ei ole juuri nyt käynnissä."
 
@@ -50,11 +50,11 @@ msgstr "Ilmoittautumislomakkeen viesti"
 msgid "Enrollment opens"
 msgstr "Ilmoittautuminen alkaa"
 
-#: templates/enrollment_admin_view.jade templates/enrollment_enroll_view.jade
+#: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
-#: templates/enrollment_event_box.jade
+#: templates/enrollment_event_box.pug
 msgid "Go to admin view…"
 msgstr "Siirry ylläpitonäkymään…"
 
@@ -62,7 +62,7 @@ msgstr "Siirry ylläpitonäkymään…"
 msgid "If you're on a diet that's not included in the list, please detail your diet here. Event organizer will try to take dietary needs into consideration, but all diets may not be catered for."
 msgstr "Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään."
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_enroll_view.pug
 msgid "If your name is publicly displayed, this is how your name will be published. You can change the name display style in your profile."
 msgstr "Jos nimesi näytetään julkisesti, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
 
@@ -70,24 +70,24 @@ msgstr "Jos nimesi näytetään julkisesti, se näytetään tässä muodossa. Vo
 msgid "Manage enrollment"
 msgstr "Ilmoittautumisten hallinta"
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_enroll_view.pug
 msgid "Name as displayed"
 msgstr "Nimen esittäminen"
 
-#: templates/enrollment_admin_view.jade
+#: templates/enrollment_admin_view.pug
 msgid "Nick"
 msgstr "Nick"
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_enroll_view.pug
 msgid "Nick name"
 msgstr "Nick"
 
-#: templates/enrollment_admin_view.jade
+#: templates/enrollment_admin_view.pug
 #, python-format
 msgid "No enrolled people visible (total %(num_total_enrolled)s)."
 msgstr "Ei ilmoittautuneita näkyvissä (yhteensä %(num_total_enrolled)s)."
 
-#: templates/enrollment_admin_view.jade
+#: templates/enrollment_admin_view.pug
 #, python-format
 msgid "One enrolled person visible (total %(num_total_enrolled)s)."
 msgid_plural "%(num_enrolled)s enrolled people visible (total %(num_total_enrolled)s)."
@@ -98,15 +98,15 @@ msgstr[1] "Näytetään %(num_enrolled)s ilmoittautunutta (yhteensä %(num_total
 msgid "Other diets"
 msgstr "Muu erikoisruokavalio"
 
-#: templates/enrollment_admin_special_diets_view.jade
+#: templates/enrollment_admin_special_diets_view.pug
 msgid "Other special diet"
 msgstr "Muu erikoisruokavalio"
 
-#: templates/enrollment_admin_special_diets_view.jade
+#: templates/enrollment_admin_special_diets_view.pug
 msgid "Other special diets"
 msgstr "Muu erikoisruokavalio"
 
-#: templates/enrollment_admin_view.jade templates/enrollment_enroll_view.jade
+#: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
@@ -114,7 +114,7 @@ msgstr "Puhelinnumero"
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_enroll_view.pug
 msgid "Please check your contact information and update your profile if necessary. By submitting this form you agree to these contact details being shared with the event organizer."
 msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman järjestäjille."
 
@@ -122,7 +122,7 @@ msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliis
 msgid "Reference to form class. Example: events.yukicon2016.forms:EnrollmentForm"
 msgstr "Form-luokan viittaus. Esimerkki: events.yukicon2016.forms:EnrollmentForm"
 
-#: templates/enrollment_admin_special_diets_view.jade
+#: templates/enrollment_admin_special_diets_view.pug
 msgid "Special diet"
 msgstr "erikoisruokavalio"
 
@@ -130,15 +130,15 @@ msgstr "erikoisruokavalio"
 msgid "Special diets"
 msgstr "Erikoisruokavaliot"
 
-#: templates/enrollment_admin_special_diets_view.jade
+#: templates/enrollment_admin_special_diets_view.pug
 msgid "Standard special diet"
 msgstr "Tyypillinen erikoisruokavalio"
 
-#: templates/enrollment_admin_special_diets_view.jade
+#: templates/enrollment_admin_special_diets_view.pug
 msgid "Standard special diets"
 msgstr "Tyypilliset erikoisruokavaliot"
 
-#: templates/enrollment_admin_view.jade templates/enrollment_enroll_view.jade
+#: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -150,7 +150,7 @@ msgstr "Kiitos ilmoittautumisestasi."
 msgid "This event does not use this site to manage enrollment."
 msgstr "Tämä tapahtuma ei käytä tätä sivustoa ilmoittautumisten hallintaan."
 
-#: templates/enrollment_enroll_view.jade
+#: templates/enrollment_enroll_view.pug
 msgid "Update profile..."
 msgstr "Päivitä profiili..."
 
@@ -170,15 +170,15 @@ msgstr "Olet jo ilmoittautunut tähän tapahtumaan."
 msgid "You are not allowed to manage enrollment for this event."
 msgstr "Sinulla ei ole ilmoittautumisten ylläpito-oikeuksia tähän tapahtumaan.."
 
-#: templates/enrollment_event_box.jade
+#: templates/enrollment_event_box.pug
 msgid "You can enroll for this event"
 msgstr "Voit ilmoittautua tähän tapahtumaan"
 
-#: templates/enrollment_event_box.jade
+#: templates/enrollment_event_box.pug
 msgid "You have already signed up for this event"
 msgstr "Olet jo ilmoittautunut tähän tapahtumaan"
 
-#: templates/enrollment_event_box.jade
+#: templates/enrollment_event_box.pug
 msgid "You have enrollment admin privileges for this event"
 msgstr "Sinulla on ylläpitäjän oikeudet tähän tapahtumaan"
 

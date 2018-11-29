@@ -7,7 +7,7 @@ def enrollment_event_box_context(request, event):
     enrollment = None
     is_enrollment_admin = False
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         is_enrollment_admin = event.enrollment_event_meta.is_user_admin(request.user)
 
         try:

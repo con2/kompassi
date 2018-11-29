@@ -29,19 +29,25 @@ class Setup(object):
         self.setup_directory()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(name='Lahden Sibeliustalo', defaults=dict(
             name_inessive='Lahden Sibeliustalolla',  # not really inessive though
         ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='kehittyvien-conien-suomi-ry',
+            defaults=dict(
+                name='Kehittyvien conien Suomi ry',
+                homepage_url='https://desucon.fi/kcs/',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='desucon2019', defaults=dict(
             name='Desucon (2019)',
             name_genitive='Desuconin',
             name_illative='Desuconiin',
             name_inessive='Desuconissa',
             homepage_url='https://desucon.fi/desucon2019/',
-            organization_name='Kehittyvien conien Suomi ry',
-            organization_url='https://desucon.fi/kcs/',
+            organization=self.organization,
             start_time=datetime(2019, 6, 14, 17, 0, 0, tzinfo=self.tz),
             end_time=datetime(2019, 6, 16, 17, 0, 0, tzinfo=self.tz),
             venue=self.venue,
@@ -128,8 +134,8 @@ class Setup(object):
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
 
-            jc.required_qualifications = [qual]
-            jc.save()
+            jc.required_qualifications.set([qual])
+
 
         labour_event_meta.create_groups()
 

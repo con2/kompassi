@@ -10,8 +10,8 @@ logger = logging.getLogger('kompassi')
 
 
 class GroupEmailAliasGrant(models.Model):
-    group = models.ForeignKey('auth.Group', verbose_name='Ryhmä')
-    type = models.ForeignKey('access.EmailAliasType', verbose_name='Tyyppi')
+    group = models.ForeignKey('auth.Group', on_delete=models.CASCADE, verbose_name='Ryhmä')
+    type = models.ForeignKey('access.EmailAliasType', on_delete=models.CASCADE, verbose_name='Tyyppi')
     active_until = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):

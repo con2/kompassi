@@ -19,7 +19,7 @@ def labour_admin_startstop_view(request, vars, event):
     return generic_publish_unpublish_view(
         request, vars, event,
         meta=event.labour_event_meta,
-        template='labour_admin_startstop_view.jade',
+        template='labour_admin_startstop_view.pug',
         FormClass=StartStopForm,
     )
 

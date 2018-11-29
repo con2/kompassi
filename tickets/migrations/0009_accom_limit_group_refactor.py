@@ -27,7 +27,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='accommodationinformation',
             name='order_product',
-            field=models.ForeignKey(related_name='accommodation_information_set', blank=True, to='tickets.OrderProduct', null=True),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='accommodation_information_set',
+                                    blank=True, to='tickets.OrderProduct', null=True),
         ),
         migrations.RunPython(populate_accommodation_limit_group, elidable=True),
     ]

@@ -28,7 +28,7 @@ APP_NAMES = dict(
 
 
 class IntraEventMeta(EventMetaBase):
-    organizer_group = models.ForeignKey('auth.Group', related_name='as_organizer_group_for_intra_event_meta')
+    organizer_group = models.ForeignKey('auth.Group', on_delete=models.CASCADE, related_name='as_organizer_group_for_intra_event_meta')
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -44,7 +44,7 @@ class IntraEventMeta(EventMetaBase):
         return self.is_user_in_group(user, self.organizer_group)
 
     def is_user_allowed_to_access(self, user):
-        return user.is_authenticated() and (
+        return user.is_authenticated and (
             user.is_superuser or
             self.is_user_organizer(user) or
             self.is_user_admin(user)

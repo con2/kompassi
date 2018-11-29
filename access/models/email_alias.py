@@ -12,8 +12,8 @@ logger = logging.getLogger('kompassi')
 
 
 class EmailAlias(EmailAliasMixin, models.Model):
-    type = models.ForeignKey('access.EmailAliasType', verbose_name=_('type'), related_name='email_aliases')
-    person = models.ForeignKey('core.Person', verbose_name=_('person'), related_name='email_aliases')
+    type = models.ForeignKey('access.EmailAliasType', on_delete=models.CASCADE, verbose_name=_('type'), related_name='email_aliases')
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE, verbose_name=_('person'), related_name='email_aliases')
 
     account_name = models.CharField(
         max_length=255,
@@ -30,7 +30,7 @@ class EmailAlias(EmailAliasMixin, models.Model):
     )
 
     # to facilitate easy pruning of old addresses
-    group_grant = models.ForeignKey('access.GroupEmailAliasGrant',
+    group_grant = models.ForeignKey('access.GroupEmailAliasGrant', on_delete=models.CASCADE,
         blank=True,
         null=True,
         help_text='Myöntämiskanava antaa kaikille tietyn ryhmän jäsenille tietyntyyppisen sähköpostialiaksen. '
@@ -39,7 +39,7 @@ class EmailAlias(EmailAliasMixin, models.Model):
     )
 
     # denormalized, for unique_together and easy queries
-    domain = models.ForeignKey('access.EmailAliasDomain', verbose_name=_('domain'))
+    domain = models.ForeignKey('access.EmailAliasDomain', on_delete=models.CASCADE, verbose_name=_('domain'))
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('created at'))
     modified_at = models.DateTimeField(auto_now=True, verbose_name=_('updated at'))

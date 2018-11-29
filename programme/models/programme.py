@@ -117,11 +117,11 @@ class Programme(models.Model, CsvExportMixin):
     AlternativeProgrammeForms.
     """
 
-    category = models.ForeignKey('programme.Category',
+    category = models.ForeignKey('programme.Category', on_delete=models.CASCADE,
         verbose_name=_('category'),
         help_text=_('Choose the category that fits your programme the best. We reserve the right to change this.'),
     )
-    form_used = models.ForeignKey('programme.AlternativeProgrammeForm',
+    form_used = models.ForeignKey('programme.AlternativeProgrammeForm', on_delete=models.CASCADE,
         blank=True,
         null=True,
         verbose_name=_('form used'),

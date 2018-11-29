@@ -28,4 +28,4 @@ def programme_profile_view(request):
         rejected_programmes=rejected_programmes,
     )
 
-    return render(request, 'programme_profile_view.jade', vars)
+    return render(request, 'programme_profile_view.pug', vars)

@@ -25,7 +25,7 @@ class AlternativeSignupForm(models.Model):
     OrganizerSignupForm and OrganizerSignupExtraForm.
     """
 
-    event = models.ForeignKey('core.Event', verbose_name='Tapahtuma')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name='Tapahtuma')
 
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
@@ -134,4 +134,3 @@ class AlternativeFormMixin(object):
             manager.set(values, clear=True)
 
         return obj
-

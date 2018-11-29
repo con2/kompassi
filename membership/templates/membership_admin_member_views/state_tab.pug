@@ -1,0 +1,8 @@
+- load crispy from crispy_forms_tags
+.tab-pane(role='tabpanel')#membership-admin-state-tab
+  .panel.panel-default
+    .panel-heading: strong Jäsenyyden tila
+    .panel-body
+      - crispy membership_form
+    .panel-footer.clearfix
+      include membership_admin_member_views/actions.pug

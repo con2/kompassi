@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex='[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
                 ('name', models.CharField(max_length=63)),
-                ('event', models.ForeignKey(to='core.Event')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, to='core.Event')),
             ],
             options={
                 'verbose_name': 'etu',
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=63)),
                 ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex='[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
                 ('priority', models.IntegerField(default=0)),
-                ('event', models.ForeignKey(to='core.Event')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, to='core.Event')),
                 ('perks', models.ManyToManyField(to='labour.Perk', blank=True)),
             ],
             options={

@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='vote',
             name='vote',
-            field=models.ForeignKey(to='sms.Nominee'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='sms.Nominee'),
             preserve_default=True,
         ),
     ]

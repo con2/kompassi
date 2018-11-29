@@ -32,19 +32,25 @@ class Setup(object):
         self.setup_intra()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(name='Tampereen yliopisto', defaults=dict(
             name_inessive='Tampereen yliopistolla',
         ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='Finncon-yhdistys ry',
+            defaults=dict(
+                name='Finncon-yhdistys ry',
+                homepage_url='http://www.finncon.org/',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='finncon2020', defaults=dict(
             name='Finncon 2020',
             name_genitive='Finncon 2020 -tapahtuman',
             name_illative='Finncon 2020 -tapahtumaan',
             name_inessive='Finncon 2020 -tapahtumassa',
             homepage_url='http://2020.finncon.org',
-            organization_name='Finncon-yhdistys ry',
-            organization_url='http://www.finncon.org/',
+            organization=self.organization,
             # start_time=datetime(2020, 7, 14, 10, 0, tzinfo=self.tz),
             # end_time=datetime(2020, 7, 15, 18, 0, tzinfo=self.tz),
             venue=self.venue,
@@ -229,8 +235,8 @@ class Setup(object):
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
 
-            jc.required_qualifications = [qual]
-            jc.save()
+            jc.required_qualifications.set([qual])
+
 
         labour_event_meta.create_groups()
 

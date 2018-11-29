@@ -1,0 +1,202 @@
+extends core_admin_base_full_width
+- load trans from i18n
+block title
+  | Tapahtumaan ilmoittautuneet henkilöt
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Tapahtumaan ilmoittautuneet henkilöt
+    table.table.table-striped
+      include labour_admin_signup_table_contents.pug
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        .btn-group
+          button.btn.btn-default.dropdown-toggle#membership-admin-mass-dropdown(type='button',
+                                                                                data-toggle='dropdown',
+                                                                                aria-haspopup='true',
+                                                                                aria-expanded='true') Muokkaa kaikkia näkyviä
+            i.fa.fa-caret-down.kompassi-icon-space-left
+          ul.dropdown-menu(aria-labelledby='membership-admin-mass-dropdown')
+            for mass_operation in mass_operations.values
+              li: a(href='', data-toggle='modal', data-target='##{mass_operation.modal_id}')= mass_operation.text
+
+        .btn-group
+          button.btn.btn-default.dropdown-toggle#membership-admin-export-dropdown(type='button',
+                                                                                  data-toggle='dropdown',
+                                                                                  data-target='membership-admin-export-dropdown-menu'
+                                                                                  aria-haspopup='true',
+                                                                                  aria-expanded='true') Vie
+            i.fa.fa-caret-down.kompassi-icon-space-left
+          ul.dropdown-menu#membership-admin-export-dropdown-menu(aria-labelledby='membership-admin-export-dropdown')
+            for export_format in export_formats
+              li: a(href='{% url "labour_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+                i.fa.fa-cloud-download.kompassi-icon-space-right
+                |{{ export_format.name }}
+            li: a(href='{% url "labour_admin_export_view" event.slug "html" %}?{{ request.META.QUERY_STRING }}')
+              i.fa.fa-print.kompassi-icon-space-right
+              {% trans "Print work certificates" %}
+
+      p.text-muted {{ num_signups }} henkilö{{ num_signups|pluralize:"ä" }} (yhteensä {{ num_all_signups }}).
+
+    .legend.labour-job-categories-legend.hidden-xs
+      span.label.label-default.kompassi-icon-space-right Haettu
+      span.label.label-info.kompassi-icon-space-right Odottaa vuoroja
+      span.label.label-success.kompassi-icon-space-right Vuorot lähetetty
+      span.label.label-warning.kompassi-icon-space-right Vaatii huomiota
+      span.label.label-danger.kompassi-icon-space-right Hylätty
+
+  - with mass_operation=mass_operations.reject
+    .modal.fade#labour-admin-mass-reject-modal(tabindex='-1',
+                                                  role='dialog',
+                                                  aria-labelledby='labour-admin-mass-reject-modal-title')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              i.fa.fa-times-circle(aria-hidden='true')
+
+            h4.modal-title#labour-admin-mass-reject-modal-title Hylkää kaikki käsittelemättömät hakemukset
+          .modal-body
+            p Tällä toiminnolla voit hylätä nyt näkyvistä hakemuksista kaikki ne, jotka ovat tilassa <em>Uusi</em>.
+            p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Hylätyt</em>-ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
+          .modal-footer
+            form(method='POST')
+              {% csrf_token %}
+              .btn-group
+                button.btn.btn-default(type='button', data-dismiss='modal')
+                  i.fa.fa-undo.kompassi-icon-space-right
+                  |Peruuta
+                if mass_operation.num_candidates
+                  button.btn.btn-danger(type='submit', name='action', value='{{ mass_operation.name }}')
+                    i.fa.fa-exclamation-triangle.kompassi-icon-space-right
+                    |Hylkää {{ mass_operation.num_candidates }} hakemus{{ mass_operation.num_candidates|pluralize:"ta" }}
+                else
+                  button.btn.btn-danger(type='button', disabled)
+                    i.fa.fa-exclamation-triangle.kompassi-icon-space-right
+                    |Hylkää 0 hakemusta
+
+  - with mass_operation=mass_operations.request_confirmation
+    .modal.fade#labour-admin-mass-request-confirmation-modal(tabindex='-1',
+                                                             role='dialog',
+                                                             aria-labelledby='labour-admin-mass-request-confirmation-modal-title')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              i.fa.fa-times-circle(aria-hidden='true')
+
+            h4.modal-title#labour-admin-mass-request-confirmation-modal-title Vaadi vahvistusta hyväksytyiltä
+          .modal-body
+            p Tällä toiminnolla voit vaatia tapahtuman vapaaehtoistyöntekijöitä vahvistamaan osallistumisensa tapahtumaan. Toiminto siirtää kaikki parhaillaan näkyvissä olevat <em>Hyväksytty, odottaa vuoroja</em> -tilassa olevat hakemukset tilaan <em>Hyväksytty, odottaa vahvistusta</em>.
+            p Kunkin vapaaehtoistyöntekijän tulee tämän jälkeen käydä vahvistamassa osallistumisensa kirjautumalla sisään Kompassiin ja painamalla tapahtumasivulla tai profiilinsa työhakemussivulla <em>Vahvista osallistuminen</em> -nappia. Työvoimavastaava voi määräajan umpeuduttua hylätä ne hakijat, jotka eivät ole vahvistaneet osallistumistaan.
+            p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Vahvistusta vaadittu</em> -ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
+          .modal-footer
+            form(method='POST')
+              {% csrf_token %}
+              .btn-group
+                button.btn.btn-default(type='button', data-dismiss='modal')
+                  i.fa.fa-undo.kompassi-icon-space-right
+                  |Peruuta
+                if mass_operation.num_candidates
+                  button.btn.btn-warning(type='submit', name='action', value='{{ mass_operation.name }}')
+                    i.fa.fa-exclamation-triangle.kompassi-icon-space-right
+                    |Vaadi vahvistusta {{ mass_operation.num_candidates }} henkilöltä
+                else
+                  button.btn.btn-warning(type='button', disabled)
+                    i.fa.fa-exclamation-triangle.kompassi-icon-space-right
+                    |Vaadi vahvistusta {{ mass_operation.num_candidates }} henkilöltä
+
+  - with mass_operation=mass_operations.send_shifts
+    .modal.fade#labour-admin-mass-send-shifts-modal(tabindex='-1',
+                                                             role='dialog',
+                                                             aria-labelledby='labour-admin-mass-send-shifts-modal-title')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              i.fa.fa-times-circle(aria-hidden='true')
+
+            h4.modal-title#labour-admin-mass-send-shifts-modal-title Lähetä vuorot
+          .modal-body
+            p Tällä toiminnolla voit julkaista työvuorot kerralla suurelle joukolle vapaaehtoistyöntekijöitä. Toiminto siirtää parhaillaan näkyvissä olevista <em>Hyväksytty, odottaa vuoroja</em> -tilassa olevista hakemuksista tilaan <em>Hyväksytty, vuorot lähetetty</em> ne, joille on määritelty työvuoroja joko työvuorotyökalulla tai työvuorojen vapaatekstikentässä.
+            p Tämä toiminto lähettää sähköpostia vuorotetuille hakijoille vain, mikäli <em>Vuorot valmiit</em> -ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massalähetystä tai sen jälkeen.
+          .modal-footer
+            form(method='POST')
+              {% csrf_token %}
+              .btn-group
+                button.btn.btn-default(type='button', data-dismiss='modal')
+                  i.fa.fa-undo.kompassi-icon-space-right
+                  |Peruuta
+                if mass_operation.num_candidates
+                  button.btn.btn-warning(type='submit', name='action', value='{{ mass_operation.name }}')
+                    i.fa.fa-paper-plane.kompassi-icon-space-right
+                    |Lähetä vuorot {{ mass_operation.num_candidates }} henkilölle
+                else
+                  button.btn.btn-warning(type='button', disabled)
+                    i.fa.fa-paper-plane.kompassi-icon-space-right
+                    |Lähetä vuorot {{ mass_operation.num_candidates }} henkilölle
+
+block side_bar
+  h3.labour-admin-filter-heading Suodata hakemuksia
+  .signup-filters#kompassi-labour-signup-filters
+    section
+      h4 Haettu tehtävä
+      div
+        for jc, active in job_category_filters
+          if active
+            span.label.label-brand.kompassi-space-after
+              a(href='?{{ jc.qs_del }}') {{ jc.name }}
+          else
+            span.label.label-default.kompassi-space-after
+              a(href='?{{ jc.qs_add }}') {{ jc.name }}
+    section
+      h4 Hyväksytty tehtävä
+      div
+        for jc, active in job_category_accepted_filters
+          if active
+            span.label.label-brand.kompassi-space-after
+              a(href='?{{ jc.qs_del }}') {{ jc.name }}
+          else
+            span.label.label-default.kompassi-space-after
+              a(href='?{{ jc.qs_add }}') {{ jc.name }}
+    section
+      h4 Henkilöstöluokka
+      div
+        for pc, active in personnel_class_filters
+          if active
+            span.label.label-brand.kompassi-space-after
+              a(href='?{{ pc.qs_del }}') {{ pc.name }}
+          else
+            span.label.label-default.kompassi-space-after
+              a(href='?{{ pc.qs_add }}') {{ pc.name }}
+    section
+      h4 Hakemuksen tila
+      div
+        for sf, active in state_filter
+          if active
+            span.label.label-brand.kompassi-space-after
+              a(href='?{{ sf.qs_del }}') {{ sf.name }}
+          else
+            span.label.label-default.kompassi-space-after
+              a(href='?{{ sf.qs_add }}') {{ sf.name }}
+    if night_work_filter
+      section
+        h4 Yötyö
+        div
+          for nw, active in night_work_filter
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ nw.qs_del }}') {{ nw.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ nw.qs_add }}') {{ nw.name }}
+    hr
+    section
+      h4 Luettelojärjestys
+      div
+        for so, active in sorter
+          if active
+            span.label.label-brand.kompassi-space-after
+              a(href='?{{ so.qs_add }}') {{ so.name }}
+          else
+            span.label.label-default.kompassi-space-after
+              a(href='?{{ so.qs_add }}') {{ so.name }}

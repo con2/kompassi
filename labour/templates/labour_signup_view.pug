@@ -1,0 +1,66 @@
+extends base.pug
+- load crispy_forms_tags
+- load static from staticfiles
+- load i18n
+block title
+  if alternative_signup_form
+    | {{ alternative_signup_form.title }}
+  else
+    | Ilmoittaudu vapaaehtois&shy;työhön
+block content
+  if alternative_signup_form
+    h2 {{ alternative_signup_form.title }}
+  else
+    h2 Ilmoittaudu vapaaehtois&shy;työhön {{ event.name_illative }}
+
+  include core_contact_information_panel.pug
+
+  .panel.panel-default
+    .panel-heading: strong {% trans "Qualifications" %}
+    if signup.person.personqualification_set.exists
+      ul.list-group
+        for pq in signup.person.personqualification_set.all
+          li.list-group-item
+            | {{ pq.qualification }}
+            if pq.qualification_extra
+              span.pull-right.text-muted {{ pq.qualification_extra }}
+    else
+      .panel-body Ei pätevyyksiä.
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        a.btn.btn-default(target='_blank', href='{% url "labour_qualifications_view" %}')
+          i.fa.fa-edit.kompassi-icon-space-right
+          | {% trans "Update qualifications…" %}
+
+      .text-muted Mikäli sinulla on esimerkiksi B- tai C-ajokortti, JV-kortti, EA1- tai EA2-kortti tai hygieniapassi, mutta se ei näy tässä, ilmoitathan pätevyyksistäsi profiilissasi.
+
+
+  form(method='POST', role='form').form-horizontal
+    .panel.panel-default
+      .panel-heading: strong {% trans "Volunteer work application" %}
+      .panel-body
+        .labour-signup-form
+          - crispy signup_form
+        - crispy signup_extra_form
+        p
+          // XXX why is this extra p necessary to preserve spacing
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-default(href='{% url "core_event_view" event.slug %}') Peruuta
+          button.btn.btn-success(type='submit', name='submit')
+            i.fa.fa-check.kompassi-icon-space-right
+            | {{ submit_text }}
+
+block extra_scripts
+  script.
+    window.labourJobDescriptions = {{job_descriptions_json|safe}};
+  script(src='{% static "job_descriptions.js" %}')
+
+  script.
+    var nonQualifiedCategoryNames = {{ non_qualified_category_names_json|safe }};
+    $.each(nonQualifiedCategoryNames, function(index, categoryName) {
+      var selector = '.labour-signup-form label.checkbox:contains("' + categoryName + '")',
+          $label = $(selector);
+      $label.addClass('text-muted');
+      $label.find('input').attr('disabled', true);
+    });

@@ -17,8 +17,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AccessOrganizationMeta',
             fields=[
-                ('organization', models.OneToOneField(primary_key=True, serialize=False, to='core.Organization', verbose_name='Organisaatio')),
-                ('admin_group', models.ForeignKey(verbose_name='Yll\xe4pit\xe4j\xe4ryhm\xe4', to='auth.Group')),
+                ('organization', models.OneToOneField(on_delete=models.CASCADE, primary_key=True,
+                 serialize=False, to='core.Organization', verbose_name='Organisaatio')),
+                ('admin_group', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Yll\xe4pit\xe4j\xe4ryhm\xe4', to='auth.Group')),
             ],
             options={
                 'verbose_name': 'P\xe4\xe4synvalvonnan asetukset',

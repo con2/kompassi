@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                 ('start_time', models.DateTimeField(null=True, verbose_name='Alkuaika', blank=True)),
                 ('length', models.IntegerField(help_text='Ohjelmalla tulee olla tila, alkuaika ja kesto, jotta se n\xe4kyisi ohjelmakartassa.', null=True, verbose_name='Kesto (minuuttia)', blank=True)),
                 ('notes', models.TextField(help_text='T\xe4m\xe4 kentt\xe4 ei normaalisti n\xe4y ohjelman j\xe4rjest\xe4j\xe4lle, mutta jos henkil\xf6 pyyt\xe4\xe4 henkil\xf6rekisteriotetta, kent\xe4n arvo on siihen sis\xe4llytett\xe4v\xe4.', verbose_name='Ohjelmavastaavan muistiinpanot', blank=True)),
-                ('category', models.ForeignKey(verbose_name='Ohjelmaluokka', to='programme.Category')),
+                ('category', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Ohjelmaluokka', to='programme.Category')),
             ],
             options={
                 'ordering': ['start_time', 'room'],
@@ -61,8 +61,8 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('used_at', models.DateTimeField(null=True, blank=True)),
                 ('state', models.CharField(default='valid', max_length=8, choices=[('valid', 'Kelvollinen'), ('used', 'K\xe4ytetty'), ('revoked', 'Mit\xe4t\xf6ity')])),
-                ('person', models.ForeignKey(to='core.Person')),
-                ('programme', models.ForeignKey(to='programme.Programme')),
+                ('person', models.ForeignKey(on_delete=models.CASCADE, to='core.Person')),
+                ('programme', models.ForeignKey(on_delete=models.CASCADE, to='programme.Programme')),
             ],
             options={
                 'abstract': False,
@@ -72,10 +72,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProgrammeEventMeta',
             fields=[
-                ('event', models.OneToOneField(related_name='programmeeventmeta', primary_key=True, serialize=False, to='core.Event')),
+                ('event', models.OneToOneField(on_delete=models.CASCADE,
+                 related_name='programmeeventmeta', primary_key=True, serialize=False, to='core.Event')),
                 ('public', models.BooleanField(default=True)),
                 ('contact_email', models.CharField(help_text='Kaikki ohjelmaj\xe4rjestelm\xe4n l\xe4hett\xe4m\xe4t s\xe4hk\xf6postiviestit l\xe4hetet\xe4\xe4n t\xe4st\xe4 osoitteesta, ja t\xe4m\xe4 osoite n\xe4ytet\xe4\xe4n ohjelmanj\xe4rjest\xe4j\xe4lle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.', max_length=255, verbose_name='yhteysosoite', blank=True)),
-                ('admin_group', models.ForeignKey(to='auth.Group')),
+                ('admin_group', models.ForeignKey(on_delete=models.CASCADE, to='auth.Group')),
             ],
             options={
                 'abstract': False,
@@ -86,8 +87,8 @@ class Migration(migrations.Migration):
             name='ProgrammeRole',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('person', models.ForeignKey(to='core.Person')),
-                ('programme', models.ForeignKey(to='programme.Programme')),
+                ('person', models.ForeignKey(on_delete=models.CASCADE, to='core.Person')),
+                ('programme', models.ForeignKey(on_delete=models.CASCADE, to='programme.Programme')),
             ],
             options={
                 'verbose_name': 'ohjelmanpit\xe4j\xe4n rooli',
@@ -118,7 +119,7 @@ class Migration(migrations.Migration):
                 ('order', models.IntegerField()),
                 ('public', models.BooleanField(default=True)),
                 ('notes', models.TextField(blank=True)),
-                ('venue', models.ForeignKey(to='core.Venue')),
+                ('venue', models.ForeignKey(on_delete=models.CASCADE, to='core.Venue')),
             ],
             options={
                 'ordering': ['venue', 'order'],
@@ -132,7 +133,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('start_time', models.DateTimeField(verbose_name='alkuaika')),
-                ('event', models.ForeignKey(verbose_name='tapahtuma', to='core.Event')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, verbose_name='tapahtuma', to='core.Event')),
             ],
             options={
                 'ordering': ['event', 'start_time'],
@@ -148,7 +149,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=15)),
                 ('order', models.IntegerField(default=0)),
                 ('style', models.CharField(default='label-default', max_length=15)),
-                ('event', models.ForeignKey(to='core.Event')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, to='core.Event')),
             ],
             options={
                 'ordering': ['order'],
@@ -163,7 +164,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('start_time', models.DateTimeField()),
                 ('end_time', models.DateTimeField()),
-                ('event', models.ForeignKey(to='core.Event')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, to='core.Event')),
             ],
             options={
             },
@@ -176,7 +177,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=32)),
                 ('public', models.BooleanField(default=True)),
                 ('order', models.IntegerField(default=0)),
-                ('event', models.ForeignKey(to='core.Event')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, to='core.Event')),
                 ('rooms', models.ManyToManyField(to='programme.Room')),
             ],
             options={
@@ -197,7 +198,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='programmerole',
             name='role',
-            field=models.ForeignKey(to='programme.Role'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='programme.Role'),
             preserve_default=True,
         ),
         migrations.AlterIndexTogether(
@@ -213,7 +214,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='programme',
             name='room',
-            field=models.ForeignKey(verbose_name='Tila', blank=True, to='programme.Room', null=True),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Tila', blank=True, to='programme.Room', null=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -225,7 +226,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='event',
-            field=models.ForeignKey(to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='core.Event'),
             preserve_default=True,
         ),
     ]

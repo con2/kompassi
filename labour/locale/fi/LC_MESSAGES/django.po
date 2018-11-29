@@ -2,7 +2,7 @@
 msgid "A reference to the form that is used as the survey form."
 msgstr "Viittaus lomakkeeseen jota kyselyssä käytetään."
 
-#: templates/labour_admin_jobcategory_view.jade
+#: templates/labour_admin_jobcategory_view.pug
 msgid "Abandon changes and return"
 msgstr "Hylkää muutokset ja palaa"
 
@@ -18,11 +18,11 @@ msgstr "Käyttöaika alkaa"
 msgid "Active until"
 msgstr "Käyttöaika päättyy"
 
-#: templates/labour_admin_jobcategories_view.jade templates/labour_admin_jobcategory_view.jade
+#: templates/labour_admin_jobcategories_view.pug templates/labour_admin_jobcategory_view.pug
 msgid "Add job category"
 msgstr "Lisää tehtäväalue"
 
-#: templates/labour_admin_startstop_view.jade views/labour_admin_menu_items.py
+#: templates/labour_admin_startstop_view.pug views/labour_admin_menu_items.py
 msgid "Application period"
 msgstr "Työvoimahaun alkamis- ja päättymisajat"
 
@@ -42,7 +42,7 @@ msgstr "Hae vapaaehtoistyöhön"
 msgid "Complete contact information"
 msgstr "Täydennä yhteystiedot"
 
-#: templates/labour_admin_special_diets_view.jade
+#: templates/labour_admin_special_diets_view.pug
 msgid "Count"
 msgstr "Lukumäärä"
 
@@ -54,35 +54,35 @@ msgstr "Kojelauta"
 msgid "Description"
 msgstr "Kuvaus"
 
-#: templates/labour_admin_shifts_table.jade templates/labour_admin_signup_views/shifts_tab.jade templates/labour_profile_shifts_table.jade
+#: templates/labour_admin_shifts_table.pug templates/labour_admin_signup_views/shifts_tab.pug templates/labour_profile_shifts_table.pug
 msgid "Duration"
 msgstr "Kesto"
 
-#: templates/labour_admin_shifts_table.jade templates/labour_admin_signup_views/shifts_tab.jade
+#: templates/labour_admin_shifts_table.pug templates/labour_admin_signup_views/shifts_tab.pug
 msgid "Edit"
 msgstr "Muokkaa"
 
-#: templates/labour_admin_jobcategories_view.jade views/labour_admin_menu_items.py
+#: templates/labour_admin_jobcategories_view.pug views/labour_admin_menu_items.py
 msgid "Edit job categories"
 msgstr "Muokkaa tehtäväalueita"
 
-#: templates/labour_admin_jobcategory_view.jade
+#: templates/labour_admin_jobcategory_view.pug
 msgid "Edit job category"
 msgstr "Muokkaa tehtäväaluetta"
 
-#: templates/labour_admin_startstop_view.jade
+#: templates/labour_admin_startstop_view.pug
 msgid "End now"
 msgstr "Sulje heti"
 
-#: templates/labour_admin_signup_views/shifts_tab.jade
+#: templates/labour_admin_signup_views/shifts_tab.pug
 msgid "Ending time"
 msgstr "Päättymisaika"
 
-#: templates/labour_admin_shifts_view.jade
+#: templates/labour_admin_shifts_view.pug
 msgid "Export"
 msgstr "Vie"
 
-#: templates/labour_admin_shifts_view.jade
+#: templates/labour_admin_shifts_view.pug
 msgid "Filter shifts"
 msgstr "Suodata työvuoroja"
 
@@ -98,15 +98,15 @@ msgstr "Lomakkeen polku"
 msgid "Format: YYYY-MM-DD HH:MM:SS"
 msgstr "Muoto: PP.KK.VVVV HH.MM.SS"
 
-#: templates/labour_profile_shifts_table.jade
+#: templates/labour_profile_shifts_table.pug
 msgid "Freeform shifts"
 msgstr "Vapaamuotoiset työvuorot"
 
-#: templates/labour_admin_startstop_view.jade
+#: templates/labour_admin_startstop_view.pug
 msgid "Here you can set the starting and ending times for the application period. The signup form will automatically open at the beginning and close at the end of the application period."
 msgstr "Tässä voit asettaa työvoimahaun alkamis- ja päättymisajat. Työvoimahaku aukeaa automaattisesti kun alkamisaika on ohitettu ja sulkeutuu automaattisesti kun päättymisaika on ohitettu."
 
-#: templates/labour_admin_startstop_view.jade
+#: templates/labour_admin_startstop_view.pug
 msgid "If the <em>Registration starts</em> field is empty, the signup form will stay closed. If the <em>Registration starts</em> is set but the <em>Registration closes</em> field is empty, the signup form will stay open once the beginning of the application period has been reached."
 msgstr "Mikäli alkamisaikaa ei ole asetettu, työvoimahaku pysyy suljettuna. Mikäli alkamisaika on asetettu mutta päättymisaikaa ei ole asetettu, työvoimahaku pysyy avauduttuaan avoimena."
 
@@ -114,7 +114,7 @@ msgstr "Mikäli alkamisaikaa ei ole asetettu, työvoimahaku pysyy suljettuna. Mi
 msgid "Invalid request."
 msgstr "Kelvoton pyyntö."
 
-#: templates/labour_admin_shifts_table.jade templates/labour_admin_signup_views/shifts_tab.jade templates/labour_profile_shifts_table.jade
+#: templates/labour_admin_shifts_table.pug templates/labour_admin_signup_views/shifts_tab.pug templates/labour_profile_shifts_table.pug
 msgid "Job"
 msgstr "Tehtävä"
 
@@ -122,7 +122,7 @@ msgstr "Tehtävä"
 msgid "Job categories that are not accepting applications are not shown on the signup form. However, they may still be applied to using alternative signup forms."
 msgstr "Tehtäväalueisiin, jotka eivät ole julkisessa haussa, ei voi hakea tavallisen hakemuslomakkeen kautta. Niihin voi kuitenkin ilmoittautua vaihtoehtoisilla ilmoittautumislomakkeilla, jos sellaisia on määritelty."
 
-#: templates/labour_admin_jobcategories_view.jade templates/labour_admin_shifts_table.jade templates/labour_admin_shifts_view.jade templates/labour_admin_signup_views/shifts_tab.jade templates/labour_profile_shifts_table.jade
+#: templates/labour_admin_jobcategories_view.pug templates/labour_admin_shifts_table.pug templates/labour_admin_shifts_view.pug templates/labour_admin_signup_views/shifts_tab.pug templates/labour_profile_shifts_table.pug
 msgid "Job category"
 msgstr "Tehtäväalue"
 
@@ -134,30 +134,30 @@ msgstr "Työvoimaviestit"
 msgid "Message when denied access"
 msgstr ""
 
-#: models/job_category.py templates/labour_admin_shifts_table.jade
+#: models/job_category.py templates/labour_admin_shifts_table.pug
 msgid "Name"
 msgstr "Nimi"
 
-#: templates/labour_admin_jobcategories_view.jade
+#: templates/labour_admin_jobcategories_view.pug
 msgid "No"
 msgstr "Ei"
 
-#: templates/labour_admin_signup_views/shifts_tab.jade
+#: templates/labour_admin_signup_views/shifts_tab.pug
 msgid "No shifts."
 msgstr "Ei työvuoroja."
 
-#: templates/labour_admin_signup_views/shifts_tab.jade
+#: templates/labour_admin_signup_views/shifts_tab.pug
 #, python-format
 msgid "One shift, %(total_hours)s h."
 msgid_plural "%(num_shifts)s shifts, total %(total_hours)s h."
 msgstr[0] "Yksi vuoro, %(total_hours)s h."
 msgstr[1] "%(num_shifts)s vuoroa, yhteensä %(total_hours)s h."
 
-#: templates/labour_admin_special_diets_view.jade
+#: templates/labour_admin_special_diets_view.pug
 msgid "Other special diet"
 msgstr "Muu erikoisruokavalio"
 
-#: templates/labour_admin_special_diets_view.jade
+#: templates/labour_admin_special_diets_view.pug
 msgid "Other special diets"
 msgstr "Muut erikoisruokavaliot"
 
@@ -173,16 +173,16 @@ msgstr "Henkilöstöluokat"
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
-#: templates/labour_admin_signups_view.jade
+#: templates/labour_admin_signups_view.pug
 msgid "Print work certificates"
 msgstr "Tulosta työtodistukset"
 
-#: templates/labour_admin_shifts_print.jade
+#: templates/labour_admin_shifts_print.pug
 #, python-format
 msgid "Printed %(now)s."
 msgstr "Tulostettu %(now)s."
 
-#: models/job_category.py templates/labour_admin_jobcategories_view.jade
+#: models/job_category.py templates/labour_admin_jobcategories_view.pug
 msgid "Publicly accepting applications"
 msgstr "Avoimessa haussa"
 
@@ -202,11 +202,11 @@ msgstr "Työvoimahaku alkaa"
 msgid "Rejected job categories"
 msgstr "Hylätyt tehtäväalueet"
 
-#: templates/labour_admin_jobcategories_view.jade
+#: templates/labour_admin_jobcategories_view.pug
 msgid "Remove"
 msgstr "Poista"
 
-#: templates/labour_admin_jobcategory_view.jade
+#: templates/labour_admin_jobcategory_view.pug
 msgid "Remove job category"
 msgstr "Poista tehtäväalue"
 
@@ -218,27 +218,27 @@ msgstr "Vaaditut pätevyydet"
 msgid "Revise qualifications"
 msgstr "Tarkista pätevyydet"
 
-#: templates/labour_admin_jobcategory_view.jade
+#: templates/labour_admin_jobcategory_view.pug
 msgid "Save and continue"
 msgstr "Tallenna ja jatka"
 
-#: templates/labour_admin_jobcategory_view.jade templates/labour_admin_startstop_view.jade
+#: templates/labour_admin_jobcategory_view.pug templates/labour_admin_startstop_view.pug
 msgid "Save and return"
 msgstr "Tallenna ja palaa"
 
-#: templates/labour_admin_startstop_view.jade
+#: templates/labour_admin_startstop_view.pug
 msgid "Save changes"
 msgstr "Tallenna muutokset"
 
-#: templates/labour_admin_shifts_table.jade
+#: templates/labour_admin_shifts_table.pug
 msgid "See application"
 msgstr "Katso hakemus"
 
-#: templates/labour_admin_shifts_table.jade templates/labour_profile_shifts_table.jade
+#: templates/labour_admin_shifts_table.pug templates/labour_profile_shifts_table.pug
 msgid "Shift ends"
 msgstr "Työvuoro päättyy"
 
-#: templates/labour_admin_shifts_view.jade views/labour_admin_menu_items.py
+#: templates/labour_admin_shifts_view.pug views/labour_admin_menu_items.py
 msgid "Shift lists"
 msgstr "Työvuorolistat"
 
@@ -246,11 +246,11 @@ msgstr "Työvuorolistat"
 msgid "Shift planning"
 msgstr "Työvuorojen suunnittelu"
 
-#: templates/labour_admin_shifts_table.jade templates/labour_profile_shifts_table.jade
+#: templates/labour_admin_shifts_table.pug templates/labour_profile_shifts_table.pug
 msgid "Shift starts"
 msgstr "Työvuoro alkaa"
 
-#: templates/labour_admin_signup_views/shifts_tab.jade
+#: templates/labour_admin_signup_views/shifts_tab.pug
 msgid "Shifts"
 msgstr "Työvuorot"
 
@@ -258,7 +258,7 @@ msgstr "Työvuorot"
 msgid "Shirt sizes"
 msgstr "Paitakoot"
 
-#: templates/labour_admin_shifts_print.jade templates/labour_admin_shifts_view.jade
+#: templates/labour_admin_shifts_print.pug templates/labour_admin_shifts_view.pug
 #, python-format
 msgid "Showing one shift (total %(num_total_shifts)s)."
 msgid_plural "Showing %(num_shifts)s shifts (total %(num_total_shifts)s)."
@@ -269,7 +269,7 @@ msgstr[1] "Näkyvissä %(num_shifts)s vuoroa (yhteensä %(num_total_shifts)s)."
 msgid "Sign up or sign in..."
 msgstr "Rekisteröidy tai kirjaudu sisään..."
 
-#: templates/labour_admin_special_diets_view.jade
+#: templates/labour_admin_special_diets_view.pug
 msgid "Special diet"
 msgstr "Erikoisruokavalio"
 
@@ -277,23 +277,23 @@ msgstr "Erikoisruokavalio"
 msgid "Special diets"
 msgstr "Erikoisruokavaliot"
 
-#: templates/labour_admin_special_diets_view.jade
+#: templates/labour_admin_special_diets_view.pug
 msgid "Standard special diet"
 msgstr "Tyypillinen erikoisruokavalio"
 
-#: templates/labour_admin_special_diets_view.jade
+#: templates/labour_admin_special_diets_view.pug
 msgid "Standard special diets"
 msgstr "Tyypilliset erikoisruokavaliot"
 
-#: templates/labour_admin_startstop_view.jade
+#: templates/labour_admin_startstop_view.pug
 msgid "Start now"
 msgstr "Avaa heti"
 
-#: templates/labour_admin_signup_views/shifts_tab.jade
+#: templates/labour_admin_signup_views/shifts_tab.pug
 msgid "Starting time"
 msgstr "Alkamisaika"
 
-#: templates/labour_survey_view.jade
+#: templates/labour_survey_view.pug
 msgid "Submit answers"
 msgstr "Lähetä vastaukset"
 
@@ -321,11 +321,11 @@ msgstr "Kiitos hakemuksestasi!"
 msgid "The application period is already underway."
 msgstr "Työvoimahaku on jo käynnissä."
 
-#: templates/labour_admin_startstop_view.jade
+#: templates/labour_admin_startstop_view.pug
 msgid "The application period is currently underway."
 msgstr "Työvoimahaku on parhaillaan käynnissä."
 
-#: templates/labour_admin_startstop_view.jade views/labour_admin_startstop_view.py
+#: templates/labour_admin_startstop_view.pug views/labour_admin_startstop_view.py
 msgid "The application period is not currently underway."
 msgstr "Työvoimahaku ei ole juuri nyt käynnissä."
 
@@ -373,7 +373,7 @@ msgstr "Pyytämäsi ilmoittautumislomake ei ole tällä hetkellä käytössä."
 msgid "The slug that would be derived from this name is already taken. Please choose another name."
 msgstr "Tästä nimestä johdettava tekninen nimi on jo käytössä. Ole hyvä ja valitse toinen nimi."
 
-#: templates/labour_survey_view.jade
+#: templates/labour_survey_view.pug
 msgid "The survey has expired. You can no longer alter your answers."
 msgstr "Kysely on vanhentunut. Et voi enää muokata vastauksiasi."
 
@@ -397,7 +397,7 @@ msgstr "Tämä tapahtuma ei kerää erikoisruokavalioita."
 msgid "This event is not currently accepting applications."
 msgstr "Tämä tapahtuma ei ota tällä hetkellä vastaan hakemuksia."
 
-#: templates/labour_admin_jobcategories_view.jade templates/labour_admin_jobcategory_view.jade
+#: templates/labour_admin_jobcategories_view.pug templates/labour_admin_jobcategory_view.pug
 msgid "This job category cannot be removed because applications have already been made to it."
 msgstr "Tätä tehtäväaluetta ei voi poistaa, koska sille on jo tehty hakemuksia."
 
@@ -417,7 +417,7 @@ msgstr "Tämä kysely ei sovellu sinuun."
 msgid "This survey is not currently active."
 msgstr "Tämä kysely ei ole tällä hetkellä käytössä."
 
-#: templates/labour_admin_roster_views/TooSmall.jade
+#: templates/labour_admin_roster_views/TooSmall.pug
 msgid "This view has not been designed for a display this small. For an optimal user experience, please switch to a tablet or a computer."
 msgstr "Tätä näkymää ei ole suunniteltu näin kapealle näytölle. Paremman käyttökokemuksen saavuttamiseksi ole hyvä ja käytä tablettia tai tietokonetta."
 
@@ -441,15 +441,15 @@ msgstr "Vapaaehtoistyöhakemukset"
 msgid "Will be displayed at the top of the survey page."
 msgstr "Näytetään kyselysivun ylälaidassa."
 
-#: templates/labour_admin_jobcategories_view.jade
+#: templates/labour_admin_jobcategories_view.pug
 msgid "Yes"
 msgstr "Kyllä"
 
-#: templates/labour_admin_startstop_view.jade
+#: templates/labour_admin_startstop_view.pug
 msgid "You can also start or stop the application period immediately."
 msgstr "Työvoimahaun voi myös avata tai sulkea välittömästi."
 
-#: templates/labour_survey_view.jade
+#: templates/labour_survey_view.pug
 #, python-format
 msgid "You can edit your answers via the same link until the survey expires at %(expiration_date)s."
 msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee %(expiration_date)s."
@@ -458,7 +458,7 @@ msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee %(e
 msgid "{entry.person} signed up for volunteer work in {entry.event}"
 msgstr "{entry.person} ilmoittautui vapaaehtoistöihin tapahtumaan {entry.event}"
 
-#: templates/labour_survey_view.jade
+#: templates/labour_survey_view.pug
 msgid "You can edit your answers via the same link until the survey is closed."
 msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee."
 

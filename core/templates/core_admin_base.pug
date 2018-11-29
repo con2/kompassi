@@ -1,0 +1,9 @@
+extends base
+block content
+  h2 {{ admin_title }}
+  .row
+    .col-md-3
+      ul.nav.nav-pills.nav-stacked
+        include core_admin_menu_items.pug
+    .col-md-9
+      block admin_content

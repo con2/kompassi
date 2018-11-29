@@ -32,7 +32,7 @@ def directory_access_required(view_func):
             messages.error(request, _('This organization does not use the directory.'))
             return redirect('core_organization_view', organization.slug)
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return login_redirect(request)
 
         if not meta.is_user_allowed_to_access(request.user):

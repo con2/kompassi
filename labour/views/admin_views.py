@@ -8,7 +8,7 @@ import datetime
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models.query import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
@@ -49,7 +49,7 @@ def labour_admin_dashboard_view(request, vars, event):
         signups=event.signup_set.order_by('-created_at')[:5]
     )
 
-    return render(request, 'labour_admin_dashboard_view.jade', vars)
+    return render(request, 'labour_admin_dashboard_view.pug', vars)
 
 
 @labour_admin_required
@@ -77,7 +77,7 @@ def labour_admin_roster_view(request, vars, event, job_category_slug=None):
         config_json=json.dumps(config),
     )
 
-    return render(request, 'labour_admin_roster_view.jade', vars)
+    return render(request, 'labour_admin_roster_view.pug', vars)
 
 
 @labour_admin_required
@@ -91,4 +91,4 @@ def labour_admin_mail_view(request, vars, event):
         labour_messages=messages
     )
 
-    return render(request, 'labour_admin_mail_view.jade', vars)
+    return render(request, 'labour_admin_mail_view.pug', vars)

@@ -1,0 +1,65 @@
+extends base
+- load i18n
+block title
+  | {{ person.full_name }}
+block content
+  - url "directory_view" organization.slug as directory_url
+
+  h2
+    | {{ person.full_name }}
+    small.text-muted.kompassi-icon-space-left {% blocktrans with organization=organization directory_url=directory_url %}in the <a href="{{ directory_url }}">{{ organization }} directory</a>{% endblocktrans %}
+
+  .panel.panel-default
+    .panel-heading: strong {% trans "Contact information" %}
+    .panel-body
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Surname" %}
+          .col-md-10 {{ person.surname }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "First name" %}
+          .col-md-10 {{ person.first_name }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Nick name" %}
+          .col-md-10 {{ person.nick }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Name as displayed" %}
+          .col-md-10 {{ person.display_name }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Phone number" %}
+          .col-md-10 {{ person.normalized_phone_number }}
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "E-mail address" %}
+          .col-md-10 {{ person.email }}
+
+  if involvement_in_current_events
+    h3 {% trans "Involvement in current events" %}
+    for involvement in involvement_in_current_events
+      include directory_event_involvement_box.pug
+
+  if involvement_in_future_events
+    h3 {% trans "Involvement in future events" %}
+    for involvement in involvement_in_future_events
+      include directory_event_involvement_box.pug
+
+  if involvement_in_past_events
+    h3 {% trans "Involvement in past events" %}
+    for involvement in involvement_in_past_events
+      include directory_event_involvement_box.pug
+
+  if membership
+    h3 {% trans "Organization membership" %}
+    .panel.panel-default
+      .panel-heading
+        strong.kompassi-space-after {{ organization.name }}
+        small.text-muted {{ organization.muncipality }}
+      .panel-body
+        p This person is a member of {{ organization }}.
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-primary(href='{% url "membership_admin_member_view" organization.slug person.id %}') {% trans "Go to membership administration…" %}

@@ -24,7 +24,7 @@ class Subscription(models.Model):
     * `callback` - the callback specified in `callback_code` will be called (for testing mostly).
     """
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     entry_type = models.CharField(max_length=255)
     channel = models.CharField(
         max_length=max(len(key) for (key, label) in CHANNEL_CHOICES),
@@ -33,19 +33,19 @@ class Subscription(models.Model):
     )
     active = models.BooleanField(default=True)
 
-    event_filter = models.ForeignKey('core.Event',
+    event_filter = models.ForeignKey('core.Event', on_delete=models.CASCADE,
         null=True,
         blank=True,
         verbose_name=_('Event filter'),
         help_text=_('When specified, only entries related to this event will match the subscription.'),
     )
-    event_survey_filter = models.ForeignKey('surveys.EventSurvey',
+    event_survey_filter = models.ForeignKey('surveys.EventSurvey', on_delete=models.CASCADE,
         null=True,
         blank=True,
         verbose_name=_('Event survey filter'),
         help_text=_('When specified, only entries related to this EventSurvey will match the subscription.'),
     )
-    job_category_filter = models.ForeignKey('labour.JobCategory',
+    job_category_filter = models.ForeignKey('labour.JobCategory', on_delete=models.CASCADE,
         null=True,
         blank=True,
         verbose_name=_('Job category filter'),

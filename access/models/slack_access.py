@@ -16,7 +16,7 @@ class SlackError(RuntimeError):
 
 
 class SlackAccess(models.Model):
-    privilege = models.OneToOneField('access.Privilege', related_name='slack_access')
+    privilege = models.OneToOneField('access.Privilege', on_delete=models.CASCADE, related_name='slack_access')
     team_name = models.CharField(max_length=255, verbose_name='Slack-yhteisön nimi')
     api_token = models.CharField(max_length=255, default='test', verbose_name='API-koodi')
 

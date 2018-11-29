@@ -30,19 +30,25 @@ class Setup(object):
         self.setup_payments()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(name='Bar Loose', defaults=dict(
             name_inessive='Bar Loosessa',
         ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='finnish-fandom-conventions-ry',
+            defaults=dict(
+                name='Finnish Fandom Conventions ry',
+                homepage_url='http://popcult.fi',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='popcultnights2018', defaults=dict(
             name='Popcult Nights 2018',
             name_genitive='Popcult Nights 2018 -tapahtuman',
             name_illative='Popcult Nights 2018 -tapahtumaan',
             name_inessive='Popcult Nights 2018 -tapahtumassa',
             homepage_url='http://popcult.fi/nights-2018',
-            organization_name='Finnish Fandom Conventions ry',
-            organization_url='http://popcult.fi',
+            organization=self.organization,
             start_time=datetime(2018, 8, 31, 20, 0, tzinfo=self.tz),
             end_time=datetime(2018, 8, 31, 23, 59, 59, tzinfo=self.tz),
             venue=self.venue,

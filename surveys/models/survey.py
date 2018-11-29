@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 from django.contrib.postgres.fields import JSONField
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
@@ -20,7 +20,7 @@ class Survey(models.Model):
     description = models.TextField(blank=True, default='')
     is_active = models.BooleanField(default=True)
 
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -50,7 +50,7 @@ class Survey(models.Model):
 
 
 class EventSurvey(Survey):
-    event = models.ForeignKey('core.Event')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
     def get_absolute_url(self):

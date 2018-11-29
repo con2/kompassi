@@ -39,7 +39,7 @@ def enrollment_admin_required(view_func):
             messages.error(request, _('This event does not use this site to manage enrollment.'))
             return redirect('core_event_view', event.slug)
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return login_redirect(request)
 
         if not event.enrollment_event_meta.is_user_admin(request.user):

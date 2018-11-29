@@ -6,8 +6,8 @@ from .group_management_mixin import GroupManagementMixin
 
 
 class EventMetaBase(models.Model, GroupManagementMixin):
-    event = models.OneToOneField('core.Event', primary_key=True, related_name='%(class)s')
-    admin_group = models.ForeignKey('auth.Group')
+    event = models.OneToOneField('core.Event', on_delete=models.CASCADE, primary_key=True, related_name='%(class)s')
+    admin_group = models.ForeignKey('auth.Group', on_delete=models.CASCADE)
 
     class Meta:
         abstract = True

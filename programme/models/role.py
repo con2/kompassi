@@ -12,7 +12,7 @@ from core.models import OneTimeCode, OneTimeCodeLite
 
 
 class Role(models.Model):
-    personnel_class = models.ForeignKey('labour.PersonnelClass',
+    personnel_class = models.ForeignKey('labour.PersonnelClass', on_delete=models.CASCADE,
         verbose_name=_('Personnel class'),
         help_text=_('The personnel class for the programme hosts that have this role.'),
     )

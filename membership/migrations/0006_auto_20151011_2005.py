@@ -14,13 +14,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='membership',
             name='organization',
-            field=models.ForeignKey(related_name='members', verbose_name='Organisaatio', to='core.Organization'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='members', verbose_name='Organisaatio', to='core.Organization'),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='membership',
             name='person',
-            field=models.ForeignKey(related_name='memberships', verbose_name='Henkil\xf6', to='core.Person'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='memberships', verbose_name='Henkil\xf6', to='core.Person'),
             preserve_default=True,
         ),
         migrations.AlterField(

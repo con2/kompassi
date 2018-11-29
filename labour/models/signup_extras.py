@@ -68,8 +68,8 @@ class SignupExtraMixin(object):
 
 
 class SignupExtraBase(SignupExtraMixin, models.Model):
-    event = models.ForeignKey('core.Event', related_name="%(app_label)s_signup_extras")
-    person = models.OneToOneField('core.Person', related_name="%(app_label)s_signup_extra")
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, related_name="%(app_label)s_signup_extras")
+    person = models.OneToOneField('core.Person', on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra")
 
     is_active = models.BooleanField(default=True)
 
@@ -144,7 +144,7 @@ class ObsoleteSignupExtraBaseV1(SignupExtraMixin, models.Model):
     Because `signup` is the primary key, we choose to retain this abstract base model and make a new one
     that refers to `event` and `person` instead.
     """
-    signup = models.OneToOneField('labour.Signup', related_name="%(app_label)s_signup_extra", primary_key=True)
+    signup = models.OneToOneField('labour.Signup', on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra", primary_key=True)
     is_active = models.BooleanField(default=True)
 
     supports_programme = False

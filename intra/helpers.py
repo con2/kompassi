@@ -34,7 +34,7 @@ def intra_organizer_required(view_func):
             messages.error(request, _('This event does not use the organizer intranet.'))
             return redirect('core_event_view', event.slug)
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return login_redirect(request)
 
         if not meta.is_user_allowed_to_access(request.user):
@@ -71,7 +71,7 @@ def intra_admin_required(view_func):
             messages.error(request, _('This event does not use the organizer intranet.'))
             return redirect('core_event_view', event.slug)
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return login_redirect(request)
 
         if not meta.is_user_admin(request.user):

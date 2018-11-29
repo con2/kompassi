@@ -1,12 +1,12 @@
-#: templates/badges_admin_create_view.jade
+#: templates/badges_admin_create_view.pug
 msgid "Abandon changes and return"
 msgstr "Hylkää muutokset ja palaa"
 
-#: templates/badges_admin_create_view.jade
+#: templates/badges_admin_create_view.pug
 msgid "Add badge"
 msgstr "Lisää badge"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Admission list"
 msgstr "Nimilista"
 
@@ -63,15 +63,15 @@ msgstr "Nimilistat"
 msgid "Exclude badges with moon runes"
 msgstr "Sisällytä erään vain badgeja, joissa ei ole kuuriimuja"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Export"
 msgstr "Vie"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Filter by personnel type"
 msgstr "Suodata henkilöstöluokan mukaan"
 
-#: models/badge.py templates/badges_admin_badges_view.jade
+#: models/badge.py templates/badges_admin_badges_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
@@ -103,23 +103,23 @@ msgstr "Nick näkyvissä"
 msgid "Is surname visible"
 msgstr "Sukunimi näkyvissä"
 
-#: models/badge.py templates/badges_admin_badges_view.jade templates/badges_admin_onboarding_view.jade
+#: models/badge.py templates/badges_admin_badges_view.pug templates/badges_admin_onboarding_view.pug
 msgid "Job title"
 msgstr "Tehtävänimike"
 
-#: templates/badges_admin_create_view.jade
+#: templates/badges_admin_create_view.pug
 msgid "Manual badge creation"
 msgstr "Badgen lisääminen käsin"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Manually add a badge"
 msgstr "Lisää badge käsin"
 
-#: models/badge.py templates/badges_admin_onboarding_view.jade
+#: models/badge.py templates/badges_admin_onboarding_view.pug
 msgid "Name"
 msgstr "Nimi"
 
-#: models/badge.py templates/badges_admin_badges_view.jade
+#: models/badge.py templates/badges_admin_badges_view.pug
 msgid "Nick name"
 msgstr "Nick"
 
@@ -127,11 +127,11 @@ msgstr "Nick"
 msgid "Number of badges"
 msgstr "Badgejen lukumäärä"
 
-#: templates/badges_admin_onboarding_view.jade views/admin_views.py
+#: templates/badges_admin_onboarding_view.pug views/admin_views.py
 msgid "Onboarding"
 msgstr "Saapuneeksi kirjaaminen"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 #, python-format
 msgid "One badge."
 msgid_plural "%(num_badges)s badges."
@@ -146,7 +146,7 @@ msgstr "Sisällytä erään vain badgeja, joissa on kuuriimuja"
 msgid "Person"
 msgstr "Henkilö"
 
-#: forms.py models/badge.py templates/badges_admin_badges_view.jade templates/badges_admin_onboarding_view.jade
+#: forms.py models/badge.py templates/badges_admin_badges_view.pug templates/badges_admin_onboarding_view.pug
 msgid "Personnel class"
 msgstr "Henkilöstöluokka"
 
@@ -166,7 +166,7 @@ msgstr "Käytäthän tehtävänimike-kenttää sivistyneesti!"
 msgid "Policy for badges with moon runes"
 msgstr "Suhtautuminen kuuriimuja sisältäviin badgeihin"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Printable version"
 msgstr "Tulostettava versio"
 
@@ -186,11 +186,11 @@ msgstr "Tulostuserä"
 msgid "Require real name to be visible"
 msgstr "Vaadi koko nimi näkyviin"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Revoke badge"
 msgstr "Mitätöi badge"
 
-#: models/count_badges_mixin.py templates/badges_admin_badges_view.jade
+#: models/count_badges_mixin.py templates/badges_admin_badges_view.pug
 msgid "Revoked"
 msgstr "Mitätöity"
 
@@ -202,27 +202,27 @@ msgstr "Mitätöintiaika"
 msgid "Revoked by"
 msgstr "Mitätöinyt"
 
-#: templates/badges_admin_onboarding_view.jade
+#: templates/badges_admin_onboarding_view.pug
 msgid "Search"
 msgstr "Haku"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Separately"
 msgstr "Erikseen"
 
-#: templates/badges_admin_onboarding_view.jade
+#: templates/badges_admin_onboarding_view.pug
 msgid "Shirt size"
 msgstr "Paitakoko"
 
-#: templates/badges_admin_onboarding_view.jade
+#: templates/badges_admin_onboarding_view.pug
 msgid "Shirt type"
 msgstr "Paitatyyppi"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Status"
 msgstr "Tila"
 
-#: models/badge.py templates/badges_admin_badges_view.jade
+#: models/badge.py templates/badges_admin_badges_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -246,15 +246,15 @@ msgstr "Badge on nyt mitätöity."
 msgid "The badge was already valid."
 msgstr "Badge oli jo voimassa."
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "This badge cannot be marked separately printed because it is revoked."
 msgstr "Tätä badgea ei voi merkitä erikseen tulostetuksi, koska badge on mitätöity."
 
-#: templates/badges_admin_badges_view.jade views/badges_admin_badges_view.py
+#: templates/badges_admin_badges_view.pug views/badges_admin_badges_view.py
 msgid "This badge cannot be revoked here because it is managed by either the labour or the programme management system."
 msgstr "Tätä badgea ei voi mitätöidä tässä, koska se on luotu työvoiman- tai ohjelmanhallintajärjestelmän kautta."
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "This badge cannot be un-marked separately printed because it is revoked."
 msgstr "Tästä badgesta ei voi pyyhkiä erikseen tulostettu -merkintää, koska badge on mitätöity."
 
@@ -262,7 +262,7 @@ msgstr "Tästä badgesta ei voi pyyhkiä erikseen tulostettu -merkintää, koska
 msgid "This controls how fields are grouped in the badge. Traditional: job title, firstname surname, nick. Emphasize nick name: first name or nick, surname or full name, job title."
 msgstr "Tämä kontrolloi sitä, miten kentät niputetaan badgessa. Perinteinen: tehtävänimike, etunimi sukunimi, nick. Korosta nickiä: etunimi tai nick, sukunimi tai koko nimi, tehtävänimike."
 
-#: templates/badges_admin_badges_view.jade views/badges_admin_badges_view.py
+#: templates/badges_admin_badges_view.pug views/badges_admin_badges_view.py
 msgid "This revoked badge cannot be un-revoked here because it is managed by either the labour or the programme management system."
 msgstr "Tätä mitätöityä badgea ei voi palauttaa tässä, koska se on luotu työvoiman- tai ohjelmanhallintajärjestelmän kautta."
 
@@ -270,7 +270,7 @@ msgstr "Tätä mitätöityä badgea ei voi palauttaa tässä, koska se on luotu 
 msgid "Traditional"
 msgstr "Perinteinen"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Un-revoke badge"
 msgstr "Palauta badge."
 
@@ -278,11 +278,10 @@ msgstr "Palauta badge."
 msgid "Updated at"
 msgstr "Päivitysaika"
 
-#: templates/badges_admin_badges_view.jade
+#: templates/badges_admin_badges_view.pug
 msgid "Waiting"
 msgstr "Odottaa"
 
 #: models/count_badges_mixin.py
 msgid "Waiting in batch"
 msgstr "Odottaa erässä"
-

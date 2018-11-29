@@ -26,8 +26,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MembershipOrganizationMeta',
             fields=[
-                ('organization', models.OneToOneField(primary_key=True, serialize=False, to='core.Organization', verbose_name='Organisaatio')),
-                ('admin_group', models.ForeignKey(verbose_name='Yll\xe4pit\xe4j\xe4ryhm\xe4', to='auth.Group')),
+                ('organization', models.OneToOneField(on_delete=models.CASCADE, primary_key=True,
+                 serialize=False, to='core.Organization', verbose_name='Organisaatio')),
+                ('admin_group', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Yll\xe4pit\xe4j\xe4ryhm\xe4', to='auth.Group')),
             ],
             options={
                 'verbose_name': 'J\xe4senrekisterien asetukset',
@@ -37,13 +38,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='membership',
             name='organization',
-            field=models.ForeignKey(verbose_name='Organisaatio', to='core.Organization'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Organisaatio', to='core.Organization'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='membership',
             name='person',
-            field=models.ForeignKey(verbose_name='Henkil\xf6', to='core.Person'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Henkil\xf6', to='core.Person'),
             preserve_default=True,
         ),
     ]

@@ -26,7 +26,7 @@ APP_ALIAS_TEMPLATES = dict(
 
 
 class InternalEmailAlias(EmailAliasMixin, models.Model):
-    domain = models.ForeignKey('access.EmailAliasDomain', verbose_name=_('domain'))
+    domain = models.ForeignKey('access.EmailAliasDomain', on_delete=models.CASCADE, verbose_name=_('domain'))
 
     account_name = models.CharField(
         max_length=255,
@@ -48,7 +48,7 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
         help_text='Muodostetaan automaattisesti',
     )
 
-    event = models.ForeignKey('core.Event', null=True, blank=True)
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, null=True, blank=True)
     app_label = models.CharField(max_length=63, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('created at'))

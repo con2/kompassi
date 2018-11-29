@@ -9,10 +9,10 @@ from core.csv_export import CsvExportMixin
 
 
 class ProgrammeRole(models.Model, CsvExportMixin):
-    person = models.ForeignKey('core.Person', related_name='programme_roles')
-    programme = models.ForeignKey('programme.Programme')
-    role = models.ForeignKey('programme.Role')
-    invitation = models.ForeignKey('programme.Invitation', null=True, blank=True)
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE, related_name='programme_roles')
+    programme = models.ForeignKey('programme.Programme', on_delete=models.CASCADE)
+    role = models.ForeignKey('programme.Role', on_delete=models.CASCADE)
+    invitation = models.ForeignKey('programme.Invitation', on_delete=models.CASCADE, null=True, blank=True)
 
     # denormalized from programme.state
     is_active = models.BooleanField(default=True)

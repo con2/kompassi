@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
                 ('preferred_name_display_style', models.CharField(blank=True, help_text='T\xe4ss\xe4 voit vaikuttaa siihen, miss\xe4 muodossa nimesi esitet\xe4\xe4n (esim. painetaan badgeesi).', max_length=31, verbose_name='Nimen esitt\xe4minen', choices=[('firstname_nick_surname', 'Etunimi "Nick" Sukunimi'), ('firstname_surname', 'Etunimi Sukunimi'), ('firstname', 'Etunimi'), ('nick', 'Nick')])),
                 ('notes', models.TextField(verbose_name='K\xe4sittelij\xe4n merkinn\xe4t', blank=True)),
                 ('email_verified_at', models.DateTimeField(null=True, blank=True)),
-                ('user', models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(on_delete=models.CASCADE, null=True, blank=True, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'ordering': ['surname'],
@@ -106,7 +106,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='passwordresettoken',
             name='person',
-            field=models.ForeignKey(to='core.Person'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='core.Person'),
             preserve_default=True,
         ),
         migrations.AlterIndexTogether(
@@ -116,13 +116,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='venue',
-            field=models.ForeignKey(verbose_name='Tapahtumapaikka', to='core.Venue'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Tapahtumapaikka', to='core.Venue'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='emailverificationtoken',
             name='person',
-            field=models.ForeignKey(to='core.Person'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='core.Person'),
             preserve_default=True,
         ),
         migrations.AlterIndexTogether(

@@ -4,8 +4,8 @@ from django.template.defaultfilters import truncatewords
 
 
 class ProgrammeFeedback(models.Model):
-    programme = models.ForeignKey('programme.Programme', related_name='feedback')
-    author = models.ForeignKey('core.Person', null=True, blank=True)
+    programme = models.ForeignKey('programme.Programme', on_delete=models.CASCADE, related_name='feedback')
+    author = models.ForeignKey('core.Person', on_delete=models.CASCADE, null=True, blank=True)
     author_ip_address = models.CharField(
         max_length=48,
         blank=True,
@@ -28,7 +28,7 @@ class ProgrammeFeedback(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     hidden_at = models.DateTimeField(null=True)
-    hidden_by = models.ForeignKey('auth.User', null=True, blank=True)
+    hidden_by = models.ForeignKey('auth.User', on_delete=models.CASCADE, null=True, blank=True)
 
     @property
     def is_visible(self):

@@ -17,8 +17,8 @@ STATE_CSS = dict(
 
 
 class GrantedPrivilege(models.Model):
-    privilege = models.ForeignKey('access.Privilege', related_name='granted_privileges')
-    person = models.ForeignKey('core.Person', related_name='granted_privileges')
+    privilege = models.ForeignKey('access.Privilege', on_delete=models.CASCADE, related_name='granted_privileges')
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE, related_name='granted_privileges')
     state = models.CharField(default='granted', max_length=8, choices=STATE_CHOICES)
 
     granted_at = models.DateTimeField(auto_now_add=True)

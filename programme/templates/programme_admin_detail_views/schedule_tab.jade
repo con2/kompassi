@@ -1,8 +1,0 @@
-- load crispy from crispy_forms_tags
-- load trans from i18n
-.tab-pane#programme-admin-programme-schedule-tab
-  .panel.panel-default
-    .panel-heading: strong {% trans "Schedule information" %}
-    .panel-body: {% crispy schedule_form %}
-    .panel-footer.clearfix
-      include programme_admin_detail_views/buttons.jade

@@ -11,7 +11,7 @@ class FreeformOrganizer(models.Model):
     committees.
     """
 
-    programme = models.ForeignKey('programme.Programme',
+    programme = models.ForeignKey('programme.Programme', on_delete=models.CASCADE,
         verbose_name=_('Programme'),
         related_name='freeform_organizers',
     )

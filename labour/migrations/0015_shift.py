@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
                 ('start_time', models.DateTimeField()),
                 ('hours', models.PositiveIntegerField()),
                 ('notes', models.TextField()),
-                ('job', models.ForeignKey(to='labour.Job')),
-                ('signup', models.ForeignKey(to='labour.Signup')),
+                ('job', models.ForeignKey(on_delete=models.CASCADE, to='labour.Job')),
+                ('signup', models.ForeignKey(on_delete=models.CASCADE, to='labour.Signup')),
             ],
             options={
                 'verbose_name': 'ty\xf6vuoro',

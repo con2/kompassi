@@ -1,0 +1,21 @@
+- load crispy from crispy_forms_tags
+- load trans from i18n
+.tab-pane#programme-admin-programme-internal-tab
+  .panel.panel-default
+    .panel-heading: strong {% trans "Internal information" %}
+    .panel-body
+      //- XXX extra div required to appease kompassi_i18n
+      div
+        {% crispy internal_form %}
+
+      if programme.pk
+        .form-group
+          label.control-label.col-md-3 {% trans "Created at" %}
+          .col-md-9
+            .form-control {{ programme.created_at|date:"SHORT_DATETIME_FORMAT" }}
+        .form-group
+          label.control-label.col-md-3 {% trans "Updated at" %}
+          .col-md-9
+            .form-control {{ programme.updated_at|date:"SHORT_DATETIME_FORMAT" }}
+    .panel-footer.clearfix
+      include programme_admin_detail_views/buttons.pug

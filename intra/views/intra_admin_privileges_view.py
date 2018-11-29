@@ -32,4 +32,4 @@ def intra_admin_privileges_view(request, vars, event):
         privileges_forms=privileges_forms,
     )
 
-    return render(request, 'intra_admin_privileges_view.jade', vars)
+    return render(request, 'intra_admin_privileges_view.pug', vars)

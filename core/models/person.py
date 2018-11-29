@@ -105,7 +105,7 @@ class Person(models.Model):
     )
 
     notes = models.TextField(blank=True, verbose_name='Käsittelijän merkinnät')
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     email_verified_at = models.DateTimeField(null=True, blank=True)
 

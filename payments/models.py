@@ -37,7 +37,7 @@ class PaymentsEventMeta(EventMetaBase):
 
 
 class Payment(models.Model):
-    event = models.ForeignKey('core.Event')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
 
     # XXX What the fuck is this and why the fuck is it here
     test = models.IntegerField(blank=True, null=True)

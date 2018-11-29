@@ -12,7 +12,7 @@ class Qualification(models.Model):
     name = models.CharField(max_length=63, verbose_name='pätevyyden nimi')
     description = models.TextField(blank=True, verbose_name='kuvaus')
 
-    qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', null=True, blank=True)
+    qualification_extra_content_type = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name = _('qualification')
@@ -46,8 +46,8 @@ class Qualification(models.Model):
 
 
 class PersonQualification(models.Model):
-    person = models.ForeignKey('core.Person', verbose_name='henkilö')
-    qualification = models.ForeignKey(Qualification, verbose_name='pätevyys')
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE, verbose_name='henkilö')
+    qualification = models.ForeignKey(Qualification, on_delete=models.CASCADE, verbose_name='pätevyys')
 
     class Meta:
         verbose_name = _('qualification holder')
@@ -72,7 +72,7 @@ class PersonQualification(models.Model):
 
 
 class QualificationExtraBase(models.Model):
-    personqualification = models.OneToOneField(PersonQualification,
+    personqualification = models.OneToOneField(PersonQualification, on_delete=models.CASCADE,
         related_name="+",
         primary_key=True)
 

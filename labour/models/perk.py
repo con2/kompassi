@@ -7,7 +7,7 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 
 class Perk(models.Model):
-    event = models.ForeignKey('core.Event')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     name = models.CharField(max_length=63)
 

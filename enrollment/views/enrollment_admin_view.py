@@ -24,4 +24,4 @@ def enrollment_admin_view(request, vars, event):
         state_filters=state_filters,
     )
 
-    return render(request, 'enrollment_admin_view.jade', vars)
+    return render(request, 'enrollment_admin_view.pug', vars)

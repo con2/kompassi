@@ -1,0 +1,16 @@
+include labour_admin_roster_views/NoScript.pug
+include labour_admin_roster_views/TooSmall.pug
+
+.hidden(data-bind="css: {hidden: false}")
+  include labour_admin_roster_views/NotFound.pug
+
+  .kompassi-frozen-table-container
+    table.table.table-striped.table-bordered
+      include labour_admin_roster_views/Header.pug
+
+      include labour_admin_roster_views/Overview.pug
+      include labour_admin_roster_views/JobCategory.pug
+
+  include labour_admin_roster_views/JobModal.pug
+  include labour_admin_roster_views/RequirementModal.pug
+  include labour_admin_roster_views/ShiftModal.pug

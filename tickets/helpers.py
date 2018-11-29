@@ -5,7 +5,7 @@ from functools import wraps
 import re
 
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 
 from ipware.ip import get_ip

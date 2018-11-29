@@ -1,0 +1,14 @@
+extends base
+- load i18n
+block full_title
+  | {{ settings.KOMPASSI_INSTALLATION_NAME }}
+block content_full_width
+  include core_frontpage_carousel.pug
+
+  .container
+    include core_messages.pug
+    include core_event_boxen.pug
+
+    p.text-muted
+      a.kompassi-icon-space-right(href='{% url "core_events_view" %}') {% trans "Browse all events" %} &raquo;
+      a.kompassi-icon-space-left(href='{% url "core_organizations_view" %}') {% trans "Browse organizations" %} &raquo;

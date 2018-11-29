@@ -32,19 +32,25 @@ class Setup(object):
         self.setup_payments()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(name='Pohjankartanon koulu', defaults=dict(
             name_inessive='Pohjankartanon koululla',
         ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='pohjoisten-conien-kyhaajat-ry',
+            defaults=dict(
+                name='Pohjoisten conien kyhääjät r',
+                homepage_url='http://matsucon.fi/pocky-ry/',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='matsucon2018', defaults=dict(
             name='Matsucon 2018',
             name_genitive='Matsucon 2018 -tapahtuman',
             name_illative='Matsucon 2018 -tapahtumaan',
             name_inessive='Matsucon 2018 -tapahtumassa',
             homepage_url='http://matsucon.fi',
-            organization_name='Pohjoisten conien kyhääjät ry',
-            organization_url='http://matsucon.fi/pocky-ry/',
+            organization=self.organization,
             start_time=datetime(2018, 5, 26, 10, 0, tzinfo=self.tz),
             end_time=datetime(2018, 5, 27, 18, 0, tzinfo=self.tz),
             venue=self.venue,
@@ -147,8 +153,8 @@ class Setup(object):
             )
 
             if created:
-                job_category.personnel_classes = pcs
-                job_category.save()
+                job_category.personnel_classes.set(pcs)
+
 
             for job_name in job_names:
                 job, created = Job.objects.get_or_create(
@@ -169,8 +175,8 @@ class Setup(object):
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
             if not jc.required_qualifications.exists():
-                jc.required_qualifications = [qual]
-                jc.save()
+                jc.required_qualifications.set([qual])
+
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,

@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('category', models.CharField(max_length=255, verbose_name='Kategorian kuvaus')),
                 ('slug', models.SlugField(max_length=20, verbose_name='Avainsana')),
                 ('primary', models.BooleanField(default=False)),
-                ('hotword', models.ForeignKey(to='sms.Hotword')),
+                ('hotword', models.ForeignKey(on_delete=models.CASCADE, to='sms.Hotword')),
             ],
             options={
                 'verbose_name': 'Kategoria',
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='nominee',
             name='vote',
-            field=models.ForeignKey(to='sms.Vote'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='sms.Vote'),
             preserve_default=True,
         ),
         migrations.RemoveField(
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='vote',
             name='category',
-            field=models.ForeignKey(to='sms.VoteCategory'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='sms.VoteCategory'),
             preserve_default=True,
         ),
         migrations.DeleteModel(

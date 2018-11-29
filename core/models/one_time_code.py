@@ -85,7 +85,7 @@ class OneTimeCodeMixin(object):
 
 class OneTimeCode(models.Model, OneTimeCodeMixin):
     code = models.CharField(max_length=63, unique=True)
-    person = models.ForeignKey('core.Person')
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     used_at = models.DateTimeField(null=True, blank=True)
     state = models.CharField(

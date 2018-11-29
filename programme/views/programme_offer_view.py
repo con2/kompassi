@@ -45,7 +45,7 @@ def programme_offer_view(request, event):
         alternative_programme_forms=alternative_programme_forms,
     )
 
-    return render(request, 'programme_offer_view.jade', vars)
+    return render(request, 'programme_offer_view.pug', vars)
 
 
 @programme_event_required
@@ -158,4 +158,4 @@ def programme_offer_form_view(request, event, form_slug):
         sired_invitation_formset=sired_invitation_formset,
     )
 
-    return render(request, 'programme_offer_form_view.jade', vars)
+    return render(request, 'programme_offer_form_view.pug', vars)

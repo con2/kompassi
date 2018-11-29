@@ -141,7 +141,7 @@ class ViewMethodsMixin(object):
 
 
 class View(models.Model, ViewMethodsMixin, OrderingMixin):
-    event = models.ForeignKey('core.Event', related_name='views')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, related_name='views')
     name = models.CharField(max_length=32, verbose_name=_('Title'))
     public = models.BooleanField(default=True)
     order = models.IntegerField(help_text=_('This will be automatically filled in if not provided.'))
@@ -194,8 +194,8 @@ class View(models.Model, ViewMethodsMixin, OrderingMixin):
 
 
 class ViewRoom(models.Model, OrderingMixin):
-    view = models.ForeignKey('programme.View', related_name='view_rooms')
-    room = models.ForeignKey('programme.Room', related_name='view_rooms')
+    view = models.ForeignKey('programme.View', on_delete=models.CASCADE, related_name='view_rooms')
+    room = models.ForeignKey('programme.Room', on_delete=models.CASCADE, related_name='view_rooms')
     order = models.IntegerField(help_text=_('This will be automatically filled in if not provided.'))
 
     @property
@@ -226,13 +226,13 @@ class AllRoomsPseudoView(ViewMethodsMixin):
 
 
 class TimeBlock(models.Model):
-    event = models.ForeignKey('core.event')
+    event = models.ForeignKey('core.event', on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
 
 
 class SpecialStartTime(models.Model):
-    event = models.ForeignKey('core.event', verbose_name=_('event'))
+    event = models.ForeignKey('core.event', on_delete=models.CASCADE, verbose_name=_('event'))
     start_time = models.DateTimeField(verbose_name=_('starting time'))
 
     def __str__(self):

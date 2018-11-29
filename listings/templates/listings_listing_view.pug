@@ -1,0 +1,26 @@
+extends base.pug
+- load trans from i18n
+block title
+  | {{ listing.title }}
+block content
+  h1 {{ listing.title }}
+  {{ listing.description|safe|linebreaks }}
+
+  if current_events
+    h2 {% trans "Events currently in progress" %}
+    - with current_events as events
+      include listings_event_list.pug
+
+  if show_future_events_heading
+    h2 {% trans "Upcoming events" %}
+  if future_events
+    - with future_events as events
+      include listings_event_list.pug
+
+
+  if past_events_by_year
+    h2 {% trans "Past events" %}
+    for year, past_events in past_events_by_year
+      h3= year
+      - with past_events as events
+        include listings_event_list.pug

@@ -1,0 +1,45 @@
+extends core_admin_base
+block title
+  | Työvoiman hallinta
+block admin_content
+  .row
+    .col-md-3
+      .panel.panel-default
+        .panel-heading: strong Ilmoittautuneita
+        .panel-body: h1 {{ event.signup_set.all.count }}
+    .col-md-3
+      .panel.panel-default
+        .panel-heading: strong Odottaa päätöstä
+        .panel-body: h1 {{ num_pending }}
+    .col-md-3
+      .panel.panel-default
+        .panel-heading: strong Hyväksytty
+        .panel-body: h1 {{ num_accepted }}
+    .col-md-3
+      .panel.panel-default
+        .panel-heading: strong Hylätty tai peruutettu
+        .panel-body: h1 {{ num_rejected }}
+
+
+    //- .col-md-3
+    //-   .panel.panel-warning
+    //-     .panel-heading: strong Uusia peruutuksia
+    //-     .panel-body: h1 0
+    //- .col-md-3
+    //-   .panel.panel-danger
+    //-     .panel-heading: strong Täyttämättä
+    //-     .panel-body: h1 1337
+    //- .col-md-3
+    //-   .panel.panel-default
+    //-     .panel-heading: strong Vailla tehtävää
+    //-     .panel-body: h1 666
+
+  .row
+    .col-md-12
+      .panel.panel-default
+        .panel-heading: strong Viimeisimmät ilmoittautuneet
+        table.table.table-striped
+          include labour_admin_signup_table_contents.pug
+        .panel-footer.clearfix
+          .pull-right
+            strong: a(href='{% url "labour_admin_signups_view" event.slug %}') Kaikki tapahtumaan ilmoittautuneet henkilöt...

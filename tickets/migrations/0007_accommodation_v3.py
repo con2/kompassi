@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('last_name', models.CharField(default='', max_length=100, verbose_name='Sukunimi', blank=True)),
                 ('phone_number', models.CharField(default='', max_length=30, verbose_name='Puhelinnumero', blank=True)),
                 ('email', models.EmailField(default='', max_length=75, verbose_name='S\xc3\xa4hk\xc3\xb6postiosoite', blank=True)),
-                ('order_product', models.ForeignKey(related_name='accommodation_information_set', to='tickets.OrderProduct')),
+                ('order_product', models.ForeignKey(on_delete=models.CASCADE, related_name='accommodation_information_set', to='tickets.OrderProduct')),
             ],
             options={
                 'verbose_name': 'majoittujan tiedot',

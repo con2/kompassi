@@ -201,7 +201,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
         tabs=tabs,
     )
 
-    return render(request, 'programme_admin_detail_view.jade', vars)
+    return render(request, 'programme_admin_detail_view.pug', vars)
 
 
 @programme_admin_required

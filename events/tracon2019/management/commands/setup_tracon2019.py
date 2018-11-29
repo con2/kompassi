@@ -176,8 +176,8 @@ class Setup(object):
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
 
-            jc.required_qualifications = [qual]
-            jc.save()
+            jc.required_qualifications.set([qual])
+
 
         labour_event_meta.create_groups()
 
@@ -630,17 +630,17 @@ class Setup(object):
                 )
             )
 
-    def setup_sms(self):
-        from sms.models import SMSEventMeta
+    # def setup_sms(self):
+    #     from sms.models import SMSEventMeta
 
-        sms_admin_group, = SMSEventMeta.get_or_create_groups(self.event, ['admins'])
-        meta, unused = SMSEventMeta.objects.get_or_create(
-            event=self.event,
-            defaults=dict(
-                admin_group=sms_admin_group,
-                sms_enabled=True,
-            )
-        )
+    #     sms_admin_group, = SMSEventMeta.get_or_create_groups(self.event, ['admins'])
+    #     meta, unused = SMSEventMeta.objects.get_or_create(
+    #         event=self.event,
+    #         defaults=dict(
+    #             admin_group=sms_admin_group,
+    #             sms_enabled=True,
+    #         )
+    #     )
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team

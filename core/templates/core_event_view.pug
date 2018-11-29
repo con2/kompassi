@@ -1,0 +1,51 @@
+extends base.pug
+- load i18n
+block full_title
+  | {{ event.name }} &ndash; {{ settings.KOMPASSI_INSTALLATION_NAME }}
+block content
+  .core-event-view
+    .row
+      .col-md-8
+        h2 {{ event.name }}
+          small.text-muted
+            | &nbsp; {{ event.venue.name_inessive }}
+            if event.start_time
+              {{ event.formatted_start_and_end_date }}
+
+        {{ event.description|linebreaks }}
+
+        if event.homepage_url
+          a.btn.btn-primary(href='{{ event.homepage_url }}', target='_blank') {% trans "Go to event home page…" %}
+
+      .col-md-4.hidden-sm.hidden-xs
+        if event.either_logo_url
+          a(href='{{ event.homepage_url }}', target='_blank')
+            img(src='{{ event.either_logo_url }}', alt='{{ event.name }}', width='100%')
+
+    if event.enrollment_event_meta
+      include enrollment_event_box.pug
+      hr
+
+    if event.labour_event_meta
+      include labour_event_box.pug
+      hr
+
+    if event.programme_event_meta
+      include programme_event_box.pug
+      hr
+
+    if event.tickets_event_meta
+      include tickets_event_box.pug
+      hr
+
+    if event.badges_event_meta
+      include badges_event_box.pug
+      hr
+
+    if event.sms_event_meta
+      include sms_event_box.pug
+      hr
+
+    if event.intra_event_meta
+      include intra_event_box.pug
+      hr

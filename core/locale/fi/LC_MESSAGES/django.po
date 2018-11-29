@@ -1,8 +1,8 @@
-#: templates/core_organization_boxen.jade
+#: templates/core_organization_boxen.pug
 msgid "Accepting applications"
 msgstr "Ottaa vastaan hakemuksia"
 
-#: templates/core_event_box.jade
+#: templates/core_event_box.pug
 msgid "Accepting programme"
 msgstr "Ohjelmahaku käynnissä"
 
@@ -26,7 +26,7 @@ msgstr "Salasanan vaihto"
 msgid "Contact information"
 msgstr "Yhteystiedot"
 
-#: templates/core_login_view.jade
+#: templates/core_login_view.pug
 msgid "Create a Kompassi account"
 msgstr "Luo Kompassi-tunnus"
 
@@ -38,15 +38,15 @@ msgstr "Sähköpostiosoite"
 msgid "E-mail address verification"
 msgstr "Sähköpostiosoitteen vahvistaminen"
 
-#: templates/core_event_box.jade
+#: templates/core_event_box.pug
 msgid "Enrollment"
 msgstr "Ilmoittautuminen"
 
-#: templates/core_event_box.jade
+#: templates/core_event_box.pug
 msgid "Enrollment open"
 msgstr "Ilmoittautuminen käynnissä"
 
-#: templates/core_event_boxen.jade
+#: templates/core_event_boxen.pug
 msgid "Events currently in progress"
 msgstr "Parhaillaan käynnissä olevat tapahtumat"
 
@@ -66,15 +66,15 @@ msgstr "Etunimi \"Nick\" Sukunimi"
 msgid "Firstname Surname"
 msgstr "Etunimi Sukunimi"
 
-#: templates/core_login_view.jade
+#: templates/core_login_view.pug
 msgid "For some of the services of this site you will need a user account which you can easily create here."
 msgstr "Osaan tämän sivuston palveluista tarvitset Kompassi-tunnuksen, jonka voit helposti luoda tästä."
 
-#: templates/core_login_view.jade
+#: templates/core_login_view.pug
 msgid "Forgot password"
 msgstr "Salasana unohtunut"
 
-#: templates/core_event_view.jade
+#: templates/core_event_view.pug
 msgid "Go to event home page…"
 msgstr "Tapahtuman kotisivulle…"
 
@@ -94,11 +94,11 @@ msgstr "Puhelinnumero ei kelpaa."
 msgid "Invalid user name"
 msgstr "Käyttäjänimi ei kelpaa"
 
-#: templates/core_navbar_user.jade
+#: templates/core_navbar_user.pug
 msgid "Log out"
 msgstr "Kirjaudu ulos"
 
-#: templates/core_organization_boxen.jade
+#: templates/core_organization_boxen.pug
 msgid "Membership roster"
 msgstr "Jäsenrekisteri"
 
@@ -134,7 +134,7 @@ msgstr "Viralliset etunimet"
 msgid "Old password"
 msgstr "Vanha salasanat"
 
-#: templates/core_organization_boxen.jade
+#: templates/core_organization_boxen.pug
 msgid "Organizations"
 msgstr "Yhdistykset"
 
@@ -150,7 +150,7 @@ msgstr "Salasana (uudestaan)"
 msgid "Passwords do not match."
 msgstr "Salasanat eivät täsmää."
 
-#: templates/core_event_boxen.jade
+#: templates/core_event_boxen.pug
 msgid "Past events"
 msgstr "Menneet tapahtumat"
 
@@ -162,7 +162,7 @@ msgstr "Ole hyvä ja tarkista lomake."
 msgid "Please choose a user name. The user name must consist of 4 to 30 characters. The following characters are allowed: <b>small</b> letters <i>a&ndash;z</i>, numbers <i>0&ndash;9</i> and underscore </i>_</i>. You can use either this user name or your e-mail address to sign in."
 msgstr "Valitse itsellesi 4–30 merkin pituinen käyttäjänimi. Seuraavat merkit ovat sallittuja: <b>pienet</b> kirjaimet <i>a–z</i>, numerot <i>0–9</i> sekä alaviiva <i>_</i>. Voit käyttää sisäänkirjautumiseen tätä käyttäjänimeä tai sähköpostiosoitettasi."
 
-#: templates/core_registration_view.jade
+#: templates/core_registration_view.pug
 msgid "Please note that creating an account takes a while. Please press the Sign up button only once."
 msgstr "Huomaathan, että tunnuksen luonnissa kestää hetken. Painathan Luo tunnus -nappia vain kerran."
 
@@ -178,7 +178,7 @@ msgstr "Rekisteriseloste"
 msgid "Profile"
 msgstr "Omat tiedot"
 
-#: templates/core_event_box.jade
+#: templates/core_event_box.pug
 msgid "Recruiting volunteers"
 msgstr "Työvoimahaku avoinna"
 
@@ -186,43 +186,43 @@ msgstr "Työvoimahaku avoinna"
 msgid "Revoked"
 msgstr "Mitätöity"
 
-#: templates/core_personify_view.jade templates/core_profile_view.jade
+#: templates/core_personify_view.pug templates/core_profile_view.pug
 msgid "Save changes"
 msgstr "Tallenna muutokset"
 
-#: templates/core_event_box.jade
+#: templates/core_event_box.pug
 msgid "Schedule"
 msgstr "Ohjelmakartta"
 
-#: templates/core_event_box.jade
+#: templates/core_event_box.pug
 msgid "Schedule published"
 msgstr "Ohjelmakartta julkaistu"
 
-#: templates/core_event_box.jade
+#: templates/core_event_box.pug
 msgid "Selling tickets"
 msgstr "Lipunmyynti käynnissä"
 
-#: templates/core_login_view.jade
+#: templates/core_login_view.pug
 msgid "Sign in"
 msgstr "Kirjaudu sisään"
 
-#: templates/core_login_view.jade
+#: templates/core_login_view.pug
 msgid "Sign in or sign up"
 msgstr "Luo tunnus tai kirjaudu sisään..."
 
-#: templates/core_login_view.jade
+#: templates/core_login_view.pug
 msgid "Sign in using your Kompassi account"
 msgstr "Kirjaudu sisään Kompassi-tunnuksellasi"
 
-#: templates/core_login_view.jade templates/core_registration_view.jade
+#: templates/core_login_view.pug templates/core_registration_view.pug
 msgid "Sign up"
 msgstr "Luo tunnus"
 
-#: templates/core_registration_view.jade
+#: templates/core_registration_view.pug
 msgid "Sign up for a Kompassi account"
 msgstr "Luo Kompassi-tunnus"
 
-#: templates/core_navbar_user.jade
+#: templates/core_navbar_user.pug
 msgid "Sign up or sign in..."
 msgstr "Rekisteröidy tai kirjaudu sisään..."
 
@@ -259,15 +259,15 @@ msgstr "Tähän sähköpostiosoitteeseen on jo liitetty käyttäjätunnus. Jos o
 msgid "This user name is already taken."
 msgstr "Tämä käyttäjänimi on jo viety."
 
-#: templates/core_admin_menu_items.jade
+#: templates/core_admin_menu_items.pug
 msgid "This view has not been designed for a display this small. For an optimal user experience, please switch to a tablet or a computer."
 msgstr "Tätä näkymää ei ole suunniteltu näin pienelle näytölle. Optimaalisen käyttökokemuksen saavuttamiseksi ole hyvä ja käytä tablettia tai tietokonetta."
 
-#: templates/core_event_box.jade
+#: templates/core_event_box.pug
 msgid "Ticket sales"
 msgstr "Lipunmyynti"
 
-#: templates/core_event_boxen.jade
+#: templates/core_event_boxen.pug
 msgid "Upcoming events"
 msgstr "Tulevat tapahtumat"
 
@@ -291,7 +291,7 @@ msgstr "Käyttäjänimi tai sähköpostiosoite"
 msgid "Valid"
 msgstr "Kelvollinen"
 
-#: templates/core_event_box.jade
+#: templates/core_event_box.pug
 msgid "Volunteers"
 msgstr "Työvoima"
 
@@ -303,7 +303,7 @@ msgstr "Salasana väärin."
 msgid "Yes"
 msgstr "Kyllä"
 
-#: templates/core_contact_information_panel.jade
+#: templates/core_contact_information_panel.pug
 msgid "Please check your contact information and update your profile if necessary. By submitting this form you agree that this contact information will be shared with the organizer of the event."
 msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Täyttämällä tämän lomakkeen annat luvan luovuttaa nämä yhteystiedot tapahtuman järjestäjille."
 

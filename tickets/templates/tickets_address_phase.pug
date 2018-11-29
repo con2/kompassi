@@ -1,0 +1,11 @@
+extends tickets_phase_base.pug
+- load crispy_forms_tags
+block body_text
+  if order.requires_shipping
+    h2 Toimitusosoite
+  else
+    h2 Yhteystiedot
+block form_content
+  p {% if order.requires_shipping %}Tarvitsemme vielä osoitteen, johon lähetämme tilaamasi liput. {% endif %}Tilaus&shy;vahvistuksen ja maksuohjeet saat sähköpostitse. Puhelinnumeroa käytämme, mikäli ongelmia syntyy. Emme luovuta yhteystietojasi eteenpäin.
+  p Tähdellä merkityt kentät ovat pakollisia.
+  - crispy form

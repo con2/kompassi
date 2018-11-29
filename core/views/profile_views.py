@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
@@ -80,7 +80,7 @@ def core_profile_view(request):
         form=form
     )
 
-    return render(request, 'core_profile_view.jade', vars)
+    return render(request, 'core_profile_view.pug', vars)
 
 
 @sensitive_post_parameters('old_password', 'new_password', 'new_password_again')
@@ -111,13 +111,13 @@ def core_password_view(request):
         form=form,
     )
 
-    return render(request, 'core_password_view.jade', vars)
+    return render(request, 'core_password_view.pug', vars)
 
 
 def core_profile_menu_items(request):
     items = []
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return items
 
     profile_url = reverse('core_profile_view')

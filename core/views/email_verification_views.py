@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
@@ -88,7 +88,7 @@ def core_email_verification_request_view(request):
         code=person.pending_email_verification,
     )
 
-    return render(request, 'core_email_verification_request_view.jade', vars)
+    return render(request, 'core_email_verification_request_view.pug', vars)
 
 
 def remind_email_verification_if_needed(request, next=None):

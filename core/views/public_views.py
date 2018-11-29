@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
@@ -56,7 +56,7 @@ def core_organization_view(request, organization):
         from membership.views import membership_organization_box_context
         vars.update(membership_organization_box_context(request, organization))
 
-    return render(request, 'core_organization_view.jade', vars)
+    return render(request, 'core_organization_view.pug', vars)
 
 def core_event_view(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
@@ -86,12 +86,12 @@ def core_event_view(request, event_slug):
         from badges.views import badges_event_box_context
         vars.update(badges_event_box_context(request, event))
 
-    if event.sms_event_meta:
-        from sms.views import sms_event_box_context
-        vars.update(sms_event_box_context(request, event))
+    # if event.sms_event_meta:
+    #     from sms.views import sms_event_box_context
+    #     vars.update(sms_event_box_context(request, event))
 
     if event.intra_event_meta:
         from intra.views import intra_event_box_context
         vars.update(intra_event_box_context(request, event))
 
-    return render(request, 'core_event_view.jade', vars)
+    return render(request, 'core_event_view.pug', vars)

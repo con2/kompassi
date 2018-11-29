@@ -56,4 +56,4 @@ def labour_admin_jobcategory_view(request, vars, event, job_category_slug=None):
         job_category=job_category,
     )
 
-    return render(request, 'labour_admin_jobcategory_view.jade', vars)
+    return render(request, 'labour_admin_jobcategory_view.pug', vars)

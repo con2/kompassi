@@ -6,11 +6,11 @@ msgstr "Linkki videotallenteeseen ohjelmasta ulkoisessa videopalvelussa kuten Yo
 msgid "A reference to the form class that implements the form. Example: hitpoint2017.forms:RolePlayingGameForm"
 msgstr "Viittaus lomakkeen toteuttavaan luokkaan. Esimerkki: hitpoint2017.forms:RpgForm"
 
-#: templates/programme_admin_detail_views/buttons.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/buttons.pug templates/programme_profile_detail_view.pug
 msgid "Abandon changes and return"
 msgstr "Hylkää muutokset ja palaa"
 
-#: templates/programme_accept_invitation_view.jade
+#: templates/programme_accept_invitation_view.pug
 msgid "Accept invitation"
 msgstr "Hyväksy kutsu"
 
@@ -30,7 +30,7 @@ msgstr "Ohjelmahaku päättyy"
 msgid "Activate selected items"
 msgstr "Aktivoi valitut kohteet"
 
-#: templates/programme_admin_organizers_view.jade
+#: templates/programme_admin_organizers_view.pug
 msgid "Active"
 msgstr "Aktiivinen"
 
@@ -42,7 +42,7 @@ msgstr "Käyttöaika alkaa"
 msgid "Active until"
 msgstr "Käyttöaika päättyy"
 
-#: templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_admin_detail_views/freeform_host_modal.pug templates/programme_admin_detail_views/hosts_tab.pug
 msgid "Add free-form organizer"
 msgstr "Lisää vapaamuotoinen ohjelmanjärjestäjä"
 
@@ -58,7 +58,7 @@ msgstr "Kaikki tilat"
 msgid "Amount of physical play"
 msgstr "Peli sisältää fyysistä pelaamista"
 
-#: templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade
+#: templates/programme_admin_feedback_view.pug templates/programme_feedback_table.pug
 msgid "Anonymous"
 msgstr "Anonyymi"
 
@@ -78,7 +78,7 @@ msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko
 msgid "Audio playback"
 msgstr "Äänen toistaminen"
 
-#: admin.py templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade
+#: admin.py templates/programme_admin_feedback_view.pug templates/programme_feedback_table.pug
 msgid "Author"
 msgstr "Kirjoittaja"
 
@@ -94,11 +94,11 @@ msgstr "Et voi antaa palautetta omasta ohjelmanumerostasi anonyymisti."
 msgid "By clearing this tick box you can hide an abusive comment from the site."
 msgstr "Poistamalla valinnan tästä voit piilottaa pahantahtoisen kommentin sivustolta."
 
-#: templates/programme_admin_detail_views/change_host_role_modals.jade templates/programme_admin_detail_views/change_invitation_role_modals.jade templates/programme_admin_detail_views/freeform_host_modal.jade templates/programme_admin_detail_views/invitation_modal.jade
+#: templates/programme_admin_detail_views/change_host_role_modals.pug templates/programme_admin_detail_views/change_invitation_role_modals.pug templates/programme_admin_detail_views/freeform_host_modal.pug templates/programme_admin_detail_views/invitation_modal.pug
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug
 msgid "Cancel invitation"
 msgstr "Peruuta kutsu"
 
@@ -106,19 +106,19 @@ msgstr "Peruuta kutsu"
 msgid "Cancelled"
 msgstr "Peruutettu"
 
-#: templates/programme_profile_view.jade
+#: templates/programme_profile_view.pug
 msgid "Cancelled and rejected programmes"
 msgstr "Peruutetut ja hylätyt ohjelmanumerot"
 
-#: templates/programme_admin_detail_views/change_host_role_modals.jade templates/programme_admin_detail_views/change_invitation_role_modals.jade
+#: templates/programme_admin_detail_views/change_host_role_modals.pug templates/programme_admin_detail_views/change_invitation_role_modals.pug
 msgid "Change role"
 msgstr "Vaihda roolia"
 
-#: templates/programme_admin_detail_views/change_host_role_modals.jade
+#: templates/programme_admin_detail_views/change_host_role_modals.pug
 msgid "Change role of accepted host"
 msgstr "Vaihda ohjelmanjärjestäjän roolia"
 
-#: templates/programme_admin_detail_views/change_invitation_role_modals.jade
+#: templates/programme_admin_detail_views/change_invitation_role_modals.pug
 msgid "Change role of invited host"
 msgstr "Vaihda ohjelmanjärjestäjäkutsun roolia"
 
@@ -126,7 +126,7 @@ msgstr "Vaihda ohjelmanjärjestäjäkutsun roolia"
 msgid "Choose the category that fits your programme the best. We reserve the right to change this."
 msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa."
 
-#: templates/programme_admin_cold_offers_view.jade views/programme_admin_menu_items.py
+#: templates/programme_admin_cold_offers_view.pug views/programme_admin_menu_items.py
 msgid "Cold offer period starting and ending times"
 msgstr "Ohjelmahaun ajastaminen"
 
@@ -134,11 +134,11 @@ msgstr "Ohjelmahaun ajastaminen"
 msgid "Computer use"
 msgstr "Tietokoneen käyttö"
 
-#: templates/core_contact_information_panel.jade
+#: templates/core_contact_information_panel.pug
 msgid "Contact information"
 msgstr "Yhteystiedot"
 
-#: models/programme.py templates/programme_admin_detail_views/internal_tab.jade
+#: models/programme.py templates/programme_admin_detail_views/internal_tab.pug
 msgid "Created at"
 msgstr "Luontiaika"
 
@@ -154,11 +154,11 @@ msgstr "Kuvaile peliäsi kolmella sanalla, esim. genre, teema ja asenne."
 msgid "Description"
 msgstr "Kuvaus"
 
-#: templates/programme_admin_create_view.jade
+#: templates/programme_admin_create_view.pug
 msgid "Discard changes and return to the list"
 msgstr "Hylkää muutokset ja palaa"
 
-#: templates/programme_feedback_view.jade
+#: templates/programme_feedback_view.pug
 msgid "Discard feedback and return to schedule"
 msgstr "Hylkää muutokset ja palaa ohjelmakarttaan"
 
@@ -166,11 +166,11 @@ msgstr "Hylkää muutokset ja palaa ohjelmakarttaan"
 msgid "Do you have tech requirements that are not covered by the previous questions?"
 msgstr "Onko ohjelmallasi tekniikkatarpeita joita edeltävät kysymykset eivät kata?"
 
-#: templates/programme_admin_detail_views/change_invitation_role_modals.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade templates/core_contact_information_panel.jade
+#: templates/programme_admin_detail_views/change_invitation_role_modals.pug templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug templates/core_contact_information_panel.pug
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
-#: templates/programme_profile_box.jade templates/programme_profile_detail_view.jade
+#: templates/programme_profile_box.pug templates/programme_profile_detail_view.pug
 msgid "Edit programme"
 msgstr "Muokkaa ohjelmanumeroa"
 
@@ -182,7 +182,7 @@ msgstr "Suojattu sisältö"
 msgid "Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings."
 msgstr "Sisältääkö ohjelmasi tekijänoikeudella suojattua sisältöä? YouTubessa julkaistavat videotallenteet eivät voi sisältää kolmansien osapuolten tekijänoikeudella suojattua videota tai ääntä. Suojattu sisältö editoidaan pois videotallenteista."
 
-#: templates/programme_admin_cold_offers_view.jade
+#: templates/programme_admin_cold_offers_view.pug
 msgid "End now"
 msgstr "Sulje heti"
 
@@ -198,7 +198,7 @@ msgstr "Englanti OK"
 msgid "Event"
 msgstr "Tapahtuma"
 
-#: templates/programme_admin_organizers_view.jade
+#: templates/programme_admin_organizers_view.pug
 msgid "Export"
 msgstr "Vie"
 
@@ -206,15 +206,15 @@ msgstr "Vie"
 msgid "Extra invites"
 msgstr "Lisäkutsut"
 
-#: admin.py templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade views/programme_admin_detail_view.py
+#: admin.py templates/programme_admin_feedback_view.pug templates/programme_feedback_table.pug views/programme_admin_detail_view.py
 msgid "Feedback"
 msgstr "Palaute"
 
-#: templates/programme_admin_organizers_view.jade
+#: templates/programme_admin_organizers_view.pug
 msgid "Filter organizers"
 msgstr "Suodata ohjelmanjärjestäjiä"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/core_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
@@ -222,11 +222,11 @@ msgstr "Etunimi"
 msgid "Format: YYYY-MM-DD HH:MM:SS"
 msgstr "Muoto: YYYY-MM-DD HH:MM:SS"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Free-form organizer"
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 
-#: models/programme.py templates/programme_admin_organizers_view.jade templates/programme_state_label.jade
+#: models/programme.py templates/programme_admin_organizers_view.pug templates/programme_state_label.pug
 msgid "Frozen"
 msgstr "Lukittu"
 
@@ -234,15 +234,15 @@ msgstr "Lukittu"
 msgid "Full-width"
 msgstr "Koko leveys"
 
-#: templates/programme_profile_view.jade
+#: templates/programme_profile_view.pug
 msgid "Future programmes"
 msgstr "Tulevat ohjelmanumerot"
 
-#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_info_fragment.jade
+#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_info_fragment.pug
 msgid "Give feedback"
 msgstr "Anna palautetta"
 
-#: templates/programme_feedback_view.jade
+#: templates/programme_feedback_view.pug
 msgid "Give feedback about a programme"
 msgstr "Anna palautetta ohjelmanumerosta"
 
@@ -250,7 +250,7 @@ msgstr "Anna palautetta ohjelmanumerosta"
 msgid "Give feedback anonymously"
 msgstr "Anna palaute anonyymisti"
 
-#: templates/programme_feedback_view.jade
+#: templates/programme_feedback_view.pug
 #, python-format
 msgid "Give feedback: %(programme_title)s"
 msgstr "Anna palautetta: %(programme_title)s"
@@ -259,11 +259,11 @@ msgstr "Anna palautetta: %(programme_title)s"
 msgid "Have you presented this same programme at another event before the event you are offering it to now, or do you intend to present it in another event before this one? If you are unsure about the re-run policy of this event, please consult the programme managers."
 msgstr "Oletko esittänyt tämän saman ohjelman toisessa tapahtumassa ennen tapahtumaa, johon nyt sitä tarjoat, tai aiotko esittää sen ensin tapahtumassa joka on ennen tätä tapahtumaa? Jos et ole varma, hyväksyykö tämä tapahtuma uusintaohjelmaa tai mikä katsotaan uusintaohjelmaksi, ota yhteyttä ohjelmavastaavaan."
 
-#: templates/programme_admin_publish_view.jade
+#: templates/programme_admin_publish_view.pug
 msgid "Here you can set a time for the programme schedule to be automatically published. You can also publish or un-publish the schedule right away."
 msgstr "Tässä voit asettaa ajan, jona ohjelmakartta julkaistaan automaattisesti. Voit myös julkaista ohjelmakartan tai palauttaa sen ei-julkaistuksi välittömästi."
 
-#: templates/programme_admin_cold_offers_view.jade
+#: templates/programme_admin_cold_offers_view.pug
 msgid "Here you can set the starting and ending times for the period during which the event will accept cold offers. The cold offer form will automatically open at the beginning and close at the end of the period."
 msgstr "Tässä voit ajastaa ohjelmahaun avautumisen ja päättymisen. Ohjelmahaun aikana tapahtuma ottaa vastaan \"kylmiä\" ohjelmatarjouksia eli ohjelmaa voi tarjota suoraan Kompassin lomakkeella ottamatta ensin yhteyttä ohjelmatiimiin. Ohjelmatiimi voi perustaa uusia ohjelmanumeroita myös ohjelmahakuajan ulkopuolella."
 
@@ -271,11 +271,11 @@ msgstr "Tässä voit ajastaa ohjelmahaun avautumisen ja päättymisen. Ohjelmaha
 msgid "Hide selected feedback"
 msgstr "Piilota valitut palautteet"
 
-#: templates/programme_profile_detail_view.jade
+#: templates/programme_profile_detail_view.pug
 msgid "Hosts can only be invited by the programme manager. If you have agreed with the programme manager to include people who are not listed here, please contact the programme manager. In order to receive speaker benefits, all hosts of the programme must be listed here."
 msgstr "Vain ohjelmavastaava voi kutsua ohjelmanjärjestäjiä. Mikäli olet sopinut ohjelmavastaavan kanssa useammasta järjestäjästä ohjelmaasi eikä heitä ole listattu tähän, ole hyvä ja ota yhteyttä ohjelmavastaavaan. Saadakseen ohjelmanjärjestäjän edut kaikkien ohjelmanjärjestäjien tulee olla listattu tässä."
 
-#: templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug
 msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
 msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
 
@@ -307,7 +307,7 @@ msgstr "En ole varma, sisältääkö ohjelmani tekijänoikeudella suojattua sis�
 msgid "IP address"
 msgstr "IP-osoite"
 
-#: templates/programme_admin_cold_offers_view.jade
+#: templates/programme_admin_cold_offers_view.pug
 msgid "If the <em>Accepting cold offers from</em> field is empty, the cold offer form will stay closed. If the <em>Accepting cold offers from</em> field is set but the <em>Accepting cold offers until</em> field is empty, the cold offer form will stay open once the beginning of the period has been reached."
 msgstr "Jos <em>Ohjelmahaku alkaa</em> -kenttä on tyhjä, ohjelmahaku pysyy suljettuna. Jos <em>Ohjelmahaku alkaa</em> -kenttä on täytetty mutta <em>Ohjelmahaku päättyy</em> -kenttä ei ole täytetty, ohjelmahaku pysyy alettuaan avoimena."
 
@@ -323,11 +323,11 @@ msgstr "Jos skenaarion on kirjoittanut joku muu kuin sen tässä tapahtumassa ve
 msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
 msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
 
-#: templates/core_contact_information_panel.jade
+#: templates/core_contact_information_panel.pug
 msgid "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile."
 msgstr "Jos nimesi näytetään julkisesti tämän ohjelman järjestäjänä, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
 
-#: templates/programme_offer_form_view.jade
+#: templates/programme_offer_form_view.pug
 msgid "If your programme has other hosts in addition to yourself, please write their e-mail addresses here. They will be sent invitations to confirm their participation in your programme. Please note that the programme manager may at their discretion limit the number of hosts allowed for your programme. Inviting someone here does not guarantee automatic admittance into the event. Adding more hosts later requires approval from the programme manager."
 msgstr "Jos ohjelmanumerossasi on lisäksesi muita ohjelmanpitäjiä, syötä heidän sähköpostiosoitteensa tähän. Heille lähetetään kutsu vahvistaa osallistumisensa ohjelmaan. Huomaathan, että kutsun lähettäminen ei takaa automaattista sisäänpääsyä. Ohjelmavastaava voi harkintansa mukaan rajoittaa ohjelmanumeroon hyväksyttävien ohjelmanpitäjien määrää."
 
@@ -339,11 +339,11 @@ msgstr "Jotta ohjelmanumero näkyisi ohjelmakartassa, sillä tulee olla alkuaika
 msgid "In this context, physical play can mean, for example, using your whole body, acting the actions of your character or moving around in the allocated space."
 msgstr "Tässä kontekstissa fyysisellä fyysinen pelaaminen voi tarkoittaa esimerksi koko keholla pelaamista, hahmon näyttelemistä tai pelitilassa liikkumista."
 
-#: templates/programme_accept_invitation_view.jade templates/programme_offer_form_view.jade templates/programme_profile_detail_view.jade
+#: templates/programme_accept_invitation_view.pug templates/programme_offer_form_view.pug templates/programme_profile_detail_view.pug
 msgid "Information about yourself"
 msgstr "Tietoja itsestäsi"
 
-#: templates/programme_admin_detail_views/internal_tab.jade views/programme_admin_detail_view.py
+#: templates/programme_admin_detail_views/internal_tab.pug views/programme_admin_detail_view.py
 msgid "Internal information"
 msgstr "Sisäiset tiedot"
 
@@ -363,27 +363,27 @@ msgstr "Kelvoton toiminto."
 msgid "Invalid request."
 msgstr "Kelvoton pyyntö."
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug
 msgid "Invitation link. If the invitation e-mail does not get through due to eg. Microsoft, you can give this link to the invitee over eg. an instant messenger."
 msgstr "Kutsun linkki. Jos kutsusähköposti ei syystä tai toisesta (esim. Microsoft) mene läpi, voit antaa tämän linkin suoraan kutsutulle esim. pikaviestisovelluksen kautta."
 
-#: templates/programme_accept_invitation_view.jade
+#: templates/programme_accept_invitation_view.pug
 msgid "Invitation to organize programme"
 msgstr "Kutsu ohjelmanjärjestäjäksi"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_detail_views/invitation_modal.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_detail_views/invitation_modal.pug
 msgid "Invite host"
 msgstr "Kutsu ohjelmanjärjestäjä"
 
-#: templates/programme_admin_invitations_view.jade
+#: templates/programme_admin_invitations_view.pug
 msgid "Invited at"
 msgstr "Kutsun luontiaika"
 
-#: templates/programme_admin_invitations_view.jade
+#: templates/programme_admin_invitations_view.pug
 msgid "Invited by"
 msgstr "Kutsuja"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug
 msgid "Invites"
 msgstr "Kutsut"
 
@@ -447,11 +447,11 @@ msgstr "Ohjelmanumeroni ei sisällä tekijänoikeudella suojattua ääntä tai v
 msgid "My programme may be recorded and published"
 msgstr "Ohjelmanumeroni saa videoida ja julkaista"
 
-#: templates/programme_admin_detail_views/change_host_role_modals.jade
+#: templates/programme_admin_detail_views/change_host_role_modals.pug
 msgid "Name"
 msgstr "Nimi"
 
-#: templates/core_contact_information_panel.jade
+#: templates/core_contact_information_panel.pug
 msgid "Name as displayed"
 msgstr "Nimen esittäminen"
 
@@ -459,15 +459,15 @@ msgstr "Nimen esittäminen"
 msgid "New offers"
 msgstr "Uudet tarjoukset"
 
-#: templates/programme_admin_create_view.jade
+#: templates/programme_admin_create_view.pug
 msgid "New programme"
 msgstr "Uusi ohjelmanumero"
 
-#: templates/programme_admin_organizers_view.jade
+#: templates/programme_admin_organizers_view.pug
 msgid "Nick"
 msgstr "Nick"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/core_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Nick name"
 msgstr "Nick"
 
@@ -479,16 +479,16 @@ msgstr "Ei"
 msgid "No computer required"
 msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
 
-#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_admin_feedback_view.jade templates/programme_profile_feedback_view.jade
+#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug
 msgid "No feedback."
 msgstr "Tämä ohjelmanumero ei ole vielä saanut palautetta."
 
-#: templates/programme_admin_organizers_view.jade
+#: templates/programme_admin_organizers_view.pug
 #, python-format
 msgid "No programme hosts visible (total %(num_total_organizers)s)."
 msgstr "Ei ohjelmanjärjestäjiä näkyvissä (yhteensä %(num_total_organizers)s)."
 
-#: templates/programme_profile_view.jade
+#: templates/programme_profile_view.pug
 msgid "No programmes"
 msgstr "Ei ohjelmanumeroita"
 
@@ -508,7 +508,7 @@ msgstr "En ole varma"
 msgid "Number of extra invites"
 msgstr "Lisäkutsujen määrä"
 
-#: templates/programme_event_box.jade templates/programme_offer_form_view.jade templates/programme_offer_view.jade
+#: templates/programme_event_box.pug templates/programme_offer_form_view.pug templates/programme_offer_view.pug
 msgid "Offer programme"
 msgstr "Tarjoa ohjelmanumeroa"
 
@@ -516,14 +516,14 @@ msgstr "Tarjoa ohjelmanumeroa"
 msgid "Offer received"
 msgstr "Ohjelmatarjous vastaanotettu"
 
-#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_admin_feedback_view.jade templates/programme_profile_feedback_view.jade
+#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug
 #, python-format
 msgid "One feedback message."
 msgid_plural "%(num_feedback_messages)s feedback messages."
 msgstr[0] "Yksi palaute."
 msgstr[1] "%(num_feedback_messages)s palautetta."
 
-#: templates/programme_admin_organizers_view.jade
+#: templates/programme_admin_organizers_view.pug
 #, python-format
 msgid "One programme host visible (total %(num_total_organizers)s)."
 msgid_plural "%(num_organizers)s programme hosts (total %(num_total_organizers)s)."
@@ -538,7 +538,7 @@ msgstr "Vain ohjelmanjärjestäjä voi nähdä ohjelmansa palautteen."
 msgid "Only hosts who are assigned public roles will be shown publicly in the programme schedule."
 msgstr "Ohjelmakartassa näytetään ainoastaan ne ohjelmanjärjestäjät, jotka ovat julkisessa roolissa."
 
-#: templates/programme_admin_invitations_view.jade views/programme_admin_menu_items.py
+#: templates/programme_admin_invitations_view.pug views/programme_admin_menu_items.py
 msgid "Open invitations"
 msgstr "Avoimet kutsut"
 
@@ -562,15 +562,15 @@ msgstr "Oma PC-kannettava"
 msgid "Own laptop – Mac"
 msgstr "Oma Mac-kannettava"
 
-#: templates/programme_profile_view.jade
+#: templates/programme_profile_view.pug
 msgid "Past programmes"
 msgstr "Menneet ohjelmanumerot"
 
-#: models/role.py templates/programme_admin_organizers_view.jade
+#: models/role.py templates/programme_admin_organizers_view.pug
 msgid "Personnel class"
 msgstr "Henkilöstöluokka"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/core_contact_information_panel.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/core_contact_information_panel.pug
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
@@ -578,7 +578,7 @@ msgstr "Puhelinnumero"
 msgid "Photography of your prorgmme"
 msgstr "Ohjelman valokuvaus"
 
-#: templates/programme_admin_publish_view.jade
+#: templates/programme_admin_publish_view.pug
 msgid "Please bear in mind that only programmes that are in the \"Published\" state are shown in the schedule."
 msgstr "Muistathan, että ohjelmakartassa näytetään vain ohjelmanumerot jotka ovat Julkaistu-tilassa."
 
@@ -586,7 +586,7 @@ msgstr "Muistathan, että ohjelmakartassa näytetään vain ohjelmanumerot jotka
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
-#: templates/core_contact_information_panel.jade
+#: templates/core_contact_information_panel.pug
 msgid "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number."
 msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman ohjelmavastaaville. Mikäli ohjelmanumerollasi on muitakin järjestäjiä, he näkevät nimesi mutteivät sähköpostiosoitettasi tai puhelinnumeroasi."
 
@@ -626,15 +626,15 @@ msgstr "Ruksaa tämä ruutu, mikäli pelisi sopii myös nuoremmille pelaajille. 
 msgid "Priority"
 msgstr "Järjestys"
 
-#: models/freeform_organizer.py models/invitation.py templates/programme_admin_feedback_view.jade templates/programme_admin_invitations_view.jade
+#: models/freeform_organizer.py models/invitation.py templates/programme_admin_feedback_view.pug templates/programme_admin_invitations_view.pug
 msgid "Programme"
 msgstr "Ohjelma"
 
-#: templates/programme_admin_detail_views/feedback_tab.jade templates/programme_admin_feedback_view.jade templates/programme_profile_feedback_view.jade views/programme_admin_menu_items.py
+#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug views/programme_admin_menu_items.py
 msgid "Programme feedback"
 msgstr "Ohjelmapalaute"
 
-#: templates/programme_admin_detail_views/programme_tab.jade views/programme_admin_detail_view.py
+#: templates/programme_admin_detail_views/programme_tab.pug views/programme_admin_detail_view.py
 msgid "Programme form"
 msgstr "Ohjelmalomake"
 
@@ -642,15 +642,15 @@ msgstr "Ohjelmalomake"
 msgid "Programme host"
 msgstr "Ohjelmanjärjestäjä"
 
-#: models/programme_role.py templates/programme_accept_invitation_view.jade templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/programme_offer_form_view.jade templates/programme_profile_detail_view.jade views/programme_admin_detail_view.py views/programme_admin_menu_items.py
+#: models/programme_role.py templates/programme_accept_invitation_view.pug templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/programme_offer_form_view.pug templates/programme_profile_detail_view.pug views/programme_admin_detail_view.py views/programme_admin_menu_items.py
 msgid "Programme hosts"
 msgstr "Ohjelmanjärjestäjät"
 
-#: templates/programme_accept_invitation_view.jade templates/programme_offer_form_view.jade
+#: templates/programme_accept_invitation_view.pug templates/programme_offer_form_view.pug
 msgid "Programme information"
 msgstr "Ohjelmanumeron tiedot"
 
-#: templates/programme_admin_organizers_view.jade templates/programme_profile_view.jade views/public_views.py
+#: templates/programme_admin_organizers_view.pug templates/programme_profile_view.pug views/public_views.py
 msgid "Programmes"
 msgstr "Ohjelmanumerot"
 
@@ -662,11 +662,11 @@ msgstr "Julkinen"
 msgid "Public from"
 msgstr "Julkaisuaika"
 
-#: templates/programme_admin_publish_view.jade
+#: templates/programme_admin_publish_view.pug
 msgid "Publish now"
 msgstr "Julkaise heti"
 
-#: templates/programme_admin_publish_view.jade views/programme_admin_menu_items.py
+#: templates/programme_admin_publish_view.pug views/programme_admin_menu_items.py
 msgid "Publish schedule"
 msgstr "Ohjelmakartan julkaiseminen"
 
@@ -690,11 +690,11 @@ msgstr "Videointilupa"
 msgid "Rejected"
 msgstr "Hylätty"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug
 msgid "Remove free-form host"
 msgstr "Poista vapaamuotoinen ohjelmanjärjestäjä"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug
 msgid "Remove host"
 msgstr "Poista ohjelmanjärjestäjä"
 
@@ -706,11 +706,11 @@ msgstr "Aikatoiveet"
 msgid "Restore selected feedback"
 msgstr "Palauta valitut palautteet näkyviin"
 
-#: templates/programme_admin_invitations_view.jade
+#: templates/programme_admin_invitations_view.pug
 msgid "Revoke all open invitations"
 msgstr "Peru kaikki avoimet kutsut"
 
-#: models/invitation.py templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_invitations_view.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: models/invitation.py templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Role"
 msgstr "Rooli"
 
@@ -722,19 +722,19 @@ msgstr "Sali"
 msgid "Room requirements"
 msgstr "Tilatarpeet"
 
-#: templates/programme_admin_create_view.jade templates/programme_admin_detail_view.jade templates/programme_admin_detail_views/buttons.jade
+#: templates/programme_admin_create_view.pug templates/programme_admin_detail_view.pug templates/programme_admin_detail_views/buttons.pug
 msgid "Save and continue"
 msgstr "Tallenna ja jatka"
 
-#: templates/programme_admin_cold_offers_view.jade templates/programme_admin_detail_views/buttons.jade templates/programme_admin_publish_view.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_cold_offers_view.pug templates/programme_admin_detail_views/buttons.pug templates/programme_admin_publish_view.pug templates/programme_profile_detail_view.pug
 msgid "Save and return"
 msgstr "Tallenna ja palaa"
 
-#: templates/programme_admin_cold_offers_view.jade templates/programme_admin_publish_view.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_cold_offers_view.pug templates/programme_admin_publish_view.pug templates/programme_profile_detail_view.pug
 msgid "Save changes"
 msgstr "Tallenna muutokset"
 
-#: templates/programme_admin_detail_views/schedule_tab.jade views/programme_admin_detail_view.py
+#: templates/programme_admin_detail_views/schedule_tab.pug views/programme_admin_detail_view.py
 msgid "Schedule information"
 msgstr "Ohjelmakarttatiedot"
 
@@ -746,15 +746,15 @@ msgstr "Ohjelmakartan asettelu"
 msgid "Select the form that will be used to edit the information of this programme. If this field is left blank, the default form will be used. Some events do not offer a choice of different forms, in which case this field will not have options and the default form will always be used. "
 msgstr "Valitse lomake, jota käytetään ohjelmanumeron tietojen syöttämiseen. Mikäli tämä kenttä jätetään tyhjäksi, käytetään oletuslomaketta. Jotkin tapahtumat eivät tarjoa valittavia lomakkeita lainkaan, jolloin tämä kenttä ei tarjoa vaihtoehtoja ja oletuslomaketta käytetään joka tapauksessa."
 
-#: templates/programme_admin_detail_views/invitation_modal.jade
+#: templates/programme_admin_detail_views/invitation_modal.pug
 msgid "Send invitation"
 msgstr "Lähetä kutsu"
 
-#: templates/programme_offer_form_view.jade
+#: templates/programme_offer_form_view.pug
 msgid "Send offer"
 msgstr "Lähetä tarjous"
 
-#: templates/programme_info_fragment.jade
+#: templates/programme_info_fragment.pug
 msgid "Sign up"
 msgstr "Ilmoittaudu"
 
@@ -778,11 +778,11 @@ msgstr "Jotkin tapahtumat määrittelevät useita ohjelmanjärjestäjärooleja, 
 msgid "Some events may opt to make their schedule use the full width of the browser window. This option selects between reasonable width (the default) and full width."
 msgstr "Jotkut tapahtumat haluavat käyttää ohjelmakartassaan selainikkunan koko leveyden. Tämä asetus vaihtaa koko järjellisen (oletus) ja koko leveyden välillä."
 
-#: templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Someone else has invited someone, but they have not yet accepted their invitation."
 msgstr "Joku toinen on kutsunut jonkun, mutta tämä ei ole vielä hyväksynyt kutsuaan."
 
-#: templates/programme_admin_cold_offers_view.jade
+#: templates/programme_admin_cold_offers_view.pug
 msgid "Start now"
 msgstr "Avaa heti"
 
@@ -794,11 +794,11 @@ msgstr "Alkamisaika"
 msgid "State"
 msgstr "Tila"
 
-#: templates/programme_feedback_view.jade
+#: templates/programme_feedback_view.pug
 msgid "Submit feedback"
 msgstr "Lähetä palaute"
 
-#: templates/programme_admin_detail_views/hosts_tab.jade templates/programme_admin_organizers_view.jade templates/core_contact_information_panel.jade templates/programme_invitations_table.jade templates/programme_profile_detail_view.jade
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -846,15 +846,15 @@ msgstr "Ohjelmahaku avattiin."
 msgid "The event has ended and the programme has been archived."
 msgstr "Tapahtuma on ohi ja ohjelmanumero on arkistoitu."
 
-#: templates/programme_event_box.jade
+#: templates/programme_event_box.pug
 msgid "The event is accepting programme offers"
 msgstr "Tapahtuma ottaa vastaan ohjelmatarjouksia"
 
-#: templates/programme_admin_cold_offers_view.jade
+#: templates/programme_admin_cold_offers_view.pug
 msgid "The event is currently accepting cold offers."
 msgstr "Tapahtuma ottaa parhaillaan vastaan kylmiä ohjelmatarjouksia."
 
-#: templates/programme_admin_cold_offers_view.jade
+#: templates/programme_admin_cold_offers_view.pug
 msgid "The event is currently not accepting cold offers."
 msgstr "Tapahtuma ei tällä hetkellä ota vastaan kylmiä ohjelmatarjouksia."
 
@@ -898,21 +898,21 @@ msgstr "Kutsu peruutettu."
 msgid "The personnel class for the programme hosts that have this role."
 msgstr "Henkilöstöluokka ohjelmanjärjestäjille, joilla on tämä rooli."
 
-#: templates/programme_accept_invitation_view.jade
+#: templates/programme_accept_invitation_view.pug
 #, python-format
 msgid "The programme manager has allowed you to invite one more host to this programme. You may do so now by entering their e-mail address in the field above, or later via your profile."
 msgid_plural "The programme manager has allowed you to invite up to %(num_invites)s hosts to this programme. You may do so now by entering their e-mail addresses in the fields above, or later via your profile."
 msgstr[0] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi yhden muun ohjelmanjärjestäjän. Voit tehdä niin nyt syöttämällä hänen sähköpostiosoitteensa yllä olevaan kenttään tai myöhemmin profiilisi kautta."
 msgstr[1] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi %(num_invite)s muuta ohjelmanjärjestäjää. Voit tehdä niin nyt syöttämällä heidän sähköpostiosoitteensa yllä oleviin kenttiin tai myöhemmin profiilisi kautta."
 
-#: templates/programme_profile_detail_view.jade
+#: templates/programme_profile_detail_view.pug
 #, python-format
 msgid "The programme manager has allowed you to invite one more host to this programme. You may do so now or later by entering their e-mail address in the field above."
 msgid_plural "The programme manager has allowed you to invite up to %(num_invites)s more hosts to this programme. You may do so now or later by entering their e-mail addresses in the fields above."
 msgstr[0] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi yhden muun ohjelmanjärjestäjän. Voit tehdä niin nyt tai myöhemmin syöttämällä hänen sähköpostiosoitteensa yllä olevaan kenttään."
 msgstr[1] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi %(num_invite)s muuta ohjelmanjärjestäjää. Voit tehdä niin nyt tai myöhemmin syöttämällä heidän sähköpostiosoitteensa yllä oleviin kenttiin."
 
-#: templates/programme_accept_invitation_view.jade
+#: templates/programme_accept_invitation_view.pug
 msgid "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details."
 msgstr "Ohjelmavastaava on kutsunut sinut järjestämään ohjelmanumeron, joka on yksilöity alla. Saadaksesi ohjelmanjärjestäjän edut sinun tulee hyväksyä tämä kutsu ja täyttää pyydetyt lisätiedot."
 
@@ -932,11 +932,11 @@ msgstr "Julkaisuaika tallennettiin."
 msgid "The role was changed."
 msgstr "Rooli vaihdettiin."
 
-#: templates/programme_admin_publish_view.jade
+#: templates/programme_admin_publish_view.pug
 msgid "The schedule is currently published."
 msgstr "Ohjelmakartta on tällä hetkellä julkinen."
 
-#: templates/programme_admin_publish_view.jade
+#: templates/programme_admin_publish_view.pug
 msgid "The schedule is not currently published."
 msgstr "Ohjelmakartta ei ole tällä hetkellä julkinen."
 
@@ -960,7 +960,7 @@ msgstr "Ohjelmahaun avautumis- ja sulkeutumisajat tallennettiin."
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
 msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta."
 
-#: templates/programme_offer_view.jade
+#: templates/programme_offer_view.pug
 msgid "This event is currently open for programme offers. Please begin by selecting below the type of programme you are offering."
 msgstr "Tämä tapahtuma ottaa parhaillaan vastaan ohjelmatarjouksia. Aloita valitsemalla tarjottavan ohjelmanumeron tyyppi alta."
 
@@ -996,7 +996,7 @@ msgstr "Tämä otsikko näkyy ohjelmanpitäjälle."
 msgid "Three-word description"
 msgstr "Kolmen sanan kuvaus"
 
-#: templates/programme_admin_feedback_view.jade templates/programme_feedback_table.jade
+#: templates/programme_admin_feedback_view.pug templates/programme_feedback_table.pug
 msgid "Timestamp"
 msgstr "Aikaleima"
 
@@ -1008,7 +1008,7 @@ msgstr "Otsikko"
 msgid "To support programmes with multiple hosts, the host offering the programme may be enabled to invite more hosts to their programme by entering their e-mail addresses. This field controls if this is available and at most how many e-mail addresses may be entered."
 msgstr "Joissain ohjelmanumeroissa on useita ohjelmanpitäjiä. Tämän mahdollistamiseksi ohjelman ilmoittajalle voidaan antaa mahdollisuus kutsua ohjelmanumeroon useampia järjestäjiä syöttämällä näiden sähköpostiosoitteet. Tämä kenttä kontrolloi, onko tämä mahdollisuus olemassa ja montako sähköpostiosoitetta on mahdollista syöttää."
 
-#: templates/programme_admin_publish_view.jade
+#: templates/programme_admin_publish_view.pug
 msgid "Un-publish now"
 msgstr "Palauta ei-julkaistuksi"
 
@@ -1016,15 +1016,15 @@ msgstr "Palauta ei-julkaistuksi"
 msgid "Unless you choose to give feedback anonymously, your name and e-mail address will be shared with the programme host and programme manager. Please note that even if you choose to leave feedback anonymously, abusive feedback can be traced back to you by the administrator of the system."
 msgstr "Ellet päätä jättää palautettasi anonyymisti, nimesi ja sähköpostiosoitteesi näytetään ohjelmanjärjestäjälle ja ohjelmavastaaville. Huomaathan, että mikäli palautteesi on asiaton, järjestelmän ylläpitäjä pystyy yhdistämään sen sinuun vaikka antaisit sen anonyymisti."
 
-#: templates/core_contact_information_panel.jade
+#: templates/core_contact_information_panel.pug
 msgid "Update profile..."
 msgstr "Päivitä profiilia..."
 
-#: models/programme.py templates/programme_admin_detail_views/internal_tab.jade
+#: models/programme.py templates/programme_admin_detail_views/internal_tab.pug
 msgid "Updated at"
 msgstr "Päivitysaika"
 
-#: templates/programme_offer_form_view.jade
+#: templates/programme_offer_form_view.pug
 msgid "Using this form you can offer programme to the event. Please note that filling in the form does not guarantee automatic admittance into the event. You will be contacted by the programme manager and notified of the decision whether to accept the programme or not."
 msgstr "Tällä lomakkeella voit tarjota ohjelmaa tapahtumaan. Huomaathan, että tämän lomakkeen täyttäminen ei takaa automaattista pääsyä tapahtumaan. Ohjelmavastaavat ottavat sinuun yhteyttä ohjelmatarjouksesi tiimoilta ja kertovat päätöksestään hyväksyäkö ohjelmasi tapahtuman ohjelmistoon."
 
@@ -1036,11 +1036,11 @@ msgstr "Videolinkki"
 msgid "Video playback"
 msgstr "Videon toistaminen"
 
-#: templates/programme_profile_box.jade
+#: templates/programme_profile_box.pug
 msgid "View programme details"
 msgstr "Tarkastele ohjelmanumeron tietoja"
 
-#: templates/programme_profile_box.jade
+#: templates/programme_profile_box.pug
 msgid "View programme feedback"
 msgstr "Tarkastele ohjelmanumeron saamaa palautetta"
 
@@ -1056,7 +1056,7 @@ msgstr "Näkyy sivulla, josta ohjelman tarjoaminen aloitetaan ja josta valitaan,
 msgid "Visible to the hosts that register their programmes using this form."
 msgstr "Näkyy lomakkeen yläpuolella ilmoitettaessa ohjelmaa käyttäen tätä lomaketta."
 
-#: templates/programme_info_fragment.jade
+#: templates/programme_info_fragment.pug
 msgid "Watch the recording"
 msgstr "Katso tallenne"
 
@@ -1104,15 +1104,15 @@ msgstr "Kyllä. Ohjelma on esitetty aiemmin toisessa tapahtumassa."
 msgid "Yes. The programme will be presented in a convention that takes place before this one."
 msgstr "Kyllä. Ohjelma esitetään ensin tapahtumassa joka on ennen tätä tapahtumaa."
 
-#: templates/programme_admin_cold_offers_view.jade
+#: templates/programme_admin_cold_offers_view.pug
 msgid "You can also start or stop accepting cold offers immediately."
 msgstr "Voit myös avata tai sulkea ohjelmahaun välittömästi."
 
-#: templates/programme_accept_invitation_view.jade templates/programme_offer_form_view.jade
+#: templates/programme_accept_invitation_view.pug templates/programme_offer_form_view.pug
 msgid "You can change these details later by visiting your profile."
 msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
 
-#: templates/programme_profile_detail_view.jade
+#: templates/programme_profile_detail_view.pug
 msgid "You can edit the details of this programme until it is published in the schedule."
 msgstr "Voit muokata tämän ohjelmanumeron tietoja kunnes se on julkaistu ohjelmakarttaan."
 
@@ -1132,11 +1132,11 @@ msgstr "Olet jo ottanut tämän kutsun vastaan. Et voi enää muokata ohjelmanum
 msgid "You have cancelled this programme."
 msgstr "Olet peruuttanut tämän ohjelmanumeron."
 
-#: templates/programme_profile_view.jade
+#: templates/programme_profile_view.pug
 msgid "You have not organized any programme in events that use this site."
 msgstr "Et ole järjestänyt ohjelmaa tapahtumissa, jotka käyttävät tätä sivustoa."
 
-#: templates/programme_feedback_view.jade
+#: templates/programme_feedback_view.pug
 msgid "Your feedback will be shared with the programme host and the programme managers."
 msgstr "Palautteesi toimitetaan ohjelmanjärjestäjälle sekä tapahtuman ohjelmavastaaville."
 

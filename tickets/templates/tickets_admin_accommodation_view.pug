@@ -1,0 +1,51 @@
+extends core_admin_base.pug
+block title
+  | Majoituslista
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Majoituslista
+    .panel-body
+      .row
+        .col-md-3
+          strong Yö ja koulu
+        .col-md-9
+          for filter_active, limit_group in filters
+            if filter_active
+              a.label.label-primary.kompassi-space-after(href='{% url "tickets_admin_accommodation_view" event.slug %}') {{ limit_group.description }}
+            else
+              a.label.label-default.kompassi-space-after(href='{% url "tickets_admin_accommodation_filtered_view" event.slug limit_group.id %}') {{ limit_group.description }}
+    table.table.table-striped
+      thead
+        th Tilaus
+        th Majoittujan sukunimi
+        th Majoittujan etunimi
+        th Sähköpostiosoite
+        th Puhelinnumero
+      tbody
+        for accommodee in accommodees
+          tr
+            if accommodee.order_product
+              td: a(href='{% url "tickets_admin_order_view" event.slug accommodee.order_product.order_id %}')= accommodee.order_product.order.formatted_order_number
+            else
+              td
+            td {{ accommodee.last_name }}
+            td {{ accommodee.first_name }}
+            td {{ accommodee.email }}
+            td {{ accommodee.phone_number }}
+
+    .panel-footer.clearfix
+      if active_filter
+        .btn-group.pull-right
+          a.btn.btn-success(href='{% url "tickets_admin_accommodation_create_view" event.slug active_filter.id %}')
+            i.fa.fa-plus.kompassi-icon-space-right
+            | Lisää uusi majoittuja käsin
+          //- a.btn.btn-default(href='?format=print', target='_blank') Tulostettava versio
+          button.btn.btn-default(type='button', data-toggle='dropdown') Vie <span class='caret'></span>
+          ul.dropdown-menu(role='menu')
+            li: a.btn.btn-link(href='?format=xlsx') XLSX
+            li: a.btn.btn-link(href='?format=csv') CSV
+            li: a.btn.btn-link(href='?format=tsv') TSV
+        p.text-muted: {{ accommodees.count }} majoittujaa.
+      else
+        p.text-muted
+          | Valitse ensin yö ja koulu.

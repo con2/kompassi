@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('used_at', models.DateTimeField(null=True, blank=True)),
                 ('state', models.CharField(default='valid', max_length=8, choices=[('valid', 'Kelvollinen'), ('used', 'K\xe4ytetty'), ('revoked', 'Mit\xe4t\xf6ity')])),
                 ('desuprofile_id', models.IntegerField()),
-                ('person', models.ForeignKey(to='core.Person')),
+                ('person', models.ForeignKey(on_delete=models.CASCADE, to='core.Person')),
             ],
             options={
                 'abstract': False,
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             name='Connection',
             fields=[
                 ('id', models.IntegerField(serialize=False, verbose_name='Desuprofiilin numero', primary_key=True)),
-                ('user', models.ForeignKey(verbose_name='K\xe4ytt\xe4j\xe4', to=settings.AUTH_USER_MODEL, unique=True)),
+                ('user', models.ForeignKey(on_delete=models.CASCADE, verbose_name='K\xe4ytt\xe4j\xe4', to=settings.AUTH_USER_MODEL, unique=True)),
             ],
             options={
             },

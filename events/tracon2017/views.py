@@ -63,4 +63,4 @@ def tracon2017_afterparty_summary_view(request, event_slug):
         return_coaches=return_coaches,
     )
 
-    return render(request, 'tracon2017_afterparty_summary_view.jade', vars)
+    return render(request, 'tracon2017_afterparty_summary_view.pug', vars)

@@ -11,14 +11,14 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.encoding import force_text
 from django.utils.translation.trans_real import templatize
-from pyjade import Compiler, process
+from pypugjs import Compiler, process
 
 ACCEPTABLE_FILENAMES_RE = re.compile("^.*\.(js|py|jade|html)$", re.I)
 
 
 def extract_template(fileobj, keywords, comment_tags, options):
     src = force_text(fileobj.read(), settings.FILE_CHARSET)
-    if fileobj.name.endswith(".jade"):
+    if fileobj.name.endswith(".pug"):
         src = process(src, compiler=Compiler)
     src = templatize(src, "")
     if "gettext" in src:
@@ -145,7 +145,7 @@ class Command(BaseCommand):
         return {
             ".py": (extract_python, {}),
             ".js": (extract_javascript, {}),
-            ".jade": (extract_template, {}),
+            ".pug": (extract_template, {}),
             ".html": (extract_template, {}),
         }
 

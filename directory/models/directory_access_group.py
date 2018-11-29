@@ -7,8 +7,8 @@ class DirectoryAccessGroup(models.Model):
     Grants expiring group access to the personnel directory.
     """
 
-    organization = models.ForeignKey('core.Organization')
-    group = models.ForeignKey('auth.Group')
+    organization = models.ForeignKey('core.Organization', on_delete=models.CASCADE)
+    group = models.ForeignKey('auth.Group', on_delete=models.CASCADE)
     active_from = models.DateTimeField(blank=True, null=True)
     active_until = models.DateTimeField(blank=True, null=True)
 

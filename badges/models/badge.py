@@ -15,14 +15,14 @@ logger = logging.getLogger('kompassi')
 
 
 class Badge(models.Model, CsvExportMixin):
-    person = models.ForeignKey('core.Person',
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE,
         null=True,
         blank=True,
         verbose_name=_('Person'),
         related_name='badges',
     )
 
-    personnel_class = models.ForeignKey('labour.PersonnelClass',
+    personnel_class = models.ForeignKey('labour.PersonnelClass', on_delete=models.CASCADE,
         verbose_name=_('Personnel class'),
         related_name='badges',
     )
@@ -33,7 +33,7 @@ class Badge(models.Model, CsvExportMixin):
         verbose_name=_('Printed separately at'),
     )
 
-    revoked_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+    revoked_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name='badges_revoked',
@@ -89,7 +89,7 @@ class Badge(models.Model, CsvExportMixin):
         help_text=_('Please stay civil with the job title field.'),
     )
 
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name='badges_created',

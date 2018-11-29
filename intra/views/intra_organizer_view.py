@@ -13,7 +13,7 @@ EXPORT_FORMATS = EXPORT_FORMATS + [
 ]
 
 HTML_TEMPLATES = dict(
-    screen='intra_organizer_view.jade',
+    screen='intra_organizer_view.pug',
 )
 
 

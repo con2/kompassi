@@ -1,0 +1,10 @@
+- load crispy from crispy_forms_tags
+.tab-pane#labour-admin-signup-application-tab
+  .panel.panel-default
+    .panel-heading: strong Hakemuksen tiedot
+    .panel-body
+      .labour-signup-form
+        - crispy signup_form
+      - crispy signup_extra_form
+    .panel-footer.clearfix
+      include labour_admin_signup_views/actions.pug

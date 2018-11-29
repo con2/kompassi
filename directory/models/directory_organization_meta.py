@@ -8,6 +8,7 @@ from core.utils import get_objects_within_period
 class DirectoryOrganizationMeta(models.Model, GroupManagementMixin):
     organization = models.OneToOneField(
         'core.Organization',
+        on_delete=models.CASCADE,
         primary_key=True,
         verbose_name=_('organization'),
     )

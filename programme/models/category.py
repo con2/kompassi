@@ -9,7 +9,7 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 
 class Category(models.Model):
-    event = models.ForeignKey('core.Event')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
     title = models.CharField(max_length=1023)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     style = models.CharField(max_length=15)

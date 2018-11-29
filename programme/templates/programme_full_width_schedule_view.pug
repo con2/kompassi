@@ -1,0 +1,12 @@
+extends base.pug
+- load static from staticfiles
+block title
+  | Ohjelmakartta
+block content_full_width
+  .container-fluid
+    include core_messages.pug
+    include programme_schedule_admin_public_warning.pug
+    include programme_schedule_tabs.pug
+    include programme_schedule_fragment.pug
+block extra_scripts
+  script(src='{% static "schedule.js" %}')

@@ -1,7 +1,8 @@
 from django.conf import settings
+from django.utils.deprecation import MiddlewareMixin
 
 
-class ListingsMiddleware(object):
+class ListingsMiddleware(MiddlewareMixin):
     def process_request(self, request):
         hostname = request.META['HTTP_HOST']
 

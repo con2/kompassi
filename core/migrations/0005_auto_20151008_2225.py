@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='event',
             name='organization',
-            field=models.ForeignKey(default=1, verbose_name='J\xe4rjest\xe4j\xe4taho', to='core.Organization'),
+            field=models.ForeignKey(on_delete=models.CASCADE, default=1, verbose_name='J\xe4rjest\xe4j\xe4taho', to='core.Organization'),
             preserve_default=False,
         ),
     ]

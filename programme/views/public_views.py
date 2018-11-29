@@ -42,8 +42,8 @@ def get_schedule_tabs(request, event):
 
 
 SCHEDULE_TEMPLATES = dict(
-    reasonable='programme_schedule_view.jade',
-    full_width='programme_full_width_schedule_view.jade',
+    reasonable='programme_schedule_view.pug',
+    full_width='programme_full_width_schedule_view.pug',
 )
 
 
@@ -131,7 +131,7 @@ def actual_schedule_view(
 def programme_special_view(
     request,
     event,
-    template='programme_special_view.jade',
+    template='programme_special_view.pug',
     show_programme_actions=False,
 ):
     return actual_special_view(request, event,
@@ -144,7 +144,7 @@ def actual_special_view(
     request,
     event,
     include_unpublished=False,
-    template='programme_special_view.jade',
+    template='programme_special_view.pug',
     vars=None,
     show_programme_actions=False,
 ):
@@ -200,7 +200,7 @@ def programme_internal_dumpdata_view(request):
 def programme_mobile_schedule_view(request, event):
     vars = dict(event=event)
 
-    return render(request, 'programme_mobile_schedule.jade', vars)
+    return render(request, 'programme_mobile_schedule.pug', vars)
 
 
 @programme_event_required

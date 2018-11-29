@@ -44,4 +44,4 @@ def enrollment_admin_special_diets_view(request, vars, event):
         special_diets=special_diets,
     )
 
-    return render(request, 'enrollment_admin_special_diets_view.jade', vars)
+    return render(request, 'enrollment_admin_special_diets_view.pug', vars)

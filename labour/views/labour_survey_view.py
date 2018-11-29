@@ -77,4 +77,4 @@ def labour_survey_view(request, event, survey_slug):
         form=form,
     )
 
-    return render(request, 'labour_survey_view.jade', vars)
+    return render(request, 'labour_survey_view.pug', vars)

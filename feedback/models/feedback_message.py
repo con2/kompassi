@@ -11,7 +11,7 @@ from django.template.defaultfilters import truncatewords
 class FeedbackMessage(models.Model):
     context = models.CharField(max_length=1024, blank=True)
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     author_ip_address = models.CharField(
         max_length=48,
         blank=True,

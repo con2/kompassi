@@ -1,0 +1,46 @@
+extends core_admin_base.pug
+- load crispy_forms_tags
+block title
+  | Toimituserät
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Toimituserät
+    if batches.exists
+      ul.list-group
+        for batch in batches
+          li.list-group-item
+            a(href='{% url "tickets_admin_batch_view" event.slug batch.pk %}', target='_blank') Toimituserä {{ batch.pk }}
+            .pull-right
+              if batch.is_delivered
+                span.badge.badge-success Toimitettu
+              else
+                form(method='POST', role='form')
+                  {% csrf_token %}
+                  input(type='hidden', name='batch_id', value='{{ batch.pk }}')
+                  .btn-group.btn-group-xs
+                    button.btn.btn-danger(type='submit', name='cancel-batch', value='cancel-batch') Peruuta
+                    button.btn.btn-success(type='submit', name='confirm-batch', value='confirm-batch') Merkitse toimitetuksi
+            .pull-right
+              .text-muted {{ batch.order_set.count }} tilaus{{ batch.order_set.count|pluralize:"ta"}}&emsp;
+
+    else
+      .panel-body
+        p Ei toimituseriä.
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        button.btn.btn-primary(type='button', data-toggle='modal', data-target='#new-batch-dialog') Uusi toimituserä...
+
+  #new-batch-dialog.modal.fade
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+          h4 Uusi toimituserä
+        form(method='POST', role='form')
+          div
+            .modal-body
+              - crispy new_batch_form
+            .modal-footer
+              .btn-group
+                button.btn.btn-default(type='button', data-dismiss='modal') Peruuta
+                button.btn.btn-success(type='submit', name='new-batch', value='new-batch') Luo toimituserä

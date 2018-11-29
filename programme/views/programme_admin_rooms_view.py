@@ -25,4 +25,4 @@ def programme_admin_rooms_view(request, vars, event):
 
     vars.update(rooms=rooms)
 
-    return render(request, 'programme_admin_rooms_view.jade', vars)
+    return render(request, 'programme_admin_rooms_view.pug', vars)

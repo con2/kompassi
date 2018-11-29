@@ -34,8 +34,8 @@ EXPORT_TYPE_VERBOSE = dict(
 
 
 HTML_TEMPLATES = dict(
-    screen='membership_admin_members_view.jade',
-    html='membership_admin_export_html_view.jade',
+    screen='membership_admin_members_view.pug',
+    html='membership_admin_export_html_view.pug',
 )
 
 
@@ -160,7 +160,7 @@ def membership_admin_member_view(request, vars, organization, person_id):
 
     membership.person.log_view(request)
 
-    return render(request, 'membership_admin_member_view.jade', vars)
+    return render(request, 'membership_admin_member_view.pug', vars)
 
 
 @handle_api_errors

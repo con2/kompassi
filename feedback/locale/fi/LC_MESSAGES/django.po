@@ -1,4 +1,4 @@
-#: templates/feedback_widget.jade
+#: templates/feedback_widget.pug
 msgid "Feedback privacy policy…"
 msgstr "Tietoa palautteen käsittelystä…"
 
@@ -6,7 +6,7 @@ msgstr "Tietoa palautteen käsittelystä…"
 msgid "Feedback received from {entry.feedback_message.author_display_name}"
 msgstr ""
 
-#: templates/feedback_widget.jade
+#: templates/feedback_widget.pug
 msgid "Give feedback about Kompassi"
 msgstr "Anna palautetta Kompassista"
 
@@ -14,11 +14,11 @@ msgstr "Anna palautetta Kompassista"
 msgid "IP address"
 msgstr "IP-osoite"
 
-#: templates/feedback_widget.jade
+#: templates/feedback_widget.pug
 msgid "Send feedback"
 msgstr "Lähetä palaute"
 
-#: templates/feedback_widget.jade
+#: templates/feedback_widget.pug
 msgid "Thank you for your feedback!"
 msgstr "Kiitos palautteestasi!"
 
@@ -37,4 +37,3 @@ msgstr "palaute"
 #: models/feedback_message.py
 msgid "feedback messages"
 msgstr "palautteet"
-

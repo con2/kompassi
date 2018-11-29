@@ -1,12 +1,12 @@
-#: templates/intra_admin_team_member_view.jade
+#: templates/intra_admin_team_member_view.pug
 msgid "Add a member to a team"
 msgstr "Lisää jäsen tiimiin"
 
-#: templates/intra_admin_team_member_view.jade
+#: templates/intra_admin_team_member_view.pug
 msgid "Add member"
 msgstr "Lisää jäsen"
 
-#: templates/intra_admin_team_actions.jade
+#: templates/intra_admin_team_actions.pug
 msgid "Add member…"
 msgstr "Lisää jäsen…"
 
@@ -14,11 +14,11 @@ msgstr "Lisää jäsen…"
 msgid "As set by the user themself"
 msgstr "Käyttäjän itsensä asettama"
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "Assign this organizer to a team…"
 msgstr "Sijoita järjestäjä tiimiin…"
 
-#: templates/intra_admin_team_member_view.jade
+#: templates/intra_admin_team_member_view.pug
 msgid "Cancel and return"
 msgstr "Peruuta ja palaa luetteloon"
 
@@ -50,11 +50,11 @@ msgstr "Näytä sisäisesti"
 msgid "Display publicly"
 msgstr "Näytä julkisesti"
 
-#: models/team.py templates/intra_organizer_view.jade
+#: models/team.py templates/intra_organizer_view.pug
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
-#: templates/intra_admin_team_member_view.jade
+#: templates/intra_admin_team_member_view.pug
 msgid "Edit team member"
 msgstr "Muokkaa jäsentä"
 
@@ -62,11 +62,11 @@ msgstr "Muokkaa jäsentä"
 msgid "Event"
 msgstr "Tapahtuma"
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "Export contacts in vCard format"
 msgstr "Vie yhteystiedot vCard-muodossa"
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
@@ -74,7 +74,7 @@ msgstr "Etunimi"
 msgid "For the purpose of public listings, the name display style of the team member may be overridden here."
 msgstr "Tässä voit asettaa tavan, jolla järjestäjän nimi näytetään julkisissa listauksissa. Ellei ole erityistä syytä vaihtaa jonkun henkilön nimen esitystapaa, tämä kenttä on suositeltavaa jättää arvoon \"Käyttäjän itsensä asettama\"."
 
-#: templates/intra_event_box.jade
+#: templates/intra_event_box.pug
 msgid "Go to the organizer view"
 msgstr "Siirry järjestäjänäkymään"
 
@@ -90,7 +90,7 @@ msgstr "Joissain listauksissa joissa tila on kortilla kukin henkilö näytetää
 msgid "Invalid action."
 msgstr "Kelvoton toiminto."
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "Job title"
 msgstr "Tehtävänimike"
 
@@ -98,25 +98,25 @@ msgstr "Tehtävänimike"
 msgid "Name"
 msgstr "Nimi"
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "Nick name"
 msgstr "Nick"
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 #, python-format
 msgid "One member."
 msgid_plural "%(num_members)s members."
 msgstr[0] "Yksi jäsen."
 msgstr[1] "%(num_members)s jäsentä."
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 #, python-format
 msgid "One organizer in total."
 msgid_plural "%(num_total_organizers)s organizers in total."
 msgstr[0] "Yhteensä yksi järjestäjä."
 msgstr[1] "Yhteensä %(num_total_organizers)s järjestäjää."
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 #, python-format
 msgid "One unassigned organizer."
 msgid_plural "%(num_members)s unassigned organizer."
@@ -127,7 +127,7 @@ msgstr[1] "%(num_members)s sijoittamatonta järjestäjää."
 msgid "Order"
 msgstr "Järjestys"
 
-#: helpers.py templates/intra_event_box.jade
+#: helpers.py templates/intra_event_box.pug
 msgid "Organizer intranet"
 msgstr "Järjestäjien intranet"
 
@@ -135,7 +135,7 @@ msgstr "Järjestäjien intranet"
 msgid "Override name display style"
 msgstr "Nimen esitystapa"
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
@@ -143,15 +143,15 @@ msgstr "Puhelinnumero"
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
-#: templates/intra_admin_team_member_view.jade
+#: templates/intra_admin_team_member_view.pug
 msgid "Remove team member"
 msgstr "Poista jäsen tiimistä"
 
-#: templates/intra_admin_team_member_view.jade
+#: templates/intra_admin_team_member_view.pug
 msgid "Save changes"
 msgstr "Tallenna muutokset"
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -171,7 +171,7 @@ msgstr "Tiimin jäsen"
 msgid "Team members"
 msgstr "Tiimin jäsenet"
 
-#: templates/intra_admin_team_member_view.jade templates/intra_organizer_view.jade views/menu_items.py
+#: templates/intra_admin_team_member_view.pug templates/intra_organizer_view.pug views/menu_items.py
 msgid "Teams and organizers"
 msgstr "Tiimit ja järjestäjät"
 
@@ -187,7 +187,7 @@ msgstr "Jäsen poistettiin tiimiistä."
 msgid "The primary contact e-mail of the team."
 msgstr "Tiimin ensisijainen yhteysosoite."
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "These organizers have not yet been assigned to a team."
 msgstr "Näitä järjestäjiä ei ole vielä sijoitettu mihinkään tiimiin."
 
@@ -195,11 +195,11 @@ msgstr "Näitä järjestäjiä ei ole vielä sijoitettu mihinkään tiimiin."
 msgid "This event does not use the organizer intranet."
 msgstr "Tämä tapahtuma ei käytä järjestäjäintranetiä."
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "This team has no members."
 msgstr "Tässä tiimissä ei ole jäseniä."
 
-#: templates/intra_organizer_view.jade
+#: templates/intra_organizer_view.pug
 msgid "Unassigned organizers"
 msgstr "Sijoittamattomat järjestäjät"
 
@@ -215,7 +215,7 @@ msgstr "Sinulla ei ole pääsyä tämän tapahtuman järjestäjäintranetiin."
 msgid "You do not have administrator access to the organizer intranet."
 msgstr "Sinulla ei ole tämän tapahtuman järjestäjäintranetin ylläpito-oikeuksia."
 
-#: templates/intra_event_box.jade
+#: templates/intra_event_box.pug
 msgid "You have access to the organizer intranet."
 msgstr "Sinulla on pääsy järjestäjien intranetiin."
 

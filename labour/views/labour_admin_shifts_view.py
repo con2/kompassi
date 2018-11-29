@@ -14,8 +14,8 @@ from ..helpers import labour_admin_required
 
 
 HTML_TEMPLATES = dict(
-    screen="labour_admin_shifts_view.jade",
-    html="labour_admin_shifts_print.jade",
+    screen="labour_admin_shifts_view.pug",
+    html="labour_admin_shifts_print.pug",
 )
 
 EXPORT_FORMATS = EXPORT_FORMATS + [

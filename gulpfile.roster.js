@@ -34,8 +34,8 @@ var config = {
     filename: 'roster.js'
   },
   templates: {
-    source: './labour/static_src/*.jade',
-    watch: './labour/static_src/*.jade',
+    source: './labour/static_src/*.pug',
+    watch: './labour/static_src/*.pug',
     destination: './labour/static/labour/',
     revision: './labour/static/labour/**/*.html'
   },

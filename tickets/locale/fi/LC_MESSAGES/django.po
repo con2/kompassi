@@ -10,15 +10,15 @@ msgstr "Osoite"
 msgid "Allow sending news and other information related to this event via e-mail"
 msgstr "Minulle saa lähettää sähköpostitse uutisia ja muita tietoja tähän tapahtumaan liittyen"
 
-#: templates/tickets_order_fragment.jade templates/tickets_order_product_table.jade
+#: templates/tickets_order_fragment.pug templates/tickets_order_product_table.pug
 msgid "Amount"
 msgstr "Lukumäärä"
 
-#: templates/tickets_event_box.jade
+#: templates/tickets_event_box.pug
 msgid "Buy tickets"
 msgstr "Osta lippuja"
 
-#: templates/tickets_buttons_fragment.jade
+#: templates/tickets_buttons_fragment.pug
 msgid "Cancel order"
 msgstr "Peruuta tilaus"
 
@@ -30,7 +30,7 @@ msgstr "Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus ja mahdollise
 msgid "City"
 msgstr "Postitoimipaikka"
 
-#: templates/tickets_confirm_phase.jade
+#: templates/tickets_confirm_phase.pug
 msgid "Confirm order"
 msgstr "Vahvista tilaus"
 
@@ -42,15 +42,15 @@ msgstr "Vahvistus"
 msgid "Contact e-mail address (with description)"
 msgstr "Asiakaspalvelun sähköpostiosoite (selitteen kanssa)"
 
-#: templates/tickets_order_fragment.jade
+#: templates/tickets_order_fragment.pug
 msgid "Contact information"
 msgstr "Yhteystiedot"
 
-#: templates/tickets_admin_shirts_view.jade
+#: templates/tickets_admin_shirts_view.pug
 msgid "Count"
 msgstr "Lukumäärä"
 
-#: templates/tickets_order_fragment.jade views/public_views.py
+#: templates/tickets_order_fragment.pug views/public_views.py
 msgid "Delivery address"
 msgstr "Toimitusosoite"
 
@@ -70,7 +70,7 @@ msgstr "E-lipun teksti"
 msgid "Event"
 msgstr "Tapahtuma"
 
-#: models.py templates/tickets_admin_shirts_view.jade
+#: models.py templates/tickets_admin_shirts_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
@@ -86,7 +86,7 @@ msgstr "Etusivun teksti"
 msgid "If set, all tickets-related e-mail messages will be also sent to this e-mail address."
 msgstr "Mikäli tämä on asetettu, kaikki lippuihin liittyvä sähköposti lähetetään piilokopiona myös tähän osoitteeseen."
 
-#: templates/tickets_confirm_phase.jade
+#: templates/tickets_confirm_phase.pug
 msgid "In order to ensure speedy delivery of your order, please remember to return to the ticket shop from the payment provider after completing your payment."
 msgstr "Varmistaaksesi tilauksesi nopean toimituksen, muistathan palata maksamisen jälkeen maksupalvelusta verkkokauppaamme."
 
@@ -110,19 +110,19 @@ msgstr "Maksimimäärä"
 msgid "Monitoring e-mail address"
 msgstr "Tarkkailusähköposti"
 
-#: templates/tickets_buttons_fragment.jade
+#: templates/tickets_buttons_fragment.pug
 msgid "New order"
 msgstr "Uusi tilaus"
 
-#: templates/tickets_buttons_fragment.jade
+#: templates/tickets_buttons_fragment.pug
 msgid "Next"
 msgstr "Seuraava"
 
-#: templates/tickets_confirm_phase.jade
+#: templates/tickets_confirm_phase.pug
 msgid "Note!"
 msgstr "Huom!"
 
-#: templates/tickets_admin_shirts_view.jade
+#: templates/tickets_admin_shirts_view.pug
 #, python-format
 msgid "One shirt."
 msgid_plural "%(num_shirts)s shirts."
@@ -137,11 +137,11 @@ msgstr "Maksuaika (päivää)"
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
-#: templates/tickets_confirm_phase.jade
+#: templates/tickets_confirm_phase.pug
 msgid "Please check your delivery information, especially the e-mail address, and the amounts of products being ordered. By selecting <em>Proceed to payment</em> you will navigate to a payment page on which you will select the payment method."
 msgstr "Ole hyvä ja tarkista toimitusosoite, erityisesti sähköpostiosoite, ja tilattavien tuotteiden määrät. Valitsemalla <em>Siirry maksamaan</em> siirryt maksupalveluun, jossa pääset valitsemaan maksutavan."
 
-#: templates/tickets_tickets_phase.jade
+#: templates/tickets_tickets_phase.pug
 msgid "Please fill in the amount for each product. You can combine multiple products in a single order. You will have a chance to check these before the final confirmation and payment."
 msgstr "Ole hyvä ja syötä tilattavien tuotteiden määrät. Voit yhdistää samaan tilaukseen useita eri tilauksia. Ennen tilauksen vahvistamista ja maksua sinulla on vielä tilaisuus tarkistaa tuotteiden määrät."
 
@@ -153,23 +153,23 @@ msgstr "Ole hyvä ja valitse vähintään yksi tuote."
 msgid "Postal code"
 msgstr "Postinumero"
 
-#: templates/tickets_buttons_fragment.jade
+#: templates/tickets_buttons_fragment.pug
 msgid "Previous"
 msgstr "Edellinen"
 
-#: templates/tickets_buttons_fragment.jade
+#: templates/tickets_buttons_fragment.pug
 msgid "Proceed to payment"
 msgstr "Siirry maksamaan"
 
-#: templates/tickets_order_fragment.jade templates/tickets_order_product_table.jade
+#: templates/tickets_order_fragment.pug templates/tickets_order_product_table.pug
 msgid "Product"
 msgstr "Tuote"
 
-#: templates/tickets_tickets_phase.jade
+#: templates/tickets_tickets_phase.pug
 msgid "Product selection"
 msgstr "Tuotteiden valinta"
 
-#: templates/tickets_order_fragment.jade
+#: templates/tickets_order_fragment.pug
 msgid "Products"
 msgstr "Tuotteet"
 
@@ -185,11 +185,11 @@ msgstr "Viitenumeron muoto"
 msgid "Reservation period (seconds)"
 msgstr "Varausaika (sekuntia)"
 
-#: templates/tickets_buttons_fragment.jade
+#: templates/tickets_buttons_fragment.pug
 msgid "Return to event home page"
 msgstr "Palaa tapahtuman kotisivuille"
 
-#: templates/tickets_order_fragment.jade
+#: templates/tickets_order_fragment.pug
 msgid "Shipping and handling"
 msgstr "Toimituskulut"
 
@@ -197,19 +197,19 @@ msgstr "Toimituskulut"
 msgid "Shipping and handling (cents)"
 msgstr "Toimituskulut (senttejä)"
 
-#: templates/tickets_admin_shirts_view.jade
+#: templates/tickets_admin_shirts_view.pug
 msgid "Shirt list"
 msgstr "Paitalista"
 
-#: templates/tickets_admin_shirts_view.jade
+#: templates/tickets_admin_shirts_view.pug
 msgid "Shirt orders"
 msgstr "Paitatilaukset"
 
-#: templates/tickets_admin_shirts_view.jade
+#: templates/tickets_admin_shirts_view.pug
 msgid "Shirt size"
 msgstr "Paitakoko"
 
-#: templates/tickets_admin_shirts_view.jade
+#: templates/tickets_admin_shirts_view.pug
 msgid "Shirt size summary"
 msgstr "Paitakokojen yhteenveto"
 
@@ -217,15 +217,15 @@ msgstr "Paitakokojen yhteenveto"
 msgid "Shirt sizes"
 msgstr "Paitakoot"
 
-#: templates/tickets_admin_shirts_view.jade
+#: templates/tickets_admin_shirts_view.pug
 msgid "Shirt type"
 msgstr "Paitatyyppi"
 
-#: models.py templates/tickets_admin_shirts_view.jade
+#: models.py templates/tickets_admin_shirts_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
-#: templates/tickets_thanks_phase.jade
+#: templates/tickets_thanks_phase.pug
 msgid "Thank you for your order!"
 msgstr "Kiitos tilauksestasi!"
 
@@ -261,7 +261,7 @@ msgstr "Tämä teksti tulostetaan postitse toimitettavien tilausten keräilylist
 msgid "This text will be shown on the front page of the web shop."
 msgstr "Tämä teksti näytetään verkkokaupan etusivulla."
 
-#: templates/tickets_event_box.jade
+#: templates/tickets_event_box.pug
 msgid "Ticket sales"
 msgstr "Lipunmyynti"
 
@@ -269,11 +269,11 @@ msgstr "Lipunmyynti"
 msgid "Ticket sales ends"
 msgstr "Lipunmyynti päättyy"
 
-#: templates/tickets_event_box.jade
+#: templates/tickets_event_box.pug
 msgid "Ticket sales is currently open."
 msgstr "Lipunmyynti on parhaillaan käynnissä."
 
-#: templates/tickets_event_box.jade
+#: templates/tickets_event_box.pug
 msgid "Ticket sales is not currently open."
 msgstr "Lipunmyynti ei ole tällä hetkellä käynnissä."
 
@@ -281,7 +281,7 @@ msgstr "Lipunmyynti ei ole tällä hetkellä käynnissä."
 msgid "Ticket sales starts"
 msgstr "Lipunmyynti alkaa"
 
-#: templates/tickets_phase_base.jade
+#: templates/tickets_phase_base.pug
 msgid "Ticket shop"
 msgstr "Lippukauppa"
 
@@ -289,7 +289,7 @@ msgstr "Lippukauppa"
 msgid "Tickets"
 msgstr "Liput"
 
-#: templates/tickets_order_fragment.jade
+#: templates/tickets_order_fragment.pug
 msgid "Total"
 msgstr "Yhteensä"
 
@@ -301,7 +301,7 @@ msgstr "Tyyppi"
 msgid "Unfortunately a product you have selected has just been sold out."
 msgstr "Valitettavasti jokin valitsemistasi tuotteista on juuri myyty loppuun."
 
-#: templates/tickets_order_fragment.jade templates/tickets_order_product_table.jade
+#: templates/tickets_order_fragment.pug templates/tickets_order_product_table.pug
 msgid "Unit price"
 msgstr "Yksikköhinta"
 
@@ -313,7 +313,7 @@ msgstr "Käyttää Pythonin .format()-tekstimuotoilua."
 msgid "Welcome"
 msgstr "Tervetuloa"
 
-#: templates/tickets_thanks_phase.jade
+#: templates/tickets_thanks_phase.pug
 msgid "Your order is now complete. Welcome to the event!"
 msgstr "Tilauksesi on nyt valmis. Tervetuloa tapahtumaan!"
 
@@ -333,7 +333,7 @@ msgstr "loppuunmyyntiryhmä"
 msgid "limit groups"
 msgstr "loppuunmyyntiryhmät"
 
-#: templates/tickets_order_fragment.jade
+#: templates/tickets_order_fragment.pug
 msgid "pcs."
 msgstr "kpl"
 
@@ -357,6 +357,6 @@ msgstr "tapahtuman lipunmyyntiasetukset"
 msgid "ticket sales settings for events"
 msgstr "tapahtumien lipunmyyntiasetukset"
 
-#: templates/tickets_confirm_phase.jade
+#: templates/tickets_confirm_phase.pug
 msgid "You have already confirmed your order and it can no longer be changed. However, we have not yet received word of your successful payment. If the payment is still in progress in another tab or browser window, please complete it there. If you cancelled the payment, please proceed to payment again or cancel the order using the buttons below. If you completed the payment, it is likely that you did not return to the web shop using the link provided by the payment provider. In this case, please wait three to five banking days before contacting our customer service."
 msgstr "Olet jo vahvistanut tilauksesi etkä siksi enää voi muuttaa sitä. Emme kuitenkaan ole vielä saaneet tietoa onnistuneesta maksustasi. Mikäli maksutapahtuma on edelleen käynnissä toisessa välilehdessä tai selainikkunassa, ole hyvä ja tee se loppuun siellä. Mikäli peruutit maksun, ole hyvä ja siirry uudestaan maksamaan tai peru tilaus alla olevilla napeilla. Mikäli suoritit maksutapahtuman loppuun asti, on todennäköistä että et palannut verkkokauppaamme käyttäen maksunvälittäjän linkkiä. Tässä tapauksessa odota kolmesta viiteen pankkipäivää ennen yhteydenottoa asiakaspalveluumme."

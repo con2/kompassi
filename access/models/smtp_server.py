@@ -28,6 +28,18 @@ class SMTPServer(models.Model):
     def __str__(self):
         return self.hostname
 
+    def get_smtppasswd_file_contents(self):
+        lines = []
+
+        for smtp_password in self.smtp_passwords.all():
+            lines.append('{username}:{password_hash}:{full_name}'.format(
+                username=smtp_password.person.user.username,
+                password_hash=smtp_password.password_hash,
+                full_name=smtp_password.person.full_name,
+            ))
+
+        return '\n'.join(lines)
+
     class Meta:
         verbose_name = _('SMTP server')
         verbose_name_plural = _('SMTP servers')

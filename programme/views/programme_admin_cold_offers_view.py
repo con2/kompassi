@@ -18,7 +18,7 @@ def programme_admin_cold_offers_view(request, vars, event):
     return generic_publish_unpublish_view(
         request, vars, event,
         meta=meta,
-        template='programme_admin_cold_offers_view.jade',
+        template='programme_admin_cold_offers_view.pug',
         FormClass=ColdOffersForm,
         save_success_message=_("The times for cold offer period were saved."),
         start_now_success_message=_("The cold offer period was started."),

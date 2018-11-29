@@ -21,9 +21,9 @@ def contains_moon_runes(unicode_str):
 
 
 class Batch(models.Model):
-    event = models.ForeignKey('core.Event', related_name='badge_batch_set')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, related_name='badge_batch_set')
 
-    personnel_class = models.ForeignKey('labour.PersonnelClass', null=True, blank=True)
+    personnel_class = models.ForeignKey('labour.PersonnelClass', on_delete=models.CASCADE, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Updated at'))

@@ -15,8 +15,8 @@ from ..proxies.signup.certificate import SignupCertificateProxy
 
 
 HTML_TEMPLATES = dict(
-    screen="labour_admin_signups_view.jade",
-    html="labour_admin_work_certificate_print.jade",
+    screen="labour_admin_signups_view.pug",
+    html="labour_admin_work_certificate_print.pug",
 )
 
 

@@ -16,15 +16,15 @@ class Invitation(OneTimeCodeLite):
     ProgrammeRole, the Role will be filled in from the Invitation.
     """
 
-    programme = models.ForeignKey('programme.Programme',
+    programme = models.ForeignKey('programme.Programme', on_delete=models.CASCADE,
         verbose_name=_('Programme'),
     )
 
-    role = models.ForeignKey('programme.Role',
+    role = models.ForeignKey('programme.Role', on_delete=models.CASCADE,
         verbose_name=_('Role'),
     )
 
-    created_by = models.ForeignKey('auth.User',
+    created_by = models.ForeignKey('auth.User', on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
@@ -35,7 +35,7 @@ class Invitation(OneTimeCodeLite):
         help_text=_('The host may send this many extra invites to other hosts of the programme.'),
     )
 
-    sire = models.ForeignKey('programme.ProgrammeRole',
+    sire = models.ForeignKey('programme.ProgrammeRole', on_delete=models.CASCADE,
         null=True,
         blank=True,
         verbose_name=_('Sire'),

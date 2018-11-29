@@ -67,8 +67,8 @@ class Migration(migrations.Migration):
                 ('payment_date', models.DateField(null=True, verbose_name='Maksup\xe4iv\xe4', blank=True)),
                 ('cancellation_time', models.DateTimeField(null=True, verbose_name='Peruutusaika', blank=True)),
                 ('reference_number', models.CharField(max_length=31, verbose_name='Viitenumero', blank=True)),
-                ('batch', models.ForeignKey(verbose_name='Toimituser\xe4', blank=True, to='tickets.Batch', null=True)),
-                ('customer', models.OneToOneField(null=True, blank=True, to='tickets.Customer')),
+                ('batch', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Toimituser\xe4', blank=True, to='tickets.Batch', null=True)),
+                ('customer', models.OneToOneField(on_delete=models.CASCADE, null=True, blank=True, to='tickets.Customer')),
             ],
             options={
                 'verbose_name': 'tilaus',
@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('count', models.IntegerField(default=0)),
-                ('order', models.ForeignKey(related_name='order_product_set', to='tickets.Order')),
+                ('order', models.ForeignKey(on_delete=models.CASCADE, related_name='order_product_set', to='tickets.Order')),
             ],
             options={
                 'verbose_name': 'tilausrivi',
@@ -113,7 +113,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TicketsEventMeta',
             fields=[
-                ('event', models.OneToOneField(related_name='ticketseventmeta', primary_key=True, serialize=False, to='core.Event')),
+                ('event', models.OneToOneField(on_delete=models.CASCADE, related_name='ticketseventmeta', primary_key=True, serialize=False, to='core.Event')),
                 ('shipping_and_handling_cents', models.IntegerField(default=0, verbose_name='Toimituskulut (senttej\xe4)')),
                 ('due_days', models.IntegerField(default=14, verbose_name='Maksuaika (p\xe4ivi\xe4)')),
                 ('ticket_sales_starts', models.DateTimeField(null=True, verbose_name='Lipunmyynnin alkuaika', blank=True)),
@@ -124,7 +124,7 @@ class Migration(migrations.Migration):
                 ('ticket_spam_email', models.CharField(help_text='Kaikki j\xe4rjestelm\xe4n l\xe4hett\xe4m\xe4t s\xe4hk\xf6postiviestit l\xe4hetet\xe4\xe4n my\xf6s t\xe4h\xe4n osoitteeseen.', max_length=255, verbose_name='Tarkkailus\xe4hk\xf6posti', blank=True)),
                 ('reservation_seconds', models.IntegerField(default=1800, help_text='K\xe4ytt\xe4j\xe4ll\xe4 on t\xe4m\xe4n verran aikaa siirty\xe4 maksamaan ja maksaa tilauksensa tai tilaus perutaan.', verbose_name='Varausaika (sekuntia)')),
                 ('ticket_free_text', models.TextField(help_text='T\xe4m\xe4 teksti tulostetaan E-lippuun.', verbose_name='E-lipun teksti', blank=True)),
-                ('admin_group', models.ForeignKey(to='auth.Group')),
+                ('admin_group', models.ForeignKey(on_delete=models.CASCADE, to='auth.Group')),
             ],
             options={
                 'verbose_name': 'tapahtuman lipunmyyntiasetukset',
@@ -135,7 +135,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='event',
-            field=models.ForeignKey(to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='core.Event'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -147,25 +147,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='orderproduct',
             name='product',
-            field=models.ForeignKey(related_name='order_product_set', to='tickets.Product'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='order_product_set', to='tickets.Product'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='order',
             name='event',
-            field=models.ForeignKey(to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='core.Event'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='limitgroup',
             name='event',
-            field=models.ForeignKey(verbose_name='Tapahtuma', to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Tapahtuma', to='core.Event'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='batch',
             name='event',
-            field=models.ForeignKey(to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='core.Event'),
             preserve_default=True,
         ),
     ]

@@ -29,4 +29,4 @@ def listings_listing_view(request, listing_hostname, include_past_events=False):
         login_page=True,
     )
 
-    return render(request, 'listings_listing_view.jade', vars)
+    return render(request, 'listings_listing_view.pug', vars)

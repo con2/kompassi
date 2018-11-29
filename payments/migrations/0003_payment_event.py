@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='payment',
             name='event',
-            field=models.ForeignKey(default=1, to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, default=1, to='core.Event'),
             preserve_default=False,
         ),
     ]

@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from django.utils.deprecation import MiddlewareMixin
+
 from .page_wizard import page_wizard_clear
 
 
@@ -10,7 +12,7 @@ NEVER_BLOW_PAGE_WIZARD_PREFIXES = [
 ]
 
 
-class PageWizardMiddleware(object):
+class PageWizardMiddleware(MiddlewareMixin):
     """
     MIDDLEWARE_CLASSES = (
         # ...

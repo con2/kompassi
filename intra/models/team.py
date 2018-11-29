@@ -8,7 +8,7 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs
 
 
 class Team(models.Model):
-    event = models.ForeignKey('core.Event')
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
     order = models.IntegerField(
         verbose_name=_('Order'),
         default=0,
@@ -24,7 +24,7 @@ class Team(models.Model):
         help_text=_('What is the team responsible for?'),
     )
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    group = models.ForeignKey('auth.Group')
+    group = models.ForeignKey('auth.Group', on_delete=models.CASCADE)
 
     email = models.EmailField(
         blank=True,

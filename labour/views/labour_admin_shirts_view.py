@@ -60,4 +60,4 @@ def labour_admin_shirts_view(request, vars, event):
         shirt_type_totals=shirt_type_totals,
     )
 
-    return render(request, 'labour_admin_shirts_view.jade', vars)
+    return render(request, 'labour_admin_shirts_view.pug', vars)

@@ -1,0 +1,12 @@
+ul.pager
+  if previous_programme
+    li.previous
+      a(href='{% url "programme_admin_detail_view" event.slug previous_programme.id %}') &larr; {{ previous_programme.title }}
+
+  li.current
+    .btn.disabled {{ programme.title }}
+    include programme_state_label.pug
+
+  if next_programme
+    li.next
+      a(href='{% url "programme_admin_detail_view" event.slug next_programme.id %}') {{ next_programme.title }} &rarr;

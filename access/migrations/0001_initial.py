@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('granted_at', models.DateTimeField(auto_now_add=True)),
-                ('person', models.ForeignKey(related_name='granted_privileges', to='core.Person')),
+                ('person', models.ForeignKey(on_delete=models.CASCADE, related_name='granted_privileges', to='core.Person')),
             ],
             options={
                 'verbose_name': 'My\xf6nnetty k\xe4ytt\xf6oikeus',
@@ -30,8 +30,8 @@ class Migration(migrations.Migration):
             name='GroupPrivilege',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('event', models.ForeignKey(related_name='group_privileges', blank=True, to='core.Event', null=True)),
-                ('group', models.ForeignKey(related_name='group_privileges', to='auth.Group')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, related_name='group_privileges', blank=True, to='core.Event', null=True)),
+                ('group', models.ForeignKey(on_delete=models.CASCADE, related_name='group_privileges', to='auth.Group')),
             ],
             options={
                 'verbose_name': 'Ryhm\xe4n k\xe4ytt\xf6oikeus',
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='groupprivilege',
             name='privilege',
-            field=models.ForeignKey(related_name='group_privileges', to='access.Privilege'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='group_privileges', to='access.Privilege'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='grantedprivilege',
             name='privilege',
-            field=models.ForeignKey(related_name='granted_privileges', to='access.Privilege'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='granted_privileges', to='access.Privilege'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(

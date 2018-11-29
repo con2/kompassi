@@ -75,4 +75,4 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
         sender="TODO",
     )
 
-    return render(request, 'labour_admin_mail_editor_view.jade', vars)
+    return render(request, 'labour_admin_mail_editor_view.pug', vars)

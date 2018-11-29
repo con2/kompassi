@@ -15,7 +15,7 @@ def feedback_view(request):
     if feedback_form.is_valid():
         feedback = feedback_form.save(commit=False)
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             feedback.author = request.user
 
         feedback.context = request.META.get('HTTP_REFERER', '')

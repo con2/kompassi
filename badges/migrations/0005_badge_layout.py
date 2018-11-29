@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='badge',
             name='personnel_class',
-            field=models.ForeignKey(verbose_name='Henkil\xf6st\xf6luokka', blank=True, to='labour.PersonnelClass', null=True),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Henkil\xf6st\xf6luokka', blank=True, to='labour.PersonnelClass', null=True),
             preserve_default=True,
         ),
         migrations.AlterField(

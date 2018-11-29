@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
@@ -42,7 +42,7 @@ from ..helpers import person_required
 @sensitive_post_parameters('new_password', 'new_password_again')
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def core_password_reset_view(request, code):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect('core_password_view')
 
     form = initialize_form(PasswordResetForm, request)
@@ -71,12 +71,12 @@ def core_password_reset_view(request, code):
         login_page=True,
     )
 
-    return render(request, 'core_password_reset_view.jade', vars)
+    return render(request, 'core_password_reset_view.pug', vars)
 
 
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def core_password_reset_request_view(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect('core_password_view')
 
     form = initialize_form(PasswordResetRequestForm, request)
@@ -106,4 +106,4 @@ def core_password_reset_request_view(request):
         login_page=True,
     )
 
-    return render(request, 'core_password_reset_request_view.jade', vars)
+    return render(request, 'core_password_reset_request_view.pug', vars)

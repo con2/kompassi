@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('password_hash', models.CharField(max_length=255, verbose_name='Salasanan tarkiste')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Luotu')),
-                ('person', models.ForeignKey(related_name='smtp_passwords', verbose_name='Henkil\xf6', to='core.Person')),
+                ('person', models.ForeignKey(on_delete=models.CASCADE, related_name='smtp_passwords', verbose_name='Henkil\xf6', to='core.Person')),
             ],
             options={
                 'verbose_name': 'SMTP-salasana',
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='smtppassword',
             name='smtp_server',
-            field=models.ForeignKey(related_name='smtp_passwords', verbose_name='SMTP-palvelin', to='access.SMTPServer'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='smtp_passwords', verbose_name='SMTP-palvelin', to='access.SMTPServer'),
             preserve_default=True,
         ),
     ]

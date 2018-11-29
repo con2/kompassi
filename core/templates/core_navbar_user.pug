@@ -1,0 +1,12 @@
+- load trans from i18n
+if user.is_authenticated
+  li.dropdown
+    a(href="#", class="dropdown-toggle", data-toggle="dropdown")
+      | {{ user.get_full_name }}&nbsp;
+      b.caret
+    ul.dropdown-menu
+      include core_profile_menu_items.pug
+      li.divider
+      li: a(href='/logout') {% trans "Log out" %}
+else
+  li: a(href="/login?next={{ request.get_full_path }}") {% trans "Sign up or sign in..." %}

@@ -57,7 +57,7 @@ def programme_admin_organizers_view(request, vars, event, format='screen'):
     )
 
     if format == 'screen':
-        return render(request, 'programme_admin_organizers_view.jade', vars)
+        return render(request, 'programme_admin_organizers_view.pug', vars)
     elif format == 'txt':
         emails = '\n'.join(programme_roles.order_by('person__email').values_list('person__email', flat=True).distinct())
         emit('core.person.exported', request=request, event=event)

@@ -54,13 +54,13 @@ def badges_admin_dashboard_view(request, vars, event):
         num_badges_revoked=meta.count_revoked_badges(),
     )
 
-    return render(request, 'badges_admin_dashboard_view.jade', vars)
+    return render(request, 'badges_admin_dashboard_view.pug', vars)
 
 
 badges_admin_batches_view = badges_admin_required(batches_view(
     Batch=Batch,
     CreateBatchForm=CreateBatchForm,
-    template='badges_admin_batches_view.jade',
+    template='badges_admin_batches_view.pug',
 ))
 
 
@@ -110,7 +110,7 @@ def badges_admin_menu_items(request, event):
 def badges_event_box_context(request, event):
     is_badges_admin = False
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         is_badges_admin = event.badges_event_meta.is_user_admin(request.user)
 
     return dict(

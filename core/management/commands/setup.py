@@ -30,14 +30,14 @@ class Command(BaseCommand):
             # (('kompassi_i18n', '-acv2'), dict()),
             # (('collectstatic',), dict(interactive=False)),
             (('migrate',), dict(interactive=False)),
-            (('setup_core',), dict(test=test)),
-            (('setup_labour_common_qualifications',), dict(test=test)),
-            (('setup_api_v2',), dict(test=test)),
-            (('setup_access',), dict(test=test)),
+            (('setup_core',), dict()),
+            (('setup_labour_common_qualifications',), dict()),
+            (('setup_api_v2',), dict()),
+            (('setup_access',), dict()),
         ]
 
-        management_commands.extend(((command,), dict(test=test)) for command in organization_commands)
-        management_commands.extend(((command,), dict(test=test)) for command in event_commands)
+        management_commands.extend(((command,), dict()) for command in organization_commands)
+        management_commands.extend(((command,), dict()) for command in event_commands)
 
         management_commands.extend((
             (('setup_listings',), dict()),

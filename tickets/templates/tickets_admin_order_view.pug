@@ -1,0 +1,47 @@
+extends core_admin_base.pug
+- load crispy_forms_tags
+block title
+  | Tilaus {{ order.formatted_order_number }}
+block admin_content
+  form.form.form-horizontal(method='POST', role='form')
+    .panel.panel-default
+      .panel-heading
+        strong Tilauksen {{ order.formatted_order_number }} tiedot
+        .pull-right
+          if order.is_confirmed
+            span.badge.badge-primary Vahvistettu
+          if order.is_paid
+            | &thinsp;
+            span.badge.badge-success Maksettu
+          if order.is_cancelled
+            | &thinsp;
+            span.badge.badge-danger Peruutettu
+      .panel-body
+        - crispy customer_form
+      table.table.table-striped
+        include tickets_order_product_table.pug
+      .panel-footer.clearfix
+        p.text-muted Toimitettujen tuotteiden määriä ei voi muuttaa.
+        .btn-group.pull-right
+          a.btn.btn-default(href='{% url "tickets_admin_orders_view" event.slug %}') Hylkää muutokset ja palaa
+          if order.etickets_delivered
+            a.btn.btn-default(href='{% url "tickets_admin_etickets_view" event.slug order.id %}') Näytä e-liput
+          button.btn.btn-success(type='submit', name='save', value='save') Tallenna muutokset ja jatka
+    .panel.panel-default
+      .panel-heading: strong Sähköpostia lähettävät toiminnot
+      .panel-footer.clearfix
+        p.text-muted Näistä toiminnoista lähtee sähköpostia asiakkaalle. Myös nämä toiminnot tallentavat muutokset.
+        .btn-group.pull-right
+          if can_mark_paid
+            button.btn.btn-success(type='submit', name='mark-paid', value='mark-paid') Merkitse maksetuksi
+          if can_cancel
+            button.btn.btn-danger(type='submit', name='cancel', value='cancel') Peru tilaus
+          if can_uncancel
+            button.btn.btn-primary(type='submit', name='uncancel', value='uncancel') Palauta tilaus voimaan
+          if can_resend
+            button.btn.btn-primary(type='submit', name='resend-confirmation', value='resend-confirmation') Lähetä vahvistusviesti uudelleen
+
+  .panel.panel-default
+    .panel-heading: strong Tilauksen tekniset tiedot
+    .panel-body.form-horizontal
+      - crispy order_form

@@ -23,7 +23,7 @@ def events(*args, **kwargs):
     )
 
 
-def core_frontpage_view(request, template='core_frontpage_view.jade', include_past_events=False):
+def core_frontpage_view(request, template='core_frontpage_view.pug', include_past_events=False):
     t = now()
 
     if include_past_events:

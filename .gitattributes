@@ -1,6 +1,6 @@
 *.py text eol=lf
 *.eml text eol=lf
-*.jade text eol=lf
+*.pug text eol=lf
 *.css.map -diff
 labour/static/labour/js/roster.js -diff
 core/static/kompassi.css -diff

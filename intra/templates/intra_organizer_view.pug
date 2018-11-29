@@ -1,0 +1,111 @@
+extends "core_admin_base.pug"
+- load i18n
+block title
+  {% trans "Teams and organizers" %}
+block content_full_width
+  .container
+    include core_messages.pug
+
+    if is_intra_admin
+      .nav.nav-tabs
+        include core_admin_menu_items.pug
+
+    if unassigned_organizers
+      .panel.panel-danger
+        .panel-heading: strong {% trans "Unassigned organizers" %}
+        .panel-body {% trans "These organizers have not yet been assigned to a team." %}
+
+        table.table.table-striped
+          thead
+            tr
+              th {% trans "Surname" %}
+              th {% trans "First name" %}
+              th {% trans "Nick name" %}
+              th {% trans "Job title" %}
+              th {% trans "E-mail address" %}
+              th {% trans "Phone number" %}
+              if is_intra_admin
+                th
+          tbody
+            for unassigned_organizer in unassigned_organizers
+              tr
+                td= unassigned_organizer.person.surname
+                td= unassigned_organizer.person.first_name
+                td= unassigned_organizer.person.nick
+                td
+                  if unassigned_organizer.signup.personnel_class.icon_css_class
+                    i.fa.kompassi-icon-space-right(class="{{ unassigned_organizer.signup.personnel_class.icon_css_class }}"
+                                                    title="{{ unassigned_organizer.signup.personnel_class }}")
+                  | {{ unassigned_organizer.signup.some_job_title }}
+                td= unassigned_organizer.signup.email_address
+                td= unassigned_organizer.person.normalized_phone_number
+                if is_intra_admin
+                  td
+                    .btn-group
+                      a.btn.btn-xs.btn-success(
+                        href='{% url "intra_admin_member_add_team_view" event.slug unassigned_organizer.person.id %}'
+                        title='{% trans "Assign this organizer to a team…" %}'
+                      )
+                        i.fa.fa-user-plus
+
+        .panel-footer.clearfix
+          p.text-muted
+            {% blocktrans count num_members=num_unassigned_organizers %}One unassigned organizer.{% plural %}{{ num_members }} unassigned organizer.{% endblocktrans %}
+
+    for team in teams
+      .panel.panel-default
+        .panel-heading
+          if team.email
+            .pull-right
+              small.text-muted: a(href='mailto:{{ team.email }}')
+                i.fa.fa-envelope-o.kompassi-icon-space-right
+                | {{ team.email }}
+          strong.kompassi-space-after {{ team.name }}
+
+        if team.description
+          .panel-body {{ team.description|safe|linebreaks }}
+
+        if team.members.exists
+          table.table.table-striped
+            thead
+              tr
+                th {% trans "Surname" %}
+                th {% trans "First name" %}
+                th {% trans "Nick name" %}
+                th {% trans "Job title" %}
+                th {% trans "E-mail address" %}
+                th {% trans "Phone number" %}
+                if is_intra_admin
+                  th
+            tbody
+              for team_member in team.members.all
+                tr(class='{{ team_member.css_classes }}')
+                  td= team_member.person.surname
+                  td= team_member.person.first_name
+                  td= team_member.person.nick
+                  td
+                    if team_member.signup.personnel_class.icon_css_class
+                      i.fa.kompassi-icon-space-right(class="{{ team_member.signup.personnel_class.icon_css_class }}"
+                                                    title="{{ team_member.signup.personnel_class }}")
+                    | {{ team_member.job_title }}
+                  td= team_member.signup.email_address
+                  td= team_member.person.normalized_phone_number
+                  if is_intra_admin
+                    td
+                      include intra_admin_team_member_actions.pug
+          .panel-footer.clearfix
+            include intra_admin_team_actions.pug
+            p.text-muted
+              {% blocktrans count num_members=team.members.count %}One member.{% plural %}{{ num_members }} members.{% endblocktrans %}
+        else
+          .panel-footer.clearfix
+            include intra_admin_team_actions.pug
+            p.text-muted {% trans "This team has no members." %}
+
+    .clearfix(style='margin-bottom: 1em')
+      .btn-group.pull-right
+        a.btn.btn-default(href='{% url "intra_organizer_export_view" event.slug "vcf" %}')
+          i.fa.fa-cloud-download.kompassi-icon-space-right
+          {% trans "Export contacts in vCard format" %}
+
+      p.text-muted {% blocktrans count num_total_organizers=num_total_organizers %}One organizer in total.{% plural %}{{ num_total_organizers }} organizers in total.{% endblocktrans %}

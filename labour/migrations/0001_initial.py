@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
                 ('count', models.IntegerField(default=0, verbose_name='vaadittu henkil\xf6m\xe4\xe4r\xe4', validators=[django.core.validators.MinValueValidator(0)])),
                 ('start_time', models.DateTimeField(verbose_name='vaatimuksen alkuaika')),
                 ('end_time', models.DateTimeField(verbose_name='vaatimuksen p\xe4\xe4ttymisaika')),
-                ('job', models.ForeignKey(verbose_name='teht\xe4v\xe4', to='labour.Job')),
+                ('job', models.ForeignKey(on_delete=models.CASCADE, verbose_name='teht\xe4v\xe4', to='labour.Job')),
             ],
             options={
                 'verbose_name': 'henkil\xf6st\xf6vaatimus',
@@ -91,7 +91,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LabourEventMeta',
             fields=[
-                ('event', models.OneToOneField(related_name='laboureventmeta', primary_key=True, serialize=False, to='core.Event')),
+                ('event', models.OneToOneField(on_delete=models.CASCADE, related_name='laboureventmeta', primary_key=True, serialize=False, to='core.Event')),
                 ('registration_opens', models.DateTimeField(null=True, verbose_name='ty\xf6voimahaku alkaa', blank=True)),
                 ('registration_closes', models.DateTimeField(null=True, verbose_name='ty\xf6voimahaku p\xe4\xe4ttyy', blank=True)),
                 ('work_begins', models.DateTimeField(verbose_name='Ensimm\xe4iset ty\xf6vuorot alkavat')),
@@ -99,8 +99,8 @@ class Migration(migrations.Migration):
                 ('monitor_email', models.CharField(help_text='Kaikki ty\xf6voimaj\xe4rjestelm\xe4n l\xe4hett\xe4m\xe4t s\xe4hk\xf6postiviestit l\xe4hetet\xe4\xe4n my\xf6s t\xe4h\xe4n osoitteeseen.', max_length=255, verbose_name='tarkkailus\xe4hk\xf6posti', blank=True)),
                 ('contact_email', models.CharField(help_text='Kaikki ty\xf6voimaj\xe4rjestelm\xe4n l\xe4hett\xe4m\xe4t s\xe4hk\xf6postiviestit l\xe4hetet\xe4\xe4n t\xe4st\xe4 osoitteesta, ja t\xe4m\xe4 osoite n\xe4ytet\xe4\xe4n ty\xf6voimalle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.', max_length=255, verbose_name='yhteysosoite', blank=True)),
                 ('signup_message', models.TextField(default='', help_text='T\xe4m\xe4 viesti n\xe4ytet\xe4\xe4n kaikille ty\xf6voimailmoittautumisen alussa. K\xe4ytettiin esimerkiksi Tracon 9:ss\xe4 kertomaan, ett\xe4 ty\xf6voimahaku on avoinna en\xe4\xe4 JV:ille ja erikoisteht\xe4ville.', null=True, verbose_name='Ilmoittautumisen huomautusviesti', blank=True)),
-                ('admin_group', models.ForeignKey(to='auth.Group')),
-                ('signup_extra_content_type', models.ForeignKey(to='contenttypes.ContentType')),
+                ('admin_group', models.ForeignKey(on_delete=models.CASCADE, to='auth.Group')),
+                ('signup_extra_content_type', models.ForeignKey(on_delete=models.CASCADE, to='contenttypes.ContentType')),
             ],
             options={
                 'verbose_name': 'tapahtuman ty\xf6voimatiedot',
@@ -112,7 +112,7 @@ class Migration(migrations.Migration):
             name='PersonQualification',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('person', models.ForeignKey(verbose_name='henkil\xf6', to='core.Person')),
+                ('person', models.ForeignKey(on_delete=models.CASCADE, verbose_name='henkil\xf6', to='core.Person')),
             ],
             options={
                 'verbose_name': 'p\xe4tevyyden haltija',
@@ -127,7 +127,7 @@ class Migration(migrations.Migration):
                 ('slug', models.CharField(help_text='Tekninen nimi eli "slug" n\xe4kyy URL-osoitteissa. Sallittuja merkkej\xe4 ovat pienet kirjaimet, numerot ja v\xe4liviiva. Teknist\xe4 nime\xe4 ei voi muuttaa luomisen j\xe4lkeen.', unique=True, max_length=63, verbose_name='Tekninen nimi', validators=[django.core.validators.RegexValidator(regex='[a-z0-9-]+', message='Tekninen nimi saa sis\xe4lt\xe4\xe4 vain pieni\xe4 kirjaimia, numeroita sek\xe4 v\xe4liviivoja.')])),
                 ('name', models.CharField(max_length=63, verbose_name='p\xe4tevyyden nimi')),
                 ('description', models.TextField(verbose_name='kuvaus', blank=True)),
-                ('qualification_extra_content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
+                ('qualification_extra_content_type', models.ForeignKey(on_delete=models.CASCADE, blank=True, to='contenttypes.ContentType', null=True)),
             ],
             options={
                 'verbose_name': 'p\xe4tevyys',
@@ -163,7 +163,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EmptySignupExtra',
             fields=[
-                ('signup', models.OneToOneField(related_name='+', primary_key=True, serialize=False, to='labour.Signup')),
+                ('signup', models.OneToOneField(on_delete=models.CASCADE, related_name='+', primary_key=True, serialize=False, to='labour.Signup')),
             ],
             options={
                 'abstract': False,
@@ -177,7 +177,7 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(max_length=63, verbose_name='Kuvaus')),
                 ('start_time', models.DateTimeField(verbose_name='Alkuaika')),
                 ('end_time', models.DateTimeField(verbose_name='Loppuaika')),
-                ('event', models.ForeignKey(verbose_name='Tapahtuma', to='core.Event')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Tapahtuma', to='core.Event')),
             ],
             options={
                 'verbose_name': 'ty\xf6vuorotoive',
@@ -188,13 +188,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='signup',
             name='alternative_signup_form_used',
-            field=models.ForeignKey(blank=True, to='labour.AlternativeSignupForm', help_text='T\xe4m\xe4 kentt\xe4 ilmaisee, mit\xe4 ilmoittautumislomaketta hakemuksen t\xe4ytt\xe4miseen k\xe4ytettiin. Jos kentt\xe4 on tyhj\xe4, k\xe4ytettiin oletuslomaketta.', null=True, verbose_name='Ilmoittautumislomake'),
+            field=models.ForeignKey(on_delete=models.CASCADE, blank=True, to='labour.AlternativeSignupForm', help_text='T\xe4m\xe4 kentt\xe4 ilmaisee, mit\xe4 ilmoittautumislomaketta hakemuksen t\xe4ytt\xe4miseen k\xe4ytettiin. Jos kentt\xe4 on tyhj\xe4, k\xe4ytettiin oletuslomaketta.', null=True, verbose_name='Ilmoittautumislomake'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='signup',
             name='event',
-            field=models.ForeignKey(to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='core.Event'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -212,7 +212,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='signup',
             name='person',
-            field=models.ForeignKey(to='core.Person'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='core.Person'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -224,13 +224,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='personqualification',
             name='qualification',
-            field=models.ForeignKey(verbose_name='p\xe4tevyys', to='labour.Qualification'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='p\xe4tevyys', to='labour.Qualification'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='jobcategory',
             name='event',
-            field=models.ForeignKey(verbose_name='tapahtuma', to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='tapahtuma', to='core.Event'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -246,25 +246,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='job',
             name='job_category',
-            field=models.ForeignKey(verbose_name='teht\xe4v\xe4alue', to='labour.JobCategory'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='teht\xe4v\xe4alue', to='labour.JobCategory'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='infolink',
             name='event',
-            field=models.ForeignKey(verbose_name='Tapahtuma', to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Tapahtuma', to='core.Event'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='infolink',
             name='group',
-            field=models.ForeignKey(verbose_name='Ryhm\xe4', to='auth.Group', help_text='Linkki n\xe4ytet\xe4\xe4n vain t\xe4m\xe4n ryhm\xe4n j\xe4senille.'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Ryhm\xe4', to='auth.Group', help_text='Linkki n\xe4ytet\xe4\xe4n vain t\xe4m\xe4n ryhm\xe4n j\xe4senille.'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='alternativesignupform',
             name='event',
-            field=models.ForeignKey(verbose_name='Tapahtuma', to='core.Event'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Tapahtuma', to='core.Event'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(

@@ -16,7 +16,7 @@ def programme_admin_publish_view(request, vars, event):
     return generic_publish_unpublish_view(
         request, vars, event,
         meta=event.programme_event_meta,
-        template='programme_admin_publish_view.jade',
+        template='programme_admin_publish_view.pug',
         FormClass=PublishForm,
         save_success_message=_("The publication time was saved."),
         start_now_success_message=_("The schedule was published."),

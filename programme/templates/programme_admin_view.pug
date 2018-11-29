@@ -1,0 +1,111 @@
+extends core_admin_base
+- load trans from i18n
+block title
+  | Ohjelman hallinta
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Suodata ohjelmaa
+    .panel-body.signup-filters
+      .row
+        .col-md-3: strong Tyyppi
+        .col-md-9
+          for cf, active in category_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ cf.qs_del }}') {{ cf.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ cf.qs_add }}') {{ cf.name }}
+      .row
+        .col-md-3: strong Sali
+        .col-md-9
+          for rf, active in room_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ rf.qs_del }}') {{ rf.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ rf.qs_add }}') {{ rf.name }}
+      .row
+        .col-md-3: strong Ohjelmanumeron tila
+        .col-md-9
+          for sf, active in state_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ sf.qs_del }}') {{ sf.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ sf.qs_add }}') {{ sf.name }}
+      .row
+        .col-md-3: strong Videointilupa
+        .col-md-9
+          for it, active in video_permission_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ it.qs_del }}') {{ it.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ it.qs_add }}') {{ it.name }}
+      .row
+        .col-md-3: strong Valokuvauslupa
+        .col-md-9
+          for it, active in photography_filters
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ it.qs_del }}') {{ it.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ it.qs_add }}') {{ it.name }}
+
+      if form_filters
+        .row
+          .col-md-3: strong Lomake
+          .col-md-9
+            for it, active in form_filters
+              if active
+                span.label.label-brand.kompassi-space-after
+                  a(href='?{{ it.qs_del }}') {{ it.name }}
+              else
+                span.label.label-default.kompassi-space-after
+                  a(href='?{{ it.qs_add }}') {{ it.name }}
+      hr
+      .row
+        .col-md-3: strong Luettelojärjestys
+        .col-md-9
+          for so, active in sorter
+            if active
+              span.label.label-brand.kompassi-space-after
+                a(href='?{{ so.qs_add }}') {{ so.name }}
+            else
+              span.label.label-default.kompassi-space-after
+                a(href='?{{ so.qs_add }}') {{ so.name }}
+
+  .panel.panel-default
+    .panel-heading: strong Ohjelmaluettelo
+    table.table.table-striped
+      thead
+        tr
+          th Alkuaika
+          th Sali
+          th Otsikko
+          th Ohjelmanpitäjä
+          th Tila
+      tbody
+        for programme in programmes
+          tr
+            td {{ programme.formatted_start_time }}
+            td {{ programme.room.name }}
+            td: a(href='{% url "programme_admin_detail_view" event.slug programme.pk %}') {{ programme.title }}
+            td {{ programme.formatted_hosts }}
+            td
+              include programme_state_label.pug
+
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        button.btn.btn-default(type='button', data-toggle='dropdown') Vie <span class='caret'></span>
+        ul.dropdown-menu#programme-admin-export-dropdown-menu(aria-labelledby='programme-admin-export-dropdown')
+          for export_format in export_formats
+            li: a(href='{% url "programme_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+              i.fa.fa-cloud-download.kompassi-icon-space-right
+              |{{ export_format.name }}
+        a.btn.btn-primary(href='{% url "programme_admin_create_view" event.slug %}') Uusi ohjelma

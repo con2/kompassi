@@ -103,4 +103,4 @@ def programme_accept_invitation_view(request, event, code):
         sired_invitation_formset=sired_invitation_formset,
     )
 
-    return render(request, 'programme_accept_invitation_view.jade', vars)
+    return render(request, 'programme_accept_invitation_view.pug', vars)

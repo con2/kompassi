@@ -12,4 +12,4 @@ def core_organizations_view(request):
         organizations_rows=groups_of_n(organizations, 4),
     )
 
-    return render(request, 'core_organizations_view.jade', vars)
+    return render(request, 'core_organizations_view.pug', vars)

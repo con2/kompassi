@@ -1,0 +1,52 @@
+extends core_admin_base.pug
+block title
+  | Lipunmyynnin hallinta
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Lipunmyynnin raportti
+    table.table.table-striped
+      thead
+        tr
+          th Tuote
+          th Myyty kpl
+          th Myyty €
+          th Maksettu kpl
+          th Maksettu €
+      tbody
+        for item in data
+          tr
+            td {{ item.product.name }}
+            td {{ item.count }}
+            td {{ item.cents }}
+            td {{ item.paid_count }}
+            td {{ item.paid_cents }}
+        tr
+          td Toimituskulut
+          td {{ num_req_delivery }}
+          td {{ shipping_and_handling_total }}
+          td {{ num_req_delivery_paid }}
+          td {{ shipping_and_handling_paid }}
+      tfoot
+        tr
+          th Yhteensä
+          th
+          th {{ total_price }}
+          th
+          th {{ total_paid_price }}
+
+  .panel.panel-default
+    .panel-heading: strong Loppuunmyynti&shy;tilanne
+    table.table.table-striped
+      thead
+        tr
+          th Loppuunmyyntiryhmä
+          th Myyty kpl
+          th Jäljellä kpl
+          th Myyntiraja kpl
+      tbody
+        for limit_group in event.limitgroup_set.all
+          tr(class="{{ limit_group.css_class }}")
+            td {{ limit_group.description }}
+            td {{ limit_group.amount_sold }}
+            td {{ limit_group.amount_available }}
+            td {{ limit_group.limit }}

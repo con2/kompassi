@@ -71,7 +71,7 @@ def enrollment_enroll_view(request, event):
             else:
                 messages.error(request, _("One does not simply cancel an enrollment that has not yet been made."))
 
-    return render(request, 'enrollment_enroll_view.jade', dict(
+    return render(request, 'enrollment_enroll_view.pug', dict(
         already_enrolled=already_enrolled,
         enrollment=enrollment,
         event=event,

@@ -13,9 +13,9 @@ from tickets.utils import format_price
 
 
 class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
-    organization = models.OneToOneField(Organization, primary_key=True, verbose_name='Organisaatio')
-    admin_group = models.ForeignKey(Group, verbose_name='Ylläpitäjäryhmä', related_name='admin_group_for')
-    members_group = models.ForeignKey(Group, verbose_name='Jäsenryhmä', related_name='members_group_for')
+    organization = models.OneToOneField(Organization, on_delete=models.CASCADE, primary_key=True, verbose_name='Organisaatio')
+    admin_group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Ylläpitäjäryhmä', related_name='admin_group_for')
+    members_group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Jäsenryhmä', related_name='members_group_for')
     receiving_applications = models.BooleanField(
         default=True,
         verbose_name='Ottaa vastaan hakemuksia',
@@ -69,8 +69,8 @@ PAYMENT_TYPE_CHOICES = [
 
 
 class Membership(models.Model, CsvExportMixin):
-    organization = models.ForeignKey(Organization, verbose_name='Yhdistys', related_name='memberships')
-    person = models.ForeignKey(Person, verbose_name='Henkilö', related_name='memberships')
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, verbose_name='Yhdistys', related_name='memberships')
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name='Henkilö', related_name='memberships')
     state = models.CharField(
         max_length=max(len(key) for (key, val) in STATE_CHOICES),
         choices=STATE_CHOICES,
@@ -197,7 +197,7 @@ class Membership(models.Model, CsvExportMixin):
 
 
 class Term(models.Model):
-    organization = models.ForeignKey(Organization,
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE,
         verbose_name='Yhdistys',
         related_name='terms'
     )
@@ -274,8 +274,8 @@ class Term(models.Model):
 
 
 class MembershipFeePayment(models.Model):
-    term = models.ForeignKey(Term, related_name='membership_fee_payments')
-    member = models.ForeignKey(Membership, related_name='membership_fee_payments')
+    term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name='membership_fee_payments')
+    member = models.ForeignKey(Membership, on_delete=models.CASCADE, related_name='membership_fee_payments')
 
     payment_date = models.DateField(auto_now_add=True)
 

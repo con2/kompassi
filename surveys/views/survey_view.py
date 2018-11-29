@@ -32,7 +32,7 @@ def survey_view(request, event_slug='', survey_slug=''):
 
         result = SurveyResult(
             survey=survey,
-            author=request.user if request.user.is_authenticated() else None,
+            author=request.user if request.user.is_authenticated else None,
             author_ip_address=get_ip(request) or '',
             model=result_model,
         )
@@ -45,4 +45,4 @@ def survey_view(request, event_slug='', survey_slug=''):
         survey=survey,
     )
 
-    return render(request, 'survey_view.jade', vars)
+    return render(request, 'survey_view.pug', vars)

@@ -21,7 +21,7 @@ def core_registration_view(request):
     vars = page_wizard_vars(request)
     next = vars['next']
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect(next)
 
     person_form = initialize_form(RegistrationPersonForm, request, prefix='person')
@@ -72,7 +72,7 @@ def core_registration_view(request):
         login_page=True
     )
 
-    return render(request, 'core_registration_view.jade', vars)
+    return render(request, 'core_registration_view.pug', vars)
 
 
 @login_required
@@ -115,4 +115,4 @@ def core_personify_view(request):
         next=next
     )
 
-    return render(request, 'core_personify_view.jade', vars)
+    return render(request, 'core_personify_view.pug', vars)

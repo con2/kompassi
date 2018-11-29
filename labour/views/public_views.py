@@ -2,7 +2,7 @@ import json
 
 from django.conf import settings
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.timezone import now
@@ -77,7 +77,7 @@ def labour_signup_view(request, event, alternative_form_slug=None):
     else:
         actual_signup_url = url('labour_signup_view', event.slug)
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         pages = [
             ('core_login_view', _('Sign up or sign in...'), login_related()),
             ('labour_qualifications_view', _('Revise qualifications'), qualifications_related()),
@@ -197,10 +197,9 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
                         (signup, signup_form),
                         (signup_extra, signup_extra_form),
                     ]:
-                        defaults = form.get_excluded_m2m_field_defaults()
-                        if defaults:
-                            set_attrs(obj, **defaults)
-                            obj.save()
+                        defaults = form.get_excluded_m2m_field_defaults() or {}
+                        for key, values in defaults.items():
+                            getattr(obj, key).set(values)
 
             emit(event_type, request=request, person=request.user.person, event=event)
 
@@ -233,7 +232,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
         non_qualified_category_names_json=json.dumps(non_qualified_category_names),
     )
 
-    return render(request, 'labour_signup_view.jade', vars)
+    return render(request, 'labour_signup_view.pug', vars)
 
 
 @person_required
@@ -255,7 +254,7 @@ def labour_profile_signups_view(request):
         all_signups=person.signups.all(),
     )
 
-    return render(request, 'labour_profile_signups_view.jade', vars)
+    return render(request, 'labour_profile_signups_view.pug', vars)
 
 
 @person_required
@@ -289,9 +288,9 @@ def labour_qualifications_view(request):
     )
 
     if 'page_wizard' in vars:
-        template_name = 'labour_new_user_qualifications_view.jade'
+        template_name = 'labour_new_user_qualifications_view.pug'
     else:
-        template_name = 'labour_profile_qualifications_view.jade'
+        template_name = 'labour_profile_qualifications_view.pug'
 
     return render(request, template_name, vars)
 
@@ -341,9 +340,9 @@ def labour_person_qualification_view(request, qualification):
     )
 
     if 'page_wizard' in vars:
-        template_name = 'labour_new_user_person_qualification_view.jade'
+        template_name = 'labour_new_user_person_qualification_view.pug'
     else:
-        template_name = 'labour_profile_person_qualification_view.jade'
+        template_name = 'labour_profile_person_qualification_view.pug'
 
     return render(request, template_name, vars)
 
@@ -402,7 +401,7 @@ def labour_event_box_context(request, event):
     signup = None
     is_labour_admin = False
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         is_labour_admin = event.labour_event_meta.is_user_admin(request.user)
 
         try:

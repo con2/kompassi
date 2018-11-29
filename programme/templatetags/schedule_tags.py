@@ -8,7 +8,7 @@ register = Library()
 @register.filter
 def programme_list_heading_should_be_rendered(programmes):
     """
-    Used by programme_schedule_list.jade alone.
+    Used by programme_schedule_list.pug alone.
 
     A horribly convoluted way of hiding empty headings in the programme listings
     such as the one below the programme schedule table.

@@ -48,7 +48,7 @@ def badges_admin_onboarding_view(request, vars, event):
             shirt_size_field=shirt_size_field,
         )
 
-        return render(request, 'badges_admin_onboarding_view.jade', vars)
+        return render(request, 'badges_admin_onboarding_view.pug', vars)
     elif request.method == 'POST':
         badge_id = request.POST['id']
         is_arrived = request.POST['arrived'] == 'true'

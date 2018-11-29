@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 
 from core.helpers import person_required
@@ -69,7 +69,7 @@ def membership_apply_view(request, organization):
         current_term=current_term,
     )
 
-    return render(request, 'membership_apply_view.jade', vars)
+    return render(request, 'membership_apply_view.pug', vars)
 
 
 @person_required
@@ -86,7 +86,7 @@ def membership_profile_view(request):
         potential_organizations=potential_organizations,
     )
 
-    return render(request, 'membership_profile_view.jade', vars)
+    return render(request, 'membership_profile_view.pug', vars)
 
 
 def membership_organization_box_context(request, organization):

@@ -25,7 +25,7 @@ def sms_admin_votes_view(request, vars, event):
         number=settings.NEXMO_FROM
     )
 
-    return render(request, 'sms_admin_votes_view.jade', vars)
+    return render(request, 'sms_admin_votes_view.pug', vars)
 
 
 @sms_admin_required
@@ -34,7 +34,7 @@ def sms_admin_received_view(request, vars, event):
     vars.update(
         received_messages=SMSMessageIn.objects.filter(SMSEventMeta__event=event),
     )
-    return render(request, 'sms_admin_received_view.jade', vars)
+    return render(request, 'sms_admin_received_view.pug', vars)
 
 
 def sms_admin_menu_items(request, event):
@@ -55,7 +55,7 @@ def sms_admin_menu_items(request, event):
 def sms_event_box_context(request, event):
     is_sms_admin = False
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         is_sms_admin = event.sms_event_meta.is_user_admin(request.user)
 
     return dict(

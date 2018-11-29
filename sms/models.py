@@ -28,7 +28,7 @@ class Hotword(models.Model):
     )
     valid_from = models.DateTimeField()
     valid_to = models.DateTimeField()
-    assigned_event = models.ForeignKey('core.Event')
+    assigned_event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s' % (self.hotword)
@@ -47,7 +47,7 @@ class VoteCategory(models.Model):
         max_length=20,
         verbose_name='Avainsana'
     )
-    hotword = models.ForeignKey(Hotword)
+    hotword = models.ForeignKey(Hotword, on_delete=models.CASCADE)
     primary = models.BooleanField(default=False)
 
     def __str__(self):
@@ -76,9 +76,9 @@ class Nominee(models.Model):
 
 
 class Vote(models.Model):
-    category = models.ForeignKey(VoteCategory)
-    vote = models.ForeignKey(Nominee)
-    message = models.ForeignKey('nexmo.InboundMessage')
+    category = models.ForeignKey(VoteCategory, on_delete=models.CASCADE)
+    vote = models.ForeignKey(Nominee, on_delete=models.CASCADE)
+    message = models.ForeignKey('nexmo.InboundMessage', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Ääni'
@@ -125,8 +125,8 @@ class SMSEventMeta(EventMetaBase):
 
 
 class SMSMessageIn(models.Model):
-    message = models.ForeignKey('nexmo.InboundMessage')
-    SMSEventMeta = models.ForeignKey(SMSEventMeta)
+    message = models.ForeignKey('nexmo.InboundMessage', on_delete=models.CASCADE)
+    SMSEventMeta = models.ForeignKey(SMSEventMeta, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.message.message
@@ -139,8 +139,8 @@ class SMSMessageIn(models.Model):
 class SMSMessageOut(models.Model):
     message = models.TextField()
     to = models.CharField(max_length=20)
-    event = models.ForeignKey(SMSEventMeta)
-    ref = models.ForeignKey('nexmo.OutboundMessage', blank=True, null=True)
+    event = models.ForeignKey(SMSEventMeta, on_delete=models.CASCADE)
+    ref = models.ForeignKey('nexmo.OutboundMessage', on_delete=models.CASCADE, blank=True, null=True)
 
     @classmethod
     def send(cls, *args, **kwargs):

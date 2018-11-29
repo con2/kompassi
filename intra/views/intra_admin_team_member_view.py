@@ -77,4 +77,4 @@ def intra_admin_team_member_view(request, vars, event, team_slug=None, person_id
         team_member_form=team_member_form,
     )
 
-    return render(request, 'intra_admin_team_member_view.jade', vars)
+    return render(request, 'intra_admin_team_member_view.pug', vars)

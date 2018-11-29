@@ -34,7 +34,7 @@ class Setup(object):
         self.setup_badges()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(
             name='Messukeskus',
@@ -42,14 +42,20 @@ class Setup(object):
                 name_inessive='Messukeskuksessa',
             ),
         )
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='ropecon-ry',
+            defaults=dict(
+                name='Ropecon ry',
+                homepage_url='http://www.ropecon.fi/hallitu',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='ropecon2018', defaults=dict(
             name='Ropecon 2018',
             name_genitive='Ropecon 2018 -tapahtuman',
             name_illative='Ropecon 2018 -tapahtumaan',
             name_inessive='Ropecon 2018 -tapahtumassa',
             homepage_url='http://2018.ropecon.fi',
-            organization_name='Ropecon ry',
-            organization_url='http://www.ropecon.fi/hallitus',
+            organization=self.organization,
             start_time=datetime(2018, 7, 27, 15, 0, tzinfo=self.tz),
             end_time=datetime(2018, 7, 29, 18, 0, tzinfo=self.tz),
             venue=self.venue,
@@ -209,8 +215,8 @@ class Setup(object):
             )
 
             if created:
-                job_category.personnel_classes = pcs
-                job_category.save()
+                job_category.personnel_classes.set(pcs)
+
 
         labour_event_meta.create_groups()
 

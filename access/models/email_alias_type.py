@@ -10,7 +10,7 @@ logger = logging.getLogger('kompassi')
 
 
 class EmailAliasType(models.Model):
-    domain = models.ForeignKey('access.EmailAliasDomain', verbose_name=_('domain'))
+    domain = models.ForeignKey('access.EmailAliasDomain', on_delete=models.CASCADE, verbose_name=_('domain'))
     metavar = models.CharField(
         max_length=255,
         default=_('firstname.lastname'),

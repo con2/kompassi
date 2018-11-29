@@ -24,7 +24,7 @@ def enrollment_list_view(request, event):
     # information about possibly non-public fields.
     enrollments = Enrollment.objects.filter(event=event, state='ACCEPTED', is_public=True)
 
-    return render(request, 'enrollment_list_view.jade', dict(
+    return render(request, 'enrollment_list_view.pug', dict(
         event=event,
         enrollments=enrollments,
         num_enrollments=enrollments.count(),

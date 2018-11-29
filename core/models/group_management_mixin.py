@@ -8,7 +8,7 @@ from ..utils import ensure_groups_exist
 class GroupManagementMixin(object):
     @staticmethod
     def is_user_in_group(user, group):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
 
         return user.groups.filter(pk=group.pk).exists()

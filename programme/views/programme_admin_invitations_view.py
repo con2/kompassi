@@ -45,4 +45,4 @@ def programme_admin_invitations_view(request, vars, event):
         pending_invitations=pending_invitations
     )
 
-    return render(request, 'programme_admin_invitations_view.jade', vars)
+    return render(request, 'programme_admin_invitations_view.pug', vars)

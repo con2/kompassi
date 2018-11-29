@@ -33,4 +33,4 @@ def programme_admin_create_view(request, vars, event):
         form=form,
     )
 
-    return render(request, 'programme_admin_create_view.jade', vars)
+    return render(request, 'programme_admin_create_view.pug', vars)

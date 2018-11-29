@@ -14,7 +14,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SignupExtra',
             fields=[
-                ('signup', models.OneToOneField(related_name='+', primary_key=True, serialize=False, to='labour.Signup')),
+                ('signup', models.OneToOneField(on_delete=models.CASCADE,
+                 related_name='+', primary_key=True, serialize=False, to='labour.Signup')),
                 ('shift_type', models.CharField(help_text='Haluatko tehd\xe4 yhden pitk\xe4n ty\xf6vuoron vaiko monta lyhyemp\xe4\xe4 vuoroa?', max_length=15, verbose_name='Toivottu ty\xf6vuoron pituus', choices=[('none', 'Ei v\xe4li\xe4'), ('4h', 'Pari pitk\xe4\xe4 vuoroa'), ('yli4h', 'Useita lyhyit\xe4 vuoroja')])),
                 ('desu_amount', models.IntegerField(help_text='Kuinka monessa Desuconissa olet ollut v\xe4nk\xe4rin\xe4?', verbose_name='Desum\xe4\xe4r\xe4')),
                 ('prior_experience', models.TextField(help_text='Kerro t\xe4ss\xe4 kent\xe4ss\xe4, jos sinulla on aiempaa kokemusta vastaavista teht\xe4vist\xe4 tai muuta sellaista ty\xf6kokemusta, josta arvioit olevan hy\xf6ty\xe4 hakemassasi teht\xe4v\xe4ss\xe4.', verbose_name='Ty\xf6kokemus', blank=True)),

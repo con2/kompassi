@@ -5,8 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class InfoLink(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name='Tapahtuma')
-    group = models.ForeignKey('auth.Group',
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name='Tapahtuma')
+    group = models.ForeignKey('auth.Group', on_delete=models.CASCADE,
         verbose_name='Ryhmä',
         help_text='Linkki näytetään vain tämän ryhmän jäsenille.',
     )

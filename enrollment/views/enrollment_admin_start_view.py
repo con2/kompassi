@@ -11,7 +11,7 @@ def enrollment_admin_start_view(request, vars, event):
     return generic_publish_unpublish_view(
         request, vars, event,
         meta=event.enrollment_event_meta,
-        template='enrollment_admin_start_view.jade',
+        template='enrollment_admin_start_view.pug',
         FormClass=EnrollmentStartForm,
         save_success_message=_("The times for the enrollment period were saved."),
         start_now_success_message=_("The enrollment period was started."),

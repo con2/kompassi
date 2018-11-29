@@ -59,7 +59,7 @@ __all__ = [
 tickets_admin_batches_view = tickets_admin_required(batches_view(
     Batch=Batch,
     CreateBatchForm=CreateBatchForm,
-    template="tickets_admin_batches_view.jade",
+    template="tickets_admin_batches_view.pug",
     created_at_field='create_time',
 ))
 
@@ -140,7 +140,7 @@ def tickets_admin_stats_view(request, vars, event):
         total_paid_price=total_paid_price
     )
 
-    return render(request, "tickets_admin_stats_view.jade", vars)
+    return render(request, "tickets_admin_stats_view.pug", vars)
 
 
 @tickets_admin_required
@@ -204,7 +204,7 @@ def tickets_admin_orders_view(request, vars, event):
         orders = paginator.page(paginator.num_pages)
 
     vars.update(orders=orders, form=form)
-    return render(request, 'tickets_admin_orders_view.jade', vars)
+    return render(request, 'tickets_admin_orders_view.pug', vars)
 
 
 @tickets_admin_required
@@ -294,7 +294,7 @@ def tickets_admin_order_view(request, vars, event, order_id):
     # But the context field provides enough clue.
     emit('core.person.viewed', request=request, event=event)
 
-    return render(request, 'tickets_admin_order_view.jade', vars)
+    return render(request, 'tickets_admin_order_view.pug', vars)
 
 
 @tickets_admin_required
@@ -331,7 +331,7 @@ def tickets_admin_tools_view(request, vars, event):
         num_unpaid_orders_to_cancel=Order.get_unpaid_orders_to_cancel(event, hours=unpaid_cancel_hours).count(),
     )
 
-    return render(request, 'tickets_admin_tools_view.jade', vars)
+    return render(request, 'tickets_admin_tools_view.pug', vars)
 
 
 @tickets_admin_required
@@ -392,7 +392,7 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
             filters=filters,
         )
 
-        return render(request, 'tickets_admin_accommodation_view.jade', vars)
+        return render(request, 'tickets_admin_accommodation_view.pug', vars)
     else:
         raise NotImplementedError(format)
 
@@ -418,7 +418,7 @@ def tickets_admin_accommodation_create_view(request, vars, event, limit_group_id
         limit_group=limit_group,
     )
 
-    return render(request, 'tickets_admin_accommodation_create_view.jade', vars)
+    return render(request, 'tickets_admin_accommodation_create_view.pug', vars)
 
 
 @tickets_admin_required
@@ -453,7 +453,7 @@ def tickets_admin_shirts_view(request, vars, event, format='screen'):
             shirt_orders_total=shirt_orders.aggregate(Sum('count'))['count__sum'] or 0,
         )
 
-        return render(request, 'tickets_admin_shirts_view.jade', vars)
+        return render(request, 'tickets_admin_shirts_view.pug', vars)
     elif format in CSV_EXPORT_FORMATS:
         filename = "{event.slug}_shirts_{timestamp}.{format}".format(
             event=event,

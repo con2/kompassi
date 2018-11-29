@@ -110,4 +110,4 @@ def programme_profile_detail_view(request, programme_id):
         sired_invitation_formset=sired_invitation_formset,
     )
 
-    return render(request, 'programme_profile_detail_view.jade', vars)
+    return render(request, 'programme_profile_detail_view.pug', vars)

@@ -55,7 +55,7 @@ def programme_admin_schedule_view(request, vars, event):
         request,
         event,
         internal_programmes=True,
-        template='programme_admin_schedule_view.jade',
+        template='programme_admin_schedule_view.pug',
         vars=vars,
         show_programme_actions=True,
     )

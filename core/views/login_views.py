@@ -55,7 +55,7 @@ def core_login_view(request):
         login_page=True
     )
 
-    return render(request, 'core_login_view.jade', vars)
+    return render(request, 'core_login_view.pug', vars)
 
 
 def do_login(request, user, password=None, next='core_frontpage_view'):

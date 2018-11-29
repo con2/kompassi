@@ -1,0 +1,51 @@
+extends core_admin_base.pug
+- load crispy_forms_tags
+block title
+  | Tulostuserät
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Tulostuserät
+    if batches.exists
+      ul.list-group
+        for batch in batches
+          li.list-group-item
+            | Tulostuserä {{ batch.pk }}&emsp;
+            if batch.personnel_class
+              | ({{ batch.personnel_class.name }})&emsp;
+            .pull-right
+              if batch.is_printed
+                span.badge.badge-success Tulostettu
+                .btn-group.btn-group-xs
+                  a.btn.btn-primary(href='{% url "badges_admin_export_view" event.slug batch.pk "xlsx" %}', target='_blank') Lataa Excel-tiedosto
+              else
+                form(method='POST', role='form')
+                  {% csrf_token %}
+                  input(type='hidden', name='batch_id', value='{{ batch.pk }}')
+                  .btn-group.btn-group-xs
+                    button.btn.btn-danger(type='submit', name='cancel-batch', value='cancel-batch') Peruuta
+                    button.btn.btn-success(type='submit', name='confirm-batch', value='confirm-batch') Merkitse tulostetuksi
+                    a.btn.btn-primary(href='{% url "badges_admin_export_view" event.slug batch.pk "xlsx" %}', target='_blank') Lataa Excel-tiedosto
+            .pull-right
+              .text-muted {{ batch.badges.count }} badge{{ batch.badges.count|pluralize:"a"}}&emsp;
+
+    else
+      .panel-body
+        p Ei tulostuseriä.
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        button.btn.btn-primary(type='button', data-toggle='modal', data-target='#new-batch-dialog') Uusi tulostuserä...
+
+  #new-batch-dialog.modal.fade
+    .modal-dialog
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+          h4 Uusi tulostuserä
+        form(method='POST', role='form')
+          div
+            .modal-body
+              - crispy new_batch_form
+            .modal-footer
+              .btn-group
+                button.btn.btn-default(type='button', data-dismiss='modal') Peruuta
+                button.btn.btn-success(type='submit', name='new-batch', value='new-batch') Luo tulostuserä

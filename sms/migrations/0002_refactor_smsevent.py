@@ -16,11 +16,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SMSEventMeta',
             fields=[
-                ('event', models.OneToOneField(related_name='smseventmeta', primary_key=True, serialize=False, to='core.Event')),
+                ('event', models.OneToOneField(on_delete=models.CASCADE,
+                 related_name='smseventmeta', primary_key=True, serialize=False, to='core.Event')),
                 ('sms_enabled', models.BooleanField(default=False)),
                 ('current', models.BooleanField(default=False)),
                 ('used_credit', models.IntegerField(default=0)),
-                ('admin_group', models.ForeignKey(to='auth.Group')),
+                ('admin_group', models.ForeignKey(on_delete=models.CASCADE, to='auth.Group')),
             ],
             options={
                 'verbose_name': 'Tekstiviestej\xe4 k\xe4ytt\xe4v\xe4 tapahtuma',
@@ -45,7 +46,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='smsmessageout',
             name='event',
-            field=models.ForeignKey(to='sms.SMSEventMeta'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='sms.SMSEventMeta'),
             preserve_default=True,
         ),
         migrations.DeleteModel(

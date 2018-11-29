@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(help_text='T\xe4m\xe4 tekstinp\xe4tk\xe4 on varsinainen avainsana, joka tulee l\xf6yty\xe4 tekstiviestist\xe4. Kirjoita pienill\xe4!', verbose_name='Avainsana')),
                 ('valid_from', models.DateTimeField()),
                 ('valid_to', models.DateTimeField()),
-                ('assigned_event', models.ForeignKey(to='core.Event')),
+                ('assigned_event', models.ForeignKey(on_delete=models.CASCADE, to='core.Event')),
             ],
             options={
                 'verbose_name': 'Hotwordi',
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('sms_enabled', models.BooleanField(default=False)),
                 ('current', models.BooleanField(default=False)),
                 ('used_credit', models.IntegerField(default=0)),
-                ('event', models.ForeignKey(to='core.Event')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, to='core.Event')),
             ],
             options={
                 'verbose_name': 'Tekstiviestej\xe4 k\xe4ytt\xe4v\xe4 tapahtuma',
@@ -47,8 +47,8 @@ class Migration(migrations.Migration):
             name='SMSMessageIn',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('message', models.ForeignKey(to='nexmo.InboundMessage')),
-                ('smsevent', models.ForeignKey(to='sms.SMSEvent')),
+                ('message', models.ForeignKey(on_delete=models.CASCADE, to='nexmo.InboundMessage')),
+                ('smsevent', models.ForeignKey(on_delete=models.CASCADE, to='sms.SMSEvent')),
             ],
             options={
                 'verbose_name': 'Vastaanotettu viesti',
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('message', models.TextField()),
                 ('to', models.CharField(max_length=20)),
-                ('event', models.ForeignKey(to='sms.SMSEvent')),
+                ('event', models.ForeignKey(on_delete=models.CASCADE, to='sms.SMSEvent')),
                 ('ref', models.ForeignKey(blank=True, to='nexmo.OutboundMessage', null=True)),
             ],
             options={
@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(max_length=20)),
                 ('value_min', models.IntegerField()),
                 ('value_max', models.IntegerField()),
-                ('mapped', models.ForeignKey(to='sms.Hotword')),
+                ('mapped', models.ForeignKey(on_delete=models.CASCADE, to='sms.Hotword')),
             ],
             options={
                 'verbose_name': 'Kategoria',
@@ -103,19 +103,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='vote',
             name='category',
-            field=models.ForeignKey(to='sms.VoteCategories'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='sms.VoteCategories'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='vote',
             name='hotword',
-            field=models.ForeignKey(to='sms.Hotword'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='sms.Hotword'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='vote',
             name='message',
-            field=models.ForeignKey(to='nexmo.InboundMessage'),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='nexmo.InboundMessage'),
             preserve_default=True,
         ),
     ]

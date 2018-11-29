@@ -49,4 +49,4 @@ def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
         form=form,
     )
 
-    return render(request, 'badges_admin_create_view.jade', vars)
+    return render(request, 'badges_admin_create_view.pug', vars)

@@ -33,19 +33,25 @@ class Setup(object):
         self.setup_badges()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(name='Kongressitalo Mikaeli', defaults=dict(
             name_inessive='Kongressitalo Mikaelissa',
         ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='mamy-mikkelin-anime-ja-manga-yhdistys-ry',
+            defaults=dict(
+                name='MAMY Mikkelin Anime ja Manga Yhdistys ry',
+                homepage_url='http://mamy.animeunioni.org/',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='mimicon2018', defaults=dict(
             name='Mimicon (2018)',
             name_genitive='Mimiconiin',
             name_illative='Mimiconia',
             name_inessive='Mimiconissa',
             homepage_url='https://mimicon.moe',
-            organization_name='MAMY Mikkelin Anime ja Manga Yhdistys ry',
-            organization_url='http://mamy.animeunioni.org/',
+            organization=self.organization,
             start_time=datetime(2018, 9, 15, 10, 0, tzinfo=self.tz),
             end_time=datetime(2018, 9, 16, 18, 0, tzinfo=self.tz),
             venue=self.venue,
@@ -255,8 +261,8 @@ class Setup(object):
                 )
 
                 if created:
-                    job_category.personnel_classes = pcs
-                    job_category.save()
+                    job_category.personnel_classes.set(pcs)
+
 
                 for job_name in job_names:
                     job, created = Job.objects.get_or_create(
@@ -281,8 +287,8 @@ class Setup(object):
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
             if not jc.required_qualifications.exists():
-                jc.required_qualifications = [qual]
-                jc.save()
+                jc.required_qualifications.set([qual])
+
 
         for diet_name in [
             'Gluteeniton',

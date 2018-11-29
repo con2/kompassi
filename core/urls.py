@@ -25,7 +25,7 @@ urlpatterns = [
     url(
         r'^events/?$',
         core_frontpage_view,
-        dict(template='core_events_view.jade', include_past_events=True),
+        dict(template='core_events_view.pug', include_past_events=True),
         name='core_events_view',
     ),
     url(r'^events/(?P<event_slug>[a-z0-9-]+)/?$', core_event_view, name='core_event_view'),

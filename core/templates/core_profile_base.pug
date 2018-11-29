@@ -1,0 +1,12 @@
+extends base
+- load crispy_forms_tags
+// title set in inheriting views
+block content
+  .core-profile-view
+    h2 Omat tiedot
+    .row
+      .col-md-3
+        ul.nav.nav-pills.nav-stacked
+          include core_profile_menu_items.pug
+      .col-md-9
+        block profile_content

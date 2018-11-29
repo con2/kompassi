@@ -89,7 +89,7 @@ def programme_admin_view(request, vars, event, format='screen'):
             video_permission_filters=video_permission_filters,
         )
 
-        return render(request, 'programme_admin_view.jade', vars)
+        return render(request, 'programme_admin_view.pug', vars)
     elif format in CSV_EXPORT_FORMATS:
         filename = "{event.slug}_programmes_{timestamp}.xlsx".format(
             event=event,
@@ -121,7 +121,7 @@ def programme_admin_view(request, vars, event, format='screen'):
             programmes_by_start_time=programmes_by_start_time,
         )
 
-        return render(request, 'programme_admin_print_view.jade', vars)
+        return render(request, 'programme_admin_print_view.pug', vars)
     else:
         raise NotImplementedError(format)
 
@@ -134,7 +134,7 @@ def programme_admin_special_view(request, vars, event):
     return actual_special_view(
         request,
         event,
-        template='programme_admin_special_view.jade',
+        template='programme_admin_special_view.pug',
         vars=vars,
         show_programme_actions=True,
     )

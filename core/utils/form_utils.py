@@ -53,7 +53,7 @@ def initialize_form_set(FormSetClass, request, **kwargs):
 
 
 def indented_without_label(input, css_class='col-md-offset-3 col-md-9'):
-    # Checkboxen handled by pyjade
+    # Checkboxen handled by pypugjs
     if isinstance(input, str):
         return input
     # Submits we need to handle ourselves

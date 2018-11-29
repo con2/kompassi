@@ -56,7 +56,7 @@ def payments_redirect_view(request, event):
         CHECKOUT_PARAMS=settings.CHECKOUT_PARAMS,
     )
 
-    return render(request, 'payments_redirect_view.jade', vars)
+    return render(request, 'payments_redirect_view.pug', vars)
 
 
 @tickets_event_required
@@ -90,4 +90,3 @@ def payments_process_view(request, event):
     else:
         messages.error(request, "Emme saaneet maksuoperaattorilta vahvistusta maksustasi.")
         return redirect('tickets_thanks_view', event.slug)
-

@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='connection',
             name='user',
-            field=models.OneToOneField(verbose_name='K\xe4ytt\xe4j\xe4', to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(on_delete=models.CASCADE, verbose_name='K\xe4ytt\xe4j\xe4', to=settings.AUTH_USER_MODEL),
         ),
     ]

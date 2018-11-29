@@ -82,7 +82,7 @@ STATICFILES_FINDERS = (
 
 SECRET_KEY = env.str('SECRET_KEY', default=('' if not DEBUG else 'xxx'))
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     # 'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'csp.middleware.CSPMiddleware',
@@ -91,7 +91,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'core.middleware.PageWizardMiddleware',
@@ -105,6 +104,7 @@ WSGI_APPLICATION = 'kompassi.wsgi.application'
 APPEND_SLASH = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -115,19 +115,21 @@ TEMPLATES = [
             'context_processors': [
                 'core.context_processors.core_context',
                 'feedback.context_processors.feedback_context',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.request',
             ],
             'loaders': [
-                ('pyjade.ext.django.Loader', (
+                # PyPugJS part:   ##############################
+                ('pypugjs.ext.django.Loader', (
                     'django.template.loaders.filesystem.Loader',
                     'django.template.loaders.app_directories.Loader',
                 ))
             ],
-            'builtins': ['pyjade.ext.django.templatetags'],
+            'builtins': [
+                'pypugjs.ext.django.templatetags',
+            ],
         },
     },
 ]
@@ -143,12 +145,13 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
 
-    'pyjade.ext.django',
+    'pypugjs.ext.django',
     'crispy_forms',
     'oauth2_provider',
-    'nexmo',
+    # 'nexmo',
     'django_babel',
     'django_prometheus',
+    'graphene_django',
 
     'core',
     'programme',
@@ -161,7 +164,7 @@ INSTALLED_APPS = (
     'api_v2',
     'badges',
     'access',
-    'sms',
+    # 'sms',
     'membership',
     'intra',
     'lippukala',
@@ -172,6 +175,7 @@ INSTALLED_APPS = (
     'surveys',
     'directory',
     'listings',
+    'kompassi2',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -290,6 +294,10 @@ LOGGING = {
 LOGIN_URL = '/login'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+GRAPHENE = dict(
+    SCHEMA='kompassi2.schema.schema',
+)
 
 # TODO script-src unsafe-inline needed at least by feedback.js. unsafe-eval needed by Knockout (roster.js).
 # XXX style-src unsafe-inline is just basic plebbery and should be eradicated.
@@ -429,7 +437,7 @@ if 'desuprofile_integration' in INSTALLED_APPS:
 
 
 if 'listings' in INSTALLED_APPS:
-    MIDDLEWARE_CLASSES = ('listings.middleware.ListingsMiddleware',) + MIDDLEWARE_CLASSES
+    MIDDLEWARE = ('listings.middleware.ListingsMiddleware',) + MIDDLEWARE
     KOMPASSI_LISTING_URLCONFS = {
         'conit.fi': 'listings.site_urlconfs.conit_fi',
         'animecon.fi': 'listings.site_urlconfs.animecon_fi',

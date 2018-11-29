@@ -19,8 +19,8 @@ logger = logging.getLogger('kompassi')
 
 
 class TeamMember(models.Model):
-    team = models.ForeignKey('intra.Team', verbose_name=_('Team'), related_name='members')
-    person = models.ForeignKey('core.Person', verbose_name=_('Person'), related_name='team_memberships')
+    team = models.ForeignKey('intra.Team', on_delete=models.CASCADE, verbose_name=_('Team'), related_name='members')
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE, verbose_name=_('Person'), related_name='team_memberships')
     override_job_title = models.CharField(
         max_length=JOB_TITLE_LENGTH,
         blank=True,

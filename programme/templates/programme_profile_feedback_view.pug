@@ -1,0 +1,22 @@
+extends core_profile_base
+- load i18n
+- load crispy from crispy_forms_tags
+block title
+  {% trans "Programme feedback" %}
+block profile_content
+  h3 {% trans "Programme feedback" %}
+  .panel.panel-default
+    .panel-heading
+      .pull-right
+        include programme_state_label.pug
+      strong.kompassi-space-after= programme.category.event.name
+      small.text-muted= programme.category.event.headline
+    .panel-body
+      include programme_info_fragment.pug
+    if feedback.exists
+      include programme_feedback_table.pug
+    .panel-footer.clearfix
+      if feedback.exists
+        .text-muted {% blocktrans count num_feedback_messages=feedback.count %}One feedback message.{% plural %}{{ num_feedback_messages }} feedback messages.{% endblocktrans %}
+      else
+        .text-muted {% trans "No feedback." %}

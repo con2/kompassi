@@ -34,19 +34,25 @@ class Setup(object):
         self.setup_programme()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(name='Kuopion musiikkikeskus', defaults=dict(
             name_inessive='Kuopion musiikkikeskuksessa',
         ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='nekocon-ry',
+            defaults=dict(
+                name='Nekocon ry',
+                homepage_url='https://nekocon.fi',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='nekocon2019', defaults=dict(
             name='Nekocon (2019)',
             name_genitive='Nekoconin',
             name_illative='Nekoconiin',
             name_inessive='Nekoconissa',
             homepage_url='https://nekocon.fi',
-            organization_name='Nekocon ry',
-            organization_url='https://nekocon.fi',
+            organization=self.organization,
             start_time=datetime(2019, 7, 13, 10, 00, tzinfo=self.tz),
             end_time=datetime(2019, 7, 14, 17, 0, tzinfo=self.tz),
             venue=self.venue,
@@ -132,8 +138,8 @@ class Setup(object):
             )
 
             if created:
-                job_category.personnel_classes = pcs
-                job_category.save()
+                job_category.personnel_classes.set(pcs)
+
 
         labour_event_meta.create_groups()
 

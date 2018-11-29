@@ -16,7 +16,7 @@ from core.csv_export import CsvExportMixin
 
 
 class WorkPeriod(models.Model):
-    event = models.ForeignKey('core.Event', verbose_name=_('event'))
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name=_('event'))
 
     description = models.CharField(
         max_length=63,
@@ -36,7 +36,7 @@ class WorkPeriod(models.Model):
 
 class Job(models.Model):
     # REVERSE: shifts: Shift 0..N -> 1 Job
-    job_category = models.ForeignKey('labour.JobCategory', verbose_name=_('job category'))
+    job_category = models.ForeignKey('labour.JobCategory', on_delete=models.CASCADE, verbose_name=_('job category'))
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     title = models.CharField(max_length=63, verbose_name=_('job title'))
 
@@ -93,7 +93,7 @@ class Job(models.Model):
 
 
 class JobRequirement(models.Model):
-    job = models.ForeignKey(Job, verbose_name=_('job'), related_name='requirements')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, verbose_name=_('job'), related_name='requirements')
 
     count = models.IntegerField(
         verbose_name='vaadittu henkilömäärä',
@@ -137,10 +137,10 @@ class JobRequirement(models.Model):
 
 
 class Shift(models.Model, CsvExportMixin):
-    job = models.ForeignKey(Job, related_name='shifts')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='shifts')
     start_time = models.DateTimeField()
     hours = models.PositiveIntegerField()
-    signup = models.ForeignKey('labour.Signup', related_name='shifts')
+    signup = models.ForeignKey('labour.Signup', on_delete=models.CASCADE, related_name='shifts')
     notes = models.TextField(blank=True)
 
     def as_dict(self):

@@ -7,12 +7,12 @@ from ..utils import generate_machine_password
 
 
 class SMTPPassword(models.Model):
-    smtp_server = models.ForeignKey('access.SMTPServer',
+    smtp_server = models.ForeignKey('access.SMTPServer', on_delete=models.CASCADE,
         related_name='smtp_passwords',
         verbose_name=_('SMTP server'),
     )
 
-    person = models.ForeignKey('core.Person',
+    person = models.ForeignKey('core.Person', on_delete=models.CASCADE,
         related_name='smtp_passwords',
         verbose_name=_('person'),
     )

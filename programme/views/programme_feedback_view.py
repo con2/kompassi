@@ -24,7 +24,7 @@ def programme_feedback_view(request, event, programme_id):
         messages.error(request, _('You cannot leave feedback about a programme that has not yet been delivered.'))
         return redirect('core_event_view', event.slug)
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         is_own_programme = request.user.person in programme.organizers.all()
         form = initialize_form(ProgrammeFeedbackForm, request, is_own_programme=is_own_programme)
     else:
@@ -38,7 +38,7 @@ def programme_feedback_view(request, event, programme_id):
             if feedback.is_anonymous and is_own_programme:
                 messages.error(request, _('You cannot leave anonymous feedback about your own programme.'))
             else:
-                feedback.author = request.user.person if request.user.is_authenticated() else None
+                feedback.author = request.user.person if request.user.is_authenticated else None
                 feedback.author_ip_address = get_ip(request) or ''
                 feedback.programme = programme
                 feedback.save()
@@ -54,4 +54,4 @@ def programme_feedback_view(request, event, programme_id):
         form=form,
     )
 
-    return render(request, 'programme_feedback_view.jade', vars)
+    return render(request, 'programme_feedback_view.pug', vars)

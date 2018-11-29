@@ -23,7 +23,7 @@ class Event(models.Model):
 
     name = models.CharField(max_length=63, verbose_name='Tapahtuman nimi')
 
-    organization = models.ForeignKey('core.Organization', verbose_name='Järjestäjätaho', related_name='events')
+    organization = models.ForeignKey('core.Organization', on_delete=models.CASCADE, verbose_name='Järjestäjätaho', related_name='events')
 
     name_genitive = models.CharField(
         max_length=63,
@@ -45,7 +45,7 @@ class Event(models.Model):
 
     description = models.TextField(blank=True, verbose_name='Kuvaus')
 
-    venue = models.ForeignKey('core.Venue',
+    venue = models.ForeignKey('core.Venue', on_delete=models.CASCADE,
         verbose_name='Tapahtumapaikka',
     )
 
@@ -113,25 +113,6 @@ class Event(models.Model):
     class Meta:
         verbose_name = 'Tapahtuma'
         verbose_name_plural = 'Tapahtumat'
-
-    def __init__(self, *args, **kwargs):
-        # Avoid having to manually transform 20 or so event setup scripts with organization_name and organization_url
-        # in get_or_create.defaults
-        if 'organization_name' in kwargs:
-            from .organization import Organization
-
-            organization_name = kwargs.pop('organization_name')
-            organization_url = kwargs.pop('organization_url', '')
-
-            kwargs['organization'], unused = Organization.objects.get_or_create(
-                slug=slugify(organization_name),
-                defaults=dict(
-                    name=organization_name,
-                    homepage_url=organization_url,
-                )
-            )
-
-        super(Event, self).__init__(*args, **kwargs)
 
     def __str__(self):
         return self.name

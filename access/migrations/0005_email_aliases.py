@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('domain_name', models.CharField(help_text='Esim. example.com', unique=True, max_length=255, verbose_name='Verkkotunnus')),
-                ('organization', models.ForeignKey(verbose_name='Organisaatio', to='core.Organization')),
+                ('organization', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Organisaatio', to='core.Organization')),
             ],
             options={
                 'verbose_name': 'Verkkotunnus',
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('metavar', models.CharField(default='etunimi.sukunimi', help_text='Esim. "etunimi.sukunimi"', max_length=255, verbose_name='Metamuuttuja')),
                 ('account_name_code', models.CharField(default='access.email_aliases:firstname_surname', max_length=255)),
-                ('domain', models.ForeignKey(verbose_name='Verkkotunnus', to='access.EmailAliasDomain')),
+                ('domain', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Verkkotunnus', to='access.EmailAliasDomain')),
             ],
             options={
                 'verbose_name': 'S\xe4hk\xf6postialiaksen tyyppi',
@@ -59,8 +59,8 @@ class Migration(migrations.Migration):
             name='GroupEmailAliasGrant',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('group', models.ForeignKey(verbose_name='Ryhm\xe4', to='auth.Group')),
-                ('type', models.ForeignKey(verbose_name='Tyyppi', to='access.EmailAliasType')),
+                ('group', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Ryhm\xe4', to='auth.Group')),
+                ('type', models.ForeignKey(on_delete=models.CASCADE, verbose_name='Tyyppi', to='access.EmailAliasType')),
             ],
             options={
                 'verbose_name': 'My\xf6nt\xe4miskanava',
@@ -71,25 +71,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='emailalias',
             name='domain',
-            field=models.ForeignKey(verbose_name='Verkkotunnus', to='access.EmailAliasDomain'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Verkkotunnus', to='access.EmailAliasDomain'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='emailalias',
             name='group_grant',
-            field=models.ForeignKey(blank=True, to='access.GroupEmailAliasGrant', help_text='My\xf6nt\xe4miskanava antaa kaikille tietyn ryhm\xe4n j\xe4senille tietyntyyppisen s\xe4hk\xf6postialiaksen. Jos aliakselle on asetettu my\xf6nt\xe4miskanava, alias on my\xf6nnetty t\xe4m\xe4n my\xf6nt\xe4miskanavan perusteella, ja kun my\xf6nt\xe4miskanava vanhenee, kaikki sen perusteella my\xf6nnetyt aliakset voidaan poistaa kerralla.', null=True, verbose_name='My\xf6nt\xe4miskanava'),
+            field=models.ForeignKey(on_delete=models.CASCADE, blank=True, to='access.GroupEmailAliasGrant', help_text='My\xf6nt\xe4miskanava antaa kaikille tietyn ryhm\xe4n j\xe4senille tietyntyyppisen s\xe4hk\xf6postialiaksen. Jos aliakselle on asetettu my\xf6nt\xe4miskanava, alias on my\xf6nnetty t\xe4m\xe4n my\xf6nt\xe4miskanavan perusteella, ja kun my\xf6nt\xe4miskanava vanhenee, kaikki sen perusteella my\xf6nnetyt aliakset voidaan poistaa kerralla.', null=True, verbose_name='My\xf6nt\xe4miskanava'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='emailalias',
             name='person',
-            field=models.ForeignKey(related_name='email_aliases', verbose_name='Henkil\xf6', to='core.Person'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='email_aliases', verbose_name='Henkil\xf6', to='core.Person'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='emailalias',
             name='type',
-            field=models.ForeignKey(verbose_name='Tyyppi', to='access.EmailAliasType'),
+            field=models.ForeignKey(on_delete=models.CASCADE, verbose_name='Tyyppi', to='access.EmailAliasType'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(

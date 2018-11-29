@@ -32,19 +32,25 @@ class Setup(object):
         self.setup_intra()
 
     def setup_core(self):
-        from core.models import Venue, Event
+        from core.models import Venue, Event, Organization
 
         self.venue, unused = Venue.objects.get_or_create(name='Turun yliopisto', defaults=dict(
             name_inessive='Turun yliopistolla',
         ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug='turun-yliopiston-tieteiskulttuurikabinetti',
+            defaults=dict(
+                name='Turun yliopiston tieteiskulttuurikabinetti',
+                homepage_url='http://www.tieteiskulttuurikabinetti.fi',
+            )
+        )
         self.event, unused = Event.objects.get_or_create(slug='finncon2018', defaults=dict(
             name='Finncon 2018',
             name_genitive='Finncon 2018 -tapahtuman',
             name_illative='Finncon 2018 -tapahtumaan',
             name_inessive='Finncon 2018 -tapahtumassa',
             homepage_url='http://2018.finncon.org',
-            organization_name='Turun yliopiston tieteiskulttuurikabinetti',
-            organization_url='http://www.tieteiskulttuurikabinetti.fi/',
+            organization=self.organization,
             start_time=datetime(2018, 7, 14, 10, 0, tzinfo=self.tz),
             end_time=datetime(2018, 7, 15, 18, 0, tzinfo=self.tz),
             venue=self.venue,
@@ -240,8 +246,8 @@ class Setup(object):
             )
 
             if created:
-                job_category.personnel_classes = pcs
-                job_category.save()
+                job_category.personnel_classes.set(pcs)
+
 
         for name in ['Conitea']:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
@@ -252,8 +258,8 @@ class Setup(object):
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
 
-            jc.required_qualifications = [qual]
-            jc.save()
+            jc.required_qualifications.set([qual])
+
 
         labour_event_meta.create_groups()
 

@@ -24,7 +24,7 @@ class Connection(models.Model):
         verbose_name='Desuprofiilin käyttäjänimi',
     )
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
         verbose_name='Käyttäjä',
     )
 
