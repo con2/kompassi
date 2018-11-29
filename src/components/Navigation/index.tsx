@@ -11,26 +11,25 @@ import {
     UncontrolledDropdown,
 } from 'reactstrap';
 
-import './Navigation.css';
+import './index.css';
 
 
 
-interface IState {
+interface NavigationState {
     isOpen: boolean;
 }
 
 
-export default class Example extends React.Component<{}, IState> {
+export default class Navigation extends React.Component<{}, NavigationState> {
     constructor(props: {}) {
         super(props);
 
-        this.toggle = this.toggle.bind(this);
         this.state = {
             isOpen: false
         };
     }
 
-    public render() {
+    render() {
         return (
             <div>
                 <Navbar color="dark" dark={true} expand="md" id="kompassi-navbar">
@@ -62,7 +61,7 @@ export default class Example extends React.Component<{}, IState> {
         );
     }
 
-    private toggle() {
+    private toggle = () => {
         this.setState({
             isOpen: !this.state.isOpen
         });

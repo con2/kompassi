@@ -1,9 +1,12 @@
-# Kompassi Event Management System – New UI
+# Kompassi Event Management System – New UI
 
 ## Getting started
 
-    npm install
-    npm start
+    git clone git@github.com:tracon/kompassi
+    git clone git@github.com:tracon/kompassi2
+
+    cd kompassi2
+    docker-compose up
 
 ## License
 
