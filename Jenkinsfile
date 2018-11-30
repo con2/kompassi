@@ -50,17 +50,15 @@ node {
   }
 
   stage("Static") {
-    node {
-      sh """
-        docker build \
-          --build-arg KOMPASSI_IMAGE=${tempImage} \
-          --tag ${tempStaticImage} \
-          --file Dockerfile.static . && \
-        docker push ${tempStaticImage} && \
-        docker tag ${tempStaticImage} ${finalStaticImage} && \
-        docker push ${finalStaticImage}
-      """
-    }
+    sh """
+      docker build \
+        --build-arg KOMPASSI_IMAGE=${tempImage} \
+        --tag ${tempStaticImage} \
+        --file Dockerfile.static . && \
+      docker push ${tempStaticImage} && \
+      docker tag ${tempStaticImage} ${finalStaticImage} && \
+      docker push ${finalStaticImage}
+    """
   }
 
   stage("Setup") {
