@@ -47,6 +47,6 @@
                 input.btn.btn-success(type='submit', name='confirm', value='Vahvista osallistuminen')
 
 
-include labour_profile_signup_cancel_modal
-for message in signup.person_messages
-  include labour_profile_message_modal
+  include labour_profile_signup_cancel_modal
+  for message in signup.person_messages
+    include labour_profile_message_modal
