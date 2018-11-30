@@ -76,7 +76,7 @@ class BadgesTestCase(TestCase):
         assert badge.job_title == jc1.name
 
         jc2, unused = JobCategory.get_or_create_dummy(name='Hitman')
-        signup.job_categories_accepted = [jc2]
+        signup.job_categories_accepted.set([jc2])
         signup.save()
         signup.apply_state()
 
@@ -195,7 +195,7 @@ class BadgesTestCase(TestCase):
         assert badge.personnel_class == signup.personnel_classes.get()
 
         # Now cancel the worker signup and make sure they go back to having a programme badge
-        signup.personnel_classes = []
+        signup.personnel_classes.set([])
         signup.job_categories_accepted = []
         signup.state = 'cancelled'
         signup.save()
@@ -217,7 +217,7 @@ class BadgesTestCase(TestCase):
         assert badge.personnel_class == signup.personnel_classes.get()
 
         # Now cancel the worker signup and make sure they go back to having a programme badge
-        signup.personnel_classes = []
+        signup.personnel_classes.set([])
         signup.job_categories_accepted = []
         signup.state = 'cancelled'
         signup.save()
