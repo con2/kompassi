@@ -1,3 +1,5 @@
+def appName = "kompassi"
+
 def imageMap = [
   "development": "staging",
   "master": "latest"
@@ -12,26 +14,26 @@ def environmentNameMap = [
   "development": "staging"
 ]
 
+def environmentName = environmentNameMap[env.BRANCH_NAME]
+def namespace = "${appName}-${environmentName}"
+
 def tag = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
-def tempImage = "tracon/kompassi:${tag}"
-def finalImage = "tracon/kompassi:${imageMap[env.BRANCH_NAME]}"
+def tempImage = "tracon/${appName}:${tag}"
+def finalImage = "tracon/${appName}:${imageMap[env.BRANCH_NAME]}"
 
-def tempStaticImage = "tracon/kompassi-static:${tag}"
-def finalStaticImage = "tracon/kompassi-static:${imageMap[env.BRANCH_NAME]}"
-
-def environmentName = environmentNameMap[env.BRANCH_NAME]
+def tempStaticImage = "tracon/${appName}-static:${tag}"
+def finalStaticImage = "tracon/${appName}-static:${imageMap[env.BRANCH_NAME]}"
 
 
-stage("Build") {
-  node {
+
+node {
+  stage("Build") {
     checkout scm
     sh "docker build --tag ${tempImage} ."
   }
-}
 
-stage("Test") {
-  node {
+  stage("Test") {
     sh """
       docker run \
         --rm \
@@ -42,51 +44,48 @@ stage("Test") {
         python manage.py test --keepdb
     """
   }
-}
 
-stage("Push") {
-  node {
+  stage("Push") {
     sh "docker tag ${tempImage} ${finalImage} && docker push ${finalImage} && docker push ${tempImage}"
   }
-}
 
-stage("Static") {
-  node {
-    sh """
-      docker build \
-        --build-arg KOMPASSI_IMAGE=${tempImage} \
-        --tag ${tempStaticImage} \
-        --file Dockerfile.static . && \
-      docker push ${tempStaticImage} && \
-      docker tag ${tempStaticImage} ${finalStaticImage} && \
-      docker push ${finalStaticImage}
-    """
+  stage("Static") {
+    node {
+      sh """
+        docker build \
+          --build-arg KOMPASSI_IMAGE=${tempImage} \
+          --tag ${tempStaticImage} \
+          --file Dockerfile.static . && \
+        docker push ${tempStaticImage} && \
+        docker tag ${tempStaticImage} ${finalStaticImage} && \
+        docker push ${finalStaticImage}
+      """
+    }
   }
-}
 
   stage("Setup") {
     if (env.BRANCH_NAME == "development") {
       sh """
         kubectl delete job/setup \
-          -n kompassi-${environmentName} \
+          -n ${namespace} \
           --ignore-not-found && \
         emrichen kubernetes/jobs/setup.in.yml \
           -f kubernetes/${environmentName}.vars.yml \
-          -D edegal_tag=${tag} | \
-        kubectl apply -n kompassi-${environmentName} -f -
+          -D ${appName}_tag=${tag} | \
+        kubectl apply -n ${namespace} -f - && \
+        kubectl wait --for condition=complete -n ${namespace} job/setup
       """
     }
   }
 
-stage("Deploy") {
-  node {
+  stage("Deploy") {
     if (env.BRANCH_NAME == "development") {
       // Kubernetes deployment
       sh """
         emrichen kubernetes/template.in.yml \
           -f kubernetes/${environmentName}.vars.yml \
-          -D kompassi_tag=${tag} | \
-        kubectl apply -n kompassi-${environmentName} -f -
+          -D ($appName}_tag=${tag} | \
+        kubectl apply -n ${namespace} -f -
       """
     } else {
       // Legacy deployment
@@ -101,10 +100,8 @@ stage("Deploy") {
       """
     }
   }
-}
 
-stage("Cleanup") {
-  node {
+  stage("Cleanup") {
     sh """
       docker rmi ${tempStaticImage} && \
       docker rmi ${tempImage}
