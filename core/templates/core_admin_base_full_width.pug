@@ -1,12 +1,12 @@
 extends base
 block content_full_width
   .container-fluid
-    include core_messages.pug
+    include core_messages
     h2 {{ admin_title }}
     .admin-row
       .admin-col.admin-menu
         ul.nav.nav-pills.nav-stacked
-          include core_admin_menu_items.pug
+          include core_admin_menu_items
       .admin-col.admin-main
         block admin_content
       .admin-col.admin-side-bar

@@ -6,15 +6,15 @@ block profile_content
   if future_programmes.exists
     h3 {% trans "Future programmes" %}
     for programme in future_programmes
-      include programme_profile_box.pug
+      include programme_profile_box
   if past_programmes.exists
     h3 {% trans "Past programmes" %}
     for programme in past_programmes
-      include programme_profile_box.pug
+      include programme_profile_box
   if rejected_programmes.exists
     h3 {% trans "Cancelled and rejected programmes" %}
     for programme in rejected_programmes
-      include programme_profile_box.pug
+      include programme_profile_box
   if no_programmes
     h3 {% trans "No programmes" %}
     p {% trans "You have not organized any programme in events that use this site." %}

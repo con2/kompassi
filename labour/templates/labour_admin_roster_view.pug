@@ -4,10 +4,10 @@ block title
   | Työvoimatarpeet ja työvuorot
 block content_full_width
   .nav.nav-tabs
-    include core_admin_menu_items.pug
+    include core_admin_menu_items
 
   #labour-admin-roster-view
-    include labour_admin_roster_views/Roster.pug
+    include labour_admin_roster_views/Roster
 block extra_scripts
   link(rel='stylesheet', href='{% static "labour/css/roster.css" %}')
   script.

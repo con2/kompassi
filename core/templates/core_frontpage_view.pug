@@ -3,11 +3,11 @@ extends base
 block full_title
   | {{ settings.KOMPASSI_INSTALLATION_NAME }}
 block content_full_width
-  include core_frontpage_carousel.pug
+  include core_frontpage_carousel
 
   .container
-    include core_messages.pug
-    include core_event_boxen.pug
+    include core_messages
+    include core_event_boxen
 
     p.text-muted
       a.kompassi-icon-space-right(href='{% url "core_events_view" %}') {% trans "Browse all events" %} &raquo;

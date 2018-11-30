@@ -1,6 +1,6 @@
 .panel.panel-default
   .panel-heading
-    include labour_signup_panel_heading.pug
+    include labour_signup_panel_heading
   if signup.is_active
     .panel-body
       p.help-block {{ signup.state_description }}
@@ -9,7 +9,7 @@
         .col-md-9: {{ signup.created_at|date:"SHORT_DATETIME_FORMAT" }}
       .row
         .col-md-3: label {{ signup.job_categories_label }}:
-        .col-md-9: include labour_profile_job_category_labels.pug
+        .col-md-9: include labour_profile_job_category_labels
       if signup.info_links.exists
         .row
           .col-md-3: label Työvoimaohjeet:
@@ -29,8 +29,8 @@
             for granted_privilege in signup.granted_privileges
               div: a(href='{{ granted_privilege.privilege.get_absolute_url }}') {{ granted_privilege.privilege.title }}
 
-    include labour_profile_shifts_table.pug
-    include labour_profile_message_table.pug
+    include labour_profile_shifts_table
+    include labour_profile_message_table
 
     if signup.applicant_has_actions
       .panel-footer.clearfix
@@ -47,6 +47,6 @@
                 input.btn.btn-success(type='submit', name='confirm', value='Vahvista osallistuminen')
 
 
-include labour_profile_signup_cancel_modal.pug
+include labour_profile_signup_cancel_modal
 for message in signup.person_messages
-  include labour_profile_message_modal.pug
+  include labour_profile_message_modal

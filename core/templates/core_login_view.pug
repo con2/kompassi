@@ -27,4 +27,4 @@ block content
             a(href='{% url "core_registration_view" %}?next={{ next|urlencode }}').btn.btn-success {% trans "Sign up" %}
 
     if 'desuprofile_integration' in settings.INSTALLED_APPS
-      include desuprofile_integration_login_box.pug
+      include desuprofile_integration_login_box

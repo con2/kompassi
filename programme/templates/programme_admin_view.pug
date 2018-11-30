@@ -98,7 +98,7 @@ block admin_content
             td: a(href='{% url "programme_admin_detail_view" event.slug programme.pk %}') {{ programme.title }}
             td {{ programme.formatted_hosts }}
             td
-              include programme_state_label.pug
+              include programme_state_label
 
     .panel-footer.clearfix
       .btn-group.pull-right

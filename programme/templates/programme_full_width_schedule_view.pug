@@ -4,9 +4,9 @@ block title
   | Ohjelmakartta
 block content_full_width
   .container-fluid
-    include core_messages.pug
-    include programme_schedule_admin_public_warning.pug
-    include programme_schedule_tabs.pug
-    include programme_schedule_fragment.pug
+    include core_messages
+    include programme_schedule_admin_public_warning
+    include programme_schedule_tabs
+    include programme_schedule_fragment
 block extra_scripts
   script(src='{% static "schedule.js" %}')

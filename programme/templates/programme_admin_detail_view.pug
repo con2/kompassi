@@ -7,15 +7,15 @@ block title
     | Ohjelmanumeron tiedot
 block content_full_width
   .container
-    include core_messages.pug
+    include core_messages
 
     .nav.nav-tabs
-      include core_admin_menu_items.pug
+      include core_admin_menu_items
 
     for overlapping_programme in overlapping_programmes
       .alert.alert-warning Päällekkäinen ohjelmanumero: <a href='{% url "programme_admin_detail_view" event.slug overlapping_programme.id %}'>{{ overlapping_programme.title }}</a> ({{ overlapping_programme.formatted_times }})
 
-    include programme_admin_detail_views/pager.pug
+    include programme_admin_detail_views/pager
 
     ul.nav.nav-tabs
       for tab in tabs
@@ -29,13 +29,13 @@ block content_full_width
       button.btn.btn-success.hidden(type='submit', name='action', value='save-edit') {% trans "Save and continue" %}
 
       .tab-content.kompassi-slight-space-above
-        include programme_admin_detail_views/programme_tab.pug
-        include programme_admin_detail_views/schedule_tab.pug
-        include programme_admin_detail_views/internal_tab.pug
-        include programme_admin_detail_views/hosts_tab.pug
-        include programme_admin_detail_views/feedback_tab.pug
+        include programme_admin_detail_views/programme_tab
+        include programme_admin_detail_views/schedule_tab
+        include programme_admin_detail_views/internal_tab
+        include programme_admin_detail_views/hosts_tab
+        include programme_admin_detail_views/feedback_tab
 
-    include programme_admin_detail_views/invitation_modal.pug
-    include programme_admin_detail_views/freeform_host_modal.pug
-    include programme_admin_detail_views/change_host_role_modals.pug
-    include programme_admin_detail_views/change_invitation_role_modals.pug
+    include programme_admin_detail_views/invitation_modal
+    include programme_admin_detail_views/freeform_host_modal
+    include programme_admin_detail_views/change_host_role_modals
+    include programme_admin_detail_views/change_invitation_role_modals

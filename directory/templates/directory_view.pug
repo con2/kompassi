@@ -27,8 +27,8 @@ block content
           .col-md-3.text-right: strong {% trans "Event" %}
           .col-md-9
             - with event_filters as filters
-              include core_filter_labels.pug
-              include core_filter_hidden_input.pug
+              include core_filter_labels
+              include core_filter_hidden_input
 
   .panel.panel-default
     .panel-heading: strong {% trans "Search results" %}

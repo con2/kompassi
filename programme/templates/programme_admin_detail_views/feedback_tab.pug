@@ -4,7 +4,7 @@
   .panel.panel-default
     .panel-heading: strong {% trans "Programme feedback" %}
     if feedback.exists
-      include programme_feedback_table.pug
+      include programme_feedback_table
     .panel-footer.clearfix
       .btn-group.pull-right
         if programme.is_open_for_feedback

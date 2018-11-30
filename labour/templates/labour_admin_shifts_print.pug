@@ -8,6 +8,6 @@ html
       h1 {{ title|safe }}
       p {% blocktrans with now=now %}Printed {{ now }}.{% endblocktrans %}
     article
-      include labour_admin_shifts_table.pug
+      include labour_admin_shifts_table
     footer
       p {% blocktrans with num_total_shifts=num_total_shifts count num_shifts=shifts.count %}Showing one shift (total {{ num_total_shifts}}).{% plural %}Showing {{ num_shifts}} shifts (total {{ num_total_shifts }}).{% endblocktrans %}

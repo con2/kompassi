@@ -16,7 +16,7 @@ block content
           img(src='{{ organization.logo_url }}', alt='{{ organization.name }}', width='100%')
 
   if organization.membership_organization_meta
-    include membership_organization_box.pug
+    include membership_organization_box
     hr
 
   .kompassi-event-boxen
@@ -26,18 +26,18 @@ block content
         .row
           for event in current_events_row
             .col-md-3
-              include core_event_box.pug
+              include core_event_box
     if future_events_rows
       h3 Yhdistyksen tulevat tapahtumat
       for future_events_row in future_events_rows
         .row
           for event in future_events_row
             .col-md-3
-              include core_event_box.pug
+              include core_event_box
     if past_events_rows
       h3 Yhdistyksen menneet tapahtumat
       for past_events_row in past_events_rows
         .row
           for event in past_events_row
             .col-md-3
-              include core_event_box.pug
+              include core_event_box

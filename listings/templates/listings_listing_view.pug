@@ -9,13 +9,13 @@ block content
   if current_events
     h2 {% trans "Events currently in progress" %}
     - with current_events as events
-      include listings_event_list.pug
+      include listings_event_list
 
   if show_future_events_heading
     h2 {% trans "Upcoming events" %}
   if future_events
     - with future_events as events
-      include listings_event_list.pug
+      include listings_event_list
 
 
   if past_events_by_year
@@ -23,4 +23,4 @@ block content
     for year, past_events in past_events_by_year
       h3= year
       - with past_events as events
-        include listings_event_list.pug
+        include listings_event_list

@@ -3,8 +3,8 @@ extends base.pug
 block title
   | Ohjelmakartta
 block content
-  include programme_schedule_admin_public_warning.pug
-  include programme_schedule_tabs.pug
-  include programme_schedule_fragment.pug
+  include programme_schedule_admin_public_warning
+  include programme_schedule_tabs
+  include programme_schedule_fragment
 block extra_scripts
   script(src='{% static "schedule.js" %}')

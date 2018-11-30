@@ -40,17 +40,17 @@ block content
   if involvement_in_current_events
     h3 {% trans "Involvement in current events" %}
     for involvement in involvement_in_current_events
-      include directory_event_involvement_box.pug
+      include directory_event_involvement_box
 
   if involvement_in_future_events
     h3 {% trans "Involvement in future events" %}
     for involvement in involvement_in_future_events
-      include directory_event_involvement_box.pug
+      include directory_event_involvement_box
 
   if involvement_in_past_events
     h3 {% trans "Involvement in past events" %}
     for involvement in involvement_in_past_events
-      include directory_event_involvement_box.pug
+      include directory_event_involvement_box
 
   if membership
     h3 {% trans "Organization membership" %}

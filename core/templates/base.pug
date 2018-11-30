@@ -29,25 +29,25 @@ html
               if event.homepage_url
                 li: a(href='{{ event.homepage_url }}') {{ event.name_genitive }} kotisivuille
             else
-              include core_navbar_event.pug
+              include core_navbar_event
           ul.nav.navbar-nav.navbar-right
             if not login_page
-              include core_navbar_language.pug
-              include core_navbar_user.pug
+              include core_navbar_language
+              include core_navbar_user
 
     #wrap
-      include core_page_wizard_progress_bar.pug
+      include core_page_wizard_progress_bar
 
       block content_full_width
         .container.content
-          include core_messages.pug
+          include core_messages
 
           block content
 
       #push
 
     if 'feedback' in settings.INSTALLED_APPS and not login_page
-      include feedback_widget.pug
+      include feedback_widget
 
     footer
       .container

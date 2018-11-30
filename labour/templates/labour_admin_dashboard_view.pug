@@ -39,7 +39,7 @@ block admin_content
       .panel.panel-default
         .panel-heading: strong Viimeisimmät ilmoittautuneet
         table.table.table-striped
-          include labour_admin_signup_table_contents.pug
+          include labour_admin_signup_table_contents
         .panel-footer.clearfix
           .pull-right
             strong: a(href='{% url "labour_admin_signups_view" event.slug %}') Kaikki tapahtumaan ilmoittautuneet henkilöt...

@@ -3,24 +3,24 @@ extends core_admin_base
 block title
   | {{ signup.person.full_name }}
 block admin_content
-  include labour_admin_signup_views/pager.pug
-  include labour_admin_signup_views/tabs.pug
+  include labour_admin_signup_views/pager
+  include labour_admin_signup_views/tabs
 
   form(method='POST', role='form').form-horizontal
     //- To catch Enter button presses
     input.btn.btn-success.hidden(type='submit', name='save-edit', value='Tallenna ja jatka')
 
     .tab-content.kompassi-slight-space-above
-      include labour_admin_signup_views/state_tab.pug
-      include labour_admin_signup_views/person_tab.pug
-      include labour_admin_signup_views/application_tab.pug
-      include labour_admin_signup_views/messages_tab.pug
-      include labour_admin_signup_views/shifts_tab.pug
-      include labour_admin_signup_views/history_tab.pug
+      include labour_admin_signup_views/state_tab
+      include labour_admin_signup_views/person_tab
+      include labour_admin_signup_views/application_tab
+      include labour_admin_signup_views/messages_tab
+      include labour_admin_signup_views/shifts_tab
+      include labour_admin_signup_views/history_tab
 
   for message in signup.person_messages
-    include labour_profile_message_modal.pug
-  include labour_admin_signup_views/pager.pug
+    include labour_profile_message_modal
+  include labour_admin_signup_views/pager
 
 block extra_scripts
   script.

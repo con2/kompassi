@@ -23,29 +23,29 @@ block content
             img(src='{{ event.either_logo_url }}', alt='{{ event.name }}', width='100%')
 
     if event.enrollment_event_meta
-      include enrollment_event_box.pug
+      include enrollment_event_box
       hr
 
     if event.labour_event_meta
-      include labour_event_box.pug
+      include labour_event_box
       hr
 
     if event.programme_event_meta
-      include programme_event_box.pug
+      include programme_event_box
       hr
 
     if event.tickets_event_meta
-      include tickets_event_box.pug
+      include tickets_event_box
       hr
 
     if event.badges_event_meta
-      include badges_event_box.pug
+      include badges_event_box
       hr
 
     if event.sms_event_meta
-      include sms_event_box.pug
+      include sms_event_box
       hr
 
     if event.intra_event_meta
-      include intra_event_box.pug
+      include intra_event_box
       hr

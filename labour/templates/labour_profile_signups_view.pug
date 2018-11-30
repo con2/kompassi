@@ -5,11 +5,11 @@ block profile_content
   if signups_current_events.exists
     h3 Työskentely parhaillaan käynnissä olevissa tapahtumissa
     for signup in signups_current_events
-      include labour_profile_signup_box.pug
+      include labour_profile_signup_box
   if signups_future_events.exists
     h3 Hakemukset tuleviin tapahtumiin
     for signup in signups_future_events
-      include labour_profile_signup_box.pug
+      include labour_profile_signup_box
   if signups_past_events.exists
     h3 Työskentelyhistoria
     if person.allow_work_history_sharing
@@ -17,7 +17,7 @@ block profile_content
     else
       p.help-block Et ole sallinut <a href='{% url "core_profile_view" %}'>profiilissasi</a> koko työskentelyhistoriasi näyttämistä niille tapahtumille, joihin haet töihin. Työvoimavastaava näkee ainoastaan työskentelyhistoriasi saman järjestäjätahon järjestämissa tapahtumissa.
     for signup in signups_past_events
-      include labour_profile_historic_signup.pug
+      include labour_profile_historic_signup
   if no_signups
     h3 Ei työvoima&shy;hakemuksia
     p Et ole hakenut töihin yhteenkään {{ settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE }} työvoiman&shy;hallintaa käyttävään tapahtumaan.

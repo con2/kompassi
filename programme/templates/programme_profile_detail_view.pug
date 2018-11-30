@@ -9,7 +9,7 @@ block profile_content
     {{ sired_invitation_formset.management_form }}
     .panel.panel-default
       .panel-heading
-        include programme_panel_heading.pug
+        include programme_panel_heading
       .panel-body {% crispy form %}
 
     if signup_extra_form

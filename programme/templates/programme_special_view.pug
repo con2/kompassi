@@ -1,7 +1,7 @@
 extends base.pug
 block content
-  include programme_schedule_admin_public_warning.pug
-  include programme_schedule_tabs.pug
+  include programme_schedule_admin_public_warning
+  include programme_schedule_tabs
   .descriptions
     h2 Ohjelmakartan ulkopuolinen ohjelma
 
@@ -9,6 +9,6 @@ block content
       .panel.panel-default
         .panel-heading: strong Suodata ohjelmaa
         .panel-body
-          include programme_list_filters.pug
+          include programme_list_filters
 
-    include programme_list.pug
+    include programme_list

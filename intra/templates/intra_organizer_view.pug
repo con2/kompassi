@@ -4,11 +4,11 @@ block title
   {% trans "Teams and organizers" %}
 block content_full_width
   .container
-    include core_messages.pug
+    include core_messages
 
     if is_intra_admin
       .nav.nav-tabs
-        include core_admin_menu_items.pug
+        include core_admin_menu_items
 
     if unassigned_organizers
       .panel.panel-danger
@@ -92,14 +92,14 @@ block content_full_width
                   td= team_member.person.normalized_phone_number
                   if is_intra_admin
                     td
-                      include intra_admin_team_member_actions.pug
+                      include intra_admin_team_member_actions
           .panel-footer.clearfix
-            include intra_admin_team_actions.pug
+            include intra_admin_team_actions
             p.text-muted
               {% blocktrans count num_members=team.members.count %}One member.{% plural %}{{ num_members }} members.{% endblocktrans %}
         else
           .panel-footer.clearfix
-            include intra_admin_team_actions.pug
+            include intra_admin_team_actions
             p.text-muted {% trans "This team has no members." %}
 
     .clearfix(style='margin-bottom: 1em')

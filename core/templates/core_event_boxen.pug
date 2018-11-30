@@ -6,14 +6,14 @@
       .row
         for event in current_events_row
           .col-md-3
-            include core_event_box.pug
+            include core_event_box
   if future_events_rows
     h2 {% trans "Upcoming events" %}
     for future_events_row in future_events_rows
       .row
         for event in future_events_row
           .col-md-3
-            include core_event_box.pug
+            include core_event_box
   if past_events_rows_by_year
     h2 {% trans "Past events" %}
     for year, past_events_rows in past_events_rows_by_year
@@ -22,4 +22,4 @@
         .row
           for event in past_events_row
             .col-md-3
-              include core_event_box.pug
+              include core_event_box

@@ -18,7 +18,7 @@
               td
                 for label_class, label_text, label_title in signup.personnel_class_labels
                   span.label(class='{{ label_class }}', title='{{ label_title }}') {{ label_text }}
-              td: include labour_profile_job_category_labels.pug
+              td: include labour_profile_job_category_labels
               td {{ signup.job_title }}
 
       .panel-footer.clearfix
