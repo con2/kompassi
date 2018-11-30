@@ -474,7 +474,7 @@ class Setup(object):
             )
 
             if not product.limit_groups.exists():
-                product.limit_groups = limit_groups
+                product.limit_groups.set(limit_groups)
                 product.save()
 
         if not meta.receipt_footer:
