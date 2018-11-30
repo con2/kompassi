@@ -138,7 +138,7 @@ class Setup(object):
             )
 
             if pc_afterparty and created:
-                personnel_class.perks = [self.afterparty_perk]
+                personnel_class.perks.set([self.afterparty_perk])
                 personnel_class.save()
 
         # v33
