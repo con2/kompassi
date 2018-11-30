@@ -83,7 +83,7 @@ class ProgrammeSignupExtraTestCase(TestCase):
         assert signup_extra.is_active
 
         signup.personnel_classes.set([])
-        signup.job_categories_accepted = []
+        signup.job_categories_accepted.set([])
         signup.state = 'cancelled'
         assert not signup.is_active
         signup.save()

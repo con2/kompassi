@@ -196,7 +196,7 @@ class BadgesTestCase(TestCase):
 
         # Now cancel the worker signup and make sure they go back to having a programme badge
         signup.personnel_classes.set([])
-        signup.job_categories_accepted = []
+        signup.job_categories_accepted.set([])
         signup.state = 'cancelled'
         signup.save()
         signup.apply_state()
@@ -218,7 +218,7 @@ class BadgesTestCase(TestCase):
 
         # Now cancel the worker signup and make sure they go back to having a programme badge
         signup.personnel_classes.set([])
-        signup.job_categories_accepted = []
+        signup.job_categories_accepted.set([])
         signup.state = 'cancelled'
         signup.save()
         signup.apply_state()
