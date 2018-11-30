@@ -82,7 +82,7 @@ node {
       sh """
         emrichen kubernetes/template.in.yml \
           -f kubernetes/${environmentName}.vars.yml \
-          -D ($appName}_tag=${tag} | \
+          -D ${appName}_tag=${tag} | \
         kubectl apply -n ${namespace} -f -
       """
     } else {
