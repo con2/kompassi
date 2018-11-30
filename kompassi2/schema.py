@@ -1,12 +1,12 @@
 from graphene_django import DjangoObjectType
 import graphene
 
-from core.models import Event
+from core.models import Event as EventModel
 
 
-class User(DjangoObjectType):
+class Event(DjangoObjectType):
     class Meta:
-        model = Event
+        model = EventModel
 
 
 class Query(graphene.ObjectType):
@@ -14,7 +14,7 @@ class Query(graphene.ObjectType):
 
     @graphene.resolve_only_args
     def resolve_events(self):
-        return UserModel.objects.all()
+        return EventModel.objects.all()
 
 
 schema = graphene.Schema(query=Query)
