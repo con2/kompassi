@@ -372,7 +372,7 @@ class Signup(models.Model, CsvExportMixin):
             signup.job_categories.set([job_category])
 
         if accepted:
-            signup.job_categories_accepted = signup.job_categories.all()
+            signup.job_categories_accepted.set(signup.job_categories.all())
             signup.personnel_classes.add(signup.job_categories.first().personnel_classes.first())
             signup.state = 'accepted'
             signup.save()
