@@ -478,8 +478,8 @@ class Product(models.Model):
             )
         )
 
-        dummy.limit_groups = limit_groups
-        dummy.save()
+        if created:
+            dummy.limit_groups.set(limit_groups)
 
         return dummy, created
 

@@ -368,9 +368,8 @@ class Signup(models.Model, CsvExportMixin):
         job_category, unused = JobCategory.get_or_create_dummy()
 
         signup, created = Signup.objects.get_or_create(person=person, event=event)
-        extra = signup.signup_extra
-        signup.job_categories = [job_category]
-        extra.save()
+        if created:
+            signup.job_categories.set([job_category])
 
         if accepted:
             signup.job_categories_accepted = signup.job_categories.all()
