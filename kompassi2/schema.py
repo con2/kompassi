@@ -1,20 +1,23 @@
 from graphene_django import DjangoObjectType
-import graphene
+from graphene_django.filter.fields import DjangoFilterConnectionField
+from graphene import Schema, Node, ObjectType
 
-from core.models import Event as EventModel
+from core.models import Event
 
 
-class Event(DjangoObjectType):
+class EventNode(DjangoObjectType):
     class Meta:
-        model = EventModel
+        model = Event
+        interfaces = (Node, )
+        filter_fields = {
+            "start_time": ["gte"],
+            "end_time": ["lt"],
+        }
 
 
-class Query(graphene.ObjectType):
-    events = graphene.List(Event)
-
-    @graphene.resolve_only_args
-    def resolve_events(self):
-        return EventModel.objects.all()
+class Query(ObjectType):
+    event = Node.Field(EventNode)
+    all_events = DjangoFilterConnectionField(EventNode)
 
 
-schema = graphene.Schema(query=Query)
+schema = Schema(query=Query)
