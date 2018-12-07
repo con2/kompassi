@@ -6,7 +6,7 @@ from labour.models import SignupExtraBase
 class SignupExtra(SignupExtraBase):
     want_certificate = models.BooleanField(
         default=False,
-        verbose_name='Haluan todistuksen työskentelystäni Popcult Dayssa',
+        verbose_name='Haluan todistuksen työskentelystäni Popcult Helsingissä',
     )
 
     special_diet = models.ManyToManyField(
