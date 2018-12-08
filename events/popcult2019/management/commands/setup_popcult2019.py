@@ -28,7 +28,7 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_payments()
         self.setup_intra()
 
@@ -173,7 +173,7 @@ class Setup(object):
             admin_group=tickets_admin_group,
             due_days=14,
             shipping_and_handling_cents=0,
-            reference_number_template="2019{:05d}",
+            reference_number_template="2019{:06d}",
             contact_email='Popcult Helsinki <liput@popcult.fi>',
             ticket_free_text=
                 "Tämä on sähköinen lippusi Popcult Helsinki 2019 -tapahtumaan. Sähköinen lippu vaihdetaan\n"
@@ -211,18 +211,18 @@ class Setup(object):
         ordering.counter = 0
 
         for product_info in [
-            # dict(
-            #     name='Popcult Helsinki 2019 -lippu',
-            #     description='Yksi pääsylippu Popcult Helsinki -tapahtumaan lauantaille 12.5.2018. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.',
-            #     limit_groups=[
-            #         limit_group('Pääsyliput', 800),
-            #     ],
-            #     price_cents=1400,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
+            dict(
+                name='Viikonloppulippu: Popcult Helsinki 2019',
+                description='Pääsylippu Popcult Helsinki -tapahtumaan Marina Congress Centeriin 11.-12.5.2019. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.',
+                limit_groups=[
+                    limit_group('Pääsyliput', 1800),
+                ],
+                price_cents=2900,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
 
             # dict(
             #     name='Kahden lipun tarjouspaketti Popcult Helsinkihin 2018',
