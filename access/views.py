@@ -59,7 +59,7 @@ def access_profile_privilege_view(request, privilege_slug):
         privilege=potential_privilege,
     )
 
-    return render(request, 'access_profile_privilege_view.jade', vars)
+    return render(request, 'access_profile_privilege_view.pug', vars)
 
 
 @person_required
