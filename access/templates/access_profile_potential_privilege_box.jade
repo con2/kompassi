@@ -1,0 +1,16 @@
+.panel.panel-default
+  .panel-heading
+    .kompassi-anchor-wrap
+      a.kompassi-anchor(id='privilege-{{ granted_privilege.privilege.id }}')
+      strong= privilege.title
+  .panel-body
+    {{ privilege.description|safe }}
+    {{ privilege.disclaimers|safe }}
+  .panel-footer
+    if request.user.person.is_email_verified
+      form(action='{% url "access_profile_request_privilege_view" privilege.slug %}', method='POST')
+        {% csrf_token %}
+        input.btn.btn-success(type='submit', value='Pyydä käyttöoikeutta')
+    else
+      button.btn.disabled(disabled) Pyydä käyttöoikeutta
+      strong.text-danger &emsp;Käyttöoikeuden pyytäminen edellyttää <a href='{% url "core_email_verification_request_view" %}'>vahvistettua sähköposti&shy;osoitetta</a>.

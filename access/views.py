@@ -40,6 +40,29 @@ def access_profile_privileges_view(request):
 
 
 @person_required
+def access_profile_privilege_view(request, privilege_slug):
+    person = request.user.person
+    privilege = get_object_or_404(Privilege, slug=privilege_slug)
+
+    granted_privilege = person.granted_privileges.filter(privilege=privilege).first()
+    potential_privilege = Privilege.get_potential_privileges(person, id=privilege.id).first()
+
+    if not granted_privilege and not potential_privilege:
+        messages.error(request, (
+            'Et voi tällä hetkellä hankkia tätä käyttöoikeutta itsepalveluna. '
+            'Mikäli epäilet tässä olevan virheen, ota yhteys käyttöoikeudesta vastaavan tapahtuman järjestäjiin.'
+        ))
+        return redirect('access_profile_privileges_view')
+
+    vars = dict(
+        granted_privilege=granted_privilege,
+        privilege=potential_privilege,
+    )
+
+    return render(request, 'access_profile_privilege_view.jade', vars)
+
+
+@person_required
 @require_POST
 def access_profile_request_privilege_view(request, privilege_slug):
     if not request.user.person.is_email_verified:

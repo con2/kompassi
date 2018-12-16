@@ -1,0 +1,11 @@
+extends core_profile_base
+block title
+  | Käyttöoikeudet
+block profile_content
+  if granted_privilege
+    h3 Sinulle on jo myönnetty tämä käyttöoikeus
+    include access_profile_granted_privilege_box
+
+  if privilege
+    h3 Pyydä käyttöoikeutta
+    include access_profile_potential_privilege_box
