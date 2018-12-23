@@ -1,19 +1,19 @@
-# -*- coding: utf-8 -*-
 import io
 import logging
-
 import os
 import re
+
 from babel.messages import mofile, pofile, Catalog
 from babel.messages.extract import extract, extract_javascript, extract_python
 from django.apps import apps
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.encoding import force_text
-from django.utils.translation.trans_real import templatize
+from django.utils.translation import templatize
 from pypugjs import Compiler, process
 
-ACCEPTABLE_FILENAMES_RE = re.compile("^.*\.(js|py|jade|html)$", re.I)
+
+ACCEPTABLE_FILENAMES_RE = re.compile("^.*\.(js|py|pug|html)$", re.I)
 
 
 def extract_template(fileobj, keywords, comment_tags, options):
