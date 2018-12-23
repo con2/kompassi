@@ -1,5 +1,15 @@
+import logging
+from functools import lru_cache
+from itertools import chain
+
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.db.transaction import atomic
+
+from core.models import Person
+
+
+logger = logging.getLogger('kompassi')
 
 
 IDENTICAL_FIELDS_REQUIRED_FOR_MERGE = (
@@ -12,6 +22,33 @@ IDENTICAL_FIELDS_REQUIRED_FOR_MERGE = (
 
 def make_key(person):
     return tuple(getattr(person, field.lower()) for field in IDENTICAL_FIELDS_REQUIRED_FOR_MERGE)
+
+
+@lru_cache()
+def get_reference_fields(related_model=Person):
+    '''
+    Returns ForeignKeys, OneToOneFields and ManyToManyFields that reference the given model.
+    '''
+    reference_fields = []
+
+    for content_type in ContentType.objects.all():
+        ModelClass = content_type.model_class()
+
+        if not ModelClass:
+            # wtf is south.migrationhistory still doing in our database?
+            logger.warning('get_reference_fields: ContentType without ModelClass: %s.%s', content_type.app_label, content_type.name)
+            continue
+
+        meta = ModelClass._meta
+
+        if meta.proxy or meta.abstract:
+            continue
+
+        for field in meta.get_fields():
+            if field.concrete and not field.auto_created and field.related_model is related_model:
+                reference_fields.append((ModelClass, field))
+
+    return reference_fields
 
 
 def possible_merges(people):
@@ -62,21 +99,31 @@ def compare_persons(left, right):
     return cmp(left.pk, right.pk)
 
 
+@atomic
 def merge_people(people_to_merge, into):
     for mergee in people_to_merge:
-        assert mergee.user is None
+        if mergee.user and into.user:
+            merge(mergee.user, into.user)
 
-        for app_label, model_name in [
-            ('badges', 'badge'),
-            ('labour', 'personqualification'),
-            ('labour', 'signup'),
-            ('mailings', 'personmessage'),
-            ('programme', 'programmerole'),
-            ('membership', 'membership'),
-        ]:
-            if app_label in settings.INSTALLED_APPS:
-                Model = ContentType.objects.get_by_natural_key(app_label, model_name).model_class()
-                Model.objects.filter(person=mergee).update(person=into)
+        merge(mergee, into)
 
-        # All references are updated, so this should be safe
-        mergee.delete()
+
+def merge(mergee, into):
+    '''
+    Updates all references to `mergee` to point to `into` and deletes `mergee`.
+    '''
+    ModelClass = mergee._meta.model
+    assert into._meta.model is ModelClass, 'thou shalt not merge instances of different models'
+
+    for RelatedModel, field in get_reference_fields(ModelClass):
+        if field.many_to_many:
+            RelatedModel = getattr(RelatedModel, field.name).through
+
+        criteria = {field.name: mergee}
+        update = {field.name: into}
+
+        logger.debug('Updating %s by %r with %r', RelatedModel, criteria, update)
+
+        RelatedModel.objects.filter(**criteria).update(**update)
+
+    mergee.delete()
