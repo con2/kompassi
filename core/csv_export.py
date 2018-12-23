@@ -119,7 +119,7 @@ def write_header_row(event, writer, fields, m2m_mode='separate_columns'):
 
 
 def get_m2m_choices(event, field):
-    target_model = field.rel.to
+    target_model = field.related_model
     cache_key = (event.id, target_model._meta.app_label, target_model._meta.model_name)
 
     if cache_key not in get_m2m_choices.cache:
