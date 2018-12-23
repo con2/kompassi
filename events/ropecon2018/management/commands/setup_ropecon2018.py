@@ -153,15 +153,10 @@ class Setup(object):
 
             if pc_afterparty and created:
                 personnel_class.perks.set([self.afterparty_perk])
-                personnel_class.save()
-
             if pc_one_food and created:
-                personnel_class.perks = [self.one_food_perk]
-                personnel_class.save()
-
+                personnel_class.perks.set([self.one_food_perk])
             if pc_two_foods and created:
-                personnel_class.perks = [self.two_foods_perk]
-                personnel_class.save()
+                personnel_class.perks.set([self.two_foods_perk])
 
         tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
         ylityovoima = PersonnelClass.objects.get(event=self.event, slug='ylityovoima')
