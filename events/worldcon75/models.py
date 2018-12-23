@@ -56,7 +56,3 @@ class SignupExtra(SignupExtraBase):
     def get_form_class(cls):
         from .forms import SignupExtraForm
         return SignupExtraForm
-
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError()

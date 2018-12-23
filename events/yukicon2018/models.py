@@ -1,9 +1,6 @@
-# encoding: utf-8
-
 from django.db import models
 
 from labour.models import SignupExtraBase
-from labour.querybuilder import QueryBuilder, add_prefix
 
 
 # NIGHT_WORK_CHOICES = [
@@ -164,7 +161,3 @@ class SignupExtra(SignupExtraBase):
     def get_programme_form_class(cls):
         from .forms import ProgrammeSignupExtraForm
         return ProgrammeSignupExtraForm
-
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError()

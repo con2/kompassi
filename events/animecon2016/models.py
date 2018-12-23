@@ -1,11 +1,7 @@
-# encoding: utf-8
-
 from django.db import models
 
-from labour.models import ObsoleteSignupExtraBaseV1
-from labour.querybuilder import QueryBuilder, add_prefix
-
 from core.utils import validate_slug
+from labour.models import ObsoleteSignupExtraBaseV1
 
 
 TOTAL_WORK_CHOICES = [
@@ -103,14 +99,9 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         from .forms import SignupExtraForm
         return SignupExtraForm
 
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError()
-
     @property
     def formatted_lodging_needs(self):
         return "\n".join("{night}: {need}".format(
             night=night.name,
             need='Tarvitsee lattiamajoitusta' if self.lodging_needs.filter(pk=night.pk).exists() else 'Ei tarvetta lattiamajoitukselle',
         ) for night in Night.objects.all())
-

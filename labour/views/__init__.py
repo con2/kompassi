@@ -28,11 +28,6 @@ from .labour_admin_startstop_view import labour_admin_startstop_view
 from .labour_survey_view import labour_survey_view
 from .labour_mail_editor_view import labour_admin_mail_editor_view
 
-from .query_views import (
-    query_index,
-    query_exec,
-)
-
 from .api_views import (
     labour_api_job_categories_view,
     labour_api_job_category_view,

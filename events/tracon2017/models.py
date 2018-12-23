@@ -237,9 +237,6 @@ class SignupExtra(SignupExtraBase):
         from .forms import ProgrammeSignupExtraForm
         return ProgrammeSignupExtraForm
 
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError()
 
     @property
     def formatted_lodging_needs(self):

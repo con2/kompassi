@@ -1,9 +1,6 @@
-# encoding: utf-8
-
 from django.db import models
 
 from labour.models import ObsoleteSignupExtraBaseV1
-from labour.querybuilder import QueryBuilder, add_prefix
 
 
 SHIFT_TYPE_CHOICES = [
@@ -107,7 +104,3 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
     def get_form_class(cls):
         from .forms import SignupExtraForm
         return SignupExtraForm
-
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError()

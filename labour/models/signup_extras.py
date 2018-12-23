@@ -13,10 +13,6 @@ class SignupExtraMixin(object):
     def get_programme_form_class(cls):
         return cls.get_form_class()
 
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError('Query builder not implemented for this event')
-
     @classmethod
     def get_shirt_size_field(cls):
         return cls.get_field('shirt_size', None)

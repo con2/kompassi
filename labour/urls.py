@@ -27,8 +27,6 @@ from .views import (
     labour_qualifications_view,
     labour_signup_view,
     labour_survey_view,
-    query_exec,
-    query_index,
 )
 
 
@@ -168,17 +166,6 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/specialdiets/?$',
         labour_admin_special_diets_view,
         name='labour_admin_special_diets_view'
-    ),
-
-    url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/query$',
-        query_index,
-        name='labour_admin_query'
-    ),
-    url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/query/data$',
-        query_exec,
-        name='labour_admin_query_exec'
     ),
 
     url(

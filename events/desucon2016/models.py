@@ -121,10 +121,6 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
     def get_form_class(cls):
         raise NotImplementedError()
 
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError()
-
 
 class SignupExtraV2(SignupExtraBase):
     shift_type = models.CharField(
@@ -202,7 +198,3 @@ class SignupExtraV2(SignupExtraBase):
     def get_programme_form_class(cls):
         from .forms import ProgrammeSignupExtraForm
         return ProgrammeSignupExtraForm
-
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError()

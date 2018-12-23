@@ -1,13 +1,7 @@
-# encoding: utf-8
-
-
-
 from django.db import models
 
-from labour.models import ObsoleteSignupExtraBaseV1, SignupExtraBase
-from labour.querybuilder import QueryBuilder, add_prefix
-
 from core.utils import validate_slug
+from labour.models import ObsoleteSignupExtraBaseV1, SignupExtraBase
 
 
 SHIRT_SIZES = [
@@ -162,9 +156,6 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         from .forms import SignupExtraForm
         return SignupExtraForm
 
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError()
 
     @property
     def formatted_lodging_needs(self):
@@ -327,9 +318,6 @@ class SignupExtraV2(SignupExtraBase):
         from .forms import ProgrammeSignupExtraForm
         return ProgrammeSignupExtraForm
 
-    @staticmethod
-    def get_query_class():
-        raise NotImplementedError()
 
     @property
     def formatted_lodging_needs(self):

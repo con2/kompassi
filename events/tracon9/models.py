@@ -1,9 +1,6 @@
-# encoding: utf-8
-
 from django.db import models
 
 from labour.models import ObsoleteSignupExtraBaseV1
-from labour.querybuilder import QueryBuilder, add_prefix
 
 
 SHIRT_SIZES = [
@@ -137,42 +134,9 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         from .forms import SignupExtraForm
         return SignupExtraForm
 
-    @staticmethod
-    def get_query_class():
-        return Signup9
-
     @property
     def formatted_lodging_needs(self):
         return "\n".join("{night}: {need}".format(
             night=night.name,
             need='Tarvitsee lattiamajoitusta' if self.lodging_needs.filter(pk=night.pk).exists() else 'Ei tarvetta lattiamajoitukselle',
         ) for night in Night.objects.all())
-
-
-class Signup9(QueryBuilder):
-    model = SignupExtra
-    query_related_exclude = {
-        "signup": ("event",),
-    }
-    query_related_filter = {
-        "signup": "*",
-        "signup__person": ("birth_date",),
-    }
-    view_related_filter = {
-        "signup__person": ("first_name", "surname", "nick", "birth_date", "email", "phone",),
-    }
-    default_views = [
-        "signup__person__first_name",
-        "signup__person__surname",
-        "signup__person__nick",
-    ]
-    view_groups = (
-        ("Henkilötiedot", add_prefix("signup__person__", (
-            "surname", "first_name", "nick", "phone", "email", "birth_date"))),
-        ("Sisäiset", add_prefix("signup__", (
-            "state", "job_categories_accepted__pk", "notes", "created_at", "updated_at"))),
-        ("Työvuorotoiveet", "signup__job_categories__pk", "shift_type", "total_work", "construction", "overseer"),
-        ("Työtodistus", "want_certificate", "certificate_delivery_address"),
-        ("Lisätiedot", "shirt_size", "special_diet__pk", "special_diet_other",
-            "lodging_needs__pk", "prior_experience", "free_text"),
-    )
