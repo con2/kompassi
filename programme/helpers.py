@@ -70,6 +70,6 @@ def programme_admin_required(view_func):
 def group_programmes_by_start_time(programmes):
     programmes_by_start_time = groupby_strict(programmes, lambda p: p.start_time)
     return [
-        (start_time, None, programmes)
+        (start_time, None, [(programme, None) for programme in programmes])
         for (start_time, programmes) in programmes_by_start_time
     ]
