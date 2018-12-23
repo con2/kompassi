@@ -423,7 +423,7 @@ class Person(models.Model):
 
     @classmethod
     def is_user_person(cls, user):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
         else:
             return Person.objects.filter(user=user).exists()

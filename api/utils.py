@@ -102,7 +102,7 @@ def api_login_required(view_func):
     @wraps(view_func)
     @http_basic_auth
     def _decorator(request, *args, **kwargs):
-        if (not request.user.is_anonymous()) and (
+        if (not request.user.is_anonymous) and (
             request.user.is_superuser or
             request.user.groups.filter(name=settings.KOMPASSI_APPLICATION_USER_GROUP).exists()
         ):
