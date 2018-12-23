@@ -91,14 +91,15 @@ def programme_admin_view(request, vars, event, format='screen'):
 
         return render(request, 'programme_admin_view.pug', vars)
     elif format in CSV_EXPORT_FORMATS:
-        filename = "{event.slug}_programmes_{timestamp}.xlsx".format(
+        filename = "{event.slug}_programmes_{timestamp}.{format}".format(
             event=event,
             timestamp=timezone.now().strftime('%Y%m%d%H%M%S'),
+            format=format,
         )
 
         return csv_response(event, Programme, programmes,
             m2m_mode='comma_separated',
-            dialect='xlsx',
+            dialect=CSV_EXPORT_FORMATS[format],
             filename=filename,
         )
     elif format == 'html':
