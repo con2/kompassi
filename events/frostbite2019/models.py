@@ -149,7 +149,7 @@ class SignupExtra(SignupExtraBase):
         if self.shirt_type == 'NO_SHIRT':
             return 'Ei paitaa'
         else:
-            return next((name for (slug, name) in SHIRT_TYPES if slug == self.shirt_type), '')
+            return next((name for (slug, name) in SHIRT_SIZES if slug == self.shirt_size), '')
 
     def get_shirt_type_display(self):
         """
@@ -158,4 +158,4 @@ class SignupExtra(SignupExtraBase):
         if self.shirt_size == 'NO_SHIRT':
             return 'Ei paitaa'
         else:
-            return next((name for (slug, name) in SHIRT_SIZES if slug == self.shirt_size), '')
+            return next((name for (slug, name) in SHIRT_TYPES if slug == self.shirt_type), '')
