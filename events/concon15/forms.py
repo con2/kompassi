@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django import forms
 
 from core.utils import horizontal_form_helper
