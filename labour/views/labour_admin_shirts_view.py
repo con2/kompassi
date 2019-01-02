@@ -22,7 +22,7 @@ def labour_admin_shirts_view(request, vars, event):
     shirt_sizes = shirt_size_field.choices
 
     if shirt_type_field:
-        shirt_types = shirt_type_field.choices
+        shirt_types = [(slug, name) for (slug, name) in shirt_type_field.choices if slug not in ('NO_SHIRT', 'TOOLATE')]
     else:
         shirt_types = [('default', _('Paita'))]
 
@@ -31,6 +31,9 @@ def labour_admin_shirts_view(request, vars, event):
     shirt_type_totals = Counter()
     shirt_size_rows = []
     for shirt_size_slug, shirt_size_name in shirt_sizes:
+        if shirt_size_slug == 'NO_SHIRT':
+            continue
+
         num_shirts_by_shirt_type = []
         for shirt_type_slug, shirt_type_name in shirt_types:
             signup_extras = SignupExtra.objects.filter(**base_criteria).filter(shirt_size=shirt_size_slug)
