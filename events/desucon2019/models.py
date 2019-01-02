@@ -30,8 +30,10 @@ SHIRT_SIZES = [
 ]
 
 SHIRT_TYPES = [
+    ('NO_SHIRT', 'Ei paitaa'),
     ('STAFF', 'Staff'),
     ('DESURITY', 'Desurity'),
+    ('DESUTV', 'DesuTV'),
     ('KUVAAJA', 'Kuvaaja'),
     ('VENDOR', 'Myynti'),
     ('TOOLATE', 'Myöhästyi paitatilauksesta'),
@@ -135,3 +137,21 @@ class SignupExtra(SignupExtraBase):
     def get_programme_form_class(cls):
         from .forms import ProgrammeSignupExtraForm
         return ProgrammeSignupExtraForm
+
+    def get_shirt_size_display(self):
+        """
+        Emconsisten displayage of shirt type and size in onboarding view
+        """
+        if self.shirt_type == 'NO_SHIRT':
+            return 'Ei paitaa'
+        else:
+            return next((name for (slug, name) in SHIRT_TYPES if slug == self.shirt_type), '')
+
+    def get_shirt_type_display(self):
+        """
+        Emconsisten displayage of shirt type and size in onboarding view
+        """
+        if self.shirt_size == 'NO_SHIRT':
+            return 'Ei paitaa'
+        else:
+            return next((name for (slug, name) in SHIRT_SIZES if slug == self.shirt_size), '')
