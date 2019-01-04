@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django import forms
 
 from crispy_forms.layout import Layout, Fieldset
@@ -42,7 +40,6 @@ class SignupExtraForm(forms.ModelForm):
 
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
-            lodging_needs=forms.CheckboxSelectMultiple,
         )
 
 
@@ -113,6 +110,4 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
     def get_excluded_m2m_field_defaults(self):
-        return dict(
-            lodging_needs=[],
-        )
+        return dict()
