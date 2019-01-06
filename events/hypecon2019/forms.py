@@ -16,6 +16,7 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset('Lisätiedot',
+                'want_certificate',
                 'shirt_size',
                 'special_diet',
                 'special_diet_other',
@@ -27,6 +28,7 @@ class SignupExtraForm(forms.ModelForm):
     class Meta:
         model = SignupExtra
         fields = (
+            'want_certificate',
             'shirt_size',
             'special_diet',
             'special_diet_other',

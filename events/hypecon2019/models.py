@@ -41,6 +41,11 @@ class SpecialDiet(SimpleChoice):
 
 
 class SignupExtra(SignupExtraBase):
+    want_certificate = models.BooleanField(
+        default=False,
+        verbose_name='Haluan todistuksen työskentelystäni Hypeconissa',
+    )
+
     shirt_size = models.CharField(
         max_length=8,
         choices=SHIRT_SIZES,
