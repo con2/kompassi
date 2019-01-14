@@ -111,3 +111,30 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict()
+
+
+class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super(ProgrammeSignupExtraForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'special_diet',
+            'special_diet_other',
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            'special_diet',
+            'special_diet_other',
+        )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+        )
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            free_text='Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta',
+        )
