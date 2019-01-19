@@ -33,6 +33,20 @@ class SMTPServer(models.Model):
         related_name='smtp_servers',
     )
 
+    ssh_server = models.CharField(
+        max_length=255,
+        verbose_name=_('SSH server'),
+        blank=True,
+        help_text=(
+            'If set, whenever the SMTP passwords for this server are changed, Kompassi will SSH to the server '
+            'and write the password file on the server.'
+        ),
+    )
+    ssh_port = models.IntegerField(default=22)
+    ssh_username = models.CharField(max_length=255, blank=True)
+    password_file_path_on_server = models.CharField(max_length=255, blank=True)
+    trigger_file_path_on_server = models.CharField(max_length=255, blank=True)
+
     def __str__(self):
         return self.hostname
 
@@ -49,10 +63,6 @@ class SMTPServer(models.Model):
         return '\n'.join(lines)
 
     def push_smtppasswd_file(self):
-        if not hasattr(settings, 'KOMPASSI_SMTP_SSH_SERVER'):
-            logger.warning('KOMPASSI_SMTP_SSH_SERVER not set, not pushing smtppaswd file for %s', self)
-            return
-
         if 'background_tasks' in settings.INSTALLED_APPS:
             from ..tasks import smtp_server_push_smtppasswd_file
             smtp_server_push_smtppasswd_file.delay(self.id)
@@ -65,20 +75,22 @@ class SMTPServer(models.Model):
         # do this early in order not to fail while connected
         contents = self.get_smtppasswd_file_contents()
 
+        pkey = RSAKey.from_private_key_file(settings.KOMPASSI_SSH_PRIVATE_KEY_FILE)
+
         with SSHClient() as client:
-            client.load_host_keys(settings.KOMPASSI_SMTP_SSH_KNOWN_HOSTS_FILE)
+            client.load_host_keys(settings.KOMPASSI_SSH_KNOWN_HOSTS_FILE)
             client.connect(
-                hostname=settings.KOMPASSI_SMTP_SSH_SERVER,
-                port=settings.KOMPASSI_SMTP_SSH_PORT,
-                username=settings.KOMPASSI_SMTP_SSH_USERNAME,
-                pkey=RSAKey.from_private_key_file(settings.KOMPASSI_SMTP_SSH_PRIVATE_KEY_FILE),
+                hostname=self.ssh_server,
+                port=self.ssh_port,
+                username=self.ssh_username,
+                pkey=pkey,
             )
 
             with client.open_sftp() as sftp_client:
-                with sftp_client.file(settings.KOMPASSI_SMTP_PASSWORD_FILE, 'w') as output_file:
+                with sftp_client.file(self.password_file_path_on_server, 'w') as output_file:
                     output_file.write(contents.encode('UTF-8'))
 
-                with sftp_client.file(settings.KOMPASSI_SMTP_TRIGGER_FILE, 'w') as trigger_file:
+                with sftp_client.file(self.trigger_file_path_on_server, 'w') as trigger_file:
                     pass
 
         logger.info('Successfully pushed smtppasswd file for %s', self)

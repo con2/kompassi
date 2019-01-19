@@ -14,6 +14,8 @@ services:
     volumes:
       - .:/usr/src/app
       - web-media:/usr/src/app/media
+      - /Users/sapaj1/.ssh/known_hosts:/known_hosts
+      - /Users/sapaj1/.ssh/id_rsa_smtppasswd:/id_rsa
     environment:
       PYTHONUNBUFFERED: 1
       DEBUG: 1
@@ -32,6 +34,8 @@ services:
       - memcache
     volumes:
       - .:/usr/src/app:ro
+      - /Users/sapaj1/.ssh/known_hosts:/known_hosts
+      - /Users/sapaj1/.ssh/id_rsa_smtppasswd:/id_rsa
     environment:
       PYTHONUNBUFFERED: 1
       DEBUG: 1

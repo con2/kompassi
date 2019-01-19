@@ -128,6 +128,10 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
         if settings.DEBUG:
             smtp_server, created = SMTPServer.objects.get_or_create(
                 hostname='sakataki.ext.b2.fi',
+                ssh_server='neula.kompassi.eu',
+                ssh_username='japsu',
+                password_file_path_on_server='/home/japsu/smtppasswd',
+                trigger_file_path_on_server='/home/japsu/000trigger',
             )
 
             if created:
