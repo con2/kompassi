@@ -427,3 +427,13 @@ if 'listings' in INSTALLED_APPS:
         'conit.fi': 'listings.site_urlconfs.conit_fi',
         'animecon.fi': 'listings.site_urlconfs.animecon_fi',
     }
+
+
+if env('KOMPASSI_SMTP_SSH_SERVER', default=''):
+    KOMPASSI_SMTP_SSH_SERVER = env('KOMPASSI_SMTP_SSH_SERVER')
+    KOMPASSI_SMTP_SSH_PORT = env.int('KOMPASSI_SMTP_SSH_PORT', default=22)
+    KOMPASSI_SMTP_SSH_USERNAME = env('KOMPASSI_SMTP_SSH_USERNAME', default='kompassidata')
+    KOMPASSI_SMTP_SSH_PRIVATE_KEY_FILE = env('KOMPASSI_SMTP_SSH_PRIVATE_KEY_FILE', default='/id_rsa')
+    KOMPASSI_SMTP_SSH_KNOWN_HOSTS_FILE = env('KOMPASSI_SMTP_SSH_KNOWN_HOSTS_FILE', default='/known_hosts')
+    KOMPASSI_SMTP_PASSWORD_FILE = env('KOMPASSI_SMTP_PASSWORD_FILE', default='/home/kompassidata/v1/smtppasswd')
+    KOMPASSI_SMTP_TRIGGER_FILE = env('KOMPASSI_SMTP_TRIGGER_FILE', default='/home/kompassidata/v1/000trigger')

@@ -37,6 +37,8 @@ class SMTPPassword(models.Model):
             obj = cls(smtp_server=smtp_server, person=person, password_hash=hash_module.encrypt(pw))
             obj.save()
 
+        smtp_server.push_smtppasswd_file()
+
         return pw, obj
 
     def as_dict(self):
