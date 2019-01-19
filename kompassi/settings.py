@@ -151,7 +151,6 @@ INSTALLED_APPS = (
     # 'nexmo',
     'django_babel',
     'django_prometheus',
-    'graphene_django',
 
     'core',
     'programme',
@@ -175,7 +174,6 @@ INSTALLED_APPS = (
     'surveys',
     'directory',
     'listings',
-    'kompassi2',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -291,10 +289,6 @@ LOGIN_URL = '/login'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-GRAPHENE = dict(
-    SCHEMA='kompassi2.schema.schema',
-)
-
 # TODO script-src unsafe-inline needed at least by feedback.js. unsafe-eval needed by Knockout (roster.js).
 # XXX style-src unsafe-inline is just basic plebbery and should be eradicated.
 CSP_DEFAULT_SRC = "'none'"
@@ -383,11 +377,6 @@ if env('BROKER_URL', default=''):
 
     CELERY_TASK_SERIALIZER = 'json'
     CELERY_RESULT_SERIALIZER = 'json'
-
-
-if env('KOMPAQ_URL', default=''):
-    INSTALLED_APPS = INSTALLED_APPS + ('kompaq',)
-    KOMPAQ_URL = env('KOMPAQ_URL')
 
 
 if 'api' in INSTALLED_APPS:

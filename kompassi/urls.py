@@ -34,7 +34,6 @@ for app_name in [
     'surveys',
     'directory',
     'listings',
-    'kompassi2',
 ]:
     if app_name in settings.INSTALLED_APPS:
         urlpatterns.append(url(r'', include('{app_name}.urls'.format(app_name=app_name))))

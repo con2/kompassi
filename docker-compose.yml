@@ -19,7 +19,6 @@ services:
       DEBUG: 1
       DATABASE_URL: psql://kompassi:secret@postgres/kompassi
       BROKER_URL: amqp://guest:guest@rabbitmq/
-      KOMPAQ_URL: amqp://guest:guest@rabbitmq/
       CACHE_URL: memcache://memcache
       ALLOWED_HOSTS: '*'
   celery:
@@ -38,7 +37,6 @@ services:
       DEBUG: 1
       DATABASE_URL: psql://kompassi:secret@postgres/kompassi
       BROKER_URL: amqp://guest:guest@rabbitmq/
-      KOMPAQ_URL: amqp://guest:guest@rabbitmq/
       CACHE_URL: memcache://memcache
   postgres:
     # image: postgres
