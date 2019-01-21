@@ -154,9 +154,10 @@ class Enrollment(models.Model):
 
         return [
             # FIXME hideous hack
-            ', '.join(str(opt) for opt in getattr(self, field_name).all())
-            if isinstance(getattr(self.__class__, field_name, None), ManyToManyDescriptor)
-            else getattr(self, f'get_{field_name}_display', lambda: '')()
+            # ', '.join(str(opt) for opt in getattr(self, field_name).all())
+            # if isinstance(getattr(self.__class__, field_name, None), ManyToManyDescriptor)
+            # else
+            getattr(self, f'get_{field_name}_display', lambda: getattr(self, field_name))()
 
             for field_name in FormClass._meta.fields
         ]
