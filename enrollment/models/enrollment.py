@@ -86,6 +86,43 @@ class Enrollment(models.Model):
         help_text='Concon koostuu päivän luento- ja keskusteluohjelmasta sekä jatkosaunasta illalla.',
     )
 
+    personal_identification_number = models.CharField(
+        max_length=12,
+        verbose_name='Henkilötunnus',
+        help_text='Henkilötunnus luovutetaan kurssin järjestäjälle todistuksen kirjoittamista varten. Henkilötunnukset poistetaan tämän jälkeen järjestelmästä.',
+        blank=True,
+    )
+    address = models.CharField(
+        max_length=1023,
+        blank=True,
+        verbose_name='Katuosoite',
+    )
+    zip_code = models.CharField(
+        max_length=5,
+        blank=True,
+        verbose_name='Postinumero',
+    )
+    city = models.CharField(
+        max_length=127,
+        blank=True,
+        verbose_name='Postitoimipaikka',
+    )
+
+    traconjv_expiring = models.DateField(
+        verbose_name='Milloin nykyinen JV-korttisi on umpeutumassa?',
+        blank=True,
+        null=True,
+    )
+    traconjv_when = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name='Milloin olet käynyt järjestyksenvalvojan peruskoulutuksen?'
+    )
+    traconjv_solemnly_swear = models.BooleanField(
+        default=False,
+        verbose_name='Vakuutan antamani tiedot oikeiksi. Sitoudun maksamaan kurssin hinnan täysimääräisenä, mikäli en pysty osallistumaan kurssille ja/tai järjestyksenvalvojana Tracon 2019 -tapahtumaan.'
+    )
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('created at'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('updated at'))
 

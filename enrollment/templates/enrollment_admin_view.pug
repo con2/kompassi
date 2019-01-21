@@ -23,8 +23,11 @@ block content
       thead
         tr
           th {% trans "Surname" %}
-          th {% trans "First name" %}
-          th {% trans "Nick" %}
+          if event.enrollment_event_meta.is_official_name_required
+            th {% trans "Official first names" %}
+          else
+            th {% trans "First name" %}
+            th {% trans "Nick" %}
           th {% trans "E-mail address" %}
           th {% trans "Phone number" %}
           for header in meta.get_form_field_headers
@@ -34,8 +37,11 @@ block content
         for enrollment in enrollments
           tr
             td= enrollment.person.surname
-            td= enrollment.person.first_name
-            td= enrollment.person.nick
+            if event.enrollment_event_meta.is_official_name_required
+              td= enrollment.person.official_first_names
+            else
+              td= enrollment.person.first_name
+              td= enrollment.person.nick
             td= enrollment.person.email
             td= enrollment.person.normalized_phone_number
             for value in enrollment.get_form_field_values

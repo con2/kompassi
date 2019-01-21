@@ -15,6 +15,7 @@ from ..models import Enrollment
 @person_required
 def enrollment_enroll_view(request, event):
     meta = event.enrollment_event_meta
+    can_enroll = request.user.person.official_first_names or not meta.is_official_name_required
 
     if not meta.is_enrollment_open:
         if meta.is_user_admin(request.user):
@@ -44,7 +45,7 @@ def enrollment_enroll_view(request, event):
     EnrollmentForm = meta.form_class
     form = initialize_form(EnrollmentForm, request, instance=enrollment)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and can_enroll:
         action = request.POST['action']
 
         if action == 'save-return':
@@ -73,6 +74,7 @@ def enrollment_enroll_view(request, event):
 
     return render(request, 'enrollment_enroll_view.pug', dict(
         already_enrolled=already_enrolled,
+        can_enroll=can_enroll,
         enrollment=enrollment,
         event=event,
         form=form,
