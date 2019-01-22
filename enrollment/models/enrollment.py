@@ -110,6 +110,7 @@ class Enrollment(models.Model):
 
     traconjv_expiring = models.DateField(
         verbose_name='Milloin nykyinen JV-korttisi on umpeutumassa?',
+        help_text='Päivämäärä muodossa 24.2.1994 tai 1994-02-24',
         blank=True,
         null=True,
     )
