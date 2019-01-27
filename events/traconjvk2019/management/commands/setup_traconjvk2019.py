@@ -11,7 +11,7 @@ class Command(BaseCommand):
         from enrollment.models import EnrollmentEventMeta
 
         tz = tzlocal()
-        organization = Organization.objects.get(slug='tracon-ry'    )
+        organization = Organization.objects.get(slug='tracon-ry')
         venue, unused = Venue.objects.get_or_create(name='Ilmoitetaan myöhemmin')
         event, unused = Event.objects.get_or_create(
             slug='traconjvk2019',
