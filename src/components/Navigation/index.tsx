@@ -14,7 +14,6 @@ import {
 import './index.css';
 
 
-
 interface NavigationState {
     isOpen: boolean;
 }
@@ -32,7 +31,7 @@ export default class Navigation extends React.Component<{}, NavigationState> {
     render() {
         return (
             <div>
-                <Navbar color="dark" dark={true} expand="md" id="kompassi-navbar">
+                <Navbar color="dark" dark={true} expand="md" id="kompassi-navbar">
                     <NavbarBrand href="/">Kompassi <sup><small>v2 BETA</small></sup></NavbarBrand>
                     <NavbarToggler onClick={this.toggle} />
                     <Collapse isOpen={this.state.isOpen} navbar={true}>
