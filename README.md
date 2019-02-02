@@ -7,6 +7,7 @@
 
     cd kompassi2
     docker-compose up
+    open http://localhost:3000
 
 ## License
 

@@ -1,0 +1,17 @@
+.SchemaFormEditor-field {
+  margin-bottom: 1rem;
+}
+
+.SchemaFormEditor-background {
+  margin: -0.5rem;
+  padding: 0.5rem;
+  background-color: #f8f8f8;
+}
+
+.SchemaFormEditor-background .form-group + .form-group {
+  margin-bottom: 0;
+}
+
+.SchemaFormEditor-background .form-group {
+  margin-bottom: 0.5rem;
+}

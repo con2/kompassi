@@ -18,6 +18,16 @@ export interface Translations {
   SchemaForm: {
     submit: string;
   };
+  FormEditor: {
+    editField: string;
+    moveUp: string;
+    moveDown: string;
+    removeField: string;
+    addFieldAbove: string;
+    addField: string;
+    design: string;
+    preview: string;
+  };
 }
 
 const resources: i18n.Resource = { fi, en };

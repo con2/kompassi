@@ -1,23 +1,45 @@
-export type FieldType = 'Input' | 'TextArea';
+export type FieldType = 'SingleLineText' | 'MultiLineText' | 'Divider' | 'StaticText' | 'Spacer';
+
 
 interface BaseField {
   type: FieldType;
   name: string;
-  title: string;
+  title?: string;
   helpText?: string;
   required?: boolean;
+  readOnly?: boolean;
 }
 
 
-export interface Input extends BaseField {
-  type: 'Input';
+export interface SingleLineText extends BaseField {
+  type: 'SingleLineText';
 }
 
 
-export interface TextArea extends BaseField {
-  type: 'TextArea';
+export interface MultiLineText extends BaseField {
+  type: 'MultiLineText';
   rows?: number;
-  cols?: number;
 }
 
-export type Field = Input | TextArea;
+
+export interface Divider extends BaseField {
+  type: 'Divider';
+}
+
+export interface Spacer extends BaseField {
+  type: 'Spacer';
+}
+
+
+export interface StaticText extends BaseField {
+  type: 'StaticText';
+}
+
+
+export interface SingleLineText extends BaseField {
+  type: 'SingleLineText';
+}
+
+export type Field = SingleLineText | MultiLineText | Divider | Spacer | StaticText;
+
+export type Layout = 'horizontal' | 'vertical'; // TODO: inline

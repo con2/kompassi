@@ -1,20 +1,18 @@
 import React from 'react';
-import { NamespacesConsumer } from 'react-i18next';
 
-import Button from 'reactstrap/lib/Button';
-import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 import Col from 'reactstrap/lib/Col';
 import Form from 'reactstrap/lib/Form';
 import FormGroup from 'reactstrap/lib/FormGroup';
+import FormText from 'reactstrap/lib/FormText';
 import Input from 'reactstrap/lib/Input';
 import Label from 'reactstrap/lib/Label';
 
-import { Field, FieldType } from './models';
+import { Field, Layout } from './models';
 
 
 interface SchemaFormProps {
   fields: Field[];
-  layout?: 'vertical' | 'horizontal';
+  layout?: Layout;
   ns?: string[];
 }
 
@@ -23,43 +21,46 @@ interface SchemaFormState { }
 
 
 export default class SchemaForm extends React.PureComponent<SchemaFormProps, SchemaFormState> {
-  static defaultNamespace = 'SchemaForm';
-
   render() {
     const { layout } = this.props;
-    const ns = (this.props.ns || []).concat(['SchemaForm']);
 
     return (
-      <NamespacesConsumer ns={ns}>
-        {t => (
-          <Form className={layout === 'horizontal' ? 'form-horizontal' : ''}>
-            {this.props.fields.map(this.renderField)}
-
-            <ButtonGroup className="float-md-right">
-              <Button color="primary">{t('submit')}</Button>
-            </ButtonGroup>
-          </Form>
-        )}
-      </NamespacesConsumer>
+      <Form className={layout === 'horizontal' ? 'form-horizontal' : ''}>
+        {this.props.fields.map(field => <div key={field.name}>{this.renderField(field)}</div>)}
+        {this.props.children}
+      </Form>
     );
   }
 
-  renderField = (field: Field) => {
+  protected renderField(field: Field) {
     const { layout } = this.props;
-    const { name, title, helpText } = field;
+    const { type, name, helpText } = field;
+    const title = field.title || '';
+
+    if (type === 'StaticText' && !title) {
+      // Full-width static text
+      return <p>{helpText}</p>;
+    } else if (type === 'Divider') {
+      return <hr/>;
+    } else if (type === 'Spacer') {
+      return <div className="pb-3" />;
+    }
 
     switch (layout) {
       case 'horizontal':
         return (
-          <FormGroup key={name} className="row">
+          <FormGroup className="row">
             <Label for={name} className="col-md-3 col-form-label">{title}</Label>
-            <Col md={9}>{this.renderInput(field)}</Col>
+            <Col md={9}>
+              {this.renderInput(field)}
+              {helpText ? <FormText>{helpText}</FormText> : null}
+            </Col>
           </FormGroup>
         );
       case 'vertical':
       default:
         return (
-          <FormGroup key={name} className="row">
+          <FormGroup>
             <Label for={name}>{title}</Label>
             {this.renderInput(field)}
           </FormGroup>
@@ -67,12 +68,22 @@ export default class SchemaForm extends React.PureComponent<SchemaFormProps, Sch
     }
   }
 
-  renderInput = (field: Field) => {
+  protected renderInput(field: Field) {
+    const readOnly = this.isReadOnly(field);
+
     switch (field.type) {
-      case 'Input':
-        return <Input name={field.name} />;
-      case 'TextArea':
-        return <Input type="textarea" name={field.name} rows={field.rows || 10} />;
+      case 'SingleLineText':
+        return <Input name={field.name} readOnly={readOnly} />;
+      case 'MultiLineText':
+        return <Input name={field.name} readOnly={readOnly} type="textarea" rows={field.rows || 10} />;
+      case 'StaticText':
+        return <></>;
+      default:
+        throw new Error(`Not implemented: ${field.type}`);
     }
+  }
+
+  protected isReadOnly(field: Field) {
+    return !!field.readOnly;
   }
 }

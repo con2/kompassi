@@ -11,7 +11,17 @@ const translations: Translations = {
   },
   SchemaForm: {
     submit: 'Submit',
-  }
+  },
+  FormEditor: {
+    editField: 'Edit field',
+    moveUp: 'Move up',
+    moveDown: 'Move down',
+    removeField: 'Remove field',
+    addFieldAbove: 'Add field above',
+    addField: 'Add field',
+    design: 'Design',
+    preview: 'Preview',
+  },
 };
 
 export default translations;

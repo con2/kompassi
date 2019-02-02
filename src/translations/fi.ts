@@ -12,5 +12,15 @@ const translations: Translations = {
   SchemaForm: {
     submit: 'Lähetä',
   },
+  FormEditor: {
+    editField: 'Muokkaa kenttää',
+    moveUp: 'Siirrä ylös',
+    moveDown: 'Siirrä alas',
+    removeField: 'Poista kenttä',
+    addFieldAbove: 'Lisää kenttä ylle',
+    addField: 'Lisää kenttä',
+    design: 'Muokkaa',
+    preview: 'Esikatsele',
+  },
 };
 export default translations;

@@ -1,10 +1,13 @@
-import * as React from 'react';
+import React from 'react';
+import { NamespacesConsumer } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
+
+import Button from 'reactstrap/lib/Button';
+import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 
 import MainViewContainer from './MainViewContainer';
 import SchemaForm from './SchemaForm';
-import { Field } from './SchemaForm/models';
-
+import { Field, Layout } from './SchemaForm/models';
 
 
 interface FormViewRouterProps {
@@ -13,7 +16,7 @@ interface FormViewRouterProps {
 
 interface FormViewState {
   title?: string;
-  introductionText?: string;
+  layout: Layout;
   fields: Field[];
 }
 
@@ -21,31 +24,27 @@ interface FormViewState {
 export default class FormView extends React.Component<RouteComponentProps<FormViewRouterProps>, FormViewState> {
   state: FormViewState = {
     title: 'Dynaamine lomake höhöhö',
-    introductionText: 'Lorem ipsum höhöhö sit amet.\n\nWith paragraphs!',
-    fields: [
-      {
-        type: 'Input',
-        name: 'foo',
-        title: 'Foo',
-      },
-      {
-        type: 'TextArea',
-        name: 'bar',
-        title: 'Bar',
-      },
-    ],
+    layout: 'horizontal',
+    fields: [],
   };
 
   render() {
-    const { title, fields, introductionText } = this.state;
+    const { title, layout, fields } = this.state;
 
     return (
-      <MainViewContainer>
-        {title ? <h1>{title}</h1> : null}
-        {introductionText ? introductionText.split('\n\n').map((paragraph, index) => <p key={index}>{paragraph}</p>) : null}
-
-        <SchemaForm fields={fields} layout="horizontal" />
-      </MainViewContainer>
+      // TODO wrong namespace
+      <NamespacesConsumer ns={['SchemaForm']}>
+        {t => (
+          <MainViewContainer>
+            {title ? <h1>{title}</h1> : null}
+            <SchemaForm fields={fields} layout={layout}>
+              <ButtonGroup className="float-md-right">
+                <Button color="primary">{t('submit')}</Button>
+              </ButtonGroup>
+            </SchemaForm>
+          </MainViewContainer>
+        )}
+      </NamespacesConsumer>
     );
   }
 }
