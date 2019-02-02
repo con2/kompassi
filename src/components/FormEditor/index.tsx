@@ -11,15 +11,15 @@ import { Field } from '../SchemaForm/models';
 import './index.css';
 
 
-export default class SchemaFormEditor extends SchemaForm {
+export default class FormEditor extends SchemaForm {
   protected renderField(field: Field) {
     const { name } = field;
 
     return (
       <NamespacesConsumer key={name} ns={['FormEditor']}>
         {t => (
-          <div className="SchemaFormEditor-field">
-            <div className="SchemaFormEditor-background">
+          <div className="FormEditor-field">
+            <div className="FormEditor-background">
               <FormGroup>
                 <ButtonGroup className="mr-2">
                   <Button outline={true} color="primary" size="sm">{t('addFieldAbove')}…</Button>
