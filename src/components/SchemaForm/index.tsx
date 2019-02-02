@@ -20,7 +20,7 @@ interface SchemaFormProps {
 interface SchemaFormState { }
 
 
-export default class SchemaForm extends React.PureComponent<SchemaFormProps, SchemaFormState> {
+export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProps & OwnProps, SchemaFormState> {
   render() {
     const { layout } = this.props;
 
@@ -87,3 +87,6 @@ export default class SchemaForm extends React.PureComponent<SchemaFormProps, Sch
     return !!field.readOnly;
   }
 }
+
+
+export default class SchemaForm extends BaseSchemaForm<{}> {}

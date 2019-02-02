@@ -7,6 +7,10 @@ import fi from './fi';
 
 export interface Translations {
   [index: string]: i18n.ResourceKey;
+  Common: {
+    ok: string;
+    cancel: string;
+  };
   Event: {
     name: string;
     headline: string;
@@ -14,6 +18,10 @@ export interface Translations {
   Navigation: {
     logIn: string;
     logOut: string;
+  };
+  NotFound: {
+    notFoundHeader: string;
+    notFoundMessage: string;
   };
   SchemaForm: {
     submit: string;
@@ -27,6 +35,21 @@ export interface Translations {
     addField: string;
     design: string;
     preview: string;
+
+    FieldTypes: {
+      SingleLineText: string;
+      MultiLineText: string;
+      Divider: string;
+      StaticText: string;
+      Spacer: string;
+    };
+
+    RemoveFieldModal: {
+      title: string;
+      message: string;
+      yes: string;
+      no: string;
+    }
   };
 }
 

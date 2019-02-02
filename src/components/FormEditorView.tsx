@@ -3,21 +3,28 @@ import { NamespacesConsumer } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
 
 import Button from 'reactstrap/lib/Button';
+import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 import Form from 'reactstrap/lib/Form';
 import FormGroup from 'reactstrap/lib/FormGroup';
 import Input from 'reactstrap/lib/Input';
+import ListGroup from 'reactstrap/lib/ListGroup';
+import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import Nav from 'reactstrap/lib/Nav';
 import NavItem from 'reactstrap/lib/NavItem';
 import NavLink from 'reactstrap/lib/NavLink';
 
 import FormEditor from './FormEditor';
 import MainViewContainer from './MainViewContainer';
+import ManagedModal from './ManagedModal';
 import SchemaForm from './SchemaForm';
-import { Field, Layout } from './SchemaForm/models';
+import { Field, FieldType, fieldTypes, Layout } from './SchemaForm/models';
 
 
 type Tab = 'design' | 'preview';
 const tabs: Tab[] = ['design', 'preview'];
+
+
+export type FormEditorAction = 'addFieldAbove' | 'moveUp' | 'moveDown' | 'editField' | 'removeField';
 
 
 interface FormViewRouterProps {
@@ -30,7 +37,13 @@ interface FormViewState {
   layout: Layout;
 
   activeTab: Tab;
+  addingNewField: boolean;
+  fieldBeingEdited: Field;
 }
+
+
+class AddFieldModal extends ManagedModal<FieldType> {}
+class EditFieldModal extends ManagedModal<Field> {}
 
 
 export default class FormEditorView extends React.Component<RouteComponentProps<FormViewRouterProps>, FormViewState> {
@@ -65,13 +78,19 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     ],
     layout: 'horizontal',
     activeTab: 'design',
+    addingNewField: false,
+    fieldBeingEdited: { type: 'Divider', name: '' },
   };
 
+  addFieldModal: AddFieldModal | null = null;
+  editFieldModal: EditFieldModal | null = null;
+  removeFieldModal: ManagedModal<{}> | null = null;
+
   render() {
-    const { title, fields, activeTab, layout } = this.state;
+    const { title, fields, activeTab, layout, addingNewField } = this.state;
 
     return (
-      <NamespacesConsumer ns={['FormEditor']}>
+      <NamespacesConsumer ns={['FormEditor', 'Common']}>
         {t => (
           <MainViewContainer>
             <Nav tabs={true} className='mb-2'>
@@ -96,8 +115,8 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
                   </FormGroup>
                 </Form>
 
-                <FormEditor fields={fields} layout="horizontal">
-                  <Button outline={true} color="primary" size="sm">{t('addField')}…</Button>
+                <FormEditor fields={fields} layout="horizontal" onAction={this.onFormEditorAction}>
+                  <Button outline={true} color="primary" size="sm" onClick={this.addField}>{t('addField')}…</Button>
                 </FormEditor>
               </>
             ) : (
@@ -106,6 +125,51 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
                 <SchemaForm fields={fields} layout={layout} />
               </>
             )}
+
+            <AddFieldModal
+              title={t('addField')}
+              ref={(ref) => { this.addFieldModal = ref; }}
+              footer={(
+                <ButtonGroup className="float-right">
+                  <Button color="danger" outline={true} onClick={() => this.addFieldModal!.cancel()}>{t('Common:cancel')}</Button>
+                </ButtonGroup>
+              )}
+            >
+              <ListGroup>
+                {fieldTypes.map(fieldType => (
+                  <ListGroupItem
+                    tag="button"
+                    action={true}
+                    key={fieldType}
+                    onClick={() => this.addFieldModal!.ok(fieldType)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {t(`FieldTypes.${fieldType}`)}
+                  </ListGroupItem>
+                ))}
+              </ListGroup>
+            </AddFieldModal>
+
+            <EditFieldModal title={addingNewField ? t('addField') : t('editField')} ref={(ref) => { this.editFieldModal = ref; }}>
+              <p>Edit field</p>
+            </EditFieldModal>
+
+            <ManagedModal
+              ref={ref => { this.removeFieldModal = ref; }}
+              title={t('RemoveFieldModal.title')}
+              footer={(
+                <ButtonGroup className="float-right">
+                  <Button color="danger" onClick={() => this.removeFieldModal!.ok()}>
+                    {t('RemoveFieldModal.yes')}
+                  </Button>
+                  <Button color="secondary" outline={true} onClick={() => this.removeFieldModal!.cancel()}>
+                    {t('RemoveFieldModal.no')}
+                  </Button>
+                </ButtonGroup>
+              )}
+            >
+              <p>{t('RemoveFieldModal.message')}</p>
+            </ManagedModal>
           </MainViewContainer>
         )}
       </NamespacesConsumer>
@@ -115,5 +179,99 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
   onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const title = event.target.value;
     this.setState({ title });
+  }
+
+  onFormEditorAction = (action: FormEditorAction, fieldName: string) => {
+    switch(action) {
+      case 'addFieldAbove':
+        return this.addFieldAbove(fieldName);
+      case 'removeField':
+        return this.removeField(fieldName);
+      case 'moveUp':
+        return this.moveUp(fieldName);
+      case 'moveDown':
+        return this.moveDown(fieldName);
+    }
+  }
+
+  protected async addFieldAbove(fieldName: string) {
+    const { fields } = this.state;
+    const index = fields.findIndex(field => field.name === fieldName);
+
+    if (index < 0) {
+      throw new Error(`asked to addFieldAbove nonexistent ${fieldName}`);
+    }
+
+    const result = await this.getNewField();
+
+    if (result.ok) {
+      const newFields = fields.slice(0, index)
+        .concat(result.payload!)
+        .concat(fields.slice(index));
+
+      this.setState({ fields: newFields });
+    }
+  }
+
+  protected addField = async () => {
+    const { fields } = this.state;
+    const fieldTypeSelectionResult = await this.addFieldModal!.open();
+
+    if (!fieldTypeSelectionResult.ok) {
+      return;
+    }
+
+    const newFieldEditResult = await this.editFieldModal!.open();
+  }
+
+  protected async getNewField() {
+    const result = await this.addFieldModal!.open();
+
+    if (!result.ok) {
+      return { ok: false };
+    }
+
+    const newField = {
+      type: result.payload!,
+      name: '',
+    } as Field;
+
+    this.setState({ fieldBeingEdited: newField });
+
+    return this.editFieldModal!.open();
+  }
+
+  protected removeField = async (fieldName: string) => {
+    const { fields } = this.state;
+    const index = fields.findIndex(field => field.name === fieldName);
+
+    if (index < 0) {
+      throw new Error(`asked to remove nonexistent ${fieldName}`);
+    }
+
+    const result = await this.removeFieldModal!.open();
+
+    if (result.ok) {
+      const newFields = fields.slice(0, index).concat(fields.slice(index + 1));
+      this.setState({ fields: newFields });
+    }
+  }
+
+  protected moveUp(fieldName: string) {
+    const index = this.state.fields.findIndex(field => field.name === fieldName);
+    this.swapFields(index - 1, index);
+  }
+
+  protected moveDown(fieldName: string) {
+    const index = this.state.fields.findIndex(field => field.name === fieldName);
+    this.swapFields(index, index + 1);
+  }
+
+  protected swapFields(smallerIndex: number, largerIndex: number) {
+    const { fields } = this.state;
+    const newFields = fields.slice(0, smallerIndex)
+      .concat([fields[largerIndex], fields[smallerIndex]])
+      .concat(fields.slice(largerIndex + 1));
+    this.setState({ fields: newFields });
   }
 }

@@ -1,4 +1,5 @@
 export type FieldType = 'SingleLineText' | 'MultiLineText' | 'Divider' | 'StaticText' | 'Spacer';
+export const fieldTypes: FieldType[] = ['SingleLineText', 'MultiLineText', 'Divider', 'StaticText', 'Spacer'];
 
 
 interface BaseField {

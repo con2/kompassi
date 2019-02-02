@@ -28,6 +28,7 @@
       "always"
     ],
     "no-console": false,
-    "no-string-literal": false
+    "no-string-literal": false,
+    "max-classes-per-file": false
   }
 }
