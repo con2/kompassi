@@ -259,19 +259,18 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
 
   protected moveUp(fieldName: string) {
     const index = this.state.fields.findIndex(field => field.name === fieldName);
-    this.swapFields(index - 1, index);
+    this.swapWithNextField(index - 1);
   }
 
   protected moveDown(fieldName: string) {
     const index = this.state.fields.findIndex(field => field.name === fieldName);
-    this.swapFields(index, index + 1);
+    this.swapWithNextField(index);
   }
 
-  protected swapFields(smallerIndex: number, largerIndex: number) {
+  protected swapWithNextField(index: number) {
     const { fields } = this.state;
-    const newFields = fields.slice(0, smallerIndex)
-      .concat([fields[largerIndex], fields[smallerIndex]])
-      .concat(fields.slice(largerIndex + 1));
+    const newFields = fields.slice();
+    newFields.splice(index + 1, 0, newFields.splice(index, 1)[0]);
     this.setState({ fields: newFields });
   }
 }
