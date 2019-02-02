@@ -9,5 +9,8 @@ const translations: Translations = {
     logIn: 'Kirjaudu sisään',
     logOut: 'Kirjaudu ulos',
   },
+  SchemaForm: {
+    submit: 'Lähetä',
+  },
 };
 export default translations;

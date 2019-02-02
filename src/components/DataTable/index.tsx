@@ -10,7 +10,7 @@ import Session from '../SessionContext/Session';
 interface DataTableProps {
   endpoint: string;
   columns: string[];
-  namespaces?: string[];
+  ns?: string[];
 }
 
 interface DataTableState<ItemType> {
@@ -41,10 +41,10 @@ export default class DataTable<ItemType> extends React.PureComponent<DataTablePr
 
     const { columns } = this.props;
     const { items } = this.state;
-    const namespaces = this.props.namespaces ? this.props.namespaces.concat([this.defaultNamespace]) : [this.defaultNamespace];
+    const ns = this.props.ns ? this.props.ns.concat([this.defaultNamespace]) : [this.defaultNamespace];
 
     return (
-      <NamespacesConsumer ns={namespaces}>
+      <NamespacesConsumer ns={ns}>
         {(t) => (
           <Table>
             <thead>

@@ -9,6 +9,9 @@ const translations: Translations = {
     logIn: 'Log in',
     logOut: 'Log out',
   },
+  SchemaForm: {
+    submit: 'Submit',
+  }
 };
 
 export default translations;

@@ -13,8 +13,8 @@ class App extends React.Component {
       <div className='Application'>
         <Navigation />
         <Switch>
-          <Route exact={true} path="/" render={FrontPage} />
-          <Route path="/forms/:formSlug" render={() => <FormView />} />
+          <Route exact={true} path="/" component={FrontPage} />
+          <Route path="/forms/:formSlug" component={FormView} />
           <Route render={NotFound} />
         </Switch>
       </div>

@@ -12,7 +12,7 @@ export default () => (
     <DataTable
       endpoint="events"
       columns={['name', 'headline']}
-      namespaces={["Event"]}
+      ns={["Event"]}
     />
   </Container>
 );

@@ -7,9 +7,16 @@ import fi from './fi';
 
 export interface Translations {
   [index: string]: i18n.ResourceKey;
+  Event: {
+    name: string;
+    headline: string;
+  };
   Navigation: {
     logIn: string;
     logOut: string;
+  };
+  SchemaForm: {
+    submit: string;
   };
 }
 
