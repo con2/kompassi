@@ -269,8 +269,9 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
 
   protected swapWithNextField(index: number) {
     const { fields } = this.state;
-    const newFields = fields.slice();
-    newFields.splice(index + 1, 0, newFields.splice(index, 1)[0]);
+    const newFields = fields.slice(0, index)
+      .concat([fields[index + 1], fields[index]])
+      .concat(fields.slice(index + 2));
     this.setState({ fields: newFields });
   }
 }
