@@ -52,6 +52,15 @@ class EnrollmentEventMeta(EventMetaBase):
         )
     )
 
+    is_official_name_required = models.BooleanField(
+        default=False,
+        verbose_name=_('Official name required'),
+        help_text=_(
+            'If this option is selected, participants will be required to fill in their official names '
+            'in their profile.'
+        ),
+    )
+
     initial_state = models.CharField(
         default='ACCEPTED',
         choices=INITIAL_STATE_CHOICES,

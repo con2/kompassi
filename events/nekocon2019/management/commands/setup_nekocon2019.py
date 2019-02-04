@@ -29,8 +29,8 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        # self.setup_tickets()
-        # self.setup_payments()
+        self.setup_tickets()
+        self.setup_payments()
         self.setup_programme()
         self.setup_intra()
 
@@ -221,20 +221,18 @@ class Setup(object):
         defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
-            shipping_and_handling_cents=120,
-            reference_number_template="2015{:05d}",
-            contact_email='Nekocon (2019) <liput@nekocon.fi>',
-            ticket_free_text="Tämä on sähköinen lippusi Nekocon (2019) -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
+            shipping_and_handling_cents=0,
+            reference_number_template="2019{:06}",
+            contact_email='Nekocon (2019) <nekoconliput@gmail.com>',
+            ticket_free_text="Tämä on sähköinen lippusi vuoden 2019 Nekoconiin. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
                 "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
                 "lipunvaihtopisteessä.\n\n"
                 "Tervetuloa Nekocon (2019) -tapahtumaan!",
-            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Nekocon (2019) -tapahtumaan!</h2>"
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Nekoconiin!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                "<p>Lue lisää tapahtumasta <a href='http://2015.nekocon.fi'>Nekocon (2019) -tapahtuman kotisivuilta</a>.</p>"
-                "<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
-                "toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>liput@nekocon.fi</em>"
+                "<p>Lue lisää tapahtumasta <a href='http://nekocon.fi'>Nekoconin kotisivuilta</a>.</p>"
         )
 
         if self.test:
@@ -256,18 +254,18 @@ class Setup(object):
             return limit_group
 
         for product_info in [
-            # dict(
-            #     name='Nekocon (2019) -pääsylippu',
-            #     description='Viikonloppuranneke Kuopiossa järjestettävään Animecon-tapahtumaan. Huom. myynnissä vain viikonloppurannekkeita. Lippu lähetetään postitse.',
-            #     limit_groups=[
-            #         limit_group('Pääsyliput', 3000),
-            #     ],
-            #     price_cents=1600,
-            #     requires_shipping=True,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name='Nekocon (2019) -pääsylippu',
+                description='Viikonloppuranneke Kuopiossa järjestettävään vuoden 2019 Nekoconiin. Huom. myynnissä vain viikonloppurannekkeita. E-lippu vaihdetaan ovella rannekkeeseen.',
+                limit_groups=[
+                    limit_group('Pääsyliput', 3000),
+                ],
+                price_cents=2200,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
             # dict(
             #     name='Lattiamajoituspaikka (koko vkl)',
             #     description='Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',

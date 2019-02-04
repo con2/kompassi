@@ -19,20 +19,30 @@ block content
         .control-group
           label.control-label.col-md-2 {% trans "Surname" %}
           .col-md-10= request.user.person.surname
-      .row
-        .control-group
-          label.control-label.col-md-2 {% trans "First name" %}
-          .col-md-10= request.user.person.first_name
-      .row
-        .control-group
-          label.control-label.col-md-2 {% trans "Nick name" %}
-          .col-md-10= request.user.person.nick
-      .row
-        .control-group
-          label.control-label.col-md-2 {% trans "Name as displayed" %}
-          .col-md-10
-            div= request.user.person.display_name
-            .help-block {% trans "If your name is publicly displayed, this is how your name will be published. You can change the name display style in your profile." %}
+      if event.enrollment_event_meta.is_official_name_required
+        .row
+          .control-group
+            label.control-label.col-md-2 {% trans "Official first names" %}
+            .col-md-10
+              if request.user.person.official_first_names
+                |{{ request.user.person.official_first_names }}
+              else
+                .label.label-danger Viralliset etunimet puuttuvat
+      else
+        .row
+          .control-group
+            label.control-label.col-md-2 {% trans "First name" %}
+            .col-md-10= request.user.person.first_name
+        .row
+          .control-group
+            label.control-label.col-md-2 {% trans "Nick name" %}
+            .col-md-10= request.user.person.nick
+        .row
+          .control-group
+            label.control-label.col-md-2 {% trans "Name as displayed" %}
+            .col-md-10
+              div= request.user.person.display_name
+              .help-block {% trans "If your name is publicly displayed, this is how your name will be published. You can change the name display style in your profile." %}
       .row
         .control-group
           label.control-label.col-md-2 {% trans "Phone number" %}
@@ -47,11 +57,15 @@ block content
           i.fa.fa-edit.kompassi-icon-space-right
           | {% trans "Update profile..." %}
 
-      .text-muted {% trans "Please check your contact information and update your profile if necessary. By submitting this form you agree to these contact details being shared with the event organizer." %}
+      if can_enroll
+        p.text-muted {% trans "Please check your contact information and update your profile if necessary. By submitting this form you agree to these contact details being shared with the event organizer." %}
+      else
+        p.text-danger Ole hyvä ja täydennä profiiliisi puuttuvat tiedot, ja lataa tämä sivu sen jälkeen uudelleen.
 
   form(method='POST', role='form').form-horizontal
     //- Capture Enter presses
-    button.hidden(type='submit', name='action', value='save-return')
+    if can_enroll
+      button.hidden(type='submit', name='action', value='save-return')
 
     .panel.panel-default
       .panel-heading
@@ -70,9 +84,14 @@ block content
             button.btn.btn-danger(type='submit', name='action', value='cancel-enrollment')
               i.fa.fa-trash.kompassi-icon-space-right
               | Peru ilmoittautuminen
-          button.btn.btn-success(type='submit', name='action', value='save-return')
-            i.fa.fa-check.kompassi-icon-space-right
-            if already_enrolled
-              | Tallenna muutokset
-            else
-              | {% trans "Enroll" %}
+
+          if can_enroll
+            button.btn.btn-success(type='submit', name='action', value='save-return')
+              i.fa.fa-check.kompassi-icon-space-right
+              if already_enrolled
+                | Tallenna muutokset
+              else
+                | {% trans "Enroll" %}
+
+        if not can_enroll
+          p.text-danger Ennen kuin voit ilmoittautua tähän tapahtumaan, sinun täytyy päivittää täydentää profiilistasi puuttuvat tiedot.

@@ -57,12 +57,13 @@ The following services are required:
 
 * [kubernetes-secret-generator](https://github.com/mittwald/kubernetes-secret-generator)
 * [ingress-nginx](https://github.com/kubernetes/ingress-nginx) or some other ingress controller
+* [cert-manager](https://github.com/jetstack/cert-manager)
 
 Getting these deployed (eg. Docker for Mac):
 
     kubernetes/setup_prerequisites.sh
 
-The Kubernetes templates use [emrichen](https://github.com/japsu/emrichen) for substituting variables and reducing repetition.
+The Kubernetes templates use [emrichen](https://github.com/con2/emrichen) for substituting variables and reducing repetition.
 
 To deploy in a K8s cluster:
 

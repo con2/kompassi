@@ -1,40 +1,57 @@
 from django.db import models
 
-from core.utils import validate_slug
 from labour.models import SignupExtraBase
 
 
-SHIFT_TYPE_CHOICES = [
-    ('2h', '2 tunnin vuoroja'),
-    ('4h', '4 tunnin vuoroja'),
-    ('yli4h', 'Yli 4 tunnin vuoroja'),
+SHIRT_SIZES = [
+    ('NO_SHIRT', 'Ei paitaa'),
+
+    ('XS', 'XS Unisex'),
+    ('S', 'S Unisex'),
+    ('M', 'M Unisex'),
+    ('L', 'L Unisex'),
+    ('XL', 'XL Unisex'),
+    ('XXL', 'XXL Unisex'),
+    ('3XL', '3XL Unisex'),
+    ('4XL', '4XL Unisex'),
+    ('5XL', '5XL Unisex'),
+
+    ('LF_XS', 'XS Ladyfit'),
+    ('LF_S', 'S Ladyfit'),
+    ('LF_M', 'M Ladyfit'),
+    ('LF_L', 'L Ladyfit'),
+    ('LF_XL', 'XL Ladyfit'),
+    ('LF_XXL', 'XXL Ladyfit'),
 ]
 
 
-TOTAL_WORK_CHOICES = [
-    ('8h', '8 tuntia'),
-    ('yli8h', 'Yli 8 tuntia'),
-]
 
-
-class SpecialDiet(models.Model):
+class SimpleChoice(models.Model):
     name = models.CharField(max_length=63)
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        abstract = True
+
+
+class SpecialDiet(SimpleChoice):
+    pass
+
 
 class SignupExtra(SignupExtraBase):
-    shift_type = models.CharField(max_length=15,
-        verbose_name='Toivottu työvuoron pituus',
-        help_text='Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
-        choices=SHIFT_TYPE_CHOICES,
+    want_certificate = models.BooleanField(
+        default=False,
+        verbose_name='Haluan todistuksen työskentelystäni Hypeconissa',
     )
 
-    total_work = models.CharField(max_length=15,
-        verbose_name='Toivottu kokonaistyömäärä',
-        help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
-        choices=TOTAL_WORK_CHOICES,
+    shirt_size = models.CharField(
+        max_length=8,
+        choices=SHIRT_SIZES,
+        verbose_name=u'Paidan koko',
+        help_text=u'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan.',
+        default='NO_SHIRT',
     )
 
     special_diet = models.ManyToManyField(

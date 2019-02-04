@@ -28,11 +28,7 @@ We do not use the Kompassi account password for this purpose due to the followin
 
 In order to discourage people from manually setting the same password for SMTP use, or using a weak password, a secure SMTP password is automatically generated.
 
-The MTA responsible for outbound e-mail for the domain must be configured to periodically refresh its user database from `/api/v1/smtpservers/your.smtp.server.test/smtppasswd.txt`.
-
-Because the user requesting an SMTP password is likely to try it out right after requesting the password, periodical refresh is not enough, but rather we need to make the act of requesting a password cause a user database refresh at the MTA. For this, an elegant method utilizing the AMQP protocol has been developed via the `kompaq` application.
-
-However, this has been rejected by our mail service provider, and a simpler activation method is being planned (either "connect to this port using TCP" or "SSH to this host and run this command").
+Because the user requesting an SMTP password is likely to try it out right after requesting the password, periodical refresh is not enough, but rather we need to make the act of requesting a password cause a user database refresh at the MTA. For this, updates will be pushed out using SSH/SFTP.
 
 ### Slack invitation management
 

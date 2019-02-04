@@ -176,13 +176,6 @@ def access_admin_aliases_api(request, domain_name):
     return HttpResponse('\n'.join(lines), content_type='text/plain; charset=UTF-8')
 
 
-@handle_api_errors
-@api_login_required
-def access_admin_smtppasswd_api(request, smtp_server_hostname):
-    smtp_server = get_object_or_404(SMTPServer, hostname=smtp_server_hostname)
-    return HttpResponse(smtp_server.get_smtppasswd_file_contents(), content_type='text/plain; charset=UTF-8')
-
-
 @access_admin_required
 def access_admin_aliases_view(request, vars, organization):
     aliases = EmailAlias.objects.filter(domain__organization=organization).order_by('person')

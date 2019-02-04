@@ -151,7 +151,6 @@ INSTALLED_APPS = (
     # 'nexmo',
     'django_babel',
     'django_prometheus',
-    'graphene_django',
 
     'core',
     'programme',
@@ -175,7 +174,6 @@ INSTALLED_APPS = (
     'surveys',
     'directory',
     'listings',
-    'kompassi2',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -232,6 +230,9 @@ INSTALLED_APPS = (
     'events.nekocon2019',
     'events.popcult2019',
     'events.hitpoint2019',
+    'events.hypecon2019',
+    'events.traconjvk2019',
+    # 'events.traconpaidat2019',
 )
 
 LOGGING = {
@@ -289,10 +290,6 @@ LOGGING = {
 LOGIN_URL = '/login'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
-GRAPHENE = dict(
-    SCHEMA='kompassi2.schema.schema',
-)
 
 # TODO script-src unsafe-inline needed at least by feedback.js. unsafe-eval needed by Knockout (roster.js).
 # XXX style-src unsafe-inline is just basic plebbery and should be eradicated.
@@ -384,11 +381,6 @@ if env('BROKER_URL', default=''):
     CELERY_RESULT_SERIALIZER = 'json'
 
 
-if env('KOMPAQ_URL', default=''):
-    INSTALLED_APPS = INSTALLED_APPS + ('kompaq',)
-    KOMPAQ_URL = env('KOMPAQ_URL')
-
-
 if 'api' in INSTALLED_APPS:
     KOMPASSI_APPLICATION_USER_GROUP = '{KOMPASSI_INSTALLATION_SLUG}-apps'.format(**locals())
 
@@ -437,3 +429,8 @@ if 'listings' in INSTALLED_APPS:
         'conit.fi': 'listings.site_urlconfs.conit_fi',
         'animecon.fi': 'listings.site_urlconfs.animecon_fi',
     }
+
+
+# Used by access.SMTPServer. Must be created with ssh-keygen -t rsa -m pem (will not work without -m pem).
+KOMPASSI_SSH_PRIVATE_KEY_FILE = env('KOMPASSI_SSH_PRIVATE_KEY_FILE', default='/id_rsa')
+KOMPASSI_SSH_KNOWN_HOSTS_FILE = env('KOMPASSI_SSH_KNOWN_HOSTS_FILE', default='/known_hosts')

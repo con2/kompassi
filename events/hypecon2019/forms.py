@@ -15,10 +15,9 @@ class SignupExtraForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            'shift_type',
-            'total_work',
-
             Fieldset('Lisätiedot',
+                'want_certificate',
+                'shirt_size',
                 'special_diet',
                 'special_diet_other',
                 'prior_experience',
@@ -26,12 +25,11 @@ class SignupExtraForm(forms.ModelForm):
             )
         )
 
-
     class Meta:
         model = SignupExtra
         fields = (
-            'shift_type',
-            'total_work',
+            'want_certificate',
+            'shirt_size',
             'special_diet',
             'special_diet_other',
             'prior_experience',
@@ -60,8 +58,8 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
             ),
         )
 
-        self.fields['job_title'].help_text = "Mikä on tehtäväsi kupliteassa? Printataan badgeen."
-        # self.fields['job_title'].required = True
+        self.fields['job_title'].help_text = "Mikä on tehtäväsi coniteassa? Printataan badgeen."
+        self.fields['job_title'].required = True
 
     class Meta:
         model = Signup
@@ -73,44 +71,8 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict(
-            job_categories=JobCategory.objects.filter(event__slug='kuplii2019', name='Kuplitea')
+            job_categories=JobCategory.objects.filter(event__slug='hypecon2019', name='Conitea'),
         )
-
-
-class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
-    def __init__(self, *args, **kwargs):
-        super(OrganizerSignupExtraForm, self).__init__(*args, **kwargs)
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-        self.helper.layout = Layout(
-            Fieldset('Lisätiedot',
-                'special_diet',
-                'special_diet_other',
-            ),
-        )
-
-
-    class Meta:
-        model = SignupExtra
-        fields = (
-            'special_diet',
-            'special_diet_other',
-        )
-
-        widgets = dict(
-            special_diet=forms.CheckboxSelectMultiple,
-        )
-
-    def get_excluded_field_defaults(self):
-        return dict(
-            shift_type='yli4h',
-            total_work='yli8h',
-            prior_experience='',
-            free_text='Syötetty käyttäen kupliitin ilmoittautumislomaketta',
-        )
-
-    def get_excluded_m2m_field_defaults(self):
-        return dict()
 
 
 class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
@@ -138,3 +100,39 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict(
             free_text='Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta',
         )
+
+
+class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super(OrganizerSignupExtraForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset('Lisätiedot',
+                'shirt_size',
+                'special_diet',
+                'special_diet_other',
+            ),
+        )
+
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            'shirt_size',
+            'special_diet',
+            'special_diet_other',
+        )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+        )
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            prior_experience='',
+            free_text='Syötetty käyttäen coniitin ilmoittautumislomaketta',
+        )
+
+    def get_excluded_m2m_field_defaults(self):
+        return dict()
