@@ -236,9 +236,11 @@ class Setup(object):
         role_priority = 0
         for role_title in [
             'Ohjelmanjärjestäjä',
+            'Näkymätön ohjelmanjärjestäjä',
             'Panelisti',
             'Työpajanpitäjä',
             'Keskustelupiirin vetäjä',
+            'Tuomari',
         ]:
             role, unused = Role.objects.get_or_create(
                 personnel_class=personnel_class,
@@ -250,6 +252,16 @@ class Setup(object):
                 )
             )
             role_priority += 10
+
+        Role.objects.filter(
+            personnel_class__event=self.event,
+            title__in=['Näkymätön ohjelmanjärjestäjä', 'Tuomari'],
+        ).update(is_public=False)
+
+        Role.objects.filter(
+            personnel_class__event=self.event,
+            title__in='Näkymätön ohjelmanjärjestäjä',
+        ).update(override_public_title='Ohjelmanjärjestäjä')
 
         for title, slug, style in [
             ('Muu ohjelma', 'other', 'color1'),

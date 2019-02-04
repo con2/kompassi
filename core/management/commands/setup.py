@@ -33,6 +33,7 @@ class Command(BaseCommand):
             (('setup_core',), dict()),
             (('setup_labour_common_qualifications',), dict()),
             (('setup_api_v2',), dict()),
+            (('setup_api_v3',), dict()),
             (('setup_access',), dict()),
         ]
 

@@ -151,6 +151,7 @@ INSTALLED_APPS = (
     # 'nexmo',
     'django_babel',
     'django_prometheus',
+    'rest_framework',
 
     'core',
     'programme',
@@ -161,6 +162,7 @@ INSTALLED_APPS = (
     'mailings',
     'api',
     'api_v2',
+    'api_v3',
     'badges',
     'access',
     # 'sms',
@@ -285,6 +287,14 @@ LOGGING = {
             'propagate': True
         },
     }
+}
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
 }
 
 LOGIN_URL = '/login'
