@@ -142,11 +142,3 @@ class ProgrammeTestCase(TestCase):
 
         assert not Programme.get_future_programmes(person).exists()
         assert Programme.get_past_programmes(person).exists()
-
-
-class PaikkalaTestCase(TestCase):
-    def test_room_paikkalize(self):
-        room, unused = Room.get_or_create_dummy()
-        paikkala_room = room.paikkalize()
-        assert paikkala_room.name
-        assert paikkala_room.zone_set.exists()
