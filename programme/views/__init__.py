@@ -17,6 +17,12 @@ from .admin_views import (
     programme_admin_special_view,
 )
 
+from .paikkala_views import (
+    paikkala_inspection_view,
+    paikkala_relinquish_view,
+    paikkala_reservation_view,
+)
+
 
 from .programme_admin_detail_view import (
     programme_admin_change_host_role_view,
@@ -42,3 +48,4 @@ from .programme_offer_view import programme_offer_view, programme_offer_form_vie
 from .programme_profile_detail_view import programme_profile_detail_view
 from .programme_profile_feedback_view import programme_profile_feedback_view
 from .programme_profile_view import programme_profile_view
+from .programme_profile_reservations_view import programme_profile_reservations_view

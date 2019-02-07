@@ -31,3 +31,9 @@ from .feedback_forms import (
     ProgrammeFeedbackForm,
     AnonymousProgrammeFeedbackForm,
 )
+
+from .paikkala_forms import (
+    IsUsingPaikkalaForm,
+    PaikkalaProgramForm,
+    ReservationForm,
+)

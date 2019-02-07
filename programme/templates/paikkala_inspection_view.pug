@@ -1,0 +1,19 @@
+doctype html
+- load static from staticfiles
+- load trans from i18n
+html
+  head
+    title {{ event.name }}
+    link(rel='stylesheet', href='{% static "kompassi.css" %}')
+    link(rel='stylesheet', href='{% static "programme/css/paikkala_inspection_view.css" %}')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  body
+    .paikkala-inspection-view
+      p.text-muted: {{ ticket.program.kompassi_programme.event.name }}
+
+      h1: {{ ticket.program.name }}
+      p.text-muted: {% trans "Seat reservation" %} &times; {{ tickets|length }}
+      div.kompassi-space-above
+
+      for ticket in tickets
+        p: {{ ticket.zone }}<br>{% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}

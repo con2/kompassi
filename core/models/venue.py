@@ -1,6 +1,6 @@
-# encoding: utf-8
-
 from django.db import models
+
+from core.utils import slugify
 
 
 class Venue(models.Model):
@@ -27,5 +27,12 @@ class Venue(models.Model):
     @classmethod
     def get_or_create_dummy(cls):
         return cls.objects.get_or_create(
-            name='Dummy venue'
+            name='Tampere-talo',
+            defaults=dict(
+                name_inessive='Tampere-talossa',
+            )
         )
+
+    @property
+    def slug(self):
+        return slugify(self.name)

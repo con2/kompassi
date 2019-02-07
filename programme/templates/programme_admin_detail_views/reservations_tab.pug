@@ -1,0 +1,11 @@
+- load crispy from crispy_forms_tags
+- load trans from i18n
+.tab-pane#programme-admin-programme-reservations-tab
+  .panel.panel-default
+    .panel-heading: strong {% trans "Seat reservations" %}
+    .panel-body
+      {% crispy is_using_paikkala_form %}
+      if paikkala_program_form
+        {% crispy paikkala_program_form %}
+    .panel-footer.clearfix
+      include programme_admin_detail_views/buttons

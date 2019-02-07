@@ -1,0 +1,21 @@
+extends base.pug
+- load i18n
+- load crispy from crispy_forms_tags
+block title
+  | {% trans "Reserve seats" %}: {{ program }}
+block content
+  h2 {{ program }}
+  form(method='POST').form-horizontal
+    .panel.panel-default
+      .panel-heading
+        strong {% trans "Reserve seats" %}
+      .panel-body
+        {% crispy form %}
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-default(href='{% url "programme_schedule_view" event.slug %}')
+            i.fa.fa-undo.kompassi-icon-space-right
+            {% trans "Return without reserving seats" %}
+          button.btn.btn-success(type='submit')
+            i.fa.fa-check.kompassi-icon-space-right
+            {% trans "Reserve the seats" %}

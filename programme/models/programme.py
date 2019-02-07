@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import Q
+from django.db.transaction import atomic
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
@@ -417,6 +418,17 @@ class Programme(models.Model, CsvExportMixin):
             'When would you like to run your RPG? The time slots are intentionally vague. If you have more '
             'specific needs regarding the time, please explain them in the last open field.'
         ),
+    )
+
+    is_using_paikkala = models.BooleanField(
+        default=False,
+        verbose_name=_('Reservable seats'),
+        help_text=_('If selected, reserved seats for this programme will be offered.'),
+    )
+    paikkala_program = models.OneToOneField('paikkala.Program',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='kompassi_programme',
     )
 
     ROPECON2018_AUDIENCE_SIZE_CHOICES = [
@@ -903,6 +915,7 @@ class Programme(models.Model, CsvExportMixin):
         self.apply_state_async()
 
     def apply_state_sync(self, deleted_programme_roles):
+        self.paikkalize()
         self.apply_state_update_programme_roles()
         self.apply_state_update_signup_extras()
         self.apply_state_create_badges(deleted_programme_roles)
@@ -955,7 +968,6 @@ class Programme(models.Model, CsvExportMixin):
                 groups_to_add=groups_to_add,
                 groups_to_remove=groups_to_remove
             )
-
 
     def apply_state_create_badges(self, deleted_programme_roles=[]):
         if 'badges' not in settings.INSTALLED_APPS:
@@ -1053,6 +1065,56 @@ class Programme(models.Model, CsvExportMixin):
     @property
     def visible_feedback(self):
         return self.feedback.filter(hidden_at__isnull=True).select_related('author').order_by('-created_at')
+
+    @property
+    def can_paikkalize(self):
+        return (
+            self.room is not None and
+            self.room.has_paikkala_schema and
+            self.start_time is not None and
+            self.length is not None
+        )
+
+    @atomic
+    def paikkalize(self):
+        if not self.is_using_paikkala:
+            return None
+        if self.paikkala_program:
+            return self.paikkala_program
+
+        assert self.can_paikkalize
+
+        from django.template.defaultfilters import truncatechars
+        from paikkala.models import Program as PaikkalaProgram, Row
+
+        paikkala_room = self.room.paikkalize()
+        meta = self.event.programme_event_meta
+
+        self.paikkala_program = PaikkalaProgram.objects.create(
+            event_name=self.event.name,
+            name=truncatechars(self.title, PaikkalaProgram._meta.get_field('name').max_length),
+            room=paikkala_room,
+            require_user=True,
+            reservation_end=self.start_time,
+            invalid_after=self.end_time,
+            max_tickets=0,
+            automatic_max_tickets=True,
+            max_tickets_per_user=meta.paikkala_default_max_tickets_per_user,
+            max_tickets_per_batch=meta.paikkala_default_max_tickets_per_batch,
+        )
+        self.save()
+
+        self.paikkala_program.rows.set(Row.objects.filter(zone__room=paikkala_room))
+
+        return self.paikkala_program
+
+    @property
+    def is_open_for_seat_reservations(self):
+        return (
+            self.is_using_paikkala and
+            self.paikkala_program and
+            self.paikkala_program.is_reservable
+        )
 
     class Meta:
         verbose_name = _('programme')

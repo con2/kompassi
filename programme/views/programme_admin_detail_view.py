@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from collections import namedtuple
 
 from django.contrib import messages
@@ -17,6 +13,8 @@ from ..forms import (
     ChangeInvitationRoleForm,
     FreeformOrganizerForm,
     InvitationForm,
+    IsUsingPaikkalaForm,
+    PaikkalaProgramForm,
     ProgrammeInternalForm,
     ProgrammeSelfServiceForm,
     ScheduleForm,
@@ -47,7 +45,18 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     programme_form = initialize_form(FormClass, request, instance=programme, event=event, prefix='programme')
     internal_form = initialize_form(ProgrammeInternalForm, request, instance=programme, event=event, prefix='internal')
     schedule_form = initialize_form(ScheduleForm, request, instance=programme, event=event, prefix='schedule')
-    forms = [programme_form, schedule_form, internal_form]
+    is_using_paikkala_form = initialize_form(IsUsingPaikkalaForm, request,
+        instance=programme,
+        prefix='usepaikkala',
+        disabled=not programme.can_paikkalize,
+    )
+    forms = [programme_form, schedule_form, internal_form, is_using_paikkala_form]
+
+    if programme.is_using_paikkala and programme.paikkala_program:
+        paikkala_program_form = initialize_form(PaikkalaProgramForm, request, instance=programme.paikkala_program, prefix='paikkala')
+        forms.append(paikkala_program_form)
+    else:
+        paikkala_program_form = None
 
     invitation_form = initialize_form(InvitationForm, request, event=event, prefix='invitation')
     freeform_organizer_form = initialize_form(FreeformOrganizerForm, request, prefix='freeform')
@@ -176,6 +185,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
         Tab('programme-admin-programme-tab', _('Programme form'), active=True),
         Tab('programme-admin-programme-schedule-tab', _('Schedule information')),
         Tab('programme-admin-programme-internal-tab', _('Internal information')),
+        Tab('programme-admin-programme-reservations-tab', _('Seat reservations')),
         Tab('programme-admin-programme-hosts-tab', _('Programme hosts'), notifications=invitations.count()),
         Tab('programme-admin-programme-feedback-tab', _('Feedback'), notifications=feedback.count()),
     ]
@@ -183,20 +193,22 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     previous_programme, next_programme = programme.get_previous_and_next_programme()
 
     vars.update(
+        change_invitation_role_forms=change_invitation_role_forms,
         feedback=feedback,
         forms_per_host=forms_per_host,
-        change_invitation_role_forms=change_invitation_role_forms,
         freeform_organizer_form=freeform_organizer_form,
         freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
         internal_form=internal_form,
         invitation_form=invitation_form,
         invitations=invitations,
+        is_using_paikkala_form=is_using_paikkala_form,
         next_programme=next_programme,
         overlapping_programmes=programme.get_overlapping_programmes(),
+        paikkala_program_form=paikkala_program_form,
         previous_programme=previous_programme,
-        programme=programme,
-        programme_roles=programme_roles,
         programme_form=programme_form,
+        programme_roles=programme_roles,
+        programme=programme,
         schedule_form=schedule_form,
         tabs=tabs,
     )

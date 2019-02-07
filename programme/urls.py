@@ -3,6 +3,9 @@ from django.conf.urls import include, url
 from django.views.generic import RedirectView
 
 from .views import (
+    paikkala_inspection_view,
+    paikkala_relinquish_view,
+    paikkala_reservation_view,
     programme_accept_invitation_view,
     programme_admin_change_host_role_view,
     programme_admin_change_invitation_role_view,
@@ -30,6 +33,7 @@ from .views import (
     programme_plaintext_view,
     programme_profile_detail_view,
     programme_profile_feedback_view,
+    programme_profile_reservations_view,
     programme_profile_view,
     programme_schedule_view,
     programme_special_view,
@@ -99,6 +103,24 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/feedback/?$',
         programme_feedback_view,
         name='programme_feedback_view',
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/reservations/(?P<pk>\d+)/relinquish/?$',
+        paikkala_relinquish_view,
+        name='paikkala_relinquish_view',
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/reservations/(?P<pk>\d+)/inspect/(?P<key>.+?)/?$',
+        paikkala_inspection_view,
+        name='paikkala_inspection_view',
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/reservations/?$',
+        paikkala_reservation_view,
+        name='paikkala_reservation_view',
     ),
 
     url(
@@ -264,4 +286,10 @@ urlpatterns = [
         programme_profile_feedback_view,
         name='programme_profile_feedback_view',
     ),
+
+    url(
+        r'^profile/reservations/?',
+        programme_profile_reservations_view,
+        name='programme_profile_reservations_view',
+    )
 ]
