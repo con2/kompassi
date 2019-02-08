@@ -1,4 +1,5 @@
-git+https://github.com/kcsry/lippukala.git#egg=lippukala==1.2.1
+git+https://github.com/kcsry/lippukala.git@v1.2.1#egg=lippukala==1.2.1
+git+https://github.com/kcsry/paikkala.git@find-packages#=egg=paikkala==0.0
 Babel~=2.6.0
 bleach~=3.0.2
 celery~=4.2.1

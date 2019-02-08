@@ -1,0 +1,27 @@
+body {
+    padding-top: 17px;
+}
+
+.paikkala-inspection-view h1, .paikkala-inspection-view p {
+    text-align: center;
+}
+
+.paikkala-inspection-view h1 {
+    margin-bottom: 0;
+    font-size: 33px;
+}
+
+.paikkala-inspection-view img {
+    width: 100%;
+}
+
+.paikkala-inspection-view ul li {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.paikkala-inspection-view p {
+    font-size: 25px;
+    margin-bottom: 25px;
+}

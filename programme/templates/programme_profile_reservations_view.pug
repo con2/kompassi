@@ -1,0 +1,73 @@
+extends core_profile_base
+- load i18n
+- load crispy from crispy_forms_tags
+block title
+  {% trans "Seat reservations" %}
+block profile_content
+  h3 {% trans "Seat reservations" %}
+  if valid_tickets.exists
+    p {% trans "Here you can see your upcoming seat reservations. When entering a programme that requires a reserved seat, please open the seat reservation from the table below on your smartphone and show it to the security personnel at the door." %}
+    p {% trans "If you change your mind about a programme you have reserved seats for, please relinquish those seats so that others may reserve them." %}
+    table.table.table-striped
+      thead
+        tr
+          th {% trans "Programme" %}
+          th {% trans "Start time" %}
+          th {% trans "Room" %}
+          th {% trans "Seat" %}
+          th
+      tbody
+        for ticket in valid_tickets
+          tr
+            td
+              a(href="{% url 'paikkala_inspection_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id ticket.key %}")
+                | {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
+            td: {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+            td= ticket.program.kompassi_programme.room.name
+            td
+              | {{ ticket.zone.name }}<br>
+              | {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
+            td
+                button(type='button', class='btn btn-xs btn-danger', data-toggle='modal', data-target='#confirm-relinguish-{{ ticket.pk }}')
+                  i.fa.fa-trash.kompassi-icon-space-right
+                  span.hidden-xs {% trans "Relinquish" %}…
+
+    for ticket in valid_tickets
+      .modal.fade(id='confirm-relinguish-{{ ticket.pk }}')
+        .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+              h4 {% trans "Confirmation" %}
+            form(method='POST', action="{% url 'paikkala_relinquish_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id %}")
+              {% csrf_token %}
+              input(type='hidden', name='key', value='{{ ticket.key }}')
+              div
+                .modal-body
+                  p {% trans "Are you sure you want to relinquish the following seat reservation?" %}
+                table.table.table-striped
+                  thead
+                    tr
+                      th {% trans "Programme" %}
+                      th {% trans "Start time" %}
+                      th {% trans "Room" %}
+                      th {% trans "Seat" %}
+                  tbody
+                    tr
+                      td: {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
+                      td: {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+                      td= ticket.program.kompassi_programme.room.name
+                      td
+                        | {{ ticket.zone.name }}<br>
+                        | {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
+                .modal-footer
+                  .btn-group
+                    button.btn.btn-default(type='button', data-dismiss='modal')
+                      i.fa.fa-undo.kompassi-icon-space-right
+                      | {% trans "No, I wish to keep it" %}
+                    button.btn.btn-danger(type='submit')
+                      i.fa.fa-trash.kompassi-icon-space-right
+                      {% trans "Yes, relinquish it" %}
+
+  else
+    p {% trans "You have no upcoming seat reservations." %}

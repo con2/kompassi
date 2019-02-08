@@ -4,7 +4,7 @@ services:
     build: .
     init: true
     entrypoint: []
-    command: python manage.py docker_start
+    command: scripts/wait-for-it.sh -t 60 postgres:5432 -- python manage.py docker_start
     ports:
       - 8000:8000
     links:
@@ -25,7 +25,7 @@ services:
     build: .
     init: true
     entrypoint: []
-    command: celery -A kompassi.celery_app:app worker
+    command: scripts/wait-for-it.sh -t 60 postgres:5432 -- celery -A kompassi.celery_app:app worker
     links:
       - rabbitmq
       - postgres

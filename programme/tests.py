@@ -9,7 +9,7 @@ from access.models import SlackAccess, GroupPrivilege, Privilege
 from labour.models import Signup
 
 from .utils import next_full_hour
-from .models import ProgrammeEventMeta, ProgrammeRole, Programme
+from .models import ProgrammeEventMeta, ProgrammeRole, Programme, Room
 
 
 class UtilsTestCase(TestCase):
