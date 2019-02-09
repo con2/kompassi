@@ -1,4 +1,7 @@
-import { getWithCredentials } from "./helpers";
+import ClientOAuth2, { Token } from 'client-oauth2';
+
+import { getOAuth2, getWithCredentials } from "./helpers";
+
 
 export interface User {
   username: string;
@@ -9,21 +12,27 @@ export interface User {
 }
 
 
+
+
+
 export default class Session {
   user?: User;
-  token = '';
+  token?: Token;
 
-  constructor(user?: User) {
+  constructor(user?: User, token?: Token) {
     this.user = user;
+    this.token = token;
   }
 
   logIn = () => {
     console.log('Session.logIn');
 
-    // TODO
     if (this.user) {
       console.warn('Session.logIn called while already logged in');
+      return;
     }
+
+    window.location.href = getOAuth2().token.getUri();
   }
 
   logOut = () => {
@@ -32,7 +41,7 @@ export default class Session {
   }
 
   get(path: string) {
-    return getWithCredentials(path, this.token);
+    return getWithCredentials(path, this.token ? this.token.accessToken : '');
   }
 }
 

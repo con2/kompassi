@@ -1,7 +1,7 @@
 import React from 'react';
 import Spinner from 'reactstrap/lib/Spinner';
 
-import { getWithCredentials } from './helpers';
+import { getOAuth2, getWithCredentials } from './helpers';
 import Session, { emptySession } from './Session';
 
 
@@ -21,15 +21,12 @@ export class SessionProvider extends React.Component<{}, SessionProviderState> {
   };
 
   async componentDidMount() {
-    if (window.location.hash) {
-      // OAuth2 callback
-      const hash = window.location.hash;
-      window.location.hash = '';
-
-      const user = await getWithCredentials('user', ''); // TODO this.state.token
-      this.setState({ session: new Session(user) });
-    } else {
-      // Not logged in
+    try {
+      const token = await getOAuth2().token.getToken(window.location.href);
+      const user = await getWithCredentials('user', token.accessToken);
+      this.setState({ session: new Session(user, token) });
+    } catch (e) {
+      console.warn('Not logged in:', e);
       this.setState({ session: emptySession });
     }
   }
@@ -46,7 +43,6 @@ export class SessionProvider extends React.Component<{}, SessionProviderState> {
     } else {
       return <Spinner />;
     }
-
   }
 }
 

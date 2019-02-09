@@ -6,6 +6,7 @@ import FormView from './FormView';
 import FrontPage from './FrontPage';
 import Navigation from './Navigation';
 import NotFound from './NotFound';
+import CallbackView from './SessionContext/CallbackView';
 
 
 class App extends React.Component {
@@ -17,6 +18,7 @@ class App extends React.Component {
           <Route exact={true} path="/" component={FrontPage} />
           <Route path="/forms/:formSlug/edit" component={FormEditorView} />
           <Route path="/forms/:formSlug" component={FormView} />
+          <Route path="/oauth2/callback" component={CallbackView} />
           <Route render={NotFound} />
         </Switch>
       </div>

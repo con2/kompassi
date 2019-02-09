@@ -61,7 +61,7 @@ export default class Navigation extends React.Component<{}, NavigationState> {
                     ) : (
                       // Not logged in
                       <NavItem>
-                        <NavLink onClick={session.logIn}>{t('logIn')}</NavLink>
+                        <NavLink href='#' onClick={session.logIn}>{t('logIn')}</NavLink>
                       </NavItem>
                     )}
                   </Nav>
