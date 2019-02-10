@@ -83,7 +83,6 @@ STATICFILES_FINDERS = (
 SECRET_KEY = env.str('SECRET_KEY', default=('' if not DEBUG else 'xxx'))
 
 MIDDLEWARE = (
-    # 'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'csp.middleware.CSPMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -96,7 +95,6 @@ MIDDLEWARE = (
     'core.middleware.PageWizardMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django_babel.middleware.LocaleMiddleware',
-    # 'django_prometheus.middleware.PrometheusAfterMiddleware',
 )
 
 ROOT_URLCONF = 'kompassi.urls'
@@ -150,7 +148,6 @@ INSTALLED_APPS = (
     'oauth2_provider',
     # 'nexmo',
     'django_babel',
-    'django_prometheus',
     'rest_framework',
     'lippukala',
     'paikkala',
