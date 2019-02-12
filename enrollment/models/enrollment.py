@@ -119,9 +119,13 @@ class Enrollment(models.Model):
         blank=True,
         verbose_name='Milloin olet käynyt järjestyksenvalvojan peruskoulutuksen?'
     )
+    traconjv_avow_and_affirm = models.BooleanField(
+        default=False,
+        verbose_name='Vakuutan olevani lain tarkoittamalla tavalla rehellinen ja luotettava ja henkilökohtaisilta ominaisuuksiltani tehtävään sopiva, eikä minulla ole voimassaolevia tai vanhoja tuomioita tai rikosrekisteriä.',
+    )
     traconjv_solemnly_swear = models.BooleanField(
         default=False,
-        verbose_name='Vakuutan antamani tiedot oikeiksi. Sitoudun maksamaan kurssin hinnan täysimääräisenä, mikäli en pysty osallistumaan kurssille ja/tai järjestyksenvalvojana Tracon 2019 -tapahtumaan.'
+        verbose_name='Vakuutan antamani tiedot oikeiksi. Sitoudun maksamaan kurssin hinnan täysimääräisenä, mikäli en pysty osallistumaan kurssille ja/tai järjestyksenvalvojana Tracon 2019 -tapahtumaan.',
     )
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('created at'))

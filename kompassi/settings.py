@@ -233,6 +233,7 @@ INSTALLED_APPS = (
     'events.hitpoint2019',
     'events.hypecon2019',
     'events.traconjvk2019',
+    'events.traconjvp2019',
     # 'events.traconpaidat2019',
 )
 
