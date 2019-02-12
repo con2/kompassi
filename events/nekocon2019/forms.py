@@ -1,7 +1,4 @@
-# encoding: utf-8
-
 from django import forms
-from localflavor.fi.forms import FISocialSecurityNumber
 
 from crispy_forms.layout import Layout, Fieldset
 

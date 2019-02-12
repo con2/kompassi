@@ -2,6 +2,7 @@ from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 
 from core.views.api_v3_views import EventViewSet
+from forms.views.api_v3_views import FormViewSet
 
 from .views import CurrentUserView
 
@@ -15,6 +16,7 @@ class OptionalTrailingSlashRouter(DefaultRouter):
 # Create a router and register our viewsets with it.
 router = OptionalTrailingSlashRouter()
 router.register(r'events', EventViewSet)
+router.register(r'forms', FormViewSet)
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
