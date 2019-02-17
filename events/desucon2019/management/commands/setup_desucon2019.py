@@ -244,12 +244,15 @@ class Setup(object):
                 personnel_class=personnel_class,
                 title=role_title,
                 defaults=dict(
-                    is_default=True,
+                    is_default=role_title == 'Ohjelmanjärjestäjä',
                     require_contact_info=True,
                     priority=role_priority,
                 )
             )
             role_priority += 10
+
+        # fix accidentially having multiple roles with is_default=True (remove for frostbite2020)
+        Role.objects.filter(personnel_class__event=self.event, is_default=True).exclude(title='Ohjelmanjärjestäjä').update(is_default=False)
 
         for title, slug, style in [
             ('Muu ohjelma', 'other', 'color1'),
@@ -280,7 +283,6 @@ class Setup(object):
                 title='Ohjelmalomake',
                 short_description='',
                 programme_form_code='events.desucon2019.forms:ProgrammeForm',
-                active_from=datetime(2019, 9, 16, 0, 0, 0, tzinfo=self.tz),
                 num_extra_invites=0,
             )
         )

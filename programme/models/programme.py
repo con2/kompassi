@@ -27,6 +27,13 @@ VIDEO_PERMISSION_CHOICES = [
     ('private', _('I forbid publishing my programme, but it may be recorded for archiving purposes')),
     ('forbidden', _('I forbid recording my programme altogether')),
 ]
+
+STREAM_PERMISSION_CHOICES = [
+    ('please', _('Yes, I would like my programme to be streamed live')),
+    ('okay', _('Yes, I allow streaming my programme live')),
+    ('nope', _('No, I forbid streaming my programme')),
+]
+
 START_TIME_LABEL = _('Starting time')
 
 STATE_CHOICES = [
@@ -233,13 +240,21 @@ class Programme(models.Model, CsvExportMixin):
     video_permission = models.CharField(
         max_length=15,
         choices=VIDEO_PERMISSION_CHOICES,
-        default=VIDEO_PERMISSION_CHOICES[0][0],
+        blank=True,
         verbose_name=_('Recording permission'),
         help_text=_('May your programme be recorded and published in the Internet?'),
     )
 
+    stream_permission = models.CharField(
+        max_length=max(len(key) for (key, text) in STREAM_PERMISSION_CHOICES),
+        choices=STREAM_PERMISSION_CHOICES,
+        blank=True,
+        verbose_name=_('Streaming permission'),
+        help_text=_('May your programme be streamed live to the Internet (eg. YouTube)?'),
+    )
+
     encumbered_content = models.CharField(
-        default='no',
+        blank=True,
         max_length=max(len(key) for (key, label) in ENCUMBERED_CONTENT_CHOICES),
         choices=ENCUMBERED_CONTENT_CHOICES,
         verbose_name=_('Encumbered content'),
@@ -250,9 +265,9 @@ class Programme(models.Model, CsvExportMixin):
     )
 
     photography = models.CharField(
-        default='okay',
         max_length=max(len(key) for (key, label) in PHOTOGRAPHY_CHOICES),
         choices=PHOTOGRAPHY_CHOICES,
+        blank=True,
         verbose_name=_('Photography of your prorgmme'),
         help_text=_(
             'Our official photographers will try to cover all programmes whose hosts request their programmes '
@@ -261,7 +276,7 @@ class Programme(models.Model, CsvExportMixin):
     )
 
     rerun = models.CharField(
-        default='original',
+        blank=True,
         max_length=max(len(key) for (key, label) in RERUN_CHOICES),
         choices=RERUN_CHOICES,
         verbose_name=_('Is this a re-run?'),

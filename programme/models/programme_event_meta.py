@@ -110,7 +110,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     @property
     def default_role(self):
         from .role import Role
-        return Role.objects.get(personnel_class__event=self.event, is_default=True)
+        return Role.objects.filter(personnel_class__event=self.event, is_default=True).distinct().get()
 
     @property
     def is_using_alternative_programme_forms(self):

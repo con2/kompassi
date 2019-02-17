@@ -284,7 +284,6 @@ class Setup(object):
                 title='Ohjelmalomake',
                 short_description='',
                 programme_form_code='events.frostbite2018.forms:ProgrammeForm',
-                active_from=datetime(2017, 7, 23, 0, 0, 0, tzinfo=self.tz),
                 num_extra_invites=0,
             )
         )

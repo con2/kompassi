@@ -62,44 +62,13 @@ class ProgrammeAdminCreateForm(forms.ModelForm):
         )
 
 
-class ProgrammeSelfServiceForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        kwargs.pop('event')
-
-        super(ProgrammeSelfServiceForm, self).__init__(*args, **kwargs)
-
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-
-        for field_name in [
-            'title',
-            'description',
-        ]:
-            self.fields[field_name].required = True
-
-    class Meta:
-        model = Programme
-        fields = (
-            'title',
-            'description',
-            'computer',
-            'use_audio',
-            'use_video',
-            'number_of_microphones',
-            'tech_requirements',
-            'video_permission',
-            'encumbered_content',
-            'photography',
-            'rerun',
-            'room_requirements',
-            'requested_time_slot',
-            'notes_from_host',
-        )
-
-
 class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
+        if 'admin' in kwargs:
+            admin = kwargs.pop('admin')
+        else:
+            admin = False
 
         super(ProgrammeOfferForm, self).__init__(*args, **kwargs)
 
@@ -108,9 +77,19 @@ class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         for field_name in [
             'title',
-            'description',
         ]:
             self.fields[field_name].required = True
+
+        if not admin:
+            for field_name in [
+                'description',
+                'video_permission',
+                'stream_permission',
+                'photography',
+                'rerun',
+                'encumbered_content',
+            ]:
+                self.fields[field_name].required = True
 
         self.fields['category'].queryset = Category.objects.filter(event=event, public=True)
 
@@ -129,6 +108,7 @@ class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'number_of_microphones',
             'tech_requirements',
             'video_permission',
+            'stream_permission',
             'encumbered_content',
             'photography',
             'rerun',
@@ -136,6 +116,9 @@ class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'requested_time_slot',
             'notes_from_host',
         )
+
+
+ProgrammeSelfServiceForm = ProgrammeOfferForm
 
 
 class ProgrammeInternalForm(forms.ModelForm):

@@ -595,15 +595,6 @@ class Setup(object):
             default_form.programme_form_code = 'events.tracon2019.forms:ProgrammeForm'
             default_form.save()
 
-        AlternativeProgrammeForm.objects.filter(
-            event=self.event,
-            active_from__isnull=True,
-            active_until__isnull=True,
-        ).update(
-            active_from=now(),
-            active_until=self.event.end_time,
-        )
-
     def setup_access(self):
         from access.models import Privilege, GroupPrivilege, EmailAliasType, GroupEmailAliasGrant
 
