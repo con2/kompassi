@@ -49,7 +49,6 @@ class SignupExtraForm(forms.ModelForm):
 
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
-            lodging_needs=forms.CheckboxSelectMultiple,
         )
 
 
@@ -75,7 +74,9 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
     class Meta:
         model = Signup
-        fields = ('job_title',)
+        fields = (
+            'job_title',
+        )
 
         widgets = dict(
             job_categories=forms.CheckboxSelectMultiple,
@@ -94,6 +95,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset('Lisätiedot',
+                'shirt_size',
                 'special_diet',
                 'special_diet_other',
             ),
@@ -102,6 +104,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
+            'shirt_size',
             'special_diet',
             'special_diet_other',
         )
@@ -119,9 +122,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
     def get_excluded_m2m_field_defaults(self):
-        return dict(
-            lodging_needs=[],
-        )
+        return dict()
 
 
 class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
