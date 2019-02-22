@@ -100,8 +100,8 @@ class SignupExtra(SignupExtraBase):
         verbose_name='Paidan koko',
         help_text=(
             'Ajoissa ilmoittautuneet saavat maksuttoman työvoimapaidan. '
-            'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
-            'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
+            'Kokotaulukot: <a href="http://dc-collection.fi/index.php?dispatch=products.view&product_id=460" '
+            'target="_blank">unisex-paita</a>, <a href="http://dc-collection.fi/index.php?dispatch=products.view&product_id=461" '
             'target="_blank">ladyfit-paita</a>'
         ),
     )
