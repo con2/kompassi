@@ -202,8 +202,11 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         if not admin:
             for field_name in [
                 'description',
-                'long_description',
-                'length_from_host',
+                'encumbered_content',
+                'photography',
+                'rerun',
+                'stream_permission',
+                'video_permission',
             ]:
                 self.fields[field_name].required = True
 
@@ -234,6 +237,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'number_of_microphones',
             'tech_requirements',
             'video_permission',
+            'stream_permission',
             'encumbered_content',
             'photography',
             'rerun',
