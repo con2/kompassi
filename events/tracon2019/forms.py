@@ -191,19 +191,21 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(ProgrammeForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-        for field_name in [
-            'title',
-            'description',
-            'long_description',
-            'length_from_host',
-        ]:
-            self.fields[field_name].required = True
+        self.fields['title'].required = True
+        if not admin:
+            for field_name in [
+                'description',
+                'long_description',
+                'length_from_host',
+            ]:
+                self.fields[field_name].required = True
 
         self.fields['category'].queryset = Category.objects.filter(event=event, public=True)
 
