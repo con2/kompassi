@@ -71,8 +71,6 @@ class SignupExtra(SignupExtraBase):
         help_text=(
             'Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
             'omaa kenttää yllä, käytä tätä kenttää. '
-            'Jos haet valokuvaajaksi, kerro lisäksi millaista kuvauskalustoa sinulla on käytettävissäsi ja listaa'
-            'muutamia gallerialinkkejä, joista pääsemme ihailemaan ottamiasi kuvia. '
         ),
     )
 
