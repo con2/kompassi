@@ -1438,3 +1438,9 @@ msgstr "Kyllä, ohjelmani saa lähettää suorana"
 
 msgid "No, I forbid streaming my programme"
 msgstr "Ei, ohjelmaani ei saa lähettää suorana"
+
+msgid "Revolving door game"
+msgstr "Pyöröovipeli (revolving door)"
+
+msgid "Check this box if new players can join during gameplay and old players may (or must) leave before the game is over. Please mention this in the game description below, and give more details if necessary."
+msgstr "Ruksaa tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa käynnissä ja vanhat pelaajat voivat poistua (tai joutuvat poistumaan) pelistä ennen pelin loppua. Kerro tästä myös pelin kuvauksessa alla, ja anna tarvittaessa lisätietoja."

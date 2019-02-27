@@ -113,6 +113,29 @@ LANGUAGE_CHOICES = [
     ('en', _('English')),
 ]
 
+ROPECON2018_SIGNUP_LIST_CHOICES = [
+    ('itse', _('I will make my own signup sheet')),
+    ('tiski', _('Desk will make the signup sheet')),
+]
+
+ROPECON2018_KP_LENGTH_CHOICES = [
+    ('4h', _('4 hours')),
+    ('8h', _('8 hours')),
+]
+
+ROPECON2018_KP_DIFFICULTY_CHOICES = [
+    ('simple', _('Simple')),
+    ('advanced', _('Advanced')),
+    ('high', _('Highly Advanced')),
+]
+
+ROPECON2018_KP_TABLE_COUNT_CHOICES = [
+    ('1', _('1 table')),
+    ('2', _('2 tables')),
+    ('3', _('3 tables')),
+    ('4+', _('4+ tables')),
+]
+
 
 class Programme(models.Model, CsvExportMixin):
     """
@@ -347,6 +370,7 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name=_('Language'),
         help_text=_('What is the primary language of your programme?'),
     )
+    is_in_english = models.BooleanField(default=False)
 
     # Originally hitpoint2017 rpg form fields
     rpg_system = models.CharField(
@@ -389,6 +413,7 @@ class Programme(models.Model, CsvExportMixin):
         ),
         default=False,
     )
+    is_family_program = models.BooleanField(default=False)
     is_age_restricted = models.BooleanField(
         verbose_name=_('restricted to people of age 18 and over'),
         help_text=_(
@@ -433,6 +458,23 @@ class Programme(models.Model, CsvExportMixin):
             'When would you like to run your RPG? The time slots are intentionally vague. If you have more '
             'specific needs regarding the time, please explain them in the last open field.'
         ),
+        blank=True,
+    )
+    ropecon2019_blocked_time_slots = models.ManyToManyField('ropecon2019.TimeSlot',
+        verbose_name=_('time preferences'),
+        help_text=_(
+            'When are you <strong>unable to run</strong> your game?<br><br>'
+            'Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> '
+            'field below (e.g. <em>I’d like to run my game late in the evening</em>), but here we want information about limitations '
+            'set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your '
+            'accommodation in time).'
+        ),
+        blank=True,
+    )
+    is_revolving_door = models.BooleanField(
+        verbose_name=_('Revolving door game'),
+        help_text=_('Check this box if new players can join during gameplay and old players may (or must) leave before the game is over. Please mention this in the game description below, and give more details if necessary.'),
+        default=False,
     )
 
     is_using_paikkala = models.BooleanField(
@@ -454,29 +496,6 @@ class Programme(models.Model, CsvExportMixin):
         ('150-200', _('150 - 200')),
         ('200-250', _('200 - 250')),
         ('gt250', _('Over 250')),
-    ]
-
-    ROPECON2018_SIGNUP_LIST_CHOICES = [
-        ('itse', _('I will make my own signup sheet')),
-        ('tiski', _('Desk will make the signup sheet')),
-    ]
-
-    ROPECON2018_KP_LENGTH_CHOICES = [
-        ('4h', _('4 hours')),
-        ('8h', _('8 hours')),
-    ]
-
-    ROPECON2018_KP_DIFFICULTY_CHOICES = [
-        ('simple', _('Simple')),
-        ('advanced', _('Advanced')),
-        ('high', _('Highly Advanced')),
-    ]
-
-    ROPECON2018_KP_TABLE_COUNT_CHOICES = [
-        ('1', _('1 table')),
-        ('2', _('2 tables')),
-        ('3', _('3 tables')),
-        ('4+', _('4+ tables')),
     ]
 
     ropecon2018_audience_size = models.CharField(
@@ -540,6 +559,11 @@ class Programme(models.Model, CsvExportMixin):
 
     ropecon2018_genre_exploration = models.BooleanField(
         verbose_name=_('Exploration'),
+        default=False,
+    )
+
+    ropecon2019_genre_adventure = models.BooleanField(
+        verbose_name=_('Adventure'),
         default=False,
     )
 
