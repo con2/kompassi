@@ -154,7 +154,6 @@ class Setup(object):
                 title='Tarjoa ohjelmaa',
                 programme_form_code='events.finncon2018.forms:ProgrammeForm',
                 num_extra_invites=3,
-                active_from=datetime(2018, 4, 17, 22, 46, 0, tzinfo=self.tz),
             ),
         )
 

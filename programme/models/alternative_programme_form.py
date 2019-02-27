@@ -66,17 +66,7 @@ class AlternativeProgrammeForm(models.Model):
         help_text=_('A reference to the form class that implements the form. Example: hitpoint2017.forms:RolePlayingGameForm'),
     )
 
-    active_from = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name=_('Active from'),
-    )
-
-    active_until = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name=_('Active until'),
-    )
+    is_active = models.BooleanField(default=True)
 
     num_extra_invites = models.PositiveIntegerField(
         default=5,
@@ -101,29 +91,6 @@ class AlternativeProgrammeForm(models.Model):
             self._programme_form_class = get_code(self.programme_form_code)
 
         return self._programme_form_class
-
-    @property
-    def is_active(self):
-        return is_within_period(self.active_from, self.active_until)
-
-    @classmethod
-    def get_active_alternative_programme_forms(cls, t=None, **kwargs):
-        if t is None:
-            t = now()
-
-        q = (
-            # starting time is defined and it has been passed
-            Q(active_from__isnull=False, active_from__lte=t) &
-
-            # if ending time is defined, it must not yet have been passed
-            ~Q(active_until__isnull=False, active_until__lte=t)
-        )
-
-        if kwargs:
-            # any extra criteria that may have been defined
-            q = q & Q(**kwargs)
-
-        return cls.objects.filter(q)
 
     class Meta:
         verbose_name = _('alternative programme form')

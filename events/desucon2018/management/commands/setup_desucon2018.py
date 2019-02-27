@@ -280,7 +280,6 @@ class Setup(object):
                 title='Ohjelmalomake',
                 short_description='',
                 programme_form_code='events.desucon2018.forms:ProgrammeForm',
-                active_from=datetime(2018, 1, 28, 0, 0, 0, tzinfo=self.tz),
                 num_extra_invites=0,
             )
         )

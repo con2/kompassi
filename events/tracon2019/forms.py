@@ -191,19 +191,24 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(ProgrammeForm, self).__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-        for field_name in [
-            'title',
-            'description',
-            'long_description',
-            'length_from_host',
-        ]:
-            self.fields[field_name].required = True
+        self.fields['title'].required = True
+        if not admin:
+            for field_name in [
+                'description',
+                'encumbered_content',
+                'photography',
+                'rerun',
+                'stream_permission',
+                'video_permission',
+            ]:
+                self.fields[field_name].required = True
 
         self.fields['category'].queryset = Category.objects.filter(event=event, public=True)
 
@@ -232,6 +237,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'number_of_microphones',
             'tech_requirements',
             'video_permission',
+            'stream_permission',
             'encumbered_content',
             'photography',
             'rerun',
@@ -244,6 +250,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(RpgForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -271,11 +278,15 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
 
-        self.fields['three_word_description'].required = True
-        self.fields['rpg_system'].required = True
+        if not admin:
+            for field_name in [
+                'three_word_description',
+                'rpg_system',
+                'description',
+            ]:
+                self.fields[field_name].required = True
 
         self.fields['description'].help_text = RPG_DESCRIPTION_HELP_TEXT
-        self.fields['description'].required = True
 
     class Meta:
         model = Programme

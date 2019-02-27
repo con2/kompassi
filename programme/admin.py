@@ -181,7 +181,7 @@ class ProgrammeFeedbackAdmin(admin.ModelAdmin):
 
 class AlternativeProgrammeFormAdmin(admin.ModelAdmin):
     model = AlternativeProgrammeForm
-    list_display = ('event', 'title')
+    list_display = ('event', 'title', 'is_active')
     list_filter = ('event',)
 
 

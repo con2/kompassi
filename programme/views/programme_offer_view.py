@@ -24,10 +24,7 @@ def programme_offer_view(request, event):
         return redirect('programme_offer_form_view', event.slug, 'default')
 
     # event uses explicitly defined forms
-    alternative_programme_forms = AlternativeProgrammeForm.get_active_alternative_programme_forms(
-        event=event,
-    )
-
+    alternative_programme_forms = AlternativeProgrammeForm.objects.filter(event=event, is_active=True)
     num_alternative_programme_forms = alternative_programme_forms.count()
 
     if not meta.is_accepting_cold_offers or num_alternative_programme_forms == 0:

@@ -299,8 +299,6 @@ class Setup(object):
                 title='Tarjoa pöytäroolipeliä',
                 description='',
                 programme_form_code='events.hitpoint2019.forms:RpgForm',
-                active_from=now(),
-                active_until=self.event.end_time,
                 num_extra_invites=0,
                 order=10,
             )
@@ -313,8 +311,6 @@ class Setup(object):
                 title='Tarjoa freeform-skenaariota',
                 short_description='',
                 programme_form_code='events.hitpoint2019.forms:FreeformForm',
-                active_from=now(),
-                active_until=self.event.end_time,
                 num_extra_invites=0,
                 order=20,
             )
@@ -327,8 +323,6 @@ class Setup(object):
                 title='Tarjoa puhe- tai muuta ohjelmaa',
                 short_description='Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole roolipeli tai freeform-skenaario.',
                 programme_form_code='programme.forms:ProgrammeOfferForm',
-                active_from=now(),
-                active_until=self.event.end_time,
                 num_extra_invites=0,
                 order=30,
             )

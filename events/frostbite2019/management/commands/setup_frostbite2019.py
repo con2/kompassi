@@ -280,7 +280,6 @@ class Setup(object):
                 title='Ohjelmalomake',
                 short_description='',
                 programme_form_code='events.frostbite2019.forms:ProgrammeForm',
-                active_from=datetime(2018, 9, 16, 0, 0, 0, tzinfo=self.tz),
                 num_extra_invites=0,
             )
         )

@@ -42,7 +42,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
     else:
         FormClass = ProgrammeSelfServiceForm
 
-    programme_form = initialize_form(FormClass, request, instance=programme, event=event, prefix='programme')
+    programme_form = initialize_form(FormClass, request, instance=programme, event=event, prefix='programme', admin=True)
     internal_form = initialize_form(ProgrammeInternalForm, request, instance=programme, event=event, prefix='internal')
     schedule_form = initialize_form(ScheduleForm, request, instance=programme, event=event, prefix='schedule')
     is_using_paikkala_form = initialize_form(IsUsingPaikkalaForm, request,
