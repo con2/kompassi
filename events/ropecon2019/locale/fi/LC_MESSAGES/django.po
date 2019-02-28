@@ -131,3 +131,38 @@ msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa larpp
 
 msgid "Family-friendly"
 msgstr "Perheohjelma"
+
+# ohjelmalomake
+
+msgid "Come up with a catchy, concise title for your program. Ropecon reserves the right to edit the title if necessary."
+msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
+
+msgid "Describe your program to your potential audience or participants in an appealing way. If your program contains topics that are heavy or potentially distressing, please pay special attention to this in the description. Recommended length is 300-500 characters. Ropecon reserves the right to edit the description and title of the program if necessary, for example reducing their length."
+msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+msgid "Program category"
+msgstr "Ohjelmaluokka"
+
+msgid "Choose the program category that best suits your program. Ropecon reserves the right to change the program category if necessary."
+msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa."
+
+msgid "Duration of lectures and panel discussions is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other program, please make an estimation."
+msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia. Työpaja voi olla 45, 105 tai 165 minuuttia. Muut ohjelmat voivat arvioida keston."
+
+msgid "If your program is suitable for or aimed at children, teenagers or families, please tick the checkbox. More details can be provided in the last text field."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sopii myös nuoremmille osallistujille. Anna tarvittaessa lisätietoja ikäsuosituksista viimeisessä avoimessa kentässä."
+
+msgid "Max. number of participants"
+msgstr "Osallistujamäärä"
+
+msgid "If your workshop or other program can only host a limited number of participants, please provide a maximum number of attendees."
+msgstr "Mikäli työpajan tai muun ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
+
+msgid "Preferred schedule"
+msgstr "Aikatoiveet"
+
+msgid "Select the times when you DO NOT want to have your program. Time slots have been intentionally left vague. If you have further requests on time slots and schedule, more details can be provided in the open comment field below."
+msgstr "Ruksaa ne ajat, jolloin ET halua pitää ohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
+
+msgid "Do you have any further information, details, comments or questions that you would like to let our program coordinators to know?"
+msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"

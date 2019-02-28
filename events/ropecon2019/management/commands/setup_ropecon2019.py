@@ -308,22 +308,21 @@ class Setup(object):
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
             for title, slug, style in [
-                ('Larp', 'larp', 'color1'),
-                ('Lautapelit', 'lautapeli', 'color2'),
-                ('Puheohjelma', 'puheohjelma', 'color3'),
-                ('Roolipeli', 'roolipeli', 'color4'),
-                ('Korttipelit', 'korttipeli', 'color5'),
-                ('Figupelit', 'figupeli', 'color6'),
-                ('Kokemuspiste', 'kokemuspiste', 'color8'),
-                ('Panel', 'puhe-paneeli', 'color3'),
-                ('Workshop', 'puhe-tyopaja', 'color3'),
-                ('Dance program', 'puhe-tanssi', 'color3'),
-                ('Presentation', 'puhe-esitelma', 'color3'),
-                ('Experience point', 'puhe-kp', 'color3'),
-                ('Larps', 'puhe-larpit', 'color3'),
-                ('Freeform', 'puhe-freeform', 'color3'),
-                ('Other program', 'puhe-muu', 'color3'),
-                ('Sisäinen ohjelma', 'sisainen-ohjelma', 'sisainen'),
+                ('Puheohjelma: esitelmä / Presentation', 'pres', 'color1'),
+                ('Puheohjelma: paneeli / Panel discussion', 'panel', 'color1'),
+                ('Puheohjelma: keskustelu / Discussion group', 'disc', 'color1'),
+                ('Työpaja: käsityö / Crafts', 'craft', 'color2'),
+                ('Työpaja: figut / Miniature figurines', 'mini', 'color2'),
+                ('Työpaja: musiikki / Music', 'music', 'color2'),
+                ('Työpaja: muu / Other workshop', 'workshop', 'color2'),
+                ('Pelitiski: Figupeli / Miniature wargame', 'miniwar', 'color3'),
+                ('Pelitiski: Korttipeli / Card game', 'card', 'color3'),
+                ('Pelitiski: Lautapeli / Board game', 'board', 'color3'),
+                ('Pelitiski: Kokemuspiste / Experience Point', 'exp', 'color3'),
+                ('Roolipeli / Pen & Paper RPG', 'rpg', 'color4'),
+                ('LARP', 'larp', 'color5'),
+                ('Muu ohjelma / None of the above', 'other', 'color6'),
+                ('Sisäinen ohjelma', 'internal', 'sisainen'),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
@@ -485,30 +484,34 @@ Otathan huomioon myös inklusiivisuuskysymykset, eli pelisi esteettömyyden esim
 #             )
 #         )
 
-#         AlternativeProgrammeForm.objects.get_or_create(
-#             event=self.event,
-#             slug='puheohjelma',
-#             defaults=dict(
-#                 title='Tarjoa puheohjelmaa tai työpajoja',
-#                 short_description='Puheohjelmat eli esitelmät, paneelit, jne',
-#                 description='''
-# Vuoden 2019 Ropeconiin etsitään kiinnostavia ja mukaansatempaavia esitelmiä, työpajoja sekä paneelikeskusteluja erityisesti teemalla elämä ja yhteisö. Toivomme tänä vuonna lisää englanninkielistä ohjelmaa. Mainitsethan, jos pystyt vetämään ohjelmanumerosi sekä suomeksi että englanniksi.
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='default',
+            defaults=dict(
+                title='Tarjoa puheohjelmaa tai työpajoja',
+                short_description='Puheohjelmat eli esitelmät, paneelit, jne',
+                description='''
+Tervetuloa tarjoamaan ohjelmaa Ropecon-kävijöille!
 
-# Puheohjelma voi olla esitelmä, keskustelu, paneeli tai työpaja, ja se voi olla aloittelijaystävällinen tai kokeneille konkareille.
+Tällä lomakkeella voit tarjota kaikkea ei-pelillistä ohjelmaa: puheohjelmaa, työpajoja tai muuta ohjelmaa, joka ei sovi pelien kategorioihin.
 
-# Etsimme taiteisiin, käsitöihin ja muuhun roolipelaamisen ympärillä tapahtuvaan luovaan harrastamiseen liittyvää ohjelmaa. Haemme myös lauta-, figu- ja pöytäroolipeliaiheista puheohjelmaa ja työpajoja.
+Vuoden 2019 Ropeconiin etsitään kiinnostavia ja mukaansatempaavia esitelmiä, työpajoja sekä paneelikeskusteluja erityisesti teemalla mytologia. Toivomme lisää englanninkielistä ohjelmaa, joten mainitsethan, jos pystyt vetämään ohjelmanumerosi sekä suomeksi että englanniksi. Toivomme myös lapsille ja perheille soveltuvaa ohjelmaa.
 
-# Puheohjelman pituus on 45 minuuttia tai 105 minuuttia. Jos ilmoitat ohjelmaan työpajan, toivomme että se järjestetään kahdesti tapahtuman aikana.
+Etsimme taiteisiin, käsitöihin ja muuhun roolipelaamisen ympärillä tapahtuvaan luovaan harrastamiseen liittyvää ohjelmaa. Haemme myös lauta-, figu- ja pöytäroolipeliaiheista puheohjelmaa ja työpajoja.
 
-# Tänä vuonna Ropeconissa on myös akateemista ohjelmaa. Akateemiseen ohjelmaan on erillinen haku.
+Puheohjelman pituus on 45 minuuttia tai 105 minuuttia; työpaja voi olla pidempikin, 165 minuuttia. Jos ilmoitat ohjelmaan työpajan, toivomme että se järjestetään kahdesti tapahtuman aikana.
 
-# Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista tiloista ovat käytössä ainakin salit 201 sekä 204 - 207. Uutena puheohjelman käyttöön tulee ainakin sali 103. Voit tutustua tiloihin etukäteen virtuaaliesittelyn avulla.
-#                 '''.strip(),
-#                 programme_form_code='events.ropecon2019.forms:PuheohjelmaForm',
-#                 num_extra_invites=0,
-#                 order=10,
-#             )
-#         )
+Tällä lomakkeella voi ilmoittaa myös muuta ohjelmaa, kuten taistelunäytöksen tai tanssiesityksen.
+
+Kaiken ohjelman on noudatettava <a href="https://2019.ropecon.fi/kavijalle/hairinta/" target="_blank">Ropeconin häirinnänvastaista linjausta</a>.
+
+Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erillinen haku.
+                '''.strip(),
+                programme_form_code='events.ropecon2019.forms:ProgrammeForm',
+                num_extra_invites=0,
+                order=300,
+            )
+        )
 
         for time_slot_name in [
             'Perjantaina iltapäivällä / Friday afternoon',

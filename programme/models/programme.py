@@ -371,6 +371,11 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_('What is the primary language of your programme?'),
     )
     is_in_english = models.BooleanField(default=False)
+    is_inaccessible = models.BooleanField(
+        default=False,
+        verbose_name=_('Accessibility hazard'),
+        help_text=_('If your program contains loud noises, flashing lights or other elements that can limit accessibility, please tick the checkbox. More details can be provided in the last text field if necessary.'),
+    )
 
     # Originally hitpoint2017 rpg form fields
     rpg_system = models.CharField(
@@ -430,6 +435,17 @@ class Programme(models.Model, CsvExportMixin):
     is_intended_for_experienced_participants = models.BooleanField(
         verbose_name=_('experienced participants preferred'),
         default=False,
+    )
+    is_available_for_panel = models.BooleanField(
+        default=False,
+        verbose_name=_('Panel discussions'),
+        help_text=_('I can participate in a panel discussion on my field of expertise during the convention.'),
+    )
+    field_of_expertise = models.CharField(
+        max_length=1023,
+        blank=True,
+        default='',
+        verbose_name=_('My field of expertise'),
     )
     min_players = models.PositiveIntegerField(
         verbose_name=_('minimum number of players'),
@@ -694,6 +710,14 @@ class Programme(models.Model, CsvExportMixin):
             'If the scenario has been written by someone else than the GM, we require that the author be '
             'disclosed.'
         ),
+    )
+
+    content_warnings = models.CharField(
+        max_length=1023,
+        blank=True,
+        default='',
+        verbose_name=_('Content warnings'),
+        help_text=_('If your program contains heavy topics or potentially distressing themes, please mention it here.'),
     )
 
     # Internal fields

@@ -1450,3 +1450,24 @@ msgstr "aikatoiveet"
 
 msgid "When are you <strong>unable to run</strong> your game?<br><br>Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time)."
 msgstr "Milloin <strong>et pysty</strong> pelauttamaan peliäsi?<br><br>Merkitse tähän ne ajat, jolloin sinun <strong>ei ole mahdollista</strong> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. <em>haluaisin peluuttaa pelini myöhään illalla</em>), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi).
+
+msgid "Content warnings"
+msgstr "Sisältövaroitukset"
+
+msgid "If your program contains heavy topics or potentially distressing themes, please mention it here."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
+
+msgid "Accessibility hazard"
+msgstr "Esteellinen"
+
+msgid "If your program contains loud noises, flashing lights or other elements that can limit accessibility, please tick the checkbox. More details can be provided in the last text field if necessary."
+msgstr "Ruksaa tämä ruutu, jos ohjelma sisältää kovia ääniä, valoja tai muuta, mikä voi rajoittaa osallistumista. Tarkenna tarvittaessa viimeisessä avoimessa kentässä."
+
+msgid "Panel discussions"
+msgstr "Paneelikeskustelu"
+
+msgid "I can participate in a panel discussion on my field of expertise during the convention."
+msgstr "Voin osallistua erikoisalaani sivuavaan paneelikeskusteluun"
+
+msgid "My field of expertise"
+msgstr "Erikoisalani"
