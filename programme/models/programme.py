@@ -465,7 +465,7 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_(
             'When are you <strong>unable to run</strong> your game?<br><br>'
             'Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> '
-            'field below (e.g. <em>I’d like to run my game late in the evening</em>), but here we want information about limitations '
+            "field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations "
             'set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your '
             'accommodation in time).'
         ),

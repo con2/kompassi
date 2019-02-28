@@ -1,2 +1,77 @@
 msgid "Who is the game meant for?"
 msgstr "Kenelle peli on tarkoitettu?"
+
+msgid "Game title"
+msgstr "Pelin nimi"
+
+msgid "RPG system"
+msgstr "Roolipelijärjestelmä"
+
+msgid "Which RPG system does the game use?"
+msgstr "Mitä järjestelmää peli käyttää?"
+
+msgid "Game length (minutes)"
+msgstr "Pelin kesto (minuuttia)"
+
+msgid "Minimum number of players"
+msgstr "Pelaajien vähimmäismäärä"
+
+msgid "Consider the minimum number of players carefully: You will maximize your chances of running the game by setting the number as low as possible."
+msgstr "Harkitse pelaajien vähimmäismäärä tarkkaan: Maksimoit pelin toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
+
+msgid "Maximum number of players"
+msgstr "Pelaajien enimmäismäärä"
+
+msgid "In English"
+msgstr "Englanninkielinen"
+
+msgid "Please tick this box if the game is played in English."
+msgstr "Ruksaa tämä ruutu, jos peli pelataan englanniksi."
+
+msgid "Ages 18+ only"
+msgstr "Vain täysi-ikäisille"
+
+msgid "Please tick this box if your game contains themes which require it to be restricted to players who are 18+ years old. Please give more details in the game description."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä. Anna lisätietoja pelin kuvauksessa."
+
+msgid "Suitable for children"
+msgstr "Lapsiystävällinen"
+
+msgid "Please tick this box if your game is also suitable for children. If necessary, you can give more details in the game description."
+msgstr "Ruksaa tämä ruutu jos pelisi soveltuu myös lapsille. Voit antaa lisätietoja pelin kuvauksessa."
+
+msgid "Family program"
+msgstr "Perheohjelma"
+
+msgid "Please tick this box if your game has been designed also for the youngest players, and the players’ guardians may help the players or participate in the game with them. If necessary, you can give more details in the game description."
+msgstr "Ruksaa tämä ruutu jos pelisi on erityisesti suunniteltu myös pienimmille pelaajille, ja huoltajat voivat toimia pelaajien tukena tai osallistua peliin heidän kanssaan. Voit antaa lisätietoja pelin kuvauksessa."
+
+msgid "For experienced players"
+msgstr "Kokeneille pelaajille"
+
+msgid "Check this if the game requires knowledge of the world or the rules of the game."
+msgstr "Valitse tämä jos peli vaatii pelin maailman tai sääntöjen tuntemusta."
+
+msgid "Game genre (Choose all which apply)"
+msgstr "Pelin genre (valitse soveltuvat)"
+
+msgid "Game style (Choose any which apply)"
+msgstr "Pelin tyyli (valitse soveltuvat)"
+
+msgid "Description"
+msgstr "Kuvaus"
+
+msgid "Advertise your game to potential players. Be extra sure to inform about potentially shocking or disturbing themes. Recommended length is 300–500 characters. We reserve the right to edit the text as necessary.<br><br>Please write the description at least in the language the game will be run in (English or Finnish). You may include the description in both languages, if you wish."
+msgstr "Mainosta peliäsi pelaajille. Varmista, että kerrot mahdollisesti järkyttävistä tai häiritsevistä teemoista. Suositeltu pituus on 300-500 merkkiä. Pidätämme oikeuden muokata tekstiä tarpeen mukaan.<br><br>Kirjoita kuvaus ainakin sillä kielellä, jolla peli peluutetaan (suomeksi tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
+
+msgid "Short blurb"
+msgstr "Lyhyt mainoslause"
+
+msgid "Summarize your game in one sentence which helps potential players get the gist of your game. For example, “Traditional D&D dungeon adventure” or “Lovecraftian horror in Equestria”. We reserve the right to edit the text."
+msgstr "Tiivistä pelisi yhteen lauseeseen, joka kertoo pelaajalle pelin sisällöstä tärkeimmän. Esim. “Perinteistä D&D-luolastoseikkailua” tai “Lovecraftilaista kauhua Equestriassa”. Pidätämme oikeuden muokata tekstiä."
+
+msgid "Other information for the RPG coordinator"
+msgstr "Muuta tietoa roolipelivastaavalle"
+
+msgid "If there is anything else you wish to say to the RPG coordinator that is not covered by the above questions, please enter it here."
+msgstr "Jos haluat kertoa roolipelivastaavalle jotakin joka ei sisälly ylläoleviin kenttiin, kirjoita se tähän."

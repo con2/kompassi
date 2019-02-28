@@ -499,16 +499,16 @@ Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautukse
 #         )
 
         for time_slot_name in [
-            'Perjantaina iltapäivällä',
-            'Perjantaina illalla',
-            'Perjantain ja lauantain välisenä yönä',
-            'Lauantaina aamupäivällä',
-            'Lauantaina päivällä',
-            'Lauantaina iltapäivällä',
-            'Lauantaina illalla',
-            'Lauantain ja sunnuntain välisenä yönä',
-            'Sunnuntaina aamupäivällä',
-            'Sunnuntaina päivällä',
+            'Perjantaina iltapäivällä / Friday afternoon',
+            'Perjantaina illalla / Friday evening',
+            'Perjantain ja lauantain välisenä yönä / Friday night',
+            'Lauantaina aamupäivällä / Saturday morning',
+            'Lauantaina päivällä / Saturday noon',
+            'Lauantaina iltapäivällä / Saturday afternoon',
+            'Lauantaina illalla / Saturday evening',
+            'Lauantain ja sunnuntain välisenä yönä / Saturday night',
+            'Sunnuntaina aamupäivällä / Sunday morning',
+            'Sunnuntaina päivällä / Sunday noon',
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
 
