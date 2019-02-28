@@ -563,7 +563,7 @@ Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautukse
 
         for product_info in [
             dict(
-                name='Ropecon 2019 Early bird -viikonloppulippu',
+                name='Ropecon 2019 Early Dragon -viikonloppulippu',
                 description='Sisältää pääsyn Ropecon 2019 -tapahtumaan koko viikonlopun ajan.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
@@ -575,7 +575,7 @@ Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautukse
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2019 Lasten early bird -viikonloppulippu',
+                name='Ropecon 2019 Lasten Early Dragon -viikonloppulippu',
                 description='Sisältää pääsyn lapselle (7-12 v) Ropecon 2019 -tapahtumaan koko viikonlopun ajan.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
@@ -635,8 +635,8 @@ Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautukse
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2019 Akateeminen ohjelma + perjantaipäivälippu',
-                description='Sisältää pääsyn Akateemiseen ohjelmaan ja Ropecon 2019 -tapahtumaan perjantaina. Rekisteröitymislinkki: ??',
+                name='Ropecon 2019 Akateeminen seminaari + perjantaipäivälippu',
+                description='Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2019 -tapahtumaan perjantaina. Muista myös <a href="https://goo.gl/forms/J9X1401lERxaX3M52">rekisteröityä</a>!',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
