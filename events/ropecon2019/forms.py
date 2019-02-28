@@ -335,7 +335,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         for field_name, texts in PROGRAMME_FORM_FIELD_TEXTS.items():
             self.fields[field_name].label, self.fields[field_name].help_text = texts
 
-        self.fields['category'].choices = Category.objects.filter(event=event, slug__in=(
+        self.fields['category'].queryset = Category.objects.filter(event=event, slug__in=(
             'pres',
             'panel',
             'disc',
