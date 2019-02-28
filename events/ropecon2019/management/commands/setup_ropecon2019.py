@@ -388,22 +388,34 @@ Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautukse
             )
         )
 
-#         AlternativeProgrammeForm.objects.get_or_create(
-#             event=self.event,
-#             slug='larp',
-#             defaults=dict(
-#                 title='Tarjoa larppia',
-#                 short_description='Larpit eli liveroolipelit',
-#                 description='''
-# Ropecon etsii innokkaita larpinjärjestäjiä! Nyt on tilaisuutesi tulla mukaan järjestämään huvia ja viihdettä koko kansalle pienen tai isonkin conipelin muodossa. Pelipaikkoja on rajoitetusti, joten kerää ideasi, kimpsusi ja kampsusi ja laita näppäimistö sauhuamaan saman tien. Tarjolla on ikuista kunniaa ja viikonloppurannekkeita. Ekstra-plussaa saat, jos pelisi heijastelee klassikot-teemaa. Larppien käyttöön on suunniteltu saleja 216, 216a, 217 ja 218. Voit tutustua tiloihin etukäteen virtuaaliesittelyn avulla.
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='larp',
+            defaults=dict(
+                title='Tarjoa larppia',
+                short_description='Larpit eli liveroolipelit',
+                description='''
+Tervetuloa tarjoamaan Ropeconin kävijöille larp-elämyksiä!
 
-# Kiinnostaako freeform? Freeform-pelit ovat larpin kaltaisia pelejä, jotka pelataan yhdessä huoneessa vähäisellä proppauksella. Pelit ovat yleensä vahvasti tarinankerronnallisia. Freeform-pelien järjestäjäksi ilmoittaudutaan pöytäroolipelien lomakkeella. Lue lisää pöytäroolipelien kuvauksesta!
-#                 '''.strip(),
-#                 programme_form_code='events.ropecon2019.forms:LarpForm',
-#                 num_extra_invites=0,
-#                 order=30,
-#             )
-#         )
+Voit tarjota tällä lomakkeella sekä itse kirjoittamiasi pelejä että valmiita skenaarioita. Toivomme saavamme coniin hienon kattauksen sekä kotimaisia ensipelautuksia että kansainvälisiä klassikoita. Yhdellä oman pelisi pelautuksella (n. 3-4 tuntia) tai kahdella valmiin skenaarion pelautuksella (n. 6-8 tuntia) saat yhden viikonloppulipun Ropeconiin.
+
+Suosittelemme keskittymään pelisuunnittelussa/valinnassa olennaiseen: conikävijöillä ei välttämättä ole mahdollisuuksia tuoda mukanaan tarkasti määriteltyjä proppeja tai opetella kymmenien sivujen taustamateriaaleja. Parhaiten toimivat lyhyehköt pelit, joihin pelaajat voivat saapua mukanaan vain oma mielikuvituksensa ja halu pelata toistensa kanssa. Toivomme myös, että mahdollisimman moni peli olisi mahdollisimman monen kävijän pelattavissa, eivätkä pelaajan tiedot, taidot tai ominaisuudet estä peliin osallistumista.
+
+Kävijät toivoivat viime vuonna etenkin lyhyitä pelejä sekä lapsille sopivia larppeja, joten toivomme ehdotuksia lyhyistä, toistettavissa olevista pelautuksista sekä lapsille suunnitelluista larpeista.
+
+Larpit järjestetään tänäkin vuonna Siiven huoneissa 215-217, joihin voit tutustua <a href="https://messukeskus.visualizer360.com/tilat#20250,20307,0,0" target="_blank">Messukeskuksen sivuilla</a>. Pyrimme rakentamaan yhteen huoneista black boxin (black box -larpeista voit lukea <a href="https://nordiclarp.org/wiki/Black_Box_Larp" target="_blank">Nordic Larp Wikissä</a>) ja varustamaan muut huoneista tunnelmaa luovilla valospoteilla. Kerrothan tilatoiveissa, mikäli suunnitelmissasi on black box -larppi! Valitettavasti emme voi tarjota suurempia lavasteita tai proppeja, joten otathan tämän peliäsi suunnitellessa huomioon.
+
+Jos sinulla kuitenkin sattuu olemaan omasta takaa mahdollisuus esimerkiksi lavastaa jokin tila peliisi sopivaksi tai haluat tarjota koko Ropeconin ajan kestävän, Messukeskuksen alueelle levittyvän immersiivisen kokemuksen, emme missään tapauksessa kiellä tällaisten spektaakkelien suunnittelua. Kerro siinä tapauksessa meille lisää suunnitelmistasi, ja pohditaan yhdessä, kuinka sen voisi toteuttaa!
+
+Kaikkien Ropeconissa pelautettavien larppien tulee soveltaa <a href="https://turvallisempaa.wordpress.com/" target="_blank">häirinnän vastaista materiaalipakettia</a>, eikä niissä hyväksytä ahdistelua ja häirintää (paitsi hahmojen toimintana pelissä, kaikkien osapuolten rajoja kunnioittaen). Tavoitteena on luoda yhdessä turvallinen peliympäristö jokaiselle peliin osallistujalle. Odotamme pelinjohtajien tuntevan materiaalin ja sitoutuvan omalla toiminnallaan edistämään turvallista peliympäristöä ja torjumaan häirintää.
+
+Otathan huomioon myös inklusiivisuuskysymykset, eli pelisi esteettömyyden esimerkiksi liikuntarajoitteisille tai näkövammaisille pelaajille. Toivomme, että mahdollisimman moni kävijä voisi osallistua Ropeconin larppeihin. Ole meihin rohkeasti yhteydessä osoitteeseen <a href="mailto:larpit@ropecon.fi">larpit@ropecon.fi</a>, jos nämä kysymykset askarruttavat.
+                '''.strip(),
+                programme_form_code='events.ropecon2019.forms:LarpForm',
+                num_extra_invites=0,
+                order=30,
+            )
+        )
 
 #         AlternativeProgrammeForm.objects.get_or_create(
 #             event=self.event,

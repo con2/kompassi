@@ -1,3 +1,5 @@
+# ropelomake
+
 msgid "Who is the game meant for?"
 msgstr "Kenelle peli on tarkoitettu?"
 
@@ -75,3 +77,57 @@ msgstr "Muuta tietoa roolipelivastaavalle"
 
 msgid "If there is anything else you wish to say to the RPG coordinator that is not covered by the above questions, please enter it here."
 msgstr "Jos haluat kertoa roolipelivastaavalle jotakin joka ei sisälly ylläoleviin kenttiin, kirjoita se tähän."
+
+
+# larppilomake
+
+msgid "Title of the larp"
+msgstr "Pelin nimi"
+
+msgid "Come up with a catchy and concise name for your larp. Ropecon reserves the right to edit the title."
+msgstr "Keksi ytimekäs otsikko pelillesi. Varaamme oikeuden muokata otsikkoa."
+
+msgid "Estimated duration (minutes)"
+msgstr "Arvioitu pituus (minuuttia)"
+
+msgid "For one run of a 3-4 hour game (180-240 minutes) of your own writing you will receive one free weekend ticket. This includes time for propping, brief and debrief, as well as the actual game time. "
+msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman pelisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+
+msgid "Number of runs"
+msgstr "Pelautusten lukumäärä"
+
+msgid "Here you can request how many times you would like to run your game during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour game of your own writing or two runs of a pre-written scenario you will receive one free weekend ticket. Additional runs of your game will yield an extra one-day ticket."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit pelisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita.<br><br>Yhdellä oman pelisi 3-4 tunnin pelautuksella tai kahdella skenaarion pelautuksella saat yhden viikonloppurannekkeen. Lisäpelautuksella saat lisäksi päivärannekkeen."
+
+msgid "Comments"
+msgstr "Vapaamuotoiset terveiset"
+
+msgid "Is there anything else you would like to tell the organizers?<br><br>Please mention here if the design of your game dictates that some of the characters need to be a specific gender (eg. larps about a men’s sauna night or World War II female fighter pilots).<br><br>We would like the larp program as a whole to offer something for all attendees, even if not all players wish to play all genders. Due to this, some larps may be cut from the program.<br><br>You can also enter your more specific scheduling preferences here."
+msgstr "Haluatko sanoa larp-coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä?<br><br>Mainitse tässä, jos pelisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br><br>Pyrimme, että kokonaisuudessaan conissa olevissa peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br><br>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+
+msgid "The game can be run in English"
+msgstr "Pelin voi pelauttaa englanniksi"
+
+msgid "If you are able, prepared and willing to organise your program in English if necessary, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+
+msgid "The game is intended for players over 18"
+msgstr "Peli on tarkoitettu vain täysi-ikäisille pelaajille"
+
+msgid "Please tick this box if your game involves themes necessitating that all players are 18 years or older."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä."
+
+msgid "The game is intended for children"
+msgstr "Peli on tarkoitettu lapsille"
+
+msgid "Please tick this box if your game is designed for children."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi on suunniteltu lapsille."
+
+msgid "Beginner-friendly"
+msgstr "Aloittelijaystävällinen"
+
+msgid "If your game is suitable for players without any or with very limited larping experience, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa larppikokemusta olisi hyvin vähän tai ei lainkaan."
+
+msgid "Family-friendly"
+msgstr "Perheohjelma"
