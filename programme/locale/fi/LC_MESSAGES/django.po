@@ -1474,3 +1474,6 @@ msgstr "Erikoisalani"
 
 msgid "What type of game program are you offering? Tournament - organizing your own tournament or competition. Demonstration - showcasing, demonstrating and playing a game. Open game - playing a game with or without specific scenarios."
 msgstr "Minkä tyyppinen peliohjelma on kyseessä? Turnaus - turnauksen ja kilpailun järjestämistä. Demotus - pelin esittelyä ja demottamista sekä pelaamista. Avoin peluutus - vapaata pelaamista skenaarioita tai ihan yleistä pelaamista."
+
+msgid "Game program type"
+msgstr "Peliohjelman tyyppi"
