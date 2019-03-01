@@ -372,3 +372,90 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         widgets = dict(
             ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
+
+
+GAMING_DESK_FORM_FIELD_TEXTS = dict(
+    category=dict(_('Game program area'), _('Which area do you think your game program belongs to?')),
+    title=dict(_('Title'), _('Give your game program a catchy and concise title. We reserve the right to change the title if necessary.')),
+    approximate_length=dict(_('Estimated duration (minutes)'), _('For 3-4 hours (180-240 minutes) of game program you will receive a one-day ticket to Ropecon. For 6-8 hours (360-480 minutes) of game program you will receive a weekend ticket to Ropecon.')),
+    max_players=dict(_('Number of participants'), _('How many players can participate in the game?')),
+    description=dict(_('Description'), _('Advertise your game for potential players. Include information about what is expected of players and what kind of themes the game involves. Please mention here if your game involves difficult themes such as physical or psychological abuse. The recommended length of the description is 300-500 characters. We reserve the right to edit the description if necessary.')),
+    rpg_system=dict(_('Game system'), _('What is the game system used? For example, “Magic the Gathering” Did you design the game yourself? Describe it in a few words, for example “4X, space battle, conquest”')),
+    ropecon2018_signuplist=dict(_('Signup'), _('How do players sign up for your program? Sign up at the Gaming Desk - The Gaming Desk will collect a list of the participants. I will collect sign-ups - You will collect sign-ups yourself in any way you prefer. No sign-up - The game does not require sign-ups.')),
+    tech_requirements=dict(_('Space and technical needs'), _('Tell us how much table space and how many chairs you need, and whether you have any technical needs (eg. electricity). Unfortunately all requests cannot be fulfilled, so please justify how your request serves the program. Table size is 70cm x 200cm.')),
+    notes_from_host=dict(_('Comments'), _('Is there anything else you would like to tell the organizers? You can also specify your desired schedule here.')),
+    is_english_ok=dict(_('The game can be run in English'), _('If you are able, prepared and willing to organise your program in English if necessary, please tick this box.')),
+    is_age_restricted=dict(_('The game is intended for players over 18'), _('Please tick this box if your game involves themes necessitating that all players are 18 years or older.')),
+    is_children_friendly=dict(_('The game is intended for children'), _('Please tick this box if your game is designed for children.')),
+    is_beginner_friendly=dict(_('Beginner-friendly'), _('If your game is suitable for players without any or with very limited previous knowledge about the subject, please tick this box.')),
+    is_family_program=dict(_('Family-friendly'), _('If your game is suitable for the whole family and people of all ages, please tick this box.')),
+)
+
+
+class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
+
+        super().__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.helper.layout = Layout(
+            'category',
+            'ropecon2019_gaming_desk_subtype',
+            'title',
+            'approximate_length',
+            'max_players',
+            'description',
+            'content_warnings',
+            'rpg_system',
+            'ropecon2018_signuplist',
+            'tech_requirements',
+            'ropecon2019_blocked_time_slots',
+            'notes_from_host',
+
+            Fieldset(_('Who is the game for?'),
+                'is_english_ok',
+                'is_age_restricted',
+                'is_children_friendly',
+                'is_beginner_friendly',
+                'is_family_program',
+            ),
+        )
+
+        for field_name, texts in GAMING_DESK_FORM_FIELD_TEXTS.items():
+            self.fields[field_name].label, self.fields[field_name].help_text = texts
+
+        self.fields['category'].queryset = Category.objects.filter(event=event, slug__in=(
+            'miniwar',
+            'card',
+            'board',
+            'exp',
+        ))
+
+    class Meta:
+        model = Programme
+        fields = (
+            'category',
+            'ropecon2019_gaming_desk_subtype',
+            'title',
+            'approximate_length',
+            'max_players',
+            'description',
+            'content_warnings',
+            'rpg_system',
+            'ropecon2018_signuplist',
+            'tech_requirements',
+            'ropecon2019_blocked_time_slots',
+            'notes_from_host',
+            'is_english_ok',
+            'is_age_restricted',
+            'is_children_friendly',
+            'is_beginner_friendly',
+            'is_family_program',
+        )
+
+        widgets = dict(
+            ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
+        )

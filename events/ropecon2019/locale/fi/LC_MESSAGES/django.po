@@ -166,3 +166,69 @@ msgstr "Ruksaa ne ajat, jolloin ET halua pitää ohjelmaasi. Aikaslotit ovat tar
 
 msgid "Do you have any further information, details, comments or questions that you would like to let our program coordinators to know?"
 msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+
+msgid "Game program area"
+msgstr "Peliohjelman alue"
+
+msgid "Which area do you think your game program belongs to?"
+msgstr "Mihin alueelle mielestäsi peliohjelma kuuluu?
+
+msgid "Give your game program a catchy and concise title. We reserve the right to change the title if necessary."
+msgstr "Keksi ytimekäs otsikko peliohjelmalle. Varaamme oikeuden muokata otsikkoa."
+
+msgid "For 3-4 hours (180-240 minutes) of game program you will receive a one-day ticket to Ropecon. For 6-8 hours (360-480 minutes) of game program you will receive a weekend ticket to Ropecon."
+msgstr "3-4 tunnin (180-240 minuutin) peliohjelmasta saat vaivanpalkaksi yhden päivärannekkeen. 6-8 tunnin (360-480 minuutin) peliohjelmasta saat vaivanpalkaksi yhden viikonloppurannekkeen."
+
+msgid "Number of participants"
+msgstr "Osallistujamäärä"
+
+msgid "How many players can participate in the game?"
+msgstr "Kuinka monta pelaajaa mahtuu mukaan?"
+
+msgid "Advertise your game for potential players. Include information about what is expected of players and what kind of themes the game involves. Please mention here if your game involves difficult themes such as physical or psychological abuse. The recommended length of the description is 300-500 characters. We reserve the right to edit the description if necessary."
+msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos pelissäsi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+msgid "Game system"
+msgstr "Pelisysteemi"
+
+msgid "What is the game system used? For example, “Magic the Gathering” Did you design the game yourself? Describe it in a few words, for example “4X, space battle, conquest”"
+msgstr "What is the game system used? For example, “Magic the Gathering” Did you design the game yourself? Describe it in a few words, for example “4X, space battle, conquest”"
+
+msgid "Signup"
+msgstr "Ilmoittautuminen"
+
+msgid "How do players sign up for your program? Sign up at the Gaming Desk - The Gaming Desk will collect a list of the participants. I will collect sign-ups - You will collect sign-ups yourself in any way you prefer. No sign-up - The game does not require sign-ups."
+msgstr "Miten ohjelmaan ilmoittaudutaan? Ilmoittautuminen pelitiskille - pelitiskin tekemä lista on nimilista peliin tulevista ihmisistä. Hoidan itse ilmoittautumisen - Hoidat itse ilmoittautumisen miten tahdot. Ei ilmoittautumista - Peli ei vaadi erityistä ilmoittautumista."
+
+msgid "Space and technical needs"
+msgstr "Tilatoiveet ja tekniikka"
+
+msgid "Tell us how much table space and how many chairs you need, and whether you have any technical needs (eg. electricity). Unfortunately all requests cannot be fulfilled, so please justify how your request serves the program. Table size is 70cm x 200cm."
+msgstr "Kerro tässä paljonko tarvitset pöytätilaa, tuoleja ja tarvitsetko erityistä tekniikkaa (esim. sähköä). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee ohjelmaa. Pöytien koko on 70cm x 200cm."
+
+msgid "Is there anything else you would like to tell the organizers? You can also specify your desired schedule here."
+msgstr "Haluatko sanoa coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä? Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+
+msgid "The game can be run in English"
+msgstr "Pelin voi pelauttaa englanniksi"
+
+msgid "If you are able, prepared and willing to organise your program in English if necessary, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+
+msgid "The game is intended for players over 18"
+msgstr "Peli on tarkoitettu vain täysi-ikäisille pelaajille"
+
+msgid "Please tick this box if your game involves themes necessitating that all players are 18 years or older."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä."
+
+msgid "The game is intended for children"
+msgstr "Peli on tarkoitettu lapsille"
+
+msgid "Please tick this box if your game is designed for children."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi on suunniteltu lapsille."
+
+msgid "If your game is suitable for players without any or with very limited previous knowledge about the subject, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa kokemusta olisi hyvin vähän tai ei lainkaan."
+
+msgid "If your game is suitable for the whole family and people of all ages, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi soveltuu koko perheelle ja kaiken ikäisille."

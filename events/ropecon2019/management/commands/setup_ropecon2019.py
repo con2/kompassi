@@ -375,7 +375,7 @@ class Setup(object):
             event=self.event,
             slug='roolipeli',
             defaults=dict(
-                title='Tarjoa pöytäroolipeliä',
+                title='Tarjoa pöytäroolipeliä / Offer an RPG',
                 description='''
 Tule pöytäpelinjohtajaksi Ropeconiin! Voit testata kehittämiäsi seikkailuja uusilla pelaajilla ja saada näkökulmia muilta harrastajilta. Pelauttamalla onnistuneita skenaariota pääset jakamaan tietotaitoa ja ideoita muille pelinjohtajille ja pelaajille. Voit myös esitellä uusia pelijärjestelmiä ja -maailmoja tai vain nauttia pelauttamisen riemusta.
 
@@ -391,9 +391,10 @@ Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautukse
             event=self.event,
             slug='larp',
             defaults=dict(
-                title='Tarjoa larppia',
-                short_description='Larpit eli liveroolipelit',
+                title='Tarjoa larppia / Offer a LARP',
                 description='''
+<strong>Please see this introduction in English <a href="https://drive.google.com/file/d/1EBaRw9Yo25I88dcrzBQ9Lu_QLzIRvv6r/view?usp=sharing" target="_blank">here</a>. The form below will be in English if you have chosen English from the upper right.</strong>
+
 Tervetuloa tarjoamaan Ropeconin kävijöille larp-elämyksiä!
 
 Voit tarjota tällä lomakkeella sekä itse kirjoittamiasi pelejä että valmiita skenaarioita. Toivomme saavamme coniin hienon kattauksen sekä kotimaisia ensipelautuksia että kansainvälisiä klassikoita. Yhdellä oman pelisi pelautuksella (n. 3-4 tuntia) tai kahdella valmiin skenaarion pelautuksella (n. 6-8 tuntia) saat yhden viikonloppulipun Ropeconiin.
@@ -416,81 +417,52 @@ Otathan huomioon myös inklusiivisuuskysymykset, eli pelisi esteettömyyden esim
             )
         )
 
-#         AlternativeProgrammeForm.objects.get_or_create(
-#             event=self.event,
-#             slug='lautapeli',
-#             defaults=dict(
-#                 title='Tarjoa lautapeliohjelmaa',
-#                 short_description='Lautapelit',
-#                 description='''
-# Muhiiko mielessäsi hullu tai tuiki tavallinen lautapeleihin liittyvä idea? Kerro se meille! Ropeconissa käsitellään lautapelaamista niin pelisuunnittelutyöpajojen, omituisia teemoja käsittelevien luentojen kuin erikoisten turnausformaattienkin muodossa. Jos vielä epäröit, lautapelivastaava vastaa mielellään kysymyksiisi.
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='pelitiski',
+            defaults=dict(
+                title='Tarjoa pelitiskiohjelmaa / Offer Gaming Desk program',
+                short_description='Figupelit, korttipelit, lautapelit, Kokemuspiste ym. / Miniature wargames, card games, board games, Experience Point etc.',
+                description='''
+<strong>Please see this introduction in English <a href="https://drive.google.com/file/d/1GBlTBsIbsiN05aZQT7h02o6Hba7L3suv/view?usp=sharing" target="_blank">here</a>. The form below will be in English if you have chosen English from the upper right.</strong>
 
-# Ohjelman lisäksi haemme työvoimaa lautapelitiskille, joka huolehtii pelien lainaamisesta ja kunnossa pysymisestä. Ilmoittaudu lautapelitiskin työntekijäksi täyttämällä työvoimalomake.
-#                 '''.strip(),
-#                 programme_form_code='events.ropecon2019.forms:LautapeliForm',
-#                 num_extra_invites=0,
-#                 order=60,
-#             )
-#         )
+Voit tarjota tällä lomakkeella ohjelmaa pelitiskin eri osa-alueille:
 
-#         AlternativeProgrammeForm.objects.get_or_create(
-#             event=self.event,
-#             slug='korttipeli',
-#             defaults=dict(
-#                 title='Tarjoa korttipeliturnausta',
-#                 short_description='Korttipeliturnaukset',
-#                 description='''
-# Ropecon hakee järjestäjiä korttipeliturnauksille ja korttipeliaiheiselle ohjelmalle. Tarvitsemme myös työntekijöitä korttipelitiskille vastaanottamaan turnausilmoittautumisia ja pitämään huolta siitä, että ohjelma etenee suunnitelmien mukaisesti. Kaikkea ei tarvitse tietää etukäteen, sillä neuvoja ja ohjeita työskentelyyn sekä ohjelman suunnitteluun saat korttipelivastaavalta ja kokeneemmilta turnausten järjestäjiltä. Myös korttipelitiskin työntekijät perehdytetään tehtävään.
-#                 '''.strip(),
-#                 programme_form_code='events.ropecon2019.forms:KorttipeliForm',
-#                 num_extra_invites=0,
-#                 order=40,
-#             )
-#         )
+figupelit
+korttipelit
+lautapelit
+Kokemuspisteelle demotuksia
+erilaiset peliturnaukset
 
-#         AlternativeProgrammeForm.objects.get_or_create(
-#             event=self.event,
-#             slug='figupeli',
-#             defaults=dict(
-#                 title='Tarjoa figupeliturnausta',
-#                 short_description='Figut eli miniatyyripelit',
-#                 description='''
-# Heilutatko sivellintä kuin säilää? Pyöritätkö noppaa kuin puolijumala? Taipuuko foamboard käsissäsi upeiksi palatseiksi? Haluaisitko jakaa erikoistaitosi conikansan syville riveille?
+Saat päivärannekkeen Ropeconiin n. 3-4 tunnin ohjelmalla tai viikonloppurannekkeen n. 6-8 tunnin ohjelmalla.
 
-# Figuohjelma hakee puhujia miniatyyriaiheiseen puheohjelmaan, innostuneita keskustelijoita paneelikeskusteluihin, vetäjiä työpajoihin sekä peluuttajia eri pelimuotoihin. Ideoilla – olivat ne sitten viimeisen päälle hiottua timanttia tai vasta aihioita – voit lähestyä figuvastaavaa sähköpostitse.
-#                 '''.strip(),
-#                 programme_form_code='events.ropecon2019.forms:FigupeliForm',
-#                 num_extra_invites=0,
-#                 order=50,
-#             )
-#         )
+Suosittelemme keskittymään pelin valinnassa olennaiseen: Kokemuspisteellä parhaiten toimivat lyhyehköt pelit, joihin pelaajat voivat saapua mukanaan vain oma mielikuvituksensa ja halu pelata toistensa kanssa. Toivomme myös, että mahdollisimman moni peli olisi mahdollisimman monen kävijän pelattavissa, eivätkä pelaajan tiedot, taidot tai ominaisuudet estä peliin osallistumista.
 
-#         AlternativeProgrammeForm.objects.get_or_create(
-#             event=self.event,
-#             slug='kokemuspiste',
-#             defaults=dict(
-#                 title='Tarjoa kokemuspisteohjelmaa',
-#                 short_description='Kokemuspiste eli tutustu peleihin',
-#                 description='''
-# Vuoden klassikot-teeman mukaisesti nyt on oikea hetki kaivaa kaapista se vanha perintökalleutena sukupolvelta toiselle siirtynyt klassikko ja tulla esittelemään sitä koko kansalle!
+Tutustu myös Ropeconin <a href="https://2019.ropecon.fi/kavijalle/hairinta/" target="_blank">häirinnän vastaiseen linjaukseen</a>.
 
-# Kokemuspisteellä kävijä pääsee tutustumaan uusiin peleihin peliesittelijän opastuksella. Haemme esittelijöitä niin vakiintuneisiin peruspeleihin (esim. Settlers of Catan, Magic: the Gathering, Warhammer, Go) kuin vielä tuntemattomiin peleihin. Peliesittelijänä pääset pelauttamaan lempipeliäsi uudelle yleisölle. Myös pelintekijät ovat tervetulleita esittelemään sekä valmiita että melkein valmiita pelejä kiinnostuneelle yleisölle. Peliesittelyiden tulee olla kestoltaan lyhyitä, alle tunnin mittaisia. Tervetulleita ovat niin figut, lautapelit, korttipelit, pöytäropet kuin larpitkin.
+Kävijät toivoivat viime vuonna etenkin lyhyitä pelejä sekä lapsille sopivia pelejä, joten toivomme ehdotuksia lyhyistä, toistettavissa olevista peluutuksista sekä lapsille suunnitelluista demotuksista.
 
-# Huomaathan, että Kokemuspiste on vain peliesittelyä varten. Tuotteiden myyntiä varten tulee varata osasto Ropeconin myyntialueelta.
-#                 '''.strip(),
-#                 programme_form_code='events.ropecon2019.forms:KokemuspisteForm',
-#                 num_extra_invites=0,
-#                 order=70,
-#             )
-#         )
+Pelit järjestetään tänäkin vuonna Halli 3:ssa. Alueella tulee olemaan yksi pelitiski ja pelikirjasto. Pelitiskillä pystyy myös ilmoittautumaan turnauksiin ja kisoihin.
+
+Jos sinulla kuitenkin sattuu olemaan omasta takaa mahdollisuus esimerkiksi lavastaa jokin tila peliisi sopivaksi tai haluat tarjota koko Ropeconin ajan kestävän, Messukeskuksen alueelle levittyvän immersiivisen kokemuksen, emme missään tapauksessa kiellä tällaisten spektaakkelien suunnittelua. Kerro siinä tapauksessa meille lisää suunnitelmistasi, ja pohditaan yhdessä, kuinka sen voisi toteuttaa!
+
+Otathan huomioon myös inklusiivisuuskysymykset, eli pelisi esteettömyyden esimerkiksi liikuntarajoitteisille tai näkövammaisille pelaajille. Toivomme, että mahdollisimman moni kävijä voisi osallistua Ropeconin peleihin. Ole meihin rohkeasti yhteydessä osoitteeseen pelitiski@ropecon.fi, jos nämä kysymykset askarruttavat.
+                '''.strip(),
+                programme_form_code='events.ropecon2019.forms:GamingDeskForm',
+                num_extra_invites=0,
+                order=60,
+            )
+        )
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='default',
             defaults=dict(
-                title='Tarjoa puheohjelmaa tai työpajoja',
-                short_description='Puheohjelmat eli esitelmät, paneelit, jne',
+                title='Tarjoa muuta ohjelmaa / Offer any other program',
+                short_description='Puheohjelmat, työpajat, esitykset ym. / Lecture program, workshops, show program etc.',
                 description='''
+<strong>Please see this introduction in English <a href="https://drive.google.com/file/d/1GBlTBsIbsiN05aZQT7h02o6Hba7L3suv/view?usp=sharing" target="_blank">here</a>. The form below will be in English if you have chosen English from the upper right.</strong>
+
 Tervetuloa tarjoamaan ohjelmaa Ropecon-kävijöille!
 
 Tällä lomakkeella voit tarjota kaikkea ei-pelillistä ohjelmaa: puheohjelmaa, työpajoja tai muuta ohjelmaa, joka ei sovi pelien kategorioihin.

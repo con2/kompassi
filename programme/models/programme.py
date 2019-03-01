@@ -492,6 +492,17 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_('Check this box if new players can join during gameplay and old players may (or must) leave before the game is over. Please mention this in the game description below, and give more details if necessary.'),
         default=False,
     )
+    ropecon2019_gaming_desk_subtype = models.CharField(
+        max_length=4,
+        blank=True,
+        verbose_name=_('Game program type'),
+        help_text=_('What type of game program are you offering? Tournament - organizing your own tournament or competition. Demonstration - showcasing, demonstrating and playing a game. Open game - playing a game with or without specific scenarios.'),
+        choices=[
+            ('tmnt', _('Tournament')),
+            ('demo', _('Demonstration')),
+            ('open', _('Open game')),
+        ]
+    )
 
     is_using_paikkala = models.BooleanField(
         default=False,
