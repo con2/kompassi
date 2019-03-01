@@ -232,3 +232,6 @@ msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa kokem
 
 msgid "If your game is suitable for the whole family and people of all ages, please tick this box."
 msgstr "Ruksaa tämä ruutu, mikäli pelisi soveltuu koko perheelle ja kaiken ikäisille."
+
+msgid "Who is the game for?"
+msgstr "Kenelle peli on tarkoitettu?"
