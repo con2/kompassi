@@ -458,7 +458,6 @@ class Programme(models.Model, CsvExportMixin):
     max_players = models.PositiveIntegerField(
         verbose_name=_('maximum number of players'),
         help_text=_('What is the maximum number of players that can take part in a single run of the game?'),
-        default=4,
         validators=[MinValueValidator(1), MaxValueValidator(99)],
         null=True,
         blank=True,
@@ -490,6 +489,13 @@ class Programme(models.Model, CsvExportMixin):
             'accommodation in time).'
         ),
         blank=True,
+        related_name='+',
+    )
+    ropecon2019_preferred_time_slots = models.ManyToManyField('ropecon2019.TimeSlot',
+        verbose_name=_('time preferences'),
+        help_text=_('When would you like to host your game program? Check the times when you would like to host your game program. If you have more specific needs regarding the timing, please let us know in the Comments field below. We do not restrict your desired times, but we reserve the right to make changes. For example, we would rather have tournaments one after another than at the same time.'),
+        blank=True,
+        related_name='+',
     )
     is_revolving_door = models.BooleanField(
         verbose_name=_('Revolving door game'),

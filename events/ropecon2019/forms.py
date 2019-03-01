@@ -412,7 +412,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'rpg_system',
             'ropecon2018_signuplist',
             'tech_requirements',
-            'ropecon2019_blocked_time_slots',
+            'ropecon2019_preferred_time_slots',
             'notes_from_host',
 
             Fieldset(_('Who is the game for?'),
@@ -447,7 +447,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'rpg_system',
             'ropecon2018_signuplist',
             'tech_requirements',
-            'ropecon2019_blocked_time_slots',
+            'ropecon2019_preferred_time_slots',
             'notes_from_host',
             'is_english_ok',
             'is_age_restricted',
@@ -457,5 +457,5 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
-            ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2019_preferred_time_slots=forms.CheckboxSelectMultiple,
         )

@@ -1477,3 +1477,6 @@ msgstr "Minkä tyyppinen peliohjelma on kyseessä? Turnaus - turnauksen ja kilpa
 
 msgid "Game program type"
 msgstr "Peliohjelman tyyppi"
+
+msgid "When would you like to host your game program? Check the times when you would like to host your game program. If you have more specific needs regarding the timing, please let us know in the Comments field below. We do not restrict your desired times, but we reserve the right to make changes. For example, we would rather have tournaments one after another than at the same time."
+msgstr "Mihin aikaan aiot pitää ohjelmasi? Merkitse tähän ne ajat, jolloin olet suunnitellut pitäväsi peliohjelmasi. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä Vapaamuotoiset terveiset kentässä. Emme rajoita koska haluat pitää ohjelmasi, mutta pidätämme oikeudet muutoksiin (esim. aikataulutamme mieluummin turnauksia peräkkäin kuin samanaikaisesti)."
