@@ -452,12 +452,16 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_('How many players must there at least be for the game to take place?'),
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(99)],
+        null=True,
+        blank=True,
     )
     max_players = models.PositiveIntegerField(
         verbose_name=_('maximum number of players'),
         help_text=_('What is the maximum number of players that can take part in a single run of the game?'),
         default=4,
         validators=[MinValueValidator(1), MaxValueValidator(99)],
+        null=True,
+        blank=True,
     )
     hitpoint2017_preferred_time_slots = models.ManyToManyField('hitpoint2017.TimeSlot',
         verbose_name=_('preferred time slots'),
