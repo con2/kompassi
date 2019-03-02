@@ -286,7 +286,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            category=Category.objects.get(event__slug='ropecon2018', slug='larp'),
+            category=Category.objects.get(event__slug='ropecon2019', slug='larp'),
         )
 
 
