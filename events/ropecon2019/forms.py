@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from crispy_forms.layout import Layout, Fieldset
 
 from core.forms import horizontal_form_helper
+from labour.forms import AlternativeFormMixin
 from programme.forms import AlternativeProgrammeFormMixin
 from programme.models import Category, Programme
 
@@ -59,7 +60,7 @@ class SignupExtraForm(forms.ModelForm):
         return certificate_delivery_address
 
 
-class ProgrammeSignupExtraForm(forms.ModelForm):
+class ProgrammeSignupExtraForm(AlternativeFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()

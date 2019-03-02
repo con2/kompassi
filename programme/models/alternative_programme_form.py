@@ -1,7 +1,3 @@
-# encoding: utf-8
-
-
-
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -121,10 +117,7 @@ class AlternativeProgrammeFormMixin(object):
         return Category.objects.filter(event=event, public=True)
 
     def get_excluded_field_defaults(self):
-        raise NotImplementedError(
-            'At least `category` must be specified unless a category field is included in the form. '
-            'In that case, override get_excluded_field_defaults to return a dict (might be empty.)'
-        )
+        return dict()
 
     def get_excluded_m2m_field_defaults(self):
         return dict()
