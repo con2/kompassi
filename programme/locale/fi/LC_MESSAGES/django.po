@@ -1438,3 +1438,45 @@ msgstr "Kyllä, ohjelmani saa lähettää suorana"
 
 msgid "No, I forbid streaming my programme"
 msgstr "Ei, ohjelmaani ei saa lähettää suorana"
+
+msgid "Revolving door game"
+msgstr "Pyöröovipeli (revolving door)"
+
+msgid "Check this box if new players can join during gameplay and old players may (or must) leave before the game is over. Please mention this in the game description below, and give more details if necessary."
+msgstr "Ruksaa tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa käynnissä ja vanhat pelaajat voivat poistua (tai joutuvat poistumaan) pelistä ennen pelin loppua. Kerro tästä myös pelin kuvauksessa alla, ja anna tarvittaessa lisätietoja."
+
+msgid "time preferences"
+msgstr "aikatoiveet"
+
+msgid "When are you <strong>unable to run</strong> your game?<br><br>Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time)."
+msgstr "Milloin <strong>et pysty</strong> pelauttamaan peliäsi?<br><br>Merkitse tähän ne ajat, jolloin sinun <strong>ei ole mahdollista</strong> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. <em>haluaisin peluuttaa pelini myöhään illalla</em>), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi).
+
+msgid "Content warnings"
+msgstr "Sisältövaroitukset"
+
+msgid "If your program contains heavy topics or potentially distressing themes, please mention it here."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
+
+msgid "Accessibility hazard"
+msgstr "Esteellinen"
+
+msgid "If your program contains loud noises, flashing lights or other elements that can limit accessibility, please tick the checkbox. More details can be provided in the last text field if necessary."
+msgstr "Ruksaa tämä ruutu, jos ohjelma sisältää kovia ääniä, valoja tai muuta, mikä voi rajoittaa osallistumista. Tarkenna tarvittaessa viimeisessä avoimessa kentässä."
+
+msgid "Panel discussions"
+msgstr "Paneelikeskustelu"
+
+msgid "I can participate in a panel discussion on my field of expertise during the convention."
+msgstr "Voin osallistua erikoisalaani sivuavaan paneelikeskusteluun"
+
+msgid "My field of expertise"
+msgstr "Erikoisalani"
+
+msgid "What type of game program are you offering? Tournament - organizing your own tournament or competition. Demonstration - showcasing, demonstrating and playing a game. Open game - playing a game with or without specific scenarios."
+msgstr "Minkä tyyppinen peliohjelma on kyseessä? Turnaus - turnauksen ja kilpailun järjestämistä. Demotus - pelin esittelyä ja demottamista sekä pelaamista. Avoin peluutus - vapaata pelaamista skenaarioita tai ihan yleistä pelaamista."
+
+msgid "Game program type"
+msgstr "Peliohjelman tyyppi"
+
+msgid "When would you like to host your game program? Check the times when you would like to host your game program. If you have more specific needs regarding the timing, please let us know in the Comments field below. We do not restrict your desired times, but we reserve the right to make changes. For example, we would rather have tournaments one after another than at the same time."
+msgstr "Mihin aikaan aiot pitää ohjelmasi? Merkitse tähän ne ajat, jolloin olet suunnitellut pitäväsi peliohjelmasi. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä Vapaamuotoiset terveiset kentässä. Emme rajoita koska haluat pitää ohjelmasi, mutta pidätämme oikeudet muutoksiin (esim. aikataulutamme mieluummin turnauksia peräkkäin kuin samanaikaisesti)."

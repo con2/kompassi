@@ -26,12 +26,12 @@ class Setup(object):
         self.test = test
         self.tz = tzlocal()
         self.setup_core()
-        # self.setup_labour()
-        # self.setup_intra()
+        self.setup_labour()
+        self.setup_intra()
         self.setup_tickets()
-        # self.setup_programme()
+        self.setup_programme()
         self.setup_payments()
-        # self.setup_badges()
+        self.setup_badges()
 
     def setup_core(self):
         from core.models import Venue, Event, Organization
@@ -105,41 +105,17 @@ class Setup(object):
             defaults=labour_event_meta_defaults,
         )
 
-        self.afterparty_perk, unused = Perk.objects.get_or_create(
-            event=self.event,
-            slug='kaato',
-            defaults=dict(
-                name='Kaato',
-            ),
-        )
-
-        self.one_food_perk, unused = Perk.objects.get_or_create(
-            event=self.event,
-            slug='food1',
-            defaults=dict(
-                name='Yksi ruokaraha',
-            ),
-        )
-
-        self.two_foods_perk, unused = Perk.objects.get_or_create(
-            event=self.event,
-            slug='food2',
-            defaults=dict(
-                name='Kaksi ruokarahaa',
-            ),
-        )
-
-        for pc_name, pc_slug, pc_app_label, pc_afterparty, pc_one_food, pc_two_foods in [
-            ('Conitea', 'conitea', 'labour', True, False, True),
-            ('Vuorovastaava', 'ylivankari', 'labour', True, False, True),
-            ('Ylityöntekijä', 'ylityovoima', 'labour', True, False, True),
-            ('Työvoima', 'tyovoima', 'labour', True, False, False),
-            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme', True, False, False),
-            ('Guest of Honour', 'goh', 'programme', False, False, False), # tervetullut muttei kutsuta automaattiviestillä
-            ('Media', 'media', 'badges', False, False, False),
-            ('Myyjä', 'myyja', 'badges', False, False, False),
-            ('Vieras', 'vieras', 'badges', False, False, False),
-            ('Vapaalippu', 'vapaalippu', 'badges', False, False, False),
+        for pc_name, pc_slug, pc_app_label in [
+            ('Conitea', 'conitea', 'labour'),
+            ('Vuorovastaava', 'ylivankari', 'labour'),
+            ('Ylityöntekijä', 'ylityovoima', 'labour'),
+            ('Työvoima', 'tyovoima', 'labour'),
+            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
+            ('Guest of Honour', 'goh', 'programme'),
+            ('Media', 'media', 'badges'),
+            ('Myyjä', 'myyja', 'badges'),
+            ('Vieras', 'vieras', 'badges'),
+            ('Vapaalippu', 'vapaalippu', 'badges'),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -150,13 +126,6 @@ class Setup(object):
                     priority=self.get_ordering_number(),
                 ),
             )
-
-            if pc_afterparty and created:
-                personnel_class.perks.set([self.afterparty_perk])
-            if pc_one_food and created:
-                personnel_class.perks.set([self.one_food_perk])
-            if pc_two_foods and created:
-                personnel_class.perks.set([self.two_foods_perk])
 
         tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
         ylityovoima = PersonnelClass.objects.get(event=self.event, slug='ylityovoima')
@@ -339,22 +308,21 @@ class Setup(object):
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
             for title, slug, style in [
-                ('Larp', 'larp', 'color1'),
-                ('Lautapelit', 'lautapeli', 'color2'),
-                ('Puheohjelma', 'puheohjelma', 'color3'),
-                ('Roolipeli', 'roolipeli', 'color4'),
-                ('Korttipelit', 'korttipeli', 'color5'),
-                ('Figupelit', 'figupeli', 'color6'),
-                ('Kokemuspiste', 'kokemuspiste', 'color8'),
-                ('Panel', 'puhe-paneeli', 'color3'),
-                ('Workshop', 'puhe-tyopaja', 'color3'),
-                ('Dance program', 'puhe-tanssi', 'color3'),
-                ('Presentation', 'puhe-esitelma', 'color3'),
-                ('Experience point', 'puhe-kp', 'color3'),
-                ('Larps', 'puhe-larpit', 'color3'),
-                ('Freeform', 'puhe-freeform', 'color3'),
-                ('Other program', 'puhe-muu', 'color3'),
-                ('Sisäinen ohjelma', 'sisainen-ohjelma', 'sisainen'),
+                ('Puheohjelma: esitelmä / Presentation', 'pres', 'color1'),
+                ('Puheohjelma: paneeli / Panel discussion', 'panel', 'color1'),
+                ('Puheohjelma: keskustelu / Discussion group', 'disc', 'color1'),
+                ('Työpaja: käsityö / Crafts', 'craft', 'color2'),
+                ('Työpaja: figut / Miniature figurines', 'mini', 'color2'),
+                ('Työpaja: musiikki / Music', 'music', 'color2'),
+                ('Työpaja: muu / Other workshop', 'workshop', 'color2'),
+                ('Pelitiski: Figupeli / Miniature wargame', 'miniwar', 'color3'),
+                ('Pelitiski: Korttipeli / Card game', 'card', 'color3'),
+                ('Pelitiski: Lautapeli / Board game', 'board', 'color3'),
+                ('Pelitiski: Kokemuspiste / Experience Point', 'exp', 'color3'),
+                ('Roolipeli / Pen & Paper RPG', 'rpg', 'color4'),
+                ('LARP', 'larp', 'color5'),
+                ('Muu ohjelma / None of the above', 'other', 'color6'),
+                ('Sisäinen ohjelma', 'internal', 'sisainen'),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
@@ -407,7 +375,7 @@ class Setup(object):
             event=self.event,
             slug='roolipeli',
             defaults=dict(
-                title='Tarjoa pöytäroolipeliä',
+                title='Tarjoa pöytäroolipeliä / Offer an RPG',
                 description='''
 Tule pöytäpelinjohtajaksi Ropeconiin! Voit testata kehittämiäsi seikkailuja uusilla pelaajilla ja saada näkökulmia muilta harrastajilta. Pelauttamalla onnistuneita skenaariota pääset jakamaan tietotaitoa ja ideoita muille pelinjohtajille ja pelaajille. Voit myös esitellä uusia pelijärjestelmiä ja -maailmoja tai vain nauttia pelauttamisen riemusta.
 
@@ -423,12 +391,25 @@ Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautukse
             event=self.event,
             slug='larp',
             defaults=dict(
-                title='Tarjoa larppia',
-                short_description='Larpit eli liveroolipelit',
+                title='Tarjoa larppia / Offer a LARP',
                 description='''
-Ropecon etsii innokkaita larpinjärjestäjiä! Nyt on tilaisuutesi tulla mukaan järjestämään huvia ja viihdettä koko kansalle pienen tai isonkin conipelin muodossa. Pelipaikkoja on rajoitetusti, joten kerää ideasi, kimpsusi ja kampsusi ja laita näppäimistö sauhuamaan saman tien. Tarjolla on ikuista kunniaa ja viikonloppurannekkeita. Ekstra-plussaa saat, jos pelisi heijastelee klassikot-teemaa. Larppien käyttöön on suunniteltu saleja 216, 216a, 217 ja 218. Voit tutustua tiloihin etukäteen virtuaaliesittelyn avulla.
+<strong>Please see this introduction in English <a href="https://drive.google.com/file/d/1EBaRw9Yo25I88dcrzBQ9Lu_QLzIRvv6r/view?usp=sharing" target="_blank">here</a>. The form below will be in English if you have chosen English from the upper right.</strong>
 
-Kiinnostaako freeform? Freeform-pelit ovat larpin kaltaisia pelejä, jotka pelataan yhdessä huoneessa vähäisellä proppauksella. Pelit ovat yleensä vahvasti tarinankerronnallisia. Freeform-pelien järjestäjäksi ilmoittaudutaan pöytäroolipelien lomakkeella. Lue lisää pöytäroolipelien kuvauksesta!
+Tervetuloa tarjoamaan Ropeconin kävijöille larp-elämyksiä!
+
+Voit tarjota tällä lomakkeella sekä itse kirjoittamiasi pelejä että valmiita skenaarioita. Toivomme saavamme coniin hienon kattauksen sekä kotimaisia ensipelautuksia että kansainvälisiä klassikoita. Yhdellä oman pelisi pelautuksella (n. 3-4 tuntia) tai kahdella valmiin skenaarion pelautuksella (n. 6-8 tuntia) saat yhden viikonloppulipun Ropeconiin.
+
+Suosittelemme keskittymään pelisuunnittelussa/valinnassa olennaiseen: conikävijöillä ei välttämättä ole mahdollisuuksia tuoda mukanaan tarkasti määriteltyjä proppeja tai opetella kymmenien sivujen taustamateriaaleja. Parhaiten toimivat lyhyehköt pelit, joihin pelaajat voivat saapua mukanaan vain oma mielikuvituksensa ja halu pelata toistensa kanssa. Toivomme myös, että mahdollisimman moni peli olisi mahdollisimman monen kävijän pelattavissa, eivätkä pelaajan tiedot, taidot tai ominaisuudet estä peliin osallistumista.
+
+Kävijät toivoivat viime vuonna etenkin lyhyitä pelejä sekä lapsille sopivia larppeja, joten toivomme ehdotuksia lyhyistä, toistettavissa olevista pelautuksista sekä lapsille suunnitelluista larpeista.
+
+Larpit järjestetään tänäkin vuonna Siiven huoneissa 215-217, joihin voit tutustua <a href="https://messukeskus.visualizer360.com/tilat#20250,20307,0,0" target="_blank">Messukeskuksen sivuilla</a>. Pyrimme rakentamaan yhteen huoneista black boxin (black box -larpeista voit lukea <a href="https://nordiclarp.org/wiki/Black_Box_Larp" target="_blank">Nordic Larp Wikissä</a>) ja varustamaan muut huoneista tunnelmaa luovilla valospoteilla. Kerrothan tilatoiveissa, mikäli suunnitelmissasi on black box -larppi! Valitettavasti emme voi tarjota suurempia lavasteita tai proppeja, joten otathan tämän peliäsi suunnitellessa huomioon.
+
+Jos sinulla kuitenkin sattuu olemaan omasta takaa mahdollisuus esimerkiksi lavastaa jokin tila peliisi sopivaksi tai haluat tarjota koko Ropeconin ajan kestävän, Messukeskuksen alueelle levittyvän immersiivisen kokemuksen, emme missään tapauksessa kiellä tällaisten spektaakkelien suunnittelua. Kerro siinä tapauksessa meille lisää suunnitelmistasi, ja pohditaan yhdessä, kuinka sen voisi toteuttaa!
+
+Kaikkien Ropeconissa pelautettavien larppien tulee soveltaa <a href="https://turvallisempaa.wordpress.com/" target="_blank">häirinnän vastaista materiaalipakettia</a>, eikä niissä hyväksytä ahdistelua ja häirintää (paitsi hahmojen toimintana pelissä, kaikkien osapuolten rajoja kunnioittaen). Tavoitteena on luoda yhdessä turvallinen peliympäristö jokaiselle peliin osallistujalle. Odotamme pelinjohtajien tuntevan materiaalin ja sitoutuvan omalla toiminnallaan edistämään turvallista peliympäristöä ja torjumaan häirintää.
+
+Otathan huomioon myös inklusiivisuuskysymykset, eli pelisi esteettömyyden esimerkiksi liikuntarajoitteisille tai näkövammaisille pelaajille. Toivomme, että mahdollisimman moni kävijä voisi osallistua Ropeconin larppeihin. Ole meihin rohkeasti yhteydessä osoitteeseen <a href="mailto:larpit@ropecon.fi">larpit@ropecon.fi</a>, jos nämä kysymykset askarruttavat.
                 '''.strip(),
                 programme_form_code='events.ropecon2019.forms:LarpForm',
                 num_extra_invites=0,
@@ -438,16 +419,36 @@ Kiinnostaako freeform? Freeform-pelit ovat larpin kaltaisia pelejä, jotka pelat
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
-            slug='lautapeli',
+            slug='pelitiski',
             defaults=dict(
-                title='Tarjoa lautapeliohjelmaa',
-                short_description='Lautapelit',
+                title='Tarjoa pelitiskiohjelmaa / Offer Gaming Desk program',
+                short_description='Figupelit, korttipelit, lautapelit, Kokemuspiste ym. / Miniature wargames, card games, board games, Experience Point etc.',
                 description='''
-Muhiiko mielessäsi hullu tai tuiki tavallinen lautapeleihin liittyvä idea? Kerro se meille! Ropeconissa käsitellään lautapelaamista niin pelisuunnittelutyöpajojen, omituisia teemoja käsittelevien luentojen kuin erikoisten turnausformaattienkin muodossa. Jos vielä epäröit, lautapelivastaava vastaa mielellään kysymyksiisi.
+<strong>Please see this introduction in English <a href="https://drive.google.com/file/d/1GBlTBsIbsiN05aZQT7h02o6Hba7L3suv/view?usp=sharing" target="_blank">here</a>. The form below will be in English if you have chosen English from the upper right.</strong>
 
-Ohjelman lisäksi haemme työvoimaa lautapelitiskille, joka huolehtii pelien lainaamisesta ja kunnossa pysymisestä. Ilmoittaudu lautapelitiskin työntekijäksi täyttämällä työvoimalomake.
+Voit tarjota tällä lomakkeella ohjelmaa pelitiskin eri osa-alueille:
+
+figupelit
+korttipelit
+lautapelit
+Kokemuspisteelle demotuksia
+erilaiset peliturnaukset
+
+Saat päivärannekkeen Ropeconiin n. 3-4 tunnin ohjelmalla tai viikonloppurannekkeen n. 6-8 tunnin ohjelmalla.
+
+Suosittelemme keskittymään pelin valinnassa olennaiseen: Kokemuspisteellä parhaiten toimivat lyhyehköt pelit, joihin pelaajat voivat saapua mukanaan vain oma mielikuvituksensa ja halu pelata toistensa kanssa. Toivomme myös, että mahdollisimman moni peli olisi mahdollisimman monen kävijän pelattavissa, eivätkä pelaajan tiedot, taidot tai ominaisuudet estä peliin osallistumista.
+
+Tutustu myös Ropeconin <a href="https://2019.ropecon.fi/kavijalle/hairinta/" target="_blank">häirinnän vastaiseen linjaukseen</a>.
+
+Kävijät toivoivat viime vuonna etenkin lyhyitä pelejä sekä lapsille sopivia pelejä, joten toivomme ehdotuksia lyhyistä, toistettavissa olevista peluutuksista sekä lapsille suunnitelluista demotuksista.
+
+Pelit järjestetään tänäkin vuonna Halli 3:ssa. Alueella tulee olemaan yksi pelitiski ja pelikirjasto. Pelitiskillä pystyy myös ilmoittautumaan turnauksiin ja kisoihin.
+
+Jos sinulla kuitenkin sattuu olemaan omasta takaa mahdollisuus esimerkiksi lavastaa jokin tila peliisi sopivaksi tai haluat tarjota koko Ropeconin ajan kestävän, Messukeskuksen alueelle levittyvän immersiivisen kokemuksen, emme missään tapauksessa kiellä tällaisten spektaakkelien suunnittelua. Kerro siinä tapauksessa meille lisää suunnitelmistasi, ja pohditaan yhdessä, kuinka sen voisi toteuttaa!
+
+Otathan huomioon myös inklusiivisuuskysymykset, eli pelisi esteettömyyden esimerkiksi liikuntarajoitteisille tai näkövammaisille pelaajille. Toivomme, että mahdollisimman moni kävijä voisi osallistua Ropeconin peleihin. Ole meihin rohkeasti yhteydessä osoitteeseen pelitiski@ropecon.fi, jos nämä kysymykset askarruttavat.
                 '''.strip(),
-                programme_form_code='events.ropecon2019.forms:LautapeliForm',
+                programme_form_code='events.ropecon2019.forms:GamingDeskForm',
                 num_extra_invites=0,
                 order=60,
             )
@@ -455,91 +456,46 @@ Ohjelman lisäksi haemme työvoimaa lautapelitiskille, joka huolehtii pelien lai
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
-            slug='korttipeli',
+            slug='default',
             defaults=dict(
-                title='Tarjoa korttipeliturnausta',
-                short_description='Korttipeliturnaukset',
+                title='Tarjoa muuta ohjelmaa / Offer any other program',
+                short_description='Puheohjelmat, työpajat, esitykset ym. / Lecture program, workshops, show program etc.',
                 description='''
-Ropecon hakee järjestäjiä korttipeliturnauksille ja korttipeliaiheiselle ohjelmalle. Tarvitsemme myös työntekijöitä korttipelitiskille vastaanottamaan turnausilmoittautumisia ja pitämään huolta siitä, että ohjelma etenee suunnitelmien mukaisesti. Kaikkea ei tarvitse tietää etukäteen, sillä neuvoja ja ohjeita työskentelyyn sekä ohjelman suunnitteluun saat korttipelivastaavalta ja kokeneemmilta turnausten järjestäjiltä. Myös korttipelitiskin työntekijät perehdytetään tehtävään.
-                '''.strip(),
-                programme_form_code='events.ropecon2019.forms:KorttipeliForm',
-                num_extra_invites=0,
-                order=40,
-            )
-        )
+<strong>Please see this introduction in English <a href="https://drive.google.com/file/d/1GBlTBsIbsiN05aZQT7h02o6Hba7L3suv/view?usp=sharing" target="_blank">here</a>. The form below will be in English if you have chosen English from the upper right.</strong>
 
-        AlternativeProgrammeForm.objects.get_or_create(
-            event=self.event,
-            slug='figupeli',
-            defaults=dict(
-                title='Tarjoa figupeliturnausta',
-                short_description='Figut eli miniatyyripelit',
-                description='''
-Heilutatko sivellintä kuin säilää? Pyöritätkö noppaa kuin puolijumala? Taipuuko foamboard käsissäsi upeiksi palatseiksi? Haluaisitko jakaa erikoistaitosi conikansan syville riveille?
+Tervetuloa tarjoamaan ohjelmaa Ropecon-kävijöille!
 
-Figuohjelma hakee puhujia miniatyyriaiheiseen puheohjelmaan, innostuneita keskustelijoita paneelikeskusteluihin, vetäjiä työpajoihin sekä peluuttajia eri pelimuotoihin. Ideoilla – olivat ne sitten viimeisen päälle hiottua timanttia tai vasta aihioita – voit lähestyä figuvastaavaa sähköpostitse.
-                '''.strip(),
-                programme_form_code='events.ropecon2019.forms:FigupeliForm',
-                num_extra_invites=0,
-                order=50,
-            )
-        )
+Tällä lomakkeella voit tarjota kaikkea ei-pelillistä ohjelmaa: puheohjelmaa, työpajoja tai muuta ohjelmaa, joka ei sovi pelien kategorioihin.
 
-        AlternativeProgrammeForm.objects.get_or_create(
-            event=self.event,
-            slug='kokemuspiste',
-            defaults=dict(
-                title='Tarjoa kokemuspisteohjelmaa',
-                short_description='Kokemuspiste eli tutustu peleihin',
-                description='''
-Vuoden klassikot-teeman mukaisesti nyt on oikea hetki kaivaa kaapista se vanha perintökalleutena sukupolvelta toiselle siirtynyt klassikko ja tulla esittelemään sitä koko kansalle!
-
-Kokemuspisteellä kävijä pääsee tutustumaan uusiin peleihin peliesittelijän opastuksella. Haemme esittelijöitä niin vakiintuneisiin peruspeleihin (esim. Settlers of Catan, Magic: the Gathering, Warhammer, Go) kuin vielä tuntemattomiin peleihin. Peliesittelijänä pääset pelauttamaan lempipeliäsi uudelle yleisölle. Myös pelintekijät ovat tervetulleita esittelemään sekä valmiita että melkein valmiita pelejä kiinnostuneelle yleisölle. Peliesittelyiden tulee olla kestoltaan lyhyitä, alle tunnin mittaisia. Tervetulleita ovat niin figut, lautapelit, korttipelit, pöytäropet kuin larpitkin.
-
-Huomaathan, että Kokemuspiste on vain peliesittelyä varten. Tuotteiden myyntiä varten tulee varata osasto Ropeconin myyntialueelta.
-                '''.strip(),
-                programme_form_code='events.ropecon2019.forms:KokemuspisteForm',
-                num_extra_invites=0,
-                order=70,
-            )
-        )
-
-        AlternativeProgrammeForm.objects.get_or_create(
-            event=self.event,
-            slug='puheohjelma',
-            defaults=dict(
-                title='Tarjoa puheohjelmaa tai työpajoja',
-                short_description='Puheohjelmat eli esitelmät, paneelit, jne',
-                description='''
-Vuoden 2019 Ropeconiin etsitään kiinnostavia ja mukaansatempaavia esitelmiä, työpajoja sekä paneelikeskusteluja erityisesti teemalla elämä ja yhteisö. Toivomme tänä vuonna lisää englanninkielistä ohjelmaa. Mainitsethan, jos pystyt vetämään ohjelmanumerosi sekä suomeksi että englanniksi.
-
-Puheohjelma voi olla esitelmä, keskustelu, paneeli tai työpaja, ja se voi olla aloittelijaystävällinen tai kokeneille konkareille.
+Vuoden 2019 Ropeconiin etsitään kiinnostavia ja mukaansatempaavia esitelmiä, työpajoja sekä paneelikeskusteluja erityisesti teemalla mytologia. Toivomme lisää englanninkielistä ohjelmaa, joten mainitsethan, jos pystyt vetämään ohjelmanumerosi sekä suomeksi että englanniksi. Toivomme myös lapsille ja perheille soveltuvaa ohjelmaa.
 
 Etsimme taiteisiin, käsitöihin ja muuhun roolipelaamisen ympärillä tapahtuvaan luovaan harrastamiseen liittyvää ohjelmaa. Haemme myös lauta-, figu- ja pöytäroolipeliaiheista puheohjelmaa ja työpajoja.
 
-Puheohjelman pituus on 45 minuuttia tai 105 minuuttia. Jos ilmoitat ohjelmaan työpajan, toivomme että se järjestetään kahdesti tapahtuman aikana.
+Puheohjelman pituus on 45 minuuttia tai 105 minuuttia; työpaja voi olla pidempikin, 165 minuuttia. Jos ilmoitat ohjelmaan työpajan, toivomme että se järjestetään kahdesti tapahtuman aikana.
 
-Tänä vuonna Ropeconissa on myös akateemista ohjelmaa. Akateemiseen ohjelmaan on erillinen haku.
+Tällä lomakkeella voi ilmoittaa myös muuta ohjelmaa, kuten taistelunäytöksen tai tanssiesityksen.
 
-Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista tiloista ovat käytössä ainakin salit 201 sekä 204 - 207. Uutena puheohjelman käyttöön tulee ainakin sali 103. Voit tutustua tiloihin etukäteen virtuaaliesittelyn avulla.
+Kaiken ohjelman on noudatettava <a href="https://2019.ropecon.fi/kavijalle/hairinta/" target="_blank">Ropeconin häirinnänvastaista linjausta</a>.
+
+Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erillinen haku.
                 '''.strip(),
-                programme_form_code='events.ropecon2019.forms:PuheohjelmaForm',
+                programme_form_code='events.ropecon2019.forms:ProgrammeForm',
                 num_extra_invites=0,
-                order=10,
+                order=300,
             )
         )
 
         for time_slot_name in [
-            'Perjantaina iltapäivällä',
-            'Perjantaina illalla',
-            'Perjantain ja lauantain välisenä yönä',
-            'Lauantaina aamupäivällä',
-            'Lauantaina päivällä',
-            'Lauantaina iltapäivällä',
-            'Lauantaina illalla',
-            'Lauantain ja sunnuntain välisenä yönä',
-            'Sunnuntaina aamupäivällä',
-            'Sunnuntaina päivällä',
+            'Perjantaina iltapäivällä / Friday afternoon',
+            'Perjantaina illalla / Friday evening',
+            'Perjantain ja lauantain välisenä yönä / Friday night',
+            'Lauantaina aamupäivällä / Saturday morning',
+            'Lauantaina päivällä / Saturday noon',
+            'Lauantaina iltapäivällä / Saturday afternoon',
+            'Lauantaina illalla / Saturday evening',
+            'Lauantain ja sunnuntain välisenä yönä / Saturday night',
+            'Sunnuntaina aamupäivällä / Sunday morning',
+            'Sunnuntaina päivällä / Sunday noon',
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
 

@@ -1,6 +1,7 @@
 from django.db import models
 
-from labour.models import ObsoleteSignupExtraBaseV1
+from labour.models import SignupExtraBase
+from enrollment.models import SimpleChoice
 
 
 TOTAL_WORK_CHOICES = [
@@ -15,25 +16,16 @@ SHIFT_TYPE_CHOICES = [
     ('kaikkikay', 'Kumpi tahansa käy'),
 ]
 
-class SimpleChoice(models.Model):
-    name = models.CharField(max_length=63)
 
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        abstract = True
+class TimeSlot(SimpleChoice):
+    pass
 
 
 class SpecialDiet(SimpleChoice):
     pass
 
 
-class TimeSlot(SimpleChoice):
-    pass
-
-
-class SignupExtra(ObsoleteSignupExtraBaseV1):
+class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(max_length=15,
         verbose_name='Toivottu työvuoron pituus',
         help_text='Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
@@ -55,7 +47,7 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         blank=True,
         verbose_name='Työtodistuksen toimitusosoite',
         help_text='Jos haluat työtodistuksen, täytä tähän kenttään postiosoite (katuosoite, '
-            'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
+        'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
     )
 
     special_diet = models.ManyToManyField(
@@ -68,35 +60,40 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         blank=True,
         verbose_name='Muu erikoisruokavalio',
         help_text='Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
-            'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
-            'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+        'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
+        'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
     )
 
     prior_experience = models.TextField(
         blank=True,
         verbose_name='Työkokemus',
         help_text='Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
-            'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
-            'hakemassasi tehtävässä.'
+        'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
+        'hakemassasi tehtävässä.'
     )
 
     shift_wishes = models.TextField(
         blank=True,
         verbose_name='Alustavat työvuorotoiveet',
         help_text='Jos tiedät nyt jo, ettet pääse paikalle johonkin tiettyyn aikaan tai haluat '
-            'osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.'
+        'osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.'
     )
 
     free_text = models.TextField(
         blank=True,
         verbose_name='Vapaa alue',
         help_text='Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
-            'omaa kenttää yllä, käytä tätä kenttää.'
+        'omaa kenttää yllä, käytä tätä kenttää.'
     )
 
     is_active = models.BooleanField(default=True)
 
     @classmethod
     def get_form_class(cls):
+        from .forms import SignupExtraForm
+        return SignupExtraForm
+
+    @classmethod
+    def get_programme_form_class(cls):
         from .forms import ProgrammeSignupExtraForm
         return ProgrammeSignupExtraForm
