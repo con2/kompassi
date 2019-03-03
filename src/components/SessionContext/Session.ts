@@ -1,5 +1,6 @@
 import ClientOAuth2, { Token } from 'client-oauth2';
 
+import Config from '../../Config';
 import { getOAuth2, getWithCredentials } from "./helpers";
 
 
@@ -12,16 +13,13 @@ export interface User {
 }
 
 
-
-
-
 export default class Session {
   user?: User;
-  token?: Token;
+  accessToken?: string;
 
-  constructor(user?: User, token?: Token) {
+  constructor(user?: User, accessToken?: string) {
     this.user = user;
-    this.token = token;
+    this.accessToken = accessToken;
   }
 
   logIn = () => {
@@ -36,12 +34,19 @@ export default class Session {
   }
 
   logOut = () => {
-    console.warn('Session.logOut called while not logged in');
-    // TODO
+    if (!this.user) {
+      console.warn('Session.logOut called while not logged in');
+      return;
+    }
+
+    // TODO revoke token
+
+    localStorage.clear();
+    window.location.href = `${Config.api.baseUrl}/logout`;
   }
 
   get(path: string) {
-    return getWithCredentials(path, this.token ? this.token.accessToken : '');
+    return getWithCredentials(path, this.accessToken || '');
   }
 }
 

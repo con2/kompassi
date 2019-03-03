@@ -1,5 +1,5 @@
 import React from 'react';
-import { NamespacesConsumer } from 'react-i18next';
+import { Translation } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
 
 import Button from 'reactstrap/lib/Button';
@@ -33,7 +33,7 @@ export default class FormView extends React.Component<RouteComponentProps<FormVi
 
     return (
       // TODO wrong namespace
-      <NamespacesConsumer ns={['SchemaForm']}>
+      <Translation ns={['SchemaForm']}>
         {t => (
           <MainViewContainer>
             {title ? <h1>{title}</h1> : null}
@@ -44,7 +44,7 @@ export default class FormView extends React.Component<RouteComponentProps<FormVi
             </SchemaForm>
           </MainViewContainer>
         )}
-      </NamespacesConsumer>
+      </Translation>
     );
   }
 }

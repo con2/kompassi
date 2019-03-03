@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NamespacesConsumer } from 'react-i18next';
+import { Translation } from 'react-i18next';
 
 import { UncontrolledDropdown } from 'reactstrap';
 import Collapse from 'reactstrap/lib/Collapse';
@@ -16,6 +16,7 @@ import NavLink from 'reactstrap/lib/NavLink';
 import { SessionConsumer } from '../SessionContext';
 
 import './index.css';
+import { Link } from 'react-router-dom';
 
 
 interface NavigationState {
@@ -34,12 +35,12 @@ export default class Navigation extends React.Component<{}, NavigationState> {
 
   render() {
     return (
-      <NamespacesConsumer ns={['Navigation']}>
+      <Translation ns={['Navigation']}>
         {t => (
           <SessionConsumer>
             {session => (
               <Navbar color="dark" dark={true} expand="md" id="kompassi-navbar">
-                <NavbarBrand href="/">Kompassi <sup><small>v2 BETA</small></sup></NavbarBrand>
+                <Link className="navbar-brand" to="/">Kompassi <sup><small>v2 BETA</small></sup></Link>
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={this.state.isOpen} navbar={true}>
                   <Nav className="ml-auto" navbar={true}>
@@ -48,13 +49,13 @@ export default class Navigation extends React.Component<{}, NavigationState> {
                       <UncontrolledDropdown nav={true} inNavbar={true}>
                         <DropdownToggle nav={true} caret={true}>{session.user.displayName}</DropdownToggle>
                         <DropdownMenu right={true}>
-                          <DropdownItem>
+                          {/* <DropdownItem>
                             Option 1
                           </DropdownItem>
                           <DropdownItem>
                             Option 2
                           </DropdownItem>
-                          <DropdownItem divider={true} />
+                          <DropdownItem divider={true} /> */}
                           <DropdownItem onClick={session.logOut}>{t('logOut')}</DropdownItem>
                         </DropdownMenu>
                       </UncontrolledDropdown>
@@ -70,7 +71,7 @@ export default class Navigation extends React.Component<{}, NavigationState> {
             )}
           </SessionConsumer>
         )}
-      </NamespacesConsumer>
+      </Translation>
     );
   }
 

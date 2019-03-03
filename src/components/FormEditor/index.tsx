@@ -1,5 +1,5 @@
 import React from 'react';
-import { NamespacesConsumer } from 'react-i18next';
+import { Translation } from 'react-i18next';
 
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
@@ -40,7 +40,7 @@ export default class FormEditor extends BaseSchemaForm<FormEditorOwnProps> {
     const { name } = field;
 
     return (
-      <NamespacesConsumer key={name} ns={['FormEditor']}>
+      <Translation key={name} ns={['FormEditor']}>
         {t => (
           <div className="FormEditor-field">
             <div className="FormEditor-background">
@@ -75,7 +75,7 @@ export default class FormEditor extends BaseSchemaForm<FormEditorOwnProps> {
             </div>
           </div>
         )}
-      </NamespacesConsumer>
+      </Translation>
     );
   }
 

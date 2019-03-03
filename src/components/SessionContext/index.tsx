@@ -21,14 +21,29 @@ export class SessionProvider extends React.Component<{}, SessionProviderState> {
   };
 
   async componentDidMount() {
-    try {
+    // FIXME
+
+    let accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken && window.location.hash) {
       const token = await getOAuth2().token.getToken(window.location.href);
-      const user = await getWithCredentials('user', token.accessToken);
-      this.setState({ session: new Session(user, token) });
-    } catch (e) {
-      console.warn('Not logged in:', e);
+      accessToken = token.accessToken;
+    }
+
+    if (accessToken) {
+      try {
+        const user = await getWithCredentials('user', accessToken);
+        localStorage.setItem('accessToken', accessToken);
+        this.setState({ session: new Session(user, accessToken) });
+      } catch (e) {
+        console.warn('Not logged in:', e);
+        localStorage.clear();
+        this.setState({ session: emptySession });
+      }
+    } else {
       this.setState({ session: emptySession });
     }
+
   }
 
   render() {

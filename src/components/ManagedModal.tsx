@@ -1,5 +1,5 @@
 import React from 'react';
-import { NamespacesConsumer } from 'react-i18next';
+import { Translation } from 'react-i18next';
 
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
@@ -37,7 +37,7 @@ export default class ManagedModal<PayloadType> extends React.PureComponent<Modal
     const { title, footer } = this.props;
 
     return (
-      <NamespacesConsumer ns={['Common']}>
+      <Translation ns={['Common']}>
         {t => (
           <BsModal isOpen={isOpen} toggle={this.cancel}>
             {title ? <ModalHeader toggle={this.cancel}>{title}</ModalHeader> : null}
@@ -52,7 +52,7 @@ export default class ManagedModal<PayloadType> extends React.PureComponent<Modal
             </ModalFooter>
           </BsModal>
         )}
-      </NamespacesConsumer>
+      </Translation>
     );
   }
 

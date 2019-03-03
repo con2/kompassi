@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NamespacesConsumer } from 'react-i18next';
+import { Translation } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
 
 import Button from 'reactstrap/lib/Button';
@@ -90,7 +90,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     const { title, fields, activeTab, layout, addingNewField } = this.state;
 
     return (
-      <NamespacesConsumer ns={['FormEditor', 'Common']}>
+      <Translation ns={['FormEditor', 'Common']}>
         {t => (
           <MainViewContainer>
             <Nav tabs={true} className='mb-2'>
@@ -172,7 +172,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
             </ManagedModal>
           </MainViewContainer>
         )}
-      </NamespacesConsumer>
+      </Translation>
     );
   }
 
