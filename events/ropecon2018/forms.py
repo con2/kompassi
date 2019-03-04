@@ -199,6 +199,7 @@ LARP_BEGINNER_FRIENDLY_HELP_TEXT = _('Check this box if your game does not requi
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(RpgForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -254,16 +255,16 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.fields['is_english_ok'].verbose_name = RPG_ENGLISH_NAME
         self.fields['is_english_ok'].help_text = RPG_ENGLISH_HELP_TEXT
-                    
+
         self.fields['is_intended_for_experienced_participants'].verbose_name = RPG_EXPERIENCED_NAME
         self.fields['is_intended_for_experienced_participants'].help_text = RPG_EXPERIENCED_HELP_TEXT
-                    
+
         self.fields['approximate_length'].initial = 240
 
         self.fields['rpg_system'].required = True
 
         self.fields['min_players'].help_text = RPG_MIN_PLAYERS_HELP_TEXT
-        
+
         self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
         self.fields['description'].required = True
 
@@ -321,6 +322,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(LarpForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -349,7 +351,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         self.fields['title'].help_text = LARP_TITLE_HELP_TEXT
-        
+
         self.fields['approximate_length'].help_text = LARP_APPROXIMATE_LENGTH_HELP_TEXT
 
         self.fields['three_word_description'].required = True
@@ -360,15 +362,15 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields['min_players'].initial = 6
 
         self.fields['other_author'].help_text = LARP_OTHER_AUTHOR_HELP_TEXT
-        
+
         self.fields['ropecon2018_preferred_time_slots'].help_text = LARP_TIMESLOTS_HELP_TEXT
-        
+
         self.fields['notes_from_host'].help_text = LARP_NOTES_HELP_TEXT
-        
+
         self.fields['is_english_ok'].help_text = LARP_ENGLISH_OK_HELP_TEXT
-        
+
         self.fields['is_age_restricted'].help_text = LARP_AGE_RESTRICTED_HELP_TEXT
-        
+
         self.fields['is_beginner_friendly'].help_text = LARP_BEGINNER_FRIENDLY_HELP_TEXT
 
     class Meta:
@@ -406,6 +408,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class KorttipeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(KorttipeliForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -467,6 +470,7 @@ class KorttipeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class FigupeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(FigupeliForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -528,6 +532,7 @@ class FigupeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(KokemuspisteForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -581,6 +586,7 @@ class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class LautapeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(LautapeliForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -642,6 +648,7 @@ class LautapeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
 
         super(PuheohjelmaForm, self).__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -669,7 +676,7 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields['description'].required = True
 
         self.fields['approximate_length'].initial = 105
-        
+
         self.fields['ropecon2018_audience_size'].required = False
         self.fields['ropecon2018_is_panel_attendance_ok'].required = False
         self.fields['ropecon2018_speciality'].required = False
@@ -698,5 +705,3 @@ class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         return dict(
             category=Category.objects.get(event__slug='ropecon2018', slug='puheohjelma'),
         )
-
-
