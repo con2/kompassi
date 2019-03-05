@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import Spinner from 'reactstrap/lib/Spinner';
+
+import Loading from '../Loading';
 
 
 interface CallbackViewState {
@@ -30,7 +31,7 @@ export default class CallbackView extends React.Component<{}, CallbackViewState>
     if (next) {
       return <Redirect to={next} />;
     } else {
-      return <Spinner />;
+      return <Loading />;
     }
   }
 }

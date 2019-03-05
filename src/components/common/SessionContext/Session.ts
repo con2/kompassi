@@ -39,7 +39,7 @@ export default class Session {
 
     // TODO revoke token
 
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = `${Config.api.baseUrl}/logout`;
   }
 

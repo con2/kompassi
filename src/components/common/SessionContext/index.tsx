@@ -1,5 +1,6 @@
 import React from 'react';
-import Spinner from 'reactstrap/lib/Spinner';
+
+import Loading from '../Loading';
 
 import { getOAuth2, getWithCredentials } from './helpers';
 import Session, { emptySession } from './Session';
@@ -21,11 +22,9 @@ export class SessionProvider extends React.Component<{}, SessionProviderState> {
   };
 
   async componentDidMount() {
-    // FIXME
+    let accessToken = sessionStorage.getItem('accessToken');
 
-    let accessToken = localStorage.getItem('accessToken');
-
-    if (!accessToken && window.location.hash) {
+    if (window.location.hash) {
       const token = await getOAuth2().token.getToken(window.location.href);
       accessToken = token.accessToken;
     }
@@ -33,11 +32,11 @@ export class SessionProvider extends React.Component<{}, SessionProviderState> {
     if (accessToken) {
       try {
         const user = await getWithCredentials('user', accessToken);
-        localStorage.setItem('accessToken', accessToken);
+        sessionStorage.setItem('accessToken', accessToken);
         this.setState({ session: new Session(user, accessToken) });
       } catch (e) {
         console.warn('Not logged in:', e);
-        localStorage.clear();
+        sessionStorage.clear();
         this.setState({ session: emptySession });
       }
     } else {
@@ -56,7 +55,7 @@ export class SessionProvider extends React.Component<{}, SessionProviderState> {
         </SessionContext.Provider>
       );
     } else {
-      return <Spinner />;
+      return <Loading />;
     }
   }
 }
