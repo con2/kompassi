@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Translation } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 
+import Alert from 'reactstrap/lib/Alert';
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 import Form from 'reactstrap/lib/Form';
@@ -14,11 +16,13 @@ import NavItem from 'reactstrap/lib/NavItem';
 import NavLink from 'reactstrap/lib/NavLink';
 
 import FormEditor from './FormEditor';
+import Loading from './Loading';
 import MainViewContainer from './MainViewContainer';
 import ManagedModal from './ManagedModal';
 import SchemaForm from './SchemaForm';
 import { Field, FieldType, fieldTypes, Layout } from './SchemaForm/models';
-import { LinkContainer } from 'react-router-bootstrap';
+import SessionContext from './SessionContext';
+import Session from './SessionContext/Session';
 
 
 type Tab = 'design' | 'preview';
@@ -34,8 +38,9 @@ interface FormEditorViewRouterProps {
 
 interface FormEditorViewState {
   loading: boolean;
+  error?: string;
 
-  title?: string;
+  title: string;
   fields: Field[];
   layout: Layout;
 
@@ -48,6 +53,7 @@ interface FormEditorViewState {
 function initState(loading: boolean = true): FormEditorViewState {
   return {
     loading,
+    title: '',
     fields: [],
     layout: 'horizontal',
     activeTab: 'design',
@@ -61,6 +67,9 @@ class EditFieldModal extends ManagedModal<Field> {}
 
 
 export default class FormEditorView extends React.Component<RouteComponentProps<FormEditorViewRouterProps>, FormEditorViewState> {
+  static contextType = SessionContext;
+  context!: Session;
+
   state: FormEditorViewState = initState();
 
   addFieldModal: AddFieldModal | null = null;
@@ -71,19 +80,24 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     const { slug } = this.props.match.params;
 
     if (slug === 'new') {
-      this.setState({
-
-      });
+      this.setState(initState(false));
+    } else {
+      try {
+        const { title, fields } = await this.context.get(`forms/${slug}`);
+        this.setState({ loading: false, title, fields });
+      } catch (err) {
+        this.setState({ loading: false, error: err.message });
+      }
     }
   }
 
   render() {
-    const { title, fields, activeTab, layout, addingNewField } = this.state;
+    const { loading, error, title, fields, activeTab, layout, addingNewField } = this.state;
 
     return (
       <Translation ns={['FormEditor', 'Common']}>
         {t => (
-          <MainViewContainer>
+          <MainViewContainer loading={loading} error={error}>
             <ButtonGroup className="float-md-right">
               <LinkContainer to="/forms" exact={true}>
                 <Button color="danger" outline={true} size="sm">{t('cancel')}</Button>

@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 import Alert from 'reactstrap/lib/Alert';
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
-import Spinner from 'reactstrap/lib/Spinner';
 import Table from 'reactstrap/lib/Table';
 
+import Loading from '../Loading';
 import SessionContext from '../SessionContext';
 import Session from '../SessionContext/Session';
 
@@ -64,7 +64,7 @@ export default class DataTable extends React.PureComponent<DataTableProps, DataT
     const standardActions = this.props.standardActions || ['create', 'delete', 'open'];
 
     if (this.state.loading) {
-      return <div style={{ textAlign: 'center', paddingTop: '1em' }}><Spinner /></div>;
+      return <Loading />;
     } else if (this.state.error) {
       return <Alert color="danger">{this.state.error}</Alert>;
     } else {
