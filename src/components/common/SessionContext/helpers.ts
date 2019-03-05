@@ -3,7 +3,9 @@ import ClientOAuth2 from 'client-oauth2';
 import Config from '../../../Config';
 
 
-export async function getWithCredentials(path: string, token: string) {
+export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
+export async function fetchWithCredentials(method: Method, path: string, token: string, data?: any) {
   const url = `${Config.api.baseUrl}/api/v3/${path}`;
   const headers: { [name: string]: string; } = {
     accept: 'application/json',
@@ -13,7 +15,14 @@ export async function getWithCredentials(path: string, token: string) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, { headers });
+  const init: RequestInit = { headers, method };
+
+  if (data) {
+    headers['Content-Type'] = 'application/json';
+    init.body = JSON.stringify(data);
+  }
+
+  const response = await fetch(url, init);
 
   if(!response.ok) {
     throw new Error(response.statusText);

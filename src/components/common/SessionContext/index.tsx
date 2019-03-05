@@ -2,7 +2,7 @@ import React from 'react';
 
 import Loading from '../Loading';
 
-import { getOAuth2, getWithCredentials } from './helpers';
+import { fetchWithCredentials, getOAuth2 } from './helpers';
 import Session, { emptySession } from './Session';
 
 
@@ -31,7 +31,7 @@ export class SessionProvider extends React.Component<{}, SessionProviderState> {
 
     if (accessToken) {
       try {
-        const user = await getWithCredentials('user', accessToken);
+        const user = await fetchWithCredentials('GET', 'user', accessToken);
         sessionStorage.setItem('accessToken', accessToken);
         this.setState({ session: new Session(user, accessToken) });
       } catch (e) {

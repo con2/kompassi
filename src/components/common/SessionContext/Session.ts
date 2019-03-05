@@ -1,5 +1,5 @@
 import Config from '../../../Config';
-import { getOAuth2, getWithCredentials } from "./helpers";
+import { fetchWithCredentials, getOAuth2 } from "./helpers";
 
 
 export interface User {
@@ -44,7 +44,19 @@ export default class Session {
   }
 
   get(path: string) {
-    return getWithCredentials(path, this.accessToken || '');
+    return fetchWithCredentials('GET', path, this.accessToken || '');
+  }
+
+  post(path: string, data: any) {
+    return fetchWithCredentials('POST', path, this.accessToken || '', data);
+  }
+
+  put(path: string, data: any) {
+    return fetchWithCredentials('PUT', path, this.accessToken || '', data);
+  }
+
+  delete(path: string) {
+    return fetchWithCredentials('DELETE', path, this.accessToken || '');
   }
 }
 

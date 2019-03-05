@@ -288,7 +288,18 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     this.setState({ fields: newFields });
   }
 
-  protected save() {
-    console.log('save!');
+  protected save = () => {
+    const { slug } = this.props.match.params;
+
+    if (slug === 'new') {
+      this.context.post('forms', this.serializeForm());
+    } else {
+      this.context.put(`forms/${slug}`, this.serializeForm());
+    }
+  }
+
+  protected serializeForm() {
+    const { title, fields } = this.state;
+    return { title, fields };
   }
 }
