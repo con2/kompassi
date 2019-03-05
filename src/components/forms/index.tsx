@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Translation } from 'react-i18next';
 
-import DataTable from './DataTable';
-import MainViewContainer from './MainViewContainer';
+import DataTable from '../common/DataTable';
+import MainViewContainer from '../common/MainViewContainer';
 
 
-export default () => (
+const FormListView = () => (
   <Translation ns={['Forms']}>
     {t => (
       <MainViewContainer>
@@ -18,5 +18,6 @@ export default () => (
       </MainViewContainer>
     )}
   </Translation>
-
 );
+
+export default FormListView;

@@ -9,7 +9,6 @@ import ModalFooter from 'reactstrap/lib/ModalFooter';
 import ModalHeader from 'reactstrap/lib/ModalHeader';
 
 
-
 export interface ModalResult<PayloadType> {
   ok: boolean;
   payload?: PayloadType;

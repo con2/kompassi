@@ -1,6 +1,6 @@
 import ClientOAuth2 from 'client-oauth2';
 
-import Config from '../../Config';
+import Config from '../../../Config';
 
 
 export async function getWithCredentials(path: string, token: string) {

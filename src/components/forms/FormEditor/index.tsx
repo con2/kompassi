@@ -8,6 +8,7 @@ import FormGroup from 'reactstrap/lib/FormGroup';
 import { FormEditorAction } from '../FormEditorView';
 import { BaseSchemaForm } from '../SchemaForm';
 import { Field } from '../SchemaForm/models';
+
 import './index.css';
 
 

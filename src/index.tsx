@@ -7,7 +7,7 @@ import registerServiceWorker from './registerServiceWorker';
 import './translations';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { SessionProvider } from './components/SessionContext';
+import { SessionProvider } from './components/common/SessionContext';
 
 
 ReactDOM.render(

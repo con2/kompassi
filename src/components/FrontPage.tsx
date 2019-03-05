@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import Alert from 'reactstrap/lib/Alert';
 
-import DataTable from './DataTable';
-import MainViewContainer from './MainViewContainer';
+import DataTable from './common/DataTable';
+import MainViewContainer from './common/MainViewContainer';
 
 
 class EventTable extends DataTable {

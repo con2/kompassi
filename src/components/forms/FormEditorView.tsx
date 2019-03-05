@@ -3,7 +3,6 @@ import { Translation } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 
-import Alert from 'reactstrap/lib/Alert';
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 import Form from 'reactstrap/lib/Form';
@@ -15,14 +14,14 @@ import Nav from 'reactstrap/lib/Nav';
 import NavItem from 'reactstrap/lib/NavItem';
 import NavLink from 'reactstrap/lib/NavLink';
 
+import MainViewContainer from '../common/MainViewContainer';
+import ManagedModal from '../common/ManagedModal';
+import SessionContext from '../common/SessionContext';
+import Session from '../common/SessionContext/Session';
+
 import FormEditor from './FormEditor';
-import Loading from './Loading';
-import MainViewContainer from './MainViewContainer';
-import ManagedModal from './ManagedModal';
 import SchemaForm from './SchemaForm';
 import { Field, FieldType, fieldTypes, Layout } from './SchemaForm/models';
-import SessionContext from './SessionContext';
-import Session from './SessionContext/Session';
 
 
 type Tab = 'design' | 'preview';

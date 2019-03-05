@@ -1,6 +1,4 @@
-import ClientOAuth2, { Token } from 'client-oauth2';
-
-import Config from '../../Config';
+import Config from '../../../Config';
 import { getOAuth2, getWithCredentials } from "./helpers";
 
 

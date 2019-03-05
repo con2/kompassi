@@ -5,7 +5,8 @@ import { RouteComponentProps } from 'react-router';
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 
-import MainViewContainer from './MainViewContainer';
+import MainViewContainer from '../common/MainViewContainer';
+
 import SchemaForm from './SchemaForm';
 import { Field, Layout } from './SchemaForm/models';
 

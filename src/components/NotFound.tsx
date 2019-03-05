@@ -2,10 +2,10 @@ import * as React from 'react';
 
 import { Translation } from 'react-i18next';
 
-import MainViewContainer from './MainViewContainer';
+import MainViewContainer from './common/MainViewContainer';
 
 
-export default () => (
+const NotFound = () => (
   <Translation ns={['NotFound']}>
     {t => (
       <MainViewContainer>
@@ -15,3 +15,5 @@ export default () => (
     )}
   </Translation>
 );
+
+export default NotFound;
