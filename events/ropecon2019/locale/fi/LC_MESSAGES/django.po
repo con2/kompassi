@@ -90,7 +90,7 @@ msgstr "Keksi ytimekäs otsikko pelillesi. Varaamme oikeuden muokata otsikkoa."
 msgid "Estimated duration (minutes)"
 msgstr "Arvioitu pituus (minuuttia)"
 
-msgid "For one run of a 3-4 hour game (180-240 minutes) of your own writing you will receive one free weekend ticket. This includes time for propping, brief and debrief, as well as the actual game time. "
+msgid "For one run of a 3-4 hour game (180-240 minutes) of your own writing you will receive one free weekend ticket. This includes time for propping, brief and debrief, as well as the actual game time."
 msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman pelisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
 
 msgid "Number of runs"
@@ -192,7 +192,13 @@ msgid "Game system"
 msgstr "Pelisysteemi"
 
 msgid "What is the game system used? For example, “Magic the Gathering” Did you design the game yourself? Describe it in a few words, for example “4X, space battle, conquest”"
-msgstr "What is the game system used? For example, “Magic the Gathering” Did you design the game yourself? Describe it in a few words, for example “4X, space battle, conquest”"
+msgstr "Mikä on pelisysteemi? Esim. “Magic the Gathering” Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. “4X, avaruustaistelu, valloitus”"
+
+msgid "When are you unable to run your game?"
+msgstr "Milloin et pysty pelauttamaan peliäsi?"
+
+msgid "If your game is suitable for the whole family and people of all ages, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi soveltuu koko perheelle ja kaiken ikäisille."
 
 msgid "Signup"
 msgstr "Ilmoittautuminen"
@@ -235,3 +241,6 @@ msgstr "Ruksaa tämä ruutu, mikäli pelisi soveltuu koko perheelle ja kaiken ik
 
 msgid "Who is the game for?"
 msgstr "Kenelle peli on tarkoitettu?"
+
+msgid "When are you unable to have your program item?"
+msgstr "Milloin et pysty pitämään ohjelmaasi?"

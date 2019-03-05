@@ -24,7 +24,7 @@ logger = logging.getLogger('kompassi')
 
 VIDEO_PERMISSION_CHOICES = [
     ('public', _('My programme may be recorded and published')),
-    ('private', _('I forbid publishing my programme, but it may be recorded for archiving purposes')),
+    # ('private', _('I forbid publishing my programme, but it may be recorded for archiving purposes')),
     ('forbidden', _('I forbid recording my programme altogether')),
 ]
 
@@ -114,8 +114,9 @@ LANGUAGE_CHOICES = [
 ]
 
 ROPECON2018_SIGNUP_LIST_CHOICES = [
-    ('itse', _('I will make my own signup sheet')),
-    ('tiski', _('Desk will make the signup sheet')),
+    ('none', _('No sign-up')),
+    ('itse', _('I will collect sign-ups')),
+    ('tiski', _('Sign up at the Gaming Desk')),
 ]
 
 ROPECON2018_KP_LENGTH_CHOICES = [
@@ -480,9 +481,8 @@ class Programme(models.Model, CsvExportMixin):
         blank=True,
     )
     ropecon2019_blocked_time_slots = models.ManyToManyField('ropecon2019.TimeSlot',
-        verbose_name=_('time preferences'),
+        verbose_name=_('When are you unable to run your game?'),
         help_text=_(
-            'When are you <strong>unable to run</strong> your game?<br><br>'
             'Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> '
             "field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations "
             'set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your '
@@ -511,6 +511,7 @@ class Programme(models.Model, CsvExportMixin):
             ('tmnt', _('Tournament')),
             ('demo', _('Demonstration')),
             ('open', _('Open game')),
+            ('pain', _('Miniature painting')),
         ]
     )
 

@@ -213,7 +213,7 @@ LARP_FORM_FIELD_TEXTS = dict(
     is_age_restricted=(_('The game is intended for players over 18'), _('Please tick this box if your game involves themes necessitating that all players are 18 years or older.')),
     is_children_friendly=(_('The game is intended for children'), _('Please tick this box if your game is designed for children.')),
     is_beginner_friendly=(_('Beginner-friendly'), _('If your game is suitable for players without any or with very limited larping experience, please tick this box.')),
-    is_family_program=(_('Family-friendly'), None),
+    is_family_program=(_('Family-friendly'), _('If your game is suitable for the whole family and people of all ages, please tick this box.')),
 )
 
 
@@ -298,7 +298,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
     approximate_length=(_('Estimated duration (minutes)'), _('Duration of lectures and panel discussions is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other program, please make an estimation.')),
     is_family_program=(_('Family-friendly'), _('If your program is suitable for or aimed at children, teenagers or families, please tick the checkbox. More details can be provided in the last text field.')),
     max_players=(_('Max. number of participants'), _('If your workshop or other program can only host a limited number of participants, please provide a maximum number of attendees.')),
-    ropecon2019_blocked_time_slots=(_('Preferred schedule'), _('Select the times when you DO NOT want to have your program. Time slots have been intentionally left vague. If you have further requests on time slots and schedule, more details can be provided in the open comment field below.')),
+    ropecon2019_blocked_time_slots=(_('When are you unable to have your program item?'), _('Select the times when you DO NOT want to have your program. Time slots have been intentionally left vague. If you have further requests on time slots and schedule, more details can be provided in the open comment field below.')),
     notes_from_host=(_('Comments'), _('Do you have any further information, details, comments or questions that you would like to let our program coordinators to know?')),
 )
 
@@ -330,11 +330,15 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2019_blocked_time_slots',
             'notes_from_host',
             'is_available_for_panel',
+            'field_of_expertise',
             'video_permission',
         )
 
         for field_name, texts in PROGRAMME_FORM_FIELD_TEXTS.items():
             self.fields[field_name].label, self.fields[field_name].help_text = texts
+
+        self.fields['video_permission'].required = True
+        self.fields['approximate_length'].initial = 105
 
         self.fields['category'].queryset = Category.objects.filter(event=event, slug__in=(
             'pres',
@@ -367,6 +371,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2019_blocked_time_slots',
             'notes_from_host',
             'is_available_for_panel',
+            'field_of_expertise',
             'video_permission',
         )
 
