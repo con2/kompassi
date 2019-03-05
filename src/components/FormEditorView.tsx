@@ -18,6 +18,7 @@ import MainViewContainer from './MainViewContainer';
 import ManagedModal from './ManagedModal';
 import SchemaForm from './SchemaForm';
 import { Field, FieldType, fieldTypes, Layout } from './SchemaForm/models';
+import { LinkContainer } from 'react-router-bootstrap';
 
 
 type Tab = 'design' | 'preview';
@@ -27,18 +28,31 @@ const tabs: Tab[] = ['design', 'preview'];
 export type FormEditorAction = 'addFieldAbove' | 'moveUp' | 'moveDown' | 'editField' | 'removeField';
 
 
-interface FormViewRouterProps {
-  formSlug: string;
+interface FormEditorViewRouterProps {
+  slug: string;
 }
 
-interface FormViewState {
+interface FormEditorViewState {
+  loading: boolean;
+
   title?: string;
   fields: Field[];
   layout: Layout;
 
   activeTab: Tab;
   addingNewField: boolean;
-  fieldBeingEdited: Field;
+  fieldBeingEdited?: Field;
+}
+
+
+function initState(loading: boolean = true): FormEditorViewState {
+  return {
+    loading,
+    fields: [],
+    layout: 'horizontal',
+    activeTab: 'design',
+    addingNewField: false,
+  };
 }
 
 
@@ -46,45 +60,22 @@ class AddFieldModal extends ManagedModal<FieldType> {}
 class EditFieldModal extends ManagedModal<Field> {}
 
 
-export default class FormEditorView extends React.Component<RouteComponentProps<FormViewRouterProps>, FormViewState> {
-  state: FormViewState = {
-    title: 'Dynaamine lomake höhöhö',
-    fields: [
-      {
-        type: 'SingleLineText',
-        name: 'singleLine',
-        title: 'Single line text',
-      },
-      {
-        type: 'MultiLineText',
-        name: 'multiLine',
-        title: 'Multi line text',
-      },
-      {
-        type: 'Divider',
-        name: 'divider1',
-      },
-      {
-        type: 'StaticText',
-        name: 'staticFullWidth',
-        helpText: 'Full-width static text.',
-      },
-      {
-        type: 'StaticText',
-        name: 'staticWithTitle',
-        title: 'Static text with title',
-        helpText: 'I am a llama.',
-      },
-    ],
-    layout: 'horizontal',
-    activeTab: 'design',
-    addingNewField: false,
-    fieldBeingEdited: { type: 'Divider', name: '' },
-  };
+export default class FormEditorView extends React.Component<RouteComponentProps<FormEditorViewRouterProps>, FormEditorViewState> {
+  state: FormEditorViewState = initState();
 
   addFieldModal: AddFieldModal | null = null;
   editFieldModal: EditFieldModal | null = null;
   removeFieldModal: ManagedModal<{}> | null = null;
+
+  async componentDidMount() {
+    const { slug } = this.props.match.params;
+
+    if (slug === 'new') {
+      this.setState({
+
+      });
+    }
+  }
 
   render() {
     const { title, fields, activeTab, layout, addingNewField } = this.state;
@@ -93,6 +84,12 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
       <Translation ns={['FormEditor', 'Common']}>
         {t => (
           <MainViewContainer>
+            <ButtonGroup className="float-md-right">
+              <LinkContainer to="/forms" exact={true}>
+                <Button color="danger" outline={true} size="sm">{t('cancel')}</Button>
+              </LinkContainer>
+              <Button color="primary" size="sm" onClick={this.save}>{t('save')}</Button>
+            </ButtonGroup>
             <Nav tabs={true} className='mb-2'>
               {tabs.map(tab => (
                 <NavItem key={tab}>
@@ -204,24 +201,27 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
 
     const result = await this.getNewField();
 
-    if (result.ok) {
-      const newFields = fields.slice(0, index)
-        .concat(result.payload!)
-        .concat(fields.slice(index));
-
-      this.setState({ fields: newFields });
-    }
-  }
-
-  protected addField = async () => {
-    const { fields } = this.state;
-    const fieldTypeSelectionResult = await this.addFieldModal!.open();
-
-    if (!fieldTypeSelectionResult.ok) {
+    if (!result.ok) {
       return;
     }
 
-    const newFieldEditResult = await this.editFieldModal!.open();
+    const newFields = fields.slice(0, index)
+      .concat([result.payload!])
+      .concat(fields.slice(index));
+
+    this.setState({ fields: newFields });
+  }
+
+  protected addField = async () => {
+    const result = await this.getNewField();
+
+    if (!result.ok) {
+      return;
+    }
+
+    const fields = this.state.fields.concat([result.payload!]);
+
+    this.setState({ fields });
   }
 
   protected async getNewField() {
@@ -273,5 +273,9 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
       .concat([fields[index + 1], fields[index]])
       .concat(fields.slice(index + 2));
     this.setState({ fields: newFields });
+  }
+
+  protected save() {
+    console.log('save!');
   }
 }

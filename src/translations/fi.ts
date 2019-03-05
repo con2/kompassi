@@ -10,6 +10,7 @@ const translations: Translations = {
     name: 'Nimi',
   },
   Navigation: {
+    forms: 'Lomakkeet',
     logIn: 'Kirjaudu sisään',
     logOut: 'Kirjaudu ulos',
   },
@@ -20,6 +21,12 @@ const translations: Translations = {
   SchemaForm: {
     submit: 'Lähetä',
   },
+  Forms: {
+    heading: 'Lomakkeet',
+    title: 'Otsikko',
+    slug: 'Tekninen nimi',
+    create: 'Uusi lomake',
+  },
   FormEditor: {
     editField: 'Muokkaa kenttää',
     moveUp: 'Siirrä ylös',
@@ -29,6 +36,8 @@ const translations: Translations = {
     addField: 'Lisää kenttä',
     design: 'Muokkaa',
     preview: 'Esikatsele',
+    save: 'Tallenna lomake',
+    cancel: 'Palaa tallentamatta',
 
     FieldTypes: {
       SingleLineText: 'Yksirivinen tekstikenttä',

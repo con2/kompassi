@@ -11,7 +11,7 @@ import { Field, Layout } from './SchemaForm/models';
 
 
 interface FormViewRouterProps {
-  formSlug: string;
+  slug: string;
 }
 
 interface FormViewState {

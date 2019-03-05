@@ -18,11 +18,12 @@ class App extends React.Component {
         <Navigation />
         <Switch>
           <Route exact={true} path="/" component={FrontPage} />
-          <Route path="/forms/:formSlug/edit" component={FormEditorView} />
-          <Route path="/forms/:formSlug" component={FormView} />
+          <Route path="/forms/:slug(new)" component={FormEditorView} />
+          <Route path="/forms/:slug/edit" component={FormEditorView} />
+          <Route path="/forms/:slug" component={FormView} />
           <Route path="/forms" component={FormListView} />
           <Route path="/oauth2/callback" component={CallbackView} />
-          <Route render={NotFound} />
+          <Route component={NotFound} />
         </Switch>
       </div>
     );

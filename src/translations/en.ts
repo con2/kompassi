@@ -1,6 +1,4 @@
-import { Translations } from '.';
-
-const translations: Translations = {
+const translations = {
   Common: {
     ok: 'OK',
     cancel: 'Cancel',
@@ -10,6 +8,7 @@ const translations: Translations = {
     name: 'Name',
   },
   Navigation: {
+    forms: 'Forms',
     logIn: 'Log in',
     logOut: 'Log out',
   },
@@ -20,6 +19,12 @@ const translations: Translations = {
   SchemaForm: {
     submit: 'Submit',
   },
+  Forms: {
+    heading: 'Forms',
+    title: 'Title',
+    slug: 'Slug',
+    create: 'New form',
+  },
   FormEditor: {
     editField: 'Edit field',
     moveUp: 'Move up',
@@ -29,6 +34,8 @@ const translations: Translations = {
     addField: 'Add field',
     design: 'Design',
     preview: 'Preview',
+    save: 'Save form',
+    cancel: 'Return without saving',
 
     FieldTypes: {
       SingleLineText: 'Single line text field',
