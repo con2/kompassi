@@ -34,12 +34,14 @@ class RecipientGroup(models.Model):
     personnel_class = models.ForeignKey(PersonnelClass, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
+        num_ppl = self.group.user_set.count() if self.group else '–'
+
         if self.job_category:
-            kind = ' (tehtäväalue)'
+            kind = f' (tehtäväalue, {num_ppl} hlö)'
         elif self.personnel_class:
-            kind = ' (henkilöstöluokka)'
+            kind = f' (henkilöstöluokka, {num_ppl} hlö)'
         else:
-            kind = ''
+            kind = f' ({num_ppl} hlö)'
 
         return '{self.event.name}: {self.verbose_name}{kind}'.format(self=self, kind=kind)
 
