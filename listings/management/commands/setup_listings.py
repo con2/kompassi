@@ -62,6 +62,7 @@ class Command(BaseCommand):
                 'nekocon',
                 'nippori',
                 'popcult',
+                'sarjakuvafestivaalit',
                 'ropecon',
                 'tampere kuplii',
                 'tracon',
@@ -96,4 +97,3 @@ class Command(BaseCommand):
 
             listing.events.set(events)
             listing.external_events.set(external_events)
-
