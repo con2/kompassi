@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from labour.models import SignupExtraBase
 from enrollment.models import SimpleChoice
@@ -50,6 +51,14 @@ class SignupExtra(SignupExtraBase):
         'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
     )
 
+    can_finnish = models.BooleanField(default=False, verbose_name=_('Finnish'))
+    can_english = models.BooleanField(default=False, verbose_name=_('English'))
+    other_languages = models.TextField(
+        blank=True,
+        verbose_name=_('Other languages'),
+        help_text=_('Please select those languages with which you feel comfortable doing customer service work and list those not listed in the free text field. You can also describe how proficient you are with those languages in the text field.'),
+    )
+
     special_diet = models.ManyToManyField(
         SpecialDiet,
         blank=True,
@@ -84,6 +93,11 @@ class SignupExtra(SignupExtraBase):
         verbose_name='Vapaa alue',
         help_text='Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
         'omaa kenttää yllä, käytä tätä kenttää.'
+    )
+
+    roster_publish_consent = models.BooleanField(
+        default=False,
+        verbose_name=_('I give my consent for Ropecon to publish my name to my co-workers in the volunteer roster of my assigned station.'),
     )
 
     is_active = models.BooleanField(default=True)
