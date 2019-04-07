@@ -841,8 +841,7 @@ class Order(models.Model):
 
     @property
     def checkout_message(self):
-        products = ", ".join(i.description for i in self.order_product_set.filter(count__gte=1))
-        return f"{self.formatted_order_number}: {products}"
+        return ", ".join(i.description for i in self.order_product_set.filter(count__gte=1))
 
     def checkout_mac(self, request):
         return compute_payment_request_mac(request, self)

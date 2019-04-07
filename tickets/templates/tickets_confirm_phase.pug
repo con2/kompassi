@@ -1,8 +1,6 @@
 extends tickets_phase_base.pug
 - load i18n
 block body_text
-
-  .pull-right.text-muted {{ order.formatted_order_number }}
   h2 {% trans "Confirm order" %}
   p {% blocktrans %}Please check your delivery information, especially the e-mail address, and the amounts of products being ordered. By selecting <em>Proceed to payment</em> you will navigate to a payment page on which you will select the payment method.{% endblocktrans %}
 
