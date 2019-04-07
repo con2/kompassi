@@ -35,8 +35,13 @@ class SignupExtraForm(forms.ModelForm):
                 'prior_experience',
                 'shift_wishes',
                 'free_text',
-            )
+            ),
+            Fieldset(_('Consent for information processing'),
+                'roster_publish_consent',
+            ),
         )
+
+        self.fields['roster_publish_consent'].required = True
 
     class Meta:
         model = SignupExtra
@@ -52,6 +57,7 @@ class SignupExtraForm(forms.ModelForm):
             'prior_experience',
             'shift_wishes',
             'free_text',
+            'roster_publish_consent',
         )
 
         widgets = dict(
