@@ -65,7 +65,9 @@ class Setup(object):
             Qualification,
             Survey,
         )
+        from mailings.models import RecipientGroup
         from ...models import SignupExtra, SpecialDiet
+        from django.contrib.auth import get_user_model
         from django.contrib.contenttypes.models import ContentType
 
         labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
@@ -195,6 +197,18 @@ class Setup(object):
         #         active_until=datetime(2019, 6, 10, 23, 59, 59, tzinfo=self.tz),
         #     ),
         # )
+
+        User = get_user_model()
+        spam_group, = LabourEventMeta.get_or_create_groups(self.event, ['spam'])
+        spam_group.user_set.set(User.objects.filter(person__may_send_info=True, person__signups__event__slug__in=[
+            'frostbite2016',
+            'desucon2016',
+            'frostbite2017',
+            'desucon2017',
+            'frostbite2018',
+            'desucon2018',
+            'frostbite2019',
+        ]).exclude(person__signups__event=self.event).distinct())
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta

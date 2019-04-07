@@ -137,6 +137,10 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
 
+# XXX hack
+ProgrammeSignupExtraForm = OrganizerSignupExtraForm
+
+
 DESCRIPTION_HELP_TEXT = _(
     'Advertise your game to potential players. Also explain, what is expected of players '
     'and what kind of themes are involved. Be extra sure to inform about potentially '

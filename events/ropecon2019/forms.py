@@ -5,6 +5,7 @@ from crispy_forms.layout import Layout, Fieldset
 
 from core.forms import horizontal_form_helper
 from labour.forms import AlternativeFormMixin
+from labour.models import Signup, JobCategory
 from programme.forms import AlternativeProgrammeFormMixin
 from programme.models import Category, Programme
 
@@ -19,11 +20,16 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.layout = Layout(
             'shift_type',
 
-            Fieldset('Työtodistus',
+            Fieldset(_('Work certificate'),
                 'want_certificate',
                 'certificate_delivery_address',
             ),
-            Fieldset('Lisätiedot',
+            Fieldset(_('Language skills'),
+                'can_finnish',
+                'can_english',
+                'other_languages',
+            ),
+            Fieldset(_('Additional information'),
                 'special_diet',
                 'special_diet_other',
                 'prior_experience',
@@ -38,6 +44,9 @@ class SignupExtraForm(forms.ModelForm):
             'shift_type',
             'want_certificate',
             'certificate_delivery_address',
+            'can_finnish',
+            'can_english',
+            'other_languages',
             'special_diet',
             'special_diet_other',
             'prior_experience',
@@ -213,7 +222,7 @@ LARP_FORM_FIELD_TEXTS = dict(
     is_age_restricted=(_('The game is intended for players over 18'), _('Please tick this box if your game involves themes necessitating that all players are 18 years or older.')),
     is_children_friendly=(_('The game is intended for children'), _('Please tick this box if your game is designed for children.')),
     is_beginner_friendly=(_('Beginner-friendly'), _('If your game is suitable for players without any or with very limited larping experience, please tick this box.')),
-    is_family_program=(_('Family-friendly'), None),
+    is_family_program=(_('Family-friendly'), _('If your game is suitable for the whole family and people of all ages, please tick this box.')),
 )
 
 
@@ -298,7 +307,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
     approximate_length=(_('Estimated duration (minutes)'), _('Duration of lectures and panel discussions is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other program, please make an estimation.')),
     is_family_program=(_('Family-friendly'), _('If your program is suitable for or aimed at children, teenagers or families, please tick the checkbox. More details can be provided in the last text field.')),
     max_players=(_('Max. number of participants'), _('If your workshop or other program can only host a limited number of participants, please provide a maximum number of attendees.')),
-    ropecon2019_blocked_time_slots=(_('Preferred schedule'), _('Select the times when you DO NOT want to have your program. Time slots have been intentionally left vague. If you have further requests on time slots and schedule, more details can be provided in the open comment field below.')),
+    ropecon2019_blocked_time_slots=(_('When are you unable to have your program item?'), _('Select the times when you DO NOT want to have your program. Time slots have been intentionally left vague. If you have further requests on time slots and schedule, more details can be provided in the open comment field below.')),
     notes_from_host=(_('Comments'), _('Do you have any further information, details, comments or questions that you would like to let our program coordinators to know?')),
 )
 
@@ -330,11 +339,15 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2019_blocked_time_slots',
             'notes_from_host',
             'is_available_for_panel',
+            'field_of_expertise',
             'video_permission',
         )
 
         for field_name, texts in PROGRAMME_FORM_FIELD_TEXTS.items():
             self.fields[field_name].label, self.fields[field_name].help_text = texts
+
+        self.fields['video_permission'].required = True
+        self.fields['approximate_length'].initial = 105
 
         self.fields['category'].queryset = Category.objects.filter(event=event, slug__in=(
             'pres',
@@ -367,6 +380,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2019_blocked_time_slots',
             'notes_from_host',
             'is_available_for_panel',
+            'field_of_expertise',
             'video_permission',
         )
 
@@ -460,3 +474,73 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         widgets = dict(
             ropecon2019_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
+
+
+class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+        admin = kwargs.pop('admin')
+
+        assert not admin
+
+        super(OrganizerSignupForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset('Tehtävän tiedot',
+                'job_title',
+            ),
+        )
+
+        self.fields['job_title'].help_text = "Mikä on tehtäväsi coniteassa? Printataan badgeen."
+        self.fields['job_title'].required = True
+
+    class Meta:
+        model = Signup
+        fields = ('job_title',)
+
+        widgets = dict(
+            job_categories=forms.CheckboxSelectMultiple,
+        )
+
+    def get_excluded_m2m_field_defaults(self):
+        return dict(
+            job_categories=JobCategory.objects.filter(event__slug='ropecon2019', name='Conitea')
+        )
+
+
+class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super(OrganizerSignupExtraForm, self).__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset('Lisätiedot',
+                'special_diet',
+                'special_diet_other',
+            ),
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            'special_diet',
+            'special_diet_other',
+        )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+        )
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            shift_type='kaikkikay',
+            want_certificate=False,
+            certificate_delivery_address='',
+            prior_experience='',
+            free_text='Syötetty käyttäen coniitin ilmoittautumislomaketta',
+        )
+
+    def get_excluded_m2m_field_defaults(self):
+        return dict()

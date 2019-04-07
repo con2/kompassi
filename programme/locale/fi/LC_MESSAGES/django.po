@@ -1445,11 +1445,11 @@ msgstr "Pyöröovipeli (revolving door)"
 msgid "Check this box if new players can join during gameplay and old players may (or must) leave before the game is over. Please mention this in the game description below, and give more details if necessary."
 msgstr "Ruksaa tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa käynnissä ja vanhat pelaajat voivat poistua (tai joutuvat poistumaan) pelistä ennen pelin loppua. Kerro tästä myös pelin kuvauksessa alla, ja anna tarvittaessa lisätietoja."
 
-msgid "time preferences"
-msgstr "aikatoiveet"
+msgid "When are you unable to run your game?"
+msgstr "Milloin et pysty pelauttamaan peliäsi?"
 
-msgid "When are you <strong>unable to run</strong> your game?<br><br>Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time)."
-msgstr "Milloin <strong>et pysty</strong> pelauttamaan peliäsi?<br><br>Merkitse tähän ne ajat, jolloin sinun <strong>ei ole mahdollista</strong> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. <em>haluaisin peluuttaa pelini myöhään illalla</em>), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi).
+msgid "Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time)."
+msgstr "Merkitse tähän ne ajat, jolloin sinun <strong>ei ole mahdollista</strong> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. <em>haluaisin peluuttaa pelini myöhään illalla</em>), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi).
 
 msgid "Content warnings"
 msgstr "Sisältövaroitukset"
@@ -1480,3 +1480,24 @@ msgstr "Peliohjelman tyyppi"
 
 msgid "When would you like to host your game program? Check the times when you would like to host your game program. If you have more specific needs regarding the timing, please let us know in the Comments field below. We do not restrict your desired times, but we reserve the right to make changes. For example, we would rather have tournaments one after another than at the same time."
 msgstr "Mihin aikaan aiot pitää ohjelmasi? Merkitse tähän ne ajat, jolloin olet suunnitellut pitäväsi peliohjelmasi. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä Vapaamuotoiset terveiset kentässä. Emme rajoita koska haluat pitää ohjelmasi, mutta pidätämme oikeudet muutoksiin (esim. aikataulutamme mieluummin turnauksia peräkkäin kuin samanaikaisesti)."
+
+msgid "No sign-up"
+msgstr "Ei ilmoittautumista"
+
+msgid "I will collect sign-ups"
+msgstr "Hoidan itse ilmoittautumisen"
+
+msgid "Sign up at the Gaming Desk"
+msgstr "Ilmoittautuminen pelitiskille"
+
+msgid "Tournament"
+msgstr "Turnaus"
+
+msgid "Demonstration"
+msgstr "Demotus"
+
+msgid "Open game"
+msgstr "Avoin peluutus"
+
+msgid "Miniature painting"
+msgstr "Figumaalausohjelma"

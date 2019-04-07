@@ -51,11 +51,12 @@ class Command(BaseCommand):
                 'aicon',
                 'desucon',
                 'finncon',
+                'gingacon',
                 'hellocon',
                 'hypecon',
+                'k-con',
                 'kawacon',
                 'kibecon',
-                'k-con',
                 'lakeuscon',
                 'matsucon',
                 'mimicon',
@@ -63,6 +64,7 @@ class Command(BaseCommand):
                 'nippori',
                 'popcult',
                 'ropecon',
+                'sarjakuvafestivaalit',
                 'tampere kuplii',
                 'tracon',
                 'yukicon',
@@ -96,4 +98,3 @@ class Command(BaseCommand):
 
             listing.events.set(events)
             listing.external_events.set(external_events)
-
