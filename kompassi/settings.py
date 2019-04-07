@@ -177,6 +177,7 @@ INSTALLED_APPS = (
     'directory',
     'listings',
     'forms',
+    'metrics',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
