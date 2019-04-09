@@ -266,19 +266,20 @@ class Setup(object):
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
-            # dict(
-            #     name='Lattiamajoituspaikka (koko vkl)',
-            #     description='Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',
-            #     limit_groups=[
-            #         limit_group('Lattiamajoitus pe-la', 445),
-            #         limit_group('Lattiamajoitus la-su', 445),
-            #     ],
-            #     price_cents=1000,
-            #     requires_shipping=False,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name='Lattiamajoituspaikka (koko vkl)',
+                description='Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoitus aukeaa perjantaina 18:00 ja sulkeutuu sunnuntaina 12:00.',
+                limit_groups=[
+                    limit_group('Lattiamajoitus pe-la', 220),
+                    limit_group('Lattiamajoitus la-su', 220),
+                ],
+                price_cents=1500,
+                requires_shipping=False,
+                electronic_ticket=False,
+                requires_accommodation_information=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
             # dict(
             #     name='Lattiamajoituspaikka (pe-la)',
             #     description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',

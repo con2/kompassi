@@ -295,8 +295,7 @@ class AccommodationPhase(Phase):
         forms = form
         for form in forms:
             info = form.save()
-            info.limit_groups = info.order_product.product.limit_groups.all()
-            info.save()
+            info.limit_groups.set(info.order_product.product.limit_groups.all())
 
     def next(self, request, event):
         order = get_order(request, event)

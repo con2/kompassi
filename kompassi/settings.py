@@ -239,6 +239,8 @@ INSTALLED_APPS = (
     'events.traconjvp2019',
     'events.ropecon2019',
     'events.ropeconjvp2019',
+    'events.matsucon2019',
+    'events.finncon2019',
     # 'events.traconpaidat2019',
 )
 
