@@ -113,3 +113,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict()
+
+
+ProgrammeSignupExtraForm = OrganizerSignupExtraForm

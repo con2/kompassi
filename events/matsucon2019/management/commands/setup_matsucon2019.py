@@ -27,9 +27,11 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
+        self.setup_programme()
         self.setup_badges()
         self.setup_tickets()
         self.setup_payments()
+        self.setup_intra()
 
     def setup_core(self):
         from core.models import Venue, Event, Organization
@@ -202,6 +204,87 @@ class Setup(object):
             )
         )
 
+    def setup_programme(self):
+        from core.utils import full_hours_between
+        from labour.models import PersonnelClass
+        from programme.models import (
+            Category,
+            Programme,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            TimeBlock,
+            View,
+        )
+
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Matsuconin ohjelmavastaava <ohjelmavastaava@matsucon.fi>',
+        ))
+
+        personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
+
+        role, unused = Role.objects.get_or_create(
+            personnel_class=personnel_class,
+            title='Ohjelmanjärjestäjä',
+            defaults=dict(
+                is_default=True,
+                require_contact_info=True,
+            )
+        )
+
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                ('Anime ja manga', 'color1'),
+                ('Cosplay', 'color2'),
+                ('Pelit', 'color3'),
+                ('Japani', 'color4'),
+                ('Show', 'color5'),
+                ('Työpaja', 'color6'),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    style=style,
+                    defaults=dict(
+                        title=title,
+                    )
+                )
+
+        for start_time, end_time in [
+            (
+                self.event.start_time.replace(hour=10, minute=0),
+                self.event.start_time.replace(hour=20, minute=0),
+            ),
+            (
+                self.event.end_time.replace(hour=10, minute=0),
+                self.event.end_time,
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+        SpecialStartTime.objects.get_or_create(
+            event=self.event,
+            start_time=self.event.start_time,
+        )
+
+        for time_block in TimeBlock.objects.filter(event=self.event):
+            # Half hours
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30)
+                )
+
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
@@ -249,44 +332,44 @@ class Setup(object):
         ordering.counter = 0
 
         for product_info in [
-            # dict(
-            #     name='Viikonlopun lippu',
-            #     description='Matsuconin pääsylippu, joka oikeuttaa pääsyn tapahtumaan molempina päivinä.',
-            #     limit_groups=[
-            #         limit_group('Viikonloppuliput', 720),
-            #     ],
-            #     price_cents=1500,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
+            dict(
+                name='Viikonlopun lippu',
+                description='Viikonloppulippu oikeuttaa sisäänpääsyyn Matsuconin kumpanakin päivänä (3.–4.8.). Sähköinen lippu vaihdetaan ovella rannekkeeseen.',
+                limit_groups=[
+                    limit_group('Viikonloppuliput', 460),
+                ],
+                price_cents=1500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
 
-            # dict(
-            #     name='Lauantain lippu',
-            #     description='Matsuconin pääsylippu, joka oikeuttaa pääsyn tapahtumaan lauantaina.',
-            #     limit_groups=[
-            #         limit_group('Lauantailiput', 120),
-            #     ],
-            #     price_cents=1000,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
+            dict(
+                name='Lauantain lippu',
+                description='Lauantailippu oikeuttaa sisäänpääsyyn Matsuconin ensimmäisenä päivänä (3.8.). Sähköinen lippu vaihdetaan ovella rannekkeeseen.',
+                limit_groups=[
+                    limit_group('Lauantailiput', 125),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
 
-            # dict(
-            #     name='Sunnuntain lippu',
-            #     description='Matsuconin pääsylippu, joka oikeuttaa pääsyn tapahtumaan sunnuntaina.',
-            #     limit_groups=[
-            #         limit_group('Sunnuntailiput', 120),
-            #     ],
-            #     price_cents=1000,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
+            dict(
+                name='Sunnuntain lippu',
+                description='Sunnuntailippu oikeuttaa sisäänpääsyyn Matsuconin toisena päivänä (4.8.). Sähköinen lippu vaihdetaan ovella rannekkeeseen.',
+                limit_groups=[
+                    limit_group('Sunnuntailiput', 110),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
 
             # dict(
             #     name='Lattiamajoitus',
@@ -332,6 +415,34 @@ class Setup(object):
     def setup_payments(self):
         from payments.models import PaymentsEventMeta
         PaymentsEventMeta.get_or_create_dummy(event=self.event)
+
+    def setup_intra(self):
+        from intra.models import IntraEventMeta, Team
+
+        admin_group, = IntraEventMeta.get_or_create_groups(self.event, ['admins'])
+        organizer_group = self.event.labour_event_meta.get_group('conitea')
+        meta, unused = IntraEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                organizer_group=organizer_group,
+            )
+        )
+
+        for team_slug, team_name in [
+            # ('vastaavat', 'Vastaavat'),
+        ]:
+            team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+
+            team, created = Team.objects.get_or_create(
+                event=self.event,
+                slug=team_slug,
+                defaults=dict(
+                    name=team_name,
+                    order=self.get_ordering_number(),
+                    group=team_group,
+                )
+            )
 
 
 class Command(BaseCommand):
