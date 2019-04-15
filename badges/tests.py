@@ -31,11 +31,9 @@ class BadgesTestCase(TestCase):
 
         We assume this setting is not changed midway. If it is, all badges must be revoked.
         """
-        self.person.preferred_name_display_style = 'nick'
+        self.person.preferred_name_display_style = 'firstname_nick_lastname'
+        self.person.badge_name_display_style = 'nick'
         self.person.save()
-
-        assert self.person.first_name not in self.person.display_name
-        assert self.person.surname not in self.person.display_name
 
         signup, unused = Signup.get_or_create_dummy(accepted=True)
 

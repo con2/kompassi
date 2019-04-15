@@ -62,46 +62,7 @@ class LoginForm(forms.Form):
         return username
 
 
-PERSON_FORM_LAYOUT_PARTS = OrderedDict([
-    ('basic', Fieldset(_('Basic information'),
-        'first_name',
-        'surname',
-        'nick',
-        'preferred_name_display_style',
-        'birth_date',
-    )),
-    ('membership', Fieldset(_('Membership roster information'),
-        'official_first_names',
-        'muncipality',
-    )),
-    ('contact', Fieldset(_('Contact information'),
-        'phone',
-        'email',
-    )),
-    ('privacy', Fieldset(_('Privacy'),
-        'may_send_info',
-        'allow_work_history_sharing',
-    )),
-])
-
-
-class PersonForm(forms.ModelForm):
-    birth_date = DateField(required=True, label=_('Birth date'), help_text=BIRTH_DATE_HELP_TEXT)
-
-    def __init__(self, *args, **kwargs):
-        super(PersonForm, self).__init__(*args, **kwargs)
-
-        for field_name in [
-            'email',
-            'phone'
-        ]:
-            self.fields[field_name].required = True
-
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-
-        self.helper.layout = Layout(*PERSON_FORM_LAYOUT_PARTS.values())
-
+class PersonFormMixin:
     def clean_email(self):
         email = self.cleaned_data['email']
 
@@ -137,50 +98,88 @@ class PersonForm(forms.ModelForm):
 
         return surname
 
+
+class PersonForm(PersonFormMixin, forms.ModelForm):
+    birth_date = DateField(required=True, label=_('Birth date'), help_text=BIRTH_DATE_HELP_TEXT)
+
+    def __init__(self, *args, **kwargs):
+        super(PersonForm, self).__init__(*args, **kwargs)
+
+        for field_name in [
+            'email',
+            'phone'
+        ]:
+            self.fields[field_name].required = True
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.helper.layout = Layout(
+            Fieldset(_('Basic information'),
+                'first_name',
+                'surname',
+                'nick',
+                'birth_date',
+            ),
+            Fieldset(_('Membership roster information'),
+                'official_first_names',
+                'muncipality',
+            ),
+            Fieldset(_('Contact information'),
+                'phone',
+                'email',
+            ),
+            Fieldset(_('Privacy'),
+                'badge_name_display_style',
+                'preferred_name_display_style',
+                'may_send_info',
+                'allow_work_history_sharing',
+            ),
+        )
+
     class Meta:
         model = Person
         fields = (
-            'allow_work_history_sharing',
-            'birth_date',
-            'email',
             'first_name',
-            'may_send_info',
-            'muncipality',
-            'nick',
-            'phone',
-            'official_first_names',
-            'preferred_name_display_style',
             'surname',
+            'nick',
+            'birth_date',
+            'official_first_names',
+            'muncipality',
+            'phone',
+            'email',
+            'badge_name_display_style',
+            'preferred_name_display_style',
+            'may_send_info',
+            'allow_work_history_sharing',
         )
 
 
-class RegistrationPersonForm(PersonForm):
-    """
-    Strip PersonForm of fields not useful at registration time, namely muncipality and official first names.
-    """
+class RegistrationPersonForm(PersonFormMixin, forms.ModelForm):
+    birth_date = DateField(required=True, label=_('Birth date'), help_text=BIRTH_DATE_HELP_TEXT)
 
     def __init__(self, *args, **kwargs):
-        super(RegistrationPersonForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        layout_parts = OrderedDict(PERSON_FORM_LAYOUT_PARTS)
-        del layout_parts['membership']
+        for field_name in [
+            'email',
+            'phone'
+        ]:
+            self.fields[field_name].required = True
 
-        self.helper.layout = Layout(*layout_parts.values())
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
 
     class Meta:
         model = Person
         fields = (
-            'allow_work_history_sharing',
-            'birth_date',
-            'email',
             'first_name',
-            'may_send_info',
-            # 'muncipality',
-            'nick',
-            'phone',
-            # 'official_first_names',
-            'preferred_name_display_style',
             'surname',
+            'nick',
+            'birth_date',
+            'phone',
+            'email',
+            'may_send_info',
         )
 
 

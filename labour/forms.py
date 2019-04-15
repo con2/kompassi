@@ -40,12 +40,10 @@ class AdminPersonForm(PersonForm):
             if event.start_time is not None:
                 self.fields['age_event_start'].initial = self.instance.get_age_at(event.start_time)
 
-        # XXX copypasta
         self.helper.layout = Layout(
             'first_name',
             'surname',
             'nick',
-            'preferred_name_display_style',
             'birth_date',
             'age_now', # not in PersonForm
             'age_event_start', # not in PersonForm
@@ -60,7 +58,6 @@ class AdminPersonForm(PersonForm):
             'first_name',
             'surname',
             'nick',
-            'preferred_name_display_style',
             'birth_date',
             'age_now', # not in PersonForm
             'age_event_start', # not in PersonForm
