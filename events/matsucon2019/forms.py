@@ -76,7 +76,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict(
-            job_categories=JobCategory.objects.filter(event__slug='matsucon2019', name='Vastaava'),
+            job_categories=JobCategory.objects.filter(event__slug='matsucon2019', name='Conitea'),
         )
 
 
@@ -109,6 +109,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_field_defaults(self):
         return dict(
             free_text='Syötetty käyttäen vastaavan ilmoittautumislomaketta',
+            shift_type='lb',
         )
 
     def get_excluded_m2m_field_defaults(self):
