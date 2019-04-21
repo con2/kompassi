@@ -153,6 +153,7 @@ class Setup(object):
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
+            jc.required_qualifications.set([qual])
 
         period_length = timedelta(hours=8)
         for period_description, period_start in [
@@ -185,6 +186,7 @@ class Setup(object):
         for night in [
             'Perjantain ja lauantain välinen yö',
             'Lauantain ja sunnuntain välinen yö',
+            'Sunnuntain ja maanantain välinen yö',
         ]:
             Night.objects.get_or_create(name=night)
 
