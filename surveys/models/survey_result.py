@@ -34,9 +34,10 @@ class SurveyResult(CsvExportMixin, models.Model):
 
         def _generator():
             for (cls, field_name) in fields:
+                field_name = field_name.replace('.', ' ')  # XXX why does surveyjs do this
                 value = self.model.get(field_name)
                 if isinstance(value, Iterable) and not isinstance(value, str):
-                    value = ', '.join(str(value))
+                    value = ', '.join(str(i) for i in value)
                 yield value
 
         return list(_generator())
@@ -46,7 +47,7 @@ class SurveyResult(CsvExportMixin, models.Model):
 
 
 class EventSurveyResult(SurveyResult):
-    survey = models.ForeignKey('surveys.EventSurvey', on_delete=models.CASCADE)
+    survey = models.ForeignKey('surveys.EventSurvey', on_delete=models.CASCADE, related_name='results')
 
     @property
     def event(self):
@@ -59,6 +60,6 @@ class EventSurveyResult(SurveyResult):
 
 
 class GlobalSurveyResult(SurveyResult):
-    survey = models.ForeignKey('surveys.GlobalSurvey', on_delete=models.CASCADE)
+    survey = models.ForeignKey('surveys.GlobalSurvey', on_delete=models.CASCADE, related_name='results')
 
     event = None
