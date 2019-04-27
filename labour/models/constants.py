@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # FIXME this shit must die
 
 SIGNUP_STATE_NAMES = dict(

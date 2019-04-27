@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import os
 import warnings
 from email.utils import parseaddr

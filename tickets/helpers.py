@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from datetime import date
 from functools import wraps
 import re

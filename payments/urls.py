@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.conf.urls import include, url
 from payments.views import payments_process_view, payments_redirect_view
 

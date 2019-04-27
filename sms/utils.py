@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from random import randint
 
 from django.utils.timezone import now

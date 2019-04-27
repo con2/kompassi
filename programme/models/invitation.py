@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _

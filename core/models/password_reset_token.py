@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.conf import settings
 from django.db import models
 from django.template.loader import render_to_string

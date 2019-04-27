@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from .programme_event_meta import ProgrammeEventMeta
 from .category import Category
 from .room import Room

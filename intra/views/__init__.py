@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from .intra_admin_privileges_view import intra_admin_privileges_view
 from .intra_admin_team_member_view import intra_admin_team_member_view
 

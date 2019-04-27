@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.conf.urls import url
 
 from .views import survey_view, survey_export_view

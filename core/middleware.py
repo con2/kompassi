@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.utils.deprecation import MiddlewareMixin
 
 from .page_wizard import page_wizard_clear

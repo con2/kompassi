@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from core.sort_and_filter import Filter
 
 from .models import Signup

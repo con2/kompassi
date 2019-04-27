@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from itertools import cycle
 
 from django.db.models import Q

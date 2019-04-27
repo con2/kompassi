@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import logging
 from unittest import skip
 

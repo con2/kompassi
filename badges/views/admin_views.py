@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 
 from django.contrib import messages
 from django.db.models import Q

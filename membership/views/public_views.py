@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import render, redirect

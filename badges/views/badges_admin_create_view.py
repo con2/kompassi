@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _

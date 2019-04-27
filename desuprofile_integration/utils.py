@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 
 import logging
 
@@ -57,4 +54,3 @@ def _import_programme(event, payload):
         removed_programme.state = 'cancelled'
         removed_programme.save()
         removed_programme.apply_state()
-

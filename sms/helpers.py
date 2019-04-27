@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from functools import wraps
 
 from django.shortcuts import get_object_or_404

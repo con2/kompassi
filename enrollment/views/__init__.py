@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from .enrollment_event_box_context import enrollment_event_box_context
 
 from .enrollment_admin_menu_items import enrollment_admin_menu_items

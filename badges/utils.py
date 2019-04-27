@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from labour.models import PersonnelClass
 
 

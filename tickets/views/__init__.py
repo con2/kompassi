@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from .public_views import (
     ALL_PHASES,
     tickets_accommodation_view,

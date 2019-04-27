@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import hashlib
 
 from django.conf import settings

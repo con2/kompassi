@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 
 from contextlib import contextmanager
 import os
