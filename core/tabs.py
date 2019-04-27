@@ -11,11 +11,11 @@ class Tab(object):
         'notifications',
     ]
 
-    def __init__(self, id, title, active=False, notifications=0):
-      self.id = id
-      self.title = title
-      self.active = active
-      self.notifications = notifications
+    def __init__(self, id: str, title: str, active=False, notifications=0):
+        self.id = id
+        self.title = title
+        self.active = active
+        self.notifications = notifications
 
     from core.utils import simple_object_repr as __repr__
 
