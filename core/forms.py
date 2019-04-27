@@ -170,6 +170,22 @@ class RegistrationPersonForm(PersonFormMixin, forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
+        self.helper.layout = Layout(
+            Fieldset(_('Basic information'),
+                'first_name',
+                'surname',
+                'nick',
+                'birth_date',
+            ),
+            Fieldset(_('Contact information'),
+                'phone',
+                'email',
+            ),
+            Fieldset(_('Privacy'),
+                'may_send_info',
+            ),
+        )
+
     class Meta:
         model = Person
         fields = (
