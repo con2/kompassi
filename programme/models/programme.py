@@ -909,6 +909,7 @@ class Programme(models.Model, CsvExportMixin):
                 'length',
                 'start_time',
                 'is_public',
+                'video_link',
             )
         elif format == 'desucon':
             return pick_attrs(self,
@@ -917,6 +918,7 @@ class Programme(models.Model, CsvExportMixin):
                 'start_time',
                 'end_time',
                 'language',
+                'video_link',
 
                 status=1 if self.is_public else 0,
                 kind=self.category.slug,
