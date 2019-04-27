@@ -126,7 +126,10 @@ class Person(models.Model):
         return self.full_name
 
     def clean(self):
-        if self.is_nick_visible and not self.nick:
+        if not self.nick and (
+            'nick' in self.preferred_name_display_style or
+            'nick' in self.badge_name_display_style
+        ):
             raise ValidationError('Jos nick on tarkoitus näyttää, se myös täytyy syöttää.')
 
     @property
