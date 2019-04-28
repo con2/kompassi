@@ -239,7 +239,7 @@ INSTALLED_APPS = (
     'events.ropeconjvp2019',
     'events.matsucon2019',
     'events.finncon2019',
-    # 'events.traconpaidat2019',
+    'events.traconpaidat2019',
 )
 
 LOGGING = {

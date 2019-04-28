@@ -96,7 +96,10 @@ class Command(BaseCommand):
                     'Teknisistä syistä kauluspaidat ja hupparit on tässä niputettu samaan tuotteeseen. '
                     'Syötä tässä lukumääräksi haluamiesi paitojen ja hupparien yhteenlaskettu määrä. '
                     'Pääset seuraavassa vaiheessa valitsemaan, tilaatko paidan, hupparin vai molemmat, '
-                    'sekä valitsemaan värit ja koot.'
+                    'sekä valitsemaan värit ja koot.</p>'
+                    '<p><strong>TÄRKEÄÄ:</strong> Tilattavien tuotteiden enimmäismäärä on 3 kpl per hlö,'
+                    'mutta verkkokauppa ei valvo tätä. Jos tilaat yli 3 kpl, aiheuttaa tilauksesi peruminen '
+                    'ja rahojen palautus vaivalloista käsityötä.'
                 ),
                 limit_groups=[
                     limit_group('Edustustuotteet', 9999),
