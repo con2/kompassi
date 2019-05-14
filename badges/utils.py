@@ -56,7 +56,10 @@ def default_badge_factory(event, person):
         surname=person.surname,
         is_surname_visible=meta.real_name_must_be_visible or 'surname' in person.badge_name_display_style,
         nick=person.nick,
-        is_nick_visible=person.nick and 'nick' in person.badge_name_display_style,
+
+        # NOTE: Explicit cast required, or the empty string '' in person.nick will cause this predicate to return ''
+        is_nick_visible=bool(person.nick) and 'nick' in person.badge_name_display_style,
+
         personnel_class=personnel_class,
         job_title=job_title,
     )
