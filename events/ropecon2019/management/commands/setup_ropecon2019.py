@@ -292,9 +292,9 @@ class Setup(object):
 
         for pc_slug, role_title, role_is_default in [
             ('ohjelma', 'Ohjelmanjärjestäjä', True),
-            ('ohjelma', 'Pelinjohtaja', False),
-            ('ohjelma', 'Pelinjärjestäjä', False),
-            ('ohjelma', 'Peliesittelijä', False),
+            ('ohjelma', 'Peliohjelmanjärjestäjä', False),
+            ('ohjelma', 'Larp-pelinjohtaja', False),
+            ('ohjelma', 'Roolipelinjohtaja', False),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
             role, unused = Role.objects.get_or_create(
@@ -304,6 +304,16 @@ class Setup(object):
                     is_default=role_is_default,
                 )
             )
+
+        Role.objects.get_or_create(
+            personnel_class=personnel_class,
+            title=f'Näkymätön ohjelmanjärjestäjä',
+            defaults=dict(
+                override_public_title='Ohjelmanjärjestäjä',
+                is_default=False,
+                is_public=False,
+            )
+        )
 
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
@@ -371,7 +381,8 @@ class Setup(object):
                     view.rooms = rooms
                     view.save()
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        role = Role.objects.get(personnel_class__event=self.event, title='Roolipelinjohtaja')
+        alternative_form, unused = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='roolipeli',
             defaults=dict(
@@ -384,10 +395,17 @@ Pelinjohtajat saavat Ropeconin viikonloppurannekkeen kahdeksan tunnin pelautukse
                 programme_form_code='events.ropecon2019.forms:RpgForm',
                 num_extra_invites=0,
                 order=20,
+                role=role,
             )
         )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        # v90
+        if alternative_form.role is None:
+            alternative_form.role = role
+            alternative_form.save()
+
+        role = Role.objects.get(personnel_class__event=self.event, title='Larp-pelinjohtaja')
+        alternative_form, unused = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='larp',
             defaults=dict(
@@ -414,10 +432,17 @@ Otathan huomioon myös inklusiivisuuskysymykset, eli pelisi esteettömyyden esim
                 programme_form_code='events.ropecon2019.forms:LarpForm',
                 num_extra_invites=0,
                 order=30,
+                role=role,
             )
         )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        # v90
+        if alternative_form.role is None:
+            alternative_form.role = role
+            alternative_form.save()
+
+        role = Role.objects.get(personnel_class__event=self.event, title='Peliohjelmanjärjestäjä')
+        alternative_form, unused = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='pelitiski',
             defaults=dict(
@@ -454,7 +479,13 @@ Otathan huomioon myös inklusiivisuuskysymykset, eli pelisi esteettömyyden esim
             )
         )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        # v90
+        if alternative_form.role is None:
+            alternative_form.role = role
+            alternative_form.save()
+
+        role = Role.objects.get(personnel_class__event=self.event, title='Ohjelmanjärjestäjä')
+        alternative_form, unused = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='default',
             defaults=dict(
@@ -482,8 +513,14 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
                 programme_form_code='events.ropecon2019.forms:ProgrammeForm',
                 num_extra_invites=0,
                 order=300,
+                role=role,
             )
         )
+
+        # v90
+        if alternative_form.role is None:
+            alternative_form.role = role
+            alternative_form.save()
 
         for time_slot_name in [
             'Perjantaina iltapäivällä / Friday afternoon',
