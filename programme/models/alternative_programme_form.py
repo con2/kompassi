@@ -77,6 +77,14 @@ class AlternativeProgrammeForm(models.Model):
 
     order = models.IntegerField(default=0)
 
+    role = models.ForeignKey('programme.Role',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_('Role'),
+        help_text=_('If set, programme hosts entering programme using this form will by default gain this role.'),
+    )
+
     def __str__(self):
         return self.title
 
