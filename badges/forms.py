@@ -17,7 +17,7 @@ MOON_RUNES_CHOICES = [
 
 
 class CreateBatchForm(forms.Form):
-    max_items = forms.IntegerField(label="Kuinka monta badgea (enintään)?", initial=500, min_value=1, max_value=10000)
+    max_items = forms.IntegerField(label="Kuinka monta badgea (enintään)?", initial=666, min_value=1, max_value=10000)
     personnel_class = forms.ModelChoiceField(
         queryset=PersonnelClass.objects.all(),
         required=False,
