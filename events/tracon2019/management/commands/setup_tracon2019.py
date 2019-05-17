@@ -488,11 +488,21 @@ class Setup(object):
             ('ohjelma-3lk', 'Ohjelmanjärjestäjä (3. luokka)', False),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
-            role, unused = Role.objects.get_or_create(
+            Role.objects.get_or_create(
                 personnel_class=personnel_class,
                 title=role_title,
                 defaults=dict(
                     is_default=role_is_default,
+                )
+            )
+
+            Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=f'Näkymätön {role_title.lower()}',
+                defaults=dict(
+                    override_public_title=role_title,
+                    is_default=False,
+                    is_public=False,
                 )
             )
 
@@ -620,18 +630,6 @@ class Setup(object):
                     active_until=self.event.end_time,
                 )
             )
-
-    # def setup_sms(self):
-    #     from sms.models import SMSEventMeta
-
-    #     sms_admin_group, = SMSEventMeta.get_or_create_groups(self.event, ['admins'])
-    #     meta, unused = SMSEventMeta.objects.get_or_create(
-    #         event=self.event,
-    #         defaults=dict(
-    #             admin_group=sms_admin_group,
-    #             sms_enabled=True,
-    #         )
-    #     )
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team
