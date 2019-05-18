@@ -196,6 +196,18 @@ class Person(models.Model):
         return NAME_DISPLAY_STYLE_FORMATS[name_display_style].format(self=self)
 
     @property
+    def is_first_name_visible(self):
+        return 'firstname' in self.name_display_style
+
+    @property
+    def is_surname_visible(self):
+        return 'surname' in self.name_display_style
+
+    @property
+    def is_nick_visible(self):
+        return 'nick' in self.name_display_style
+
+    @property
     def username(self):
         return self.user.username if self.user is not None else None
 
