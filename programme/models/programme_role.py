@@ -111,7 +111,8 @@ class ProgrammeRole(models.Model, CsvExportMixin):
             (Person, 'email'),
             (Person, 'phone'),
             (Programme, 'title'),
-            (cls, 'role_or_status'),
+            (Programme, 'state'),
+            (Role, 'title'),
         ]
 
     def get_csv_related(self):
@@ -121,4 +122,5 @@ class ProgrammeRole(models.Model, CsvExportMixin):
         return {
             Person: self.person,
             Programme: self.programme,
+            Role: self.role,
         }
