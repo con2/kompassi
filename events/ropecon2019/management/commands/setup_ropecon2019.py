@@ -225,6 +225,7 @@ class Setup(object):
             SpecialStartTime,
             TimeBlock,
             View,
+            Tag,
         )
         from ...models import TimeSlot
 
@@ -535,6 +536,26 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
             'Sunnuntaina päivällä / Sunday noon',
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
+
+        for tag_title in [
+            'Aloittelijaystävällinen',
+            'Demo',
+            'Ei sovellu lapsille',
+            'Figupelaaminen',
+            'In English',
+            'Korttipelaaminen',
+            'Kunniavieras',
+            'Kutsuvieras',
+            'Sopii lapsille',
+            'Larppaaminen',
+            'Lautapelaaminen',
+            'Perheohjelma',
+            'Pöytäroolipelaaminen',
+            'Vain täysi-ikäisille',
+            'Kovaääninen',
+            'Teema',
+        ]:
+            Tag.objects.get_or_create(event=self.event, title=tag_title)
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
