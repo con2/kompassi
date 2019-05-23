@@ -103,6 +103,7 @@ class ProgrammeRole(models.Model, CsvExportMixin):
     def get_csv_fields(cls, event):
         from core.models import Person
         from .programme import Programme
+        from .role import Role
 
         return [
             (Person, 'surname'),
