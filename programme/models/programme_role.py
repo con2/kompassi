@@ -118,6 +118,7 @@ class ProgrammeRole(models.Model, CsvExportMixin):
     def get_csv_related(self):
         from core.models import Person
         from .programme import Programme
+        from .role import Role
 
         return {
             Person: self.person,
