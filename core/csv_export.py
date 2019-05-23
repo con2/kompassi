@@ -83,6 +83,8 @@ class CsvExportMixin(object):
                 result_row.append(localtime(field_value).replace(tzinfo=None))
             elif field_type is models.ForeignKey:
                 result_row.append(str(field_value))
+            elif callable(field_value):
+                result_row.append(field_value())
             else:
                 result_row.append(field_value)
 
