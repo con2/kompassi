@@ -30,6 +30,7 @@ class Setup(object):
         self.setup_tickets()
         self.setup_payments()
         self.setup_programme()
+        self.setup_badges()
         self.setup_intra()
 
     def setup_core(self):
@@ -441,6 +442,19 @@ class Setup(object):
                     group=team_group,
                 )
             )
+
+    def setup_badges(self):
+        from badges.models import BadgesEventMeta
+
+        badge_admin_group, = BadgesEventMeta.get_or_create_groups(self.event, ['admins'])
+        meta, unused = BadgesEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=badge_admin_group,
+                badge_layout='nick',
+                real_name_must_be_visible=True,
+            )
+        )
 
 
 class Command(BaseCommand):
