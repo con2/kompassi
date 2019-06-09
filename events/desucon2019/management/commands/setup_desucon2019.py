@@ -268,6 +268,14 @@ class Setup(object):
             )
             role_priority += 10
 
+        Role.objects.filter(
+            personnel_class__event=self.event,
+            title='Näkymätön ohjelmanjärjestäjä',
+            override_public_title='',
+        ).update(
+            override_public_title='Ohjelmanjärjestäjä',
+        )
+
         # fix accidentially having multiple roles with is_default=True (remove for frostbite2020)
         Role.objects.filter(personnel_class__event=self.event, is_default=True).exclude(title='Ohjelmanjärjestäjä').update(is_default=False)
 
