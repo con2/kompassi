@@ -139,7 +139,7 @@ class ProgrammeFeedbackAdmin(admin.ModelAdmin):
     form = ProgrammeFeedbackAdminForm
     list_display = ('admin_get_event', 'admin_get_programme_title', 'author', 'admin_get_abridged_feedback', 'admin_is_visible')
     list_filter = ('programme__category__event',)
-    readonly_fields = ('programme', 'author', 'author_ip_address', 'feedback', 'is_anonymous', 'hidden_at', 'hidden_by')
+    readonly_fields = ('programme', 'author', 'author_ip_address', 'author_external_username', 'feedback', 'is_anonymous', 'hidden_at', 'hidden_by')
     actions = [hide_selected_feedback, restore_selected_feedback]
 
     fieldsets = (

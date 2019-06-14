@@ -6,7 +6,7 @@ from datetime import datetime
 from django.db import transaction
 from django.http import HttpResponse
 from django.views.generic import View
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.urls import reverse
@@ -23,8 +23,9 @@ from core.models import Person
 from core.views.login_views import do_login
 from core.utils import create_temporary_password, get_next
 from programme.helpers import programme_event_required
+from programme.models import Programme
 
-from .models import Connection, ConfirmationCode, Desuprofile, Desuprogramme
+from .models import Connection, ConfirmationCode, Desuprofile, Desuprogramme, DesuprogrammeFeedback
 
 
 logger = logging.getLogger('kompassi')
@@ -287,3 +288,19 @@ def desuprogramme_import_view(request, event):
     import_programme(event, payload)
 
     return HttpResponse('', status=202)
+
+
+@api_view
+@api_login_required
+@programme_event_required
+@require_POST
+def desuprogramme_feedback_view(request, event, programme_slug):
+    """
+    Processes programme feedback from Desusite.
+    """
+    programme = get_object_or_404(Programme, category__event=event, slug=programme_slug)
+
+    feedback = DesuprogrammeFeedback.from_json(request.body)
+    feedback.save(programme)
+
+    return HttpResponse('', status=201)

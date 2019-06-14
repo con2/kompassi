@@ -7,7 +7,7 @@ from core.models import Person
 from badges.models import BadgesEventMeta
 from programme.models import ProgrammeEventMeta, Programme
 
-from .models import Desuprofile
+from .models import Desuprofile, DesuprogrammeFeedback
 from .utils import import_programme
 
 
@@ -151,3 +151,23 @@ class DesuprogrammeImportTestCase(TestCase):
         import_programme(self.event, payload)
         programme = Programme.objects.get(slug='todellisuusopas-komeroille')
         assert programme.title == 'Todellisuusopas komeroille 2.0'
+
+
+class DesuprogrammeFeedbackTestCase(TestCase):
+    def test_desuprogramme_import(self):
+        from programme.models import ProgrammeFeedback
+
+        programme, unused = Programme.get_or_create_dummy()
+        payload = dict(
+            feedback="Oli ihan kakka",
+            desucon_username="japsu",
+            anonymous=False,
+            ip_address='127.0.0.1',
+        )
+
+        feedback = DesuprogrammeFeedback.from_dict(payload)
+        feedback.save(programme)
+
+        feedback = ProgrammeFeedback.objects.get()
+        assert feedback.programme == programme
+        assert feedback.author is None

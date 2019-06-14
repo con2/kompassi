@@ -216,9 +216,9 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen '
             'tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä '
             'markkinoida ohjelmaasi. Pidä kuvaus kuitenkin ytimekkäänä, jotta se mahtuisi ohjelmalehteen. '
-            'Ohjelmakuvauksen maksimipituus ohjelmalehteä varten on 720 merkkiä. Varaamme oikeuden muokata kuvausta.'
+            'Ohjelmakuvauksen maksimipituus ohjelmalehteä varten on 400 merkkiä. Varaamme oikeuden muokata kuvausta.'
         )
-        self.fields['description'].max_length = 720
+        self.fields['description'].max_length = 400
 
     def get_excluded_field_defaults(self):
         return dict()

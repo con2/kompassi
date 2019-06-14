@@ -21,6 +21,7 @@ class Command(BaseCommand):
         if not test:
             raise ValueError('Should run with DEBUG=true')
 
+        event = None
         try:
             event = Event.objects.first()
         except ProgrammingError:
