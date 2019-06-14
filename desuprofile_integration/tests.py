@@ -5,7 +5,7 @@ from jsonschema import ValidationError
 
 from core.models import Person
 from badges.models import BadgesEventMeta
-from programme.models import ProgrammeEventMeta, Programme
+from programme.models import ProgrammeEventMeta, Programme, ProgrammeFeedback
 
 from .models import Desuprofile, DesuprogrammeFeedback
 from .utils import import_programme
@@ -155,7 +155,6 @@ class DesuprogrammeImportTestCase(TestCase):
 
 class DesuprogrammeFeedbackTestCase(TestCase):
     def test_desuprogramme_import(self):
-        from programme.models import ProgrammeFeedback
 
         programme, unused = Programme.get_or_create_dummy()
         payload = dict(
@@ -171,3 +170,10 @@ class DesuprogrammeFeedbackTestCase(TestCase):
         feedback = ProgrammeFeedback.objects.get()
         assert feedback.programme == programme
         assert feedback.author is None
+
+    def test_hilzun_400(self):
+        json = '{"feedback": "Test", "anonymous": true, "ip_address": "127.0.0.1", "desucon_username": ""}'
+        programme, unused = Programme.get_or_create_dummy()
+
+        feedback = DesuprogrammeFeedback.from_json(json)
+        feedback.save(programme)

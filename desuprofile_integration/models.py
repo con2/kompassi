@@ -114,7 +114,7 @@ class DesuprogrammeFeedback(DesuprogrammeFeedbackBase, JSONSchemaObject):
             anonymous=dict(type='boolean'),
             ip_address=dict(anyOf=[
                 dict(type='string', format='ipv4'),
-                dict(type='string', format='ipv6t'),
+                dict(type='string', format='ipv6'),
             ]),
         ),
         required=['feedback'],
@@ -132,7 +132,7 @@ class DesuprogrammeFeedback(DesuprogrammeFeedbackBase, JSONSchemaObject):
         if self.ip_address is not None:
             attrs['author_ip_address'] = self.ip_address
         if connection:
-            attrs['author'] = connection.user
+            attrs['author'] = connection.user.person
         if self.anonymous is not None:
             attrs['is_anonymous'] = self.anonymous
 
