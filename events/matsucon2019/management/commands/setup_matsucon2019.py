@@ -371,33 +371,34 @@ class Setup(object):
                 ordering=ordering(),
             ),
 
-            # dict(
-            #     name='Lattiamajoitus',
-            #     description='Lattiamajoitus lauantain ja sunnuntain väliselle yölle tapahtumapaikalla.',
-            #     limit_groups=[
-            #         limit_group('Lattiamajoituspaikat', 40),
-            #     ],
-            #     price_cents=700,
-            #     requires_shipping=False,
-            #     electronic_ticket=False,
-            #     requires_accommodation_information=True,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
+            dict(
+                name='Lattiamajoitus',
+                description='Lattiamajoitus lauantain ja sunnuntain väliselle yölle tapahtumapaikalla.',
+                limit_groups=[
+                    limit_group('Lattiamajoituspaikat', 35),
+                ],
+                price_cents=700,
+                requires_shipping=False,
+                electronic_ticket=False,
+                requires_accommodation_information=True,
+                available=True,
+                ordering=ordering(),
+            ),
 
-            # dict(
-            #     name='Lattiamajoitus + aamiainen',
-            #     description='Lattiamajoitus sekä aamiainen lauantain ja sunnuntain väliselle yölle tapahtumapaikalla.',
-            #     limit_groups=[
-            #         limit_group('Lattiamajoituspaikat', 40),
-            #     ],
-            #     price_cents=1000,
-            #     requires_shipping=False,
-            #     electronic_ticket=False,
-            #     requires_accommodation_information=True,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
+            dict(
+                name='Lattiamajoitus + aamiainen',
+                description='Lattiamajoitus sekä aamiainen lauantain ja sunnuntain väliselle yölle tapahtumapaikalla.',
+                limit_groups=[
+                    limit_group('Lattiamajoituspaikat', 35),
+                    limit_group('Aamiainen', 35),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                electronic_ticket=False,
+                requires_accommodation_information=True,
+                available=True,
+                ordering=ordering(),
+            ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
