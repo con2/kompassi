@@ -256,11 +256,11 @@ class Setup(object):
 
         for start_time, end_time in [
             (
-                self.event.start_time.replace(hour=10, minute=0),
-                self.event.start_time.replace(hour=20, minute=0),
+                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
+                self.event.start_time.replace(hour=20, minute=0, tzinfo=self.tz),
             ),
             (
-                self.event.end_time.replace(hour=10, minute=0),
+                self.event.end_time.replace(hour=10, minute=0, tzinfo=self.tz),
                 self.event.end_time,
             ),
         ]:
