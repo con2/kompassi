@@ -230,6 +230,21 @@ class Setup(object):
         #     ),
         # )
 
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug='swag',
+            defaults=dict(
+                title='Swag',
+                description=(
+                    'Tarjoamme työvoimatuotteeksi joko juomapullon tai paidan. Valitse tässä kumpi, '
+                    'sekä paidan tapauksessa paitakokosi.'
+                ),
+                form_class_path='events.tracon2019.forms:SwagSurvey',
+                active_from=datetime(2019, 6, 25, 12, 17, 0, tzinfo=self.tz),
+                active_until=datetime(2019, 7, 3, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
+
         # kaatoilmo_override_does_not_apply_message = (
         #     'Valitettavasti et pysty ilmoittautumaan kaatoon käyttäen tätä lomaketta. Tämä '
         #     'voi johtua siitä, että sinua ei ole kutsuttu kaatoon, tai teknisestä syystä. '

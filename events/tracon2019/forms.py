@@ -321,7 +321,7 @@ class ShiftWishesSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
 
-        super(ShiftWishesSurvey, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -334,6 +334,26 @@ class ShiftWishesSurvey(forms.ModelForm):
         model = SignupExtra
         fields = (
             'shift_wishes',
+        )
+
+
+class SwagSurvey(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('event')
+
+        super().__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    @classmethod
+    def get_instance_for_event_and_person(cls, event, person):
+        return SignupExtra.objects.get(event=event, person=person)
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            'shirt_size',
         )
 
 

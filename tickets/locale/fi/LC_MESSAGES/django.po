@@ -143,7 +143,7 @@ msgstr "Ole hyvä ja tarkista toimitusosoite, erityisesti sähköpostiosoite, ja
 
 #: templates/tickets_tickets_phase.pug
 msgid "Please fill in the amount for each product. You can combine multiple products in a single order. You will have a chance to check these before the final confirmation and payment."
-msgstr "Ole hyvä ja syötä tilattavien tuotteiden määrät. Voit yhdistää samaan tilaukseen useita eri tilauksia. Ennen tilauksen vahvistamista ja maksua sinulla on vielä tilaisuus tarkistaa tuotteiden määrät."
+msgstr "Ole hyvä ja syötä tilattavien tuotteiden määrät. Voit yhdistää samaan tilaukseen useita eri tuotteita. Ennen tilauksen vahvistamista ja maksua sinulla on vielä tilaisuus tarkistaa tilauksesi sisältö."
 
 #: views/public_views.py
 msgid "Please select at least one product."
