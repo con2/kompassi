@@ -212,23 +212,23 @@ class Setup(object):
                 )
             )
 
-        # Survey.objects.get_or_create(
-        #     event=self.event,
-        #     slug='tyovuorotoiveet',
-        #     defaults=dict(
-        #         title='Työvuorotoiveet',
-        #         description=(
-        #             'Tässä vaiheessa voit vaikuttaa työvuoroihisi. Jos saavut tapahtumaan vasta sen alkamisen '
-        #             'jälkeen tai sinun täytyy lähteä ennen tapahtuman loppumista, kerro se tässä. Lisäksi jos '
-        #             'tiedät ettet ole käytettävissä tiettyihin aikoihin tapahtuman aikana tai haluat esimerkiksi '
-        #             'nähdä jonkun ohjelmanumeron, kerro siitäkin. Työvuorotoiveiden toteutumista täysin ei voida '
-        #             'taata.'
-        #         ),
-        #         form_class_path='events.tracon2019.forms:ShiftWishesSurvey',
-        #         # active_from=datetime(2019, 7, 1, 16, 50, 0, tzinfo=self.tz),
-        #         # active_until=datetime(2019, 8, 4, 23, 59, 59, tzinfo=self.tz),
-        #     ),
-        # )
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug='tyovuorotoiveet',
+            defaults=dict(
+                title='Työvuorotoiveet',
+                description=(
+                    'Tässä vaiheessa voit vaikuttaa työvuoroihisi. Jos saavut tapahtumaan vasta sen alkamisen '
+                    'jälkeen tai sinun täytyy lähteä ennen tapahtuman loppumista, kerro se tässä. Lisäksi jos '
+                    'tiedät ettet ole käytettävissä tiettyihin aikoihin tapahtuman aikana tai haluat esimerkiksi '
+                    'nähdä jonkun ohjelmanumeron, kerro siitäkin. Työvuorotoiveiden toteutumista täysin ei voida '
+                    'taata.'
+                ),
+                form_class_path='events.tracon2019.forms:ShiftWishesSurvey',
+                active_from=datetime(2019, 7, 2, 15, 10, 0, tzinfo=self.tz),
+                active_until=datetime(2019, 7, 14, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
 
         Survey.objects.get_or_create(
             event=self.event,
