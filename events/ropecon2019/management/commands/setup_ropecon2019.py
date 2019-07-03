@@ -291,20 +291,37 @@ class Setup(object):
                     name=room_name,
                 )
 
+        priority = 0
         for pc_slug, role_title, role_is_default in [
             ('ohjelma', 'Ohjelmanjärjestäjä', True),
+            ('ohjelma', 'Näkymätön ohjelmanjärjestäjä', False),
             ('ohjelma', 'Peliohjelmanjärjestäjä', False),
             ('ohjelma', 'Larp-pelinjohtaja', False),
             ('ohjelma', 'Roolipelinjohtaja', False),
+            ('ohjelma', 'Ohjelmanjärjestäjä, päivälippu', False),
+            ('ohjelma', 'Peliohjelmanjärjestäjä, päivälippu', False),
+            ('ohjelma', 'Larp-pelinjohtaja, päivälippu', False),
+            ('ohjelma', 'Roolipelinjohtaja, päivälippu', False),
+            ('ohjelma', 'Ohjelmanjärjestäjä, työvoimaedut', False),
+            ('ohjelma', 'Peliohjelmanjärjestäjä, työvoimaedut', False),
+            ('ohjelma', 'Larp-pelinjohtaja, työvoimaedut', False),
+            ('ohjelma', 'Roolipelinjohtaja, työvoimaedut', False),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
-            role, unused = Role.objects.get_or_create(
+            role, created = Role.objects.get_or_create(
                 personnel_class=personnel_class,
                 title=role_title,
                 defaults=dict(
                     is_default=role_is_default,
+                    priority=priority,
                 )
             )
+
+            if not created:
+                role.priority = priority
+                role.save()
+
+            priority += 10
 
         Role.objects.get_or_create(
             personnel_class=personnel_class,
