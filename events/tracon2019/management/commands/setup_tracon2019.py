@@ -408,7 +408,7 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Lattiamajoitus 1 yö la-su - Aleksanterin koulutalo (sis. makuualusta)',
+                name='Lattiamajoitus 1 yö la-su - Aleksanterin koulutalo (ei sis. makuualustaa)',
                 description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Aleksanterin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
                 limit_groups=[
                     limit_group('Majoitus Aleksanteri la-su', 100),
