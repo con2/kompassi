@@ -345,43 +345,43 @@ class Setup(object):
             return limit_group
 
         for product_info in [
-            # dict(
-            #     name='Viikonloppulippu',
-            #     description='Voimassa koko viikonlopun ajan la klo 10–02 ja su klo 07–18. Toimitetaan sähköpostitse PDF-tiedostona.',
-            #     limit_groups=[
-            #         limit_group('Lauantain liput', 4400),
-            #         limit_group('Sunnuntain liput', 4400),
-            #     ],
-            #     price_cents=2800,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name='Lauantailippu',
-            #     description='Voimassa koko lauantaipäivän ajan klo 10–02. Toimitetaan sähköpostitse PDF-tiedostona.',
-            #     limit_groups=[
-            #         limit_group('Lauantain liput', 4400),
-            #     ],
-            #     price_cents=2000,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name='Sunnuntailippu',
-            #     description='Voimassa koko sunnuntaipäivän ajan klo 07–18. Toimitetaan sähköpostitse PDF-tiedostona.',
-            #     limit_groups=[
-            #         limit_group('Sunnuntain liput', 4400),
-            #     ],
-            #     price_cents=1800,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name='Viikonloppulippu',
+                description='Voimassa koko viikonlopun ajan la klo 09–00 ja su klo 09–18. Toimitetaan sähköpostitse PDF-tiedostona.',
+                limit_groups=[
+                    limit_group('Lauantain liput', 4500),
+                    limit_group('Sunnuntain liput', 4500),
+                ],
+                price_cents=2800,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Lauantailippu',
+                description='Voimassa koko lauantaipäivän ajan klo 09–00. Toimitetaan sähköpostitse PDF-tiedostona.',
+                limit_groups=[
+                    limit_group('Lauantain liput', 4500),
+                ],
+                price_cents=2000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Sunnuntailippu',
+                description='Voimassa koko sunnuntaipäivän ajan klo 09–18. Toimitetaan sähköpostitse PDF-tiedostona.',
+                limit_groups=[
+                    limit_group('Sunnuntain liput', 4500),
+                ],
+                price_cents=1800,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
             # dict(
             #     name='Iltabilelippu',
             #     description='Pääsylippu maksullisiin K18-iltabileisiin Pakkahuoneella. Toimitetaan sähköpostitse PDF-tiedostona. Huomaathan, että tänä vuonna pääsy iltabileisiin edellyttää iltabilelipun lisäksi Traconin pääsylippua (lauantai-, sunnuntai- tai viikonloppulippu tai badge).',
@@ -394,58 +394,58 @@ class Setup(object):
             #     available=True,
             #     ordering=self.get_ordering_number() + 9000, # XXX
             # ),
-            # dict(
-            #     name='Lattiamajoitus 1 yö pe-la - Aleksanterin koulu (sis. makuualusta)',
-            #     description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
-            #     limit_groups=[
-            #         limit_group('Majoitus Aleksanteri pe-la', 90),
-            #     ],
-            #     price_cents=1300,
-            #     requires_shipping=False,
-            #     requires_accommodation_information=True,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name='Lattiamajoitus 1 yö la-su - Aleksanterin koulu (sis. makuualusta)',
-            #     description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Aleksanterin koululta. Aleksanterin koulun majoituspaikat sisältävät makuualustan, joten sinun tarvitsee tuoda vain makuupussi.',
-            #     limit_groups=[
-            #         limit_group('Majoitus Aleksanteri la-su', 90),
-            #     ],
-            #     price_cents=1300,
-            #     requires_shipping=False,
-            #     requires_accommodation_information=True,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name='Lattiamajoitus 1 yö pe-la - Pyynikin koulu (ei sis. makuualustaa)',
-            #     description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
-            #     limit_groups=[
-            #         limit_group('Majoitus Pyynikki pe-la', 120),
-            #     ],
-            #     price_cents=1000,
-            #     requires_shipping=False,
-            #     requires_accommodation_information=True,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name='Lattiamajoitus 1 yö la-su - Pyynikin koulu (ei sis. makuualustaa)',
-            #     description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Pyynikin koululta. Pyynikin koulun majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
-            #     limit_groups=[
-            #         limit_group('Majoitus Pyynikki la-su', 120),
-            #     ],
-            #     price_cents=1000,
-            #     requires_shipping=False,
-            #     requires_accommodation_information=True,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name='Lattiamajoitus 1 yö pe-la - Aleksanterin koulutalo (ei sis. makuualustaa)',
+                description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Aleksanterin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                limit_groups=[
+                    limit_group('Majoitus Aleksanteri pe-la', 100),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                requires_accommodation_information=True,
+                electronic_ticket=False,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Lattiamajoitus 1 yö la-su - Aleksanterin koulutalo (sis. makuualusta)',
+                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Aleksanterin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                limit_groups=[
+                    limit_group('Majoitus Aleksanteri la-su', 100),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                requires_accommodation_information=True,
+                electronic_ticket=False,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Lattiamajoitus 1 yö pe-la - Amurin koulutalo (ei sis. makuualustaa)',
+                description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                limit_groups=[
+                    limit_group('Majoitus Pyynikki pe-la', 195),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                requires_accommodation_information=True,
+                electronic_ticket=False,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Lattiamajoitus 1 yö la-su - Amurin koulutalo (ei sis. makuualustaa)',
+                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
+                limit_groups=[
+                    limit_group('Majoitus Pyynikki la-su', 195),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                requires_accommodation_information=True,
+                electronic_ticket=False,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
