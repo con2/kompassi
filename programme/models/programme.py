@@ -952,6 +952,8 @@ class Programme(models.Model, CsvExportMixin):
                 tags=list(self.tags.values_list('slug', flat=True)),
                 genres=self.ropecon_genres,
                 styles=self.ropecon_styles,
+                revolving_door=self.is_revolving_door if self.category.slug == 'roolipeli' else None,
+                short_blurb=self.three_word_description if self.category.slug == 'roolipeli' else None,
 
             )
         else:
