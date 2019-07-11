@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django import forms
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
@@ -11,7 +9,7 @@ from core.utils import initialize_form
 
 
 class CreateBatchForm(forms.Form):
-    max_items = forms.IntegerField(label="Kuinka monta tilausta (enintään)?")
+    max_items = forms.IntegerField(label="Kuinka monta tilausta (enintään)?", initial=500, min_value=1, max_value=10000)
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
@@ -38,10 +36,7 @@ def batches_view(Batch, template, CreateBatchForm=CreateBatchForm, created_at_fi
     """
 
     def _badges_view(request, vars, event):
-        new_batch_form = initialize_form(CreateBatchForm, request,
-            event=event,
-            initial=dict(max_items=100),
-        )
+        new_batch_form = initialize_form(CreateBatchForm, request, event=event)
 
         if request.method == 'POST':
             if 'new-batch' in request.POST:

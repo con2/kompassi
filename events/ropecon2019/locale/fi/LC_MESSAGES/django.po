@@ -244,3 +244,15 @@ msgstr "Kenelle peli on tarkoitettu?"
 
 msgid "When are you unable to have your program item?"
 msgstr "Milloin et pysty pitämään ohjelmaasi?"
+
+msgid "Other languages"
+msgstr "Muu kielitaito"
+
+msgid "Please select those languages with which you feel comfortable doing customer service work and list those not listed in the free text field. You can also describe how proficient you are with those languages in the text field."
+msgstr "Valitse ne kielet, joilla koet pystyväsi antamaan asiakaspalvelua. Listaa vapaatekstikentässä ne kielet, joille ei ole omaa ruutua. Voit myös kuvailla kielitaitoasi tarkemmin vapaatekstikentässä."
+
+msgid "I give my consent for Ropecon to publish my name to my co-workers in the volunteer roster of my assigned station."
+msgstr "Ymmärrän, että ilmoittautumalla työvoimaksi annan luvan siihen, että nimeni saa näkyä työpisteellä olevassa työvuorolistassa muille työpisteen vapaaehtoisille."
+
+msgid "Consent for information processing"
+msgstr "Suostumus tietojen käsittelyyn"

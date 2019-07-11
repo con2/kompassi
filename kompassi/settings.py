@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import os
 import warnings
 from email.utils import parseaddr
@@ -177,6 +175,7 @@ INSTALLED_APPS = (
     'directory',
     'listings',
     'forms',
+    'metrics',
 
     'organizations.tracon_ry',
     'organizations.aicon_ry',
@@ -238,7 +237,9 @@ INSTALLED_APPS = (
     'events.traconjvp2019',
     'events.ropecon2019',
     'events.ropeconjvp2019',
-    # 'events.traconpaidat2019',
+    'events.matsucon2019',
+    'events.finncon2019',
+    'events.traconpaidat2019',
 )
 
 LOGGING = {

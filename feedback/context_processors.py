@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 
 from core.utils import initialize_form
 

@@ -9,6 +9,8 @@ from core.utils import validate_slug
 SHIRT_SIZES = [
     ('NO_SHIRT', 'Ei paitaa'),
 
+    ('BOTTLE', 'Juomapullo'),
+
     ('XS', 'XS Unisex'),
     ('S', 'S Unisex'),
     ('M', 'M Unisex'),
@@ -88,9 +90,10 @@ class SignupExtra(SignupExtraBase):
         max_length=8,
         choices=SHIRT_SIZES,
         default='NO_SHIRT',
-        verbose_name='Paidan koko',
+        verbose_name='Swag-valinta',
         help_text=(
-            'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. '
+            'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan tai juomapullon. '
+            'Valitse tässä haluatko paidan vai juomapullon, sekä paidan koko. '
             'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
             'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
             'target="_blank">ladyfit-paita</a>'

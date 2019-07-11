@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.db import models
 
 from .group_management_mixin import GroupManagementMixin

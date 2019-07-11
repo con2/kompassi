@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from labour.models import PersonnelClass
 
 
@@ -54,11 +52,14 @@ def default_badge_factory(event, person):
 
     return dict(
         first_name=person.first_name,
-        is_first_name_visible=meta.real_name_must_be_visible or person.is_first_name_visible,
+        is_first_name_visible=meta.real_name_must_be_visible or 'firstname' in person.badge_name_display_style,
         surname=person.surname,
-        is_surname_visible=meta.real_name_must_be_visible or person.is_surname_visible,
+        is_surname_visible=meta.real_name_must_be_visible or 'surname' in person.badge_name_display_style,
         nick=person.nick,
-        is_nick_visible=person.is_nick_visible,
+
+        # NOTE: Explicit cast required, or the empty string '' in person.nick will cause this predicate to return ''
+        is_nick_visible=bool(person.nick) and 'nick' in person.badge_name_display_style,
+
         personnel_class=personnel_class,
         job_title=job_title,
     )

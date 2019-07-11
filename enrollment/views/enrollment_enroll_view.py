@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from core.helpers import person_required
 from core.utils import initialize_form
 

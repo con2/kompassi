@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from collections import namedtuple
 
 from django.db import models
@@ -11,6 +9,9 @@ from core.models import OneTimeCode
 from core.utils import url
 
 
+DESUPROFILE_USERNAME_MAX_LENGTH = 150
+
+
 class Connection(models.Model):
     # no auto-increment
     id = models.IntegerField(
@@ -19,7 +20,7 @@ class Connection(models.Model):
     )
 
     desuprofile_username = models.CharField(
-        max_length=30,
+        max_length=DESUPROFILE_USERNAME_MAX_LENGTH,
         blank=True,
         verbose_name='Desuprofiilin käyttäjänimi',
     )
@@ -101,3 +102,42 @@ class Desuprogramme(DesuprogrammeBase, JSONSchemaObject):
                     notes='Tuotu automaattisesti Desusaitilta',
                 ),
             )
+
+
+DesuprogrammeFeedbackBase = namedtuple('DesuprogrammeFeedback', 'feedback desucon_username anonymous ip_address')
+class DesuprogrammeFeedback(DesuprogrammeFeedbackBase, JSONSchemaObject):
+    schema = dict(
+        type='object',
+        properties=dict(
+            feedback=dict(type='string', minLength=1),
+            desucon_username=dict(type='string', maxLength=DESUPROFILE_USERNAME_MAX_LENGTH),
+            anonymous=dict(type='boolean'),
+            ip_address=dict(anyOf=[
+                dict(type='string', format='ipv4'),
+                dict(type='string', format='ipv6'),
+            ]),
+        ),
+        required=['feedback'],
+    )
+
+    def save(self, programme):
+        from programme.models import ProgrammeFeedback
+
+        connection = Connection.objects.filter(desuprofile_username=self.desucon_username).first()
+        attrs = dict()
+
+        # XXX this must die
+        if self.desucon_username is not None:
+            attrs['author_external_username'] = self.desucon_username
+        if self.ip_address is not None:
+            attrs['author_ip_address'] = self.ip_address
+        if connection:
+            attrs['author'] = connection.user.person
+        if self.anonymous is not None:
+            attrs['is_anonymous'] = self.anonymous
+
+        return ProgrammeFeedback.objects.create(
+            programme=programme,
+            feedback=self.feedback,
+            **attrs,
+        )

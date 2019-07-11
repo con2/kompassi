@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 def format_price(cents):
     return "%d,%02d €" % divmod(cents, 100)
 

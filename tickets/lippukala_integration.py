@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # https://docs.google.com/spreadsheet/ccc?key=0Annwjrq9JeBldGQ3aEFRakpJeGtISUVpTnpJRl92dUE&usp=drive_web#gid=0
 KEYSPACE = list(set("""
 ahma    arkki   ääni    höyry   kulta   aita    piano   hylly   hame    kahvi   viiva

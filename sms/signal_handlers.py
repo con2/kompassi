@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.conf import settings
 from django.dispatch import receiver
 from django.utils import timezone

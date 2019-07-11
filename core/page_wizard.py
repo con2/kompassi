@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.urls import reverse
 
 from .utils import get_next, url

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import os
 from datetime import datetime, timedelta
 
@@ -32,6 +30,7 @@ class Setup(object):
         self.setup_tickets()
         self.setup_payments()
         self.setup_programme()
+        self.setup_badges()
         self.setup_intra()
 
     def setup_core(self):
@@ -153,6 +152,7 @@ class Setup(object):
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
+            jc.required_qualifications.set([qual])
 
         period_length = timedelta(hours=8)
         for period_description, period_start in [
@@ -185,6 +185,7 @@ class Setup(object):
         for night in [
             'Perjantain ja lauantain välinen yö',
             'Lauantain ja sunnuntain välinen yö',
+            'Sunnuntain ja maanantain välinen yö',
         ]:
             Night.objects.get_or_create(name=night)
 
@@ -266,19 +267,20 @@ class Setup(object):
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
-            # dict(
-            #     name='Lattiamajoituspaikka (koko vkl)',
-            #     description='Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',
-            #     limit_groups=[
-            #         limit_group('Lattiamajoitus pe-la', 445),
-            #         limit_group('Lattiamajoitus la-su', 445),
-            #     ],
-            #     price_cents=1000,
-            #     requires_shipping=False,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name='Lattiamajoituspaikka (koko vkl)',
+                description='Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoitus aukeaa perjantaina 18:00 ja sulkeutuu sunnuntaina 12:00.',
+                limit_groups=[
+                    limit_group('Lattiamajoitus pe-la', 220),
+                    limit_group('Lattiamajoitus la-su', 220),
+                ],
+                price_cents=1500,
+                requires_shipping=False,
+                electronic_ticket=False,
+                requires_accommodation_information=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
             # dict(
             #     name='Lattiamajoituspaikka (pe-la)',
             #     description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',
@@ -440,6 +442,19 @@ class Setup(object):
                     group=team_group,
                 )
             )
+
+    def setup_badges(self):
+        from badges.models import BadgesEventMeta
+
+        badge_admin_group, = BadgesEventMeta.get_or_create_groups(self.event, ['admins'])
+        meta, unused = BadgesEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=badge_admin_group,
+                badge_layout='nick',
+                real_name_must_be_visible=True,
+            )
+        )
 
 
 class Command(BaseCommand):

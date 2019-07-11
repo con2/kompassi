@@ -26,14 +26,15 @@ for app_name in [
     'sms',
     'desuprofile_integration',
     'membership',
-    'events.tracon2017',
-    'events.tracon2018',
+    'events.tracon2019',
+    'events.traconpaidat2019',
     'enrollment',
     'intra',
     'feedback',
     'surveys',
     'directory',
     'listings',
+    'metrics',
 ]:
     if app_name in settings.INSTALLED_APPS:
         urlpatterns.append(url(r'', include('{app_name}.urls'.format(app_name=app_name))))

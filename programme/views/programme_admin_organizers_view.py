@@ -11,7 +11,7 @@ from event_log.utils import emit
 from labour.models import PersonnelClass
 
 from ..helpers import programme_admin_required
-from ..models import ProgrammeRole
+from ..models import ProgrammeRole, Role, AlternativeProgrammeForm
 
 
 EXPORT_FORMATS = EXPORT_FORMATS + [
@@ -38,6 +38,16 @@ def programme_admin_organizers_view(request, vars, event, format='screen'):
     personnel_class_filters.add_objects('role__personnel_class__slug', personnel_classes)
     programme_roles = personnel_class_filters.filter_queryset(programme_roles)
 
+    roles = Role.objects.filter(personnel_class__event=event)
+    role_filters = Filter(request, 'role')
+    role_filters.add_objects('role__slug', roles)
+    programme_roles = role_filters.filter_queryset(programme_roles)
+
+    forms = AlternativeProgrammeForm.objects.filter(event=event)
+    form_filters = Filter(request, 'form')
+    form_filters.add_objects('programme__form_used__slug', forms)
+    programme_roles = form_filters.filter_queryset(programme_roles)
+
     active_filters = Filter(request, 'active').add_booleans('is_active')
     programme_roles = active_filters.filter_queryset(programme_roles)
 
@@ -50,10 +60,12 @@ def programme_admin_organizers_view(request, vars, event, format='screen'):
     vars.update(
         active_filters=active_filters,
         export_formats=EXPORT_FORMATS,
+        form_filters=form_filters,
         num_organizers=len(organizers),
         num_total_organizers=Person.objects.filter(programme__category__event=event).distinct().count(),
         organizers=organizers,
         personnel_class_filters=personnel_class_filters,
+        role_filters=role_filters,
     )
 
     if format == 'screen':

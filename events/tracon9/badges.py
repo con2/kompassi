@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 
 from labour.models import Signup
 from badges.models import Template

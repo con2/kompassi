@@ -13,6 +13,12 @@ class ProgrammeFeedback(models.Model):
         verbose_name=_('IP address'),
         help_text=_('The IP address is only visible in the admin interface'),
     )
+    author_external_username = models.CharField(
+        max_length=150,
+        blank=True,
+        default='',
+        verbose_name=_('External username'),
+    )
 
     is_anonymous = models.BooleanField(
         default=False,

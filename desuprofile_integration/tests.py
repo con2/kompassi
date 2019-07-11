@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.forms import ValidationError
 from django.test import TestCase
 
@@ -7,9 +5,9 @@ from jsonschema import ValidationError
 
 from core.models import Person
 from badges.models import BadgesEventMeta
-from programme.models import ProgrammeEventMeta, Programme
+from programme.models import ProgrammeEventMeta, Programme, ProgrammeFeedback
 
-from .models import Desuprofile
+from .models import Desuprofile, DesuprogrammeFeedback
 from .utils import import_programme
 
 
@@ -153,3 +151,29 @@ class DesuprogrammeImportTestCase(TestCase):
         import_programme(self.event, payload)
         programme = Programme.objects.get(slug='todellisuusopas-komeroille')
         assert programme.title == 'Todellisuusopas komeroille 2.0'
+
+
+class DesuprogrammeFeedbackTestCase(TestCase):
+    def test_desuprogramme_import(self):
+
+        programme, unused = Programme.get_or_create_dummy()
+        payload = dict(
+            feedback="Oli ihan kakka",
+            desucon_username="japsu",
+            anonymous=False,
+            ip_address='127.0.0.1',
+        )
+
+        feedback = DesuprogrammeFeedback.from_dict(payload)
+        feedback.save(programme)
+
+        feedback = ProgrammeFeedback.objects.get()
+        assert feedback.programme == programme
+        assert feedback.author is None
+
+    def test_hilzun_400(self):
+        json = '{"feedback": "Test", "anonymous": true, "ip_address": "127.0.0.1", "desucon_username": ""}'
+        programme, unused = Programme.get_or_create_dummy()
+
+        feedback = DesuprogrammeFeedback.from_json(json)
+        feedback.save(programme)

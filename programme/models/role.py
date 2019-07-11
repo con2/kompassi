@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 
 from django.db import models
 from django.dispatch import receiver
@@ -21,13 +18,16 @@ class Role(models.Model):
         max_length=1023,
         verbose_name=_('Job title'),
     )
+
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+
     override_public_title = models.CharField(
         max_length=63,
         blank=True,
         verbose_name=_('Override public job title'),
         help_text=_('This gets displayed publicly instead of title, if set. Affects eg. badges.')
-
     )
+
     require_contact_info = models.BooleanField(default=True)
     is_default = models.BooleanField(default=False)
     is_public = models.BooleanField(
@@ -42,13 +42,13 @@ class Role(models.Model):
         help_text=_('Some events have speaker roles that convey different privileges within the same personnel class. This priority field will put the speakers in their place.'),
     )
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         verbose_name = _('role')
         verbose_name_plural = _('roles')
         ordering = ('personnel_class__event', 'personnel_class__priority', 'priority')
+
+    def __str__(self):
+        return self.title
 
     @property
     def public_title(self):

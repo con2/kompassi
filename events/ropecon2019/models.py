@@ -47,8 +47,7 @@ class SignupExtra(SignupExtraBase):
     certificate_delivery_address = models.TextField(
         blank=True,
         verbose_name='Työtodistuksen toimitusosoite',
-        help_text='Jos haluat työtodistuksen, täytä tähän kenttään postiosoite (katuosoite, '
-        'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
+        help_text='Todistukset toimitetaan ensisijaisesti sähköpostitse, mutta jos haluat todistuksesi paperilla kirjaa tähän postiosoite(katuosoite, postinumero ja toimipaikka), johon haluat todistuksen toimitettavan.',
     )
 
     can_finnish = models.BooleanField(default=False, verbose_name=_('Finnish'))

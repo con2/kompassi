@@ -32,6 +32,26 @@ block content_full_width
               else
                 span.label.label-default.kompassi-space-after
                   a(href='?{{ it.qs_add }}') {{ it.name }}
+        .row
+          .col-md-3: strong {% trans "Role" %}
+          .col-md-9
+            for it, active in role_filters
+              if active
+                span.label.label-brand.kompassi-space-after
+                  a(href='?{{ it.qs_del }}') {{ it.name }}
+              else
+                span.label.label-default.kompassi-space-after
+                  a(href='?{{ it.qs_add }}') {{ it.name }}
+        .row
+          .col-md-3: strong {% trans "Form used" %}
+          .col-md-9
+            for it, active in form_filters
+              if active
+                span.label.label-brand.kompassi-space-after
+                  a(href='?{{ it.qs_del }}') {{ it.name }}
+              else
+                span.label.label-default.kompassi-space-after
+                  a(href='?{{ it.qs_add }}') {{ it.name }}
         //- hr
         //- .row
         //-   .col-md-3: strong Luettelojärjestys

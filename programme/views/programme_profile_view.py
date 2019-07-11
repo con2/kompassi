@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.shortcuts import render
 
 from core.helpers import person_required

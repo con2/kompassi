@@ -175,13 +175,6 @@ class Badge(models.Model, CsvExportMixin):
             expected_badge_opts = default_badge_factory(event=event, person=person)
             new_badge_opts = dict(expected_badge_opts)
 
-            if event.badges_event_meta.is_using_fuzzy_reissuance_hack:
-                # The fuzzy reissuance hack is documented at
-                # badges.models.badges_event_meta:Badge.is_using_fuzzy_reissuance_hack
-                expected_badge_opts.pop('is_first_name_visible', None)
-                expected_badge_opts.pop('is_surname_visible', None)
-                expected_badge_opts.pop('is_nick_visible', None)
-
             if existing_badge:
                 # There is an existing un-revoked badge. Check that its information is correct.
                 if any(getattr(existing_badge, key) != value for (key, value) in expected_badge_opts.items()):

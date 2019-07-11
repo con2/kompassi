@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from os import unlink
 from tempfile import NamedTemporaryFile
 import urllib.request, urllib.error, urllib.parse

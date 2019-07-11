@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 
 import csv
 from collections import defaultdict, Counter

@@ -54,6 +54,7 @@ def programme_offer_form_view(request, event, form_slug):
     if not alternative_programme_forms.exists() and form_slug == 'default':
         # implicit default form
         alternative_programme_form = None
+        role = meta.default_role
         FormClass = ProgrammeOfferForm
         num_extra_invites = DEFAULT_NUM_EXTRA_INVITES
 
@@ -65,6 +66,7 @@ def programme_offer_form_view(request, event, form_slug):
             return redirect('core_event_view', event.slug)
     else:
         alternative_programme_form = get_object_or_404(alternative_programme_forms, slug=form_slug)
+        role = alternative_programme_form.role or meta.default_role
         num_extra_invites = alternative_programme_form.num_extra_invites
         FormClass = alternative_programme_form.programme_form_class
 
@@ -118,7 +120,7 @@ def programme_offer_form_view(request, event, form_slug):
                 programme_role = ProgrammeRole(
                     person=request.user.person,
                     programme=programme,
-                    role=meta.default_role,
+                    role=role,
                 )
                 programme_role.save()
 

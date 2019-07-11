@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django import forms
 from django.conf import settings
 from django.contrib import admin
@@ -47,7 +45,7 @@ class PersonAdmin(admin.ModelAdmin):
         ('Basic information', {'fields': [('first_name', 'surname'), 'nick']}),
         ('Contact information', {'fields': ['email', 'phone', 'may_send_info']}),
         ('Official information', {'fields': ['official_first_names', 'muncipality']}),
-        ('Display', {'fields': ['preferred_name_display_style']}),
+        ('Display', {'fields': ['preferred_name_display_style', 'badge_name_display_style']}),
         ('Notes', {'fields': ['notes']}),
     ]
 

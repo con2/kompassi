@@ -122,7 +122,7 @@ class JSONSchemaObject(object):
     @classmethod
     def from_dict(cls, d):
         validate(d, cls.schema)
-        attrs = [d.get(key, '') for key in cls._fields]
+        attrs = [d.get(key, None) for key in cls._fields]
         return cls(*attrs)
 
     @classmethod

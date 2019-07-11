@@ -98,8 +98,16 @@ class Person(models.Model):
 
     preferred_name_display_style = models.CharField(
         max_length=31,
-        verbose_name='Nimen esittäminen',
-        help_text='Tässä voit vaikuttaa siihen, missä muodossa nimesi esitetään (esim. painetaan badgeesi).',
+        verbose_name='Nimen esittäminen listauksissa',
+        help_text='Mikäli sinut mainitaan tapahtuman järjestäjä- tai ohjelmalistauksessa (esim. käsiohjelmassa tai web-sivuilla), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä listauksessa.',
+        blank=True,
+        choices=NAME_DISPLAY_STYLE_CHOICES,
+    )
+
+    badge_name_display_style = models.CharField(
+        max_length=31,
+        verbose_name='Nimen esittäminen badgessa',
+        help_text='Mikäli saat johonkin tapahtumaan nimikoidun henkilökortin (esim. työvoima- tai ohjelmabadgen), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä badgessa. Huomaathan kuitenkin, että jotkin tapahtumat saattavat vaatia etu- ja sukunimen painamista badgeen, jolloin tämä kenttä vaikuttaa ainoastaan siihen painetaanko badgeen myös nickisi vai ei.',
         blank=True,
         choices=NAME_DISPLAY_STYLE_CHOICES,
     )
@@ -118,7 +126,10 @@ class Person(models.Model):
         return self.full_name
 
     def clean(self):
-        if self.is_nick_visible and not self.nick:
+        if not self.nick and (
+            'nick' in self.preferred_name_display_style or
+            'nick' in self.badge_name_display_style
+        ):
             raise ValidationError('Jos nick on tarkoitus näyttää, se myös täytyy syöttää.')
 
     @property
@@ -183,6 +194,18 @@ class Person(models.Model):
             name_display_style = self.name_display_style
 
         return NAME_DISPLAY_STYLE_FORMATS[name_display_style].format(self=self)
+
+    @property
+    def is_first_name_visible(self):
+        return 'firstname' in self.name_display_style
+
+    @property
+    def is_surname_visible(self):
+        return 'surname' in self.name_display_style
+
+    @property
+    def is_nick_visible(self):
+        return 'nick' in self.name_display_style
 
     @property
     def username(self):
@@ -348,28 +371,6 @@ class Person(models.Model):
 
         self.email_verified_at = timezone.now()
         self.save()
-
-    @property
-    def is_first_name_visible(self):
-        return self.name_display_style in [
-            'firstname_nick_surname',
-            'firstname_surname',
-            'firstname',
-        ]
-
-    @property
-    def is_surname_visible(self):
-        return self.name_display_style in [
-            'firstname_nick_surname',
-            'firstname_surname',
-        ]
-
-    @property
-    def is_nick_visible(self):
-        return self.name_display_style in [
-            'firstname_nick_surname',
-            'nick',
-        ]
 
     @property
     def age_now(self):

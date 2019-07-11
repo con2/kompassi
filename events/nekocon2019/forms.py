@@ -21,10 +21,13 @@ class SignupExtraForm(forms.ModelForm):
                 'certificate_delivery_address',
             ),
             Fieldset('Lisätiedot',
+                indented_without_label('afterparty_participation'),
+                'lodging_needs',
                 'special_diet',
                 'special_diet_other',
-                'lodging_needs',
+                'shirt_size',
                 'prior_experience',
+                'shift_wishes',
                 'free_text',
             )
         )
@@ -36,10 +39,13 @@ class SignupExtraForm(forms.ModelForm):
             'total_work',
             'want_certificate',
             'certificate_delivery_address',
+            'afterparty_participation',
             'special_diet',
             'special_diet_other',
+            'shirt_size',
             'lodging_needs',
             'prior_experience',
+            'shift_wishes',
             'free_text',
         )
 

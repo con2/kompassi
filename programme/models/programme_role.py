@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -104,7 +102,9 @@ class ProgrammeRole(models.Model, CsvExportMixin):
     @classmethod
     def get_csv_fields(cls, event):
         from core.models import Person
+        from .alternative_programme_form import AlternativeProgrammeForm
         from .programme import Programme
+        from .role import Role
 
         return [
             (Person, 'surname'),
@@ -113,14 +113,20 @@ class ProgrammeRole(models.Model, CsvExportMixin):
             (Person, 'email'),
             (Person, 'phone'),
             (Programme, 'title'),
-            (cls, 'role_or_status'),
+            (Programme, 'get_state_display'),
+            (Role, 'title'),
+            (AlternativeProgrammeForm, 'title'),
         ]
 
     def get_csv_related(self):
         from core.models import Person
+        from .alternative_programme_form import AlternativeProgrammeForm
         from .programme import Programme
+        from .role import Role
 
         return {
             Person: self.person,
             Programme: self.programme,
+            Role: self.role,
+            AlternativeProgrammeForm: self.programme.form_used,
         }

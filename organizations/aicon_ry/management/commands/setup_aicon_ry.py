@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from datetime import date, datetime, timedelta
 
 from django.contrib.auth.models import Group

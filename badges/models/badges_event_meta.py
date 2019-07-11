@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -30,17 +27,6 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
             'name only. Some events have, however, decided to restrict this and require the first name and '
             'surname to be visible in all badges. If this option is selected, only the name display styles '
             '<em>Firstname Surname</em> and <em>Firstname "Nick" Surname</em> are effectively allowed.'
-        )
-    )
-
-    is_using_fuzzy_reissuance_hack = models.BooleanField(
-        default=False,
-        verbose_name=_('Use fuzzy reissuance hack'),
-        help_text=_(
-            'In Tracon 2017, Japsu forgot to re-issue badges when he flipped the "Real name must be visible" '
-            'setting. This caused lots of printed badges to be revoked and re-issued. When the fuzzy reissuance hack '
-            'is active, badges will not get re-issued if the only change is which fields are visible. '
-            'Combine this with python manage.py rescue_wrongly_revoked_badges.'
         )
     )
 
