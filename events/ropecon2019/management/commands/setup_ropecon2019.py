@@ -571,6 +571,7 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
             'Vain täysi-ikäisille',
             'Kovaääninen',
             'Teema',
+            'Kilpailu/Turnaus',
         ]:
             Tag.objects.get_or_create(event=self.event, title=tag_title)
 

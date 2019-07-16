@@ -28,10 +28,12 @@ class Command(BaseCommand):
                 'vapaaehtoisvoimin järjestettävät animetapahtumat sitä mukaa kun ne '
                 'tulevat ylläpitäjän tietoon.'
             ), (
+                'animeseminaari',
                 'desucon',
                 'hypecon',
                 'kawacon',
                 'kibecon',
+                'kitsunecon',
                 'lakeuscon',
                 'matsucon',
                 'mimicon',
@@ -49,6 +51,7 @@ class Command(BaseCommand):
                 'tulevat ylläpitäjän tietoon.'
             ), (
                 'aicon',
+                'animeseminaari',
                 'desucon',
                 'finncon',
                 'gingacon',
@@ -57,6 +60,7 @@ class Command(BaseCommand):
                 'k-con',
                 'kawacon',
                 'kibecon',
+                'kitsunecon',
                 'lakeuscon',
                 'matsucon',
                 'mimicon',
