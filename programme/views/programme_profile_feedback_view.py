@@ -10,6 +10,7 @@ from ..models import Programme
 from ..helpers import programme_event_required
 
 
+@person_required
 def programme_profile_feedback_view(request, programme_id):
     programme = get_object_or_404(Programme, id=int(programme_id))
     event = programme.event
