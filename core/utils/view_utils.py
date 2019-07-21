@@ -14,11 +14,9 @@ def login_redirect(request, view='core_login_view'):
 
 
 def get_next(request, default='/'):
-    if request.method == 'GET':
-        next = request.GET.get('next', None)
-    elif request.method == 'POST':
+    if request.method in ('POST', 'PATCH', 'PUT'):
         next = request.POST.get('next', None)
     else:
-        raise NotImplementedError(request.method)
+        next = request.GET.get('next', None)
 
     return next if next else default
