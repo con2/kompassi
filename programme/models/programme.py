@@ -963,18 +963,26 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def ropecon_genres(self):
-        genres = []
-        for genre in ['fantasy','scifi','historical','modern','war','horror','exploration','mystery','drama','humor']:
-            if getattr(self, 'ropecon2018_genre_' + genre):
-                genres.append(genre)
-        return genres
+        found_genres = []
+
+        for prefix, possible_genres in [
+            ('ropecon2018', ['fantasy', 'scifi', 'historical', 'modern', 'war', 'horror', 'exploration', 'mystery', 'drama', 'humor']),
+            ('ropecon2019', ['adventure']),
+        ]:
+            for genre in possible_genres:
+                if getattr(self, f'{prefix}_genre_{genre}'):
+                    found_genres.append(genre)
+
+        return found_genres
 
     @property
     def ropecon_styles(self):
         styles = []
-        for style in ['serious','light','rules_heavy','rules_light','story_driven','character_driven','combat_driven']:
+
+        for style in ['serious', 'light', 'rules_heavy', 'rules_light', 'story_driven', 'character_driven', 'combat_driven']:
             if getattr(self, 'ropecon2018_style_' + style):
                 styles.append(style)
+
         return styles
 
     @property
