@@ -46,7 +46,7 @@ html
 
       #push
 
-    if 'feedback' in settings.INSTALLED_APPS and not login_page
+    if 'feedback' in settings.INSTALLED_APPS and not login_page and not disable_feedback_widget
       include feedback_widget
 
     footer

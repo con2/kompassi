@@ -73,6 +73,7 @@ def labour_admin_roster_view(request, vars, event, job_category_slug=None):
 
     vars.update(
         config_json=json.dumps(config),
+        disable_feedback_widget=True,
     )
 
     return render(request, 'labour_admin_roster_view.pug', vars)
