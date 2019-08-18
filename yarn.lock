@@ -2933,9 +2933,9 @@ klaw@^1.0.0:
   optionalDependencies:
     graceful-fs "^4.1.9"
 
-knockout@^3.4.0:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/knockout/-/knockout-3.4.1.tgz#8bd057bde8f7d0a02b93dda433c2a8d942d8a9a0"
+knockout@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/knockout/-/knockout-3.5.0.tgz#6d3e19bf53b1dc4d8de81c97a5ba9672443dc292"
 
 labeled-stream-splicer@^2.0.0:
   version "2.0.0"
