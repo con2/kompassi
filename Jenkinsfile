@@ -21,7 +21,7 @@ node {
   stage("Build") {
     checkout scm
     sh "docker build --tag $buildImage ."
-    sh ". $HOME/.kompassi2.env && docker build --file Dockerfile.static --build-arg FRONTEND_IMAGE=$buildImage  --tag $tempStaticImage ."
+    sh ". $HOME/.kompassi2.env && docker build --file Dockerfile.static --build-arg FRONTEND_IMAGE=$buildImage --build-arg PUBLIC_URL=\$PUBLIC_URL --build-arg REACT_APP_KOMPASSI_BASE_URL=\$REACT_APP_KOMPASSI_BASE_URL --build-arg REACT_APP_CLIENT_ID=\$REACT_APP_CLIENT_ID --tag $tempStaticImage ."
   }
 
   stage("Push") {
