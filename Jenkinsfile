@@ -21,7 +21,7 @@ node {
   stage("Build") {
     checkout scm
     sh "docker build --tag $buildImage ."
-    sh "source $HOME/.kompassi2.env && docker build --file Dockerfile.static --build-arg FRONTEND_IMAGE=$buildImage  --tag $tempStaticImage ."
+    sh ". $HOME/.kompassi2.env && docker build --file Dockerfile.static --build-arg FRONTEND_IMAGE=$buildImage  --tag $tempStaticImage ."
   }
 
   stage("Push") {
