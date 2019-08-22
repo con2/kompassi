@@ -1,7 +1,17 @@
 ARG FRONTEND_IMAGE=kompassi2
+ARG PUBLIC_URL='http://localhost:3000'
+ARG REACT_APP_KOMPASSI_BASE_URL='http://localhost:8000'
+ARG REACT_APP_CLIENT_ID='insecure kompassi v2 development client id'
+
 FROM $FRONTEND_IMAGE
 USER root
-RUN NODE_ENV=production npm run build
+
+ENV NODE_ENV=production
+ENV PUBLIC_URL=$PUBLIC_URL
+ENV REACT_APP_CLIENT_ID=$REACT_APP_CLIENT_ID
+ENV REACT_APP_KOMPASSI_BASE_URL=$REACT_APP_KOMPASSI_BASE_URL
+
+RUN npm run build
 
 FROM nginx:1-alpine
 COPY --from=0 /usr/src/app/build/ /usr/share/nginx/html/
