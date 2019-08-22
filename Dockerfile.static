@@ -1,0 +1,7 @@
+ARG FRONTEND_IMAGE=kompassi2
+FROM $FRONTEND_IMAGE
+USER root
+RUN NODE_ENV=production npm run build
+
+FROM nginx:1-alpine
+COPY --from=0 /usr/src/app/build/ /usr/share/nginx/html/
