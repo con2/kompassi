@@ -1,18 +1,13 @@
 import * as React from 'react';
-import { Translation } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
-import Form from 'reactstrap/lib/Form';
 import FormGroup from 'reactstrap/lib/FormGroup';
 import Input from 'reactstrap/lib/Input';
 import ListGroup from 'reactstrap/lib/ListGroup';
 import ListGroupItem from 'reactstrap/lib/ListGroupItem';
-import Nav from 'reactstrap/lib/Nav';
-import NavItem from 'reactstrap/lib/NavItem';
-import NavLink from 'reactstrap/lib/NavLink';
 
 import MainViewContainer from '../common/MainViewContainer';
 import ManagedModal from '../common/ManagedModal';
@@ -23,13 +18,12 @@ import FormEditor from './FormEditor';
 import SchemaForm from './SchemaForm';
 import { Field, FieldType, fieldTypes, Layout } from './SchemaForm/models';
 
+import Tabs from '../common/Tabs';
+import { T } from '../../translations';
 
-type Tab = 'design' | 'preview';
-const tabs: Tab[] = ['design', 'preview'];
-
+type Tab = 'design' | 'preview' | 'properties';
 
 export type FormEditorAction = 'addFieldAbove' | 'moveUp' | 'moveDown' | 'editField' | 'removeField';
-
 
 interface FormEditorViewRouterProps {
   slug: string;
@@ -48,8 +42,7 @@ interface FormEditorViewState {
   fieldBeingEdited?: Field;
 }
 
-
-function initState(loading: boolean = true): FormEditorViewState {
+function initState(loading = true): FormEditorViewState {
   return {
     loading,
     title: '',
@@ -60,20 +53,21 @@ function initState(loading: boolean = true): FormEditorViewState {
   };
 }
 
-
 class AddFieldModal extends ManagedModal<FieldType> {}
 class EditFieldModal extends ManagedModal<Field> {}
-
+class RemoveFieldModal extends ManagedModal<null> {}
 
 export default class FormEditorView extends React.Component<RouteComponentProps<FormEditorViewRouterProps>, FormEditorViewState> {
   static contextType = SessionContext;
   context!: Session;
 
+  titleForm?: HTMLFormElement;
+
   state: FormEditorViewState = initState();
 
   addFieldModal: AddFieldModal | null = null;
   editFieldModal: EditFieldModal | null = null;
-  removeFieldModal: ManagedModal<{}> | null = null;
+  removeFieldModal: RemoveFieldModal | null = null;
 
   async componentDidMount() {
     const { slug } = this.props.match.params;
@@ -92,107 +86,121 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
 
   render() {
     const { loading, error, title, fields, activeTab, layout, addingNewField } = this.state;
+    const t = T(r => r.FormEditor);
+    const tRoot = T(r => r);
 
     return (
-      <Translation ns={['FormEditor', 'Common']}>
-        {t => (
-          <MainViewContainer loading={loading} error={error}>
-            <ButtonGroup className="float-md-right">
-              <LinkContainer to="/forms" exact={true}>
-                <Button color="danger" outline={true} size="sm">{t('cancel')}</Button>
-              </LinkContainer>
-              <Button color="primary" size="sm" onClick={this.save}>{t('save')}</Button>
-            </ButtonGroup>
-            <Nav tabs={true} className='mb-2'>
-              {tabs.map(tab => (
-                <NavItem key={tab}>
-                  <NavLink
-                    href='#'
-                    onClick={() => this.setState({ activeTab: tab })}
-                    active={this.state.activeTab === tab}
-                  >
-                    {t(tab)}
-                  </NavLink>
-                </NavItem>
-              ))}
-            </Nav>
+      <MainViewContainer loading={loading} error={error}>
+        <ButtonGroup className="float-md-right">
+          <LinkContainer to="/forms" exact={true}>
+            <Button color="danger" outline={true} size="sm">
+              {t(r => r.cancel)}
+            </Button>
+          </LinkContainer>
+          <Button color="primary" size="sm" onClick={this.save}>
+            {t(r => r.save)}
+          </Button>
+        </ButtonGroup>
 
-            {activeTab === 'design' ? (
+        <Tabs t={t}>
+          {{
+            design: (
               <>
-                <Form>
+                <form ref={(form: HTMLFormElement) => (this.titleForm = form)}>
                   <FormGroup>
-                    <Input bsSize="lg" name="title" placeholder="Form title" value={title} onChange={this.onTitleChange} />
+                    <Input
+                      bsSize="lg"
+                      name="title"
+                      placeholder={t(r => r.titlePlaceholder)}
+                      value={title}
+                      onChange={this.onTitleChange}
+                      required={true}
+                    />
                   </FormGroup>
-                </Form>
+                </form>
 
                 <FormEditor fields={fields} layout="horizontal" onAction={this.onFormEditorAction}>
-                  <Button outline={true} color="primary" size="sm" onClick={this.addField}>{t('addField')}…</Button>
+                  <Button outline={true} color="primary" size="sm" onClick={this.addField}>
+                    {t(r => r.addField)}…
+                  </Button>
                 </FormEditor>
               </>
-            ) : (
-              <>
+            ),
+            preview: (
+              <div style={{ display: activeTab === 'preview' ? '' : 'none' }}>
                 {title ? <h2>{title}</h2> : null}
                 <SchemaForm fields={fields} layout={layout} />
-              </>
-            )}
+              </div>
+            ),
+          }}
+        </Tabs>
 
-            <AddFieldModal
-              title={t('addField')}
-              ref={(ref) => { this.addFieldModal = ref; }}
-              footer={(
-                <ButtonGroup className="float-right">
-                  <Button color="danger" outline={true} onClick={() => this.addFieldModal!.cancel()}>{t('Common:cancel')}</Button>
-                </ButtonGroup>
-              )}
-            >
-              <ListGroup>
-                {fieldTypes.map(fieldType => (
-                  <ListGroupItem
-                    tag="button"
-                    action={true}
-                    key={fieldType}
-                    onClick={() => this.addFieldModal!.ok(fieldType)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {t(`FieldTypes.${fieldType}`)}
-                  </ListGroupItem>
-                ))}
-              </ListGroup>
-            </AddFieldModal>
+        <AddFieldModal
+          title={t(r => r.addField)}
+          ref={ref => {
+            this.addFieldModal = ref;
+          }}
+          footer={
+            <ButtonGroup className="float-right">
+              <Button color="danger" outline={true} onClick={() => this.addFieldModal!.cancel()}>
+                {tRoot(r => r.Common.cancel)}
+              </Button>
+            </ButtonGroup>
+          }
+        >
+          <ListGroup>
+            {fieldTypes.map(fieldType => (
+              <ListGroupItem
+                tag="button"
+                action={true}
+                key={fieldType}
+                onClick={() => this.addFieldModal!.ok(fieldType)}
+                style={{ cursor: 'pointer' }}
+              >
+                {t(r => r.FieldTypes[fieldType])}
+              </ListGroupItem>
+            ))}
+          </ListGroup>
+        </AddFieldModal>
 
-            <EditFieldModal title={addingNewField ? t('addField') : t('editField')} ref={(ref) => { this.editFieldModal = ref; }}>
-              <p>Edit field</p>
-            </EditFieldModal>
+        <EditFieldModal
+          title={addingNewField ? t(r => r.addField) : t(r => r.editField)}
+          ref={ref => {
+            this.editFieldModal = ref;
+          }}
+        >
+          <p>Edit field</p>
+        </EditFieldModal>
 
-            <ManagedModal
-              ref={ref => { this.removeFieldModal = ref; }}
-              title={t('RemoveFieldModal.title')}
-              footer={(
-                <ButtonGroup className="float-right">
-                  <Button color="danger" onClick={() => this.removeFieldModal!.ok()}>
-                    {t('RemoveFieldModal.yes')}
-                  </Button>
-                  <Button color="secondary" outline={true} onClick={() => this.removeFieldModal!.cancel()}>
-                    {t('RemoveFieldModal.no')}
-                  </Button>
-                </ButtonGroup>
-              )}
-            >
-              <p>{t('RemoveFieldModal.message')}</p>
-            </ManagedModal>
-          </MainViewContainer>
-        )}
-      </Translation>
+        <RemoveFieldModal
+          ref={ref => {
+            this.removeFieldModal = ref;
+          }}
+          title={t(r => r.RemoveFieldModal.title)}
+          footer={
+            <ButtonGroup className="float-right">
+              <Button color="danger" onClick={() => this.removeFieldModal!.ok()}>
+                {t(r => r.RemoveFieldModal.yes)}
+              </Button>
+              <Button color="secondary" outline={true} onClick={() => this.removeFieldModal!.cancel()}>
+                {t(r => r.RemoveFieldModal.no)}
+              </Button>
+            </ButtonGroup>
+          }
+        >
+          <p>{t(r => r.RemoveFieldModal.message)}</p>
+        </RemoveFieldModal>
+      </MainViewContainer>
     );
   }
 
   onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const title = event.target.value;
     this.setState({ title });
-  }
+  };
 
   onFormEditorAction = (action: FormEditorAction, fieldName: string) => {
-    switch(action) {
+    switch (action) {
       case 'addFieldAbove':
         return this.addFieldAbove(fieldName);
       case 'removeField':
@@ -202,7 +210,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
       case 'moveDown':
         return this.moveDown(fieldName);
     }
-  }
+  };
 
   protected async addFieldAbove(fieldName: string) {
     const { fields } = this.state;
@@ -218,7 +226,8 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
       return;
     }
 
-    const newFields = fields.slice(0, index)
+    const newFields = fields
+      .slice(0, index)
       .concat([result.payload!])
       .concat(fields.slice(index));
 
@@ -235,7 +244,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     const fields = this.state.fields.concat([result.payload!]);
 
     this.setState({ fields });
-  }
+  };
 
   protected async getNewField() {
     const result = await this.addFieldModal!.open();
@@ -268,7 +277,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
       const newFields = fields.slice(0, index).concat(fields.slice(index + 1));
       this.setState({ fields: newFields });
     }
-  }
+  };
 
   protected moveUp(fieldName: string) {
     const index = this.state.fields.findIndex(field => field.name === fieldName);
@@ -282,21 +291,28 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
 
   protected swapWithNextField(index: number) {
     const { fields } = this.state;
-    const newFields = fields.slice(0, index)
+    const newFields = fields
+      .slice(0, index)
       .concat([fields[index + 1], fields[index]])
       .concat(fields.slice(index + 2));
     this.setState({ fields: newFields });
   }
 
-  protected save = () => {
+  protected save = async () => {
     const { slug } = this.props.match.params;
 
-    if (slug === 'new') {
-      this.context.post('forms', this.serializeForm());
-    } else {
-      this.context.put(`forms/${slug}`, this.serializeForm());
+    if (!this.titleForm!.reportValidity()) {
+      this.setState({ activeTab: 'design' });
+      setTimeout(() => this.titleForm!.reportValidity(), 0);
+      return;
     }
-  }
+
+    if (slug === 'new') {
+      await this.context.post('forms', this.serializeForm());
+    } else {
+      await this.context.put(`forms/${slug}`, this.serializeForm());
+    }
+  };
 
   protected serializeForm() {
     const { title, fields } = this.state;

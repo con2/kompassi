@@ -4,17 +4,31 @@ import Alert from 'reactstrap/lib/Alert';
 
 import DataTable from './common/DataTable';
 import MainViewContainer from './common/MainViewContainer';
+import { T } from '../translations';
+import Config from '../Config';
 
+interface Event {
+  slug: string;
+  name: string;
+  headline: string;
+}
+class EventTable extends DataTable<Event> {}
 
-export default () => (
-  <MainViewContainer>
-    <Alert color="warning">This is by no means the final front page for Kompassi v2. Just a demo of the table component for now.</Alert>
-    <h1>Events</h1>
-    <DataTable
-      endpoint="events"
-      columns={['name', 'headline']}
-      standardActions={['open']}
-      ns={["Event"]}
-    />
-  </MainViewContainer>
-);
+export default () => {
+  const t = T(r => r.Event);
+
+  return (
+    <MainViewContainer>
+      <Alert color="warning">{t(r => r.workInProgress)}</Alert>
+      <h1>{t(r => r.title)}</h1>
+      <EventTable
+        endpoint="events"
+        columns={['name', 'headline']}
+        standardActions={['open']}
+        searchFields={['name']}
+        t={t}
+        getHref={event => `${Config.api.baseUrl}/events/${event.slug}`}
+      />
+    </MainViewContainer>
+  );
+};

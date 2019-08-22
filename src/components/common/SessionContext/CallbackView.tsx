@@ -3,14 +3,12 @@ import { Redirect } from 'react-router-dom';
 
 import Loading from '../Loading';
 
-
 interface CallbackViewState {
   next: string | null;
 }
 
-
 export default class CallbackView extends React.Component<{}, CallbackViewState> {
-  state = {
+  state: CallbackViewState = {
     next: null,
   };
 

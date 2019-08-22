@@ -2,12 +2,11 @@ import ClientOAuth2 from 'client-oauth2';
 
 import Config from '../../../Config';
 
-
 export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export async function fetchWithCredentials(method: Method, path: string, token: string, data?: any) {
   const url = `${Config.api.baseUrl}/api/v3/${path}`;
-  const headers: { [name: string]: string; } = {
+  const headers: { [name: string]: string } = {
     accept: 'application/json',
   };
 
@@ -24,13 +23,12 @@ export async function fetchWithCredentials(method: Method, path: string, token: 
 
   const response = await fetch(url, init);
 
-  if(!response.ok) {
+  if (!response.ok) {
     throw new Error(response.statusText);
   }
 
   return response.json();
 }
-
 
 function getPath() {
   if (window.location.search) {
@@ -40,12 +38,11 @@ function getPath() {
   }
 }
 
-function encodeQuery(query: {[key: string]: string}) {
+function encodeQuery(query: { [key: string]: string }) {
   const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => params.set(key, value));
   return params.toString();
 }
-
 
 export function getOAuth2() {
   const query = encodeQuery({ next: getPath() });
@@ -55,6 +52,6 @@ export function getOAuth2() {
     accessTokenUri: `${Config.api.baseUrl}/oauth2/token`,
     authorizationUri: `${Config.api.baseUrl}/oauth2/authorize`,
     redirectUri: `${Config.publicUrl}/oauth2/callback?${query}`,
-    scopes: ['read', 'write']
+    scopes: ['read', 'write'],
   });
 }

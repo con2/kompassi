@@ -1,5 +1,4 @@
 import React from 'react';
-import { Translation } from 'react-i18next';
 
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
@@ -7,7 +6,7 @@ import BsModal from 'reactstrap/lib/Modal';
 import ModalBody from 'reactstrap/lib/ModalBody';
 import ModalFooter from 'reactstrap/lib/ModalFooter';
 import ModalHeader from 'reactstrap/lib/ModalHeader';
-
+import { TranslationFunction, T } from '../../translations';
 
 export interface ModalResult<PayloadType> {
   ok: boolean;
@@ -17,12 +16,12 @@ export interface ModalResult<PayloadType> {
 interface ModalProps {
   title?: string;
   footer?: React.ReactNode;
+  t?: TranslationFunction<any>;
 }
 
 interface ModalState {
   isOpen: boolean;
 }
-
 
 export default class ManagedModal<PayloadType> extends React.PureComponent<ModalProps, ModalState> {
   state: ModalState = {
@@ -34,24 +33,25 @@ export default class ManagedModal<PayloadType> extends React.PureComponent<Modal
   render() {
     const { isOpen } = this.state;
     const { title, footer } = this.props;
+    const t = this.props.t || T(r => r.Common);
 
     return (
-      <Translation ns={['Common']}>
-        {t => (
-          <BsModal isOpen={isOpen} toggle={this.cancel}>
-            {title ? <ModalHeader toggle={this.cancel}>{title}</ModalHeader> : null}
-            <ModalBody>{this.props.children}</ModalBody>
-            <ModalFooter>
-              {footer || (
-                <ButtonGroup className="float-right">
-                  <Button color="success" onClick={() => this.ok()}>{t('ok')}</Button>
-                  <Button color="danger" outline={true} onClick={() => this.cancel()}>{t('cancel')}</Button>
-                </ButtonGroup>
-              )}
-            </ModalFooter>
-          </BsModal>
-        )}
-      </Translation>
+      <BsModal isOpen={isOpen} toggle={this.cancel}>
+        {title ? <ModalHeader toggle={this.cancel}>{title}</ModalHeader> : null}
+        <ModalBody>{this.props.children}</ModalBody>
+        <ModalFooter>
+          {footer || (
+            <ButtonGroup className="float-right">
+              <Button color="success" onClick={() => this.ok()}>
+                {t(r => r.ok)}
+              </Button>
+              <Button color="danger" outline={true} onClick={() => this.cancel()}>
+                {t(r => r.cancel)}
+              </Button>
+            </ButtonGroup>
+          )}
+        </ModalFooter>
+      </BsModal>
     );
   }
 
@@ -60,17 +60,17 @@ export default class ManagedModal<PayloadType> extends React.PureComponent<Modal
       this.resolve = resolve;
       this.setState({ isOpen: true });
     });
-  }
+  };
 
   ok = (payload?: PayloadType) => {
     this.setState({ isOpen: false });
     this.resolve!({ ok: true, payload });
     this.resolve = undefined;
-  }
+  };
 
   cancel = (payload?: PayloadType) => {
     this.setState({ isOpen: false });
     this.resolve!({ ok: false, payload });
     this.resolve = undefined;
-  }
+  };
 }

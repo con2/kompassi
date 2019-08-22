@@ -1,6 +1,5 @@
 import Config from '../../../Config';
-import { fetchWithCredentials, getOAuth2 } from "./helpers";
-
+import { fetchWithCredentials, getOAuth2 } from './helpers';
 
 export interface User {
   username: string;
@@ -9,7 +8,6 @@ export interface User {
   surname: string;
   displayName: string;
 }
-
 
 export default class Session {
   user?: User;
@@ -29,7 +27,7 @@ export default class Session {
     }
 
     window.location.href = getOAuth2().token.getUri();
-  }
+  };
 
   logOut = () => {
     if (!this.user) {
@@ -41,7 +39,7 @@ export default class Session {
 
     sessionStorage.clear();
     window.location.href = `${Config.api.baseUrl}/logout`;
-  }
+  };
 
   get(path: string) {
     return fetchWithCredentials('GET', path, this.accessToken || '');
@@ -59,6 +57,5 @@ export default class Session {
     return fetchWithCredentials('DELETE', path, this.accessToken || '');
   }
 }
-
 
 export const emptySession = new Session();

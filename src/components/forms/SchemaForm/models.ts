@@ -1,7 +1,6 @@
 export type FieldType = 'SingleLineText' | 'MultiLineText' | 'Divider' | 'StaticText' | 'Spacer';
 export const fieldTypes: FieldType[] = ['SingleLineText', 'MultiLineText', 'Divider', 'StaticText', 'Spacer'];
 
-
 interface BaseField {
   type: FieldType;
   name: string;
@@ -11,17 +10,14 @@ interface BaseField {
   readOnly?: boolean;
 }
 
-
 export interface SingleLineText extends BaseField {
   type: 'SingleLineText';
 }
-
 
 export interface MultiLineText extends BaseField {
   type: 'MultiLineText';
   rows?: number;
 }
-
 
 export interface Divider extends BaseField {
   type: 'Divider';
@@ -31,11 +27,9 @@ export interface Spacer extends BaseField {
   type: 'Spacer';
 }
 
-
 export interface StaticText extends BaseField {
   type: 'StaticText';
 }
-
 
 export interface SingleLineText extends BaseField {
   type: 'SingleLineText';

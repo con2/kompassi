@@ -1,11 +1,21 @@
 const translations = {
+  AccommodationOnboardingView: {
+    title: 'Accommodation onboarding',
+  },
   Common: {
     ok: 'OK',
     cancel: 'Cancel',
+    submit: 'Submit',
+    search: 'Search',
+  },
+  DataTable: {
+    create: 'Create',
   },
   Event: {
+    title: 'Events',
     headline: 'Date and venue',
     name: 'Name',
+    workInProgress: 'Kompassi v2 is a work in progress. This is not the final front page, but rather a demo of the table component.',
   },
   Navigation: {
     forms: 'Forms',
@@ -36,6 +46,7 @@ const translations = {
     preview: 'Preview',
     save: 'Save form',
     cancel: 'Return without saving',
+    titlePlaceholder: 'Form title',
 
     FieldTypes: {
       SingleLineText: 'Single line text field',

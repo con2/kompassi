@@ -1,19 +1,13 @@
 import * as React from 'react';
 
-import { Translation } from 'react-i18next';
-
 import MainViewContainer from './common/MainViewContainer';
-
+import { t } from '../translations';
 
 const NotFound = () => (
-  <Translation ns={['NotFound']}>
-    {t => (
-      <MainViewContainer>
-        <h1>{t('notFoundHeader')}</h1>
-        <p>{t('notFoundMessage')}</p>
-      </MainViewContainer>
-    )}
-  </Translation>
+  <MainViewContainer>
+    <h1>{t(r => r.NotFound.notFoundHeader)}</h1>
+    <p>{t(r => r.NotFound.notFoundMessage)}</p>
+  </MainViewContainer>
 );
 
 export default NotFound;

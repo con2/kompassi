@@ -9,24 +9,21 @@ import Label from 'reactstrap/lib/Label';
 
 import { Field, Layout } from './models';
 
-
 interface SchemaFormProps {
   fields: Field[];
   layout?: Layout;
   ns?: string[];
 }
 
-
-interface SchemaFormState { }
-
-
-export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProps & OwnProps, SchemaFormState> {
+export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProps & OwnProps, {}> {
   render() {
     const { layout } = this.props;
 
     return (
       <Form className={layout === 'horizontal' ? 'form-horizontal' : ''}>
-        {this.props.fields.map(field => <div key={field.name}>{this.renderField(field)}</div>)}
+        {this.props.fields.map(field => (
+          <div key={field.name}>{this.renderField(field)}</div>
+        ))}
         {this.props.children}
       </Form>
     );
@@ -41,7 +38,7 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
       // Full-width static text
       return <p>{helpText}</p>;
     } else if (type === 'Divider') {
-      return <hr/>;
+      return <hr />;
     } else if (type === 'Spacer') {
       return <div className="pb-3" />;
     }
@@ -50,7 +47,9 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
       case 'horizontal':
         return (
           <FormGroup className="row">
-            <Label for={name} className="col-md-3 col-form-label">{title}</Label>
+            <Label for={name} className="col-md-3 col-form-label">
+              {title}
+            </Label>
             <Col md={9}>
               {this.renderInput(field)}
               {helpText ? <FormText>{helpText}</FormText> : null}
@@ -87,6 +86,5 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
     return !!field.readOnly;
   }
 }
-
 
 export default class SchemaForm extends BaseSchemaForm<{}> {}

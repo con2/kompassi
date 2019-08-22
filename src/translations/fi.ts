@@ -1,13 +1,23 @@
 import { Translations } from '.';
 
 const translations: Translations = {
+  AccommodationOnboardingView: {
+    title: 'Majoituksen sisäänkirjaus',
+  },
   Common: {
     ok: 'OK',
     cancel: 'Peruuta',
+    submit: 'Lähetä',
+    search: 'Haku',
+  },
+  DataTable: {
+    create: 'Luo uusi',
   },
   Event: {
+    title: 'Tapahtumat',
     headline: 'Aika ja paikka',
     name: 'Nimi',
+    workInProgress: 'Kompassi v2 on työn alla. Tämä ei ole vielä valmis etusivu, vaan taulukkokomponentin demo.',
   },
   Navigation: {
     forms: 'Lomakkeet',
@@ -38,6 +48,7 @@ const translations: Translations = {
     preview: 'Esikatsele',
     save: 'Tallenna lomake',
     cancel: 'Palaa tallentamatta',
+    titlePlaceholder: 'Lomakkeen otsikko',
 
     FieldTypes: {
       SingleLineText: 'Yksirivinen tekstikenttä',

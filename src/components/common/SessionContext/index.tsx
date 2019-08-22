@@ -5,15 +5,12 @@ import Loading from '../Loading';
 import { fetchWithCredentials, getOAuth2 } from './helpers';
 import Session, { emptySession } from './Session';
 
-
 const SessionContext = React.createContext<Session>(emptySession);
 export const SessionConsumer = SessionContext.Consumer;
-
 
 interface SessionProviderState {
   session?: Session;
 }
-
 
 export class SessionProvider extends React.Component<{}, SessionProviderState> {
   // why do I have to type this explicitly? :thinking:
@@ -42,23 +39,17 @@ export class SessionProvider extends React.Component<{}, SessionProviderState> {
     } else {
       this.setState({ session: emptySession });
     }
-
   }
 
   render() {
     const { session } = this.state;
 
     if (session) {
-      return (
-        <SessionContext.Provider value={session}>
-          {this.props.children}
-        </SessionContext.Provider>
-      );
+      return <SessionContext.Provider value={session}>{this.props.children}</SessionContext.Provider>;
     } else {
       return <Loading />;
     }
   }
 }
-
 
 export default SessionContext;

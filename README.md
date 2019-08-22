@@ -32,3 +32,24 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
+
+## TODO
+
+### Table component
+
+### Schema form
+
+- [ ] form serialization to JSON
+  - [ ] `onChange` or sth
+- [ ] initial values
+
+### Form editor
+
+- [ ] get the talkation between front and back workative
+- [ ] emtypesafen
+- [ ] implement new field parameters dialog / edit field dialog
+
+### `<Tabs>`
+
+- [ ] evaluate `react-bootstrap` v1 beta as an alternative to `reactstrap`
+- [ ] change from `<Tabs ns="foo">{{ foo: <div>Bar</div> }}</Tabs>` to `<Tabs><Tab key="foo" title={t('Foo')}>Bar</Tab></Tabs>`
