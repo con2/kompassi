@@ -1157,6 +1157,7 @@ class AccommodationInformation(models.Model, CsvExportMixin):
     @classmethod
     def get_csv_fields(cls, event):
         return (
+            (cls, 'formatted_order_number')
             (cls, 'last_name'),
             (cls, 'first_name'),
             (cls, 'phone_number'),
