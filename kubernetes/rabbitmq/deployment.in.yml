@@ -33,14 +33,25 @@ spec:
                   key: username
           volumeMounts:
             - !If
-                test: !Var rabbitmq_enable_volumes
+                test: !Any [!Var rabbitmq_storage_pvc, !Var rabbitmq_storage_cephfs]
                 then:
                   mountPath: /var/lib/rabbitmq
                   name: rabbitmq-data
       volumes:
         - !If
-            test: !Var rabbitmq_enable_volumes
+            test: !Var rabbitmq_storage_pvc
             then:
               name: rabbitmq-data
               persistentVolumeClaim:
                 claimName: rabbitmq-data
+        - !If
+            test: !Var rabbitmq_storage_cephfs
+            then:
+              name: rabbitmq-data
+              flexVolume:
+                driver: ceph.rook.io/rook
+                fsType: ceph
+                options:
+                  fsName: !Var rabbitmq_storage_cephfs
+                  clusterNamespace: !Var rabbitmq_storage_cephfs_namespace
+                  path: !Var rabbitmq_storage_cephfs_path

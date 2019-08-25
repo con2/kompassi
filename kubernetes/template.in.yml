@@ -32,7 +32,7 @@
 
 ---
 !If
-  test: !Var rabbitmq_managed
+  test: !All [!Var rabbitmq_managed, !Var rabbitmq_storage_pvc]
   then: !Include rabbitmq/pvc.in.yml
 
 ---
@@ -73,7 +73,9 @@
 ---
 !Include kompassi/deployment.in.yml
 ---
-!Include kompassi/pvc.in.yml
+!If
+  test: !Var kompassi_storage_pvc
+  then: !Include kompassi/pvc.in.yml
 ---
 !Include kompassi/secret.in.yml
 

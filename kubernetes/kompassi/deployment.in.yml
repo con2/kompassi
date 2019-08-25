@@ -39,14 +39,17 @@ spec:
           periodSeconds: 30
         volumeMounts:
           - !If
-              test: !Var kompassi_enable_volumes
+              test: !Any [!Var kompassi_storage_pvc, !Var kompassi_storage_cephfs]
               then:
                 mountPath: /usr/src/app/media
                 name: kompassi-media
       volumes:
         - !If
-            test: !Var kompassi_enable_volumes
+            test: !Var kompassi_storage_pvc
             then:
               name: kompassi-media
               persistentVolumeClaim:
                 claimName: kompassi-media
+        - !If
+            test: !Var kompassi_storage_cephfs
+            then: !Var kompassi_storage_cephfs_volume_definition

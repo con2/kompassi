@@ -3,7 +3,23 @@
 kompassi_tag: staging
 kompassi_image: !Format tracon/kompassi:{kompassi_tag}
 kompassi_static_image: !Format tracon/kompassi-static:{kompassi_tag}
-kompassi_enable_volumes: true
+kompassi_storage_pvc: true
+
+# to use cephfs via flexvolume, set kompassi_storage_pvc to false and kompassi_storage_cephfs to the name of your cephfs
+# the cephfs will not be created for you, it must already exist. also mkdir -p and chown 998:998 the path in cephfs.
+kompassi_storage_cephfs: ''
+kompassi_storage_cephfs_namespace: rook-ceph
+kompassi_storage_cephfs_path: /kompassi-staging/kompassi-media
+kompassi_storage_cephfs_volume_definition:
+  name: kompassi-media
+  flexVolume:
+    driver: ceph.rook.io/rook
+    fsType: ceph
+    options:
+      fsName: !Var kompassi_storage_cephfs
+      clusterNamespace: !Var kompassi_storage_cephfs_namespace
+      path: !Var kompassi_storage_cephfs_path
+
 
 ingress_public_hostname: kompassi.127.0.0.1.xip.io
 ingress_letsencrypt_enabled: false
@@ -20,7 +36,10 @@ rabbitmq_managed: true
 rabbitmq_image: rabbitmq
 rabbitmq_hostname: rabbitmq
 rabbitmq_vhost: kompassi
-rabbitmq_enable_volumes: true
+rabbitmq_storage_pvc: true
+rabbitmq_storage_cephfs: ''
+rabbitmq_storage_cephfs_namespace: rook-ceph
+rabbitmq_storage_cephfs_path: /kompassi-staging/rabbitmq-data
 
 # NOTE: "managed" PostgreSQL should not be considered production-ready.
 postgres_managed: true
