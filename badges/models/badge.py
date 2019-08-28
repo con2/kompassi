@@ -217,10 +217,10 @@ class Badge(models.Model, CsvExportMixin):
             # Chief Technology Officer
             return [
                 (cls, 'personnel_class_name'),
-                (BadgePrivacyAdapter, 'surname_for_sorting'),
                 (BadgePrivacyAdapter, 'nick_or_first_name'),
                 (BadgePrivacyAdapter, 'surname_or_full_name'),
                 (cls, 'job_title'),
+                (BadgePrivacyAdapter, 'surname_for_sorting'),
             ]
         else:
             raise NotImplementedError(meta.badge_layout)
