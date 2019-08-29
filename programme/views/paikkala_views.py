@@ -1,5 +1,6 @@
 from functools import wraps
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
@@ -73,6 +74,6 @@ class ReservationView(PaikkalAdapterMixin, BaseReservationView):
         return form
 
 
-paikkala_inspection_view = programme_event_required(InspectionView.as_view())
-paikkala_relinquish_view = programme_event_required(RelinquishView.as_view())
-paikkala_reservation_view = programme_event_required(ReservationView.as_view())
+paikkala_inspection_view = login_required(programme_event_required(InspectionView.as_view()))
+paikkala_relinquish_view = login_required(programme_event_required(RelinquishView.as_view()))
+paikkala_reservation_view = login_required(programme_event_required(ReservationView.as_view()))

@@ -46,6 +46,7 @@ class ProgrammeAdmin(admin.ModelAdmin):
         ('Basic information', {'fields': ['title', 'description', 'category', 'tags']}),
         ('Time and location', {'fields': ['room', ('start_time', 'length')]}),
         ('Notes', {'fields': ['notes']}),
+        ('Paikkala', {'fields': ['paikkala_icon']}),
     ]
 
     inlines = [

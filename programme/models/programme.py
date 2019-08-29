@@ -2,7 +2,7 @@ import logging
 from datetime import timedelta
 
 from django.conf import settings
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.db.transaction import atomic
@@ -136,6 +136,8 @@ ROPECON2018_KP_TABLE_COUNT_CHOICES = [
     ('3', _('3 tables')),
     ('4+', _('4+ tables')),
 ]
+
+valid_hex_color = RegexValidator(r'#[\da-fA-F]{3,6}')
 
 
 class Programme(models.Model, CsvExportMixin):
@@ -524,6 +526,12 @@ class Programme(models.Model, CsvExportMixin):
         on_delete=models.SET_NULL,
         null=True,
         related_name='kompassi_programme',
+    )
+    paikkala_icon = models.FileField(
+        upload_to='paikkala_icons',
+        blank=True,
+        verbose_name=_('Programme icon'),
+        help_text=_('The programme icon is used to make it harder to mix up reservations of different programmes during inspection.'),
     )
 
     ROPECON2018_AUDIENCE_SIZE_CHOICES = [

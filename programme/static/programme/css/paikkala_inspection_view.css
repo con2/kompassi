@@ -25,3 +25,20 @@ body {
     font-size: 25px;
     margin-bottom: 25px;
 }
+
+
+.paikkala-zone-takapermanto-oikea-2-krs, .paikkala-zone-etupermanto-oikea-2-krs, .paikkala-zone-aitio-a-oikea-2-krs {
+    background-color: #FFF226; /* keltainen */
+}
+
+.paikkala-zone-takaparveke-vasen-3-krs, .paikkala-zone-etuparveke-vasen-3-krs {
+    background-color: #00C3FF; /* sininen */
+}
+
+.paikkala-zone-takaparveke-oikea-3-krs, .paikkala-zone-etuparveke-oikea-3-krs {
+    background-color: #FF5052; /* punainen */
+}
+
+.paikkala-zone-takapermanto-vasen-2-krs, .paikkala-zone-etupermanto-vasen-2-krs {
+    background-color: #69E140; /* vihrea */
+}
