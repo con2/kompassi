@@ -17,6 +17,7 @@ kompassi_storage_pvc: false
 kompassi_storage_cephfs: qbfs
 kompassi_storage_cephfs_path: /kompassi-staging/kompassi-media
 
+# triggered by jenkins separately
 setup_should_run: false
 
 ingress_letsencrypt_enabled: true
