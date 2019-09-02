@@ -1519,3 +1519,18 @@ msgstr "Paikkavaraukset tuleviin ohjelmiin"
 
 msgid "Reservable programmes"
 msgstr "Varattavissa olevat ohjelmat"
+
+msgid "There isn't sufficient space for your reservation in the selected zone. Please try another zone."
+msgstr "Valitsemallasi alueella ei ole tarpeeksi tilaa varauksellesi. Ole hyvä ja kokeile toista aluetta."
+
+msgid "You cannot reserve any more tickets for this programme."
+msgstr "Et voi varata enempää lippuja tähän ohjelmaan."
+
+msgid "The size of your reservation exceeds the allowed maximum. Please try a smaller reservation."
+msgstr "Varauksesi koko ylittää sallitun. Ole hyvä ja kokeile pienempää varausta."
+
+msgid "This programme does not allow reservations at this time."
+msgstr "Tähän ohjelmanumeroon ei tällä hetkellä oteta vastaan paikkavarauksia."
+
+msgid "You need to log in before reserving tickets."
+msgstr "Sinun täytyy kirjautua sisään ennen paikkojen varaamista."

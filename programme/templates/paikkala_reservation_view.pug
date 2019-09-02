@@ -13,7 +13,7 @@ block content
         {% crispy form %}
       .panel-footer.clearfix
         .btn-group.pull-right
-          a.btn.btn-default(href='{% url "programme_schedule_view" event.slug %}')
+          a.btn.btn-default(href='{% url "programme_profile_reservations_view" %}')
             i.fa.fa-undo.kompassi-icon-space-right
             {% trans "Return without reserving seats" %}
           button.btn.btn-success(type='submit')

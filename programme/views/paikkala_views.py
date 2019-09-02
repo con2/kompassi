@@ -1,9 +1,11 @@
+import logging
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
+from django.contrib import messages
 
 from core.utils import horizontal_form_helper
 from paikkala.views import (
@@ -11,10 +13,22 @@ from paikkala.views import (
     ReservationView as BaseReservationView,
     InspectionView as BaseInspectionView,
 )
+from paikkala.excs import (
+    BatchSizeOverflow,
+    MaxTicketsPerUserReached,
+    MaxTicketsReached,
+    NoCapacity,
+    NoRowCapacity,
+    Unreservable,
+    UserRequired,
+)
 
 from ..forms import ReservationForm
 from ..helpers import programme_event_required
 from ..models import Programme
+
+
+logger = logging.getLogger('kompassi')
 
 
 class PaikkalAdapterMixin:
@@ -42,6 +56,36 @@ class PaikkalAdapterMixin:
     def get_success_url(self):
         return reverse('programme_profile_reservations_view')
 
+
+def handle_errors(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        # exc_info may only be called from inside exception handler
+        # don't use logger.exception, it spams the admin
+        try:
+            return view_func(request, *args, **kwargs)
+        except (NoCapacity, NoRowCapacity):
+            message = _("There isn't sufficient space for your reservation in the selected zone. Please try another zone.")
+            logger.warning(message, exc_info=True)
+        except (MaxTicketsReached, MaxTicketsPerUserReached):
+            message = _('You cannot reserve any more tickets for this programme.')
+            logger.warning(message, exc_info=True)
+        except BatchSizeOverflow:
+            message = _('The size of your reservation exceeds the allowed maximum. Please try a smaller reservation.')
+            logger.warning(message, exc_info=True)
+        except Unreservable:
+            message = _('This programme does not allow reservations at this time.')
+            logger.warning(message, exc_info=True)
+        except UserRequired:
+            message = _('You need to log in before reserving tickets.')
+            logger.warning(message, exc_info=True)
+        except PermissionDenied:
+            message = _('Permission denied.')
+            logger.warning(message, exc_info=True)
+
+        messages.error(request, message)
+        return redirect(request.path)
+    return wrapper
 
 class InspectionView(PaikkalAdapterMixin, BaseInspectionView):
     template_name = 'paikkala_inspection_view.pug'
@@ -75,5 +119,5 @@ class ReservationView(PaikkalAdapterMixin, BaseReservationView):
 
 
 paikkala_inspection_view = login_required(programme_event_required(InspectionView.as_view()))
-paikkala_relinquish_view = login_required(programme_event_required(RelinquishView.as_view()))
-paikkala_reservation_view = login_required(programme_event_required(ReservationView.as_view()))
+paikkala_relinquish_view = login_required(programme_event_required(handle_errors(RelinquishView.as_view())))
+paikkala_reservation_view = login_required(programme_event_required(handle_errors(ReservationView.as_view())))
