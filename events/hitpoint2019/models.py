@@ -16,7 +16,8 @@ SHIFT_TYPE_CHOICES = [
 ]
 
 TOTAL_WORK_CHOICES = [
-    ('8h', 'Minimi - 8 tuntia'),
+    ('6h', 'Minimi – 6 tuntia'),
+    ('8h', '8 tuntia'),  # TODO remove me 2020
     ('12h', '10–12 tuntia'),
     ('yli12h', 'Työn Sankari! Yli 12 tuntia!'),
 ]
@@ -48,7 +49,7 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
 
     total_work = models.CharField(max_length=15,
         verbose_name='Toivottu kokonaistyömäärä',
-        help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).',
+        help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on 6 tuntia.',
         choices=TOTAL_WORK_CHOICES,
     )
 
