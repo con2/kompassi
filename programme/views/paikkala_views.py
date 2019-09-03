@@ -87,8 +87,11 @@ def handle_errors(view_func):
         return redirect(request.path)
     return wrapper
 
+
 class InspectionView(PaikkalAdapterMixin, BaseInspectionView):
     template_name = 'paikkala_inspection_view.pug'
+    require_same_user = True
+    require_same_zone = True
 
 
 class RelinquishView(PaikkalAdapterMixin, BaseRelinquishView):
