@@ -8,11 +8,7 @@ body {
 
 .paikkala-inspection-view h1 {
     margin-bottom: 0;
-    font-size: 33px;
-}
-
-.paikkala-inspection-view img {
-    width: 100%;
+    font-size: 27px;
 }
 
 .paikkala-inspection-view ul li {
@@ -22,8 +18,16 @@ body {
 }
 
 .paikkala-inspection-view p {
-    font-size: 25px;
-    margin-bottom: 25px;
+    font-size: 21px;
+    margin-bottom: 21px;
+}
+
+.paikkala-programme-icon {
+    display: block;
+    width: 60%;
+    max-width: 25em;
+    max-height: 25em;
+    margin: 0.5em auto;
 }
 
 

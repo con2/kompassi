@@ -6,7 +6,7 @@ block title
 block profile_content
   h3 {% trans "Upcoming seat reservations" %}
   if valid_tickets.exists
-    p {% trans "Here you can see your upcoming seat reservations. When entering a programme that requires a reserved seat, please open the seat reservation from the table below on your smartphone and show it to the security personnel at the door." %}
+    p {% trans "When entering a programme that requires a reserved seat, please open the seat reservation from the table below on your smartphone and show it to the security personnel at the door." %}
     p {% trans "If you change your mind about a programme you have reserved seats for, please relinquish those seats so that others may reserve them." %}
     table.table.table-striped.hidden-sm.hidden-xs
       thead
@@ -32,16 +32,16 @@ block profile_content
                 i.fa.fa-trash.kompassi-icon-space-right
                 span.hidden-xs {% trans "Relinquish" %}…
 
-    .list-group.visible-sm.visible-xs(style='margin-bottom: 9em')
-      for ticket in valid_tickets
-        a.list-group-item.col-xs-9(href="{% url 'paikkala_inspection_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id ticket.key %}", style='height: 85px')
+    for ticket in valid_tickets
+      .list-group.visible-sm.visible-xs
+        a.list-group-item(href="{% url 'paikkala_inspection_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id ticket.key %}", style='cursor: pointer')
           h4.list-group-item-heading {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
           p.list-group-item-text {{ ticket.program.kompassi_programme.room.name }} {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
           p.list-group-item-text {{ ticket.zone.name }}, {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
-        div.col-xs-3(style='padding-left: 0.5em')
-          button.btn.btn-danger(type='button', data-toggle='modal', data-target='#confirm-relinguish-{{ ticket.pk }}', style='display: block; height: 85px; width: 100%')
-            i.fa.fa-trash.kompassi-icon-space-right
-            span {% trans "Relinquish" %}…
+
+        button.btn.btn-block.btn-danger(type='button', data-toggle='modal', data-target='#confirm-relinguish-{{ ticket.pk }}')
+          i.fa.fa-trash.kompassi-icon-space-right
+          span {% trans "Relinquish" %}…
 
     for ticket in valid_tickets
       .modal.fade(id='confirm-relinguish-{{ ticket.pk }}')

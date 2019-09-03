@@ -54,7 +54,7 @@ class ProgrammeAdmin(admin.ModelAdmin):
     ]
 
     list_display = ('title', 'category', 'room', 'start_time', 'length', 'end_time')
-    list_filter = ('room', 'start_time', 'category')
+    list_filter = ('category__event',)
 
 
 class ViewAdmin(admin.ModelAdmin):
