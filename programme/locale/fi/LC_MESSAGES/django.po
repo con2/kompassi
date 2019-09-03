@@ -1364,6 +1364,9 @@ msgstr "Voit varata enintään {max_tickets} lippua."
 msgid "Seat reservations"
 msgstr "Paikkavaraukset"
 
+msgid "Seat reservation"
+msgstr "Paikkavaraus"
+
 msgid "When entering a programme that requires a reserved seat, please open the seat reservation from the table below on your smartphone and show it to the security personnel at the door."
 msgstr "Kun olet menossa paikkavarausta edellyttävään ohjelmaan, ole hyvä ja avaa paikkavaraus valmiiksi älypuhelimesi näytölle napsauttamalla ohjelmanumeron nimeä."
 
