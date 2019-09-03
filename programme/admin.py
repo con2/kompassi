@@ -42,19 +42,11 @@ class ProgrammeRoleInline(admin.TabularInline):
 
 
 class ProgrammeAdmin(admin.ModelAdmin):
-    fieldsets = [
-        ('Basic information', {'fields': ['title', 'description', 'category', 'tags']}),
-        ('Time and location', {'fields': ['room', ('start_time', 'length')]}),
-        ('Notes', {'fields': ['notes']}),
-        ('Paikkala', {'fields': ['paikkala_icon']}),
-    ]
-
-    inlines = [
-        ProgrammeRoleInline,
-    ]
-
+    fields = ('title', 'category', 'room', 'start_time', 'length', 'end_time', 'paikkala_icon',)
+    readonly_fields = ('title', 'category', 'room', 'start_time', 'length', 'end_time',)
     list_display = ('title', 'category', 'room', 'start_time', 'length', 'end_time')
     list_filter = ('category__event',)
+    search_fields = ('title',)
 
 
 class ViewAdmin(admin.ModelAdmin):
