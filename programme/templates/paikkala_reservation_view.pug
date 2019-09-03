@@ -1,16 +1,17 @@
 extends base.pug
 - load i18n
-- load crispy from crispy_forms_tags
+- load bootstrap3
 block title
   | {% trans "Reserve seats" %}: {{ program }}
 block content
   h2 {{ program }}
   form(method='POST').form-horizontal
+    {% csrf_token %}
     .panel.panel-default
       .panel-heading
         strong {% trans "Reserve seats" %}
       .panel-body
-        {% crispy form %}
+        {% bootstrap_form form layout='horizontal' %}
       .panel-footer.clearfix
         .btn-group.pull-right
           a.btn.btn-default(href='{% url "programme_profile_reservations_view" %}')

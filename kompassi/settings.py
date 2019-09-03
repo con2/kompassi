@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'django_babel',
     'rest_framework',
     'guardian',
+    'bootstrap3',
 
     'lippukala',
     'paikkala',

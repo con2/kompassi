@@ -64,6 +64,7 @@ class ReservationForm(PaikkalaReservationForm):
 
         # make these translatable
         self.fields['zone'].label = _('Zone')
+        self.fields['zone'].label_format = _('{zone} – {remaining} seats remain')
         self.fields['count'].label = _('Count')
         self.fields['count'].help_text = _('You can reserve at most {max_tickets} tickets.').format(
             max_tickets=self.instance.max_tickets_per_batch,

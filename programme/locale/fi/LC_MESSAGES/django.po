@@ -1534,3 +1534,6 @@ msgstr "Tähän ohjelmanumeroon ei tällä hetkellä oteta vastaan paikkavarauks
 
 msgid "You need to log in before reserving tickets."
 msgstr "Sinun täytyy kirjautua sisään ennen paikkojen varaamista."
+
+msgid "{zone} – {remaining} seats remain"
+msgstr "{zone} – {remaining} paikkaa jäljellä"

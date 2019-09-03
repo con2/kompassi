@@ -64,9 +64,6 @@ def handle_errors(view_func):
         # don't use logger.exception, it spams the admin
         try:
             return view_func(request, *args, **kwargs)
-        except (NoCapacity, NoRowCapacity):
-            message = _("There isn't sufficient space for your reservation in the selected zone. Please try another zone.")
-            logger.warning(message, exc_info=True)
         except (MaxTicketsReached, MaxTicketsPerUserReached):
             message = _('You cannot reserve any more tickets for this programme.')
             logger.warning(message, exc_info=True)
@@ -81,6 +78,9 @@ def handle_errors(view_func):
             logger.warning(message, exc_info=True)
         except PermissionDenied:
             message = _('Permission denied.')
+            logger.warning(message, exc_info=True)
+        except (NoCapacity, NoRowCapacity):
+            message = _("There isn't sufficient space for your reservation in the selected zone. Please try another zone.")
             logger.warning(message, exc_info=True)
 
         messages.error(request, message)
