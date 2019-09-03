@@ -150,7 +150,8 @@ class SignupExtra(SignupExtraBase):
         verbose_name='Työvuorotoiveet',
         help_text=(
             'Jos tiedät, ettet pääse paikalle johonkin tiettyyn aikaan tai haluat esimerkiksi '
-            'osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.'
+            'osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä. HUOM! Muistathan '
+            'mainita kellonajat (myös ohjelmanumeroista).'
         )
     )
 
