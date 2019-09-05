@@ -1552,3 +1552,6 @@ msgstr "Jäljellä"
 
 msgid "Total capacity"
 msgstr "Paikkoja yhteensä"
+
+msgid "Reservable"
+msgstr "Varattavissa"
