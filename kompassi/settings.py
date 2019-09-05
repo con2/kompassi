@@ -241,6 +241,7 @@ INSTALLED_APPS = (
     'events.matsucon2019',
     'events.finncon2019',
     'events.traconpaidat2019',
+    'events.popcultnights2019',
 )
 
 LOGGING = {

@@ -32,8 +32,8 @@ class Setup(object):
     def setup_core(self):
         from core.models import Venue, Event, Organization
 
-        self.venue, unused = Venue.objects.get_or_create(name='Bar Loose', defaults=dict(
-            name_inessive='Bar Loosessa',
+        self.venue, unused = Venue.objects.get_or_create(name='Yökerho Maxine', defaults=dict(
+            name_inessive='Yökerho Maxinessa',
         ))
         self.organization, unused = Organization.objects.get_or_create(
             slug='finnish-fandom-conventions-ry',
@@ -105,7 +105,7 @@ class Setup(object):
                 name='Popcult Nights 2019 -pääsylippu',
                 description='Yksi pääsylippu Popcult Nights -tapahtumaan perjantaille 27.9.2019. Ovet kello 19:00. Sisältää narikan.',
                 limit_groups=[
-                    limit_group('Pääsyliput', 200),
+                    limit_group('Pääsyliput', 180),
                 ],
                 price_cents=900,
                 requires_shipping=False,
