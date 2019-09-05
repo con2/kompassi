@@ -38,6 +38,7 @@ from .programme_admin_invitations_view import programme_admin_invitations_view
 from .programme_admin_menu_items import programme_admin_menu_items
 from .programme_admin_organizers_view import programme_admin_organizers_view
 from .programme_admin_publish_view import programme_admin_publish_view
+from .programme_admin_reservation_status_view import programme_admin_reservation_status_view
 from .programme_admin_rooms_view import programme_admin_rooms_view
 from .programme_admin_schedule_view import (
     programme_admin_schedule_view,

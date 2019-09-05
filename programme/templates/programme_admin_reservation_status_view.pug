@@ -1,0 +1,50 @@
+extends core_admin_base.pug
+- load i18n
+block title
+  {% trans "Seat reservations" %}
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong {% trans "Reservation summary" %}
+    table.table.table-striped
+      thead
+        tr
+          th(scope='column') {% trans "Programme" %}
+          th(scope='column') {% trans "Reserved" %}
+          th(scope='column') {% trans "Remaining" %}
+          th(scope='column') {% trans "Total capacity" %}
+      tbody
+        for programme, zones, total_reservation_status in programmes_with_reservation_status
+          tr
+            td(scope='row')
+              a(href='{% url "programme_admin_detail_view" event.slug programme.id %}')= programme.title
+              if programme.paikkala_program.is_reservable
+                .label.label-primary
+                  a(href='{% url "paikkala_reservation_view" programme.event.slug programme.id %}') {% trans "Reservable" %}
+            td= total_reservation_status.total_reserved
+            td= total_reservation_status.total_remaining
+            td= total_reservation_status.total_capacity
+
+  for programme, zones, total_reservation_status in programmes_with_reservation_status
+    .panel.panel-default
+      .panel-heading: strong= programme.title
+      table.table.table-striped
+        thead
+          tr
+            th(scope='column') {% trans "Zone" %}
+            th(scope='column') {% trans "Reserved" %}
+            th(scope='column') {% trans "Remaining" %}
+            th(scope='column') {% trans "Total capacity" %}
+        tbody
+          for zone, zone_reservation_status in zones
+            tr
+              td(scope='row')= zone.name
+              td= zone_reservation_status.total_reserved
+              td= zone_reservation_status.total_remaining
+              td= zone_reservation_status.total_capacity
+
+        tfooter
+          tr
+            th(scope='row') {% trans "Total" %}
+            th(scope='column')= total_reservation_status.total_reserved
+            th(scope='column')= total_reservation_status.total_remaining
+            th(scope='column')= total_reservation_status.total_capacity

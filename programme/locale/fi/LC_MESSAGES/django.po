@@ -1540,3 +1540,15 @@ msgstr "Sinun täytyy kirjautua sisään ennen paikkojen varaamista."
 
 msgid "{zone} – {remaining} seats remain"
 msgstr "{zone} – {remaining} paikkaa jäljellä"
+
+msgid "Reservation summary"
+msgstr "Paikkavarausten yhteenveto"
+
+msgid "Reserved"
+msgstr "Varattu"
+
+msgid "Remaining"
+msgstr "Jäljellä"
+
+msgid "Total capacity"
+msgstr "Paikkoja yhteensä"
