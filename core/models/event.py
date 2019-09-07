@@ -110,6 +110,9 @@ class Event(models.Model):
         ]
     )
 
+    created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
+
     class Meta:
         verbose_name = 'Tapahtuma'
         verbose_name_plural = 'Tapahtumat'
