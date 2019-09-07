@@ -424,7 +424,7 @@ class Setup(object):
                 name='Lattiamajoitus 1 yö pe-la - Amurin koulutalo (ei sis. makuualustaa)',
                 description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
                 limit_groups=[
-                    limit_group('Majoitus Pyynikki pe-la', 195),
+                    limit_group('Majoitus Amuri pe-la', 195),
                 ],
                 price_cents=1000,
                 requires_shipping=False,
@@ -437,7 +437,7 @@ class Setup(object):
                 name='Lattiamajoitus 1 yö la-su - Amurin koulutalo (ei sis. makuualustaa)',
                 description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.',
                 limit_groups=[
-                    limit_group('Majoitus Pyynikki la-su', 195),
+                    limit_group('Majoitus Amuri la-su', 195),
                 ],
                 price_cents=1000,
                 requires_shipping=False,
