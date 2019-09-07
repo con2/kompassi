@@ -137,6 +137,11 @@ ROPECON2018_KP_TABLE_COUNT_CHOICES = [
     ('4+', _('4+ tables')),
 ]
 
+CSV_EXPORT_EXCLUDED_FIELDS = [
+    'paikkala_icon',
+    'paikkala_program',
+]
+
 valid_hex_color = RegexValidator(r'#[\da-fA-F]{3,6}')
 
 
@@ -1220,6 +1225,16 @@ class Programme(models.Model, CsvExportMixin):
             self.paikkala_program and
             self.paikkala_program.is_reservable
         )
+
+    def get_csv_fields(self, event):
+        fields = super().get_csv_fields(event)
+        return [
+            (cls, field)
+            for (cls, field) in fields if (
+                field not in CSV_EXPORT_EXCLUDED_FIELDS and
+                getattr(field, 'name', None) not in CSV_EXPORT_EXCLUDED_FIELDS
+            )
+        ]
 
     class Meta:
         verbose_name = _('programme')
