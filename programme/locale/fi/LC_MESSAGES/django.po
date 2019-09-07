@@ -1555,3 +1555,21 @@ msgstr "Paikkoja yhteensä"
 
 msgid "Reservable"
 msgstr "Varattavissa"
+
+msgid "You need to log in before reserving tickets."
+msgstr "Kirjaudu sisään ennen paikkavarauksen tekemistä."
+
+msgid "The size of your reservation exceeds the allowed maximum. Please try a smaller reservation."
+msgstr "Yritit varata paikkoja yli sallitun määrän. Ole hyvä ja kokeile pienempää varausta."
+
+msgid "This programme is currently full."
+msgstr "Ohjelma on tällä hetkellä täynnä."
+
+msgid "You cannot reserve any more tickets for this programme."
+msgstr "Et voi varata enempää lippuja tähän ohjelmaan."
+
+msgid "This programme does not allow reservations at this time."
+msgstr "Tämä ohjelma ei ole tällä hetkellä varattavissa."
+
+msgid "Permission denied."
+msgstr "Pääsy estetty."
