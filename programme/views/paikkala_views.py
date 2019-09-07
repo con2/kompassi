@@ -65,27 +65,49 @@ def handle_errors(view_func):
         # don't use logger.exception, it spams the admin
         try:
             return view_func(request, *args, **kwargs)
-        except (MaxTicketsReached, MaxTicketsPerUserReached):
-            message = _('You cannot reserve any more tickets for this programme.')
-            logger.warning(message, exc_info=True)
-        except BatchSizeOverflow:
-            message = _('The size of your reservation exceeds the allowed maximum. Please try a smaller reservation.')
-            logger.warning(message, exc_info=True)
-        except Unreservable:
-            message = _('This programme does not allow reservations at this time.')
-            logger.warning(message, exc_info=True)
+
         except UserRequired:
             message = _('You need to log in before reserving tickets.')
+            messages.error(request, message)
             logger.warning(message, exc_info=True)
+            return redirect('core_frontpage_view')
+
+        except BatchSizeOverflow:
+            message = _('The size of your reservation exceeds the allowed maximum. Please try a smaller reservation.')
+            messages.error(request, message)
+            logger.warning(message, exc_info=True)
+            return redirect(request.path)
+
+        except MaxTicketsReached:
+            message = _('This programme is currently full.')
+            messages.error(request, message)
+            logger.warning(message, exc_info=True)
+            return redirect('programme_profile_reservations_view')
+
+        except MaxTicketsPerUserReached:
+            message = _('You cannot reserve any more tickets for this programme.')
+            messages.error(request, message)
+            logger.warning(message, exc_info=True)
+            return redirect('programme_profile_reservations_view')
+
+        except Unreservable:
+            message = _('This programme does not allow reservations at this time.')
+            messages.error(request, message)
+            logger.warning(message, exc_info=True)
+            return redirect('programme_profile_reservations_view')
+
         except PermissionDenied:
             message = _('Permission denied.')
+            messages.error(request, message)
             logger.warning(message, exc_info=True)
+            return redirect('core_frontpage_view')
+
         except (NoCapacity, NoRowCapacity):
             message = _("There isn't sufficient space for your reservation in the selected zone. Please try another zone.")
+            messages.error(request, message)
             logger.warning(message, exc_info=True)
+            return redirect(request.path)
 
-        messages.error(request, message)
-        return redirect(request.path)
     return wrapper
 
 
