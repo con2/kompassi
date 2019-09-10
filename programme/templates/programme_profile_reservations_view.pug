@@ -71,8 +71,10 @@ block profile_content
                       td: {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
                       td= ticket.program.kompassi_programme.room.name
                       td
-                        | {{ ticket.zone.name }}<br>
-                        | {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
+                        | {{ ticket.zone.name }}
+                        if ticket.program.numbered_seats
+                          br
+                          | {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
                 .modal-footer
                   .btn-group
                     button.btn.btn-default(type='button', data-dismiss='modal')
