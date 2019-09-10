@@ -538,28 +538,42 @@ class Setup(object):
                     )
                 )
 
-        if self.test:
-            # create some test programme
-            Programme.objects.get_or_create(
-                category=Category.objects.get(title='Animeohjelma', event=self.event),
-                title='Yaoi-paneeli',
+        saturday = self.event.start_time + timedelta(days=1)
+
+        for programme_title, room_title, hour in [
+            ('Kaatobussin paikkavaraus, menomatka', 'Kaatobussi meno', 15),
+            ('Kaatobussin paikkavaraus, paluumatka', 'Kaatobussi paluu', 23),
+        ]:
+            programme, unused = Programme.objects.get_or_create(
+                category=Category.objects.get(title='Muu ohjelma', event=self.event),
+                title=programme_title,
                 defaults=dict(
-                    description='Kika-kika tirsk',
+                    room=Room.objects.get_or_create(event=self.event, name=room_title)[0],
+                    start_time=(saturday + timedelta(days=14)).replace(hour=hour, minute=0, second=0, tzinfo=self.tz),
+                    length=4 * 60,  # minutes
+                    is_using_paikkala=True,
+                    is_paikkala_public=False,
                 )
+            )
+            programme.paikkalize(
+                max_tickets_per_user=1,
+                max_tickets_per_batch=1,
+                reservation_start=self.event.start_time,
+                numbered_seats=False,
             )
 
         for start_time, end_time in [
             (
-                datetime(2019, 9, 6, 16, 0, tzinfo=self.tz),
-                datetime(2019, 9, 6, 21, 0, tzinfo=self.tz),
+                self.event.start_time.replace(hour=16, minute=0, tzinfo=self.tz),
+                self.event.start_time.replace(hour=21, minute=0, tzinfo=self.tz),
             ),
             (
-                datetime(2019, 9, 7, 9, 0, tzinfo=self.tz),
-                datetime(2019, 9, 8, 1, 0, tzinfo=self.tz),
+                saturday.replace(hour=9, minute=0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=1, minute=0, tzinfo=self.tz),
             ),
             (
-                datetime(2019, 9, 8, 9, 0, tzinfo=self.tz),
-                datetime(2019, 9, 8, 18, 0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),
             ),
         ]:
             TimeBlock.objects.get_or_create(
