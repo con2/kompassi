@@ -1511,8 +1511,8 @@ msgstr "Figumaalausohjelma"
 msgid "There are currently no reservable programmes."
 msgstr "Minkään ohjelmanumeron paikat eivät ole tällä hetkellä varattavissa."
 
-msgid "Here are the programmes you can currently reserve seats for. Please click the name of the programme to reserve seats."
-msgstr "Näihin ohjelmanumeroihin voit tällä hetkellä varata paikkoja. Napsauta ohjelmanumeron nimeä varataksesi paikkoja."
+msgid "Here are the programmes you can currently reserve seats for. Please click the name of the programme to reserve seats. If the programme is currently booked full, seats may become available as visitors release reservations they do not need, so check back later."
+msgstr "Näihin ohjelmanumeroihin voit tällä hetkellä varata paikkoja. Napsauta ohjelmanumeron nimeä varataksesi paikkoja. Jos ohjelmanumero on tällä hetkellä täynnä, paikkoja voi tulla saataville kävijöiden vapauttaessa lippuja joita he eivät tarvitse, joten kannattaa tarkistaa tilanne myöhemmin uudelleen."
 
 msgid "You have no upcoming seat reservations."
 msgstr "Sinulla ei ole paikkavarauksia tuleviin ohjelmiin."
@@ -1579,3 +1579,6 @@ msgstr "Tapahtumassa on ohjelmanumeroita, joiden paikat ovat varattavissa"
 
 msgid "Go to reservations"
 msgstr "Siirry paikkavarauksiin"
+
+msgid "Full"
+msgstr "Täynnä"
