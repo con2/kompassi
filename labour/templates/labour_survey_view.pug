@@ -6,7 +6,7 @@ block title
 block content
   h2 {{ survey.title }}
 
-  {{ survey.description|linebreaks}}
+  {{ survey.description|safe|linebreaks }}
 
   form(method='POST', role='form').form-horizontal
     .panel.panel-default

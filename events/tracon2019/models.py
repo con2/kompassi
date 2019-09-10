@@ -174,48 +174,9 @@ class SignupExtra(SignupExtraBase):
         verbose_name='Osallistun kaatajaisiin',
         help_text=(
             'Ruksaa tämä ruutu, mikäli haluat osallistua kaatajaisiin. Mikäli mielesi muuttuu '
-            'tai sinulle tulee este, peru ilmoittautumisesi poistamalla rasti tästä ruudusta.'
+            'tai sinulle tulee este, peru ilmoittautumisesi poistamalla rasti tästä ruudusta. '
+            'Muistathan tällöin vapauttaa myös mahdollisen <a href="/profile/reservations" target="_blank">paikkasi kaatobussissa</a>.'
         ),
-    )
-
-    outward_coach_departure_time = models.CharField(
-        blank=True,
-        default='',
-        max_length=5,
-        choices=[
-            ('16:00', '16:00'),
-            ('17:00', '17:00'),
-            ('18:00', '18:00'),
-            ('nobus', 'En tarvitse menokyytiä (tulen omalla kyydillä)'),
-        ],
-        verbose_name='Menobussin lähtöaika',
-    )
-
-    return_coach_departure_time = models.CharField(
-        blank=True,
-        default='',
-        max_length=5,
-        choices=[
-            ('23:00', '23:00'),
-            ('00:00', '00:00'),
-            ('01:00', '01:00'),
-            ('nobus', 'En tarvitse paluukyytiä (poistun omalla kyydillä)'),
-        ],
-        verbose_name='Paluubussin lähtöaika',
-        help_text=(
-            'Tracon tarjoaa maksuttoman bussikyydin kaatajaisiin ja takaisin Tampereen keskustorilta. '
-            'Saavuthan hyvissä ajoin ennen valitsemaasi lähtöaikaa lähtöpysäkille (Vanha kirkko), ja '
-            'huolehdithan itse siitä, että nouset oikeaan aikaan paluubussiin kaatajaispaikalla. Mikäli myöhästyt '
-            'valitsemastasi bussista, Tracon ei välttämättä pysty tarjoamaan sinulle kyytiä kaatajaisiin '
-            'tai sieltä pois. Bussit täytetään ilmoittautumisjärjestyksessä, ja mikäli jokin busseista '
-            'osoittautuu erityisen suosituksi, saatamme joutua siirtämään osallistujia bussista toiseen, '
-            'mistä ilmoitamme sähköpostitse. Meno- tai paluubussin vaihto kaatajaisilmoittautumisen sulkeuduttua '
-            'ainoastaan kaatajaisvastaavan myötävaikutuksella os. kaatajaiset@tracon.fi, ei omin päin.'
-        ),
-    )
-
-    afterparty_coaches_changed = models.BooleanField(
-        default=False,
     )
 
     pick_your_poison = models.ManyToManyField(
@@ -230,9 +191,14 @@ class SignupExtra(SignupExtraBase):
         )
     )
 
-    willing_to_bartend = models.BooleanField(
-        default=False,
-        verbose_name='Olen halukas tekemään 1h juomienkaatonakin kaatajaisissa',
+    afterparty_help = models.TextField(
+        default='',
+        verbose_name='Työskentely kaatajaisissa',
+        blank=True,
+        help_text=(
+            'Oletko valmis auttamaan kaadon järjestelyissä, esim. logistiikassa, roudauksessa tai juomien kaatamisessa? '
+            'Jos olet, kirjoita tähän, millaisia hommia olisit valmis tekemään ja kuinka paljon (karkea tuntimäärä illan aikana).'
+        ),
     )
 
     @classmethod

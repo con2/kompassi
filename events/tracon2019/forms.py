@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime, timedelta
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -393,30 +393,15 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-        self.fields['outward_coach_departure_time'].required = True
-        self.fields['return_coach_departure_time'].required = True
-
-        # Ban most popular bus choices… unless they have already signed up for it
-        if self.instance.outward_coach_departure_time not in YOINKEN_OUTWARD_COACHES:
-            self.fields['outward_coach_departure_time'].choices = [
-                (id, text)
-                for id, text in self.fields['outward_coach_departure_time'].choices
-                if id not in YOINKEN_OUTWARD_COACHES
-            ]
-
-        if self.instance.return_coach_departure_time not in YOINKEN_RETURN_COACHES:
-            self.fields['return_coach_departure_time'].choices = [
-                (id, text)
-                for id, text in self.fields['return_coach_departure_time'].choices
-                if id not in YOINKEN_RETURN_COACHES
-            ]
-
     @classmethod
     def get_instance_for_event_and_person(cls, event, person):
+        year = event.start_time.year
+        t = event.start_time.date().replace(year=year - 18) + timedelta(days=15)
+        print(t)
         return SignupExtra.objects.get(
             event=event,
             person=person,
-            person__birth_date__lte=date(2000, 9, 22),
+            person__birth_date__lte=t,
             is_active=True,
         )
 
@@ -424,12 +409,10 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
         model = SignupExtra
         fields = (
             'afterparty_participation',
-            'willing_to_bartend',
-            'outward_coach_departure_time',
-            'return_coach_departure_time',
+            'pick_your_poison',
             'special_diet',
             'special_diet_other',
-            'pick_your_poison',
+            'afterparty_help',
         )
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,

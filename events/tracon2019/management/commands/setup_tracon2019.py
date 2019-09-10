@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
+from django.urls import reverse
 
 from dateutil.tz import tzlocal
 
@@ -27,6 +28,7 @@ class Setup(object):
         self.setup_intra()
         self.setup_access()
         self.setup_directory()
+        self.setup_kaatoilmo()
         # self.setup_sms()
 
     def setup_core(self):
@@ -244,44 +246,6 @@ class Setup(object):
                 active_until=datetime(2019, 7, 3, 23, 59, 59, tzinfo=self.tz),
             ),
         )
-
-        # kaatoilmo_override_does_not_apply_message = (
-        #     'Valitettavasti et pysty ilmoittautumaan kaatoon käyttäen tätä lomaketta. Tämä '
-        #     'voi johtua siitä, että sinua ei ole kutsuttu kaatoon, tai teknisestä syystä. '
-        #     'Kaatoon osallistumaan ovat oikeutettuja kaatopäivänä 18 vuotta täyttäneet '
-        #     'coniitit, vuorovastaavat, vänkärit sekä badgelliset ohjelmanjärjestäjät. '
-        #     'Mikäli saat tämän viestin siitä huolimatta, että olet mielestäsi oikeutettu '
-        #     'osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen '
-        #     '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
-        # )
-        # kaatoilmo, unused = Survey.objects.get_or_create(
-        #     event=self.event,
-        #     slug='kaatoilmo',
-        #     defaults=dict(
-        #         title='Ilmoittautuminen kaatajaisiin',
-        #         description=(
-        #             'Kiitokseksi työpanoksestasi tapahtumassa Tracon tarjoaa sinulle mahdollisuuden '
-        #             'osallistua kaatajaisiin lauantaina 21. syyskuuta 2019 Hangaslahden saunalla '
-        #             'Tampereen lähistöllä. Kaatajaisiin osallistuminen edellyttää ilmoittautumista. '
-        #         ),
-        #         override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
-        #         form_class_path='events.tracon2019.forms:AfterpartyParticipationSurvey',
-        #         active_from=datetime(2019, 9, 13, 7, 57, 0, tzinfo=self.tz),
-        #         active_until=datetime(2019, 9, 18, 23, 59, 59, tzinfo=self.tz),
-        #     ),
-        # )
-
-        # for poison_name in [
-        #     'Olut',
-        #     'Siideri, kuiva',
-        #     'Siideri, makea',
-        #     'Lonkero',
-        #     'Punaviini',
-        #     'Valkoviini',
-        #     'Cocktailit',
-        #     'Alkoholittomat juomat',
-        # ]:
-        #     Poison.objects.get_or_create(name=poison_name)
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
@@ -540,28 +504,6 @@ class Setup(object):
 
         saturday = self.event.start_time + timedelta(days=1)
 
-        for programme_title, room_title, hour in [
-            ('Kaatobussin paikkavaraus, menomatka', 'Kaatobussi meno', 15),
-            ('Kaatobussin paikkavaraus, paluumatka', 'Kaatobussi paluu', 23),
-        ]:
-            programme, unused = Programme.objects.get_or_create(
-                category=Category.objects.get(title='Muu ohjelma', event=self.event),
-                title=programme_title,
-                defaults=dict(
-                    room=Room.objects.get_or_create(event=self.event, name=room_title)[0],
-                    start_time=(saturday + timedelta(days=14)).replace(hour=hour, minute=0, second=0, tzinfo=self.tz),
-                    length=4 * 60,  # minutes
-                    is_using_paikkala=True,
-                    is_paikkala_public=False,
-                )
-            )
-            programme.paikkalize(
-                max_tickets_per_user=1,
-                max_tickets_per_batch=1,
-                reservation_start=self.event.start_time,
-                numbered_seats=False,
-            )
-
         for start_time, end_time in [
             (
                 self.event.start_time.replace(hour=16, minute=0, tzinfo=self.tz),
@@ -710,6 +652,84 @@ class Setup(object):
             active_from=datetime(2018, 9, 26, 12, 39, 0, tzinfo=self.tz),
             active_until=self.event.end_time + timedelta(days=30),
         )
+
+    def setup_kaatoilmo(self):
+        from labour.models import Survey
+        from programme.models import Programme, Category, Room
+        from ...models import Poison
+
+        saturday = self.event.start_time + timedelta(days=1)
+
+        coaches = []
+        for coach_title, room_title, hour in [
+            ('Kaatobussin paikkavaraus, menomatka', 'Kaatobussi meno', 15),
+            ('Kaatobussin paikkavaraus, paluumatka', 'Kaatobussi paluu', 23),
+        ]:
+            coach, unused = Programme.objects.get_or_create(
+                category=Category.objects.get(title='Muu ohjelma', event=self.event),
+                title=coach_title,
+                defaults=dict(
+                    room=Room.objects.get_or_create(event=self.event, name=room_title)[0],
+                    start_time=(saturday + timedelta(days=14)).replace(hour=hour, minute=0, second=0, tzinfo=self.tz),
+                    length=4 * 60,  # minutes
+                    is_using_paikkala=True,
+                    is_paikkala_public=False,
+                )
+            )
+            coach.paikkalize(
+                max_tickets_per_user=1,
+                max_tickets_per_batch=1,
+                reservation_start=self.event.start_time,
+                numbered_seats=False,
+            )
+            coaches.append(coach)
+        outward_coach, return_coach = coaches
+
+        kaatoilmo_override_does_not_apply_message = (
+            'Valitettavasti et pysty ilmoittautumaan kaatoon käyttäen tätä lomaketta. Tämä '
+            'voi johtua siitä, että sinua ei ole kutsuttu kaatoon, tai teknisestä syystä. '
+            'Kaatoon osallistumaan ovat oikeutettuja kaatopäivänä 18 vuotta täyttäneet '
+            'coniitit, vuorovastaavat, vänkärit sekä badgelliset ohjelmanjärjestäjät. '
+            'Mikäli saat tämän viestin siitä huolimatta, että olet mielestäsi oikeutettu '
+            'osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen '
+            '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
+        )
+        outward_coach_url = reverse('paikkala_reservation_view', args=(self.event.slug, outward_coach.id))
+        return_coach_url = reverse('paikkala_reservation_view', args=(self.event.slug, return_coach.id))
+        kaatoilmo, unused = Survey.objects.get_or_create(
+            event=self.event,
+            slug='kaatoilmo',
+            defaults=dict(
+                title='Ilmoittautuminen kaatajaisiin',
+                description=(
+                    'Kiitokseksi työpanoksestasi tapahtumassa Tracon tarjoaa sinulle mahdollisuuden '
+                    'osallistua kaatajaisiin lauantaina 21. syyskuuta 2019 Hangaslahden saunalla '
+                    'Tampereen lähistöllä. Kaatajaisiin osallistuminen edellyttää ilmoittautumista. '
+                    '</p><p>'
+                    '<strong>HUOM!</strong> Paikat kaatobusseihin varataan erikseen. Varaa paikkasi '
+                    f'<a href="{outward_coach_url}" target="_blank">menobussiin täältä</a> ja '
+                    f'<a href="{return_coach_url}" target="_blank">paluubussiin täältä</a>. '
+                    f'Näet bussivarauksesi <a href="{reverse("programme_profile_reservations_view")}" target="_blank">paikkalippusivulta</a>.'
+                ),
+                override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
+                form_class_path='events.tracon2019.forms:AfterpartyParticipationSurvey',
+                active_from=self.event.end_time,
+                active_until=(self.event.end_time + timedelta(days=7)).replace(hour=23, minute=59, second=59, tzinfo=self.tz),
+            ),
+        )
+
+        for poison_name in [
+            'Olut',
+            'Siideri, kuiva',
+            'Siideri, makea',
+            'Lonkero',
+            'Panimosima',
+            'Punaviini',
+            'Valkoviini',
+            'Cocktailit',
+            'Alkoholittomat juomat',
+        ]:
+            Poison.objects.get_or_create(name=poison_name)
 
 
 class Command(BaseCommand):
