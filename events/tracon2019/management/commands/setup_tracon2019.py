@@ -714,7 +714,7 @@ class Setup(object):
                 override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
                 form_class_path='events.tracon2019.forms:AfterpartyParticipationSurvey',
                 active_from=self.event.end_time,
-                active_until=(self.event.end_time + timedelta(days=7)).replace(hour=23, minute=59, second=59, tzinfo=self.tz),
+                active_until=(self.event.end_time + timedelta(days=9)).replace(hour=23, minute=59, second=59, tzinfo=self.tz),
             ),
         )
 
