@@ -7,6 +7,7 @@ NEVER_BLOW_PAGE_WIZARD_PREFIXES = [
     # we have addresses like /desuprofile/confirm/475712413a0ddc3c7a57c6721652b75449bf3c89
     # that should not blow the page wizard when used within a signup page wizard flow
     '/desuprofile/confirm/',
+    '/oauth2/',
 ]
 
 
