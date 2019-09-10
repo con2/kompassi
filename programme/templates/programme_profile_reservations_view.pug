@@ -25,8 +25,10 @@ block profile_content
             td: {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
             td= ticket.program.kompassi_programme.room.name
             td
-              | {{ ticket.zone.name }}<br>
-              | {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
+              | {{ ticket.zone.name }}
+              if ticket.program.numbered_seats
+                br
+                | {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
             td
               button(type='button', class='btn btn-xs btn-danger', data-toggle='modal', data-target='#confirm-relinguish-{{ ticket.pk }}')
                 i.fa.fa-trash.kompassi-icon-space-right
@@ -97,7 +99,7 @@ block profile_content
         for programme in reservable_programmes
           tr
             th(scope='row')
-              a(href='{% url "paikkala_reservation_view" programme.event.slug programme.id %}')= programme.title
+              a(href='{% url "paikkala_reservation_view" programme.event.slug programme.id %}') {{ programme.event }}: {{ programme.title }}
             td {{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
             td= programme.room.name
 

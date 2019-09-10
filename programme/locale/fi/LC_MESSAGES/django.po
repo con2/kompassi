@@ -1573,3 +1573,9 @@ msgstr "Tämä ohjelma ei ole tällä hetkellä varattavissa."
 
 msgid "Permission denied."
 msgstr "Pääsy estetty."
+
+msgid "The event has programme with reservations open"
+msgstr "Tapahtumassa on ohjelmanumeroita, joiden paikat ovat varattavissa"
+
+msgid "Go to reservations"
+msgstr "Siirry paikkavarauksiin"

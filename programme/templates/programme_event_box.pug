@@ -13,6 +13,11 @@ if event.programme_event_meta.is_accepting_cold_offers
 
   p: a.btn.btn-primary(href='{% url "programme_offer_view" event.slug %}') {% trans "Offer programme" %}
 
+if event.programme_event_meta.has_open_reservations
+  h4 {% trans "The event has programme with reservations open" %}
+
+  p: a.btn.btn-primary(href='{% url "programme_profile_reservations_view" %}') {% trans "Go to reservations" %}
+
 if is_programme_admin
   h4 Sinulla on ohjelma&shy;vastaavan oikeudet tähän tapahtumaan
 

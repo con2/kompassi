@@ -18,6 +18,7 @@ def programme_profile_reservations_view(request):
     reservable_programmes = Programme.objects.filter(
         paikkala_program__reservation_start__lte=t,
         paikkala_program__reservation_end__gt=t,
+        is_paikkala_public=True,
     )
 
     vars = dict(

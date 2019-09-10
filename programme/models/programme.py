@@ -538,6 +538,11 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name=_('Programme icon'),
         help_text=_('The programme icon is used to make it harder to mix up reservations of different programmes during inspection.'),
     )
+    is_paikkala_public = models.BooleanField(
+        default=True,
+        verbose_name=_('Publicly reservable'),
+        help_text=_('If selected, this programme will be shown in listings as publicly reservable while it is in its reservation period. Non-publicly reservable programmes can only be accessed by knowing the direct URL.'),
+    )
 
     ROPECON2018_AUDIENCE_SIZE_CHOICES = [
         ('unknown', _('No estimate')),
@@ -1186,7 +1191,7 @@ class Programme(models.Model, CsvExportMixin):
         )
 
     @atomic
-    def paikkalize(self):
+    def paikkalize(self, **paikkalkwargs):
         if not self.is_using_paikkala:
             return None
         if self.paikkala_program:
@@ -1200,7 +1205,7 @@ class Programme(models.Model, CsvExportMixin):
         paikkala_room = self.room.paikkalize()
         meta = self.event.programme_event_meta
 
-        self.paikkala_program = PaikkalaProgram.objects.create(
+        paikkala_program_kwargs = dict(
             event_name=self.event.name,
             name=truncatechars(self.title, PaikkalaProgram._meta.get_field('name').max_length),
             room=paikkala_room,
@@ -1212,9 +1217,15 @@ class Programme(models.Model, CsvExportMixin):
             max_tickets_per_user=meta.paikkala_default_max_tickets_per_user,
             max_tickets_per_batch=meta.paikkala_default_max_tickets_per_batch,
         )
+        paikkala_program_kwargs.update(paikkalkwargs)
+
+        self.paikkala_program = PaikkalaProgram.objects.create(**paikkala_program_kwargs)
+
         self.save()
 
         self.paikkala_program.rows.set(Row.objects.filter(zone__room=paikkala_room))
+        self.paikkala_program.full_clean()
+        self.paikkala_program.save()
 
         return self.paikkala_program
 

@@ -122,6 +122,24 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         from .alternative_programme_form import AlternativeProgrammeForm
         return AlternativeProgrammeForm.objects.filter(event=self.event, slug='default').first()
 
+    def get_programmes_with_open_reservations(self, t=None):
+        from .programme import Programme
+
+        if t is None:
+            t = now()
+
+        return Programme.objects.filter(
+            category__event=self.event,
+            is_using_paikkala=True,
+            is_paikkala_public=True,
+            paikkala_program__reservation_start__lte=t,
+            paikkala_program__reservation_end__gt=t,
+        )
+
+    @property
+    def has_open_reservations(self):
+        return self.get_programmes_with_open_reservations().exists()
+
     def publish(self):
         self.public_from = now()
         self.save()

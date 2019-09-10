@@ -21,7 +21,8 @@ html
 
       p {{ ticket.zone }}
 
-      p
-        for ticket in tickets
-          | {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
-          br
+      if ticket.program.numbered_seats
+        p
+          for ticket in tickets
+            | {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
+            br
