@@ -39,7 +39,7 @@ block profile_content
         a.list-group-item(href="{% url 'paikkala_inspection_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id ticket.key %}", style='cursor: pointer')
           h4.list-group-item-heading {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
           p.list-group-item-text {{ ticket.program.kompassi_programme.room.name }} {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
-          p.list-group-item-text {{ ticket.zone.name }}, {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}
+          p.list-group-item-text {{ ticket.zone.name }}{% if ticket.program.numbered_seats %}, {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}{% endif %}
 
         button.btn.btn-block.btn-danger(type='button', data-toggle='modal', data-target='#confirm-relinguish-{{ ticket.pk }}')
           i.fa.fa-trash.kompassi-icon-space-right
