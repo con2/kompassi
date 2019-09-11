@@ -29,6 +29,31 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
         except SurveyRecord.DoesNotExist:
             return None
 
+    def get_coach_by_programme_title(self, title):
+        from programme.models import Programme
+
+        try:
+            programme = Programme.objects.get(category__event=self.event, title=title)
+        except Programme.DoesNotExist:
+            logger.exception('Programme %r not found', title)
+            return None
+
+        try:
+            ticket = programme.paikkala_program.tickets.get(user=self.person.user)
+        except Ticket.DoesNotExist:
+            # ENOBUS
+            return None
+
+        return ticket.zone.name
+
+    @property
+    def outward_coach(self):
+        return self.get_coach_by_programme_title('Kaatobussin paikkavaraus, menomatka')
+
+    @property
+    def return_coach(self):
+        return self.get_coach_by_programme_title('Kaatobussin paikkavaraus, paluumatka')
+
     @classmethod
     def get_csv_fields(cls, event):
         assert event.slug == 'tracon2019'
@@ -42,11 +67,11 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
             (Person, 'nick'),
             (Person, 'email'),
             (Person, 'normalized_phone_number'),
-            (cls, 'outward_coach_departure_time'),
-            (cls, 'return_coach_departure_time'),
+            (cls, 'outward_coach'),
+            (cls, 'return_coach'),
             (cls, 'formatted_special_diet'),
             (cls, 'special_diet_other'),
-            (cls, 'willing_to_bartend'),
+            (cls, 'afterparty_help'),
 
             # TODO FIX THIS IN csv_export
             (cls, next(f for f in cls._meta.many_to_many if f.name == 'pick_your_poison')),
