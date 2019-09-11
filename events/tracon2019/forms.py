@@ -380,10 +380,6 @@ class LodgingNeedsSurvey(forms.ModelForm):
         )
 
 
-YOINKEN_OUTWARD_COACHES = ['16:00', '17:00']
-YOINKEN_RETURN_COACHES = ['00:00', '01:00']
-
-
 class AfterpartyParticipationSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop('event')
@@ -397,7 +393,6 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
     def get_instance_for_event_and_person(cls, event, person):
         year = event.start_time.year
         t = event.start_time.date().replace(year=year - 18) + timedelta(days=15)
-        print(t)
         return SignupExtra.objects.get(
             event=event,
             person=person,
