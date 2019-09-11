@@ -10,6 +10,7 @@ from .views import (
     programme_admin_change_host_role_view,
     programme_admin_change_invitation_role_view,
     programme_admin_reservation_status_view,
+    programme_admin_reservations_export_view,
     programme_admin_cold_offers_view,
     programme_admin_cold_offers_view,
     programme_admin_create_view,
@@ -190,6 +191,12 @@ urlpatterns = [
         r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/invitations/(?P<invitation_id>\d+)/?$',
         programme_admin_change_invitation_role_view,
         name='programme_admin_change_invitation_role_view',
+    ),
+
+    url(
+        r'^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/reservations\.xlsx$',
+        programme_admin_reservations_export_view,
+        name='programme_admin_reservations_export_view',
     ),
 
     url(
