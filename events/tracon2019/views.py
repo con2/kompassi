@@ -59,14 +59,10 @@ def tracon2019_afterparty_summary_view(request, event_slug):
         )
     ))
     signup_extras = SignupExtra.objects.filter(afterparty_participation=True)
-    outward_coaches = count_passengers(signup_extras, 'outward_coach_departure_time')
-    return_coaches = count_passengers(signup_extras, 'return_coach_departure_time')
 
     vars = dict(
         event=event,
         poisons=poisons,
-        outward_coaches=outward_coaches,
-        return_coaches=return_coaches,
     )
 
     return render(request, 'tracon2019_afterparty_summary_view.pug', vars)

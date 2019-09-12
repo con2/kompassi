@@ -13,6 +13,6 @@ urlpatterns = [
     url(
         r'^events/(?P<event_slug>tracon2019)/labour/surveys/kaatoilmo/summary/?$',
         tracon2019_afterparty_summary_view,
-        name='tracon2019_afterparty_participants_view',
+        name='tracon2019_afterparty_summary_view',
     ),
 ]
