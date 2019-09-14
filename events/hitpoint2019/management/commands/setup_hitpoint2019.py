@@ -24,10 +24,10 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
         self.setup_access()
-        # self.setup_payments()
+        self.setup_payments()
         self.setup_badges()
 
     def setup_core(self):
@@ -347,7 +347,7 @@ class Setup(object):
             admin_group=tickets_admin_group,
             due_days=14,
             shipping_and_handling_cents=120,
-            reference_number_template="2019{:05d}",
+            reference_number_template="2019{:06d}",
             contact_email='Tracon Hitpoint -lipunmyynti <hitpoint@tracon.fi.fi>',
             ticket_free_text="Tämä on sähköinen lippusi Tracon Hitpoint -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
@@ -370,10 +370,10 @@ class Setup(object):
             )
         else:
             # TODO
-            # defaults.update(
-            #     ticket_sales_starts=datetime(2015, 3, 4, 18, 0, tzinfo=self.tz),
-            #     ticket_sales_ends=datetime(2015, 6, 28, 18, 0, tzinfo=self.tz),
-            # )
+            defaults.update(
+                ticket_sales_starts=datetime(2019, 9, 14, 18, 0, tzinfo=self.tz),
+                ticket_sales_ends=self.event.end_time,
+            )
             pass
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -390,11 +390,11 @@ class Setup(object):
         for product_info in [
             dict(
                 name='Tracon Hitpoint -pääsylippu',
-                description='Viikonloppulippu Tracon Hitpoint 2019-tapahtumaan. Voimassa koko viikonlopun ajan la klo 10 – su klo 18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
+                description='Viikonloppulippu Tracon Hitpoint 2019-tapahtumaan. Voimassa koko viikonlopun ajan la klo 10–00 ja su klo 10–18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.',
                 limit_groups=[
-                    limit_group('Pääsyliput', 900),
+                    limit_group('Pääsyliput', 800),
                 ],
-                price_cents=1500,
+                price_cents=1000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -411,7 +411,7 @@ class Setup(object):
             )
 
             if not product.limit_groups.exists():
-                product.limit_groups = limit_groups
+                product.limit_groups.set(limit_groups)
                 product.save()
 
     def setup_access(self):
