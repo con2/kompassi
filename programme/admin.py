@@ -42,7 +42,7 @@ class ProgrammeRoleInline(admin.TabularInline):
 
 
 class ProgrammeAdmin(admin.ModelAdmin):
-    fields = ('title', 'category', 'room', 'start_time', 'length', 'end_time', 'paikkala_icon',)
+    fields = ('title', 'category', 'room', 'start_time', 'length', 'end_time', 'paikkala_icon', 'is_paikkala_public', 'is_paikkala_time_visible')
     readonly_fields = ('title', 'category', 'room', 'start_time', 'length', 'end_time',)
     list_display = ('title', 'category', 'room', 'start_time', 'length', 'end_time')
     list_filter = ('category__event',)

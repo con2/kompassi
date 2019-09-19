@@ -543,6 +543,11 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name=_('Publicly reservable'),
         help_text=_('If selected, this programme will be shown in listings as publicly reservable while it is in its reservation period. Non-publicly reservable programmes can only be accessed by knowing the direct URL.'),
     )
+    is_paikkala_time_visible = models.BooleanField(
+        default=True,
+        verbose_name=_('Programme time is visible in Paikkala context'),
+        help_text=_('If selected, the time of this progrmme will be shown in reservation context. This is used to hide the time in contexts in which the time is not relevant or would be misleading, particularly Tracon afterparty coaches.'),
+    )
 
     ROPECON2018_AUDIENCE_SIZE_CHOICES = [
         ('unknown', _('No estimate')),

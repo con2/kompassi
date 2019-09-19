@@ -22,7 +22,12 @@ block profile_content
             th(scope='row')
               a(href="{% url 'paikkala_inspection_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id ticket.key %}")
                 | {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
-            td: {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+
+            if ticket.program.kompassi_programme.is_paikkala_time_visible
+              td {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+            else
+              td {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATE_FORMAT" }}
+
             td= ticket.program.kompassi_programme.room.name
             td
               | {{ ticket.zone.name }}
@@ -38,7 +43,7 @@ block profile_content
       .list-group.visible-sm.visible-xs
         a.list-group-item(href="{% url 'paikkala_inspection_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id ticket.key %}", style='cursor: pointer')
           h4.list-group-item-heading {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
-          p.list-group-item-text {{ ticket.program.kompassi_programme.room.name }} {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+          p.list-group-item-text {{ ticket.program.kompassi_programme.room.name }} {% if ticket.program.kompassi_programme.is_paikkala_time_visible %}{{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
           p.list-group-item-text {{ ticket.zone.name }}{% if ticket.program.numbered_seats %}, {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}{% endif %}
 
         button.btn.btn-block.btn-danger(type='button', data-toggle='modal', data-target='#confirm-relinguish-{{ ticket.pk }}')
@@ -68,7 +73,12 @@ block profile_content
                   tbody
                     tr
                       td: {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
-                      td: {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+
+                      if ticket.program.kompassi_programme.is_paikkala_time_visible
+                        td {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+                      else
+                        td {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATE_FORMAT" }}
+
                       td= ticket.program.kompassi_programme.room.name
                       td
                         | {{ ticket.zone.name }}
@@ -106,7 +116,12 @@ block profile_content
               else
                 span.text-muted.kompassi-icon-space-right {{ programme.event }}: {{ programme.title }}
                 span.label.label-default {% trans "Full" %}
-            td {{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+
+            if programme.is_paikkala_time_visible
+              td {{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+            else
+              td {{ programme.start_time|date:"SHORT_DATE_FORMAT" }}
+
             td= programme.room.name
 
     .list-group.visible-sm.visible-xs
@@ -114,13 +129,13 @@ block profile_content
         if programme.paikkala_program.remaining_tickets
           a.list-group-item(href='{% url "paikkala_reservation_view" programme.event.slug programme.id %}')
             h4.list-group-item-heading= programme.title
-            p.list-group-item-text {{ programme.room.name }}, {{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+            p.list-group-item-text {{ programme.room.name }}, {% if programme.is_paikkala_time_visible %}{{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ programme.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
         else
           .list-group-item
             h4.list-group-item-heading.text-muted
               | {{ programme.title }}
               .label.label-default {% trans "Full" %}
-            p.list-group-item-text.text-muted {{ programme.room.name }}, {{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+            p.list-group-item-text.text-muted {{ programme.room.name }}, {% if programme.is_paikkala_time_visible %}{{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ programme.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
 
 
   else

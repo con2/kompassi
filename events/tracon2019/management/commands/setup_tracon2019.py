@@ -665,7 +665,7 @@ class Setup(object):
             ('Kaatobussin paikkavaraus, menomatka', 'Kaatobussi meno', 15),
             ('Kaatobussin paikkavaraus, paluumatka', 'Kaatobussi paluu', 23),
         ]:
-            coach, unused = Programme.objects.get_or_create(
+            coach, created = Programme.objects.get_or_create(
                 category=Category.objects.get(title='Muu ohjelma', event=self.event),
                 title=coach_title,
                 defaults=dict(
@@ -674,15 +674,24 @@ class Setup(object):
                     length=4 * 60,  # minutes
                     is_using_paikkala=True,
                     is_paikkala_public=False,
+                    is_paikkala_time_visible=False,
                 )
             )
+
+            # TODO remove for 2020
+            if coach.is_paikkala_time_visible:
+                coach.is_paikkala_time_visible = False
+                coach.save()
+
             coach.paikkalize(
                 max_tickets_per_user=1,
                 max_tickets_per_batch=1,
                 reservation_start=self.event.start_time,
                 numbered_seats=False,
             )
+
             coaches.append(coach)
+
         outward_coach, return_coach = coaches
 
         kaatoilmo_override_does_not_apply_message = (
