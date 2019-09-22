@@ -5,9 +5,8 @@ from .public_views import (
     membership_profile_view,
 )
 
-from .admin_views import (
-    membership_admin_emails_api,
-    membership_admin_member_view,
-    membership_admin_members_view,
-    membership_admin_menu_items,
-)
+from .membership_admin_emails_api import membership_admin_emails_api
+from .membership_admin_member_view import membership_admin_member_view
+from .membership_admin_members_view import membership_admin_members_view
+from .membership_admin_menu_items import membership_admin_menu_items
+from .membership_admin_term_view import membership_admin_term_view

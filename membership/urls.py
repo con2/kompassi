@@ -2,11 +2,12 @@ from django.conf.urls import include, url
 from django.views.generic.base import RedirectView
 
 from .views import (
-    membership_apply_view,
-    membership_admin_members_view,
-    membership_admin_member_view,
-    membership_profile_view,
     membership_admin_emails_api,
+    membership_admin_member_view,
+    membership_admin_members_view,
+    membership_admin_term_view,
+    membership_apply_view,
+    membership_profile_view,
 )
 
 urlpatterns = [
@@ -33,6 +34,18 @@ urlpatterns = [
         r'^organizations/(?P<organization_slug>[a-z0-9-]+)/admin/members/(?P<person_id>[0-9]+)/?$',
         membership_admin_member_view,
         name='membership_admin_member_view'
+    ),
+
+    url(
+        r'^organizations/(?P<organization_slug>[a-z0-9-]+)/admin/term/(?P<term_id>\d+)/?$',
+        membership_admin_term_view,
+        name='membership_admin_term_view',
+    ),
+
+    url(
+        r'^organizations/(?P<organization_slug>[a-z0-9-]+)/admin/term/?$',
+        membership_admin_term_view,
+        name='membership_admin_new_term_view',
     ),
 
     url(

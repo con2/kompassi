@@ -30,7 +30,9 @@ block admin_content
           th Sukunimi
           th Etunimet
           th Kotikunta
-          th.text-right Jäsenyyden tila
+          th Jäsenyyden tila
+          if current_term.membership_fee_cents
+            th Jäsenmaksu ({{ current_term }})
       tbody
         for membership in memberships
           tr
@@ -50,8 +52,15 @@ block admin_content
             else
               td.danger
 
-            td.text-right
+            td
               .label(class='{{ membership.state_css }}')= membership.get_state_display
+
+            if current_term.membership_fee_cents
+              if membership.get_payment_for_term.is_paid
+                td: .label.label-success Maksettu
+              else
+                td: .label.label-danger Maksamatta
+
     .panel-footer.clearfix
       form(method='POST')
         {% csrf_token %}

@@ -1,20 +1,22 @@
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import redirect, render
 from django.utils.timezone import now
-from django.views.decorators.http import require_safe, require_http_methods
+from django.views.decorators.http import require_http_methods
 
-from api.utils import handle_api_errors, api_login_required
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS
+from api.utils import api_login_required, handle_api_errors
+from core.admin_menus import AdminMenuItem
+from core.csv_export import CSV_EXPORT_FORMATS, csv_response
 from core.models import Organization
 from core.sort_and_filter import Filter
 from core.tabs import Tab
-from core.utils import url, initialize_form
+from core.utils import initialize_form, url
 from event_log.utils import emit
+from tickets.utils import format_price
 
-from ..forms import MemberForm, MembershipForm
+from ..forms import MemberForm, MembershipFeePaymentForm, MembershipForm
 from ..helpers import membership_admin_required
-from ..models import STATE_CHOICES, Membership
+from ..models import STATE_CHOICES, Membership, MembershipFeeNonPayment, MembershipFeePayment
 
 
 EXPORT_FORMATS = [
@@ -23,7 +25,6 @@ EXPORT_FORMATS = [
     ('csv', 'CSV'),
 ]
 
-
 EXPORT_TYPE_VERBOSE = dict(
     approval='Hyväksyntää odottavat hakemukset',
     discharged='Erotetut jäsenet',
@@ -31,7 +32,6 @@ EXPORT_TYPE_VERBOSE = dict(
     in_effect='Jäsenluettelo',
     all='Jäsenluettelo',
 )
-
 
 HTML_TEMPLATES = dict(
     screen='membership_admin_members_view.pug',
@@ -75,6 +75,10 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
         export_type_verbose=export_type_verbose,
     )
 
+    current_term = organization.membership_organization_meta.get_current_term()
+    if not current_term:
+        messages.warning(request, 'Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä.')
+
     vars.update(
         show_approve_all_button=state_filters.selected_slug == 'approval',
         memberships=memberships,
@@ -86,6 +90,7 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
         export_formats=EXPORT_FORMATS,
         now=now(),
         title=title,
+        current_term=current_term,
     )
 
     if format in HTML_TEMPLATES:
@@ -106,82 +111,3 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
         )
     else:
         raise NotImplementedError(format)
-
-
-@membership_admin_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
-def membership_admin_member_view(request, vars, organization, person_id):
-    membership = get_object_or_404(Membership, organization=organization, person=int(person_id))
-    read_only = membership.person.user is not None
-    member_form = initialize_form(MemberForm, request, instance=membership.person, readonly=read_only, prefix='member')
-    membership_form = initialize_form(MembershipForm, request, instance=membership, prefix='membership')
-
-    forms = [membership_form] if read_only else [membership_form, member_form]
-
-    if request.method == 'POST':
-        action = request.POST['action']
-
-        if action in ['save-edit', 'save-return']:
-            if all(form.is_valid() for form in forms):
-                for form in forms:
-                    form.save()
-
-                membership.apply_state()
-
-                messages.success(request, 'Jäsenen tiedot tallennettiin.')
-
-                if action == 'save-return':
-                    return redirect('membership_admin_members_view', organization.slug)
-
-            else:
-                messages.error(request, 'Tarkista lomakkeen tiedot.')
-        else:
-            raise NotImplementedError(action)
-
-    previous_membership, next_membership = membership.get_previous_and_next()
-
-    tabs = [
-        Tab('membership-admin-person-tab', 'Jäsenen tiedot', active=True),
-        Tab('membership-admin-state-tab', 'Jäsenyyden tila'),
-        # Tab('membership-admin-events-tab', 'Jäsenyyteen liittyvät tapahtumat'),
-        # Tab('membership-admin-payments-tab', 'Jäsenmaksut'),
-    ]
-
-    vars.update(
-        member=membership.person,
-        member_form=member_form,
-        membership=membership,
-        membership_form=membership_form,
-        next_membership=next_membership,
-        previous_membership=previous_membership,
-        read_only=read_only,
-        tabs=tabs,
-    )
-
-    membership.person.log_view(request)
-
-    return render(request, 'membership_admin_member_view.pug', vars)
-
-
-@handle_api_errors
-@api_login_required
-@require_safe
-def membership_admin_emails_api(request, organization_slug):
-    organization = get_object_or_404(Organization, slug=organization_slug)
-
-    return HttpResponse(
-        '\n'.join(
-            membership.person.email
-            for membership in organization.memberships.filter(state='in_effect')
-            if membership.person.email
-        ),
-        content_type='text/plain; charset=UTF-8'
-    )
-
-
-def membership_admin_menu_items(request, organization):
-    members_url = url('membership_admin_members_view', organization.slug)
-    members_active = request.path.startswith(members_url)
-    members_text = 'Jäsenrekisteri'
-
-    return [(members_active, members_url, members_text)]

@@ -1,0 +1,33 @@
+extends core_admin_base.pug
+- load bootstrap3
+block title
+  |{{ organization.name }}: {{ member.official_name }}
+block admin_content
+  .panel.panel-default
+    .panel-heading: strong Valitse muokattava toimikausi
+    .panel-body
+      .row
+        .col-md-3: strong Toimikausi
+        .col-md-9
+          for the_term, is_active in terms
+            if is_active
+              span.label.label-primary.kompassi-icon-space-right= the_term
+            else
+              a(href='{{ the_term.get_absolute_url }}')
+                span.label.label-default.kompassi-icon-space-right= the_term
+
+  form.form-horizontal(method="POST")
+    {% csrf_token %}
+    .panel.panel-default
+      .panel-heading
+        if term.pk
+          strong Toimikauden {{ term }} tiedot
+        else
+          strong Uuden toimikauden tiedot
+      .panel-body
+        {% bootstrap_form form layout='horizontal' %}
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          button.btn.btn-success(type="submit")
+            i.fa.fa-save.kompassi-icon-space-right
+            | Tallenna
