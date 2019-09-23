@@ -10,6 +10,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--really', default=False, action='store_true')
+        parser.add_argument('--template', type=str, default='tracon2019_afterparty_message.eml')
 
     def handle(self, *args, **options):
         really = options['really']
@@ -20,7 +21,7 @@ class Command(BaseCommand):
             subject = 'Tracon (2019): Tervetuloa kaatajaisiin!'
             sender = 'tracon2019-kaatajaiset@kompassi.eu'
             recipient = signup_extra.person.name_and_email
-            body = render_to_string('tracon2019_afterparty_message.eml', vars)
+            body = render_to_string(options['template'], vars)
 
             if really:
                 send_mail(
