@@ -12,6 +12,8 @@ from programme.models import AlternativeProgrammeFormMixin, Programme, Category
 from .models import SignupExtra
 
 
+# TODO hitpoint2020: shirt_Size
+
 class SignupExtraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SignupExtraForm, self).__init__(*args, **kwargs)
@@ -295,4 +297,24 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def get_excluded_field_defaults(self):
         return dict(
             category=Category.objects.get(event__slug='hitpoint2019', slug='freeform'),
+        )
+
+
+class SwagSurvey(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('event')
+
+        super().__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    @classmethod
+    def get_instance_for_event_and_person(cls, event, person):
+        return SignupExtra.objects.get(signup__event=event, signup__person=person)
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            'shirt_size',
         )

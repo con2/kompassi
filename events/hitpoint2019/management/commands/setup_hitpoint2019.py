@@ -64,6 +64,7 @@ class Setup(object):
             PersonnelClass,
             Qualification,
             WorkPeriod,
+            Survey,
         )
         from ...models import SignupExtra, SpecialDiet
         from django.contrib.contenttypes.models import ContentType
@@ -185,6 +186,20 @@ class Setup(object):
                 signup_extra_form_class_path='events.hitpoint2019.forms:OrganizerSignupExtraForm',
                 active_from=datetime(2018, 12, 28, 12, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2019, 11, 24, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
+
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug='swag',
+            defaults=dict(
+                title='Swag',
+                description=(
+                    'Syötä tässä paitakokosi, jos haluat työvoimapaidan.'
+                ),
+                form_class_path='events.hitpoint2019.forms:SwagSurvey',
+                active_from=now(),
+                active_until=self.event.end_time,
             ),
         )
 

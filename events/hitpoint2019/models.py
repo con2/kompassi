@@ -22,6 +22,28 @@ TOTAL_WORK_CHOICES = [
     ('yli12h', 'Työn Sankari! Yli 12 tuntia!'),
 ]
 
+SHIRT_SIZES = [
+    ('NO_SHIRT', 'Ei paitaa'),
+
+    ('BOTTLE', 'Juomapullo'),
+
+    ('XS', 'XS Unisex'),
+    ('S', 'S Unisex'),
+    ('M', 'M Unisex'),
+    ('L', 'L Unisex'),
+    ('XL', 'XL Unisex'),
+    ('XXL', 'XXL Unisex'),
+    ('3XL', '3XL Unisex'),
+    ('4XL', '4XL Unisex'),
+    ('5XL', '5XL Unisex'),
+
+    ('LF_XS', 'XS Ladyfit'),
+    ('LF_S', 'S Ladyfit'),
+    ('LF_M', 'M Ladyfit'),
+    ('LF_L', 'L Ladyfit'),
+    ('LF_XL', 'XL Ladyfit'),
+]
+
 
 class SimpleChoice(models.Model):
     name = models.CharField(max_length=63)
@@ -81,6 +103,20 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         verbose_name='Työtodistuksen toimitusosoite',
         help_text='Jos haluat työtodistuksen, täytä tähän kenttään postiosoite (katuosoite, '
             'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
+    )
+
+    shirt_size = models.CharField(
+        max_length=8,
+        choices=SHIRT_SIZES,
+        default='NO_SHIRT',
+        verbose_name='Paidan koko',
+        help_text=(
+            'Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. '
+            'Valitse tässä paidan koko. '
+            'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
+            'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
+            'target="_blank">ladyfit-paita</a>'
+        ),
     )
 
     special_diet = models.ManyToManyField(
