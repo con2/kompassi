@@ -61,6 +61,7 @@ class Command(BaseCommand):
                 'kawacon',
                 'kibecon',
                 'kitsunecon',
+                'kummacon',
                 'lakeuscon',
                 'matsucon',
                 'mimicon',
