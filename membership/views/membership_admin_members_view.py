@@ -48,11 +48,24 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
     state_filters = Filter(request, 'state').add_choices('state', STATE_CHOICES)
     memberships = state_filters.filter_queryset(memberships)
 
-    filter_active = any(f.selected_slug != f.default for f in [
-        state_filters,
-    ])
-
     memberships = memberships.order_by('person__surname', 'person__official_first_names')
+
+    all_filters = [state_filters]
+
+    current_term = organization.membership_organization_meta.get_current_term()
+    if current_term:
+        payment_filters = Filter(request, 'paid')
+        paymentinator = lambda is_paid: lambda member: member.get_payment_for_term().is_paid == is_paid
+        payment_filters.add('1', 'Maksettu', paymentinator(True))
+        payment_filters.add('0', 'Ei maksettu', paymentinator(False))
+        memberships = payment_filters.filter_queryset(memberships)
+
+        all_filters.append(payment_filters)
+    else:
+        messages.warning(request, 'Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä.')
+        payment_filters = None
+
+    filter_active = any(f.selected_slug != f.default for f in all_filters)
 
     if request.method == 'POST' and state_filters.selected_slug == 'approval':
         # PLEASE DON'T: locally cached objects do not get updated and apply_state does not do the needful
@@ -75,16 +88,13 @@ def membership_admin_members_view(request, vars, organization, format='screen'):
         export_type_verbose=export_type_verbose,
     )
 
-    current_term = organization.membership_organization_meta.get_current_term()
-    if not current_term:
-        messages.warning(request, 'Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä.')
-
     vars.update(
         show_approve_all_button=state_filters.selected_slug == 'approval',
         memberships=memberships,
-        num_members=memberships.count(),
+        num_members=len(memberships),
         num_all_members=num_all_members,
         state_filters=state_filters,
+        payment_filters=payment_filters,
         filter_active=filter_active,
         css_to_show_filter_panel='in' if filter_active else '',
         export_formats=EXPORT_FORMATS,
