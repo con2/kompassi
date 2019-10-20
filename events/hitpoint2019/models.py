@@ -25,8 +25,6 @@ TOTAL_WORK_CHOICES = [
 SHIRT_SIZES = [
     ('NO_SHIRT', 'Ei paitaa'),
 
-    ('BOTTLE', 'Juomapullo'),
-
     ('XS', 'XS Unisex'),
     ('S', 'S Unisex'),
     ('M', 'M Unisex'),
@@ -37,7 +35,6 @@ SHIRT_SIZES = [
     ('4XL', '4XL Unisex'),
     ('5XL', '5XL Unisex'),
 
-    ('LF_XS', 'XS Ladyfit'),
     ('LF_S', 'S Ladyfit'),
     ('LF_M', 'M Ladyfit'),
     ('LF_L', 'L Ladyfit'),
