@@ -1,0 +1,8 @@
+Yhdistyksen {{ entry.organization }} jäsenyyttä on hakenut {{ entry.person }}.
+
+Hakijan viesti hakemuksen käsittelijälle:
+
+{{ entry.membership.message }}
+
+--
+{{ settings.DEFAULT_FROM_EMAIL }}

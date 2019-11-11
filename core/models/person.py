@@ -65,9 +65,9 @@ class Person(models.Model):
         max_length=127,
         verbose_name='Kotikunta',
         help_text='Virallinen kotikuntasi eli kunta jossa olet kirjoilla. Kotikunta ja väestörekisteriin '
-            'merkityt etunimesi (kaikki) ovat pakollisia tietoja, mikäli kuulut '
-            'tai haluat liittyä johonkin yhdistykseen joka käyttää tätä sivustoa jäsenrekisterin '
-            'hallintaan.'
+        'merkityt etunimesi (kaikki) ovat pakollisia tietoja, mikäli kuulut '
+        'tai haluat liittyä johonkin yhdistykseen joka käyttää tätä sivustoa jäsenrekisterin '
+        'hallintaan.'
     )
 
     email = models.EmailField(
@@ -104,7 +104,7 @@ class Person(models.Model):
         choices=NAME_DISPLAY_STYLE_CHOICES,
     )
 
-    badge_name_display_style = models.CharField(
+    preferred_badge_name_display_style = models.CharField(
         max_length=31,
         verbose_name='Nimen esittäminen badgessa',
         help_text='Mikäli saat johonkin tapahtumaan nimikoidun henkilökortin (esim. työvoima- tai ohjelmabadgen), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä badgessa. Huomaathan kuitenkin, että jotkin tapahtumat saattavat vaatia etu- ja sukunimen painamista badgeen, jolloin tämä kenttä vaikuttaa ainoastaan siihen painetaanko badgeen myös nickisi vai ei.',
@@ -128,7 +128,7 @@ class Person(models.Model):
     def clean(self):
         if not self.nick and (
             'nick' in self.preferred_name_display_style or
-            'nick' in self.badge_name_display_style
+            'nick' in self.preferred_zbadge_name_display_style
         ):
             raise ValidationError('Jos nick on tarkoitus näyttää, se myös täytyy syöttää.')
 
@@ -175,15 +175,22 @@ class Person(models.Model):
     def name_and_email(self):
         return "{self.first_name} {self.surname} <{self.email}>".format(self=self)
 
-    @property
-    def name_display_style(self):
-        if self.preferred_name_display_style:
-            return self.preferred_name_display_style
+    def get_name_display_style(self, preferred_name_display_style):
+        if preferred_name_display_style:
+            return preferred_name_display_style
         else:
             if self.nick:
                 return 'firstname_nick_surname'
             else:
                 return 'firstname_surname'
+
+    @property
+    def name_display_style(self):
+        return self.get_name_display_style(self.preferred_name_display_style)
+
+    @property
+    def badge_name_display_style(self):
+        return self.get_name_display_style(self.preferred_badge_name_display_style)
 
     @property
     def display_name(self):
