@@ -128,7 +128,7 @@ class Person(models.Model):
     def clean(self):
         if not self.nick and (
             'nick' in self.preferred_name_display_style or
-            'nick' in self.preferred_zbadge_name_display_style
+            'nick' in self.preferred_badge_name_display_style
         ):
             raise ValidationError('Jos nick on tarkoitus näyttää, se myös täytyy syöttää.')
 
