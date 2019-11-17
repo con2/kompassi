@@ -1002,7 +1002,8 @@ class Programme(models.Model, CsvExportMixin):
                 'is_beginner_friendly',
                 'rpg_system',
                 'is_children_friendly',
-                'is_intended_for_experienced_participants'
+                'is_intended_for_experienced_participants',
+                identifier='p{id}'.format(id=self.id),
             )
         else:
             raise NotImplementedError(format)
