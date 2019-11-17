@@ -157,10 +157,17 @@ urlpatterns = [
     ),
 
     url(
-        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/ropecon$',
+        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/ropecon/?$',
         programme_json_view,
         dict(format='ropecon'),
         name='programme_rcon_view',
+    ),
+
+    url(
+        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/hitpoint/?$',
+        programme_json_view,
+        dict(format='hitpoint'),
+        name='programme_hitpoint_view',
     ),
 
     url(

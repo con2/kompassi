@@ -981,6 +981,29 @@ class Programme(models.Model, CsvExportMixin):
                 short_blurb=self.three_word_description if self.category.slug == 'rpg' else None,
 
             )
+        elif format == 'hitpoint':
+            return pick_attrs(self,
+                'title',
+                'description',
+                'category_title',
+                'formatted_hosts',
+                'room_name',
+                'length',
+                'start_time',
+                'is_public',
+                'video_link',
+                'min_players',
+                'max_players',
+                'three_word_description',
+                'physical_play',
+                'other_author',
+                'is_english_ok',
+                'is_age_restricted',
+                'is_beginner_friendly',
+                'rpg_system',
+                'is_children_friendly',
+                'is_intended_for_experienced_participants'
+            )
         else:
             raise NotImplementedError(format)
 
