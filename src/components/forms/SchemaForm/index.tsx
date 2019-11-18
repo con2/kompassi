@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FormEvent, ChangeEvent } from 'react';
 
 import Col from 'reactstrap/lib/Col';
 import Form from 'reactstrap/lib/Form';
@@ -13,26 +13,34 @@ interface SchemaFormProps {
   fields: Field[];
   layout?: Layout;
   ns?: string[];
+
+  // TODO Stricter typings
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value?: any;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onChange?(values: any): void;
 }
 
 export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProps & OwnProps, {}> {
   render() {
-    const { layout } = this.props;
+    const { layout, fields, children } = this.props;
 
     return (
       <Form className={layout === 'horizontal' ? 'form-horizontal' : ''}>
-        {this.props.fields.map(field => (
+        {fields.map(field => (
           <div key={field.name}>{this.renderField(field)}</div>
         ))}
-        {this.props.children}
+        {children}
       </Form>
     );
   }
 
   protected renderField(field: Field) {
-    const { layout } = this.props;
-    const { type, name, helpText } = field;
+    const { layout, value } = this.props;
+    const { type, name, helpText, required } = field;
     const title = field.title || '';
+    const fieldValue = value ? value[field.name] || '' : '';
 
     if (type === 'StaticText' && !title) {
       // Full-width static text
@@ -45,13 +53,14 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
 
     switch (layout) {
       case 'horizontal':
+        const className = required ? 'col-md-3 col-form-label font-weight-bold' : 'col-md-3 col-form-label';
         return (
           <FormGroup className="row">
-            <Label for={name} className="col-md-3 col-form-label">
+            <Label for={name} className={className}>
               {title}
             </Label>
             <Col md={9}>
-              {this.renderInput(field)}
+              {this.renderInput(field, fieldValue)}
               {helpText ? <FormText>{helpText}</FormText> : null}
             </Col>
           </FormGroup>
@@ -60,27 +69,50 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
       default:
         return (
           <FormGroup>
-            <Label for={name}>{title}</Label>
-            {this.renderInput(field)}
+            <Label for={name} className={required ? 'font-weight-bold' : ''}>
+              {title}
+            </Label>
+            {this.renderInput(field, fieldValue)}
           </FormGroup>
         );
     }
   }
 
-  protected renderInput(field: Field) {
+  protected renderInput(field: Field, value: string) {
     const readOnly = this.isReadOnly(field);
 
     switch (field.type) {
       case 'SingleLineText':
-        return <Input name={field.name} readOnly={readOnly} />;
+        return <Input id={field.name} name={field.name} readOnly={readOnly} onChange={this.handleChange} value={value} />;
       case 'MultiLineText':
-        return <Input name={field.name} readOnly={readOnly} type="textarea" rows={field.rows || 10} />;
+        return (
+          <Input
+            id={field.name}
+            name={field.name}
+            readOnly={readOnly}
+            onChange={this.handleChange}
+            type="textarea"
+            rows={field.rows || 10}
+            value={value}
+          />
+        );
       case 'StaticText':
         return <></>;
       default:
         throw new Error(`Not implemented: ${field.type}`);
     }
   }
+
+  protected handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const name = event.currentTarget.name;
+    const fieldValue = event.currentTarget.value;
+
+    const value = Object.assign({}, this.props.value, { [name]: fieldValue });
+
+    if (this.props.onChange) {
+      this.props.onChange(value);
+    }
+  };
 
   protected isReadOnly(field: Field) {
     return !!field.readOnly;

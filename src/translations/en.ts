@@ -48,6 +48,22 @@ const translations = {
     cancel: 'Return without saving',
     titlePlaceholder: 'Form title',
 
+    EditFieldForm: {
+      name: {
+        title: 'Name',
+        helpText:
+          'Machine-readable field name. Valid characters: letters A-Za-z, numbers 0-9, underscore _. Must not start with a number.',
+      },
+      title: {
+        title: 'Title',
+        helpText: 'Human-readable field label. If unset, defaults to field name.',
+      },
+      helpText: {
+        title: 'Help text',
+        helpText: 'Displayed below the field.',
+      },
+    },
+
     FieldTypes: {
       SingleLineText: 'Single line text field',
       MultiLineText: 'Multi-line text field',

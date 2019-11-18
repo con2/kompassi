@@ -50,6 +50,23 @@ const translations: Translations = {
     cancel: 'Palaa tallentamatta',
     titlePlaceholder: 'Lomakkeen otsikko',
 
+    EditFieldForm: {
+      name: {
+        title: 'Nimi',
+        helpText:
+          'Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla',
+      },
+      title: {
+        title: 'Otsikko',
+        helpText:
+          'Ihmisluettava otsikko. Näytetään loppukäyttäjälle. Mikäli otsikkoa ei ole asetettu, sen tilalla näytetään kentän tekninen nimi.',
+      },
+      helpText: {
+        title: 'Ohjeteksti',
+        helpText: 'Näytetään kentän alla.',
+      },
+    },
+
     FieldTypes: {
       SingleLineText: 'Yksirivinen tekstikenttä',
       MultiLineText: 'Monirivinen tekstikenttä',

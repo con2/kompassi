@@ -25,6 +25,43 @@ type Tab = 'design' | 'preview' | 'properties';
 
 export type FormEditorAction = 'addFieldAbove' | 'moveUp' | 'moveDown' | 'editField' | 'removeField';
 
+const tEditor = T(r => r.FormEditor.EditFieldForm);
+const tType = T(r => r.FormEditor.FieldTypes);
+
+const nameField: Field = {
+  type: 'SingleLineText',
+  name: 'name',
+  title: tEditor(r => r.name.title),
+  helpText: tEditor(r => r.name.helpText),
+  required: true,
+};
+
+const baseFieldEditorFields: Field[] = [
+  nameField,
+  {
+    type: 'SingleLineText',
+    name: 'title',
+    title: tEditor(r => r.title.title),
+    helpText: tEditor(r => r.title.helpText),
+    required: false,
+  },
+  {
+    type: 'MultiLineText',
+    name: 'helpText',
+    title: tEditor(r => r.helpText.title),
+    helpText: tEditor(r => r.helpText.helpText),
+    required: false,
+  },
+];
+
+const fieldEditorMapping = {
+  SingleLineText: baseFieldEditorFields,
+  MultiLineText: baseFieldEditorFields,
+  Divider: [nameField],
+  StaticText: baseFieldEditorFields,
+  Spacer: [nameField],
+};
+
 interface FormEditorViewRouterProps {
   slug: string;
 }
@@ -85,7 +122,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
   }
 
   render() {
-    const { loading, error, title, fields, activeTab, layout, addingNewField } = this.state;
+    const { loading, error, title, fields, activeTab, layout, addingNewField, fieldBeingEdited } = this.state;
     const t = T(r => r.FormEditor);
     const tRoot = T(r => r);
 
@@ -127,10 +164,10 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
               </>
             ),
             preview: (
-              <div style={{ display: activeTab === 'preview' ? '' : 'none' }}>
+              <>
                 {title ? <h2>{title}</h2> : null}
                 <SchemaForm fields={fields} layout={layout} />
-              </div>
+              </>
             ),
           }}
         </Tabs>
@@ -169,7 +206,14 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
             this.editFieldModal = ref;
           }}
         >
-          <p>Edit field</p>
+          {fieldBeingEdited && (
+            <SchemaForm
+              layout="horizontal"
+              fields={fieldEditorMapping[fieldBeingEdited.type]}
+              value={fieldBeingEdited}
+              onChange={this.onFieldBeingEditedChange}
+            />
+          )}
         </EditFieldModal>
 
         <RemoveFieldModal
@@ -199,6 +243,10 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     this.setState({ title });
   };
 
+  onFieldBeingEditedChange = (fieldBeingEdited: Field) => {
+    this.setState({ fieldBeingEdited });
+  };
+
   onFormEditorAction = (action: FormEditorAction, fieldName: string) => {
     switch (action) {
       case 'addFieldAbove':
@@ -209,6 +257,8 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
         return this.moveUp(fieldName);
       case 'moveDown':
         return this.moveDown(fieldName);
+      case 'editField':
+        return this.editField(fieldName);
     }
   };
 
@@ -221,6 +271,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     }
 
     const result = await this.getNewField();
+    const { fieldBeingEdited } = this.state;
 
     if (!result.ok) {
       return;
@@ -228,7 +279,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
 
     const newFields = fields
       .slice(0, index)
-      .concat([result.payload!])
+      .concat([fieldBeingEdited!])
       .concat(fields.slice(index));
 
     this.setState({ fields: newFields });
@@ -236,27 +287,47 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
 
   protected addField = async () => {
     const result = await this.getNewField();
+    const { fieldBeingEdited } = this.state;
 
     if (!result.ok) {
       return;
     }
 
-    const fields = this.state.fields.concat([result.payload!]);
+    const fields = this.state.fields.concat([fieldBeingEdited!]);
 
     this.setState({ fields });
   };
 
+  protected editField = async (fieldName: string) => {
+    const { fields } = this.state;
+    const index = fields.findIndex(field => field.name === fieldName);
+    const fieldBeingEdited = fields[index];
+    this.setState({ fieldBeingEdited });
+
+    const result = await this.editFieldModal!.open();
+
+    if (result.ok) {
+      const newFields = fields
+        .slice(0, index)
+        .concat([this.state.fieldBeingEdited!])
+        .concat(fields.slice(index + 1));
+      this.setState({ fields: newFields });
+    }
+  };
+
   protected async getNewField() {
+    const t = T(r => r.FormEditor);
     const result = await this.addFieldModal!.open();
 
     if (!result.ok) {
       return { ok: false };
     }
 
-    const newField = {
-      type: result.payload!,
-      name: '',
-    } as Field;
+    const type = result.payload!;
+    const name = type[0].toLowerCase() + type.slice(1);
+    const title = t(r => r.FieldTypes[type]);
+
+    const newField: Field = { type, name, title };
 
     this.setState({ fieldBeingEdited: newField });
 

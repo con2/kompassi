@@ -6,7 +6,7 @@ import FormGroup from 'reactstrap/lib/FormGroup';
 
 import { FormEditorAction } from '../FormEditorView';
 import { BaseSchemaForm } from '../SchemaForm';
-import { Field } from '../SchemaForm/models';
+import { Field, FieldType } from '../SchemaForm/models';
 import { T } from '../../../translations';
 
 import './index.css';

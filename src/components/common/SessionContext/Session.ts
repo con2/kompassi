@@ -19,8 +19,6 @@ export default class Session {
   }
 
   logIn = () => {
-    console.log('Session.logIn');
-
     if (this.user) {
       console.warn('Session.logIn called while already logged in');
       return;
