@@ -74,9 +74,9 @@ interface FormEditorViewState {
   fields: Field[];
   layout: Layout;
 
-  activeTab: Tab;
   addingNewField: boolean;
   fieldBeingEdited?: Field;
+  activeTab: 'design' | 'preview';
 }
 
 function initState(loading = true): FormEditorViewState {
@@ -85,8 +85,8 @@ function initState(loading = true): FormEditorViewState {
     title: '',
     fields: [],
     layout: 'horizontal',
-    activeTab: 'design',
     addingNewField: false,
+    activeTab: 'design',
   };
 }
 
@@ -122,7 +122,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
   }
 
   render() {
-    const { loading, error, title, fields, activeTab, layout, addingNewField, fieldBeingEdited } = this.state;
+    const { loading, error, title, fields, layout, addingNewField, fieldBeingEdited, activeTab } = this.state;
     const t = T(r => r.FormEditor);
     const tRoot = T(r => r);
 
@@ -139,7 +139,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
           </Button>
         </ButtonGroup>
 
-        <Tabs t={t}>
+        <Tabs t={t} activeTab={activeTab} onChange={this.setActiveTab}>
           {{
             design: (
               <>
@@ -237,6 +237,10 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
       </MainViewContainer>
     );
   }
+
+  setActiveTab = (activeTab: 'design' | 'preview') => {
+    this.setState({ activeTab });
+  };
 
   onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const title = event.target.value;
@@ -373,7 +377,6 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     const { slug } = this.props.match.params;
 
     if (!this.titleForm!.reportValidity()) {
-      this.setState({ activeTab: 'design' });
       setTimeout(() => this.titleForm!.reportValidity(), 0);
       return;
     }

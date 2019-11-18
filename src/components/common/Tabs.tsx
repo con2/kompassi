@@ -5,43 +5,40 @@ import NavItem from 'reactstrap/lib/NavItem';
 import NavLink from 'reactstrap/lib/NavLink';
 import { TranslationFunction } from '../../translations';
 
-interface TabsProps {
-  children: { [tabName: string]: React.ReactNode };
+interface TabsProps<T extends { [tabName: string]: React.ReactNode }> {
+  children: T;
   t?: TranslationFunction<any>;
+  activeTab?: string;
+  onChange?(tab: keyof T): void;
 }
 
-interface TabsState {
-  activeTab: string;
-}
+function Tabs<T extends { [tabName: string]: React.ReactNode }>(props: TabsProps<T>) {
+  const { children } = props;
+  const t = props.t || (r => '');
+  const activeTab = props.activeTab || Object.keys(children)[0];
+  const onChange = props.onChange || (() => {});
 
-export default class Tabs extends React.Component<TabsProps, TabsState> {
-  state: TabsState = {
-    activeTab: '',
-  };
+  const onClick = React.useCallback((tab: keyof T) => () => onChange(tab), [onChange]);
 
-  render() {
-    const { children } = this.props;
-    const t = this.props.t || (r => undefined);
-    const activeTab = this.state.activeTab || Object.keys(children)[0];
-
-    return (
-      <>
-        <Nav tabs={true} className="mb-2">
-          {Object.keys(children).map(tab => (
-            <NavItem key={tab}>
-              <NavLink href="#" onClick={() => this.setState({ activeTab: tab })} active={activeTab === tab}>
-                {t(r => r[tab]) || tab}
-              </NavLink>
-            </NavItem>
-          ))}
-        </Nav>
-
-        {Object.entries(children).map(([tabName, tabContents]) => (
-          <div key={tabName} style={{ display: activeTab === tabName ? '' : 'none' }}>
-            {tabContents}
-          </div>
+  return (
+    <>
+      <Nav tabs={true} className="mb-2">
+        {Object.keys(children).map(tab => (
+          <NavItem key={tab}>
+            <NavLink href="#" onClick={onClick(tab as keyof T)} active={activeTab === tab}>
+              {t(r => r[tab]) || tab}
+            </NavLink>
+          </NavItem>
         ))}
-      </>
-    );
-  }
+      </Nav>
+
+      {Object.entries(children).map(([tabName, tabContents]) => (
+        <div key={tabName} style={{ display: activeTab === tabName ? '' : 'none' }}>
+          {tabContents}
+        </div>
+      ))}
+    </>
+  );
 }
+
+export default Tabs;
