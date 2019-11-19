@@ -8,6 +8,7 @@ import Input from 'reactstrap/lib/Input';
 import Label from 'reactstrap/lib/Label';
 
 import { Field, Layout } from './models';
+import HorizontalField from '../HorizontalField';
 
 interface SchemaFormProps {
   fields: Field[];
@@ -15,11 +16,11 @@ interface SchemaFormProps {
   ns?: string[];
 
   // TODO Stricter typings
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   value?: any;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange?(values: any): void;
+  onSubmit?(values: any): void;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProps & OwnProps, {}> {
@@ -51,48 +52,65 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
       return <div className="pb-3" />;
     }
 
-    switch (layout) {
-      case 'horizontal':
-        const className = required ? 'col-md-3 col-form-label font-weight-bold' : 'col-md-3 col-form-label';
+    switch (type) {
+      case 'SingleCheckbox':
         return (
-          <FormGroup className="row">
-            <Label for={name} className={className}>
-              {title}
+          <FormGroup check={true}>
+            <Label check={true} className={required ? 'font-weight-bold' : ''}>
+              {this.renderInput(field, fieldValue)} {title}
+              <FormText>{helpText}</FormText>
             </Label>
-            <Col md={9}>
-              {this.renderInput(field, fieldValue)}
-              {helpText ? <FormText>{helpText}</FormText> : null}
-            </Col>
           </FormGroup>
         );
-      case 'vertical':
       default:
-        return (
-          <FormGroup>
-            <Label for={name} className={required ? 'font-weight-bold' : ''}>
-              {title}
-            </Label>
-            {this.renderInput(field, fieldValue)}
-          </FormGroup>
-        );
+        switch (layout) {
+          case 'horizontal':
+            return (
+              <HorizontalField name={name} title={title} helpText={helpText} required={required}>
+                {this.renderInput(field, fieldValue)}
+              </HorizontalField>
+            );
+          case 'vertical':
+          default:
+            return (
+              <FormGroup>
+                <Label for={name} className={required ? 'font-weight-bold' : ''}>
+                  {title}
+                </Label>
+                {this.renderInput(field, fieldValue)}
+                <FormText>{helpText}</FormText>
+              </FormGroup>
+            );
+        }
     }
   }
 
-  protected renderInput(field: Field, value: string) {
+  protected renderInput(field: Field, value: any) {
     const readOnly = this.isReadOnly(field);
 
     switch (field.type) {
       case 'SingleLineText':
-        return <Input id={field.name} name={field.name} readOnly={readOnly} onChange={this.handleChange} value={value} />;
+        return <Input id={field.name} name={field.name} readOnly={readOnly} onChange={this.handleTextFieldChange} value={value} />;
       case 'MultiLineText':
         return (
           <Input
+            type="textarea"
             id={field.name}
             name={field.name}
             readOnly={readOnly}
-            onChange={this.handleChange}
-            type="textarea"
+            onChange={this.handleTextFieldChange}
             rows={field.rows || 10}
+            value={value}
+          />
+        );
+      case 'SingleCheckbox':
+        return (
+          <Input
+            type="checkbox"
+            id={field.name}
+            name={field.name}
+            disabled={readOnly}
+            onChange={this.handleCheckboxChange}
             value={value}
           />
         );
@@ -103,14 +121,33 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
     }
   }
 
-  protected handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const name = event.currentTarget.name;
-    const fieldValue = event.currentTarget.value;
+  protected handleTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value: fieldValue } = event.currentTarget;
+    const { value, onChange } = this.props;
 
-    const value = Object.assign({}, this.props.value, { [name]: fieldValue });
+    const newValue = Object.assign({}, value, { [name]: fieldValue });
 
-    if (this.props.onChange) {
-      this.props.onChange(value);
+    if (onChange) {
+      onChange(newValue);
+    }
+  };
+
+  protected handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name } = event.currentTarget;
+    const checked: boolean = event.currentTarget.checked;
+    const { value, onChange } = this.props;
+
+    const newValue = Object.assign({}, value, { [name]: checked });
+
+    if (onChange) {
+      onChange(newValue);
+    }
+  };
+
+  protected handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const { onSubmit, value } = this.props;
+    if (onSubmit) {
+      onSubmit(value);
     }
   };
 

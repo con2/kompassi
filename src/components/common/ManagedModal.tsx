@@ -68,9 +68,9 @@ export default class ManagedModal<PayloadType> extends React.PureComponent<Modal
     this.resolve = undefined;
   };
 
-  cancel = (payload?: PayloadType) => {
+  cancel = () => {
     this.setState({ isOpen: false });
-    this.resolve!({ ok: false, payload });
+    this.resolve!({ ok: false });
     this.resolve = undefined;
   };
 }

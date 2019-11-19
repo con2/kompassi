@@ -19,14 +19,16 @@ import SchemaForm from './SchemaForm';
 import { Field, FieldType, fieldTypes, Layout } from './SchemaForm/models';
 
 import Tabs from '../common/Tabs';
-import { T } from '../../translations';
+import { T, t } from '../../translations';
+import slugify from '../../utils/slugify';
+import { Form } from 'reactstrap';
+import HorizontalField from './HorizontalField';
 
 type Tab = 'design' | 'preview' | 'properties';
 
 export type FormEditorAction = 'addFieldAbove' | 'moveUp' | 'moveDown' | 'editField' | 'removeField';
 
 const tEditor = T(r => r.FormEditor.EditFieldForm);
-const tType = T(r => r.FormEditor.FieldTypes);
 
 const nameField: Field = {
   type: 'SingleLineText',
@@ -59,6 +61,7 @@ const fieldEditorMapping = {
   MultiLineText: baseFieldEditorFields,
   Divider: [nameField],
   StaticText: baseFieldEditorFields,
+  SingleCheckbox: baseFieldEditorFields,
   Spacer: [nameField],
 };
 
@@ -70,22 +73,26 @@ interface FormEditorViewState {
   loading: boolean;
   error?: string;
 
+  slug: string;
   title: string;
   fields: Field[];
   layout: Layout;
 
   addingNewField: boolean;
   fieldBeingEdited?: Field;
-  activeTab: 'design' | 'preview';
+  autoGenerateSlug: boolean;
+  activeTab: Tab;
 }
 
 function initState(loading = true): FormEditorViewState {
   return {
     loading,
+    slug: '',
     title: '',
     fields: [],
     layout: 'horizontal',
     addingNewField: false,
+    autoGenerateSlug: true,
     activeTab: 'design',
   };
 }
@@ -114,7 +121,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     } else {
       try {
         const { title, fields } = await this.context.get(`forms/${slug}`);
-        this.setState({ loading: false, title, fields });
+        this.setState({ loading: false, autoGenerateSlug: false, title, fields, slug });
       } catch (err) {
         this.setState({ loading: false, error: err.message });
       }
@@ -122,7 +129,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
   }
 
   render() {
-    const { loading, error, title, fields, layout, addingNewField, fieldBeingEdited, activeTab } = this.state;
+    const { loading, error, title, slug, fields, layout, addingNewField, fieldBeingEdited, activeTab } = this.state;
     const t = T(r => r.FormEditor);
     const tRoot = T(r => r);
 
@@ -139,7 +146,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
           </Button>
         </ButtonGroup>
 
-        <Tabs t={t} activeTab={activeTab} onChange={this.setActiveTab}>
+        <Tabs t={T(r => r.FormEditor.Tabs)} activeTab={activeTab} onChange={this.setActiveTab}>
           {{
             design: (
               <>
@@ -148,7 +155,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
                     <Input
                       bsSize="lg"
                       name="title"
-                      placeholder={t(r => r.titlePlaceholder)}
+                      placeholder={t(r => r.FormPropertiesForm.title.title)}
                       value={title}
                       onChange={this.onTitleChange}
                       required={true}
@@ -156,7 +163,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
                   </FormGroup>
                 </form>
 
-                <FormEditor fields={fields} layout="horizontal" onAction={this.onFormEditorAction}>
+                <FormEditor fields={fields} layout={layout} onAction={this.onFormEditorAction}>
                   <Button outline={true} color="primary" size="sm" onClick={this.addField}>
                     {t(r => r.addField)}…
                   </Button>
@@ -168,6 +175,37 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
                 {title ? <h2>{title}</h2> : null}
                 <SchemaForm fields={fields} layout={layout} />
               </>
+            ),
+            properties: (
+              <Form onSubmit={() => {}}>
+                <HorizontalField
+                  name="title"
+                  title={t(r => r.FormPropertiesForm.title.title)}
+                  helpText={t(r => r.FormPropertiesForm.title.helpText)}
+                  required={true}
+                >
+                  <Input name="title" value={title} onChange={this.onTitleChange} required={true} />
+                </HorizontalField>
+
+                <HorizontalField
+                  name="slug"
+                  title={t(r => r.FormPropertiesForm.slug.title)}
+                  helpText={t(r => r.FormPropertiesForm.slug.helpText)}
+                >
+                  <Input name="slug" value={slug} onChange={this.onSlugChange} />
+                </HorizontalField>
+
+                <HorizontalField
+                  name="layout"
+                  title={t(r => r.FormPropertiesForm.layout.title)}
+                  helpText={t(r => r.FormPropertiesForm.layout.helpText)}
+                >
+                  <Input name="layout" type="select" onChange={this.onLayoutChange}>
+                    <option value="horizontal">{t(r => r.FormPropertiesForm.layout.choices.horizontal)}</option>
+                    <option value="vertical">{t(r => r.FormPropertiesForm.layout.choices.vertical)}</option>
+                  </Input>
+                </HorizontalField>
+              </Form>
             ),
           }}
         </Tabs>
@@ -238,13 +276,28 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     );
   }
 
-  setActiveTab = (activeTab: 'design' | 'preview') => {
+  setActiveTab = (activeTab: Tab) => {
     this.setState({ activeTab });
   };
 
   onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const title = event.target.value;
-    this.setState({ title });
+    const { autoGenerateSlug } = this.state;
+    const slug = autoGenerateSlug ? slugify(title) : this.state.slug;
+
+    this.setState({ title, slug });
+  };
+
+  onSlugChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const slug = event.target.value;
+    this.setState({ slug, autoGenerateSlug: !slug });
+  };
+
+  onLayoutChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const layout = event.target.value;
+
+    // cast is safe because it comes from a select that only has these options
+    this.setState({ layout: layout as Layout });
   };
 
   onFieldBeingEditedChange = (fieldBeingEdited: Field) => {
@@ -328,7 +381,7 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     }
 
     const type = result.payload!;
-    const name = type[0].toLowerCase() + type.slice(1);
+    const name = this.makeNewFieldName(type);
     const title = t(r => r.FieldTypes[type]);
 
     const newField: Field = { type, name, title };
@@ -336,6 +389,22 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
     this.setState({ fieldBeingEdited: newField });
 
     return this.editFieldModal!.open();
+  }
+
+  protected makeNewFieldName(type: FieldType) {
+    const fields: { [key: string]: Field } = {};
+    this.state.fields.forEach(field => (fields[field.name] = field));
+
+    const baseName = type[0].toLowerCase() + type.slice(1);
+    let counter = 1;
+    let name = `${baseName}${counter}`;
+
+    while (fields[name]) {
+      counter += 1;
+      name = `${baseName}${counter}`;
+    }
+
+    return name;
   }
 
   protected removeField = async (fieldName: string) => {
@@ -381,15 +450,20 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
       return;
     }
 
-    if (slug === 'new') {
-      await this.context.post('forms', this.serializeForm());
-    } else {
-      await this.context.put(`forms/${slug}`, this.serializeForm());
+    try {
+      if (slug === 'new') {
+        await this.context.post('forms', this.serializeForm());
+      } else {
+        await this.context.put(`forms/${slug}`, this.serializeForm());
+      }
+    } catch (err) {
+      const error = err.message || t(r => r.FormEditor.saveFailedErrorMessage);
+      this.setState({ error });
     }
   };
 
   protected serializeForm() {
-    const { title, fields } = this.state;
-    return { title, fields };
+    const { title, fields, slug } = this.state;
+    return { title, fields, slug };
   }
 }

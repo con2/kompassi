@@ -44,17 +44,42 @@ const translations: Translations = {
     removeField: 'Poista kenttä',
     addFieldAbove: 'Lisää kenttä ylle',
     addField: 'Lisää kenttä',
-    design: 'Muokkaa',
-    preview: 'Esikatsele',
     save: 'Tallenna lomake',
     cancel: 'Palaa tallentamatta',
-    titlePlaceholder: 'Lomakkeen otsikko',
+    saveFailedErrorMessage: 'Jokin meni pieleen lomaketta tallennettaessa. JavaScript-konsolissa voi olla lisätietoja.',
+
+    Tabs: {
+      design: 'Muokkaa',
+      preview: 'Esikatsele',
+      properties: 'Asetukset',
+    },
+
+    FormPropertiesForm: {
+      title: {
+        title: 'Lomakkeen otsikko',
+        helpText: 'Ihmisen luettava lomakkeen otsikko. Ei välttämättä näytetä lomakkeiden kaikkien käyttötarkoitusten yhteydessä.',
+      },
+      slug: {
+        title: 'Tekninen nimi',
+        helpText:
+          'Lomakkeen tekninen nimi. Tulee osaksi lomakkeen osoitetta. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla.',
+      },
+      layout: {
+        title: 'Asettelu',
+        helpText:
+          'Tässä valittu asettelu ei välttämättä ole käytössä kaikkien käyttötarkoitusten yhteydessä (esim. ahtaassa tilassa asettelu voi olla pakotettu vaakasuuntaiseksi).',
+        choices: {
+          horizontal: 'Vaakasuuntainen',
+          vertical: 'Pystysuuntainen',
+        },
+      },
+    },
 
     EditFieldForm: {
       name: {
-        title: 'Nimi',
+        title: 'Tekninen nimi',
         helpText:
-          'Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla',
+          'Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla.',
       },
       title: {
         title: 'Otsikko',
@@ -73,6 +98,7 @@ const translations: Translations = {
       Divider: 'Erotinviiva',
       StaticText: 'Kiinteä teksti',
       Spacer: 'Tyhjä tila',
+      SingleCheckbox: 'Yksittäinen rasti ruutuun -kenttä',
     },
 
     RemoveFieldModal: {

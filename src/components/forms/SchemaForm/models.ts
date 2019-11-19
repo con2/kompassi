@@ -1,5 +1,5 @@
-export type FieldType = 'SingleLineText' | 'MultiLineText' | 'Divider' | 'StaticText' | 'Spacer';
-export const fieldTypes: FieldType[] = ['SingleLineText', 'MultiLineText', 'Divider', 'StaticText', 'Spacer'];
+export type FieldType = 'SingleLineText' | 'MultiLineText' | 'Divider' | 'StaticText' | 'Spacer' | 'SingleCheckbox';
+export const fieldTypes: FieldType[] = ['SingleLineText', 'MultiLineText', 'SingleCheckbox', 'StaticText', 'Divider', 'Spacer'];
 
 interface BaseField {
   type: FieldType;
@@ -35,6 +35,10 @@ export interface SingleLineText extends BaseField {
   type: 'SingleLineText';
 }
 
-export type Field = SingleLineText | MultiLineText | Divider | Spacer | StaticText;
+export interface SingleCheckbox extends BaseField {
+  type: 'SingleCheckbox';
+}
 
-export type Layout = 'horizontal' | 'vertical'; // TODO: inline
+export type Field = SingleLineText | MultiLineText | Divider | Spacer | StaticText | SingleCheckbox;
+
+export type Layout = 'horizontal' | 'vertical';

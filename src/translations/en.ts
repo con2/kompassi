@@ -42,15 +42,39 @@ const translations = {
     removeField: 'Remove field',
     addFieldAbove: 'Add field above',
     addField: 'Add field',
-    design: 'Design',
-    preview: 'Preview',
     save: 'Save form',
     cancel: 'Return without saving',
-    titlePlaceholder: 'Form title',
+    saveFailedErrorMessage: 'Something went wrong while saving the form. There may be further information in the JavaScript console.',
+
+    Tabs: {
+      design: 'Design',
+      preview: 'Preview',
+      properties: 'Properties',
+    },
+
+    FormPropertiesForm: {
+      title: {
+        title: 'Form title',
+        helpText: 'Human-readable form title. May not be displayed in all contexts.',
+      },
+      slug: {
+        title: 'Technical name',
+        helpText:
+          'Machine-readable form name. Will be a part of the URL of the form. Valid characters: letters A-Za-z, numbers 0-9, underscore _. Must not start with a number.',
+      },
+      layout: {
+        title: 'Layout',
+        helpText: 'May not take effect in some contexts (eg. space-constrained forms may be forced to be horizontal).',
+        choices: {
+          horizontal: 'Horizontal',
+          vertical: 'Vertical',
+        },
+      },
+    },
 
     EditFieldForm: {
       name: {
-        title: 'Name',
+        title: 'Technical name',
         helpText:
           'Machine-readable field name. Valid characters: letters A-Za-z, numbers 0-9, underscore _. Must not start with a number.',
       },
@@ -70,6 +94,7 @@ const translations = {
       Divider: 'Divider',
       StaticText: 'Static text',
       Spacer: 'Empty space',
+      SingleCheckbox: 'Single check box',
     },
 
     RemoveFieldModal: {

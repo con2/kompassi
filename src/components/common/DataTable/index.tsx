@@ -23,7 +23,6 @@ interface DataTableProps<ItemType> {
   standardActions?: StandardAction[];
   linkColumns?: Array<number | Column<ItemType>>;
   identityAttribute?: Column<ItemType>;
-  ns?: string[];
   t?: TranslationFunction<any>;
   filterFields?: Column<ItemType>[];
   searchFields?: Column<ItemType>[];
@@ -99,7 +98,9 @@ export default class DataTable<ItemType> extends React.PureComponent<DataTablePr
             <thead>
               <tr>
                 {columns.map(columnName => (
-                  <th key={columnName}>{t(r => r[columnName])}</th>
+                  <th key={columnName} scope="column">
+                    {t(r => r[columnName])}
+                  </th>
                 ))}
               </tr>
             </thead>
