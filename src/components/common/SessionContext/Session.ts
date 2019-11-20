@@ -39,21 +39,21 @@ export default class Session {
     window.location.href = `${Config.api.baseUrl}/logout`;
   };
 
-  get(path: string) {
+  get = (path: string) => {
     return fetchWithCredentials('GET', path, this.accessToken || '');
-  }
+  };
 
-  post(path: string, data: any) {
+  post = (path: string, data: any) => {
     return fetchWithCredentials('POST', path, this.accessToken || '', data);
-  }
+  };
 
-  put(path: string, data: any) {
+  put = (path: string, data: any) => {
     return fetchWithCredentials('PUT', path, this.accessToken || '', data);
-  }
+  };
 
-  delete(path: string) {
+  delete = (path: string) => {
     return fetchWithCredentials('DELETE', path, this.accessToken || '');
-  }
+  };
 }
 
 export const emptySession = new Session();

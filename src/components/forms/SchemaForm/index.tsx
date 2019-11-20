@@ -1,6 +1,5 @@
 import React, { FormEvent, ChangeEvent } from 'react';
 
-import Col from 'reactstrap/lib/Col';
 import Form from 'reactstrap/lib/Form';
 import FormGroup from 'reactstrap/lib/FormGroup';
 import FormText from 'reactstrap/lib/FormText';

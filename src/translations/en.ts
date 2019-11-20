@@ -35,6 +35,9 @@ const translations = {
     slug: 'Slug',
     create: 'New form',
   },
+  MainView: {
+    defaultErrorMessage: 'Something went wrong. There may be further information in the JavaScript console.',
+  },
   FormEditor: {
     editField: 'Edit field',
     moveUp: 'Move up',

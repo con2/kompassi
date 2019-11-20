@@ -37,6 +37,9 @@ const translations: Translations = {
     slug: 'Tekninen nimi',
     create: 'Uusi lomake',
   },
+  MainView: {
+    defaultErrorMessage: 'Jokin meni pieleen. JavaScript-konsolissa voi olla lisätietoja.',
+  },
   FormEditor: {
     editField: 'Muokkaa kenttää',
     moveUp: 'Siirrä ylös',

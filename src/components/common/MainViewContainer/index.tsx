@@ -6,37 +6,31 @@ import Container from 'reactstrap/lib/Container';
 import Loading from '../Loading';
 
 import './index.css';
+import { t } from '../../../translations';
 
 interface MainViewContainerProps {
   loading?: boolean;
-  error?: string;
+  error?: any;
 }
 
-export default class MainViewContainer extends React.Component<MainViewContainerProps, {}> {
-  static getDerivedStateFromError(error: Error) {
-    return { loading: false, error: error.message };
+const MainViewContainer: React.FC<MainViewContainerProps> = ({ loading, error, children }) => {
+  if (error) {
+    return (
+      <Container className="MainViewContainer">
+        <Alert color="danger">
+          {error ? error.message || t(r => r.MainView.defaultErrorMessage) : t(r => r.MainView.defaultErrorMessage)}
+        </Alert>
+      </Container>
+    );
+  } else if (loading) {
+    return (
+      <Container className="MainViewContainer">
+        <Loading />
+      </Container>
+    );
+  } else {
+    return <Container className="MainViewContainer">{children}</Container>;
   }
+};
 
-  componentDidCatch(error: Error, info: any) {
-    // TODO raven
-    console.error(error, info);
-  }
-
-  render() {
-    if (this.props.loading) {
-      return (
-        <MainViewContainer>
-          <Loading />
-        </MainViewContainer>
-      );
-    } else if (this.props.error) {
-      return (
-        <MainViewContainer>
-          <Alert color="danger">{this.props.error}</Alert>
-        </MainViewContainer>
-      );
-    } else {
-      return <Container className="MainViewContainer">{this.props.children}</Container>;
-    }
-  }
-}
+export default MainViewContainer;

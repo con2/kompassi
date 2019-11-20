@@ -1,45 +1,39 @@
 import React from 'react';
-import { RouteComponentProps } from 'react-router';
+import { useParams } from 'react-router-dom';
+import useSWR from 'swr';
 
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 
 import MainViewContainer from '../common/MainViewContainer';
+import SessionContext from '../common/SessionContext';
 
 import SchemaForm from './SchemaForm';
-import { Field, Layout } from './SchemaForm/models';
 import { T } from '../../translations';
+import { Form } from './SchemaForm/models';
 
-interface FormViewRouterProps {
-  slug: string;
-}
+const FormView: React.FC<{}> = () => {
+  const { slug } = useParams();
+  const context = React.useContext(SessionContext);
+  const { error, data } = useSWR<Form>(`forms/${slug}`, context.get);
+  const t = T(r => r.Common);
 
-interface FormViewState {
-  title?: string;
-  layout: Layout;
-  fields: Field[];
-}
-
-export default class FormView extends React.Component<RouteComponentProps<FormViewRouterProps>, FormViewState> {
-  state: FormViewState = {
-    title: 'Dynaamine lomake höhöhö',
-    layout: 'horizontal',
-    fields: [],
-  };
-
-  render() {
-    const { title, layout, fields } = this.state;
-    const t = T(r => r.Common);
-
-    return (
-      <MainViewContainer>
-        {title ? <h1>{title}</h1> : null}
-        <SchemaForm fields={fields} layout={layout}>
-          <ButtonGroup className="float-md-right">
-            <Button color="primary">{t(r => r.submit)}</Button>
-          </ButtonGroup>
-        </SchemaForm>
-      </MainViewContainer>
-    );
+  if (error || !data) {
+    return <MainViewContainer error={error} loading={!data} />;
   }
-}
+
+  const { title, layout, fields } = data;
+
+  return (
+    <MainViewContainer>
+      {title ? <h1>{title}</h1> : null}
+      <SchemaForm fields={fields} layout={layout}>
+        <ButtonGroup className="pt-3">
+          <Button color="primary">{t(r => r.submit)}</Button>
+        </ButtonGroup>
+      </SchemaForm>
+    </MainViewContainer>
+  );
+};
+
+export default FormView;

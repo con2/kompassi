@@ -42,3 +42,10 @@ export interface SingleCheckbox extends BaseField {
 export type Field = SingleLineText | MultiLineText | Divider | Spacer | StaticText | SingleCheckbox;
 
 export type Layout = 'horizontal' | 'vertical';
+
+export interface Form {
+  title: string;
+  slug: string;
+  fields: Field[];
+  layout: Layout;
+}
