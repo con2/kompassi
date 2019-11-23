@@ -54,6 +54,12 @@ const baseFieldEditorFields: Field[] = [
     helpText: tEditor(r => r.helpText.helpText),
     required: false,
   },
+  {
+    type: 'SingleCheckbox',
+    name: 'required',
+    title: tEditor(r => r.required.title),
+    required: false,
+  },
 ];
 
 const fieldEditorMapping = {

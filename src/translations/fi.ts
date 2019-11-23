@@ -93,6 +93,9 @@ const translations: Translations = {
         title: 'Ohjeteksti',
         helpText: 'Näytetään kentän alla.',
       },
+      required: {
+        title: 'Pakollinen',
+      },
     },
 
     FieldTypes: {

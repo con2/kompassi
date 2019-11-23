@@ -89,6 +89,9 @@ const translations = {
         title: 'Help text',
         helpText: 'Displayed below the field.',
       },
+      required: {
+        title: 'Required',
+      },
     },
 
     FieldTypes: {
