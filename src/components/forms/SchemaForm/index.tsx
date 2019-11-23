@@ -110,7 +110,7 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
             name={field.name}
             disabled={readOnly}
             onChange={this.handleCheckboxChange}
-            value={value}
+            checked={value}
           />
         );
       case 'StaticText':
