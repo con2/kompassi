@@ -13,6 +13,7 @@ interface SchemaFormProps {
   fields: Field[];
   layout?: Layout;
   ns?: string[];
+  readOnly?: boolean;
 
   // TODO Stricter typings
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -27,7 +28,7 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
     const { layout, fields, children } = this.props;
 
     return (
-      <Form className={layout === 'horizontal' ? 'form-horizontal' : ''}>
+      <Form className={layout === 'horizontal' ? 'form-horizontal' : ''} onSubmit={this.handleSubmit}>
         {fields.map(field => (
           <div key={field.name}>{this.renderField(field)}</div>
         ))}
@@ -144,6 +145,8 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
   };
 
   protected handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     const { onSubmit, value } = this.props;
     if (onSubmit) {
       onSubmit(value);
@@ -151,7 +154,7 @@ export class BaseSchemaForm<OwnProps> extends React.PureComponent<SchemaFormProp
   };
 
   protected isReadOnly(field: Field) {
-    return !!field.readOnly;
+    return this.props.readOnly || !!field.readOnly;
   }
 }
 

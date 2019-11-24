@@ -7,6 +7,7 @@ const translations = {
     cancel: 'Cancel',
     submit: 'Submit',
     search: 'Search',
+    somethingWentWrong: 'Something went wrong. There may be further information in the JavaScript console.',
   },
   DataTable: {
     create: 'Create',
@@ -34,6 +35,11 @@ const translations = {
     title: 'Title',
     slug: 'Slug',
     create: 'New form',
+  },
+  FormResponses: {
+    heading: 'Form responses',
+    form: 'Form',
+    user: 'User',
   },
   MainView: {
     defaultErrorMessage: 'Something went wrong. There may be further information in the JavaScript console.',

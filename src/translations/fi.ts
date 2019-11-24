@@ -9,6 +9,7 @@ const translations: Translations = {
     cancel: 'Peruuta',
     submit: 'Lähetä',
     search: 'Haku',
+    somethingWentWrong: 'Jokin meni pieleen. JavaScript-konsolissa voi olla lisätietoja.',
   },
   DataTable: {
     create: 'Luo uusi',
@@ -36,6 +37,11 @@ const translations: Translations = {
     title: 'Otsikko',
     slug: 'Tekninen nimi',
     create: 'Uusi lomake',
+  },
+  FormResponses: {
+    heading: 'Lomakkeiden vastaukset',
+    form: 'Lomake',
+    user: 'Käyttäjä',
   },
   MainView: {
     defaultErrorMessage: 'Jokin meni pieleen. JavaScript-konsolissa voi olla lisätietoja.',
