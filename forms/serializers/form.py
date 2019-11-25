@@ -12,5 +12,6 @@ class FormSerializer(serializers.HyperlinkedModelSerializer):
             'slug',
             'title',
             'fields',
+            'layout',
         )
         model = Form

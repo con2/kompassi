@@ -7,7 +7,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.utils import SLUG_FIELD_PARAMS
 
+
 logger = logging.getLogger('kompassi')
+
+LAYOUT_CHOICES = [
+    ('horizontal', _('Horizontal')),
+    ('vertical', _('Vertical')),
+]
 
 
 class Form(models.Model):
@@ -22,6 +28,12 @@ class Form(models.Model):
             'Stand-alone forms can be used via the generic form views whereas '
             'non-stand-alone forms can only be accessed from some other facility.'
         ),
+    )
+    layout = models.CharField(
+        verbose_name=_('Layout'),
+        choices=LAYOUT_CHOICES,
+        max_length=max(len(c) for (c, t) in LAYOUT_CHOICES),
+        default=LAYOUT_CHOICES[0][0],
     )
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)

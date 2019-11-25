@@ -654,3 +654,6 @@ msgstr "Vapaaehtoistyöhakemus"
 
 msgid "Update qualifications…"
 msgstr "Päivitä pätevyydet…"
+
+msgid "Your application to this event"
+msgstr "Hakemuksesi tähän tapahtumaan"
