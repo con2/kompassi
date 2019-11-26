@@ -55,6 +55,7 @@ const translations: Translations = {
     addField: 'Lisää kenttä',
     save: 'Tallenna lomake',
     cancel: 'Palaa tallentamatta',
+    open: 'Avaa lomake',
     saveFailedErrorMessage: 'Jokin meni pieleen lomaketta tallennettaessa. JavaScript-konsolissa voi olla lisätietoja.',
 
     Tabs: {
@@ -64,6 +65,9 @@ const translations: Translations = {
     },
 
     FormPropertiesForm: {
+      flags: {
+        title: 'Toiminta',
+      },
       title: {
         title: 'Lomakkeen otsikko',
         helpText: 'Ihmisen luettava lomakkeen otsikko. Ei välttämättä näytetä lomakkeiden kaikkien käyttötarkoitusten yhteydessä.',
@@ -81,6 +85,20 @@ const translations: Translations = {
           horizontal: 'Vaakasuuntainen',
           vertical: 'Pystysuuntainen',
         },
+      },
+      standalone: {
+        title: 'Itsenäinen lomake',
+        helpText:
+          'Itsenäisen lomakkeen voi täyttää yleiskäyttöisen lomakenäkymän kautta. Ei-itsenäisen lomakkeen voi täyttää vain toiseen käyttötapaukseen upotettuna.',
+      },
+      active: {
+        title: 'Aktiivinen',
+        helpText:
+          'Ei-aktiivisia lomakkeita ei voi täyttää. Tämä koskee ainoastaan itsenäisiä lomakkeita; ei-itsenäisen lomakkeen aktiivisuuden ratkaisee käyttötapaus, johon lomake on upotettu.',
+      },
+      loginRequired: {
+        title: 'Vaatii sisäänkirjautumisen',
+        helpText: 'Koskee ainoastaan itsenäisiä lomakkeita.',
       },
     },
 

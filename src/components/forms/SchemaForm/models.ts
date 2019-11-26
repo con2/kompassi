@@ -48,4 +48,7 @@ export interface Form {
   slug: string;
   fields: Field[];
   layout: Layout;
+  loginRequired: boolean;
+  active: boolean;
+  standalone: boolean;
 }

@@ -16,15 +16,17 @@ import Session from '../common/SessionContext/Session';
 
 import FormEditor from './FormEditor';
 import SchemaForm from './SchemaForm';
-import { Field, FieldType, fieldTypes, Layout } from './SchemaForm/models';
+import { Form as FormType, Field, FieldType, fieldTypes, Layout } from './SchemaForm/models';
 
 import Tabs from '../common/Tabs';
 import { T, t } from '../../translations';
 import slugify from '../../utils/slugify';
-import { Form } from 'reactstrap';
+import { Form, Label, FormText, Col } from 'reactstrap';
 import HorizontalField from './HorizontalField';
 
 type Tab = 'design' | 'preview' | 'properties';
+type Flag = 'active' | 'standalone' | 'loginRequired';
+const flags: Flag[] = ['standalone', 'active', 'loginRequired'];
 
 export type FormEditorAction = 'addFieldAbove' | 'moveUp' | 'moveDown' | 'editField' | 'removeField';
 
@@ -75,14 +77,9 @@ interface FormEditorViewRouterProps {
   slug: string;
 }
 
-interface FormEditorViewState {
+interface FormEditorViewState extends FormType {
   loading: boolean;
   error?: string;
-
-  slug: string;
-  title: string;
-  fields: Field[];
-  layout: Layout;
 
   addingNewField: boolean;
   fieldBeingEdited?: Field;
@@ -93,13 +90,17 @@ interface FormEditorViewState {
 function initState(loading = true): FormEditorViewState {
   return {
     loading,
+    addingNewField: false,
+    autoGenerateSlug: true,
+    activeTab: 'design',
+
     slug: '',
     title: '',
     fields: [],
     layout: 'horizontal',
-    addingNewField: false,
-    autoGenerateSlug: true,
-    activeTab: 'design',
+    loginRequired: false,
+    standalone: true,
+    active: true,
   };
 }
 
@@ -135,9 +136,10 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
   }
 
   render() {
-    const { loading, error, title, slug, fields, layout, addingNewField, fieldBeingEdited, activeTab } = this.state;
+    const { loading, error, title, slug, fields, layout, addingNewField, fieldBeingEdited, activeTab, active, standalone } = this.state;
     const t = T(r => r.FormEditor);
     const tRoot = T(r => r);
+    const isOpenButtonShown = slug !== 'new' && active && standalone;
 
     return (
       <MainViewContainer loading={loading} error={error}>
@@ -150,6 +152,12 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
           <Button color="primary" size="sm" onClick={this.save}>
             {t(r => r.save)}
           </Button>
+          {/* TODO link button */}
+          {isOpenButtonShown && (
+            <Button color="success" size="sm" onClick={this.open}>
+              {t(r => r.open)}…
+            </Button>
+          )}
         </ButtonGroup>
 
         <Tabs t={T(r => r.FormEditor.Tabs)} activeTab={activeTab} onChange={this.setActiveTab}>
@@ -211,6 +219,21 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
                     <option value="vertical">{t(r => r.FormPropertiesForm.layout.choices.vertical)}</option>
                   </Input>
                 </HorizontalField>
+
+                <FormGroup className="row">
+                  <Label className="col-md-3">{t(r => r.FormPropertiesForm.flags.title)}</Label>
+                  <Col md={9}>
+                    {flags.map(flag => (
+                      <React.Fragment key={flag}>
+                        <Label check={true} for={flag} className="pb-2">
+                          <Input type="checkbox" id={flag} name={flag} onChange={this.handleFlagChange} checked={this.state[flag]} />
+                          {t(r => r.FormPropertiesForm[flag].title)}
+                          <FormText>{t(r => r.FormPropertiesForm[flag].helpText)}</FormText>
+                        </Label>
+                      </React.Fragment>
+                    ))}
+                  </Col>
+                </FormGroup>
               </Form>
             ),
           }}
@@ -323,6 +346,13 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
       case 'editField':
         return this.editField(fieldName);
     }
+  };
+
+  handleFlagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const flag: Flag = event.currentTarget.name as Flag;
+    const { checked } = event.currentTarget;
+
+    this.setState({ [flag]: checked } as any);
   };
 
   protected async addFieldAbove(fieldName: string) {
@@ -466,6 +496,11 @@ export default class FormEditorView extends React.Component<RouteComponentProps<
       const error = err.message || t(r => r.FormEditor.saveFailedErrorMessage);
       this.setState({ error });
     }
+  };
+
+  protected open = async () => {
+    const { slug } = this.props.match.params;
+    window.open(`/forms/${slug}`);
   };
 
   protected serializeForm() {

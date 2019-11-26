@@ -53,6 +53,7 @@ const translations = {
     addField: 'Add field',
     save: 'Save form',
     cancel: 'Return without saving',
+    open: 'Open form',
     saveFailedErrorMessage: 'Something went wrong while saving the form. There may be further information in the JavaScript console.',
 
     Tabs: {
@@ -62,6 +63,9 @@ const translations = {
     },
 
     FormPropertiesForm: {
+      flags: {
+        title: 'Behaviour',
+      },
       title: {
         title: 'Form title',
         helpText: 'Human-readable form title. May not be displayed in all contexts.',
@@ -78,6 +82,19 @@ const translations = {
           horizontal: 'Horizontal',
           vertical: 'Vertical',
         },
+      },
+      standalone: {
+        title: 'Stand-alone',
+        helpText:
+          'Stand-alone forms can be filled using the generic form view. Non-stand-alone forms can only be filled when embedded in another use-case.',
+      },
+      active: {
+        title: 'Active',
+        helpText: 'Inactive forms cannot be filled. Only applies to stand-alone forms.',
+      },
+      loginRequired: {
+        title: 'Login required',
+        helpText: 'Only applies to stand-alone forms.',
       },
     },
 
