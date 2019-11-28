@@ -20,8 +20,8 @@ class Form(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default='')
-    is_active = models.BooleanField(default=True)
-    is_standalone = models.BooleanField(
+    active = models.BooleanField(default=True)
+    standalone = models.BooleanField(
         default=True,
         verbose_name=_('Stand-alone'),
         help_text=_(
@@ -34,6 +34,14 @@ class Form(models.Model):
         choices=LAYOUT_CHOICES,
         max_length=max(len(c) for (c, t) in LAYOUT_CHOICES),
         default=LAYOUT_CHOICES[0][0],
+    )
+    login_required = models.BooleanField(
+        default=False,
+        verbose_name=_('Login required'),
+        help_text=_(
+            'This switch only takes effect in a stand-alone context. In non-stand-alone '
+            'contexts the use case will direct whether or not login is required.'
+        )
     )
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)

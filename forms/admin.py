@@ -5,8 +5,8 @@ from .models import Form, FormResponse
 
 class FormAdmin(admin.ModelAdmin):
     model = Form
-    list_display = ('title', 'is_active', 'is_standalone')
-    list_filter = ('is_active', 'is_standalone')
+    list_display = ('title', 'active', 'standalone')
+    list_filter = ('active', 'standalone')
     search_fields = ('slug', 'title')
 
 

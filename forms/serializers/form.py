@@ -13,5 +13,8 @@ class FormSerializer(serializers.HyperlinkedModelSerializer):
             'title',
             'fields',
             'layout',
+            'login_required',
+            'active',
+            'standalone',
         )
         model = Form
