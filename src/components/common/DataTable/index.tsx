@@ -1,20 +1,34 @@
 import * as React from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
-import Link from '../Link';
 
 import Alert from 'reactstrap/lib/Alert';
 import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 import Table from 'reactstrap/lib/Table';
+import { InputGroup, Input } from 'reactstrap';
+import imageIcons from 'material-design-icons/sprites/svg-sprite/svg-sprite-image-symbol.svg';
+import actionIcons from 'material-design-icons/sprites/svg-sprite/svg-sprite-action-symbol.svg';
 
 import Loading from '../Loading';
 import SessionContext from '../SessionContext';
 import Session from '../SessionContext/Session';
 import { TranslationFunction, T } from '../../../translations';
-import { InputGroup, Input } from 'reactstrap';
+import Link from '../Link';
 
-type StandardAction = 'create' | 'open' | 'delete';
+import './index.css';
+
+type RowAction = 'delete' | 'edit';
+type StandardAction = 'create' | 'open' | RowAction;
 type Column<ItemType> = Extract<keyof ItemType, string>;
+
+const rowStandardActions: RowAction[] = ['edit', 'delete'];
+
+const standardActionColors = {
+  create: 'success',
+  open: 'primary',
+  delete: 'danger',
+  edit: 'primary',
+};
 
 // TODO figure out default props under typescript
 interface DataTableProps<ItemType> {
@@ -66,6 +80,8 @@ export default class DataTable<ItemType> extends React.PureComponent<DataTablePr
 
   render() {
     const standardActions = this.props.standardActions || ['create', 'delete', 'open'];
+    const rowActions = standardActions.filter(action => rowStandardActions.includes(action as RowAction));
+    const haveRowActions = rowActions.length > 0;
     const t = this.props.t || T(r => r.DataTable);
     const tc = T(r => r.Common);
 
@@ -73,56 +89,84 @@ export default class DataTable<ItemType> extends React.PureComponent<DataTablePr
       return <Loading />;
     } else if (this.state.error) {
       return <Alert color="danger">{this.state.error}</Alert>;
-    } else {
-      const { columns } = this.props;
-      const { visibleItems, searchTerm } = this.state;
-      const searchFields = this.props.searchFields || [];
-
-      return (
-        <div className="DataTable">
-          <ButtonGroup className="mb-2 mr-auto">
-            {standardActions.includes('create') ? (
-              <LinkContainer to={this.getCreateLink()}>
-                <Button size="sm" color="success">
-                  {t(r => r.create)}…
-                </Button>
-              </LinkContainer>
-            ) : null}
-          </ButtonGroup>
-          {searchFields.length ? (
-            <InputGroup className="mb-2 ml-auto" style={{ width: '20em' }}>
-              <Input placeholder={tc(r => r.search) + '…'} value={searchTerm} onChange={this.onChangeSearchTerm} />
-            </InputGroup>
-          ) : null}
-          <Table>
-            <thead>
-              <tr>
-                {columns.map(columnName => (
-                  <th key={columnName} scope="column">
-                    {t(r => r[columnName])}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {visibleItems.map(item => (
-                <tr key={this.getSlug(item)}>
-                  {columns.map((columnName, columnIndex) => (
-                    <td key={columnName}>
-                      {this.isLinkColumn(columnName, columnIndex) ? (
-                        <Link to={this.getHref(item)}>{item[columnName]}</Link>
-                      ) : (
-                        item[columnName]
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      );
     }
+
+    const { columns } = this.props;
+    const { visibleItems, searchTerm } = this.state;
+    const searchFields = this.props.searchFields || [];
+
+    return (
+      <div className="DataTable">
+        <ButtonGroup className="mb-2 mr-auto">
+          {standardActions.includes('create') ? (
+            <LinkContainer to={this.getCreateLink()}>
+              <Button size="sm" color={standardActionColors.create}>
+                {t(r => r.create)}…
+              </Button>
+            </LinkContainer>
+          ) : null}
+        </ButtonGroup>
+        {searchFields.length ? (
+          <InputGroup className="mb-2 ml-auto" style={{ width: '20em' }}>
+            <Input placeholder={tc(r => r.search) + '…'} value={searchTerm} onChange={this.onChangeSearchTerm} />
+          </InputGroup>
+        ) : null}
+        <Table>
+          <thead>
+            <tr>
+              {columns.map(columnName => (
+                <th key={columnName} scope="column">
+                  {t(r => r[columnName])}
+                </th>
+              ))}
+              {/* Actions column */}
+              {haveRowActions && (
+                <th className="DataTable-actionsColumn" scope="column">
+                  <span className="sr-only">{tc(r => r.actions)}</span>
+                </th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {visibleItems.map(item => (
+              <tr key={this.getSlug(item)}>
+                {columns.map((columnName, columnIndex) => (
+                  <td key={columnName}>
+                    {this.isLinkColumn(columnName, columnIndex) ? (
+                      <Link to={this.getHref(item)}>{item[columnName]}</Link>
+                    ) : (
+                      item[columnName]
+                    )}
+                  </td>
+                ))}
+                {haveRowActions && (
+                  <td className="DataTable-actionsColumn">
+                    <ButtonGroup>
+                      {rowActions.includes('edit') ? (
+                        <LinkContainer to={this.getEditLink(item)}>
+                          <Button size="sm" color="primary" title={tc(r => r.standardActions.edit)}>
+                            <svg className="DataTable-actionIcon">
+                              <use xlinkHref={`${imageIcons}#ic_edit_24px`} />
+                            </svg>
+                          </Button>
+                        </LinkContainer>
+                      ) : null}
+                      {rowActions.includes('delete') ? (
+                        <Button size="sm" color="danger" title={tc(r => r.standardActions.delete)}>
+                          <svg className="DataTable-actionIcon">
+                            <use xlinkHref={`${actionIcons}#ic_delete_24px`} />
+                          </svg>
+                        </Button>
+                      ) : null}
+                    </ButtonGroup>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
   }
 
   protected isLinkColumn(columnName: string, columnIndex: number) {
@@ -168,6 +212,13 @@ export default class DataTable<ItemType> extends React.PureComponent<DataTablePr
   protected getCreateLink() {
     const { endpoint } = this.props;
     return `/${endpoint}/new`;
+  }
+
+  protected getEditLink(item: ItemType) {
+    const { endpoint } = this.props;
+    const slug = this.getSlug(item);
+
+    return `/${endpoint}/${slug}/edit`;
   }
 
   protected onChangeSearchTerm = (event: React.FormEvent<HTMLInputElement>) => {

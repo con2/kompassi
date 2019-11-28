@@ -1,0 +1,15 @@
+.DataTable-actionsColumn {
+  text-align: right;
+}
+
+.DataTable-actionsColumn .btn-group {
+  margin-top: -3px;
+}
+
+.DataTable-actionIcon {
+  width: 16px;
+  height: 16px;
+  fill: #eee;
+  margin-top: -3px;
+  margin-right: 2px;
+}

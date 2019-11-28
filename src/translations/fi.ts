@@ -10,6 +10,13 @@ const translations: Translations = {
     submit: 'Lähetä',
     search: 'Haku',
     somethingWentWrong: 'Jokin meni pieleen. JavaScript-konsolissa voi olla lisätietoja.',
+    actions: 'Toiminnot',
+    standardActions: {
+      open: 'Avaa',
+      edit: 'Muokkaa',
+      delete: 'Poista',
+      create: 'Uusi',
+    },
   },
   DataTable: {
     create: 'Luo uusi',

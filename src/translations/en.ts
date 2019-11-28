@@ -8,6 +8,13 @@ const translations = {
     submit: 'Submit',
     search: 'Search',
     somethingWentWrong: 'Something went wrong. There may be further information in the JavaScript console.',
+    actions: 'Actions',
+    standardActions: {
+      open: 'Open',
+      edit: 'Edit',
+      delete: 'Delete',
+      create: 'Create',
+    },
   },
   DataTable: {
     create: 'Create',
