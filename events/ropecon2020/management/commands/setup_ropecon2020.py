@@ -28,8 +28,8 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        self.setup_programme()
-        # self.setup_tickets()
+        # self.setup_programme()
+        self.setup_tickets()
         self.setup_payments()
         self.setup_badges()
 
@@ -547,7 +547,7 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
                 "Tervetuloa Ropeconiin!",
             front_page_text="<h2>Tervetuloa Ropeconin lippukauppaan!</h2>"
                 "<p>Liput maksetaan tilauksen yhteydessä käyttämällä suomalaia verkkopankkipalveluja.</p>"
-                "<p>Maksetut liput toimitetaan e-lippuina sähköpostitse asiakkaan antamaan osoitteeseen. E-liput vaihdetaan rannekkeiksi tapahtuman lipunmyyntipisteillä 27.–29.7.2020.</p>"
+                "<p>Maksetut liput toimitetaan e-lippuina sähköpostitse asiakkaan antamaan osoitteeseen. E-liput vaihdetaan rannekkeiksi tapahtumaan saavuttaessa.</p>"
                 "<p>Lisätietoja lipuista saat tapahtuman verkkosivuilta. <a href='https://2020.ropecon.fi/liput/'>Siirry takaisin tapahtuman verkkosivuille</a>.</p>"
                 "<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
                 "toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>lipunmyynti@ropecon.fi</em>"
@@ -573,7 +573,7 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
 
         for product_info in [
             dict(
-                name='Ropecon 2020 Early Dragon -viikonloppulippu',
+                name='Ropecon 2020 Christmas Dragon -viikonloppulippu',
                 description='Sisältää pääsyn Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
@@ -585,7 +585,7 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2020 Lasten Early Dragon -viikonloppulippu',
+                name='Ropecon 2020 Lasten Christmas Dragon -viikonloppulippu',
                 description='Sisältää pääsyn lapselle (7-12 v) Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
@@ -597,31 +597,7 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2020 Ennakkoviikonloppulippu',
-                description='Sisältää pääsyn Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
-                limit_groups=[
-                    limit_group('Pääsyliput', 9999),
-                ],
-                price_cents=4500,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name='Ropecon 2020 Lasten ennakkoviikonloppulippu',
-                description='Sisältää pääsyn lapselle (7-12 v) Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
-                limit_groups=[
-                    limit_group('Pääsyliput', 9999),
-                ],
-                price_cents=2500,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name='Ropecon 2020 Perheviikonloppulippupaketti',
+                name='Ropecon 2020 Perhelippu',
                 description='Sisältää pääsyn Ropecon 2020 -tapahtumaan 2 aikuiselle ja 1-3 lapselle (7-12 v) koko viikonlopun ajan.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
@@ -632,30 +608,54 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
-            dict(
-                name='Ropecon 2020 Sponsoriviikonloppulippu',
-                description='Sisältää pääsyn Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
-                limit_groups=[
-                    limit_group('Pääsyliput', 9999),
-                ],
-                price_cents=10000,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name='Ropecon 2020 Akateeminen seminaari + perjantaipäivälippu',
-                description='Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2020 -tapahtumaan perjantaina. Muista myös <a href="https://goo.gl/forms/J9X1401lERxaX3M52">rekisteröityä</a>!',
-                limit_groups=[
-                    limit_group('Pääsyliput', 9999),
-                ],
-                price_cents=5500,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
+            # dict(
+            #     name='Ropecon 2020 Ennakkoviikonloppulippu',
+            #     description='Sisältää pääsyn Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
+            #     limit_groups=[
+            #         limit_group('Pääsyliput', 9999),
+            #     ],
+            #     price_cents=4500,
+            #     requires_shipping=False,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name='Ropecon 2020 Lasten ennakkoviikonloppulippu',
+            #     description='Sisältää pääsyn lapselle (7-12 v) Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
+            #     limit_groups=[
+            #         limit_group('Pääsyliput', 9999),
+            #     ],
+            #     price_cents=2500,
+            #     requires_shipping=False,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name='Ropecon 2020 Sponsoriviikonloppulippu',
+            #     description='Sisältää pääsyn Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
+            #     limit_groups=[
+            #         limit_group('Pääsyliput', 9999),
+            #     ],
+            #     price_cents=10000,
+            #     requires_shipping=False,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name='Ropecon 2020 Akateeminen seminaari + perjantaipäivälippu',
+            #     description='Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2020 -tapahtumaan perjantaina. Muista myös <a href="https://goo.gl/forms/J9X1401lERxaX3M52">rekisteröityä</a>!',
+            #     limit_groups=[
+            #         limit_group('Pääsyliput', 9999),
+            #     ],
+            #     price_cents=5500,
+            #     requires_shipping=False,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')
