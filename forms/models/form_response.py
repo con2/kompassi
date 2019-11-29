@@ -1,9 +1,12 @@
+import uuid
+
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
 class FormResponse(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     form = models.ForeignKey('forms.Form', on_delete=models.CASCADE)
     values = JSONField()
 
