@@ -574,7 +574,7 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
         for product_info in [
             dict(
                 name='Ropecon 2020 Christmas Dragon -viikonloppulippu',
-                description='Sisältää pääsyn Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
+                description='Sisältää pääsyn Ropecon 2020 -tapahtumaan koko viikonlopun ajan. Jos haluat antaa lipun lahjaksi, voit ladata <a href="https://2020.ropecon.fi/wp-content/uploads/2019/11/joulukortti.pdf" target="_blank" rel="noopener nofollow">tästä</a> taitettavan kortin annettavaksi lipun kanssa.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
@@ -586,7 +586,7 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
             ),
             dict(
                 name='Ropecon 2020 Lasten Christmas Dragon -viikonloppulippu',
-                description='Sisältää pääsyn lapselle (7-12 v) Ropecon 2020 -tapahtumaan koko viikonlopun ajan.',
+                description='Sisältää pääsyn lapselle (7–12 v) Ropecon 2020 -tapahtumaan koko viikonlopun ajan. Jos haluat antaa lipun lahjaksi, voit ladata <a href="https://2020.ropecon.fi/wp-content/uploads/2019/11/joulukortti.pdf" target="_blank" rel="noopener nofollow">tästä</a> taitettavan kortin annettavaksi lipun kanssa.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
@@ -598,7 +598,7 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
             ),
             dict(
                 name='Ropecon 2020 Perhelippu',
-                description='Sisältää pääsyn Ropecon 2020 -tapahtumaan 2 aikuiselle ja 1-3 lapselle (7-12 v) koko viikonlopun ajan.',
+                description='Sisältää pääsyn Ropecon 2020 -tapahtumaan 2 aikuiselle ja 1–3 lapselle (7–12 v) koko viikonlopun ajan.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
