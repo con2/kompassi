@@ -546,6 +546,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             certificate_delivery_address='',
             prior_experience='',
             free_text='Syötetty käyttäen coniitin ilmoittautumislomaketta',
+            roster_publish_consent=True,
         )
 
     def get_excluded_m2m_field_defaults(self):
