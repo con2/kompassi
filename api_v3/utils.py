@@ -1,15 +1,7 @@
-from rest_framework_nested.routers import SimpleRouter, NestedSimpleRouter
+from rest_framework.routers import SimpleRouter
 
 
-class OptionalTrailingSlashMixin:
+class OptionalTrailingSlashRouter(SimpleRouter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.trailing_slash = '/?'
-
-
-class OptionalTrailingSlashRouter(OptionalTrailingSlashMixin, SimpleRouter):
-    pass
-
-
-class OptionalTrailingSlashNestedRouter(OptionalTrailingSlashMixin, NestedSimpleRouter):
-    pass
