@@ -6,13 +6,12 @@ import Button from 'reactstrap/lib/Button';
 import ButtonGroup from 'reactstrap/lib/ButtonGroup';
 import Alert from 'reactstrap/lib/Alert';
 
-import MainViewContainer from '../common/MainViewContainer';
-import SessionContext from '../common/SessionContext';
-
-import SchemaForm from './SchemaForm';
-import { T } from '../../translations';
 import { Form } from './SchemaForm/models';
 import { Spinner } from 'reactstrap';
+import { T } from '../../translations';
+import MainViewContainer from '../common/MainViewContainer';
+import SchemaForm from './SchemaForm';
+import SessionContext from '../common/SessionContext';
 
 const FormView: React.FC<{}> = () => {
   const { slug } = useParams();
@@ -24,11 +23,11 @@ const FormView: React.FC<{}> = () => {
   const [posting, setPosting] = React.useState(false);
 
   const onSubmit = React.useCallback(
-    (value: any) => {
+    (values: any) => {
       (async function() {
         try {
           setPosting(true);
-          await context.post(`form/${slug}/responses`, value);
+          await context.post(`forms/${slug}/responses`, { values });
         } catch (err) {
           setPostError(err);
         } finally {
