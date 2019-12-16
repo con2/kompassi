@@ -13,6 +13,7 @@ class Privilege(models.Model):
     description = models.TextField(blank=True)
     disclaimers = models.TextField(blank=True)
     request_success_message = models.TextField(blank=True)
+    url = models.CharField(max_length=255, blank=True)
 
     grant_code = models.CharField(max_length=256)
 

@@ -1,3 +1,4 @@
+- load trans from i18n
 .panel.panel-default
   .panel-heading
     .pull-right
@@ -7,3 +8,9 @@
       strong= granted_privilege.privilege.title
   .panel-body
     {{ granted_privilege.privilege.description|safe }}
+  if granted_privilege.is_open_app_link_shown
+    .panel-footer.clearfix
+      .btn-group.pull-right
+        a.btn.btn-primary(href="{{ granted_privilege.privilege.url }}", target="_blank", rel="noopener noreferrer")
+          i.fa.fa-external-link.kompassi-icon-space-right
+          {% trans "Open app" %}…

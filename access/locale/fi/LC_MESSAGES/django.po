@@ -170,3 +170,5 @@ msgstr ""
 msgid "updated at"
 msgstr ""
 
+msgid "Open app"
+msgstr "Avaa sovellus"

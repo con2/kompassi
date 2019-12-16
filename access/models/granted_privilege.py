@@ -27,6 +27,10 @@ class GrantedPrivilege(models.Model):
     def state_css(self):
         return STATE_CSS[self.state]
 
+    @property
+    def is_open_app_link_shown(self):
+        return self.state == 'granted' and self.privilege.url
+
     def __str__(self):
         return '{person_name} - {privilege_title}'.format(
             person_name=self.person.full_name if self.person else None,

@@ -6,11 +6,13 @@
   .panel-body
     {{ privilege.description|safe }}
     {{ privilege.disclaimers|safe }}
-  .panel-footer
+  .panel-footer.clearfix
     if request.user.person.is_email_verified
       form(action='{% url "access_profile_request_privilege_view" privilege.slug %}', method='POST')
         {% csrf_token %}
-        input.btn.btn-success(type='submit', value='Pyydä käyttöoikeutta')
+        .btn-group.pull-right
+          input.btn.btn-success(type='submit', value='Pyydä käyttöoikeutta')
     else
-      button.btn.disabled(disabled) Pyydä käyttöoikeutta
+      .btn-group.pull-right
+        button.btn.disabled(disabled) Pyydä käyttöoikeutta
       strong.text-danger &emsp;Käyttöoikeuden pyytäminen edellyttää <a href='{% url "core_email_verification_request_view" %}'>vahvistettua sähköposti&shy;osoitetta</a>.
