@@ -249,6 +249,7 @@ INSTALLED_APPS = (
     'events.nekocon2020',
     'events.ropecon2020',
     'events.tracrossf2019',
+    'events.hypecon2020',
 )
 
 LOGGING = {
