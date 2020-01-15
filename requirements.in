@@ -3,8 +3,10 @@ git+https://github.com/tracon/paikkala.git@feature/zone-ordering#egg=paikkala==0
 Babel
 bleach
 celery
+Django
 django_csp
 django-babel
+django-bootstrap3
 django-cors-headers
 django-crispy-forms
 django-environ
@@ -13,11 +15,13 @@ django-guardian
 django-ipware
 django-localflavor
 django-oauth-toolkit
-Django
 djangorestframework
 drf-nested-routers
+flake8
+gunicorn
 ipdb
 ipython
+isort
 jsonschema
 paramiko
 passlib
@@ -31,10 +35,9 @@ python-memcached
 PyYAML
 regex
 reportlab
-requests-oauthlib
 requests
+requests-oauthlib
 unicodecsv
 vobject
 XlsxWriter
 zxcvbn
-django-bootstrap3
