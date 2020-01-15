@@ -1,19 +1,18 @@
-import gulp from "gulp";
-import gutil from "gulp-util";
-import less from "gulp-less";
-import autoprefixer from "gulp-autoprefixer";
-import sourcemaps from "gulp-sourcemaps";
-import cssnano from "gulp-cssnano";
-import rename from "gulp-rename";
-import size from "gulp-size";
-import {production} from "./gulp-env";
+const gulp = require("gulp");
+// const gutil = require("gulp-util");
+const less = require("gulp-less");
+const autoprefixer = require("gulp-autoprefixer");
+const sourcemaps = require("gulp-sourcemaps");
+// const cssnano = require("gulp-cssnano");
+const rename = require("gulp-rename");
+const size = require("gulp-size");
 
 gulp.task("style:build", () => {
     return gulp.src("core/static_src/less/kompassi.less")
         .pipe(sourcemaps.init())
         .pipe(less())
         .pipe(autoprefixer())
-        .pipe((production ? cssnano() : gutil.noop()))
+        // .pipe(cssnano() : gutil.noop()))
         .pipe(rename("kompassi.css"))
         .pipe(size())
         .pipe(sourcemaps.write("."))
@@ -21,10 +20,10 @@ gulp.task("style:build", () => {
 });
 
 gulp.task("style:watch", () => {
-    gulp.watch([
+    return gulp.watch([
         "core/static_src/less/**/*.less",
         "feedback/static_src/less/**/*.less",
-    ], [
-        "style:build"
-    ]);
+    ],
+        gulp.series("style:build")
+    );
 });

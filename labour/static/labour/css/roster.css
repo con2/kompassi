@@ -1,1 +1,54 @@
-.roster-editable,.roster-slot,.roster-shift{cursor:pointer;}.roster-editable:hover,.roster-slot:hover,.roster-shift:hover{text-decoration:underline}.roster-timeline,.roster-timeline th,.roster-timeline td{height:60px}.kompassi-frozen-table-container{overflow-x:scroll;margin-left:250px;overflow-y:visible;padding-bottom:1px}.kompassi-freeze-first-column{position:absolute;width:250px;left:0;top:auto}.roster-cell{text-align:center}.roster-lane td{height:20px;font-size:13px;padding-top:0 !important;padding-bottom:0 !important}.roster-slot{background-color:#f2dede}.roster-shift-planned{background-color:#d9edf7}.roster-shift-confirmed{background-color:#dff0d8}.roster-shift-complained{background-color:#fcf8e3}.roster-cell-content{height:18px;overflow:hidden}
+.roster-editable,
+.roster-slot,
+.roster-shift {
+  cursor: pointer;
+}
+.roster-editable:hover,
+.roster-slot:hover,
+.roster-shift:hover {
+  text-decoration: underline;
+}
+.roster-timeline,
+.roster-timeline th,
+.roster-timeline td {
+  height: 60px;
+}
+.kompassi-frozen-table-container {
+  overflow-x: scroll;
+  margin-left: 250px;
+  overflow-y: visible;
+  padding-bottom: 1px;
+}
+.kompassi-freeze-first-column {
+  position: absolute;
+  width: 250px;
+  left: 0;
+  top: auto;
+}
+.roster-cell {
+  text-align: center;
+}
+.roster-lane td {
+  height: 20px;
+  font-size: 13px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.roster-slot {
+  background-color: #f2dede;
+}
+.roster-shift-planned {
+  background-color: #d9edf7;
+}
+.roster-shift-confirmed {
+  background-color: #dff0d8;
+}
+.roster-shift-complained {
+  background-color: #fcf8e3;
+}
+.roster-cell-content {
+  height: 18px;
+  overflow: hidden;
+}
+
+/*# sourceMappingURL=roster.css.map */

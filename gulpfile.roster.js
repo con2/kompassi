@@ -6,7 +6,7 @@ var browserSync = require('browser-sync');
 var duration = require('gulp-duration');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var jade = require('gulp-jade');
+var jade = require('gulp-pug');
 var nib = require('nib');
 var notifier = require('node-notifier');
 var path = require('path');
@@ -57,7 +57,7 @@ var config = {
 };
 
 var browserifyConfig = {
-  entries: ['node_modules/babel-polyfill/dist/polyfill', config.scripts.source],
+  entries: ['node_modules/@babel/polyfill/dist/polyfill', config.scripts.source],
   extensions: config.scripts.extensions,
   debug: !production,
   cache: {},
@@ -160,15 +160,15 @@ gulp.task('roster:watch', function() {
 
 var buildTasks = ['roster:templates', 'roster:styles', 'roster:assets'];
 
-gulp.task('roster:revision', buildTasks.concat(['roster:scripts']), function() {
+gulp.task('roster:revision', gulp.series(...buildTasks, 'roster:scripts', function() {
   return gulp.src(config.revision.source, {base: config.revision.base})
     .pipe(rev())
     .pipe(gulp.dest(config.revision.destination))
     .pipe(rev.manifest())
     .pipe(gulp.dest('./'));
-});
+}));
 
-gulp.task('roster:replace-revision-references', ['roster:revision', 'roster:templates'], function() {
+gulp.task('roster:replace-revision-references', gulp.series('roster:revision', 'roster:templates', function() {
   var revisions = require('./rev-manifest.json');
 
   var pipeline = gulp.src(config.templates.revision);
@@ -178,9 +178,6 @@ gulp.task('roster:replace-revision-references', ['roster:revision', 'roster:temp
   }, pipeline);
 
   return pipeline.pipe(gulp.dest(config.templates.destination));
-});
+}));
 
-gulp.task('roster:build', function() {
-  rimraf.sync(config.destination);
-  gulp.start(buildTasks.concat(['roster:scripts', 'roster:revision', 'roster:replace-revision-references']));
-});
+gulp.task('roster:build', gulp.series((done) => { rimraf.sync(config.destination); done() }, ...buildTasks, 'roster:scripts', 'roster:revision', 'roster:replace-revision-references'));
