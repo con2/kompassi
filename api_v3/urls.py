@@ -15,7 +15,7 @@ router.register(r'events', EventViewSet)
 router.register(r'forms', FormViewSet)
 
 forms_router = NestedSimpleRouter(router, 'forms', lookup='form')
-forms_router.register(r'responses', FormResponseViewSet, base_name='form-response')
+forms_router.register(r'responses', FormResponseViewSet, basename='form-response')
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [

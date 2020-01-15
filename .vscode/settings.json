@@ -6,5 +6,5 @@
     "python.linting.flake8Enabled": true,
     "python.linting.pylintEnabled": false,
     "python.linting.enabled": false,
-    "python.pythonPath": "/usr/local/opt/python/bin/python3.7"
+    "python.pythonPath": "/usr/local/opt/python@3.8/bin/python3"
 }
