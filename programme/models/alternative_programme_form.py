@@ -36,7 +36,7 @@ class AlternativeProgrammeForm(models.Model):
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
     title = models.CharField(
-        max_length=63,
+        max_length=1023,
         verbose_name=_('title'),
         help_text=_('This title is visible to the programme host.'),
     )
