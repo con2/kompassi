@@ -126,6 +126,9 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             'min_players',
             'max_players',
             'is_revolving_door',
+
+            # TÄHÄN ASTI KENTÄT OK :) :) :)
+
             Fieldset(_('Who is the game meant for?'),
                 'is_in_english',
                 'is_age_restricted',

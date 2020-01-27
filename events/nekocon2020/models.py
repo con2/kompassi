@@ -128,6 +128,11 @@ class SignupExtra(SignupExtraBase):
         from .forms import SignupExtraForm
         return SignupExtraForm
 
+    @classmethod
+    def get_programme_form_class(cls):
+        from .forms import OrganizerSignupExtraForm
+        return OrganizerSignupExtraForm
+
     @property
     def formatted_lodging_needs(self):
         return "\n".join("{night}: {need}".format(

@@ -328,6 +328,7 @@ class Setup(object):
         from core.utils import full_hours_between
         from labour.models import PersonnelClass
         from programme.models import (
+            AlternativeProgrammeForm,
             Category,
             Programme,
             ProgrammeEventMeta,
@@ -403,6 +404,17 @@ class Setup(object):
                     event=self.event,
                     start_time=hour_start_time.replace(minute=30)
                 )
+
+        form, created = AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug='default',
+            defaults=dict(
+                title='Ohjelmalomake',
+                short_description='',
+                programme_form_code='events.nekocon2020.forms:ProgrammeForm',
+                num_extra_invites=0,
+            )
+        )
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team

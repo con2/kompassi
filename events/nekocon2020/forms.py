@@ -5,6 +5,8 @@ from crispy_forms.layout import Layout, Fieldset
 from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory, WorkPeriod
+from programme.forms import AlternativeProgrammeFormMixin
+from programme.models import Programme, Category
 
 from .models import SignupExtra
 
@@ -135,4 +137,60 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_m2m_field_defaults(self):
         return dict(
             lodging_needs=[],
+        )
+
+
+class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event')
+        admin = kwargs.pop('admin') if 'admin' in kwargs else False
+
+        super(ProgrammeForm, self).__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.fields['title'].required = True
+        if not admin:
+            for field_name in [
+                'description',
+                'encumbered_content',
+                'photography',
+                'rerun',
+                'stream_permission',
+                'video_permission',
+            ]:
+                self.fields[field_name].required = True
+
+        self.fields['category'].queryset = Category.objects.filter(event=event, public=True)
+
+        self.fields['description'].help_text = (
+            'Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen '
+            'tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä '
+            'markkinoida ohjelmaasi. Pidä kuvaus kuitenkin ytimekkäänä, jotta se mahtuisi ohjelmalehteen. '
+            'Ohjelmakuvauksen maksimipituus ohjelmalehteä varten on 400 merkkiä. Varaamme oikeuden muokata kuvausta.'
+        )
+        self.fields['description'].max_length = 400
+
+    class Meta:
+        model = Programme
+        fields = (
+            'title',
+            'description',
+            'long_description',
+            'length_from_host',
+            'category',
+            'computer',
+            'use_audio',
+            'use_video',
+            'number_of_microphones',
+            'tech_requirements',
+            'video_permission',
+            'stream_permission',
+            'encumbered_content',
+            'photography',
+            'rerun',
+            'room_requirements',
+            'requested_time_slot',
+            'notes_from_host',
         )
