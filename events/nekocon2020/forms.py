@@ -107,10 +107,8 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset('Lisätiedot',
-                'special_diet',
-                'special_diet_other',
-            ),
+            'special_diet',
+            'special_diet_other',
         )
 
 
@@ -135,9 +133,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
     def get_excluded_m2m_field_defaults(self):
-        return dict(
-            lodging_needs=[],
-        )
+        return dict()
 
 
 class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):

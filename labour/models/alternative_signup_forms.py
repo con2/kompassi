@@ -127,8 +127,8 @@ class AlternativeFormMixin(object):
         obj = self.save()
 
         defaults = self.get_excluded_m2m_field_defaults()
-        for key, values in defaults:
+        for key, values in defaults.items():
             manager = getattr(obj, key)
-            manager.set(values, clear=True)
+            manager.set(values)
 
         return obj

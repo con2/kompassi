@@ -7,7 +7,7 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from core.utils import slugify
+from core.utils import slugify, full_hours_between
 
 
 def mkpath(*parts):
@@ -28,6 +28,7 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
+        self.setup_programme()
         # self.setup_tickets()
         # self.setup_payments()
         self.setup_intra()
@@ -251,6 +252,107 @@ class Setup(object):
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
                 product.save()
+
+    def setup_programme(self):
+        from labour.models import PersonnelClass
+        from programme.models import (
+            Category,
+            ProgrammeEventMeta,
+            Role,
+            Room,
+            SpecialStartTime,
+            Tag,
+            TimeBlock,
+            View,
+        )
+
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
+            public=False,
+            admin_group=programme_admin_group,
+            contact_email='Popcult Helsinki -ohjelmatiimi <popcult@popcult.fi>',
+            schedule_layout='reasonable',
+        ))
+
+        if settings.DEBUG:
+            programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
+            programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
+            programme_event_meta.save()
+
+        personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
+
+        role_priority = 0
+        for role_title in [
+            'Ohjelmanjärjestäjä',
+            'Näkymätön ohjelmanjärjestäjä',
+        ]:
+            role, unused = Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_title == 'Ohjelmanjärjestäjä',
+                    is_public=role_title != 'Näkymätön ohjelmanjärjestäjä',
+                    require_contact_info=True,
+                    priority=role_priority,
+                )
+            )
+            role_priority += 10
+
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                ('Puheohjelma', 'color1'),
+                ('Esitysohjelma', 'color2'),
+                ('Pajaohjelma', 'color3'),
+                ('Miitti', 'color4'),
+                ('Muu ohjelma', 'color5'),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    style=style,
+                    defaults=dict(
+                        title=title,
+                    )
+                )
+
+        for start_time, end_time in [
+            (
+                self.event.start_time,
+                self.event.start_time.replace(hour=21, minute=0, tzinfo=self.tz),
+            ),
+            (
+                self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),
+                self.event.end_time,
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(
+                    end_time=end_time
+                )
+            )
+
+        for time_block in TimeBlock.objects.filter(event=self.event):
+            # Half hours
+            # [:-1] – discard 18:30
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30)
+                )
+
+        for tag_title, tag_class in [
+            ('In English', 'label-success'),
+            ('Ikärajasuositus K-15', 'label-danger'),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    style=tag_class,
+                ),
+            )
 
     def setup_payments(self):
         from payments.models import PaymentsEventMeta
