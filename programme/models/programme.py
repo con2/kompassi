@@ -522,6 +522,37 @@ class Programme(models.Model, CsvExportMixin):
         ]
     )
 
+    ropecon2020_suitable_for_children_under_7 = models.BooleanField(
+        default=False,
+        verbose_name=_('Suitable for children under 7'),
+        help_text=_('If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them.'),
+    )
+    ropecon2020_suitable_for_children_aged_7_12 = models.BooleanField(
+        default=False,
+        verbose_name=_('Suitable for children aged 7-12'),
+        help_text=_('If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them.'),
+    )
+    ropecon2020_suitable_for_children_aged_12_plus = models.BooleanField(
+        default=False,
+        verbose_name=_('Suitable for children aged 12+'),
+        help_text=_('If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them.'),
+    )
+    ropecon2020_not_suitable_for_children = models.BooleanField(
+        default=False,
+        verbose_name=_('Not suitable for children'),
+        help_text=_('If your game programme is not suitable for children under 15 years of age, please tick this box.'),
+    )
+    ropecon2020_theme_end_of_the_world = models.BooleanField(
+        default=False,
+        verbose_name=_('Theme: End of the world'),
+        help_text=_('If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box.'),
+    )
+    ropecon2020_theme_dinosaurs    = models.BooleanField(
+        default=False,
+        verbose_name=_('Theme: Dinosaurs'),
+        help_text=_('If your game is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box.'),
+    )
+
     is_using_paikkala = models.BooleanField(
         default=False,
         verbose_name=_('Reservable seats'),
