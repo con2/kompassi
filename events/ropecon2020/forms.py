@@ -165,6 +165,8 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
 
         self.fields['rpg_system'].required = True
         self.fields['approximate_length'].required = True
+        self.fields['min_players'].required = True
+        self.fields['min_players'].initial = 2
         self.fields['max_players'].required = True
         self.fields['max_players'].initial = 5
         self.fields['description'].required = True
