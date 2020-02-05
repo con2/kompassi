@@ -95,7 +95,7 @@ class ProgrammeSignupExtraForm(AlternativeFormMixin, forms.ModelForm):
 
 RPG_FORM_FIELD_TEXTS = dict(
     title=(_('Title of your game'), None),
-    rpg_system=(_('RPG system'), _('What role-playing game system is used? ')),
+    rpg_system=(_('RPG system'), _('What role-playing game system is used?')),
     approximate_length=(_('Estimated duration of your game (minutes)'), None),
     min_players=(_('Minimum number of players'), _('Consider the minimum number of players required to run your game carefully: by setting it as low as possible, you increase the chances of your game being able to be run.')),
     max_players=(_('Maximum number of players'), None),
@@ -103,9 +103,17 @@ RPG_FORM_FIELD_TEXTS = dict(
     is_in_english=(_('In English'), _('If your game can be run in English, please tick this box.')),
     is_age_restricted=(_('For players over 18 only'), _('If your game contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players.')),
     is_beginner_friendly=(_('Beginner-friendly'), _('If your game is suitable for players with very limited or without any previous experience about RPGs, please tick this box.')),
-    description=(_('Description'), _('Advertise your game to potential players. Be extra sure to inform about potentially shocking or disturbing themes. Recommended length is 300–500 characters. We reserve the right to edit the text as necessary.<br><br>Please write the description at least in the language the game will be run in (English or Finnish). You may include the description in both languages, if you wish.')),
-    three_word_description=(_('Short blurb'), _('Summarize your game in one sentence which helps potential players get the gist of your game. For example, “Traditional D&D dungeon adventure” or “Lovecraftian horror in Equestria”. We reserve the right to edit the text.')),
-    notes_from_host=(_('Other information for the RPG coordinator'), _('If there is anything else you wish to say to the RPG coordinator that is not covered by the above questions, please enter it here.')),
+    ropecon2018_style_serious=(_('Serious playstyle'), None),
+    ropecon2018_style_light=(_('Lighthearted playstyle'), None),
+    ropecon2018_style_rules_heavy=(_('Rules-heavy'), None),
+    ropecon2018_style_rules_light=(_('Rules-light'), None),
+    ropecon2018_style_story_driven=(_('Story-driven'), None),
+    ropecon2018_style_character_driven=(_('Character-driven'), None),
+    ropecon2018_style_combat_driven=(_('Combat-driven'), None),
+    description=(_('Description of your game'), _('Advertise your game for potential players. If your game includes any potentially shocking or distressing themes, please mention it here.<br><br>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.<br><br>Write the description in the language the game will be run in (Finnish, English). You can write the description in both languages if you want.')),
+    three_word_description=(_('Slogan for your game'), _('Condense the essence of your game into one short sentence that will let players know what your game have to offer. For example, “A traditional D&D dungeon crawl”, or “Lovecraftian horror in Equestria”. We reserve the right to edit the slogan if necessary.')),
+    ropecon2019_blocked_time_slots=(_('When are you NOT able to run your game?'), _('Select the times when you are NOT able to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.')),
+    notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the RPG coordinators? For example, if you are a beginner GM and would like some additional support, let us know and we will gladly help you out!')),
 )
 
 
@@ -133,11 +141,11 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
                 'ropecon2020_suitable_for_children_aged_7_12',
                 'ropecon2020_suitable_for_children_aged_12_plus',
                 'ropecon2020_not_suitable_for_children',
+                'is_beginner_friendly',
                 'ropecon2020_theme_end_of_the_world',
                 'ropecon2020_theme_dinosaurs',
-                'is_beginner_friendly',
             ),
-            Fieldset(_('Play style and mechanics (Choose any which apply)'),
+            Fieldset(_('Playstyle and mechanics (Choose any which apply)'),
                 'ropecon2018_style_serious',
                 'ropecon2018_style_light',
                 'ropecon2018_style_rules_heavy',
@@ -155,6 +163,14 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
         for field_name, texts in RPG_FORM_FIELD_TEXTS.items():
             self.fields[field_name].label, self.fields[field_name].help_text = texts
 
+        self.fields['rpg_system'].required = True
+        self.fields['approximate_length'].required = True
+        self.fields['max_players'].required = True
+        self.fields['max_players'].initial = 5
+        self.fields['description'].required = True
+        self.fields['three_word_description'].required = True
+        self.fields['ropecon2019_blocked_time_slots'].required = True
+
     class Meta:
         model = Programme
         fields = [
@@ -170,9 +186,9 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             'ropecon2020_suitable_for_children_aged_7_12',
             'ropecon2020_suitable_for_children_aged_12_plus',
             'ropecon2020_not_suitable_for_children',
+            'is_beginner_friendly',
             'ropecon2020_theme_end_of_the_world',
             'ropecon2020_theme_dinosaurs',
-            'is_beginner_friendly',
             'ropecon2018_style_serious',
             'ropecon2018_style_light',
             'ropecon2018_style_rules_heavy',
