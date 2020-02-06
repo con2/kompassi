@@ -215,15 +215,25 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
 
 
 LARP_FORM_FIELD_TEXTS = dict(
-    title=(_('Title of the larp'), _('Come up with a catchy and concise name for your larp. Ropecon reserves the right to edit the title.')),
-    approximate_length=(_('Estimated duration (minutes)'), _('For one run of a 3-4 hour game (180-240 minutes) of your own writing you will receive one free weekend ticket. This includes time for propping, brief and debrief, as well as the actual game time.')),
-    ropecon2018_sessions=(_('Number of runs'), _('Here you can request how many times you would like to run your game during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour game of your own writing or two runs of a pre-written scenario you will receive one free weekend ticket. Additional runs of your game will yield an extra one-day ticket.')),
-    notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the organizers?<br><br>Please mention here if the design of your game dictates that some of the characters need to be a specific gender (eg. larps about a men’s sauna night or World War II female fighter pilots).<br><br>We would like the larp program as a whole to offer something for all attendees, even if not all players wish to play all genders. Due to this, some larps may be cut from the program.<br><br>You can also enter your more specific scheduling preferences here.')),
-    is_english_ok=(_('The game can be run in English'), _('If you are able, prepared and willing to organise your program in English if necessary, please tick this box.')),
-    is_age_restricted=(_('The game is intended for players over 18'), _('Please tick this box if your game involves themes necessitating that all players are 18 years or older.')),
-    is_children_friendly=(_('The game is intended for children'), _('Please tick this box if your game is designed for children.')),
-    is_beginner_friendly=(_('Beginner-friendly'), _('If your game is suitable for players without any or with very limited larping experience, please tick this box.')),
-    is_family_program=(_('Family-friendly'), _('If your game is suitable for the whole family and people of all ages, please tick this box.')),
+    title=(_('Title of your larp'), _('Give your larp a catchy and concise title. We reserve the right to edit the title if necessary.')),
+    approximate_length=(_('Estimated duration (minutes)'), _('For one run of a 3-4 hour original larp (180-240 minutes) you will receive a one-day ticket to Ropecon. This includes time for propping, brief and debrief, as well as the actual game.')),
+    ropecon2018_sessions=(_('Number of runs'), _('Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour original larp or two runs of a pre-written scenario you will receive one weekend ticket as a GM. Additional runs of your larp will yield an extra one-day ticket.')),
+    ropecon2018_characters=(_('Number of characters'), _('If the design of your game requires gendered characters, please mention it in the Comments section of this form.')),
+    min_players=(_('Minimum number of players'), _('How many players must sign up for the larp to be able to run it?')),
+    description=(_('Description'), _('Advertise your larp for potential players. Inform players about what is expected of them, and what themes your larp contains. If your larp includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br><br>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.')),
+    content_warnings=(_('Content warnings'), _('If your larp contains any heavy topics or themes that some players may find distressing, please mention them here.')),
+    other_author=(_('Game designer (if other than GM)'), _('If the game was designed by someone other than the GM running it at Ropecon, please enter the name of the designer here.')),
+    ropecon2019_blocked_time_slots=(_('When are you NOT able to run your game?'), _('Select the times when you are NOT able to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.')),
+    notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the larp coordinators?<br><br>If the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br><br>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br><br>You can also specify your preferred schedule here.')),
+    is_in_english=(_('English OK'), _('If you are able, prepared and willing to run your larp in English if necessary, please tick this box.')),
+    is_age_restricted=(_('For players over 18 only'), _('If your larp contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players.')),
+    ropecon2020_suitable_for_children_under_7=(_('Suitable for children under 7'), _('If your larp is aimed at children under 7 years of age, please tick this box. You can also tick this box if your larp is suitable for children under 7 years, even if it is not specifically designed for them.')),
+    ropecon2020_suitable_for_children_aged_7_12=(_('Suitable for children aged 7-12'), _('If your larp is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your larp is suitable for children aged 7-12 years, even if it is not specifically designed for them.')),
+    ropecon2020_suitable_for_children_aged_12_plus=(_('Suitable for children aged 12+'), _('If your larp is aimed at children over the age of 12, please tick this box. You can also tick this box if your larp is suitable for children aged 12 years and older, even if it is not specifically designed for them.')),
+    ropecon2020_not_suitable_for_children=(_('Not suitable for children'), _('If your larp is not suitable for children under 15 years of age, please tick this box.')),
+    is_beginner_friendly=(_('Beginner-friendly'), _('If your larp is suitable for players with very limited or without any previous experience about larping, please tick this box.')),
+    ropecon2020_theme_end_of_the_world=(_('Theme: End of the world'), _('If your larp is related to the theme of Ropecon 2020 (end of the world), please tick this box.')),
+    ropecon2020_theme_dinosaurs=(_('Theme: Dinosaurs'), _('If your larp is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box.')),
 )
 
 
@@ -251,12 +261,16 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2019_blocked_time_slots',
             'notes_from_host',
 
-            Fieldset(_('Whom is the game for?'),
-                'is_english_ok',
+            Fieldset(_('Who is your larp for?'),
+                'is_in_english',
                 'is_age_restricted',
-                'is_children_friendly',
+                'ropecon2020_suitable_for_children_under_7',
+                'ropecon2020_suitable_for_children_aged_7_12',
+                'ropecon2020_suitable_for_children_aged_12_plus',
+                'ropecon2020_not_suitable_for_children',
                 'is_beginner_friendly',
-                'is_family_program',
+                'ropecon2020_theme_end_of_the_world',
+                'ropecon2020_theme_dinosaurs',
             ),
         )
 
@@ -265,6 +279,12 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.fields['ropecon2018_sessions'].initial = 2
         self.fields['ropecon2018_characters'].initial = 10
+        self.fields['min_players'].required = True
+        self.fields['min_players'].initial = 6
+        self.fields['description'].required = True
+        self.fields["ropecon2018_signuplist"].choices = [(k, t) for (k, t) in self.fields["ropecon2018_signuplist"].choices if k != 'none']
+#        self.fields["ropecon2018_signuplist"].help_text =
+        self.fields['ropecon2019_blocked_time_slots'].required = True
 
     class Meta:
         model = Programme
@@ -283,11 +303,15 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2019_blocked_time_slots',
             'notes_from_host',
 
-            'is_english_ok',
+            'is_in_english',
             'is_age_restricted',
-            'is_children_friendly',
+            'ropecon2020_suitable_for_children_under_7',
+            'ropecon2020_suitable_for_children_aged_7_12',
+            'ropecon2020_suitable_for_children_aged_12_plus',
+            'ropecon2020_not_suitable_for_children',
             'is_beginner_friendly',
-            'is_family_program',
+            'ropecon2020_theme_end_of_the_world',
+            'ropecon2020_theme_dinosaurs',
         )
 
         widgets = dict(
