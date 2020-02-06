@@ -1,3 +1,122 @@
+# Roolipelit 2020
+
+msgid "Title of your game"
+msgstr "Pelin nimi"
+
+msgid "RPG system"
+msgstr "Roolipelijärjestelmä"
+
+msgid "What role-playing game system is used?"
+msgstr "Mitä järjestelmää peli käyttää?"
+
+msgid "Estimated duration of your game (minutes)"
+msgstr "Pelin kesto (minuuttia)"
+
+msgid "Consider the minimum number of players required to run your game carefully: by setting it as low as possible, you increase the chances of your game being able to be run."
+msgstr "Harkitse pelaajien vähimmäismäärä tarkkaan: Maksimoit pelin toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
+
+msgid "Revolving door RPG"
+msgstr "Pyöröovipeli (revolving door)"
+
+msgid "If new players can join your game while it is already running and old players can leave freely before the game has ended, please tick this box. Mention this in the description of your game as well, and provide additional information in the Comments section below if needed. If you are not sure whether your game is a revolving door RPG or not, contact us and we will figure it out together!"
+msgstr "Ruksaa tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa käynnissä ja vanhat pelaajat voivat poistua (tai joutuvat poistumaan) pelistä ennen pelin loppua. Kerro tästä myös pelin kuvauksessa alla, ja anna tarvittaessa lisätietoja. Jos et ole varma onko sinulla pyöröovipeli, ole yhteydessä meihin niin katsotaan!"
+
+msgid "If your game can be run in English, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos peli pelataan englanniksi."
+
+msgid "For players over 18 only"
+msgstr "Vain täysi-ikäisille"
+
+msgid "If your game contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+
+msgid "Suitable for children under 7"
+msgstr "Sopii alle 7-vuotiaille"
+
+msgid "If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "Suitable for children aged 7-12"
+msgstr "Sopii 7-12-vuotiaille"
+
+msgid "If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "Suitable for children aged 12+"
+msgstr "Sopii yli 12-vuotiaille"
+
+msgid "If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "Not suitable for children"
+msgstr "Ei sovellu lapsille"
+
+msgid "If your game programme is not suitable for children under 15 years of age, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi ei sovellu alle 15-vuotiaille lapsille."
+
+msgid "If your game is suitable for players with very limited or without any previous experience about RPGs, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmaasi voi osallistua, vaikka aiempaa kokemusta roolipeleistä olisi hyvin vähän tai ei lainkaan."
+
+msgid "Theme: End of the world"
+msgstr "Teema: Maailmanloppu"
+
+msgid "If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden teemaan."
+
+msgid "Theme: Dinosaurs"
+msgstr "Teema: Dinosaurukset"
+
+msgid "If your game is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden lasten teemaan."
+
+msgid "Playstyle and mechanics (Choose any which apply)"
+msgstr "Pelin tyyli (valitse soveltuvat)"
+
+msgid "Serious playstyle"
+msgstr "Vakava pelityyli"
+
+msgid "Lighthearted playstyle"
+msgstr "Kevyt pelityyli"
+
+msgid "Rules-heavy"
+msgstr "Raskaat säännöt"
+
+msgid "Rules-light"
+msgstr "Kevyet säännöt"
+
+msgid "Story-driven"
+msgstr "Tarinavetoinen"
+
+msgid "Character-driven"
+msgstr "Hahmovetoinen"
+
+msgid "Combat-driven"
+msgstr "Taisteluvetoinen"
+
+msgid "Description of your game"
+msgstr "Kuvaus"
+
+msgid "Advertise your game for potential players. If your game includes any potentially shocking or distressing themes, please mention it here.<br><br>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.<br><br>Write the description in the language the game will be run in (Finnish, English). You can write the description in both languages if you want."
+msgstr "Mainosta peliäsi pelaajille. Varmista, että kerrot mahdollisesti järkyttävistä tai häiritsevistä teemoista. Suositeltu pituus on 300-500 merkkiä. Pidätämme oikeuden muokata tekstiä tarpeen mukaan.<br><br>Kirjoita kuvaus ainakin sillä kielellä, jolla peli peluutetaan (suomeksi tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
+
+msgid "Slogan for your game"
+msgstr "Lyhyt mainoslause"
+
+msgid "Condense the essence of your game into one short sentence that will let players know what your game have to offer. For example, “A traditional D&D dungeon crawl”, or “Lovecraftian horror in Equestria”. We reserve the right to edit the slogan if necessary."
+msgstr "Tiivistä pelisi yhteen lauseeseen, joka kertoo pelaajalle pelin sisällöstä tärkeimmän. Esim. "Perinteistä D&D-luolastoseikkailua" tai "Lovecraftilaista kauhua Equestriassa". Pidätämme oikeuden muokata tekstiä."
+
+msgid "When are you NOT able to run your game?"
+msgstr "Milloin ET PYSTY pelauttamaan peliäsi?"
+
+msgid "Select the times when you are NOT able to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
+msgstr "Merkitse tähän ne ajat, jolloin sinun ei ole mahdollista pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."
+
+msgid "Comments"
+msgstr "Muuta tietoa roolipelivastaaville"
+
+msgid "Is there anything else you would like to tell the RPG coordinators? For example, if you are a beginner GM and would like some additional support, let us know and we will gladly help you out!"
+msgstr "Jos haluat kertoa roolipelivastaaville jotakin joka ei sisälly ylläoleviin kenttiin, kirjoita se tähän. Jos olet esimerkiksi aloitteleva pelinjohtaja, ja kaipaat lisätukea, autamme mielellämme!"
+
 # ropelomake
 
 msgid "Who is the game meant for?"
@@ -6,8 +125,7 @@ msgstr "Kenelle peli on tarkoitettu?"
 msgid "Game title"
 msgstr "Pelin nimi"
 
-msgid "RPG system"
-msgstr "Roolipelijärjestelmä"
+
 
 msgid "Which RPG system does the game use?"
 msgstr "Mitä järjestelmää peli käyttää?"
