@@ -225,7 +225,7 @@ LARP_FORM_FIELD_TEXTS = dict(
     other_author=(_('Game designer (if other than GM)'), _('If the game was designed by someone other than the GM running it at Ropecon, please enter the name of the designer here.')),
     ropecon2018_signuplist=(_('Who makes the sign-up list - you or the Larp Desk?'), _('If you make the sign-up list for your larp yourself, you can ask more specific questions about player preferences. A sign-up list made by the Larp Desk is simply a list of names.')),
     ropecon2019_blocked_time_slots=(_('When are you NOT able to run your game?'), _('Select the times when you are NOT able to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.')),
-    notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the larp coordinators?<br><br>If the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br><br>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br><br>You can also specify your preferred schedule here.')),
+    notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the larp coordinators?<br><br>Please mention here if the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br><br>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br><br>You can also specify your preferred schedule here.')),
     is_in_english=(_('English OK'), _('If you are able, prepared and willing to run your larp in English if necessary, please tick this box.')),
     is_age_restricted=(_('For players over 18 only'), _('If your larp contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players.')),
     ropecon2020_suitable_for_children_under_7=(_('Suitable for children under 7'), _('If your larp is aimed at children under 7 years of age, please tick this box. You can also tick this box if your larp is suitable for children under 7 years, even if it is not specifically designed for them.')),
@@ -285,7 +285,6 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields['description'].required = True
         self.fields["ropecon2018_signuplist"].choices = [('none', _('No sign-up')), ('tiski', _('The Larp Desk will make the sign-up list')), ('itse', _('I will make my own sign-up list')),]
         self.fields["ropecon2018_signuplist"].choices = [(k, t) for (k, t) in self.fields["ropecon2018_signuplist"].choices if k != 'none']
-#        self.fields["ropecon2018_signuplist"].help_text =
         self.fields['ropecon2019_blocked_time_slots'].required = True
 
     class Meta:
@@ -317,6 +316,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
+            content_warnings=forms.Textarea,
             ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
