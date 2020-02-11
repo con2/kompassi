@@ -513,12 +513,12 @@ class Programme(models.Model, CsvExportMixin):
         max_length=4,
         blank=True,
         verbose_name=_('Game program type'),
-        help_text=_('What type of game program are you offering? Tournament - organizing your own tournament or competition. Demonstration - showcasing, demonstrating and playing a game. Open game - playing a game with or without specific scenarios.'),
+        help_text=_('What type of game programme are you offering? Tournament – organising your own game tournament or contest. Demonstration – showcasing, demonstrating and running demo games at the Experience Point. Open game – running games with or without specific scenarios by request. Other – Something other than mentioned above'),
         choices=[
             ('tmnt', _('Tournament')),
             ('demo', _('Demonstration')),
             ('open', _('Open game')),
-            ('pain', _('Miniature painting')),
+            ('othr', _('Other')),
         ]
     )
 
@@ -547,10 +547,16 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name=_('Theme: End of the world'),
         help_text=_('If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box.'),
     )
-    ropecon2020_theme_dinosaurs    = models.BooleanField(
+    ropecon2020_theme_dinosaurs = models.BooleanField(
         default=False,
         verbose_name=_('Theme: Dinosaurs'),
         help_text=_('If your game is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box.'),
+    )
+    ropecon2020_materials_language = models.CharField(
+        max_length=1023,
+        default='',
+        blank=True,
+        verbose_name=_('What language is used in the game materials?'),
     )
 
     is_using_paikkala = models.BooleanField(
@@ -583,10 +589,10 @@ class Programme(models.Model, CsvExportMixin):
     ROPECON2018_AUDIENCE_SIZE_CHOICES = [
         ('unknown', _('No estimate')),
         ('lt50', _('Less than 50')),
-        ('50-100', _('50 - 100')),
-        ('100-150', _('100 - 150')),
-        ('150-200', _('150 - 200')),
-        ('200-250', _('200 - 250')),
+        ('50-100', _('50 – 100')),
+        ('100-150', _('100 – 150')),
+        ('150-200', _('150 – 200')),
+        ('200-250', _('200 – 250')),
         ('gt250', _('Over 250')),
     ]
 
