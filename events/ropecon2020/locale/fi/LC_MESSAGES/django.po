@@ -1,3 +1,95 @@
+# Pelitiski 2020
+
+msgid "Game category"
+msgstr "Pelityyppi"
+
+msgid "Which category does your game programme belong to?"
+msgstr "Mihin kategoriaan peliohjelmasi mielestäsi kuuluu?"
+
+msgid "Game programme type"
+msgstr "Peliohjelman tyyppi"
+
+msgid "What type of game programme are you offering?<br><br>Tournament - organising your own game tournament or contest<br><br>Demonstration - showcasing, demonstrating and running demo games at the Experience Point<br><br>Open game - running games with or without specific scenarios by request<br><br>Other - Something other than mentioned above"
+msgstr "Minkä tyyppinen peliohjelma on kyseessä?<br><br>Turnaus - nimenomaan turnauksen ja kilpailun järjestämistä.<br><br>Demotus - pelin esittelyä ja demottamista sekä pelaamista.<br><br>Avoin peluutus - avointa peluutusta pyynnöstä<br><br>Muu - jokin muu kuin ylläoleva"
+
+msgid "Other"
+msgstr "Muu"
+
+msgid "Game programme title"
+msgstr "Peliohjelman nimi"
+
+msgid "Give your game programme a catchy and concise title. We reserve the right to edit the title if necessary."
+msgstr "Keksi ytimekäs otsikko peliohjelmalle. Varaamme oikeuden muokata otsikkoa."
+
+msgid "For 3 to 4 hours (180-240 minutes) of game programme you will receive a one-day ticket to Ropecon. For 6 to 8 hours (360-480 minutes) of game programme you will receive a weekend ticket to Ropecon."
+msgstr "3-4 tunnin (180-240 minuutin) peliohjelmasta saat vaivanpalkaksi yhden päivärannekkeen. 6-8 tunnin (360-480 minuutin) peliohjelmasta saat vaivanpalkaksi yhden viikonloppurannekkeen."
+
+msgid "Number of players"
+msgstr "Osallistujamäärä"
+
+msgid "How many players can participate in the game programme?"
+msgstr "Kuinka monta pelaajaa mahtuu mukaan?"
+
+msgid "Advertise your game for potential players. Inform players about what is expected of them, and what themes your game contains. If your game includes any heavy themes, such as physical violence or psychological abuse, please mention it here. Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary."
+msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos pelissäsi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+msgid "If your game programme contains any heavy topics or themes that some players may find distressing, please mention them here."
+msgstr "Mikäli ohjelmasi sisältää jotain ronskeja ja osalle sopimattomia aiheita niin ilmoita ne tässä."
+
+msgid "What game system is used? For example, “Magic the Gathering”. If you designed the game system yourself, describe it in a few words. For example, “4X, space battle, conquest”"
+msgstr "Mikä on pelisysteemi? Esim. “Magic the Gathering” Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. “4X, avaruustaistelu, valloitus”"
+
+msgid "What language is used in the game materials?"
+msgstr "Millä kielellä pelimateriaalit on tarjottu?"
+
+msgid "Sign-up process"
+msgstr "Ilmoittautuminen"
+
+msgid "How will players sign up for your game programme?<br><br>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option.<br><br>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br><br>No sign-up - No sign-up is required to participate."
+msgstr "Miten ohjelmaan ilmoittaudutaan?<br><br>Ilmoittautuminen pelitiskille - pelitiskin tekemä lista on nimilista peliin tulevista ihmisistä. Jos ohjelmasi vaatii ilmoittautumisen, eikä kyseessä ole figuturnaus, valitse tämä.<br><br>Ilmoittautuminen ennakkoon - figuturnausten ilmoittautumisen tulee aueta viimeistään 31.5.<br><br>Ei ilmoittautumista - Peli ei vaadi erityistä ilmoittautumista."
+
+msgid "Sign-up in advance"
+msgstr "Ilmoittautuminen ennakkoon"
+
+msgid "Sign-up at the Gaming Desk"
+msgstr "Ilmoittautuminen pelitiskille"
+
+msgid "How much table space and how many chairs do you need for your game programme? Do you have any technical needs (for example, electricity)? Please keep in mind that we may not be able to fulfill all requests, so please justify how yours would benefit your game programme. Table size is 70 cm x 200 cm."
+msgstr "Kerro tässä paljonko tarvitset pöytätilaa, tuoleja ja tarvitsetko erityistä tekniikkaa (esim. sähköä). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee ohjelmaa. Pöytien koko on 70cm x 200cm."
+
+msgid "When would you like to host your game programme? Select the times when you ARE ABLE to host your game programme.<br><br>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below.<br><br>There are no restrictions on when you can or cannot host your game programme, but we reserve the right to make changes if necessary (for example, we would prefer to schedule tournaments to be held one after another rather than at the same time)."
+msgstr "Mihin aikaan aiot pitää ohjelmasi? Merkitse tähän ne ajat, jolloin PYSTYT pitämään ohjelmasi.<br><br>Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä Vapaamuotoiset terveiset kentässä.<br><br>Emme rajoita koska haluat pitää ohjelmasi, mutta pidätämme oikeudet muutoksiin (esim aikataulutamme mielummin turnauksia peräkkäin kuin samanaikaisesti."
+
+msgid "Is there anything else you would like to tell the organisers of Ropecon? You can also specify your preferred schedule here."
+msgstr "Haluatko sanoa coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä? Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+
+msgid "Who is your game programme for?"
+msgstr "Kenelle peli on tarkoitettu?"
+
+msgid "If you are able, prepared and willing to host your game programme in English if necessary, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+
+msgid "If your game programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+
+msgid "If your game programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "If your game programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "If your game programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "If your game programme is suitable for players with very limited or without any previous knowledge about the game in question, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemusta aiheesta olisi hyvin vähän tai ei lainkaan."
+
+msgid "If your game programme is related to the theme of Ropecon 2020 (end of the world), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
+
+msgid "If your game programme is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden lasten teemaan."
+
 # Larpit 2020
 
 msgid "Title of your larp"
@@ -109,46 +201,46 @@ msgid "For players over 18 only"
 msgstr "Vain täysi-ikäisille"
 
 msgid "If your game contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
-msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
 
 msgid "Suitable for children under 7"
 msgstr "Sopii alle 7-vuotiaille"
 
 msgid "If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "Suitable for children aged 7-12"
 msgstr "Sopii 7-12-vuotiaille"
 
 msgid "If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "Suitable for children aged 12+"
 msgstr "Sopii yli 12-vuotiaille"
 
 msgid "If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "Not suitable for children"
 msgstr "Ei sovellu lapsille"
 
 msgid "If your game programme is not suitable for children under 15 years of age, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos ohjelmasi ei sovellu alle 15-vuotiaille lapsille."
+msgstr "Ruksaa tämä ruutu, jos pelisi ei sovellu alle 15-vuotiaille lapsille."
 
 msgid "If your game is suitable for players with very limited or without any previous experience about RPGs, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos ohjelmaasi voi osallistua, vaikka aiempaa kokemusta roolipeleistä olisi hyvin vähän tai ei lainkaan."
+msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemusta roolipeleistä olisi hyvin vähän tai ei lainkaan."
 
 msgid "Theme: End of the world"
 msgstr "Teema: Maailmanloppu"
 
 msgid "If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box."
-msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden teemaan."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
 
 msgid "Theme: Dinosaurs"
 msgstr "Teema: Dinosaurukset"
 
 msgid "If your game is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box."
-msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden lasten teemaan."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden lasten teemaan."
 
 msgid "Playstyle and mechanics (Choose any which apply)"
 msgstr "Pelin tyyli (valitse soveltuvat)"
