@@ -45,8 +45,8 @@ msgstr "Millä kielellä pelimateriaalit on tarjottu?"
 msgid "Sign-up process"
 msgstr "Ilmoittautuminen"
 
-msgid "How will players sign up for your game programme?<br><br>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option.<br><br>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br><br>No sign-up - No sign-up is required to participate."
-msgstr "Miten ohjelmaan ilmoittaudutaan?<br><br>Ilmoittautuminen pelitiskille - pelitiskin tekemä lista on nimilista peliin tulevista ihmisistä. Jos ohjelmasi vaatii ilmoittautumisen, eikä kyseessä ole figuturnaus, valitse tämä.<br><br>Ilmoittautuminen ennakkoon - figuturnausten ilmoittautumisen tulee aueta viimeistään 31.5.<br><br>Ei ilmoittautumista - Peli ei vaadi erityistä ilmoittautumista."
+msgid "How will players sign up for your game programme?<br><br>No sign-up - No sign-up is required to participate.<br><br>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br><br>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option."
+msgstr "Miten ohjelmaan ilmoittaudutaan?<br><br>Ei ilmoittautumista - Peli ei vaadi erityistä ilmoittautumista.<br><br>Ilmoittautuminen ennakkoon - figuturnausten ilmoittautumisen tulee aueta viimeistään 31.5.<br><br>Ilmoittautuminen pelitiskille - pelitiskin tekemä lista on nimilista peliin tulevista ihmisistä. Jos ohjelmasi vaatii ilmoittautumisen, eikä kyseessä ole figuturnaus, valitse tämä."
 
 msgid "Sign-up in advance"
 msgstr "Ilmoittautuminen ennakkoon"

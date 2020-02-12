@@ -425,7 +425,7 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
     description=(_('Description'), _('Advertise your game for potential players. Inform players about what is expected of them, and what themes your game contains. If your game includes any heavy themes, such as physical violence or psychological abuse, please mention it here. Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.')),
     content_warnings=(_('Content warnings'), _('If your game programme contains any heavy topics or themes that some players may find distressing, please mention them here.')),
     rpg_system=(_('Game system'), _('What game system is used? For example, “Magic the Gathering”. If you designed the game system yourself, describe it in a few words. For example, “4X, space battle, conquest”')),
-    ropecon2018_signuplist=(_('Sign-up process'), _('How will players sign up for your game programme?<br><br>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option.<br><br>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br><br>No sign-up - No sign-up is required to participate.')),
+    ropecon2018_signuplist=(_('Sign-up process'), _('How will players sign up for your game programme?<br><br>No sign-up - No sign-up is required to participate.<br><br>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br><br>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option.')),
     tech_requirements=(_('Space and technical needs'), _('How much table space and how many chairs do you need for your game programme? Do you have any technical needs (for example, electricity)? Please keep in mind that we may not be able to fulfill all requests, so please justify how yours would benefit your game programme. Table size is 70 cm x 200 cm.')),
     ropecon2019_preferred_time_slots=(_('Preferred schedule'), _('When would you like to host your game programme? Select the times when you ARE ABLE to host your game programme.<br><br>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below.<br><br>There are no restrictions on when you can or cannot host your game programme, but we reserve the right to make changes if necessary (for example, we would prefer to schedule tournaments to be held one after another rather than at the same time).')),
     notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the organisers of Ropecon? You can also specify your preferred schedule here.')),
@@ -439,6 +439,8 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
     ropecon2020_theme_end_of_the_world=(_('Theme: End of the world'), _('If your game programme is related to the theme of Ropecon 2020 (end of the world), please tick this box.')),
     ropecon2020_theme_dinosaurs=(_('Theme: Dinosaurs'), _('If your game programme is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box.')),
 )
+
+
 
 
 class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
