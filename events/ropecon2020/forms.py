@@ -417,17 +417,30 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
 
 GAMING_DESK_FORM_FIELD_TEXTS = dict(
-    category=(_('Game programme type'), _('What type of game programme are you offering? Tournament - organising your own game tournament or contest. Demonstration - showcasing, demonstrating and running demo games at the Experience Point. Open game - running games with or without specific scenarios by request. Other - Something other than mentioned above.')),
+    category=(_('Game category'), _('Which category does your game programme belong to?')),
+    ropecon2019_gaming_desk_subtype=(_('Game programme type'), _('What type of game programme are you offering?<br><br>Tournament - organising your own game tournament or contest<br><br>Demonstration - showcasing, demonstrating and running demo games at the Experience Point<br><br>Open game - running games with or without specific scenarios by request<br><br>Other - Something other than mentioned above')),
     title=(_('Game programme title'), _('Give your game programme a catchy and concise title. We reserve the right to edit the title if necessary.')),
     approximate_length=(_('Estimated duration (minutes)'), _('For 3 to 4 hours (180-240 minutes) of game programme you will receive a one-day ticket to Ropecon. For 6 to 8 hours (360-480 minutes) of game programme you will receive a weekend ticket to Ropecon.')),
     max_players=(_('Number of players'), _('How many players can participate in the game programme?')),
     description=(_('Description'), _('Advertise your game for potential players. Inform players about what is expected of them, and what themes your game contains. If your game includes any heavy themes, such as physical violence or psychological abuse, please mention it here. Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.')),
     content_warnings=(_('Content warnings'), _('If your game programme contains any heavy topics or themes that some players may find distressing, please mention them here.')),
-    rpg_system=(_('Game system'), _('What is the game system used? For example, “Magic the Gathering” Did you design the game yourself? Describe it in a few words, for example “4X, space battle, conquest”')),
-    ropecon2018_signuplist=(_('Signup'), _('How do players sign up for your program? Sign up at the Gaming Desk - The Gaming Desk will collect a list of the participants. I will collect sign-ups - You will collect sign-ups yourself in any way you prefer. No sign-up - The game does not require sign-ups.')),
-    tech_requirements=(_('Space and technical needs'), _('Tell us how much table space and how many chairs you need, and whether you have any technical needs (eg. electricity). Unfortunately all requests cannot be fulfilled, so please justify how your request serves the program. Table size is 70cm x 200cm.')),
-    notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the organizers? You can also specify your desired schedule here.')),
+    rpg_system=(_('Game system'), _('What game system is used? For example, “Magic the Gathering”. If you designed the game system yourself, describe it in a few words. For example, “4X, space battle, conquest”')),
+    ropecon2018_signuplist=(_('Sign-up process'), _('How will players sign up for your game programme?<br><br>No sign-up - No sign-up is required to participate.<br><br>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br><br>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option.')),
+    tech_requirements=(_('Space and technical needs'), _('How much table space and how many chairs do you need for your game programme? Do you have any technical needs (for example, electricity)? Please keep in mind that we may not be able to fulfill all requests, so please justify how yours would benefit your game programme. Table size is 70 cm x 200 cm.')),
+    ropecon2019_preferred_time_slots=(_('Preferred schedule'), _('When would you like to host your game programme? Select the times when you ARE ABLE to host your game programme.<br><br>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below.<br><br>There are no restrictions on when you can or cannot host your game programme, but we reserve the right to make changes if necessary (for example, we would prefer to schedule tournaments to be held one after another rather than at the same time).')),
+    notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the organisers of Ropecon? You can also specify your preferred schedule here.')),
+    is_in_english=(_('English OK'), _('If you are able, prepared and willing to host your game programme in English if necessary, please tick this box.')),
+    is_age_restricted=(_('For players over 18 only'), _('If your game programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players.')),
+    ropecon2020_suitable_for_children_under_7=(_('Suitable for children under 7'), _('If your game programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them.')),
+    ropecon2020_suitable_for_children_aged_7_12=(_('Suitable for children aged 7-12'), _('If your game programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them.')),
+    ropecon2020_suitable_for_children_aged_12_plus=(_('Suitable for children aged 12+'), _('If your game programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them.')),
+    ropecon2020_not_suitable_for_children=(_('Not suitable for children'), _('If your game programme is not suitable for children under 15 years of age, please tick this box.')),
+    is_beginner_friendly=(_('Beginner-friendly'), _('If your game programme is suitable for players with very limited or without any previous knowledge about the game in question, please tick this box.')),
+    ropecon2020_theme_end_of_the_world=(_('Theme: End of the world'), _('If your game programme is related to the theme of Ropecon 2020 (end of the world), please tick this box.')),
+    ropecon2020_theme_dinosaurs=(_('Theme: Dinosaurs'), _('If your game programme is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box.')),
 )
+
+
 
 
 class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
@@ -454,7 +467,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2019_preferred_time_slots',
             'notes_from_host',
 
-            Fieldset(_('Who is the game for?'),
+            Fieldset(_('Who is your game programme for?'),
                 'is_in_english',
                 'is_age_restricted',
                 'ropecon2020_suitable_for_children_under_7',
@@ -476,6 +489,14 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'board',
             'exp',
         ))
+
+        self.fields["category"].choices = [('miniwar', _('Pelitiski: Figupeli / Miniature wargame')), ('card', _('Pelitiski: Korttipeli / Card game')), ('board', _('Pelitiski: Lautapeli / Board game')), ('exp', _('Pelitiski: Muu / Other')),]
+        self.fields['ropecon2019_gaming_desk_subtype'].required = True
+        self.fields['max_players'].initial = 3
+        self.fields['max_players'].required = True
+        self.fields['description'].required = True
+        self.fields["ropecon2018_signuplist"].choices = [('none', _('No sign-up')), ('itse', _('Sign-up in advance')), ('tiski', _('Sign-up at the Gaming Desk')),]
+        self.fields['ropecon2019_preferred_time_slots'].required = True
 
     class Meta:
         model = Programme
@@ -505,6 +526,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
+            content_warnings=forms.Textarea,
             ropecon2019_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 
