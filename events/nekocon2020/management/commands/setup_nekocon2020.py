@@ -130,10 +130,9 @@ class Setup(object):
                 target_event=self.event,
             )
 
-        labour_event_meta.create_groups()
+            JobCategory.objects.filter(event=self.event, name='Conitea').update(public=False)
 
-        for name in ['Conitea']:
-            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+        labour_event_meta.create_groups()
 
         for jc_name, qualification_name in [
             ('Järjestyksenvalvoja', 'JV-kortti'),
