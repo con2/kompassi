@@ -1,3 +1,122 @@
+# Muu ohjelma 2020
+
+msgid "Title of your programme"
+msgstr "Otsikko"
+
+msgid "Come up with a catchy, concise title for your programme. Ropecon reserves the right to edit the title if necessary."
+msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
+
+msgid "Describe your programme to your potential audience or participants in an appealing way. If your programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your programme is meant as humorous or entertaining in nature, let it show in the description as well. Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the programme if necessary."
+msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Jos ohjelmasi on humoristinen tai viihteellinen, annathan sen näkyä myös kuvauksessa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+msgid "If your programme contains topics or themes that are heavy or distressing, please mention them here."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
+
+msgid "Programme category"
+msgstr "Ohjelmaluokka"
+
+msgid "Choose the category that best suits your programme. Ropecon reserves the right to change the programme category if necessary."
+msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa."
+
+msgid "Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other programme, please make an estimation."
+msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia. Työpaja voi olla 45, 105 tai 165 minuuttia. Muut ohjelmat voivat arvioida keston."
+
+msgid "If you are able, prepared and willing to organise your programme in English if necessary, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään ohjelmasi tarvittaessa englanniksi."
+
+msgid "If your programme is suitable for people with very limited or without any previous knowledge about the subject, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmaan voi osallistua vaikka aiempaa kokemusta aiheesta olisi hyvin vähän tai ei lainkaan."
+
+msgid "For children under 7"
+msgstr "Sopii alle 7-vuotiaille"
+
+msgid "If your programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your programme is suitable for children under 7 years, even if it is not specifically aimed at them."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "For children aged 7-12"
+msgstr "Sopii 7-12-vuotiaille"
+
+msgid "If your programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your programme is suitable for children aged 7-12 years, even if it is not specifically aimed at them."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "For children aged 12+"
+msgstr "Sopii yli 12-vuotiaille"
+
+msgid "If your programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your programme is suitable for children aged 12 years and older, even if it is not specifically aimed at them."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "If your programme is not suitable for children under 15 years of age, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi ei sovellu alle 15-vuotiaille lapsille."
+
+msgid "For 18+ only"
+msgstr "Vain täysi-ikäisille"
+
+msgid "If your programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all participants."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+
+msgid "Accessibility"
+msgstr "Esteellisyys"
+
+msgid "If your programme contains any loud noises, flashing lights or other elements that can limit accessibility, please tick this box. More details can be provided in the Comments section below if necessary."
+msgstr "Ruksaa tämä ruutu, jos ohjelma sisältää kovia ääniä, valoja tai muuta, mikä voi rajoittaa osallistumista. Tarkenna tarvittaessa viimeisessä avoimessa kentässä."
+
+msgid "If your programme is related to the theme of Ropecon 2020 (end of the world), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden teemaan."
+
+msgid "If your programme is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden lasten teemaan."
+
+msgid "If the number of participants in your workshop or other programme is limited, please provide the maximum number of participants."
+msgstr "Mikäli työpajan tai muun ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
+
+msgid "Laptop needs"
+msgstr "Tietokoneen käyttö"
+
+msgid "What kind of a laptop will you use? We strongly recommend using a laptop provided by Ropecon. Using your own laptop is possible only when notified in advance."
+msgstr "Minkälaista tietokonetta haluat käyttää? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
+
+msgid "Laptop provided by Ropecon"
+msgstr "Tapahtuman toimittama kannettava tietokone"
+
+msgid "Own laptop (PC)"
+msgstr "Oma PC-kannettava"
+
+msgid "Own laptop (Mac)"
+msgstr "Oma Mac-kannettava"
+
+msgid "No laptop is needed in my programme"
+msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
+
+msgid "Other technical needs"
+msgstr "Muut tekniikkatarpeet"
+
+msgid "When are you NOT able to host your programme?"
+msgstr "Milloin ET pysty pitämään ohjelmaasi?"
+
+msgid "Select the times when you DO NOT want to host your programme. Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
+msgstr "Ruksaa ne ajat, jolloin ET halua pitää ohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
+
+msgid "Is there anything else you would like to tell the programme coordinators or organisers of Ropecon?"
+msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+
+msgid "I’m interested in participating in a panel discussion related to my field of expertise."
+msgstr "Voin osallistua erikoisalaani sivuavaan paneelikeskusteluun"
+
+msgid "Recording & publishing consent"
+msgstr "Videointilupa"
+
+msgid "Do you give Ropecon permission to record your programme and publish it on the Internet?"
+msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
+
+msgid "I give permission to record and publish my programme"
+msgstr "Ohjelmanumeroni saa videoida ja julkaista"
+
+msgid "I do not give permission to record or publish my programme"
+msgstr "Kiellän ohjelmani videoinnin kokonaan"
+
+msgid ""
+msgstr ""
+
 # Pelitiski 2020
 
 msgid "Game category"
