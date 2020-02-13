@@ -29,7 +29,7 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_programme()
+#        self.setup_programme()
         self.setup_tickets()
         self.setup_payments()
         self.setup_badges()
@@ -292,14 +292,15 @@ class Setup(object):
                 ('Puheohjelma: esitelmä / Presentation', 'pres', 'color1'),
                 ('Puheohjelma: paneeli / Panel discussion', 'panel', 'color1'),
                 ('Puheohjelma: keskustelu / Discussion group', 'disc', 'color1'),
-                ('Työpaja: käsityö / Crafts', 'craft', 'color2'),
-                ('Työpaja: figut / Miniature figurines', 'mini', 'color2'),
-                ('Työpaja: musiikki / Music', 'music', 'color2'),
+                ('Työpaja: käsityö / Workshop: crafts', 'craft', 'color2'),
+                ('Työpaja: figut / Workshop: miniature figurines', 'mini', 'color2'),
+                ('Työpaja: musiikki / Workshop: music', 'music', 'color2'),
                 ('Työpaja: muu / Other workshop', 'workshop', 'color2'),
+                ('Tanssiohjelma / Dance programme', 'dance', 'color2'),
                 ('Pelitiski: Figupeli / Miniature wargame', 'miniwar', 'color3'),
                 ('Pelitiski: Korttipeli / Card game', 'card', 'color3'),
                 ('Pelitiski: Lautapeli / Board game', 'board', 'color3'),
-                ('Pelitiski: Kokemuspiste / Experience Point', 'exp', 'color3'),
+                ('Pelitiski: Muu / Other', 'exp', 'color3'),
                 ('Roolipeli / Pen & Paper RPG', 'rpg', 'color4'),
                 ('LARP', 'larp', 'color5'),
                 ('Muu ohjelma / None of the above', 'other', 'color6'),

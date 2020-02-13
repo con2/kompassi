@@ -328,14 +328,28 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
 
 PROGRAMME_FORM_FIELD_TEXTS = dict(
-    title=(_('Title'), _('Come up with a catchy, concise title for your program. Ropecon reserves the right to edit the title if necessary.')),
-    description=(_('Description'), _('Describe your program to your potential audience or participants in an appealing way. If your program contains topics that are heavy or potentially distressing, please pay special attention to this in the description. Recommended length is 300-500 characters. Ropecon reserves the right to edit the description and title of the program if necessary, for example reducing their length.')),
-    category=(_('Program category'), _('Choose the program category that best suits your program. Ropecon reserves the right to change the program category if necessary.')),
-    approximate_length=(_('Estimated duration (minutes)'), _('Duration of lectures and panel discussions is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other program, please make an estimation.')),
-    is_family_program=(_('Family-friendly'), _('If your program is suitable for or aimed at children, teenagers or families, please tick the checkbox. More details can be provided in the last text field.')),
-    max_players=(_('Max. number of participants'), _('If your workshop or other program can only host a limited number of participants, please provide a maximum number of attendees.')),
-    ropecon2019_blocked_time_slots=(_('When are you unable to have your program item?'), _('Select the times when you DO NOT want to have your program. Time slots have been intentionally left vague. If you have further requests on time slots and schedule, more details can be provided in the open comment field below.')),
-    notes_from_host=(_('Comments'), _('Do you have any further information, details, comments or questions that you would like to let our program coordinators to know?')),
+    title=(_('Title of your programme'), _('Come up with a catchy, concise title for your programme. Ropecon reserves the right to edit the title if necessary.')),
+    description=(_('Description'), _('Describe your programme to your potential audience or participants in an appealing way. If your programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your programme is meant as humorous or entertaining in nature, let it show in the description as well. Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the programme if necessary.')),
+    content_warnings=(_('Content warnings'), _('If your programme contains topics or themes that are heavy or distressing, please mention them here.')),
+    category=(_('Programme category'), _('Choose the category that best suits your programme. Ropecon reserves the right to change the programme category if necessary.')),
+    approximate_length=(_('Estimated duration (minutes)'), _('Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other programme, please make an estimation.')),
+    is_english_ok=(_('English OK'), _('If you are able, prepared and willing to organise your programme in English if necessary, please tick this box.')),
+    is_beginner_friendly=(_('Beginner-friendly'), _('If your programme is suitable for people with very limited or without any previous knowledge about the subject, please tick this box.')),
+    ropecon2020_suitable_for_children_under_7=(_('For children under 7'), _('If your programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your programme is suitable for children under 7 years, even if it is not specifically aimed at them.')),
+    ropecon2020_suitable_for_children_aged_7_12=(_('For children aged 7-12'), _('If your programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your programme is suitable for children aged 7-12 years, even if it is not specifically aimed at them.')),
+    ropecon2020_suitable_for_children_aged_12_plus=(_('For children aged 12+'), _('If your programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your programme is suitable for children aged 12 years and older, even if it is not specifically aimed at them.')),
+    ropecon2020_not_suitable_for_children=(_('Not suitable for children'), _('If your programme is not suitable for children under 15 years of age, please tick this box.')),
+    is_age_restricted=(_('For 18+ only'), _('If your programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all participants.')),
+    is_inaccessible=(_('Accessibility'), _('If your programme contains any loud noises, flashing lights or other elements that can limit accessibility, please tick this box. More details can be provided in the Comments section below if necessary.')),
+    ropecon2020_theme_end_of_the_world=(_('Theme: End of the world'), _('If your programme is related to the theme of Ropecon 2020 (end of the world), please tick this box.')),
+    ropecon2020_theme_dinosaurs=(_('Theme: Dinosaurs'), _('If your programme is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box.')),
+    max_players=(_('Number of participants'), _('If the number of participants in your workshop or other programme is limited, please provide the maximum number of participants.')),
+    computer=(_('Laptop needs'), _('What kind of a laptop will you use? We strongly recommend using a laptop provided by Ropecon. Using your own laptop is possible only when notified in advance.')),
+    tech_requirements=(_('Other technical needs'), None),
+    ropecon2019_blocked_time_slots=(_('When are you NOT able to host your programme?'), _('Select the times when you DO NOT want to host your programme. Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below.')),
+    notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the programme coordinators or organisers of Ropecon?')),
+    is_available_for_panel=(_('Panel discussions'), _('I’m interested in participating in a panel discussion related to my field of expertise.')),
+    video_permission=(_('Recording & publishing consent'), _('Do you give Ropecon permission to record your programme and publish it on the Internet?')),
 )
 
 
@@ -355,11 +369,15 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'category',
             'approximate_length',
             'is_english_ok',
-            'is_children_friendly',
             'is_beginner_friendly',
-            'is_inaccessible',
-            'is_family_program',
+            'ropecon2020_suitable_for_children_under_7',
+            'ropecon2020_suitable_for_children_aged_7_12',
+            'ropecon2020_suitable_for_children_aged_12_plus',
+            'ropecon2020_not_suitable_for_children',
             'is_age_restricted',
+            'is_inaccessible',
+            'ropecon2020_theme_end_of_the_world',
+            'ropecon2020_theme_dinosaurs',
             'max_players',
             'computer',
             'tech_requirements',
@@ -370,9 +388,14 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'video_permission',
         )
 
+
+
+
         for field_name, texts in PROGRAMME_FORM_FIELD_TEXTS.items():
             self.fields[field_name].label, self.fields[field_name].help_text = texts
 
+        self.fields['description'].required = True
+        self.fields['approximate_length'].required = True
         self.fields['video_permission'].required = True
         self.fields['approximate_length'].initial = 105
 
@@ -384,8 +407,13 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'mini',
             'music',
             'workshop',
+            'dance',
             'other',
         ))
+        self.fields['computer'].choices = [('con', _('Laptop provided by Ropecon')), ('pc', _('Own laptop (PC)')), ('mac', _('Own laptop (Mac)')),('none', _('No laptop is needed in my programme')),]
+        self.fields['ropecon2019_blocked_time_slots'].required = True
+        self.fields['video_permission'].choices = [('public', _('I give permission to record and publish my programme')), ('forbidden', _('I do not give permission to record or publish my programme')),]
+        self.fields['video_permission'].blank = True
 
     class Meta:
         model = Programme
@@ -396,11 +424,15 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'category',
             'approximate_length',
             'is_english_ok',
-            'is_children_friendly',
             'is_beginner_friendly',
-            'is_inaccessible',
-            'is_family_program',
+            'ropecon2020_suitable_for_children_under_7',
+            'ropecon2020_suitable_for_children_aged_7_12',
+            'ropecon2020_suitable_for_children_aged_12_plus',
+            'ropecon2020_not_suitable_for_children',
             'is_age_restricted',
+            'is_inaccessible',
+            'ropecon2020_theme_end_of_the_world',
+            'ropecon2020_theme_dinosaurs',
             'max_players',
             'computer',
             'tech_requirements',
@@ -490,7 +522,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'exp',
         ))
 
-        self.fields["category"].choices = [('miniwar', _('Pelitiski: Figupeli / Miniature wargame')), ('card', _('Pelitiski: Korttipeli / Card game')), ('board', _('Pelitiski: Lautapeli / Board game')), ('exp', _('Pelitiski: Muu / Other')),]
+
         self.fields['ropecon2019_gaming_desk_subtype'].required = True
         self.fields['max_players'].initial = 3
         self.fields['max_players'].required = True
