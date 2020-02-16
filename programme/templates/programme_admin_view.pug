@@ -68,6 +68,19 @@ block admin_content
               else
                 span.label.label-default.kompassi-space-after
                   a(href='?{{ it.qs_add }}') {{ it.name }}
+
+      if miniworkshop_filters
+        .row
+          .col-md-3: strong Figutyöpaja
+          .col-md-9
+            for it, active in miniworkshop_filters
+              if active
+                span.label.label-brand.kompassi-space-after
+                  a(href='?{{ it.qs_del }}') {{ it.name }}
+              else
+                span.label.label-default.kompassi-space-after
+                  a(href='?{{ it.qs_add }}') {{ it.name }}
+
       hr
       .row
         .col-md-3: strong Luettelojärjestys

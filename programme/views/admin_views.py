@@ -54,11 +54,9 @@ def programme_admin_view(request, vars, event, format='screen'):
 
     video_permission_filters = Filter(request, 'video_permission')
     video_permission_filters.add_choices('video_permission', VIDEO_PERMISSION_CHOICES)
-    video_permission_filters.filter_queryset(programmes)
     programmes = video_permission_filters.filter_queryset(programmes)
 
     photography_filters = Filter(request, 'photography').add_choices('photography', PHOTOGRAPHY_CHOICES)
-    photography_filters.filter_queryset(programmes)
     programmes = photography_filters.filter_queryset(programmes)
 
     forms = AlternativeProgrammeForm.objects.filter(event=event)
@@ -76,11 +74,21 @@ def programme_admin_view(request, vars, event, format='screen'):
         sorter.add('created_at', name='Uusin ensin', definition=('-created_at',))
         programmes = sorter.order_queryset(programmes)
 
+    if event.slug.startswith('ropecon'):
+        miniworkshop_filters = Filter(request, 'ropecon_miniworkshop')
+        miniworkshopinator = lambda is_miniworkshop: lambda programme: programme.form_used and programme.form_used.slug == 'default' and (programme.category.slug == 'mini') == is_miniworkshop
+        miniworkshop_filters.add('1', 'Figutyöpajat', miniworkshopinator(True))
+        miniworkshop_filters.add('0', 'Muu ohjelma, ei figutyöpaja', miniworkshopinator(False))
+        programmes = miniworkshop_filters.filter_queryset(programmes)
+    else:
+        miniworkshop_filters = None
+
     if format == 'screen':
         vars.update(
             category_filters=category_filters,
             export_formats=EXPORT_FORMATS,
             form_filters=form_filters,
+            miniworkshop_filters=miniworkshop_filters,
             photography_filters=photography_filters,
             programmes=programmes,
             room_filters=room_filters,
