@@ -19,7 +19,13 @@ class EnrollmentForm(forms.ModelForm):
         ):
             self.fields[field_name].required = True
 
-        self.fields['traconjv_avow_and_affirm'].label = 'Vakuutan olevani lain tarkoittamalla tavalla rehellinen ja luotettava ja henkilökohtaisilta ominaisuuksiltani tehtävään sopiva, eikä minulla ole voimassaolevia tai vanhoja tuomioita tai rikosrekisteriä.'
+        self.fields['traconjv_avow_and_affirm'].label = """Lain mukaan järjestyksenvalvojaksi voidaan hyväksyä se, joka:<br>
+1) on täyttänyt 18 vuotta;<br>
+2) tunnetaan rehelliseksi ja luotettavaksi ja on henkilökohtaisilta ominaisuuksiltaan tehtävään sopiva.<br><br>
+
+Näiden ehtojen lisäksi järjestyksenvalvojakortin myöntäminen edellyttää todistusta tämän perus- tai kertauskurssin hyväksytystä suorituksesta.<br><br>
+
+Vakuutan täyttäväni järjestyksenvalvojaksi hyväksymiselle määritellyt ehdot, ja osallistuvani kurssin kaikille tunneille."""
         self.fields['traconjv_solemnly_swear'].label = 'Vakuutan antamani tiedot oikeiksi. Ilmoittautumalla sitoudun osallistumaan peruskurssille ilmoitettuna päivinä pääkaupunkiseudulla ja järjestyksenvalvojana Ropecon 2020- ja Ropecon 2021 -tapahtumiin.'
 
     class Meta:
