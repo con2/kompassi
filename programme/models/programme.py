@@ -281,7 +281,7 @@ class Programme(models.Model, CsvExportMixin):
         choices=STREAM_PERMISSION_CHOICES,
         blank=True,
         verbose_name=_('Streaming permission'),
-        help_text=_('May your programme be streamed live to the Internet (eg. YouTube)?'),
+        help_text=_('May your programme be streamed live on YouTube? Streamed programmes will also be available afterwards on our channel.'),
     )
 
     encumbered_content = models.CharField(
@@ -316,6 +316,13 @@ class Programme(models.Model, CsvExportMixin):
             'it to now, or do you intend to present it in another event before this one? If you are unsure '
             'about the re-run policy of this event, please consult the programme managers.'
         ),
+    )
+
+    rerun_extra = models.TextField(
+        blank=True,
+        default='',
+        verbose_name="Kuvaile uusintaohjelmaa tarkemmin",
+        help_text="Jos ohjelmasi on uusinta, kerro tarkemmin missä ja milloin olet sen aikaisemmin pitänyt. Aiotko tehdä muutoksia ohjelmaasi tätä esitystä varten? Millaisia?",
     )
 
     notes_from_host = models.TextField(

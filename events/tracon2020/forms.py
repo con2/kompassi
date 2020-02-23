@@ -205,7 +205,6 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 'photography',
                 'rerun',
                 'stream_permission',
-                'video_permission',
             ]:
                 self.fields[field_name].required = True
 
@@ -218,6 +217,10 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'Ohjelmakuvauksen maksimipituus ohjelmalehteä varten on 400 merkkiä. Varaamme oikeuden muokata kuvausta.'
         )
         self.fields['description'].max_length = 400
+
+        self.fields['room_requirements'].help_text = 'Miten suurta yleisöä odotat ohjelmallesi? Minkä tyyppistä tilaa toivot ohjelmallesi? Minkälaisia kalusteita tarvitset ohjelmaasi varten? (Luentosaleissa löytyy paikat puhujille ja penkit yleisölle, näitä ei tarvitse tässä listata.)'
+
+        self.fields['stream_permission'].choices = [(k, t) for (k, t) in self.fields['stream_permission'].choices if k != 'please']
 
     def get_excluded_field_defaults(self):
         return dict()
@@ -235,11 +238,11 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'use_video',
             'number_of_microphones',
             'tech_requirements',
-            'video_permission',
             'stream_permission',
             'encumbered_content',
             'photography',
             'rerun',
+            'rerun_extra',
             'room_requirements',
             'requested_time_slot',
             'notes_from_host',

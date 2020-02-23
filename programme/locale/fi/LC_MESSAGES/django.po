@@ -1430,8 +1430,8 @@ msgstr "Kerralla varattavien lippujen enimmäismäärä"
 msgid "Both reservation start and reservation end must be set for the reservation to be considered open.'
 msgstr "Sekä alku- että loppuaika täytyy asettaa jotta varausjärjestelmä aukeaa."
 
-msgid "May your programme be streamed live to the Internet (eg. YouTube)?"
-msgstr "Saako ohjelmasi lähettää suorana netissä (esim. YouTubessa)?"
+msgid "May your programme be streamed live on YouTube? Streamed programmes will also be available afterwards on our channel."
+msgstr "Saako ohjelmasi lähettää suorana YouTubessa? Striimatut ohjelmat ovat katsottavissa kanavaltamme myös jälkikäteen."
 
 msgid "Streaming permission"
 msgstr "Striimauslupa"
