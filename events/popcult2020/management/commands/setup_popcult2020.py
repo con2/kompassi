@@ -29,8 +29,8 @@ class Setup(object):
         self.setup_labour()
         self.setup_badges()
         self.setup_programme()
-        # self.setup_tickets()
-        # self.setup_payments()
+        self.setup_tickets()
+        self.setup_payments()
         self.setup_intra()
 
     def setup_core(self):
@@ -214,11 +214,11 @@ class Setup(object):
         for product_info in [
             dict(
                 name='Viikonloppulippu: Popcult Helsinki 2020',
-                description='Pääsylippu Popcult Helsinki -tapahtumaan Marina Congress Centeriin 11.-12.5.2020. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.',
+                description='Pääsylippu Popcult Helsinki -tapahtumaan 15.–16.8.2020 Kulttuuritehdas Korjaamolle. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.',
                 limit_groups=[
-                    limit_group('Pääsyliput', 1800),
+                    limit_group('Pääsyliput', 950),
                 ],
-                price_cents=2900,
+                price_cents=2500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
