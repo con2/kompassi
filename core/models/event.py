@@ -240,6 +240,7 @@ class Event(models.Model):
                 'homepage_url',
                 'start_time',
                 'end_time',
+                'cancelled',
             )
         else:
             raise NotImplementedError(format)

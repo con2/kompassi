@@ -58,6 +58,7 @@ class ExternalEvent(models.Model):
 
     # should be named is_public but due to legacy
     public = models.BooleanField(default=True)
+    cancelled = models.BooleanField(default=False)
 
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
@@ -90,4 +91,5 @@ class ExternalEvent(models.Model):
             'homepage_url',
             'start_time',
             'end_time',
+            'cancelled',
         )

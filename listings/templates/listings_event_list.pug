@@ -1,7 +1,11 @@
+- load trans from i18n
 .list-group
   for event in events
     a.list-group-item(href='{{ event.homepage_url }}')
       if event.logo_file
         img.pull-right(style='height: 70px', src='{{ event.logo_file.url }}', alt='')
-      h4= event.name
-      p= event.headline
+      h4(class="{% if event.cancelled %}text-muted{% endif %}")
+        | {{ event.name }}
+        if event.cancelled
+          .label.label-danger.kompassi-space-before {% trans "Cancelled" %}
+      p(class="{% if event.cancelled %}text-muted{% endif %}")= event.headline
