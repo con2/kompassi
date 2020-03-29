@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 from ..utils import (
     format_date_range,
@@ -71,6 +72,11 @@ class Event(models.Model):
         default=True,
         verbose_name='Julkinen',
         help_text='Julkiset tapahtumat näytetään etusivulla.'
+    )
+
+    cancelled = models.BooleanField(
+        default=False,
+        verbose_name=_("Cancelled"),
     )
 
     logo_file = models.FileField(

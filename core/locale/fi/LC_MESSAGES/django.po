@@ -346,3 +346,16 @@ msgstr "Ole hyvä ja käytä vahvaa salasanaa."
 #:
 msgid "We check passwords securely against a database of known leaked passwords. This password has been compromised in a known leak. Please use another password."
 msgstr "Tarkistamme turvallisesti uudet salasanat tunnettujen tietovuotojen tietokantaa vasten. Tämä salasana löytyy tietokannasta. Ole hyvä ja keksi uusi salasana."
+
+msgid "Cancelled"
+msgstr "Peruutettu"
+
+msgid "This event has been cancelled"
+msgstr "Tämä tapahtuma on peruutettu"
+
+# XXX FMH how do I blocktrans with links
+msgid "For more information, see the"
+msgstr "Lisätietoja löydät"
+
+msgid "event home page"
+msgstr "tapahtuman kotisivulta"

@@ -22,6 +22,12 @@ block content
           a(href='{{ event.homepage_url }}', target='_blank')
             img(src='{{ event.either_logo_url }}', alt='{{ event.name }}', width='100%')
 
+    if event.cancelled
+      h3.text-danger {% trans "This event has been cancelled" %}
+
+      //- XXX FMH how do I blocktrans with links
+      p.text-danger {% trans "For more information, see the" %} <a href="{{ event.homepage_url }}" target="_blank" rel="noreferer noopener">{% trans "event home page" %}</a>.
+
     if event.enrollment_event_meta
       include enrollment_event_box
       hr

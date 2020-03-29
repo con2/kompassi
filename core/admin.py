@@ -87,8 +87,8 @@ if 'intra' in settings.INSTALLED_APPS:
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('name', 'organization', 'venue', 'public')
-    list_filter = ('organization', 'venue', 'public')
+    list_display = ('name', 'organization', 'venue', 'public', 'cancelled')
+    list_filter = ('organization', 'venue', 'public', 'cancelled')
     search_fields = ('name',)
 
     inlines = tuple(event_admin_inlines)
@@ -111,6 +111,8 @@ class EventAdmin(admin.ModelAdmin):
             'logo_file',
             'logo_url',
             'organization',
+            'public',
+            'cancelled',
         ))),
     )
 

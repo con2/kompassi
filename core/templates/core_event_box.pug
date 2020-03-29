@@ -6,26 +6,30 @@
     if event.start_time
       p {{ event.formatted_start_and_end_date }}
     p
-      if event.enrollment_event_meta
-        if event.enrollment_event_meta.is_enrollment_open
-          span.label.label-primary.kompassi-space-after: a(href='{% url "enrollment_enroll_view" event.slug %}') {% trans "Enrollment open" %}
-        else
-          span.label.label-default.kompassi-space-after {% trans "Enrollment" %}
-      if event.labour_event_meta
-        if event.labour_event_meta.is_registration_open
-          span.label.label-primary.kompassi-space-after: a(href='{% url "labour_signup_view" event.slug %}') {% trans "Recruiting volunteers" %}
-        else
-          span.label.label-default.kompassi-space-after {% trans "Volunteers" %}
-      if event.programme_event_meta
-        if event.programme_event_meta.is_public
-          span.label.label-primary.kompassi-space-after: a(href='{% url "programme_schedule_view" event.slug %}') {% trans "Schedule published" %}
-        else
-          if event.programme_event_meta.is_accepting_cold_offers
-            span.label.label-primary.kompassi-space-after: a(href='{% url "programme_offer_view" event.slug %}') {% trans "Accepting programme" %}
+      if event.cancelled
+        span.label.label-danger.kompassi-space-after
+          a(href="{{ event.homepage_url }}" target="_blank" rel="noopener noreferer") {% trans "Cancelled" %}
+      else
+        if event.enrollment_event_meta
+          if event.enrollment_event_meta.is_enrollment_open
+            span.label.label-primary.kompassi-space-after: a(href='{% url "enrollment_enroll_view" event.slug %}') {% trans "Enrollment open" %}
           else
-            span.label.label-default.kompassi-space-after {% trans "Schedule" %}
-      if event.tickets_event_meta
-        if event.tickets_event_meta.is_ticket_sales_open
-          span.label.label-primary.kompassi-space-after: a(href='{% url "tickets_welcome_view" event.slug %}') {% trans "Selling tickets" %}
-        else
-          span.label.label-default.kompassi-space-after {% trans "Ticket sales" %}
+            span.label.label-default.kompassi-space-after {% trans "Enrollment" %}
+        if event.labour_event_meta
+          if event.labour_event_meta.is_registration_open
+            span.label.label-primary.kompassi-space-after: a(href='{% url "labour_signup_view" event.slug %}') {% trans "Recruiting volunteers" %}
+          else
+            span.label.label-default.kompassi-space-after {% trans "Volunteers" %}
+        if event.programme_event_meta
+          if event.programme_event_meta.is_public
+            span.label.label-primary.kompassi-space-after: a(href='{% url "programme_schedule_view" event.slug %}') {% trans "Schedule published" %}
+          else
+            if event.programme_event_meta.is_accepting_cold_offers
+              span.label.label-primary.kompassi-space-after: a(href='{% url "programme_offer_view" event.slug %}') {% trans "Accepting programme" %}
+            else
+              span.label.label-default.kompassi-space-after {% trans "Schedule" %}
+        if event.tickets_event_meta
+          if event.tickets_event_meta.is_ticket_sales_open
+            span.label.label-primary.kompassi-space-after: a(href='{% url "tickets_welcome_view" event.slug %}') {% trans "Selling tickets" %}
+          else
+            span.label.label-default.kompassi-space-after {% trans "Ticket sales" %}
