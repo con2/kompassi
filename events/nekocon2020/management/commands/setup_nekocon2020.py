@@ -27,8 +27,8 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        # self.setup_tickets()
-        # self.setup_payments()
+        self.setup_tickets()
+        self.setup_payments()
         self.setup_programme()
         self.setup_badges()
         self.setup_intra()
@@ -247,9 +247,9 @@ class Setup(object):
                 name='Nekocon (2020) -pääsylippu',
                 description='Viikonloppuranneke Kuopiossa järjestettävään vuoden 2020 Nekoconiin. Huom. myynnissä vain viikonloppurannekkeita. E-lippu vaihdetaan ovella rannekkeeseen.',
                 limit_groups=[
-                    limit_group('Pääsyliput', 3000),
+                    limit_group('Pääsyliput', 2000),
                 ],
-                price_cents=2200,
+                price_cents=2500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
