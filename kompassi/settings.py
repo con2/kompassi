@@ -255,6 +255,7 @@ INSTALLED_APPS = (
     'events.ropeconjvk2020',
     'events.concon17',
     'events.matsucon2020',
+    'events.hitpoint2020',
 )
 
 LOGGING = {
