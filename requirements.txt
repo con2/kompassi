@@ -28,7 +28,7 @@ django-guardian==2.1.0    # via -r requirements.in
 django-ipware==2.1.0      # via -r requirements.in
 django-localflavor==2.2   # via -r requirements.in
 django-oauth-toolkit==1.2.0  # via -r requirements.in
-django==2.2.10            # via -r requirements.in, django-babel, django-cors-headers, django-csp, django-filter, django-localflavor, django-oauth-toolkit, djangorestframework, drf-nested-routers, lippukala, paikkala
+django==2.2.13            # via -r requirements.in, django-babel, django-cors-headers, django-csp, django-filter, django-localflavor, django-oauth-toolkit, djangorestframework, drf-nested-routers, lippukala, paikkala
 djangorestframework==3.11.0  # via -r requirements.in, drf-nested-routers
 drf-nested-routers==0.91  # via -r requirements.in
 entrypoints==0.3          # via flake8
