@@ -598,6 +598,7 @@ class Setup(object):
         )
 
         for team_slug, team_name in [
+            ('tracoff', 'TracOff'),
             ('jory', 'Johtoryhmä'),
             ('ohjelma', 'Ohjelma'),
             ('isosali', 'Iso sali'),
@@ -619,9 +620,13 @@ class Setup(object):
                     name=team_name,
                     order=self.get_ordering_number(),
                     group=team_group,
-                    email=email
+                    email=email,
                 )
             )
+
+        for team in Team.objects.filter(event=self.event):
+            team.is_public = (team.slug == 'tracoff')
+            team.save()
 
     def setup_directory(self):
         from directory.models import DirectoryAccessGroup

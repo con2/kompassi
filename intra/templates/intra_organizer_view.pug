@@ -53,7 +53,7 @@ block content_full_width
             {% blocktrans count num_members=num_unassigned_organizers %}One unassigned organizer.{% plural %}{{ num_members }} unassigned organizer.{% endblocktrans %}
 
     for team in teams
-      .panel.panel-default
+      .panel.panel-default(class="{% if not team.is_public %}text-muted{% endif %}")
         .panel-heading
           if team.email
             .pull-right
@@ -61,6 +61,8 @@ block content_full_width
                 i.fa.fa-envelope-o.kompassi-icon-space-right
                 | {{ team.email }}
           strong.kompassi-space-after {{ team.name }}
+          if not team.is_public
+            em (piilotettu)
 
         if team.description
           .panel-body {{ team.description|safe|linebreaks }}

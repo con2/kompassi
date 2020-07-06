@@ -20,7 +20,12 @@ HTML_TEMPLATES = dict(
 @intra_organizer_required
 def intra_organizer_view(request, vars, event, format='screen'):
     meta = event.intra_event_meta
-    teams = Team.objects.filter(event=event).prefetch_related('members')
+    is_admin = meta.is_user_admin(request.user)
+
+    teams_criteria = dict(event=event)
+    if not is_admin:
+        teams_criteria.update(is_public=True)
+    teams = Team.objects.filter(**teams_criteria).prefetch_related('members')
 
     vars.update(
         num_total_organizers=meta.organizer_group.user_set.count(),

@@ -31,6 +31,8 @@ class Team(models.Model):
         help_text=_('The primary contact e-mail of the team.'),
     )
 
+    is_public = models.BooleanField(default=True, verbose_name=_("Public"))
+
     def __str__(self):
         return self.name
 
