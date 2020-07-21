@@ -15,7 +15,7 @@
       p
         | {{ order.customer.email }}
         br
-        | {{ order.customer.phone_number }}
+        | {{ order.customer.normalized_phone_number|default:"" }}
   .col-md-6
     h3 {% trans "Products" %}
     table.table.table-bordered.table-striped

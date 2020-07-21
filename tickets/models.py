@@ -22,7 +22,6 @@ from core.utils import (
     slugify,
     url,
 )
-from payments.utils import compute_payment_request_mac
 
 from .utils import format_date, format_price
 from .receipt import render_receipt
@@ -630,6 +629,7 @@ class Order(models.Model):
         max_length=31,
         blank=True,
         verbose_name='Viitenumero',
+        db_index=True,
     )
 
     @property
@@ -824,28 +824,6 @@ class Order(models.Model):
     @property
     def formatted_address(self):
         return "{self.customer.name}\n{self.customer.address}\n{self.customer.zip_code} {self.customer.city}".format(self=self)
-
-    @property
-    def checkout_stamp(self):
-        stamp = "{0}{1:010.0f}".format(
-            self.reference_number, # 6 or 7 digits
-            mktime(self.start_time.timetuple()), # 10 digits
-        )
-
-        # TODO horrible hack because checkout old api does not accept >20 character stamps
-        if len(stamp) > 20:
-            from hashlib import sha256
-            stamp = str(int(sha256(stamp.encode('UTF-8')).hexdigest(), 16) % 10**20)
-
-        return stamp
-
-    @property
-    def checkout_message(self):
-        products = ", ".join(i.description for i in self.order_product_set.filter(count__gte=1))
-        return f"{self.formatted_order_number}: {products}"
-
-    def checkout_mac(self, request):
-        return compute_payment_request_mac(request, self)
 
     def checkout_return_url(self, request):
         return request.build_absolute_uri(url('payments_process_view', self.event.slug))

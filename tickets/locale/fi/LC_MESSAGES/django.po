@@ -360,3 +360,6 @@ msgstr "tapahtumien lipunmyyntiasetukset"
 #: templates/tickets_confirm_phase.pug
 msgid "You have already confirmed your order and it can no longer be changed. However, we have not yet received word of your successful payment. If the payment is still in progress in another tab or browser window, please complete it there. If you cancelled the payment, please proceed to payment again or cancel the order using the buttons below. If you completed the payment, it is likely that you did not return to the web shop using the link provided by the payment provider. In this case, please wait three to five banking days before contacting our customer service."
 msgstr "Olet jo vahvistanut tilauksesi etkä siksi enää voi muuttaa sitä. Emme kuitenkaan ole vielä saaneet tietoa onnistuneesta maksustasi. Mikäli maksutapahtuma on edelleen käynnissä toisessa välilehdessä tai selainikkunassa, ole hyvä ja tee se loppuun siellä. Mikäli peruutit maksun, ole hyvä ja siirry uudestaan maksamaan tai peru tilaus alla olevilla napeilla. Mikäli suoritit maksutapahtuman loppuun asti, on todennäköistä että et palannut verkkokauppaamme käyttäen maksunvälittäjän linkkiä. Tässä tapauksessa odota kolmesta viiteen pankkipäivää ennen yhteydenottoa asiakaspalveluumme."
+
+msgid "The order was aborted."
+msgstr "Tilaus keskeytettiin."

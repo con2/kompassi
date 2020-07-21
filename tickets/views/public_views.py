@@ -4,6 +4,8 @@ from django.http import HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
 
+from csp.decorators import csp_update
+
 from core.utils import groupby_strict, initialize_form, url
 
 from ..forms import *
@@ -15,17 +17,6 @@ from ..models import (
     ShirtSize,
 )
 from ..utils import *
-
-
-__all__ = [
-    "ALL_PHASES",
-    "tickets_accommodation_view",
-    "tickets_address_view",
-    "tickets_confirm_view",
-    "tickets_thanks_view",
-    "tickets_tickets_view",
-    "tickets_welcome_view",
-]
 
 
 def multiform_validate(forms):
@@ -183,8 +174,9 @@ class Phase(object):
         return redirect(self.prev_phase, event.slug)
 
     def cancel(self, request, event):
+        messages.warning(request, _("The order was aborted."))
         destroy_order(request, event)
-        return HttpResponseRedirect(event.homepage_url)
+        return redirect("core_event_view", event.slug)
 
     def vars(self, request, event, form):
         return {}
@@ -420,7 +412,7 @@ class ConfirmPhase(Phase):
     friendly_name = _('Confirmation')
     template = "tickets_confirm_phase.pug"
     prev_phase = "tickets_address_view"
-    next_phase = "payments_redirect_view"
+    next_phase = "tickets_thanks_view"
     payment_phase = True
     delay_complete = True
 
@@ -459,14 +451,27 @@ class ConfirmPhase(Phase):
         order = get_order(request, event)
         return not order.is_confirmed
 
+    def next(self, request, event):
+        from payments.models import CheckoutPayment
+        order = get_order(request, event)
 
+        payment = CheckoutPayment.from_order(order)
+        payment.save()
+
+        result = payment.perform_create_payment_request(request)
+
+        return redirect(result["href"])
+
+
+# Confirm view needs to be able to redirect to Checkout payment wall, so this needs to be included in CSP.
 tickets_confirm_phase = ConfirmPhase()
-tickets_confirm_view = decorate(tickets_confirm_phase)
+CHECKOUT_PAYMENT_WALL_ORIGIN = "pay.checkout.fi"
+tickets_confirm_view = csp_update(FORM_ACTION=CHECKOUT_PAYMENT_WALL_ORIGIN)(decorate(tickets_confirm_phase))
 
 
 class ThanksPhase(Phase):
     name = "tickets_thanks_view"
-    friendly_name = _('Thank you!')
+    friendly_name = _("Thank you!")
     template = "tickets_thanks_phase.pug"
     prev_phase = None
     next_phase = "tickets_welcome_view"
