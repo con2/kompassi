@@ -586,7 +586,7 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
             due_days=14,
             shipping_and_handling_cents=0,
             reference_number_template="2019{:05d}",
-            contact_email='Ropecon 2019 -lipunmyynti <lipunmyynti@ropecon.fi.fi>',
+            contact_email='Ropecon 2019 -lipunmyynti <lipunmyynti@ropecon.fi>',
             ticket_free_text="Tämä on sähköinen lippusi Ropecon 2019 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"

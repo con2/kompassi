@@ -364,7 +364,7 @@ class Setup(object):
             due_days=14,
             shipping_and_handling_cents=120,
             reference_number_template="2020{:06d}",
-            contact_email='Tracon Hitpoint -lipunmyynti <hitpoint@tracon.fi.fi>',
+            contact_email='Tracon Hitpoint -lipunmyynti <hitpoint@tracon.fi>',
             ticket_free_text="Tämä on sähköinen lippusi Tracon Hitpoint -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
@@ -373,9 +373,9 @@ class Setup(object):
                 "Tervetuloa Tracon Hitpointiin!",
             front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Tracon Hitpoint -tapahtumaan!</h2>"
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                "<p>Lue lisää tapahtumasta <a href='http://2020.hitpoint.tracon.fi'>Tracon Hitpoint -tapahtuman kotisivuilta</a>.</p>"
-                "<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
-                "toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>hitpoint@tracon.fi</em>"
+                "<p>Lue lisää tapahtumasta <a href='http://2020.hitpoint.tracon.fi' target='_blank' rel='noreferer noopener'>Tracon Hitpoint -tapahtuman kotisivuilta</a>.</p>"
+                "<p><strong>Note</strong>: Purchasing Tracont Hitpoint tickets through this web shop requires a Finnish web bank service. "
+                "If you do not have one, please contact us to purchase tickets: <em>hitpoint@tracon.fi</em>.</p>"
         )
 
         if self.test:
