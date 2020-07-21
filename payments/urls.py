@@ -28,7 +28,7 @@ urlpatterns = [
     ),
 
     url(
-        r'payments/checkout/cassbacks/cancel/?$',
+        r'payments/checkout/callbacks/cancel/?$',
         payments_checkout_cancel_callback,
         name="payments_checkout_cancel_callback",
     ),
