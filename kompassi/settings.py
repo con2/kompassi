@@ -395,10 +395,6 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='spam@example.com')
 GOOGLE_ANALYTICS_TOKEN = env('GOOGLE_ANALYTICS_TOKEN', default='')
 
 
-if 'payments' in INSTALLED_APPS:
-    from payments.defaults import CHECKOUT_PARAMS  # noqafoo
-
-
 if 'lippukala' in INSTALLED_APPS:
     import tickets.lippukala_integration
 

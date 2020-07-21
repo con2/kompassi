@@ -1,64 +1,48 @@
-import hashlib
+import hmac
+from typing import Dict
 
-from django.conf import settings
-
-ENCODING = 'UTF-8'
-
-
-def u(s):
-    return s.encode(ENCODING)
+import requests
 
 
-def compute_payment_request_mac(request, order):
-    meta = order.event.payments_event_meta
+def calculate_hmac(
+    secret: str,
+    params: Dict[str, str],
+    body: str = None,
+    encoding = 'UTF-8',
+    hash_algorithm = 'sha256',
+):
+    """
+    :param secret: Merchant shared secret
+    :param params: Headers or query string parameters
+    :param body: Request body or empty string for GET requests
 
-    mac = hashlib.md5()
-    mac.update(u(settings.CHECKOUT_PARAMS['VERSION']))
-    mac.update(b'+')
-    mac.update(u(str(order.checkout_stamp)))
-    mac.update(b'+')
-    mac.update(u(str(order.price_cents)))
-    mac.update(b'+')
-    mac.update(u(order.reference_number))
-    mac.update(b'+')
-    mac.update(u(order.checkout_message))
-    mac.update(b'+')
-    mac.update(u(settings.CHECKOUT_PARAMS['LANGUAGE']))
-    mac.update(b'+')
-    mac.update(u(meta.checkout_merchant))
-    mac.update(b'+')
-    mac.update(u(order.checkout_return_url(request)))
-    mac.update(b'+')
-    mac.update(b'')
-    mac.update(b'+')
-    mac.update(b'')
-    mac.update(b'+')
-    mac.update(b'')
-    mac.update(b'+')
-    mac.update(u(settings.CHECKOUT_PARAMS['COUNTRY']))
-    mac.update(b'+')
-    mac.update(u(settings.CHECKOUT_PARAMS['CURRENCY']))
-    mac.update(b'+')
-    mac.update(u(settings.CHECKOUT_PARAMS['DEVICE']))
-    mac.update(b'+')
-    mac.update(u(settings.CHECKOUT_PARAMS['CONTENT']))
-    mac.update(b'+')
-    mac.update(u(settings.CHECKOUT_PARAMS['TYPE']))
-    mac.update(b'+')
-    mac.update(u(settings.CHECKOUT_PARAMS['ALGORITHM']))
-    mac.update(b'+')
-    mac.update(u(meta.checkout_delivery_date))
-    mac.update(b'+')
-    mac.update(u(order.customer.first_name))
-    mac.update(b'+')
-    mac.update(u(order.customer.last_name))
-    mac.update(b'+')
-    mac.update(u(order.customer.address))
-    mac.update(b'+')
-    mac.update(u(order.customer.zip_code))
-    mac.update(b'+')
-    mac.update(u(order.customer.city))
-    mac.update(b'+')
-    mac.update(u(meta.checkout_password))
+    Based on the following Node.js example code from
+    https://checkoutfinland.github.io/psp-api/#/examples?id=hmac-calculation-node-js
 
-    return mac.hexdigest().upper()
+    ```javascript
+    const calculateHmac = (secret, params, body) => {
+        const hmacPayload =
+            Object.keys(params)
+            .sort()
+            .map((key) => [ key, params[key] ].join(':'))
+            .concat(body ? JSON.stringify(body) : '')
+            .join("\n");
+
+        return crypto
+            .createHmac('sha256', secret)
+            .update(hmacPayload)
+            .digest('hex');
+    ```
+    };
+    """
+    hmac_payload_parts = []
+    for key in sorted(params.keys()):
+        if key.startswith("checkout-"):
+            hmac_payload_parts.append(f"{key}:{params[key]}")
+    hmac_payload_parts.append(body if body else "")
+    hmac_payload = "\n".join(hmac_payload_parts)
+    return hmac.new(
+        key=secret.encode(encoding),
+        msg=hmac_payload.encode(encoding),
+        digestmod=hash_algorithm,
+    ).hexdigest()
