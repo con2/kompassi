@@ -8,6 +8,9 @@ block profile_content
       for membership in memberships
         li.list-group-item
           .pull-right
+            if membership.get_payment_for_term
+              if not membership.get_payment_for_term.is_paid
+                .label.label-danger Jäsenmaksu maksamatta
             .label(class='{{ membership.state_css }}')= membership.get_state_display
           a(href='{% url "core_organization_view" membership.organization.slug %}')= membership.organization.name
   else
