@@ -71,24 +71,27 @@ class MembershipForm(forms.ModelForm):
 
 class MembershipFeePaymentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        current_term = kwargs.pop('current_term')
-        initial = kwargs.setdefault('initial', {})
-        initial.update(
-            term=current_term.id,
-            amount_cents=current_term.membership_fee_cents,
-            payment_type='membership_fee',
-        )
-
         super().__init__(*args, **kwargs)
 
-        self.fields['term'].queryset = current_term.organization.terms.all()
+        term = self.instance.term
 
     class Meta:
         model = MembershipFeePayment
-        fields = ('term', 'payment_type', 'payment_method', 'amount_cents')
+        fields = ('payment_type', 'payment_method', 'payment_date', 'amount_cents')
 
 
 class TermForm(forms.ModelForm):
     class Meta:
         model = Term
-        fields = ('title', 'start_date', 'end_date', 'entrance_fee_cents', 'membership_fee_cents')
+        # TODO: support entrance_fee_cents
+        fields = ('title', 'start_date', 'end_date', 'membership_fee_cents', 'payment_method')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if not (self.instance.organization.payments_organization_meta):
+            # if not chekkout, get the hekk out
+            self.fields['payment_method'].choices = [
+                (key, label) for (key, label) in self.fields['payment_method'].choices
+                if key != 'checkout'
+            ]

@@ -8,6 +8,7 @@ from .views import (
     membership_admin_term_view,
     membership_apply_view,
     membership_profile_view,
+    membership_pay_fee_view,
 )
 
 urlpatterns = [
@@ -46,6 +47,12 @@ urlpatterns = [
         r'^organizations/(?P<organization_slug>[a-z0-9-]+)/admin/term/?$',
         membership_admin_term_view,
         name='membership_admin_new_term_view',
+    ),
+
+    url(
+        r"^organizations/(?P<organization_slug>[a-z0-9-]+)/fee/?$",
+        membership_pay_fee_view,
+        name="membership_pay_fee_view",
     ),
 
     url(

@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from csp.decorators import csp_update
 
 from core.utils import groupby_strict, initialize_form, url
+from payments.models import CHECKOUT_PAYMENT_WALL_ORIGIN
 
 from ..forms import *
 from ..helpers import *
@@ -465,7 +466,6 @@ class ConfirmPhase(Phase):
 
 # Confirm view needs to be able to redirect to Checkout payment wall, so this needs to be included in CSP.
 tickets_confirm_phase = ConfirmPhase()
-CHECKOUT_PAYMENT_WALL_ORIGIN = "pay.checkout.fi"
 tickets_confirm_view = csp_update(FORM_ACTION=CHECKOUT_PAYMENT_WALL_ORIGIN)(decorate(tickets_confirm_phase))
 
 

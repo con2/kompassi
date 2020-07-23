@@ -1,7 +1,7 @@
 import hashlib
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from uuid import uuid4
 
 from django.conf import settings
@@ -9,11 +9,12 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.shortcuts import redirect
 
 from dateutil.parser import parse as parse_datetime
 import requests
 
-from core.models import EventMetaBase
+from core.models import EventMetaBase, GroupManagementMixin
 from tickets.utils import format_price
 
 from .utils import calculate_hmac
@@ -22,6 +23,7 @@ from .utils import calculate_hmac
 logger = logging.getLogger("kompassi")
 
 CHECKOUT_API_BASE_URL = "https://api.checkout.fi"
+CHECKOUT_PAYMENT_WALL_ORIGIN = "pay.checkout.fi"
 CHECKOUT_STATUSES = [
     ("new", _("New")),
     ("ok", _("OK")),
@@ -29,32 +31,47 @@ CHECKOUT_STATUSES = [
     ("pending", _("Pending")),
     ("delayed", _("Delayed")),
 ]
-EVENT_META_DEFAULTS = dict(
+META_DEFAULTS = dict(
     checkout_password="SAIPPUAKAUPPIAS",
     checkout_merchant="375917",
-    checkout_delivery_date="20130914",
 )
 
 
 class PaymentsEventMeta(EventMetaBase):
+    """
+    Deprecated. PaymentsOrganizationMeta used instead.
+    """
     checkout_password = models.CharField(max_length=255)
     checkout_merchant = models.CharField(max_length=255)
     checkout_delivery_date = models.CharField(max_length=9)
 
     @classmethod
-    def get_or_create_dummy(cls, event=None):
-        from django.contrib.auth.models import Group
-        from core.models import Event
+    def get_or_create_dummy(cls, event):
+        """
+        Deprecated. But because it's used in an uwuton of places (that's, like, a thousand owotons),
+        we jury-rig it to produce PaymentsOrganizationMeta instead.
+        """
+        unused, created = PaymentsOrganizationMeta.get_or_create_dummy(event.organization)
+        return None, created
 
-        if event is None:
-            event, unused = Event.get_or_create_dummy()
 
-        group, = PaymentsEventMeta.get_or_create_groups(event, ["admins"])
+class PaymentsOrganizationMeta(models.Model):
+    organization = models.OneToOneField('core.Organization', on_delete=models.CASCADE, primary_key=True)
+    checkout_password = models.CharField(max_length=255)
+    checkout_merchant = models.CharField(max_length=255)
 
-        return cls.objects.get_or_create(event=event, defaults=dict(
-            EVENT_META_DEFAULTS,
-            admin_group=group,
-        ))
+    @classmethod
+    def get_or_create_dummy(cls, organization=None):
+        """
+        Creates a POM with Checkout test merchant. Suitable for development, but try to use it in production and you'll get 500 ISE.
+        """
+        if organization is None:
+            organization, uwused = Organization.get_or_create_dummy()
+
+        return cls.objects.get_or_create(
+            organization=organization,
+            defaults=META_DEFAULTS,
+        )
 
     def get_checkout_params(self, method="POST", t=None):
         if t is None:
@@ -67,22 +84,6 @@ class PaymentsEventMeta(EventMetaBase):
             "checkout-nonce": str(uuid4()),
             "checkout-timestamp": t.isoformat(),
         }
-
-    @property
-    def normalized_checkout_delivery_date(self):
-        """
-        In the Olden Days of PHP and Joose the delivery date was encoded as YYYYMMDD.
-        In the Modern Days of Typescript and Vesse the delivery date is encoded YYYY-MM-DD.
-        This returns whichever is stored as YYYY-MM-DD.
-        """
-        if not self.checkout_delivery_date:
-            return None
-
-        return parse_datetime(self.checkout_delivery_date).strftime("%Y-%m-%d")
-
-    class Meta:
-        verbose_name = "tapahtuman maksunvälitystiedot"
-        verbose_name_plural = "tapahtuman maksunvälitystiedot"
 
 
 class Payment(models.Model):
@@ -106,7 +107,8 @@ class CheckoutPayment(models.Model):
 
     See https://checkoutfinland.github.io/psp-api/#/?id=request
     """
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
+    organization = models.ForeignKey('core.Organization', on_delete=models.CASCADE)
+    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, blank=True, null=True)
 
     # Fields sent in Create Payment request
     stamp = models.UUIDField(primary_key=True, default=uuid4, editable=False)
@@ -131,6 +133,12 @@ class CheckoutPayment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if self.event:
+            self.organization = self.event.organization
+
+        return super().save(*args, **kwargs)
+
     @classmethod
     def from_order(cls, order):
         items = [
@@ -139,7 +147,7 @@ class CheckoutPayment(models.Model):
                 "units": order_product.count,
                 "vatPercentage": 0,  # TODO make configurable
                 "productCode": str(order_product.product.id),
-                "deliveryDate": order.event.payments_event_meta.normalized_checkout_delivery_date
+                "deliveryDate": order.event.start_time.date().isoformat(),
             }
             for order_product in order.order_product_set.all()
             if order_product.count > 0
@@ -153,7 +161,6 @@ class CheckoutPayment(models.Model):
         }
 
         return cls(
-            stamp=uuid4(),
             event=order.event,
             reference=order.reference_number,
             price_cents=order.price_cents,
@@ -161,9 +168,51 @@ class CheckoutPayment(models.Model):
             customer=customer,
         )
 
+    @classmethod
+    def from_membership_fee_payment(cls, membership_fee_payment):
+        term = membership_fee_payment.term
+        organization = term.organization
+        person = membership_fee_payment.member.person
+
+        items = [
+            {
+                "unitPrice": term.membership_fee_cents,
+                "units": 1,
+                "vatPercentage": 0,
+                "productCode": f"{organization.slug}-membership-{term.title}",
+                "description": f"Jäsenmaksu kaudelle {term.title}",
+                "deliveryDate": term.start_date.isoformat(),
+            }
+        ]
+
+        if term.entrance_fee_cents and membership_fee_payment.payment_type == "membership_fee_with_entrance_fee":
+            items.append({
+                "unitPrice": term.entrance_fee_cents,
+                "units": 1,
+                "vatPercentage": 0,
+                "productCode": f"{organization.slug}-entrance-{term.title}",
+                "description": f"Liittymismaksu",
+                "deliveryDate": date.today().isoformat(),
+            })
+
+        customer = {
+            "email": person.email,
+            "firstName": person.first_name,
+            "lastName": person.surname,
+            "phone": person.normalized_phone_number or "",
+        }
+
+        return cls(
+            organization=organization,
+            reference=membership_fee_payment.reference_number,
+            price_cents=membership_fee_payment.amount_cents,
+            items=items,
+            customer=customer,
+        )
+
     @property
     def meta(self):
-        return self.event.payments_event_meta
+        return self.organization.payments_organization_meta
 
     @property
     def tickets_order(self):
@@ -176,8 +225,16 @@ class CheckoutPayment(models.Model):
 
         return self._tickets_order
 
+    @property
+    def membership_fee_payment(self):
+        if not hasattr(self, "_membership_fee_payment"):
+            from membership.models import MembershipFeePayment
+            self._membership_fee_payment = MembershipFeePayment.objects.filter(reference_number=self.reference).first()
+
+        return self._membership_fee_payment
+
     def perform_create_payment_request(self, request):
-        if not settings.DEBUG and self.meta.checkout_merchant == EVENT_META_DEFAULTS["checkout_merchant"]:
+        if not settings.DEBUG and self.meta.checkout_merchant == META_DEFAULTS["checkout_merchant"]:
             raise ValueError(f"Event {self.event} has testing merchant in production, please change this in admin")
 
         body = {
@@ -254,6 +311,9 @@ class CheckoutPayment(models.Model):
         if self.tickets_order:
             if self.status == "ok" and not self.tickets_order.is_paid:
                 self.tickets_order.confirm_payment()
+        elif self.membership_fee_payment:
+            if self.status == "ok" and not self.membership_fee_payment.is_paid:
+                self.membership_fee_payment.confirm_payment(payment_method="checkout")
 
     def admin_get_customer_email(self):
         try:
@@ -269,3 +329,17 @@ class CheckoutPayment(models.Model):
         return format_price(self.price_cents)
     admin_get_formatted_amount.short_description = "Amount"
     admin_get_formatted_amount.admin_order_field = "price_cents"
+
+    def get_redirect(self):
+        if self.tickets_order:
+            # Old webshop order
+            if self.status in ["ok", "pending", "delayed"]:
+                return redirect("tickets_thanks_view", self.tickets_order.event.slug)
+            else:
+                return redirect("tickets_confirm_view", self.tickets_order.event.slug)
+        elif self.membership_fee_payment:
+            return redirect("core_organization_view", self.membership_fee_payment.term.organization.slug)
+        else:
+            # Not old webshop order (NOTE: should add handler, generic payments are bad m'kay)
+            logger.warn("Received payment without webshop order or other handler: %s", payment.stamp)
+            return redirect("core_frontpage_view")

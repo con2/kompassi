@@ -1,9 +1,10 @@
 from django.contrib import admin
 
-from .models import PaymentsEventMeta, CheckoutPayment
+from .models import PaymentsOrganizationMeta, CheckoutPayment
 
-class InlinePaymentsEventMetaAdmin(admin.StackedInline):
-    model = PaymentsEventMeta
+
+class InlinePaymentsOrganizationMetaAdmin(admin.StackedInline):
+    model = PaymentsOrganizationMeta
 
 
 class CheckoutPaymentAdmin(admin.ModelAdmin):
@@ -30,6 +31,7 @@ class CheckoutPaymentAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('General', dict(fields=(
+            'organization',
             'event',
             'created_at',
             'updated_at',
@@ -51,7 +53,8 @@ class CheckoutPaymentAdmin(admin.ModelAdmin):
         ))),
     )
 
-    list_display = ('event', 'stamp', 'reference', 'checkout_transaction_id', 'checkout_reference', 'admin_get_customer_email', 'admin_get_formatted_amount', 'status', 'created_at')
+    list_display_links = ('stamp',)
+    list_display = ('organization', 'event', 'stamp', 'reference', 'checkout_transaction_id', 'checkout_reference', 'admin_get_customer_email', 'admin_get_formatted_amount', 'status', 'created_at')
     list_filter = ('event', 'status')
     search_fields = ('stamp', 'reference', 'checkout_reference', 'checkout_transaction_id')
 

@@ -88,10 +88,11 @@ block content
                 | Hae jäsenyyttä
           p.text-muted Hyväksyn yhdistyksen tarkoituksen ja säännöt ja haen yhdistyksen jäsenyyttä. Vakuutan täyttäväni yhdistyksen sääntöjen mukaiset jäsenyyden ehdot ja hyväksyn henkilötietojeni tallentamisen yhdistyksen jäsenrekisteriin <a href='{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}' target='_blank'>{{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} rekisteriselosteen</a> mukaisesti.
         else
-          .btn-group.pull-right
-            button.btn.disabled(disabled) Hae jäsenyyttä
           if mandatory_information_missing
+            .btn-group.pull-right
+              a.btn.btn-primary(href="{% url 'core_profile_view' %}", target="_blank", rel="noreferer noopener") Täydennä tiedot profiiliin
             p.text-danger Ennen kuin voit hakea yhdistyksen jäsenyyttä, sinun täytyy päivittää täydentää profiilistasi puuttuvat tiedot.
+
           if already_member
             p.text-danger Olet jo tämän yhdistyksen jäsen, tai jäsenyytesi on käsiteltävänä.
           if not_receiving_applications

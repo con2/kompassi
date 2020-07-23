@@ -9,6 +9,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods, require_safe
 
+from csp.decorators import csp_update
+
+from payments.models import CHECKOUT_PAYMENT_WALL_ORIGIN
+
 from ..models import (
     EmailVerificationError,
     EmailVerificationToken,
@@ -36,6 +40,7 @@ from ..helpers import person_required, public_organization_required
 
 
 @public_organization_required
+@csp_update(FORM_ACTION=CHECKOUT_PAYMENT_WALL_ORIGIN)
 def core_organization_view(request, organization):
     t = now()
 

@@ -33,7 +33,7 @@ class TermAdmin(admin.ModelAdmin):
 
 
 class MembershipFeePaymentAdmin(admin.ModelAdmin):
-    list_display = ('admin_get_organization', 'term', 'admin_get_official_name', 'payment_date')
+    list_display = ('admin_get_organization', 'term', 'admin_get_official_name', 'admin_get_formatted_amount', 'admin_is_paid', 'payment_date')
     list_filter = ('term__organization',)
     ordering = ('term__organization', 'member__person__surname', 'member__person__official_first_names')
 

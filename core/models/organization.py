@@ -65,9 +65,6 @@ class Organization(models.Model):
 
     @property
     def membership_organization_meta(self):
-        if 'membership' not in settings.INSTALLED_APPS:
-            return None
-
         from membership.models import MembershipOrganizationMeta
 
         try:
@@ -77,9 +74,6 @@ class Organization(models.Model):
 
     @property
     def access_organization_meta(self):
-        if 'access' not in settings.INSTALLED_APPS:
-            return None
-
         from access.models import AccessOrganizationMeta
 
         try:
@@ -89,14 +83,20 @@ class Organization(models.Model):
 
     @property
     def directory_organization_meta(self):
-        if 'directory' not in settings.INSTALLED_APPS:
-            return None
-
         from directory.models import DirectoryOrganizationMeta
 
         try:
             return self.directoryorganizationmeta
         except DirectoryOrganizationMeta.DoesNotExist:
+            return None
+
+    @property
+    def payments_organization_meta(self):
+        from payments.models import PaymentsOrganizationMeta
+
+        try:
+            return self.paymentsorganizationmeta
+        except PaymentsOrganizationMeta.DoesNotExist:
             return None
 
     @property

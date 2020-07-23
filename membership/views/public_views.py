@@ -98,14 +98,17 @@ def membership_organization_box_context(request, organization):
             person=request.user.person,
         ).first()
         is_membership_admin = meta.is_user_admin(request.user)
+        current_term_payment = membership.get_payment_for_term() if membership else None
     else:
         membership = None
         is_membership_admin = False
+        current_term_payment = None
 
     return dict(
         can_apply=meta.receiving_applications and not membership,
-        membership=membership,
+        current_term_payment=current_term_payment,
         is_membership_admin=is_membership_admin,
+        membership=membership,
     )
 
 

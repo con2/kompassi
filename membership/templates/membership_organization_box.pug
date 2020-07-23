@@ -11,6 +11,18 @@ if membership
   if membership.is_declined
     h4 Jäsenhakemuksesi on hylätty.
     p Lisätietoja saat yhdistyksen hallitukselta.
+  //- FIXME should_be_paid
+  if current_term_payment
+    if current_term_payment.is_paid
+      h4 Jäsenmaksusi kaudelle {{ current_term_payment.term }} on maksettu.
+    else
+      h4 Jäsenmaksusi kaudelle {{ current_term_payment.term }} on maksamatta.
+      if current_term_payment.can_pay_checkout
+        form(method="POST", action='{% url "membership_pay_fee_view" organization.slug %}')
+          {% csrf_token %}
+          button.btn.btn-primary(type="submit")
+            i.fa.fa-money.kompassi-icon-space-right
+            | Maksa pankkitunnuksilla ({{ current_term_payment.formatted_amount }})
 else
   if can_apply
     h4 Voit hakea tämän yhdistyksen jäsenyyttä.

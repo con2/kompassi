@@ -14,9 +14,9 @@ from core.utils import initialize_form, url
 from event_log.utils import emit
 from tickets.utils import format_price
 
-from ..forms import MemberForm, MembershipFeePaymentForm, MembershipForm
+from ..forms import MemberForm, MembershipForm
 from ..helpers import membership_admin_required
-from ..models import STATE_CHOICES, Membership, MembershipFeeNonPayment, MembershipFeePayment
+from ..models import STATE_CHOICES, Membership, MembershipFeePayment
 
 
 EXPORT_FORMATS = [

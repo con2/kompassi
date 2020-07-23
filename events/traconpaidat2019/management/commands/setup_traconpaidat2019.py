@@ -36,16 +36,16 @@ class Command(BaseCommand):
         tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(event, ['admins', 'pos'])
         payments_admin_group, = PaymentsEventMeta.get_or_create_groups(event, ['admins'])
 
-        tracon_payments = PaymentsEventMeta.objects.get(event__slug='tracon2019')
-        PaymentsEventMeta.objects.get_or_create(
-            event=event,
-            defaults=dict(
-                admin_group=payments_admin_group,
-                checkout_delivery_date='20190906',
-                checkout_merchant=tracon_payments.checkout_merchant,
-                checkout_password=tracon_payments.checkout_password,
-            ),
-        )
+        # tracon_payments = PaymentsEventMeta.objects.get(event__slug='tracon2019')
+        # PaymentsEventMeta.objects.get_or_create(
+        #     event=event,
+        #     defaults=dict(
+        #         admin_group=payments_admin_group,
+        #         checkout_delivery_date='20190906',
+        #         checkout_merchant=tracon_payments.checkout_merchant,
+        #         checkout_password=tracon_payments.checkout_password,
+        #     ),
+        # )
 
         defaults = dict(
             admin_group=tickets_admin_group,

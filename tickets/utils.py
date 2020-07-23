@@ -4,3 +4,7 @@ def format_price(cents):
 
 def format_date(dt):
     return dt.strftime("%Y-%m-%d")
+
+
+def append_reference_number_checksum(s):
+    return s + str(-sum(int(x) * [7, 3, 1][i % 3] for i, x in enumerate(s[::-1])) % 10)

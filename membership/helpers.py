@@ -3,6 +3,10 @@ from functools import wraps
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 
+from core.helpers import person_required
+
+from .models import Membership
+
 
 def membership_admin_required(view_func):
     @wraps(view_func)
@@ -44,4 +48,28 @@ def membership_organization_required(view_func):
             return redirect('core_organization_view', organization.slug)
 
         return view_func(request, organization, *args, **kwargs)
+    return wrapper
+
+
+def membership_required(view_func):
+    @wraps(view_func)
+    @person_required
+    def wrapper(request, organization_slug, *args, **kwargs):
+        from core.models import Organization
+
+        organization = get_object_or_404(Organization, slug=organization_slug)
+        meta = organization.membership_organization_meta
+
+        if not meta:
+            messages.error(request, "Tämä organisaatio ei käytä Kompassia jäsenrekisterin hallintaan.")
+            return redirect('core_organization_view', organization.slug)
+
+        try:
+            membership = Membership.objects.get(organization=organization, person=request.user.person)
+        except Membership.DoesNotExist:
+            messages.error(request, "Et ole tämän organisaation jäsen.")
+            return redirect('core_organization_view', organization.slug)
+
+        return view_func(request, membership, *args, **kwargs)
+
     return wrapper

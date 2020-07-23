@@ -9,6 +9,7 @@
         tr
           th(scope="column") Toimikausi
           th(scope="column") Maksupäivä
+          th(scope="column") Maksutapa
           th(scope="column") Maksun tyyppi
           th(scope="column") Summa
       tbody
@@ -19,32 +20,39 @@
               td {{ payment.payment_date|date:"SHORT_DATE_FORMAT" }}
             else
               td: .label.label-danger Maksamatta
+            td= payment.get_payment_method_display
             td= payment.get_payment_type_display
             td= payment.formatted_amount
     .panel-footer.clearfix
-      .btn-group.pull-right
-        button.btn.btn-primary(type='button', data-toggle='modal', data-target='#membership-payment-modal')
-          i.fa.fa-money.kompassi-icon-space-right
-          | Merkitse jäsenmaksu maksetuksi…
+      if current_term
+        .btn-group.pull-right
+          button.btn.btn-primary(type='button', data-toggle='modal', data-target='#membership-payment-modal')
+            i.fa.fa-money.kompassi-icon-space-right
+            | Merkitse jäsenmaksu maksetuksi…
+      else
+        p.text-danger Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä ennen jäsenmaksujen syöttämistä.
 
-.modal.fade#membership-payment-modal(tabindex="-1",
-                             role="dialog",
-                             aria-labelledby="membership-payment-modal-title",
-                             data-bind='with: jobCategory.jobModal')
-  .modal-dialog
-    .modal-content
-      form(method='POST').form-horizontal
-        {% csrf_token %}
-        .modal-header
-          button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
-          h4#membership-payment-modal-title {% trans "Merkitse jäsenmaksu maksetuksi" %}
-        .modal-body
-          {% bootstrap_form membership_fee_payment_form layout='horizontal' %}
-        .modal-footer.clearfix
-          .btn-group.pull-right
-            button.btn.btn-default(type='button', data-dismiss='modal')
-              i.fa.fa-undo.kompassi-icon-space-right
-              | {% trans "Cancel" %}
-            button.btn.btn-success(type='submit', name='action', value='mark-paid')
-              i.fa.fa-money.kompassi-icon-space-right
-              | Merkitse maksetuksi
+if membership_fee_payment_form
+  .modal.fade#membership-payment-modal(tabindex="-1",
+                              role="dialog",
+                              aria-labelledby="membership-payment-modal-title")
+    .modal-dialog
+      .modal-content
+        form(method='POST').form-horizontal
+          {% csrf_token %}
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+            h4#membership-payment-modal-title {% trans "Merkitse jäsenmaksu maksetuksi" %}
+          .modal-body
+            .form-group
+              label.col-md-3.control-label Toimikausi
+              p.col-md-9.form-control-static= current_term
+            {% bootstrap_form membership_fee_payment_form layout='horizontal' %}
+          .modal-footer.clearfix
+            .btn-group.pull-right
+              button.btn.btn-default(type='button', data-dismiss='modal')
+                i.fa.fa-undo.kompassi-icon-space-right
+                | {% trans "Cancel" %}
+              button.btn.btn-success(type='submit', name='action', value='mark-paid')
+                i.fa.fa-money.kompassi-icon-space-right
+                | Merkitse maksetuksi

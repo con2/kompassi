@@ -23,7 +23,7 @@ from core.utils import (
     url,
 )
 
-from .utils import format_date, format_price
+from .utils import format_date, format_price, append_reference_number_checksum
 from .receipt import render_receipt
 
 
@@ -715,8 +715,7 @@ class Order(models.Model):
         return self.event.tickets_event_meta.reference_number_template.format(self.pk)
 
     def _make_reference_number(self):
-        s = self.reference_number_base
-        return s + str(-sum(int(x) * [7, 3, 1][i % 3] for i, x in enumerate(s[::-1])) % 10)
+        return append_reference_number_checksum(self.reference_number_base)
 
     @property
     def formatted_reference_number(self):

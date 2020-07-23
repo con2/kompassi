@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
@@ -12,7 +14,7 @@ from tickets.utils import format_price
 
 from ..forms import MemberForm, MembershipFeePaymentForm, MembershipForm
 from ..helpers import membership_admin_required
-from ..models import STATE_CHOICES, Membership, MembershipFeeNonPayment, MembershipFeePayment
+from ..models import STATE_CHOICES, Membership, MembershipFeePayment
 
 
 @membership_admin_required
@@ -32,13 +34,12 @@ def membership_admin_member_view(request, vars, organization, person_id):
 
     if current_term:
         current_term_payment = membership.get_payment_for_term(current_term)
-        if current_term.membership_fee_cents and not current_term_payment.is_paid:
-            # Membership fee not paid, nag
-            membership_fee_payments = list(membership_fee_payments) + [current_term_payment, ]
-    else:
-        messages.warning(request, 'Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä.')
 
-    membership_fee_payment_form = initialize_form(MembershipFeePaymentForm, request, current_term=current_term)
+    if current_term_payment:
+        initial = dict(payment_date=current_term_payment.payment_date or date.today())
+        membership_fee_payment_form = initialize_form(MembershipFeePaymentForm, request, instance=current_term_payment, initial=initial)
+    else:
+        membership_fee_payment_form = None
 
     if request.method == 'POST':
         action = request.POST['action']
@@ -60,10 +61,9 @@ def membership_admin_member_view(request, vars, organization, person_id):
                 messages.error(request, 'Tarkista lomakkeen tiedot.')
         elif action == 'mark-paid':
             payment = membership_fee_payment_form.save(commit=False)
-            payment.member = membership
             payment.save()
 
-            messages.success(request, 'Jäsenmaksu merkattiin maksetuksi.')
+            messages.success(request, 'Jäsenmaksu päivitetty.')
             return redirect('membership_admin_member_view', organization.slug, membership.person.id)
         else:
             raise NotImplementedError(action)

@@ -4,29 +4,29 @@ from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.models import User, Group
 
+from access.admin import InlineAccessOrganizationMetaAdmin
+from badges.admin import InlineBadgesEventMetaAdmin
+from directory.admin import InlineDirectoryOrganizationMetaAdmin
+from enrollment.admin import InlineEnrollmentEventMetaAdmin
+from intra.admin import InlineIntraEventMetaAdmin
+from labour.admin import InlineLabourEventMetaAdmin
+from membership.admin import InlineMembershipOrganizationMetaAdmin
+from payments.admin import InlinePaymentsOrganizationMetaAdmin
+from programme.admin import InlineProgrammeEventMetaAdmin
+from tickets.admin import InlineTicketsEventMetaAdmin
+
 from .models import Organization, Event, Person, Venue, CarouselSlide
-
-
-organization_admin_inlines = []
-
-if 'membership' in settings.INSTALLED_APPS:
-    from membership.admin import InlineMembershipOrganizationMetaAdmin
-    organization_admin_inlines.append(InlineMembershipOrganizationMetaAdmin)
-
-if 'access' in settings.INSTALLED_APPS:
-    from access.admin import InlineAccessOrganizationMetaAdmin
-    organization_admin_inlines.append(InlineAccessOrganizationMetaAdmin)
-
-
-if 'directory' in settings.INSTALLED_APPS:
-    from directory.admin import InlineDirectoryOrganizationMetaAdmin
-    organization_admin_inlines.append(InlineDirectoryOrganizationMetaAdmin)
 
 
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'homepage_url')
     ordering = ('name',)
-    inlines = tuple(organization_admin_inlines)
+    inlines = (
+        InlineMembershipOrganizationMetaAdmin,
+        InlineAccessOrganizationMetaAdmin,
+        InlinePaymentsOrganizationMetaAdmin,
+        InlineDirectoryOrganizationMetaAdmin,
+    )
 
 
 def merge_selected_people(modeladmin, request, queryset):
@@ -55,43 +55,19 @@ class PersonAdmin(admin.ModelAdmin):
     actions = [merge_selected_people]
 
 
-event_admin_inlines = []
-
-if 'labour' in settings.INSTALLED_APPS:
-    from labour.admin import InlineLabourEventMetaAdmin
-    event_admin_inlines.append(InlineLabourEventMetaAdmin)
-
-if 'programme' in settings.INSTALLED_APPS:
-    from programme.admin import InlineProgrammeEventMetaAdmin
-    event_admin_inlines.append(InlineProgrammeEventMetaAdmin)
-
-if 'tickets' in settings.INSTALLED_APPS:
-    from tickets.admin import InlineTicketsEventMetaAdmin
-    event_admin_inlines.append(InlineTicketsEventMetaAdmin)
-
-if 'payments' in settings.INSTALLED_APPS:
-    from payments.admin import InlinePaymentsEventMetaAdmin
-    event_admin_inlines.append(InlinePaymentsEventMetaAdmin)
-
-if 'badges' in settings.INSTALLED_APPS:
-    from badges.admin import InlineBadgesEventMetaAdmin
-    event_admin_inlines.append(InlineBadgesEventMetaAdmin)
-
-if 'enrollment' in settings.INSTALLED_APPS:
-    from enrollment.admin import InlineEnrollmentEventMetaAdmin
-    event_admin_inlines.append(InlineEnrollmentEventMetaAdmin)
-
-if 'intra' in settings.INSTALLED_APPS:
-    from intra.admin import InlineIntraEventMetaAdmin
-    event_admin_inlines.append(InlineIntraEventMetaAdmin)
-
-
 class EventAdmin(admin.ModelAdmin):
     list_display = ('name', 'organization', 'venue', 'public', 'cancelled')
     list_filter = ('organization', 'venue', 'public', 'cancelled')
     search_fields = ('name',)
 
-    inlines = tuple(event_admin_inlines)
+    inlines = (
+        InlineLabourEventMetaAdmin,
+        InlineProgrammeEventMetaAdmin,
+        InlineTicketsEventMetaAdmin,
+        InlineBadgesEventMetaAdmin,
+        InlineEnrollmentEventMetaAdmin,
+        InlineIntraEventMetaAdmin,
+    )
 
     fieldsets = (
         ('Tapahtuman nimi', dict(fields=(
