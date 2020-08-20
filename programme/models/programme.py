@@ -485,6 +485,14 @@ class Programme(models.Model, CsvExportMixin):
         ),
     )
 
+    hitpoint2020_preferred_time_slots = models.ManyToManyField('hitpoint2020.TimeSlot',
+        verbose_name=_('preferred time slots'),
+        help_text=_(
+            'When would you like to run your RPG? The time slots are intentionally vague. If you have more '
+            'specific needs regarding the time, please explain them in the last open field.'
+        ),
+    )
+
     # XXX BAD, there needs to be a better way if this becomes a recurring pattern
     ropecon2018_preferred_time_slots = models.ManyToManyField('ropecon2018.TimeSlot',
         verbose_name=_('preferred time slots'),

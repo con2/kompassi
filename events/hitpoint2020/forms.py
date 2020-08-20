@@ -24,13 +24,13 @@ class SignupExtraForm(forms.ModelForm):
             'total_work',
             'night_work',
             'construction',
-            'overseer',
 
             Fieldset('Työtodistus',
                 'want_certificate',
                 'certificate_delivery_address',
             ),
             Fieldset('Lisätiedot',
+                'shirt_size',
                 'special_diet',
                 'special_diet_other',
                 'prior_experience',
@@ -47,9 +47,9 @@ class SignupExtraForm(forms.ModelForm):
             'total_work',
             'night_work',
             'construction',
-            'overseer',
             'want_certificate',
             'certificate_delivery_address',
+            'shirt_size',
             'special_diet',
             'special_diet_other',
             'prior_experience',
@@ -136,7 +136,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             total_work='yli12h',
             night_work='miel',
             construction=False,
-            overseer=False,
             want_certificate=False,
             certificate_delivery_address='',
             prior_experience='',
@@ -177,7 +176,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'max_players',
             'description',
             'three_word_description',
-            'hitpoint2017_preferred_time_slots',
+            'hitpoint2020_preferred_time_slots',
             'notes_from_host',
 
             Fieldset(_('Whom is the game for?'),
@@ -185,17 +184,22 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 'is_children_friendly',
                 'is_age_restricted',
                 'is_beginner_friendly',
-                'is_intended_for_experienced_participants',
             ),
         )
 
         self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
 
         self.fields['three_word_description'].required = True
+        self.fields['three_word_description'].label = _("Summary in one sentence")
+        self.fields['three_word_description'].help_text = _("Summarize the description of your game in one sentence.")
+
         self.fields['rpg_system'].required = True
 
         self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
         self.fields['description'].required = True
+
+        self.fields['is_english_ok'].label = _("In English")
+        self.fields['is_english_ok'].help_text = _("Check this box if your RPG is played in English.")
 
     class Meta:
         model = Programme
@@ -207,17 +211,16 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'max_players',
             'three_word_description',
             'description',
-            'hitpoint2017_preferred_time_slots',
+            'hitpoint2020_preferred_time_slots',
             'notes_from_host',
             'is_english_ok',
             'is_children_friendly',
             'is_age_restricted',
             'is_beginner_friendly',
-            'is_intended_for_experienced_participants',
         )
 
         widgets = dict(
-            hitpoint2017_preferred_time_slots=forms.CheckboxSelectMultiple,
+            hitpoint2020_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
@@ -252,7 +255,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'physical_play',
             'other_author',
 
-            'hitpoint2017_preferred_time_slots',
+            'hitpoint2020_preferred_time_slots',
             'notes_from_host',
 
             Fieldset(_('Whom is the game for?'),
@@ -265,9 +268,14 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
 
         self.fields['three_word_description'].required = True
+        self.fields['three_word_description'].label = _("Summary in one sentence")
+        self.fields['three_word_description'].help_text = _("Summarize the description of your game in one sentence.")
 
         self.fields['description'].required = True
         self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
+
+        self.fields['is_english_ok'].label = _("In English")
+        self.fields['is_english_ok'].help_text = _("Check this box if your RPG is played in English.")
 
     class Meta:
         model = Programme
@@ -281,7 +289,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'physical_play',
             'other_author',
 
-            'hitpoint2017_preferred_time_slots',
+            'hitpoint2020_preferred_time_slots',
             'notes_from_host',
 
             'is_english_ok',
@@ -291,7 +299,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
-            hitpoint2017_preferred_time_slots=forms.CheckboxSelectMultiple,
+            hitpoint2020_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):

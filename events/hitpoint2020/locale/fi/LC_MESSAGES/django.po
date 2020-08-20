@@ -10,3 +10,11 @@ msgstr "Saadaksesi maksuttoman sisäänpääsyn, sinun tulee pitää pelejä vä
 msgid "Whom is the game for?"
 msgstr "Kenelle peli on tarkoitettu?"
 
+msgid "Summary in one sentence"
+msgstr "Yhden lauseen kuvaus"
+
+msgid "Summarize the description of your game in one sentence."
+msgstr "Tiivistä pelisi kuvaus yhteen lauseeseen."
+
+msgid "Check this box if your RPG is played in English."
+msgstr "Ruksaa tämä ruutu, jos pelisi pelataan englanniksi."

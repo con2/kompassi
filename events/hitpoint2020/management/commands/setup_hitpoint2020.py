@@ -346,13 +346,16 @@ class Setup(object):
 
         for time_slot_name in [
             'Lauantaina päivällä',
-            'Lauantaina iltapäivällä',
             'Lauantaina illalla',
-            'Lauantain ja sunnuntain välisenä yönä',
-            'Sunnuntaina aamupäivällä',
             'Sunnuntaina päivällä',
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
+
+        TimeSlot.objects.filter(name__in=[
+            'Lauantaina iltapäivällä',
+            'Lauantain ja sunnuntain välisenä yönä',
+            'Sunnuntaina aamupäivällä',
+        ]).delete()
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product

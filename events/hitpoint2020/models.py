@@ -17,7 +17,6 @@ SHIFT_TYPE_CHOICES = [
 
 TOTAL_WORK_CHOICES = [
     ('6h', 'Minimi – 6 tuntia'),
-    ('8h', '8 tuntia'),  # TODO remove me 2020
     ('12h', '10–12 tuntia'),
     ('yli12h', 'Työn Sankari! Yli 12 tuntia!'),
 ]
@@ -82,12 +81,6 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         default=False,
         verbose_name='Voin työskennellä jo perjantaina',
         help_text='Huomaathan, että perjantain ja lauantain väliselle yölle ei ole tarjolla majoitusta.',
-    )
-
-    overseer = models.BooleanField(
-        default=False,
-        verbose_name='Olen kiinnostunut vuorovastaavan tehtävistä',
-        help_text='Vuorovastaavat ovat kokeneempia conityöläisiä, jotka toimivat oman tehtäväalueensa tiiminvetäjänä.',
     )
 
     want_certificate = models.BooleanField(
