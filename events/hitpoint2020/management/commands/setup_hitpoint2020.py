@@ -303,10 +303,11 @@ class Setup(object):
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(
-                    event=self.event,
-                    start_time=hour_start_time.replace(minute=30)
-                )
+                for minute in [15, 30, 45]:
+                    SpecialStartTime.objects.get_or_create(
+                        event=self.event,
+                        start_time=hour_start_time.replace(minute=minute)
+                    )
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
