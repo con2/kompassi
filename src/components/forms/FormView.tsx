@@ -14,7 +14,7 @@ import SchemaForm from './SchemaForm';
 import SessionContext from '../common/SessionContext';
 
 const FormView: React.FC<{}> = () => {
-  const { slug } = useParams();
+  const { slug } = useParams<{ slug: string }>();
   const context = React.useContext(SessionContext);
   const { error, data } = useSWR<Form>(`forms/${slug}`, context.get);
   const t = T(r => r.Common);
@@ -24,7 +24,7 @@ const FormView: React.FC<{}> = () => {
 
   const onSubmit = React.useCallback(
     (values: any) => {
-      (async function() {
+      (async function () {
         try {
           setPosting(true);
           await context.post(`forms/${slug}/responses`, { values });

@@ -3,6 +3,8 @@ services:
   frontend:
     build: .
     init: true
+    tty: true
+    stdin_open: true
     ports:
       - 3000:3000
     volumes:
