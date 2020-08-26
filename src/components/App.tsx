@@ -13,6 +13,7 @@ import Navigation from './Navigation';
 import NotFound from './NotFound';
 import { SessionProvider } from './common/SessionContext';
 import FormResponsesView from './forms/FormResponsesView';
+import ContactEditor from './larps/ContactEditor';
 
 class App extends React.Component {
   render() {
@@ -23,6 +24,7 @@ class App extends React.Component {
           <Switch>
             <Route exact={true} path="/" component={FrontPage} />
             <Route path="/events/:eventSlug/accommodation/onboarding" component={AccommodationOnboardingView} />
+            <Route path="/events/:eventSlug/larp/characters/:characterSlug/contacts/:otherCharacterSlug" component={ContactEditor} />
             <Route path="/forms/:slug(new)" component={FormEditorView} />
             <Route path="/forms/:slug/edit" component={FormEditorView} />
             <Route path="/forms/:slug/responses" component={FormResponsesView} />
