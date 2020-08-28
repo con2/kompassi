@@ -388,6 +388,9 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
 
         super(AfterpartyParticipationSurvey, self).__init__(*args, **kwargs)
 
+        self.fields['afterparty_participation'].label = "Osallistun iltabileisiin"
+        self.fields['afterparty_participation'].help_text = "Ruksaa tämä ruutu, mikäli haluat osallistua kaatajaisiin. Mikäli mielesi muuttuu tai sinulle tulee este, peru ilmoittautumisesi poistamalla rasti tästä ruudusta."
+
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
@@ -406,12 +409,12 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
         model = SignupExtra
         fields = (
             'afterparty_participation',
-            'pick_your_poison',
+            # 'pick_your_poison',
             'special_diet',
             'special_diet_other',
-            'afterparty_help',
+            # 'afterparty_help',
         )
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
-            pick_your_poison=forms.CheckboxSelectMultiple,
+            # pick_your_poison=forms.CheckboxSelectMultiple,
         )

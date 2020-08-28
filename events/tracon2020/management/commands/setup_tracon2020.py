@@ -28,7 +28,7 @@ class Setup(object):
         self.setup_intra()
         self.setup_access()
         self.setup_directory()
-        # self.setup_kaatoilmo()
+        self.setup_kaatoilmo()
         # self.setup_sms()
 
     def setup_core(self):
@@ -680,7 +680,7 @@ class Setup(object):
 
             coaches.append(coach)
 
-        outward_coach, return_coach = coaches
+        # outward_coach, return_coach = coaches
 
         kaatoilmo_override_does_not_apply_message = (
             'Valitettavasti et pysty ilmoittautumaan kaatoon käyttäen tätä lomaketta. Tämä '
@@ -691,8 +691,8 @@ class Setup(object):
             'osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen '
             '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
         )
-        outward_coach_url = reverse('paikkala_reservation_view', args=(self.event.slug, outward_coach.id))
-        return_coach_url = reverse('paikkala_reservation_view', args=(self.event.slug, return_coach.id))
+        # outward_coach_url = reverse('paikkala_reservation_view', args=(self.event.slug, outward_coach.id))
+        # return_coach_url = reverse('paikkala_reservation_view', args=(self.event.slug, return_coach.id))
         kaatoilmo, unused = Survey.objects.get_or_create(
             event=self.event,
             slug='kaatoilmo',
@@ -700,7 +700,7 @@ class Setup(object):
                 title='Ilmoittautuminen iltabileisiin',
                 description=(
                     'Kiitokseksi työpanoksestasi tapahtumassa Tracon tarjoaa sinulle mahdollisuuden '
-                    'osallistua iltabileisiin lauantaina 5. syyskuuta 2020 Tampereella. Iltobileisiin osallistuminen edellyttää ilmoittautumista. '
+                    'osallistua iltabileisiin lauantaina 5. syyskuuta 2020 Tampereella. Iltabileisiin osallistuminen edellyttää ilmoittautumista. '
                     # '</p><p>'
                     # '<strong>HUOM!</strong> Paikat kaatobusseihin varataan erikseen. Varaa paikkasi '
                     # f'<a href="{outward_coach_url}" target="_blank">menobussiin täältä</a> ja '
@@ -715,15 +715,15 @@ class Setup(object):
         )
 
         for poison_name in [
-            'Olut',
-            'Siideri, kuiva',
-            'Siideri, makea',
-            'Lonkero',
-            'Panimosima',
-            'Punaviini',
-            'Valkoviini',
-            'Cocktailit',
-            'Alkoholittomat juomat',
+            # 'Olut',
+            # 'Siideri, kuiva',
+            # 'Siideri, makea',
+            # 'Lonkero',
+            # 'Panimosima',
+            # 'Punaviini',
+            # 'Valkoviini',
+            # 'Cocktailit',
+            # 'Alkoholittomat juomat',
         ]:
             Poison.objects.get_or_create(name=poison_name)
 
