@@ -96,11 +96,19 @@ def labour_admin_signup_view(request, vars, event, person_id):
 
     previous_signup, next_signup = signup.get_previous_and_next_signup()
 
-    historic_signups = Signup.objects.filter(person=signup.person).exclude(event=event).order_by('-event__start_time')
+    unarchived_signups = Signup.objects.filter(person=signup.person).exclude(event=event).order_by('-event__start_time')
+    archived_signups = person.archived_signups.all()
     if not person.allow_work_history_sharing:
         # The user has elected to not share their full work history between organizations.
         # Only show work history for the current organization.
-        historic_signups = historic_signups.filter(event__organization=event.organization)
+        unarchived_signups = unarchived_signups.filter(event__organization=event.organization)
+        archived_signups = archived_signups.filter(event__organization=event.organization)
+
+    historic_signups = sorted(
+        list(archived_signups) + list(unarchived_signups),
+        key=lambda signup: signup.event.start_time,
+        reverse=True,
+    )
 
     tabs = [
         Tab('labour-admin-signup-state-tab', 'Hakemuksen tila', active=True),
@@ -108,7 +116,7 @@ def labour_admin_signup_view(request, vars, event, person_id):
         Tab('labour-admin-signup-application-tab', 'Hakemuksen tiedot'),
         Tab('labour-admin-signup-messages-tab', 'Työvoimaviestit', notifications=signup.person_messages.count()),
         Tab('labour-admin-signup-shifts-tab', 'Työvuorot'),
-        Tab('labour-admin-signup-history-tab', 'Työskentelyhistoria', notifications=historic_signups.count()),
+        Tab('labour-admin-signup-history-tab', 'Työskentelyhistoria', notifications=len(historic_signups)),
     ]
 
     vars.update(

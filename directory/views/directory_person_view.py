@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.utils.timezone import now
 
-from labour.models import Signup
+from labour.models import ArchivedSignup, Signup
 from membership.models import Membership
 from programme.models import ProgrammeRole
 from enrollment.models import Enrollment
@@ -24,9 +24,15 @@ Involvement = namedtuple('Involvement', [
 
 
 def get_involvement(request, event, person):
+    signup = ArchivedSignup.objects.filter(person=person, event=event).first()
+    if not signup:
+        signup = Signup.objects.filter(person=person, event=event).first()
+
+    print(signup)
+
     return Involvement(
         event=event,
-        signup=Signup.objects.filter(person=person, event=event).first(),
+        signup=signup,
         enrollment=Enrollment.objects.filter(person=person, event=event).first(),
         programme_roles=ProgrammeRole.objects.filter(person=person, programme__category__event=event),
         current_user_is_labour_admin=(
@@ -66,6 +72,8 @@ def directory_person_view(request, vars, organization, person_id):
         involvement_in_current_events=involvement_in_current_events,
         involvement_in_future_events=involvement_in_future_events,
     )
+
+    print("directory_person_view", locals())
 
     person.log_view(request, organization=organization)
 

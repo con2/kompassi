@@ -18,3 +18,4 @@ from .signup import Signup
 from .signup_extras import ObsoleteSignupExtraBaseV1, ObsoleteEmptySignupExtraV1, SignupExtraBase, EmptySignupExtra
 from .info_link import InfoLink
 from .survey import Survey, SurveyRecord
+from .archived_signup import ArchivedSignup

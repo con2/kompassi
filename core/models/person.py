@@ -392,6 +392,9 @@ class Person(models.Model):
         # or signups
         q |= Q(signup__person=self)
 
+        # or archived signups
+        q |= Q(archived_signups__person=self)
+
         # or enrollments
         q |= Q(enrollment__person=self)
 

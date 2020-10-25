@@ -363,7 +363,7 @@ KOMPASSI_INSTALLATION_NAME_ILLATIVE = 'Kompassin kehitys\u00ADinstanssiin' if DE
 KOMPASSI_INSTALLATION_NAME_GENITIVE = 'Kompassin kehitys\u00ADinstanssin' if DEBUG else 'Kompassin'
 KOMPASSI_INSTALLATION_NAME_PARTITIVE = 'Kompassin kehitys\u00ADinstanssia' if DEBUG else 'Kompassia'
 KOMPASSI_INSTALLATION_SLUG = env('KOMPASSI_INSTALLATION_SLUG', default='turskadev')
-KOMPASSI_PRIVACY_POLICY_URL = 'https://confluence.tracon.fi/display/CONDB/Rekisteriseloste'
+KOMPASSI_PRIVACY_POLICY_URL = 'https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi'
 FEEDBACK_PRIVACY_POLICY_URL = 'https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute'
 
 # Confluence & co. require a group of users

@@ -18,6 +18,7 @@ SIGNUP_STATE_NAMES = dict(
     relieved='Vapautettu tehtävästään',
 
     beyond_logic='Perätilassa',
+    archived='Arkistoitu',
 )
 
 NUM_FIRST_CATEGORIES = 8
@@ -36,6 +37,7 @@ SIGNUP_STATE_CLASSES = dict(
     no_show='danger',
     beyond_logic='danger',
     relieved='danger',
+    archived='default',
 )
 
 SIGNUP_STATE_LABEL_CLASSES = dict(

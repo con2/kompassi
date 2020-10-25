@@ -9,9 +9,14 @@ thead
 tbody
   for signup in signups
     tr
-      td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}') {{ signup.person.surname }}
-      td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}') {{ signup.person.first_name }}
-      td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}') {{ signup.person.nick }}
+      if archive_mode
+        td= signup.person.surname
+        td= signup.person.first_name
+        td= signup.person.nick
+      else
+        td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}')= signup.person.surname
+        td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}')= signup.person.first_name
+        td: a(href='{% url "labour_admin_signup_view" event.slug signup.person.pk %}')= signup.person.nick
       td.hidden-xs
         if signup.is_accepted
           | {{ signup.some_job_title }}

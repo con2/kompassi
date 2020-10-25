@@ -241,17 +241,30 @@ def labour_profile_signups_view(request):
 
     t = now()
 
-    signups_past_events = person.signups.filter(event__end_time__lte=t).order_by('-event__start_time')
+    unarchived_signups_past_events = person.signups.filter(event__end_time__lte=t).order_by('-event__start_time')
     signups_current_events = person.signups.filter(event__start_time__lte=t, event__end_time__gt=t).order_by('-event__start_time')
     signups_future_events = person.signups.filter(event__start_time__gt=t).order_by('-event__start_time')
+
+    archived_signups = person.archived_signups.all()
+    signups_past_events = sorted(
+        list(archived_signups) + list(unarchived_signups_past_events),
+        key=lambda signup: signup.event.start_time,
+        reverse=True,
+    )
+
+    no_signups = not any(signups.exists() for signups in [
+        archived_signups,
+        unarchived_signups_past_events,
+        signups_current_events,
+        signups_future_events
+    ])
 
     vars = dict(
         person=person,
         signups_past_events=signups_past_events,
         signups_current_events=signups_current_events,
         signups_future_events=signups_future_events,
-        no_signups=not any(signups.exists() for signups in [signups_past_events, signups_current_events, signups_future_events]),
-        all_signups=person.signups.all(),
+        no_signups=no_signups,
     )
 
     return render(request, 'labour_profile_signups_view.pug', vars)

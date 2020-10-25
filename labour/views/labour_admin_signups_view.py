@@ -1,8 +1,10 @@
 from collections import OrderedDict, namedtuple
 
+from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 
 from core.sort_and_filter import Sorter, Filter
 from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, csv_response
@@ -10,7 +12,7 @@ from event_log.utils import emit
 
 from ..helpers import labour_admin_required
 from ..filters import SignupStateFilter
-from ..models import Signup
+from ..models import ArchivedSignup, Signup
 from ..proxies.signup.certificate import SignupCertificateProxy
 
 
@@ -37,21 +39,42 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
     signups = signups.select_related('person').select_related('event')
     signups = signups.prefetch_related('job_categories').prefetch_related('job_categories_accepted')
 
+    archived_signups = ArchivedSignup.objects.filter(event=event)
+    archive_mode = archived_signups.exists()
+
     if format in HTML_TEMPLATES:
         num_all_signups = signups.count()
 
     job_categories = event.jobcategory_set.all()
     personnel_classes = event.personnelclass_set.filter(app_label='labour')
 
-    job_category_filters = Filter(request, "job_category").add_objects("job_categories__slug", job_categories)
-    signups = job_category_filters.filter_queryset(signups)
+    if archive_mode:
+        signups = archived_signups
+        messages.warning(request, _(
+            "The applications for this event have been archived. Functionality is limited. "
+            "Only people who worked at the event are displayed below. "
+            "Note that as only a positive record is maintained, people who were reprimanded "
+            "for their performance may also have been omitted."
+        ))
+
+    all_filters = []
+
     job_category_accepted_filters = Filter(request, "job_category_accepted").add_objects("job_categories_accepted__slug", job_categories)
     signups = job_category_accepted_filters.filter_queryset(signups)
+    all_filters.append(job_category_accepted_filters)
+
     personnel_class_filters = Filter(request, "personnel_class").add_objects("personnel_classes__slug", personnel_classes)
     signups = personnel_class_filters.filter_queryset(signups)
+    all_filters.append(personnel_class_filters)
 
-    state_filter = SignupStateFilter(request, "state")
-    signups = state_filter.filter_queryset(signups)
+    if not archive_mode:
+        job_category_filters = Filter(request, "job_category").add_objects("job_categories__slug", job_categories)
+        signups = job_category_filters.filter_queryset(signups)
+        all_filters.append(job_category_filters)
+
+        state_filter = SignupStateFilter(request, "state")
+        signups = state_filter.filter_queryset(signups)
+        all_filters.append(state_filter)
 
     if SignupExtra.get_field('night_work'):
         night_work_path = '{prefix}{app_label}_signup_extra__night_work'.format(
@@ -60,16 +83,21 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
         )
         night_work_filter = Filter(request, 'night_work').add_booleans(night_work_path)
         signups = night_work_filter.filter_queryset(signups)
+        all_filters.append(night_work_filter)
     else:
         night_work_filter = None
 
     sorter = Sorter(request, "sort")
     sorter.add("name", name='Sukunimi, Etunimi', definition=('person__surname', 'person__first_name'))
-    sorter.add("newest", name='Uusin ensin', definition=('-created_at',))
-    sorter.add("oldest", name='Vanhin ensin', definition=('created_at',))
+    all_filters.append(sorter)
+
+    if not archive_mode:
+        sorter.add("newest", name='Uusin ensin', definition=('-created_at',))
+        sorter.add("oldest", name='Vanhin ensin', definition=('created_at',))
+
     signups = sorter.order_queryset(signups)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and not archive_mode:
         action = request.POST.get('action', None)
         if action == 'reject':
             SignupClass.mass_reject(signups)
@@ -83,35 +111,41 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
         return redirect('labour_admin_signups_view', event.slug)
 
     elif format in HTML_TEMPLATES:
-        num_would_mass_reject = signups.filter(**SignupClass.get_state_query_params('new')).count()
-        num_would_mass_request_confirmation = signups.filter(**SignupClass.get_state_query_params('accepted')).count()
-        num_would_send_shifts = SignupClass.filter_signups_for_mass_send_shifts(signups).count()
-
-        mass_operations = OrderedDict([
-            ('reject', MassOperation(
-                'reject',
-                'labour-admin-mass-reject-modal',
-                'Hylkää kaikki käsittelemättömät...',
-                num_would_mass_reject,
-            )),
-            ('request_confirmation', MassOperation(
-                'request_confirmation',
-                'labour-admin-mass-request-confirmation-modal',
-                'Vaadi vahvistusta kaikilta hyväksytyiltä...',
-                num_would_mass_request_confirmation,
-            )),
-            ('send_shifts', MassOperation(
-                'send_shifts',
-                'labour-admin-mass-send-shifts-modal',
-                'Lähetä vuorot kaikille vuoroja odottaville, joille ne on määritelty...',
-                num_would_send_shifts,
-            )),
-        ])
+        if archive_mode:
+            num_would_mass_reject = 0
+            num_would_mass_request_confirmation = 0
+            num_would_send_shifts = 0
+            mass_operations = OrderedDict()
+        else:
+            num_would_mass_reject = signups.filter(**SignupClass.get_state_query_params('new')).count()
+            num_would_mass_request_confirmation = signups.filter(**SignupClass.get_state_query_params('accepted')).count()
+            num_would_send_shifts = SignupClass.filter_signups_for_mass_send_shifts(signups).count()
+            mass_operations = OrderedDict([
+                ('reject', MassOperation(
+                    'reject',
+                    'labour-admin-mass-reject-modal',
+                    'Hylkää kaikki käsittelemättömät...',
+                    num_would_mass_reject,
+                )),
+                ('request_confirmation', MassOperation(
+                    'request_confirmation',
+                    'labour-admin-mass-request-confirmation-modal',
+                    'Vaadi vahvistusta kaikilta hyväksytyiltä...',
+                    num_would_mass_request_confirmation,
+                )),
+                ('send_shifts', MassOperation(
+                    'send_shifts',
+                    'labour-admin-mass-send-shifts-modal',
+                    'Lähetä vuorot kaikille vuoroja odottaville, joille ne on määritelty...',
+                    num_would_send_shifts,
+                )),
+            ])
 
         vars.update(
+            archive_mode=archive_mode,
             export_formats=EXPORT_FORMATS,
             job_category_accepted_filters=job_category_accepted_filters,
-            job_category_filters=job_category_filters,
+            job_category_filters=job_category_filters if not archive_mode else None,
             mass_operations=mass_operations,
             night_work_filter=night_work_filter,
             num_all_signups=num_all_signups,
@@ -119,14 +153,8 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
             personnel_class_filters=personnel_class_filters,
             signups=signups,
             sorter=sorter,
-            state_filter=state_filter,
-            css_to_show_filter_panel='in' if any(f.selected_slug != f.default for f in [
-                job_category_filters,
-                job_category_accepted_filters,
-                personnel_class_filters,
-                state_filter,
-                sorter,
-            ]) else '',
+            state_filter=state_filter if not archive_mode else None,
+            css_to_show_filter_panel='in' if any(f.selected_slug != f.default for f in all_filters) else '',
             now=now(),
         )
 
