@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse
 
 from csp.decorators import csp_update
-from ipware.ip import get_ip
+from core.utils import get_ip
 
 from core.models import Event
 

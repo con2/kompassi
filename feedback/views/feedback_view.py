@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 
-from ipware.ip import get_ip
+from core.utils import get_ip
 
 from core.utils import initialize_form
 

@@ -15,6 +15,7 @@ django-guardian
 django-ipware
 django-localflavor
 django-oauth-toolkit
+django-redis
 djangorestframework
 drf-nested-routers
 flake8
@@ -26,7 +27,6 @@ jsonschema
 paramiko
 passlib
 phonenumberslite
-pika
 Pillow
 psycopg2
 pypugjs

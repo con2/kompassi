@@ -344,7 +344,7 @@ class Person(models.Model):
         self.setup_code(request, EmailVerificationToken)
 
     def setup_password_reset(self, request):
-        from ipware.ip import get_ip
+        from core.utils import get_ip
         from .password_reset_token import PasswordResetToken
 
         self.setup_code(request, PasswordResetToken, ip_address=get_ip(request) or '')

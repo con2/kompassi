@@ -29,6 +29,7 @@ from .misc_utils import (
     simple_object_init,
     simple_object_repr,
     omit_keys,
+    get_ip,
 )
 
 from .properties import (
