@@ -13,43 +13,45 @@ spec:
         stack: kompassi
         component: kompassi
     spec:
-      containers:
-      - name: master
-        image: !Var kompassi_image
-        ports:
-        - containerPort: 8000
-        env: !Var environment
-        readinessProbe:
-          httpGet:
-            path: /api/v1/status
-            port: 8000
-            httpHeaders:
-              - name: Host
-                value: !Var ingress_public_hostname
-          initialDelaySeconds: 15
-          periodSeconds: 30
-        livenessProbe:
-          httpGet:
-            path: /api/v1/status
-            port: 8000
-            httpHeaders:
-              - name: Host
-                value: !Var ingress_public_hostname
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        volumeMounts:
-          - !If
-              test: !Any [!Var kompassi_storage_pvc, !Var kompassi_storage_cephfs]
-              then:
-                mountPath: /usr/src/app/media
-                name: kompassi-media
-      volumes:
+      enableServiceLinks: false
+      securityContext: !Var kompassi_pod_security_context
+      initContainers:
         - !If
-            test: !Var kompassi_storage_pvc
+            test: !Var setup_should_run
             then:
+              name: setup
+              image: !Var kompassi_image
+              args: ["python", "manage.py", "setup"]
+              env: !Var kompassi_environment
+              securityContext: !Var kompassi_container_security_context
+      containers:
+        - name: master
+          image: !Var kompassi_image
+          ports:
+            - containerPort: 8000
+          env: !Var kompassi_environment
+          securityContext: !Var kompassi_container_security_context
+          readinessProbe:
+            httpGet:
+              path: /api/v1/status
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: !Var ingress_public_hostname
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /api/v1/status
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: !Var ingress_public_hostname
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - mountPath: /usr/src/app/media
               name: kompassi-media
-              persistentVolumeClaim:
-                claimName: kompassi-media
-        - !If
-            test: !Var kompassi_storage_cephfs
-            then: !Var kompassi_storage_cephfs_volume_definition
+            - mountPath: /tmp
+              name: kompassi-temp
+      volumes: !Var kompassi_media_volumes_definition

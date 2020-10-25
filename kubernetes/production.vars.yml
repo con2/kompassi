@@ -1,5 +1,22 @@
+ingress_public_hostname: beta.kompassi.eu
+
 postgres_managed: false
 postgres_hostname: siilo.tracon.fi
+postgres_database: kompassi
+postgres_username: kompassi
+postgres_ssl: true
 
-rabbitmq_image: rabbitmq:3.7.8
-memcached_image: memcached:1.5.11-alpine
+redis_managed: false
+redis_hostname: redis-ha-haproxy.redis-ha.svc.cluster.local
+redis_broker_database: 9
+redis_cache_database: 10
+
+kompassi_repository: harbor.con2.fi/con2/kompassi
+kompassi_tag: latest
+kompassi_storage_pvc: true
+kompassi_storage_pvc_storageclass: longhorn-nfs
+
+setup_should_run: false
+
+ingress_letsencrypt_enabled: true
+ingress_letsencrypt_cluster_issuer: letsencrypt-prod

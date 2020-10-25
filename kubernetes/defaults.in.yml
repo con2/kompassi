@@ -1,84 +1,98 @@
 !Defaults
 
+# Note: For {dev.,beta.,}conikuvat.fi and larppikuvat.fi, kompassi_tag is overridden in Jenkinsfile.
 kompassi_tag: staging
-kompassi_image: !Format tracon/kompassi:{kompassi_tag}
-kompassi_static_image: !Format tracon/kompassi-static:{kompassi_tag}
+kompassi_repository: harbor.con2.fi/con2/kompassi
+kompassi_image: !Format "{kompassi_repository}:{kompassi_tag}"
+kompassi_static_image: !Format "{kompassi_repository}-static:{kompassi_tag}"
+
+# By default image storage is configured using a PersistentVolumeClaim.
+# In order to use NFS, set this to false.
+# See also redis_storage_…
 kompassi_storage_pvc: true
 
-# to use cephfs via flexvolume, set kompassi_storage_pvc to false and kompassi_storage_cephfs to the name of your cephfs
-# the cephfs will not be created for you, it must already exist. also mkdir -p and chown 998:998 the path in cephfs.
-kompassi_storage_cephfs: ''
-kompassi_storage_cephfs_namespace: rook-ceph
-kompassi_storage_cephfs_path: /kompassi-staging/kompassi-media
-kompassi_storage_cephfs_volume_definition:
-  name: kompassi-media
-  flexVolume:
-    driver: ceph.rook.io/rook
-    fsType: ceph
-    options:
-      fsName: !Var kompassi_storage_cephfs
-      clusterNamespace: !Var kompassi_storage_cephfs_namespace
-      path: !Var kompassi_storage_cephfs_path
+# Storage class used for upload storage, or !Void for default
+kompassi_storage_pvc_storageclass: !Void
 
+# To use an existing NFS export as the image storage, set kompassi_storage_nfs to the IP of the server.
+kompassi_storage_nfs: ''
+kompassi_storage_nfs_path: /
 
+# Set this to the public hostname of your service.
 ingress_public_hostname: kompassi.127.0.0.1.xip.io
+
+# If you use ingress-nginx and cert-manager, TLS can be automatically configured by setting this to true.
 ingress_letsencrypt_enabled: false
+ingress_letsencrypt_cluster_issuer: letsencrypt-prod
 
-# For memcached, rabbitmq and PostgreSQL, choose between a managed (in-cluster) service or
-# an external one. For external services, set fooservice_managed: false and point
-# fooservice_hostname to the external service, overriding the other defaults if necessary.
-# Also please pin the images using a tag other than latest for production.
-memcached_managed: true
-memcached_image: memcached:alpine
-memcached_hostname: memcached
-
-rabbitmq_managed: true
-rabbitmq_image: rabbitmq
-rabbitmq_hostname: rabbitmq
-rabbitmq_vhost: kompassi
-rabbitmq_storage_pvc: true
-rabbitmq_storage_cephfs: ''
-rabbitmq_storage_cephfs_namespace: rook-ceph
-rabbitmq_storage_cephfs_path: /kompassi-staging/rabbitmq-data
+redis_managed: true
+redis_image: redis
+redis_hostname: redis
+redis_broker_database: 1
+redis_cache_database: 2
+redis_storage_pvc: true
+redis_storage_pvc_storageclass: !Void
 
 # NOTE: "managed" PostgreSQL should not be considered production-ready.
 postgres_managed: true
 postgres_image: postgres
 postgres_hostname: postgres
 postgres_database: kompassi
+postgres_storage_pvc_storageclass: !Void
 
+# note: managed postgres doesn't provide ssl, only enable if using external postgres
+postgres_ssl: false
+
+# Whether or not "python manage.py setup" should run as init container
 setup_should_run: true
 
+# Configuration vars end here. Configuration snippets follow. May be overridden for advanced configuration.
+
+# Security context for Edegal and Celery pods
+# User 998 (kompassi) is guaranteed to exist in the Docker image, only change if you know what you're doing
+kompassi_pod_security_context:
+  runAsUser: 998
+  runAsGroup: 998
+  fsGroup: 998
+kompassi_container_security_context:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
 # Common environment vars for both kompassi and celery pods.
-environment:
-  - name: POSTGRESQL_HOSTNAME
-    value: !Var postgres_hostname
-  - name: POSTGRESQL_DATABASE
-    value: !Var postgres_database
-  - name: POSTGRESQL_USERNAME
+kompassi_environment:
+  - name: POSTGRES_HOSTNAME
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: hostname
+  - name: POSTGRES_DATABASE
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: database
+  - name: POSTGRES_USERNAME
     valueFrom:
       secretKeyRef:
         name: postgres
         key: username
-  - name: POSTGRESQL_PASSWORD
+  - name: POSTGRES_PASSWORD
     valueFrom:
       secretKeyRef:
         name: postgres
         key: password
-  - name: RABBITMQ_HOSTNAME
-    value: !Var rabbitmq_hostname
-  - name: RABBITMQ_VHOST
-    value: !Var rabbitmq_vhost
-  - name: RABBITMQ_USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: rabbitmq
-        key: username
-  - name: RABBITMQ_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: rabbitmq
-        key: password
+  - !If
+      test: !Var postgres_ssl
+      then:
+        name: POSTGRES_EXTRAS
+        value: '?sslmode=require'
+  - name: REDIS_HOSTNAME
+    value: !Var redis_hostname
+
+  # Format to ensure these are strings
+  - name: REDIS_BROKER_DATABASE
+    value: !Format "{redis_broker_database}"
+  - name: REDIS_CACHE_DATABASE
+    value: !Format "{redis_cache_database}"
   - name: SECRET_KEY
     valueFrom:
       secretKeyRef:
@@ -86,3 +100,43 @@ environment:
         key: secretKey
   - name: ALLOWED_HOSTS
     value: !Var ingress_public_hostname
+
+# Common volumes for kompassi, celery and nginx pods.
+kompassi_media_volume_mounts:
+  - mountPath: /usr/src/app/media
+    name: kompassi-media
+  - mountPath: /tmp
+    name: kompassi-temp
+kompassi_media_volumes_definition:
+  - name: kompassi-temp
+    emptyDir: {}
+  - !If
+      test: !Var kompassi_storage_pvc
+      then:
+        name: kompassi-media
+        persistentVolumeClaim:
+          claimName: kompassi-media
+  - !If
+      test: !Var kompassi_storage_nfs
+      then:
+        name: kompassi-media
+        nfs:
+          server: !Var kompassi_storage_nfs
+          path: !Var kompassi_storage_nfs_path
+
+# Default annotations work for nginx ingress with or without LetsEncrypt TLS. Override if you need something else.
+ingress_annotations: !Merge
+  - nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.org/client-max-body-size: "100m"
+  - !If
+      test: !Var ingress_letsencrypt_enabled
+      then:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+ingress_tls: !If
+  test: !Var ingress_letsencrypt_enabled
+  then:
+    - secretName: ingress-letsencrypt
+      hosts:
+        - !Var ingress_public_hostname

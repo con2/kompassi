@@ -2,34 +2,22 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: kompassi
-  annotations:
-    !If
-      test: !Var ingress_letsencrypt_enabled
-      then:
-        certmanager.k8s.io/cluster-issuer: !Var ingress_letsencrypt_cluster_issuer
-        ingress.kubernetes.io/ssl-redirect: "true"
-        kubernetes.io/tls-acme: "true"
+  annotations: !Var ingress_annotations
 spec:
-  tls:
-    - !If
-        test: !Var ingress_letsencrypt_enabled
-        then:
-          hosts:
-            - !Var ingress_public_hostname
-          secretName: ingress-letsencrypt
+  tls: !Var ingress_tls
   rules:
     - host: !Var ingress_public_hostname
       http:
         paths:
-          - path: /static
-            backend:
-              serviceName: nginx
-              servicePort: 80
-          - path: /media
-            backend:
-              serviceName: nginx
-              servicePort: 80
-          - path: /
+          - path: /admin
             backend:
               serviceName: kompassi
               servicePort: 8000
+          - path: /api
+            backend:
+              serviceName: kompassi
+              servicePort: 8000
+          - path: /
+            backend:
+              serviceName: nginx
+              servicePort: 80

@@ -19,11 +19,11 @@ def namespace = "${appName}-${environmentName}"
 
 def tag = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
 
-def tempImage = "tracon/${appName}:${tag}"
-def finalImage = "tracon/${appName}:${imageMap[env.BRANCH_NAME]}"
+def tempImage = "harbor.con2.fi/con2/${appName}:${tag}"
+def finalImage = "harbor.con2.fi/con2/${appName}:${imageMap[env.BRANCH_NAME]}"
 
-def tempStaticImage = "tracon/${appName}-static:${tag}"
-def finalStaticImage = "tracon/${appName}-static:${imageMap[env.BRANCH_NAME]}"
+def tempStaticImage = "harbor.con2.fi/con2/${appName}-static:${tag}"
+def finalStaticImage = "harbor.con2.fi/con2/${appName}-static:${imageMap[env.BRANCH_NAME]}"
 
 
 
@@ -59,21 +59,6 @@ node {
       docker tag ${tempStaticImage} ${finalStaticImage} && \
       docker push ${finalStaticImage}
     """
-  }
-
-  stage("Setup") {
-    if (env.BRANCH_NAME == "development") {
-      sh """
-        kubectl delete job/setup \
-          -n ${namespace} \
-          --ignore-not-found && \
-        emrichen kubernetes/jobs/setup.in.yml \
-          -f kubernetes/${environmentName}.vars.yml \
-          -D ${appName}_tag=${tag} | \
-        kubectl apply -n ${namespace} -f - && \
-        kubectl wait --for condition=complete -n ${namespace} job/setup
-      """
-    }
   }
 
   stage("Deploy") {

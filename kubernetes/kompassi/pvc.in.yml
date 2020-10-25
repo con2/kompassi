@@ -6,6 +6,7 @@ metadata:
     component: kompassi
   name: kompassi-media
 spec:
+  storageClassName: !Var kompassi_storage_pvc_storageclass
   accessModes:
   - ReadWriteMany
   resources:

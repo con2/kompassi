@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: redis
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: redis
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: master
+          image: !Var redis_image
+          args:
+            - redis-server
+            - "--appendonly"
+            - "yes"
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - mountPath: /data
+              name: redis-data
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-data

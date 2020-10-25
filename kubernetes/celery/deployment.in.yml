@@ -13,8 +13,13 @@ spec:
         stack: kompassi
         component: celery
     spec:
+      enableServiceLinks: false
+      securityContext: !Var kompassi_pod_security_context
       containers:
-      - name: master
-        image: !Var kompassi_image
-        args: ["celery", "-A", "kompassi.celery_app:app", "worker"]
-        env: !Var environment
+        - name: master
+          image: !Var kompassi_image
+          args: ["celery", "-A", "kompassi.celery_app:app", "worker"]
+          env: !Var kompassi_environment
+          volumeMounts: !Var kompassi_media_volume_mounts
+          securityContext: !Var kompassi_container_security_context
+      volumes: !Var kompassi_media_volumes_definition

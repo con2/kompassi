@@ -13,24 +13,13 @@ spec:
         stack: kompassi
         component: nginx
     spec:
+      enableServiceLinks: false
       containers:
         - name: master
           image: !Var kompassi_static_image
           ports:
             - containerPort: 80
           volumeMounts:
-            - !If
-                test: !Any [!Var kompassi_storage_pvc, !Var kompassi_storage_cephfs]
-                then:
-                  mountPath: /usr/share/nginx/html/media
-                  name: kompassi-media
-      volumes:
-        - !If
-            test: !Var kompassi_storage_pvc
-            then:
+            - mountPath: /usr/share/nginx/html/media
               name: kompassi-media
-              persistentVolumeClaim:
-                claimName: kompassi-media
-        - !If
-            test: !Var kompassi_storage_cephfs
-            then: !Var kompassi_storage_cephfs_volume_definition
+      volumes: !Var kompassi_media_volumes_definition
