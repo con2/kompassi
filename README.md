@@ -68,7 +68,7 @@ The Kubernetes templates use [emrichen](https://github.com/con2/emrichen) for su
 To deploy in a K8s cluster:
 
     kubectl create namespace kompassi
-    emrichen kubernetes/template.in.yml | kubectl apply -n kompassi -f -
+    emrichen kubernetes/template.in.yaml | kubectl apply -n kompassi -f -
 
 For production, you may want to use an external PostgreSQL (and maybe memcached and RabbitMQ).
 

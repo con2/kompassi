@@ -1,10 +1,6 @@
-!Defaults
-
-# Note: For {dev.,beta.,}conikuvat.fi and larppikuvat.fi, kompassi_tag is overridden in Jenkinsfile.
-kompassi_tag: staging
-kompassi_repository: harbor.con2.fi/con2/kompassi
-kompassi_image: !Format "{kompassi_repository}:{kompassi_tag}"
-kompassi_static_image: !Format "{kompassi_repository}-static:{kompassi_tag}"
+# let skaffold manage the image tag
+kompassi_image: kompassi
+kompassi_static_image: kompassi-static
 
 # By default image storage is configured using a PersistentVolumeClaim.
 # In order to use NFS, set this to false.
@@ -38,6 +34,7 @@ postgres_managed: true
 postgres_image: postgres
 postgres_hostname: postgres
 postgres_database: kompassi
+postgres_username: kompassi
 postgres_storage_pvc_storageclass: !Void
 
 # note: managed postgres doesn't provide ssl, only enable if using external postgres
