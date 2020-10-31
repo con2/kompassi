@@ -19,3 +19,4 @@ tmp/
 virtualenv/
 .DS_Store
 media/
+*.compiled.yaml
