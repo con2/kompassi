@@ -53,7 +53,7 @@ pexpect==4.7.0            # via ipython
 phonenumberslite==8.11.1  # via -r requirements.in
 pickleshare==0.7.5        # via ipython
 pika==1.1.0               # via -r requirements.in
-pillow==7.0.0             # via -r requirements.in, reportlab
+pillow==7.1.0             # via -r requirements.in, reportlab
 prompt-toolkit==3.0.2     # via ipython
 psycopg2==2.8.4           # via -r requirements.in
 ptyprocess==0.6.0         # via pexpect
