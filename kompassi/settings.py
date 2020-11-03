@@ -259,6 +259,7 @@ INSTALLED_APPS = (
     'events.ropecon2020vd',
     'events.ropecon2021',
     'events.tracon2021',
+    'events.kuplii2021',
 )
 
 LOGGING = {
