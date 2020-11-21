@@ -414,13 +414,13 @@ if 'lippukala' in INSTALLED_APPS:
 
 if env('BROKER_URL', default=''):
     INSTALLED_APPS = INSTALLED_APPS + ('background_tasks',)
-    BROKER_URL = env('BROKER_URL')
+    CELERY_BROKER_URL = env('BROKER_URL')
     CELERY_ACCEPT_CONTENT = ['json']
 
     # EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 
     CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
-    SERVER_EMAIL = DEFAULT_FROM_EMAIL
+    CELERY_SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
     CELERY_TASK_SERIALIZER = 'json'
     CELERY_RESULT_SERIALIZER = 'json'
