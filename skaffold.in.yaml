@@ -13,6 +13,9 @@ build:
       context: .
       docker:
         dockerfile: Dockerfile.static
+      requires:
+        - image: kompassi
+          alias: KOMPASSI_IMAGE
 
 deploy:
   kubectl:
