@@ -29,7 +29,7 @@ kompassi_cors_allowed_hosts:
   - v2.kompassi.eu
 
 smtp_server: sr1.pahaip.fi
-smtp_default_from_email: root@tracon.fi
+smtp_default_from_email: suunnistajat@kompassi.eu
 
 setup_should_run: true
 
