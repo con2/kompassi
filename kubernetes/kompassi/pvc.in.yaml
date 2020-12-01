@@ -3,11 +3,12 @@ kind: PersistentVolumeClaim
 metadata:
   labels:
     stack: kompassi
-    component: postgres
-  name: postgres-data
+    component: kompassi
+  name: kompassi-media
 spec:
+  storageClassName: !Var kompassi_storage_pvc_storageclass
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
   resources:
     requests:
       storage: 1000Mi

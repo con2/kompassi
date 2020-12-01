@@ -3,9 +3,10 @@ kind: PersistentVolumeClaim
 metadata:
   labels:
     stack: kompassi
-    component: rabbitmq
-  name: rabbitmq-data
+    component: postgres
+  name: postgres-data
 spec:
+  storageClass: !Var postgres_storage_pvc_storageclass
   accessModes:
   - ReadWriteOnce
   resources:

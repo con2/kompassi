@@ -10,7 +10,7 @@ block profile_content
     h3 Hakemukset tuleviin tapahtumiin
     for signup in signups_future_events
       include labour_profile_signup_box
-  if signups_past_events.exists
+  if signups_past_events
     h3 Työskentelyhistoria
     if person.allow_work_history_sharing
       p.help-block Olet sallinut <a href='{% url "core_profile_view" %}'>profiilissasi</a> työskentelyhistoriasi näyttämisen niille tapahtumille, joihin haet töihin.

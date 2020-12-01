@@ -80,7 +80,68 @@ class StateTransition(object):
         return bool(self.disabled_reason)
 
 
-class Signup(models.Model, CsvExportMixin):
+class SignupMixin:
+    """
+    Contains functionality common to both Signup and ArchivedSignup.
+    """
+    @property
+    def job_category_accepted_labels(self):
+        state = self.state
+        label_class = SIGNUP_STATE_LABEL_CLASSES[state]
+
+        if state == 'new':
+            label_texts = [cat.name for cat in self.get_first_categories()]
+            labels = [(label_class, label_text, None) for label_text in label_texts]
+
+            if self.is_more_categories:
+                labels.append((label_class, '...', self.get_redacted_category_names()))
+
+        elif state == 'cancelled':
+            labels = [(label_class, 'Peruutettu', None)]
+
+        elif state == 'rejected':
+            labels = [(label_class, 'Hylätty', None)]
+
+        elif state == 'beyond_logic':
+            labels = [(label_class, 'Perätilassa', None)]
+
+        elif self.is_accepted:
+            label_texts = [cat.name for cat in self.job_categories_accepted.all()]
+            labels = [(label_class, label_text, None) for label_text in label_texts]
+
+        else:
+            from warnings import warn
+            warn('Unknown state: {state}'.format(self=self))
+            labels = []
+
+        return labels
+
+    @property
+    def personnel_class_labels(self):
+        label_texts = [pc.name for pc in self.personnel_classes.all()]
+        return [('label-default', label_text, None) for label_text in label_texts]
+
+    @property
+    def formatted_state(self):
+        return dict(SIGNUP_STATE_NAMES).get(self.state, '')
+
+    @property
+    def job_categories_label(self):
+        if self.state == 'new':
+            return 'Haetut tehtävät'
+        else:
+            return 'Hyväksytyt tehtävät'
+
+    @property
+    def state_label_class(self):
+        return SIGNUP_STATE_LABEL_CLASSES[self.state]
+
+    @property
+    def state_description(self):
+        return SIGNUP_STATE_DESCRIPTIONS.get(self.state, '')
+
+
+class Signup(CsvExportMixin, SignupMixin, models.Model):
     person = models.ForeignKey('core.Person', on_delete=models.CASCADE, related_name='signups')
     event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
 
@@ -274,50 +335,6 @@ class Signup(models.Model, CsvExportMixin):
 
     def get_redacted_category_names(self):
         return ', '.join(cat.name for cat in self.job_categories.all()[NUM_FIRST_CATEGORIES:])
-
-    @property
-    def job_categories_label(self):
-        if self.state == 'new':
-            return 'Haetut tehtävät'
-        else:
-            return 'Hyväksytyt tehtävät'
-
-    @property
-    def job_category_accepted_labels(self):
-        state = self.state
-        label_class = SIGNUP_STATE_LABEL_CLASSES[state]
-
-        if state == 'new':
-            label_texts = [cat.name for cat in self.get_first_categories()]
-            labels = [(label_class, label_text, None) for label_text in label_texts]
-
-            if self.is_more_categories:
-                labels.append((label_class, '...', self.get_redacted_category_names()))
-
-        elif state == 'cancelled':
-            labels = [(label_class, 'Peruutettu', None)]
-
-        elif state == 'rejected':
-            labels = [(label_class, 'Hylätty', None)]
-
-        elif state == 'beyond_logic':
-            labels = [(label_class, 'Perätilassa', None)]
-
-        elif self.is_accepted:
-            label_texts = [cat.name for cat in self.job_categories_accepted.all()]
-            labels = [(label_class, label_text, None) for label_text in label_texts]
-
-        else:
-            from warnings import warn
-            warn('Unknown state: {state}'.format(self=self))
-            labels = []
-
-        return labels
-
-    @property
-    def personnel_class_labels(self):
-        label_texts = [pc.name for pc in self.personnel_classes.all()]
-        return [('label-default', label_text, None) for label_text in label_texts]
 
     @property
     def some_job_title(self):
@@ -609,18 +626,6 @@ class Signup(models.Model, CsvExportMixin):
     @property
     def next_states_buttons(self):
         return [StateTransition(self, to_state) for to_state in self.next_states]
-
-    @property
-    def formatted_state(self):
-        return dict(SIGNUP_STATE_NAMES).get(self.state, '')
-
-    @property
-    def state_label_class(self):
-        return SIGNUP_STATE_LABEL_CLASSES[self.state]
-
-    @property
-    def state_description(self):
-        return SIGNUP_STATE_DESCRIPTIONS.get(self.state, '')
 
     @property
     def state_times(self):

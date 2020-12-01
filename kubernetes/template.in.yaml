@@ -1,0 +1,84 @@
+# kompassi deployment using Kubernetes
+# usage: emrichen kubernetes.in.yaml | kubectl apply -n kompassi -f -
+
+#########
+# REDIS #
+#########
+---
+!If
+  test: !Var redis_managed
+  then: !Include redis/service.in.yaml
+
+---
+!If
+  test: !Var redis_managed
+  then: !Include redis/deployment.in.yaml
+
+---
+!If
+  test: !All [!Var redis_managed, !Var redis_storage_pvc]
+  then: !Include redis/pvc.in.yaml
+
+
+##############
+# POSTGRESQL #
+##############
+---
+!If
+  test: !Var postgres_managed
+  then: !Include postgres/service.in.yaml
+
+---
+!If
+  test: !Var postgres_managed
+  then: !Include postgres/deployment.in.yaml
+
+---
+!If
+  test: !Var postgres_managed
+  then: !Include postgres/pvc.in.yaml
+
+---
+!If
+  test: !Var postgres_managed
+  then: !Include postgres/secret.in.yaml
+
+
+#########################
+# GUNICORN (Web server) #
+#########################
+---
+!Include kompassi/service.in.yaml
+---
+!Include kompassi/deployment.in.yaml
+---
+!If
+  test: !Var kompassi_storage_pvc
+  then: !Include kompassi/pvc.in.yaml
+---
+!If
+  test: !Var kompassi_secret_managed
+  then: !Include kompassi/secret.in.yaml
+
+
+##############################
+# CELERY (Background worker) #
+##############################
+---
+!Include celery/deployment.in.yaml
+
+
+###############################
+# NGINX (Static file serving) #
+###############################
+---
+!Include nginx/service.in.yaml
+---
+!Include nginx/deployment.in.yaml
+
+
+###########
+# INGRESS #
+###########
+---
+!Include ingress.in.yaml

@@ -1,0 +1,24 @@
+apiVersion: skaffold/v2beta9
+kind: Config
+metadata:
+  name: edegal
+
+build:
+  local:
+    useBuildkit: true
+  artifacts:
+    - image: kompassi
+      context: .
+    - image: kompassi-static
+      context: .
+      docker:
+        dockerfile: Dockerfile.static
+      requires:
+        - image: kompassi
+          alias: KOMPASSI_IMAGE
+
+deploy:
+  statusCheckDeadlineSeconds: 600
+  kubectl:
+    manifests:
+      - kubernetes/template.compiled.yaml

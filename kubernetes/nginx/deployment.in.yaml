@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: nginx
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: nginx
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: master
+          image: !Var kompassi_static_image
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html/media
+              name: kompassi-media
+      volumes: !Var kompassi_media_volumes_definition

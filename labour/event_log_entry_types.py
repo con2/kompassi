@@ -14,3 +14,13 @@ registry.register(
     name='labour.signup.updated',
     message=_('{entry.person} updated their application for volunteer work in {entry.event}'),
 )
+
+registry.register(
+    name='labour.signup.archived',
+    message=_('The application of {entry.person} for volunteer work in {entry.event} was archived'),
+)
+
+registry.register(
+    name='labour.signup.deleted',
+    message=_('The application of {entry.person} for volunteer work in {entry.event} was deleted'),
+)

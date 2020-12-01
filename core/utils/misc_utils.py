@@ -7,6 +7,8 @@ from django.contrib.auth.models import Group, User
 from django.contrib.contenttypes.models import ContentType
 from django.forms import ValidationError
 
+from ipware import get_client_ip
+
 
 def give_all_app_perms_to_group(app_label, group):
     for ctype in ContentType.objects.filter(app_label=app_label):
@@ -204,3 +206,11 @@ def omit_keys(mapping, *keys_to_omit, **keys_to_set):
         ((key, value) for (key, value) in mapping.items() if key not in keys_to_omit),
         **keys_to_set
     )
+
+
+def get_ip(request):
+    """
+    Django-ipware 2.x compatibility wrapper for django-ipware 3.x
+    """
+    client_ip, is_routable = get_client_ip(request)
+    return client_ip

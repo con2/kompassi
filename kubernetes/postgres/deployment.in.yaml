@@ -13,6 +13,7 @@ spec:
         stack: kompassi
         component: postgres
     spec:
+      enableServiceLinks: false
       containers:
       - name: master
         image: !Var postgres_image

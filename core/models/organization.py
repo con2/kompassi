@@ -109,6 +109,9 @@ class Organization(models.Model):
         # have signups
         q = Q(signups__event__organization=self)
 
+        # have archived signups
+        q |= Q(archived_signups__event__organization=self)
+
         # or programmes
         q |= Q(programme_roles__programme__category__event__organization=self)
 

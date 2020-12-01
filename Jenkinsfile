@@ -1,108 +1,34 @@
-def appName = "kompassi"
-
-def imageMap = [
+def environmentMap = [
   "development": "staging",
-  "master": "latest"
-]
-
-def deploymentTagMap = [
-  "master": "kompassi-production"
-]
-
-def environmentNameMap = [
   "master": "production",
-  "development": "staging"
 ]
 
-def environmentName = environmentNameMap[env.BRANCH_NAME]
-def namespace = "${appName}-${environmentName}"
+pipeline {
+  agent any
 
-def tag = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-
-def tempImage = "tracon/${appName}:${tag}"
-def finalImage = "tracon/${appName}:${imageMap[env.BRANCH_NAME]}"
-
-def tempStaticImage = "tracon/${appName}-static:${tag}"
-def finalStaticImage = "tracon/${appName}-static:${imageMap[env.BRANCH_NAME]}"
-
-
-
-node {
-  stage("Build") {
-    checkout scm
-    sh "docker build --tag ${tempImage} ."
+  environment {
+    PYTHONUNBUFFERED = "1"
+    SKAFFOLD_DEFAULT_REPO = "harbor.con2.fi/con2"
   }
 
-  stage("Test") {
-    sh """
-      docker run \
-        --rm \
-        --link jenkins.tracon.fi-postgres:postgres \
-        --env-file ~/.kompassi.env \
-        --entrypoint "" \
-        ${tempImage} \
-        python manage.py test --keepdb
-    """
-  }
+  stages {
+    stage("Build") {
+      steps {
+        sh "emskaffolden -E ${environmentMap[env.BRANCH_NAME]} -- build --file-output build.json"
+      }
+    }
 
-  stage("Push") {
-    sh "docker tag ${tempImage} ${finalImage} && docker push ${finalImage} && docker push ${tempImage}"
-  }
-
-  stage("Static") {
-    sh """
-      docker build \
-        --build-arg KOMPASSI_IMAGE=${tempImage} \
-        --tag ${tempStaticImage} \
-        --file Dockerfile.static . && \
-      docker push ${tempStaticImage} && \
-      docker tag ${tempStaticImage} ${finalStaticImage} && \
-      docker push ${finalStaticImage}
-    """
-  }
-
-  stage("Setup") {
-    if (env.BRANCH_NAME == "development") {
-      sh """
-        kubectl delete job/setup \
-          -n ${namespace} \
-          --ignore-not-found && \
-        emrichen kubernetes/jobs/setup.in.yml \
-          -f kubernetes/${environmentName}.vars.yml \
-          -D ${appName}_tag=${tag} | \
-        kubectl apply -n ${namespace} -f - && \
-        kubectl wait --for condition=complete -n ${namespace} job/setup
-      """
+    stage("Deploy") {
+      steps {
+        sh "emskaffolden -E ${environmentMap[env.BRANCH_NAME]} -- deploy -n kompassi-${environmentMap[env.BRANCH_NAME]} -a=build.json"
+      }
     }
   }
 
-  stage("Deploy") {
-    if (env.BRANCH_NAME == "development") {
-      // Kubernetes deployment
-      sh """
-        emrichen kubernetes/template.in.yml \
-          -f kubernetes/${environmentName}.vars.yml \
-          -D ${appName}_tag=${tag} | \
-        kubectl apply -n ${namespace} -f -
-      """
-    } else {
-      // Legacy deployment
-      git url: "git@github.com:tracon/ansible-tracon"
-      sh """
-        ansible-playbook \
-          --vault-password-file=~/.vault_pass.txt \
-          --user root \
-          --limit neula.kompassi.eu \
-          --tags ${deploymentTagMap[env.BRANCH_NAME]} \
-          tracon.yml
-      """
+  post {
+    always {
+      archiveArtifacts "build.json"
+      archiveArtifacts "kubernetes/template.compiled.yaml"
     }
-  }
-
-  stage("Cleanup") {
-    sh """
-      docker rmi ${tempStaticImage} && \
-      docker rmi ${tempImage}
-    """
   }
 }

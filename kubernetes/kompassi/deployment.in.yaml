@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kompassi
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: kompassi
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: kompassi
+    spec:
+      enableServiceLinks: false
+      securityContext: !Var kompassi_pod_security_context
+      initContainers:
+        - !If
+            test: !Var setup_should_run
+            then:
+              name: setup
+              image: !Var kompassi_image
+              args: ["python", "manage.py", "setup"]
+              env: !Var kompassi_environment
+              securityContext: !Var kompassi_container_security_context
+      containers:
+        - name: master
+          image: !Var kompassi_image
+          ports:
+            - containerPort: 8000
+          env: !Var kompassi_environment
+          securityContext: !Var kompassi_container_security_context
+          args:
+            - gunicorn
+            - !Format "--workers={kompassi_workers}"
+            - --bind=0.0.0.0:8000
+            - --access-logfile=-
+            - --capture-output
+            - kompassi.wsgi
+          readinessProbe:
+            httpGet:
+              path: /api/v1/status
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: !Lookup ingress_public_hostnames[0]
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /api/v1/status
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: !Lookup ingress_public_hostnames[0]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - mountPath: /usr/src/app/media
+              name: kompassi-media
+            - mountPath: /tmp
+              name: kompassi-temp
+      volumes: !Var kompassi_media_volumes_definition

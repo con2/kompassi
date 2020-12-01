@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 
-from ipware.ip import get_ip
+from core.utils import get_ip
 
 from .models import Order, OrderProduct
 

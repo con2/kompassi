@@ -1,0 +1,216 @@
+
+# Set this to the public hostname of your service.
+# First is canonical.
+ingress_public_hostnames:
+  - kompassi.localhost
+
+# let skaffold manage the image tag
+kompassi_image: kompassi
+kompassi_static_image: kompassi-static
+
+# in production deployments, set to false and manage a secret yourself (see kompassi/secret.in.yaml)
+kompassi_secret_managed: true
+
+# By default image storage is configured using a PersistentVolumeClaim.
+# In order to use NFS, set this to false.
+# See also redis_storage_…
+kompassi_storage_pvc: true
+
+# Storage class used for upload storage, or !Void for default
+kompassi_storage_pvc_storageclass: !Void
+
+# To use an existing NFS export as the image storage, set kompassi_storage_nfs to the IP of the server.
+kompassi_storage_nfs: ''
+kompassi_storage_nfs_path: /
+
+kompassi_installation_slug: komplocaldev
+kompassi_installation_name: Kompassi (LOCAL DEV)
+
+kompassi_allowed_hosts: !Var ingress_public_hostnames
+kompassi_cors_allowed_hosts: []
+kompassi_admins: []
+
+# workers per pod
+kompassi_workers: 4
+
+# If you use ingress-nginx and cert-manager, TLS can be automatically configured by setting this to true.
+ingress_letsencrypt_enabled: false
+ingress_letsencrypt_cluster_issuer: letsencrypt-prod
+
+redis_managed: true
+redis_image: redis
+redis_hostname: redis
+redis_broker_database: 1
+redis_cache_database: 2
+redis_storage_pvc: true
+redis_storage_pvc_storageclass: !Void
+
+# NOTE: "managed" PostgreSQL should not be considered production-ready.
+postgres_managed: true
+postgres_image: postgres
+postgres_hostname: postgres
+postgres_database: kompassi
+postgres_username: kompassi
+postgres_password: ''
+postgres_storage_pvc_storageclass: !Void
+
+# note: managed postgres doesn't provide ssl, only enable if using external postgres
+postgres_ssl: false
+
+# Whether or not "python manage.py setup" should run as init container
+setup_should_run: true
+
+smtp_server: ''
+smtp_default_from_email: ''
+
+# Configuration vars end here. Configuration snippets follow. May be overridden for advanced configuration.
+
+# Security context for Edegal and Celery pods
+# User 998 (kompassi) is guaranteed to exist in the Docker image, only change if you know what you're doing
+kompassi_pod_security_context:
+  runAsUser: 998
+  runAsGroup: 998
+  fsGroup: 998
+kompassi_container_security_context:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
+# Common environment vars for both kompassi and celery pods.
+kompassi_environment:
+  - name: POSTGRES_HOSTNAME
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: hostname
+  - name: POSTGRES_DATABASE
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: database
+  - name: POSTGRES_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: username
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: password
+  - !If
+      test: !Var postgres_ssl
+      then:
+        name: POSTGRES_EXTRAS
+        value: '?sslmode=require'
+  - name: REDIS_HOSTNAME
+    value: !Var redis_hostname
+
+  # Format to ensure these are strings
+  - name: REDIS_BROKER_DATABASE
+    value: !Format "{redis_broker_database}"
+  - name: REDIS_CACHE_DATABASE
+    value: !Format "{redis_cache_database}"
+  - name: SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: secretKey
+  - name: ALLOWED_HOSTS
+    value: !Join
+      items: !Var kompassi_allowed_hosts
+      separator: ' '
+  - name: EMAIL_HOST
+    value: !Var smtp_server
+  - name: DEFAULT_FROM_EMAIL
+    value: !Var smtp_default_from_email
+  - name: ADMINS
+    value: !Join
+      items: !Var kompassi_admins
+      separator: ","
+  - name: KOMPASSI_INSTALLATION_NAME
+    value: !Var kompassi_installation_name
+  - name: KOMPASSI_INSTALLATION_SLUG
+    value: !Var kompassi_installation_slug
+  - name: NEXMO_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: nexmoUsername
+  - name: NEXMO_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: nexmoPassword
+  - name: NEXMO_FROM
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: nexmoFrom
+  - name: NEXMO_INBOUND_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: nexmoInboundKey
+  - name: KOMPASSI_CROWD_APPLICATION_NAME
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: crowdApplicationName
+  - name: KOMPASSI_CROWD_APPLICATION_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: crowdApplicationPassword
+  - name: KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: desuprofileOauth2ClientId
+  - name: KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: desuprofileOauth2ClientSecret
+  - name: CORS_ORIGIN_WHITELIST
+    value: !Join
+      items: !Var kompassi_cors_allowed_hosts
+      separator: ' '
+
+# Common volumes for kompassi, celery and nginx pods.
+kompassi_media_volume_mounts:
+  - mountPath: /usr/src/app/media
+    name: kompassi-media
+  - mountPath: /tmp
+    name: kompassi-temp
+kompassi_media_volumes_definition:
+  - name: kompassi-temp
+    emptyDir: {}
+  - !If
+      test: !Var kompassi_storage_pvc
+      then:
+        name: kompassi-media
+        persistentVolumeClaim:
+          claimName: kompassi-media
+  - !If
+      test: !Var kompassi_storage_nfs
+      then:
+        name: kompassi-media
+        nfs:
+          server: !Var kompassi_storage_nfs
+          path: !Var kompassi_storage_nfs_path
+
+# Default annotations work for nginx ingress with or without LetsEncrypt TLS. Override if you need something else.
+ingress_annotations: !Merge
+  - nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.org/client-max-body-size: "100m"
+  - !If
+      test: !Var ingress_letsencrypt_enabled
+      then:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+ingress_tls: !If
+  test: !Var ingress_letsencrypt_enabled
+  then:
+    - secretName: ingress-letsencrypt
+      hosts: !Var ingress_public_hostnames

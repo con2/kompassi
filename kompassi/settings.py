@@ -358,14 +358,13 @@ MESSAGE_TAGS = {
 }
 
 
-KOMPASSI_PUBLIC_URL = env('KOMPASSI_PUBLIC_URL', default='/')
 KOMPASSI_APPLICATION_NAME = 'Kompassi'
 KOMPASSI_INSTALLATION_NAME = env('KOMPASSI_INSTALLATION_NAME', default='Kompassi (DEV)')
 KOMPASSI_INSTALLATION_NAME_ILLATIVE = 'Kompassin kehitys\u00ADinstanssiin' if DEBUG else 'Kompassiin'
 KOMPASSI_INSTALLATION_NAME_GENITIVE = 'Kompassin kehitys\u00ADinstanssin' if DEBUG else 'Kompassin'
 KOMPASSI_INSTALLATION_NAME_PARTITIVE = 'Kompassin kehitys\u00ADinstanssia' if DEBUG else 'Kompassia'
 KOMPASSI_INSTALLATION_SLUG = env('KOMPASSI_INSTALLATION_SLUG', default='turskadev')
-KOMPASSI_PRIVACY_POLICY_URL = 'https://confluence.tracon.fi/display/CONDB/Rekisteriseloste'
+KOMPASSI_PRIVACY_POLICY_URL = 'https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi'
 FEEDBACK_PRIVACY_POLICY_URL = 'https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute'
 
 # Confluence & co. require a group of users
@@ -415,16 +414,18 @@ if 'lippukala' in INSTALLED_APPS:
 
 if env('BROKER_URL', default=''):
     INSTALLED_APPS = INSTALLED_APPS + ('background_tasks',)
-    BROKER_URL = env('BROKER_URL')
+    CELERY_BROKER_URL = env('BROKER_URL')
     CELERY_ACCEPT_CONTENT = ['json']
 
     # EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 
     CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
-    SERVER_EMAIL = DEFAULT_FROM_EMAIL
+    CELERY_SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
     CELERY_TASK_SERIALIZER = 'json'
     CELERY_RESULT_SERIALIZER = 'json'
+
+    CELERY_REDIS_SOCKET_KEEPALIVE = True
 
 
 if 'api' in INSTALLED_APPS:
