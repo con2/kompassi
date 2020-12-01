@@ -1,7 +1,5 @@
 # Kompassi Event Management System
 
-[![Sponsored by Leonidas](https://img.shields.io/badge/sponsored%20by-leonidas-389fc1.svg)](https://leonidasoy.fi/opensource)
-
 Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. Work in progress.
 
 ## Getting Started
@@ -121,5 +119,3 @@ All the words _hostname_, _database_, _username_ and _password_ are 8 characters
     THE SOFTWARE.
 
 For third-party component licenses, see [LICENSE](https://github.com/tracon/kompassi/blob/master/LICENSE.md).
-
-The work of Santtu Pajukanta on Kompassi has been partially sponsored by [Leonidas Oy](https://leonidasoy.fi/opensource).
