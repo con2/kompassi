@@ -5,8 +5,11 @@ metadata:
   annotations: !Var ingress_annotations
 spec:
   tls: !Var ingress_tls
-  rules:
-    - host: !Var ingress_public_hostname
+  rules: !Loop
+    over: !Var ingress_public_hostnames
+    as: hostname
+    template:
+      host: !Var hostname
       http:
         paths:
           - path: /static

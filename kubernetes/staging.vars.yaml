@@ -1,4 +1,5 @@
-ingress_public_hostname: dev.kompassi.eu
+ingress_public_hostnames:
+  - dev.kompassi.eu
 
 postgres_managed: false
 postgres_hostname: siilo.tracon.fi
@@ -9,12 +10,18 @@ postgres_ssl: true
 redis_managed: false
 redis_hostname: redis-ha-haproxy.redis-ha.svc.cluster.local
 redis_broker_database: 7
-redis_cache_database: 8
+redis_cache_database: 7
 
-kompassi_repository: harbor.con2.fi/con2/kompassi
-kompassi_tag: staging
+kompassi_secret_managed: false
 kompassi_storage_pvc: true
 kompassi_storage_pvc_storageclass: longhorn-nfs
+kompassi_installation_name: Kompassi (DEV)
+kompassi_installation_slug: turskadev
+kompassi_admins:
+  - Santtu Pajukanta <santtu@pajukanta.fi>
+
+smtp_server: sr1.pahaip.fi
+smtp_default_from_email: root@tracon.fi
 
 setup_should_run: true
 

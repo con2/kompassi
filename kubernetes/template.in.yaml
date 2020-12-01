@@ -56,7 +56,9 @@
   test: !Var kompassi_storage_pvc
   then: !Include kompassi/pvc.in.yaml
 ---
-!Include kompassi/secret.in.yaml
+!If
+  test: !Var kompassi_secret_managed
+  then: !Include kompassi/secret.in.yaml
 
 
 ##############################

@@ -18,6 +18,7 @@ build:
           alias: KOMPASSI_IMAGE
 
 deploy:
+  statusCheckDeadlineSeconds: 600
   kubectl:
     manifests:
       - kubernetes/template.compiled.yaml
