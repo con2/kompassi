@@ -516,10 +516,12 @@ class Person(models.Model):
             self._apply_state_new_user_async(password)
 
     def _apply_state_new_user_async(self, password):
-        self.crowd_create_user(password)
-        self.crowd_sync_groups()
+        if 'crowd_integration' in settings.INSTALLED_APPS:
+            self.crowd_create_user(password)
+            self.crowd_sync_groups()
 
     def crowd_create_user(self, password):
+        assert 'crowd_integration' in settings.INSTALLED_APPS
         from crowd_integration.utils import create_user
         create_user(self.user, password)
 
@@ -534,6 +536,7 @@ class Person(models.Model):
         TODO Propagate django-admin group changes to Crowd
         https://docs.djangoproject.com/en/1.10/ref/signals/#m2m-changed
         """
+        assert 'crowd_integration' in settings.INSTALLED_APPS
         from crowd_integration.utils import ensure_user_group_membership
         for group in self.user.groups.all():
             ensure_user_group_membership(self.user, group.name)
