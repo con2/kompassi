@@ -10,12 +10,6 @@ from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger('kompassi')
 
-
-AUTH = HTTPBasicAuth(
-    settings.KOMPASSI_CROWD_APPLICATION_NAME,
-    settings.KOMPASSI_CROWD_APPLICATION_PASSWORD,
-)
-
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -27,12 +21,17 @@ class CrowdError(RuntimeError):
 
 
 def crowd_request(method, url, params={}, body=None, ignore_status_codes=[]):
+    auth = HTTPBasicAuth(
+        settings.KOMPASSI_CROWD_APPLICATION_NAME,
+        settings.KOMPASSI_CROWD_APPLICATION_PASSWORD,
+    )
+
     url = '{base_url}{url}'.format(base_url=settings.KOMPASSI_CROWD_BASE_URL, url=url)
 
     response = requests.request(
         method=method,
         url=url,
-        auth=AUTH,
+        auth=auth,
         data=json.dumps(body) if body else None,
         headers=HEADERS,
         params=params,
