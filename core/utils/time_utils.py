@@ -56,6 +56,7 @@ def get_objects_within_period(
     t=None,
     start_field_name='active_from',
     end_field_name='active_until',
+    end_field_nullable=True,
     **extra_criteria
 ):
     """
@@ -72,7 +73,12 @@ def get_objects_within_period(
         t = now()
 
     q = Q(**{f'{start_field_name}__lte': t})
-    q &= Q(**{f'{end_field_name}__gt': t}) | Q(**{f'{end_field_name}__isnull': True})
+
+    if end_field_nullable:
+        q &= Q(**{f'{end_field_name}__gt': t}) | Q(**{f'{end_field_name}__isnull': True})
+    else:
+        q &= Q(**{f'{end_field_name}__gt': t})
+
     q &= Q(**extra_criteria)
 
     return Model.objects.filter(q)

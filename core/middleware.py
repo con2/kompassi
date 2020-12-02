@@ -62,12 +62,10 @@ class EventOrganizationMiddleware:
 
         if resolver_match := request.resolver_match:
             if event_slug := resolver_match.kwargs.get("event_slug"):
-                request.event = Event.objects.filter(slug=event_slug).select_related("organization").first()
-                request.organization = request.event.organization
+                if event := Event.objects.filter(slug=event_slug).select_related("organization").first():
+                    request.event = event
+                    request.organization = event.organization
             elif organization_slug := resolver_match.kwargs.get("organization_slug"):
                 request.organization = Organization.objects.filter(slug=organization_slug).first()
-
-        from access.cbac import get_default_claims
-        print(get_default_claims(request))
 
         return None
