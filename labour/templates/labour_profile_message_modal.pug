@@ -8,5 +8,5 @@
       .modal-footer
         .btn-group
           if admin_title
-            a.btn.btn-primary(href='{% url "labour_admin_mail_editor_view" event.slug message.pk %}') Avaa viesti editorissa
+            a.btn.btn-primary(href='{% url "labour:admin_mail_editor_view" event.slug message.pk %}') Avaa viesti editorissa
           button.btn.btn-default(type='button', data-dismiss='modal') Sulje

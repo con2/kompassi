@@ -11,7 +11,7 @@ from ..models import ProgrammeFeedback
 
 @programme_admin_required
 @require_safe
-def programme_admin_feedback_view(request, vars, event):
+def admin_feedback_view(request, vars, event):
     feedback = ProgrammeFeedback.get_visible_feedback_for_event(event)
 
     vars.update(

@@ -34,7 +34,7 @@ PerHostForms = namedtuple('PerHostForms', 'change_host_role_form signup_extra_fo
 # TODO Split this into multiple views or at refactor it into a CBV
 @programme_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
-def programme_admin_detail_view(request, vars, event, programme_id):
+def admin_detail_view(request, vars, event, programme_id):
     programme = get_object_or_404(ProgrammeManagementProxy, category__event=event, pk=int(programme_id))
 
     if programme.form_used:
@@ -102,9 +102,9 @@ def programme_admin_detail_view(request, vars, event, programme_id):
                 messages.success(request, _('The changes were saved.'))
 
                 if action == 'save-edit':
-                    return redirect('programme_admin_detail_view', event.slug, programme_id)
+                    return redirect('admin_detail_view', event.slug, programme_id)
                 elif action == 'save-return':
-                    return redirect('programme_admin_view', event.slug)
+                    return redirect('admin_view', event.slug)
                 else:
                     raise NotImplementedError(action)
             else:
@@ -121,7 +121,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
                 messages.success(request, _('The host was successfully invited.'))
 
-                return redirect('programme_admin_detail_view', event.slug, programme_id)
+                return redirect('admin_detail_view', event.slug, programme_id)
             else:
                 messages.error(request, _('Please check the form.'))
 
@@ -133,7 +133,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
                 messages.success(request, _('The freeform organizer was successfully added.'))
 
-                return redirect('programme_admin_detail_view', event.slug, programme_id)
+                return redirect('admin_detail_view', event.slug, programme_id)
             else:
                 messages.error(request, _('Please check the form.'))
 
@@ -174,7 +174,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
                 else:
                     raise NotImplementedError(action)
 
-                return redirect('programme_admin_detail_view', event.slug, programme_id)
+                return redirect('admin_detail_view', event.slug, programme_id)
         else:
             messages.error(request, _('Invalid action.'))
 
@@ -218,7 +218,7 @@ def programme_admin_detail_view(request, vars, event, programme_id):
 
 @programme_admin_required
 @require_POST
-def programme_admin_change_host_role_view(request, vars, event, programme_id, programme_role_id):
+def admin_change_host_role_view(request, vars, event, programme_id, programme_role_id):
     programme = get_object_or_404(ProgrammeManagementProxy, id=int(programme_id), category__event=event)
     programme_role = ProgrammeRole.objects.get(id=int(programme_role_id), programme=programme)
     change_role_form = initialize_form(ChangeHostRoleForm, request, prefix='chr', event=event, instance=programme_role)
@@ -250,12 +250,12 @@ def programme_admin_change_host_role_view(request, vars, event, programme_id, pr
 
     programme = change_role_form.instance.programme
 
-    return redirect('programme_admin_detail_view', programme.event.slug, programme.pk)
+    return redirect('admin_detail_view', programme.event.slug, programme.pk)
 
 
 @programme_admin_required
 @require_POST
-def programme_admin_change_invitation_role_view(request, vars, event, programme_id, invitation_id):
+def admin_change_invitation_role_view(request, vars, event, programme_id, invitation_id):
     programme = get_object_or_404(ProgrammeManagementProxy, id=int(programme_id), category__event=event)
     invitation = Invitation.objects.get(id=int(invitation_id), programme=programme)
     change_role_form = initialize_form(ChangeInvitationRoleForm, request, prefix='cir', event=event, instance=invitation)
@@ -269,4 +269,4 @@ def programme_admin_change_invitation_role_view(request, vars, event, programme_
 
     programme = change_role_form.instance.programme
 
-    return redirect('programme_admin_detail_view', programme.event.slug, programme.pk)
+    return redirect('admin_detail_view', programme.event.slug, programme.pk)

@@ -25,11 +25,11 @@ from ..helpers import (
 
 
 def get_schedule_tabs(request, event):
-    schedule_url = url('programme_schedule_view', event.slug)
+    schedule_url = url('programme:schedule_view', event.slug)
     schedule_active = request.path == schedule_url
     schedule_text = 'Ohjelmakartta'
 
-    special_url = url('programme_special_view', event.slug)
+    special_url = url('programme:special_view', event.slug)
     special_active = request.path == special_url
     special_text = 'Ohjelmakartan ulkopuolinen ohjelma'
 
@@ -49,7 +49,7 @@ SCHEDULE_TEMPLATES = dict(
 @cache_control(public=True, max_age=5 * 60)
 @cache_page(5 * 60)  # XXX remove once nginx cache is in place
 @require_safe
-def programme_schedule_view(
+def schedule_view(
     request,
     event,
     internal_programmes=False,
@@ -73,7 +73,7 @@ def programme_schedule_view(
 # look, no cache
 @programme_event_required
 @require_safe
-def programme_internal_schedule_view(
+def internal_schedule_view(
     request,
     event,
     internal_programmes=True,
@@ -126,7 +126,7 @@ def actual_schedule_view(
 
 @public_programme_required
 @require_safe
-def programme_special_view(
+def special_view(
     request,
     event,
     template='programme_special_view.pug',
@@ -179,7 +179,7 @@ def actual_special_view(
 
 @user_passes_test(lambda u: u.is_superuser)
 @require_safe
-def programme_internal_dumpdata_view(request):
+def internal_dumpdata_view(request):
     from django.core import management
     from io import StringIO
 
@@ -195,7 +195,7 @@ def programme_internal_dumpdata_view(request):
 @cache_page(1 * 60)  # XXX remove once nginx cache is in place
 @public_programme_required
 @require_safe
-def programme_mobile_schedule_view(request, event):
+def mobile_schedule_view(request, event):
     vars = dict(event=event)
 
     return render(request, 'programme_mobile_schedule.pug', vars)
@@ -203,7 +203,7 @@ def programme_mobile_schedule_view(request, event):
 
 @programme_event_required
 @require_safe
-def programme_internal_adobe_taggedtext_view(request, event):
+def internal_adobe_taggedtext_view(request, event):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).get_programmes_by_start_time(request=request))
     data = render_to_string('programme_schedule.taggedtext', vars, request=request)
 
@@ -218,16 +218,16 @@ def programme_internal_adobe_taggedtext_view(request, event):
 
 @programme_event_required
 @require_safe
-def programme_plaintext_view(request, event):
+def plaintext_view(request, event):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).get_programmes_by_start_time(request=request))
-    data = render_to_string('programme_plaintext_view.txt', vars, request=request)
+    data = render_to_string('plaintext_view.txt', vars, request=request)
     return HttpResponse(data, 'text/plain; charset=utf-8')
 
 
 @programme_event_required
 @require_safe
 @api_view
-def programme_json_view(request, event, format='default', include_unpublished=False):
+def json_view(request, event, format='default', include_unpublished=False):
     criteria = dict(category__event=event)
 
     if not include_unpublished:
@@ -247,11 +247,11 @@ def programme_json_view(request, event, format='default', include_unpublished=Fa
 
 
 def programme_profile_menu_items(request):
-    programme_url = url('programme_profile_view')
+    programme_url = url('programme:profile_view')
     programme_active = request.path.startswith(programme_url)
     programme_text = _('Programmes')
 
-    reservations_url = url('programme_profile_reservations_view')
+    reservations_url = url('programme:profile_reservations_view')
     reservations_active = request.path.startswith(reservations_url)
     reservations_text = _('Seat reservations')
 

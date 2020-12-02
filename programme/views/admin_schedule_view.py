@@ -29,7 +29,7 @@ schedule_actions = {
 
 @programme_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
-def programme_admin_schedule_view(request, vars, event):
+def admin_schedule_view(request, vars, event):
     from .public_views import actual_schedule_view
 
     if request.method == 'POST':
@@ -41,7 +41,7 @@ def programme_admin_schedule_view(request, vars, event):
             if form.is_valid():
                 form.save()
                 messages.success(request, _('The schedule change was successful.'))
-                return redirect('programme_admin_schedule_view', event_slug=event.slug)
+                return redirect('admin_schedule_view', event_slug=event.slug)
             else:
                 messages.error(request, _('Please check the form.'))
         else:
@@ -71,7 +71,7 @@ view_actions = {
 
 @programme_admin_required
 @require_POST
-def programme_admin_schedule_update_view_view(request, vars, event, view_id):
+def admin_schedule_update_view_view(request, vars, event, view_id):
     view = get_object_or_404(View, id=int(view_id), event=event)
     action = request.POST.get('action')
 
@@ -81,10 +81,10 @@ def programme_admin_schedule_update_view_view(request, vars, event, view_id):
         if form.is_valid():
             form.save()
             messages.success(request, _('The schedule change was successful.'))
-            return redirect('programme_admin_schedule_view', event_slug=event.slug)
+            return redirect('admin_schedule_view', event_slug=event.slug)
         else:
             messages.error(request, _('Please check the form.'))
     else:
         messages.error(request, _('Unknown action'))
 
-    return redirect('programme_admin_schedule_view', event_slug=event.slug)
+    return redirect('admin_schedule_view', event_slug=event.slug)

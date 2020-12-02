@@ -22,7 +22,7 @@ block content_full_width
           for feedback_message in feedback
             tr
               td
-                a(href='{% url "programme_admin_detail_view" event.slug feedback_message.programme.pk %}')= feedback_message.programme.title
+                a(href='{% url "programme:admin_detail_view" event.slug feedback_message.programme.pk %}')= feedback_message.programme.title
               td
                 if feedback_message.is_really_anonymous
                   em.text-muted {% trans "Anonymous" %}

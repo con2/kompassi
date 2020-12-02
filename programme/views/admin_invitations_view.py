@@ -12,7 +12,7 @@ from ..forms import IdForm
 
 @programme_admin_required
 @require_http_methods(["GET", "HEAD", "POST"])
-def programme_admin_invitations_view(request, vars, event):
+def admin_invitations_view(request, vars, event):
     pending_invitations = Invitation.objects.filter(programme__category__event=event, state='valid')
 
     if request.method == 'POST':
@@ -30,12 +30,12 @@ def programme_admin_invitations_view(request, vars, event):
                 invitation.programme.apply_state()
 
                 messages.success(request, _('The invitation was cancelled.'))
-                return redirect('programme_admin_invitations_view', event.slug)
+                return redirect('admin_invitations_view', event.slug)
 
         elif action == 'cancel-all-invitations':
             pending_invitations.update(state='revoked')
             messages.success(request, _('All pending invitations were cancelled.'))
-            return redirect('programme_admin_invitations_view', event.slug)
+            return redirect('admin_invitations_view', event.slug)
 
         messages.error(request, _('Invalid request.'))
 

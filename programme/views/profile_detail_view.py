@@ -17,7 +17,7 @@ logger = logging.getLogger('kompassi')
 
 
 @person_required
-def programme_profile_detail_view(request, programme_id):
+def profile_detail_view(request, programme_id):
     programme_role_qs = ProgrammeRole.objects.filter(person=request.user.person, programme=int(programme_id))
     try:
         programme_role = get_object_or_404(programme_role_qs)
@@ -64,7 +64,7 @@ def programme_profile_detail_view(request, programme_id):
     if request.method == 'POST':
         if not programme.host_can_edit:
             messages.error(request, programme.host_cannot_edit_explanation)
-            return redirect('programme_profile_detail_view', programme.id)
+            return redirect('profile_detail_view', programme.id)
 
         elif all(the_form.is_valid() for the_form in forms):
             with transaction.atomic():
@@ -82,7 +82,7 @@ def programme_profile_detail_view(request, programme_id):
                     extra_invite.send(request)
 
             messages.success(request, _('The changes were saved.'))
-            return redirect('programme_profile_view')
+            return redirect('profile_view')
 
         else:
             messages.error(request, 'Please check the form.')

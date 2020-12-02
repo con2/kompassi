@@ -39,10 +39,10 @@
           //if signup.applicant_can_cancel
           //  a.btn.btn-danger(data-toggle='modal', href='#cancel-{{ signup.pk }}') Peru hakemus
           if signup.applicant_can_edit
-            a.btn.btn-primary(href='{% url "labour_signup_view" signup.event.slug %}') Muokkaa hakemusta
+            a.btn.btn-primary(href='{% url "labour:signup_view" signup.event.slug %}') Muokkaa hakemusta
           if signup.applicant_can_confirm
             .btn-group
-              form(method='post', action='{% url "labour_confirm_view" signup.event.slug %}')
+              form(method='post', action='{% url "labour:confirm_view" signup.event.slug %}')
                 {% csrf_token %}
                 input.btn.btn-success(type='submit', name='confirm', value='Vahvista osallistuminen')
 

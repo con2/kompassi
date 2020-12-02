@@ -7,31 +7,31 @@ from core.utils import url
 
 
 def labour_admin_menu_items(request, event):
-    dashboard_url = url('labour_admin_dashboard_view', event.slug)
+    dashboard_url = url('labour:admin_dashboard_view', event.slug)
     dashboard_active = request.path == dashboard_url
     dashboard_text = _("Dashboard")
 
-    signups_url = url('labour_admin_signups_view', event.slug)
+    signups_url = url('labour:admin_signups_view', event.slug)
     signups_active = request.path.startswith(signups_url)
     signups_text = _("Applications")
 
-    mail_url = url('labour_admin_mail_view', event.slug)
+    mail_url = url('labour:admin_mail_view', event.slug)
     mail_active = request.path.startswith(mail_url)
     mail_text = _("Mass messages")
 
-    roster_url = url('labour_admin_roster_view', event.slug)
+    roster_url = url('labour:admin_roster_view', event.slug)
     roster_active = request.path.startswith(roster_url)
     roster_text = _("Shift planning")
 
-    shifts_url = url('labour_admin_shifts_view', event.slug)
+    shifts_url = url('labour:admin_shifts_view', event.slug)
     shifts_active = request.path.startswith(shifts_url)
     shifts_text = _("Shift lists")
 
-    jobcategories_url = url('labour_admin_jobcategories_view', event.slug)
+    jobcategories_url = url('labour:admin_jobcategories_view', event.slug)
     jobcategories_active = request.path.startswith(jobcategories_url)
     jobcategories_text = _("Edit job categories")
 
-    startstop_url = url('labour_admin_startstop_view', event.slug)
+    startstop_url = url('labour:admin_startstop_view', event.slug)
     startstop_active = request.path == startstop_url
     startstop_text = _("Application period")
 
@@ -58,7 +58,7 @@ def labour_admin_menu_items(request, event):
     ]
 
     if event.labour_event_meta.signup_extra_model.get_shirt_size_field():
-        shirts_url = url('labour_admin_shirts_view', event.slug)
+        shirts_url = url('labour:admin_shirts_view', event.slug)
         shirts_active = request.path == shirts_url
         shirts_text = _("Shirt sizes")
 
@@ -68,7 +68,7 @@ def labour_admin_menu_items(request, event):
         event.labour_event_meta.signup_extra_model.get_special_diet_field() or
         event.labour_event_meta.signup_extra_model.get_special_diet_other_field()
     ):
-        special_diets_url = url('labour_admin_special_diets_view', event.slug)
+        special_diets_url = url('labour:admin_special_diets_view', event.slug)
         special_diets_active = request.path == special_diets_url
         special_diets_text = _("Special diets")
 

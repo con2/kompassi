@@ -11,13 +11,13 @@ from ..helpers import programme_event_required
 
 
 @person_required
-def programme_profile_feedback_view(request, programme_id):
+def profile_feedback_view(request, programme_id):
     programme = get_object_or_404(Programme, id=int(programme_id))
     event = programme.event
 
     if not request.user.person in programme.organizers.all():
         messages.error(request, _('Only an organizer of the programme may view its feedback.'))
-        return redirect('programme_profile_view')
+        return redirect('profile_view')
 
     feedback = programme.visible_feedback
 

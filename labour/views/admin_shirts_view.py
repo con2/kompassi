@@ -8,7 +8,7 @@ from ..helpers import labour_admin_required
 
 
 @labour_admin_required
-def labour_admin_shirts_view(request, vars, event):
+def admin_shirts_view(request, vars, event):
     # TODO half assumes and half doesn't that the shirt size field is named "shirt_size"
     meta = event.labour_event_meta
     SignupExtra = meta.signup_extra_model
@@ -17,7 +17,7 @@ def labour_admin_shirts_view(request, vars, event):
 
     if shirt_size_field is None:
         messages.error(request, _('This event does not record shirt sizes.'))
-        return redirect('labour_admin_dashboard_view', event.slug)
+        return redirect('admin_dashboard_view', event.slug)
 
     shirt_sizes = shirt_size_field.choices
 

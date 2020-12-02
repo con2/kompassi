@@ -87,7 +87,7 @@ block content_full_width
                         {{ pr.role_or_status }}
                         if not pr.programme.host_can_edit
                           i.fa.fa-lock.kompassi-icon-space-left(title='{% trans "Frozen" %}')
-                    a(href='{% url "programme_admin_detail_view" event.slug pr.programme.pk %}') {{ pr.programme.title }}
+                    a(href='{% url "programme:admin_detail_view" event.slug pr.programme.pk %}') {{ pr.programme.title }}
       .panel-footer.clearfix
         if num_organizers
           .btn-group.pull-right
@@ -100,7 +100,7 @@ block content_full_width
                 i.fa.fa-caret-down.kompassi-icon-space-left
               ul.dropdown-menu#programme-admin-export-dropdown-menu(aria-labelledby='programme-admin-export-dropdown')
                 for export_format in export_formats
-                  li: a(href='{% url "programme_admin_export_organizers_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+                  li: a(href='{% url "programme:admin_export_organizers_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
                     i.fa.fa-cloud-download.kompassi-icon-space-right
                     |{{ export_format.name }}
           .text-muted {% blocktrans with num_total_organizers=num_total_organizers count num_organizers=num_organizers %}One programme host visible (total {{ num_total_organizers }}).{% plural %}{{ num_organizers }} programme hosts (total {{ num_total_organizers }}).{% endblocktrans %}

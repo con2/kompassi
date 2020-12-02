@@ -17,7 +17,7 @@ block admin_content
           for room in rooms
             tr
               td: {{ room.name }}
-                //- a(href='{% url "programme_admin_room_view" event.slug room.slug %}')= room.name
+                //- a(href='{% url "programme:admin_room_view" event.slug room.slug %}')= room.name
               td
                 .btn-group
                   if room.can_remove
@@ -31,6 +31,6 @@ block admin_content
 
     //-   .panel-footer.clearfix
     //-     .btn-group.pull-right
-    //-       a.btn.btn-success(href='{% url "programme_admin_add_room_view" event.slug %}')
+    //-       a.btn.btn-success(href='{% url "programme:admin_add_room_view" event.slug %}')
     //-         i.fa.fa-plus.kompassi-icon-space-right
     //-         {% trans "Add room" %}

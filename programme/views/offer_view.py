@@ -16,12 +16,12 @@ DEFAULT_NUM_EXTRA_INVITES = 5
 
 @programme_event_required
 @person_required
-def programme_offer_view(request, event):
+def offer_view(request, event):
     meta = event.programme_event_meta
 
     if not meta.is_using_alternative_programme_forms:
         # event uses implicit default form
-        return redirect('programme_offer_form_view', event.slug, 'default')
+        return redirect('offer_form_view', event.slug, 'default')
 
     # event uses explicitly defined forms
     alternative_programme_forms = AlternativeProgrammeForm.objects.filter(event=event, is_active=True)
@@ -35,7 +35,7 @@ def programme_offer_view(request, event):
         return redirect('core_event_view', event.slug)
 
     elif num_alternative_programme_forms == 1:
-        return redirect('programme_offer_form_view', event.slug, alternative_programme_forms[0].slug)
+        return redirect('offer_form_view', event.slug, alternative_programme_forms[0].slug)
 
     vars = dict(
         event=event,
@@ -47,7 +47,7 @@ def programme_offer_view(request, event):
 
 @programme_event_required
 @person_required
-def programme_offer_form_view(request, event, form_slug):
+def offer_form_view(request, event, form_slug):
     meta = event.programme_event_meta
     alternative_programme_forms = AlternativeProgrammeForm.objects.filter(event=event)
 
@@ -141,7 +141,7 @@ def programme_offer_form_view(request, event, form_slug):
                 'Thank you for offering your programme. The programme managers will be in touch.'
             ))
 
-            return redirect('programme_profile_detail_view', programme.pk)
+            return redirect('profile_detail_view', programme.pk)
         else:
             messages.error(request, _('Please check the form.'))
 

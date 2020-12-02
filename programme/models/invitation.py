@@ -62,7 +62,7 @@ class Invitation(OneTimeCodeLite):
 
         vars = dict(
             event=event,
-            link=request.build_absolute_uri(url('programme_accept_invitation_view', event.slug, self.code)),
+            link=request.build_absolute_uri(url('programme:accept_invitation_view', event.slug, self.code)),
             meta=event.programme_event_meta,
             programme=self.programme,
         )

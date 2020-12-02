@@ -19,7 +19,7 @@ block admin_content
         - crispy form
       .panel-footer.clearfix
         .btn-group.pull-right
-          a(href='{% url "labour_admin_mail_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa
+          a(href='{% url "labour:admin_mail_view" event.slug %}').btn.btn-default Hylkää muutokset ja palaa
           button(type='submit', name='action', value='save-return').btn.btn-primary Tallenna ja palaa
           button(type='submit', name='action', value='save-edit').btn.btn-primary Tallenna ja jatka
 
@@ -44,4 +44,3 @@ block admin_content
               button(type='submit', name='action', value='delete').btn.btn-danger Poista luonnos
             button(type='submit', name='action', value='save-send').btn.btn-success Lähetä viesti
         p.text-muted Myös nämä toiminnot tallentavat viestiin tehdyt muutokset.
-

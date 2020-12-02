@@ -10,7 +10,7 @@ from ..forms import DeleteRoomForm
 
 @programme_admin_required
 @require_http_methods(["GET", "HEAD", "POST"])
-def programme_admin_rooms_view(request, vars, event):
+def admin_rooms_view(request, vars, event):
     rooms = Room.objects.filter(event=event)
 
     if request.method == 'POST':
@@ -21,7 +21,7 @@ def programme_admin_rooms_view(request, vars, event):
         else:
             messages.error(request, _("Invalid request."))
 
-        return redirect('programme_admin_rooms_view', event.slug)
+        return redirect('admin_rooms_view', event.slug)
 
     vars.update(rooms=rooms)
 

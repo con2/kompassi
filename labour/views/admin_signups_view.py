@@ -31,7 +31,7 @@ class MassOperation(MassOperationBase):
 
 @labour_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
-def labour_admin_signups_view(request, vars, event, format='screen'):
+def admin_signups_view(request, vars, event, format='screen'):
     meta = event.labour_event_meta
     SignupClass = SignupCertificateProxy if format == 'html' else Signup
     SignupExtra = meta.signup_extra_model
@@ -108,7 +108,7 @@ def labour_admin_signups_view(request, vars, event, format='screen'):
         else:
             messages.error(request, 'Ei semmosta toimintoa oo.')
 
-        return redirect('labour_admin_signups_view', event.slug)
+        return redirect('admin_signups_view', event.slug)
 
     elif format in HTML_TEMPLATES:
         if archive_mode:

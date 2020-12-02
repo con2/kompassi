@@ -21,7 +21,7 @@ EXPORT_FORMATS = EXPORT_FORMATS + [
 
 
 @labour_admin_required
-def labour_admin_shifts_view(request, vars, event, format='screen'):
+def admin_shifts_view(request, vars, event, format='screen'):
     shifts = (
         Shift.objects.filter(job__job_category__event=event)
             .select_related('signup__person')

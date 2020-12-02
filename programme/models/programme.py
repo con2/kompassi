@@ -1251,7 +1251,7 @@ class Programme(models.Model, CsvExportMixin):
             raise NotImplementedError(self.state)
 
     def get_feedback_url(self, request=None):
-        path = url('programme_feedback_view', self.event.slug, self.pk)
+        path = url('programme:feedback_view', self.event.slug, self.pk)
 
         if request:
             return request.build_absolute_uri(path)

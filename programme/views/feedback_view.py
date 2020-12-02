@@ -14,7 +14,7 @@ from ..helpers import programme_event_required
 
 
 @programme_event_required
-def programme_feedback_view(request, event, programme_id):
+def feedback_view(request, event, programme_id):
     programme = get_object_or_404(Programme, id=int(programme_id), category__event=event)
 
     if not programme.is_open_for_feedback:

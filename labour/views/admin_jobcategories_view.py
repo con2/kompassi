@@ -10,7 +10,7 @@ from ..forms import RemoveJobCategoryForm
 
 @labour_admin_required
 @require_http_methods(["GET", "HEAD", "POST"])
-def labour_admin_jobcategories_view(request, vars, event):
+def admin_jobcategories_view(request, vars, event):
     job_categories = JobCategoryManagementProxy.objects.filter(event=event, app_label='labour')
 
     if request.method == 'POST':
@@ -23,10 +23,10 @@ def labour_admin_jobcategories_view(request, vars, event):
                 if job_category.can_remove:
                     job_category.delete()
                     messages.success(request, _("The job category was removed."))
-                    return redirect('labour_admin_jobcategories_view', event.slug)
+                    return redirect('admin_jobcategories_view', event.slug)
 
         messages.error(request, _("Invalid request."))
-        return redirect('labour_admin_jobcategories_view', event.slug)
+        return redirect('admin_jobcategories_view', event.slug)
 
     vars.update(job_categories=job_categories)
 

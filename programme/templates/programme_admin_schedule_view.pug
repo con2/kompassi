@@ -133,7 +133,7 @@ block content
                   aria-labelledby="view-{{ view.id }}-settings-modal-title")
         .modal-dialog(role="document")
           form.modal-content.form-horizontal(method='POST',
-                                             action='{% url "programme_admin_schedule_update_view_view" event.slug view.id %}')
+                                             action='{% url "programme:admin_schedule_update_view_view" event.slug view.id %}')
             //- Catch Enter
             button.sr-only(type='submit', name='action', value='update-view') Tallenna
 
@@ -157,7 +157,7 @@ block content
                   aria-labelledby="view-{{ view.id }}-add-room-modal-title")
         .modal-dialog(role="document")
           form.modal-content.form-horizontal(method='POST',
-                                             action='{% url "programme_admin_schedule_update_view_view" event.slug view.id %}')
+                                             action='{% url "programme:admin_schedule_update_view_view" event.slug view.id %}')
             //- Catch Enter
             button.sr-only(type='submit', name='action', value='add-room') Lisää
 

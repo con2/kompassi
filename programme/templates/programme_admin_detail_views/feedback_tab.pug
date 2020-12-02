@@ -8,7 +8,7 @@
     .panel-footer.clearfix
       .btn-group.pull-right
         if programme.is_open_for_feedback
-          a.btn.btn-success(href='{% url "programme_feedback_view" event.slug programme.id %}', target='_blank')
+          a.btn.btn-success(href='{% url "programme:feedback_view" event.slug programme.id %}', target='_blank')
             {% trans "Give feedback" %}
       if feedback.exists
         .text-muted {% blocktrans count num_feedback_messages=feedback.count %}One feedback message.{% plural %}{{ num_feedback_messages }} feedback messages.{% endblocktrans %}

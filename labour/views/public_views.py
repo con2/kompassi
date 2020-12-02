@@ -54,7 +54,7 @@ def qualifications_related():
 
     for qual in Qualification.objects.all():
         # wouldn't need labour_person_(dis)qualify_view if they used POST as they should
-        for view_name in ['labour_person_qualification_view', 'labour_person_qualify_view', 'labour_person_disqualify_view']:
+        for view_name in ['labour:person_qualification_view', 'labour:person_qualify_view', 'labour:person_disqualify_view']:
             result.append(url(view_name, qual.slug))
 
     return result
@@ -62,10 +62,10 @@ def qualifications_related():
 
 @labour_event_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
-def labour_signup_view(request, event, alternative_form_slug=None):
+def signup_view(request, event, alternative_form_slug=None):
     """
     This is the "gate" function. The implementation is in
-    `actual_labour_signup_view`.
+    `actual_signup_view`.
 
     The purpose of this function is to redirect new users through the process
     of registering an account, entering qualifications and only then signing up.
@@ -73,14 +73,14 @@ def labour_signup_view(request, event, alternative_form_slug=None):
     """
 
     if alternative_form_slug:
-        actual_signup_url = url('labour_special_signup_view', event.slug, alternative_form_slug)
+        actual_signup_url = url('labour:special_signup_view', event.slug, alternative_form_slug)
     else:
-        actual_signup_url = url('labour_signup_view', event.slug)
+        actual_signup_url = url('labour:signup_view', event.slug)
 
     if not request.user.is_authenticated:
         pages = [
             ('core_login_view', _('Sign up or sign in...'), login_related()),
-            ('labour_qualifications_view', _('Revise qualifications'), qualifications_related()),
+            ('labour:qualifications_view', _('Revise qualifications'), qualifications_related()),
             (actual_signup_url, _('Apply for volunteer work')),
         ]
 
@@ -92,17 +92,17 @@ def labour_signup_view(request, event, alternative_form_slug=None):
     except Person.DoesNotExist:
         pages = [
             ('core_personify_view', _('Complete contact information')),
-            ('labour_qualifications_view', _('Revise qualifications'), qualifications_related()),
+            ('labour:qualifications_view', _('Revise qualifications'), qualifications_related()),
             (actual_signup_url, _('Apply for volunteer work')),
         ]
 
         page_wizard_init(request, pages)
         return redirect('core_personify_view')
 
-    return actual_labour_signup_view(request, event, alternative_form_slug=alternative_form_slug)
+    return actual_signup_view(request, event, alternative_form_slug=alternative_form_slug)
 
 
-def actual_labour_signup_view(request, event, alternative_form_slug):
+def actual_signup_view(request, event, alternative_form_slug):
     vars = page_wizard_vars(request)
 
     signup = event.labour_event_meta.get_signup_for_person(request.user.person)
@@ -236,7 +236,7 @@ def actual_labour_signup_view(request, event, alternative_form_slug):
 
 
 @person_required
-def labour_profile_signups_view(request):
+def profile_signups_view(request):
     person = request.user.person
 
     t = now()
@@ -273,22 +273,22 @@ def labour_profile_signups_view(request):
 @person_required
 @labour_event_required
 @require_POST
-def labour_confirm_view(request, event):
+def confirm_view(request, event):
     signup = get_object_or_404(Signup, event=event, person=request.user.person)
 
     if not signup.state == 'confirmation':
         messages.error(request, _('Your application does not currently need to be confirmed.'))
-        return redirect('labour_profile_signups_view')
+        return redirect('profile_signups_view')
 
     signup.confirm()
     messages.success(request, _('Your application has been confirmed.'))
 
-    return redirect('labour_profile_signups_view')
+    return redirect('profile_signups_view')
 
 
 @person_required
 @require_safe
-def labour_qualifications_view(request):
+def qualifications_view(request):
     vars = page_wizard_vars(request)
 
     person_qualifications = request.user.person.personqualification_set.all()
@@ -310,7 +310,7 @@ def labour_qualifications_view(request):
 
 @person_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
-def labour_person_qualification_view(request, qualification):
+def person_qualification_view(request, qualification):
     vars = page_wizard_vars(request)
 
     person = request.user.person
@@ -343,7 +343,7 @@ def labour_person_qualification_view(request, qualification):
                 form.save()
 
             messages.success(request, _('The qualification has been updated.'))
-            return redirect('labour_qualifications_view')
+            return redirect('labour:qualifications_view')
         else:
             messages.error(request, _('Please check the form.'))
 
@@ -361,12 +361,12 @@ def labour_person_qualification_view(request, qualification):
 
 
 @person_required
-def labour_person_qualify_view(request, qualification):
+def person_qualify_view(request, qualification):
     person = request.user.person
     qualification = get_object_or_404(Qualification, slug=qualification)
 
     if qualification.qualification_extra_model:
-        return redirect('labour_person_qualification_view', qualification.slug)
+        return redirect('labour:person_qualification_view', qualification.slug)
 
     person_qualification, created = PersonQualification.objects.get_or_create(
         person=person,
@@ -376,11 +376,11 @@ def labour_person_qualify_view(request, qualification):
     if created:
         messages.success(request, _('The qualification has been added.'))
 
-    return redirect('labour_qualifications_view')
+    return redirect('labour:qualifications_view')
 
 
 @person_required
-def labour_person_disqualify_view(request, qualification):
+def person_disqualify_view(request, qualification):
     person = request.user.person
     qualification = get_object_or_404(Qualification, slug=qualification)
 
@@ -392,15 +392,15 @@ def labour_person_disqualify_view(request, qualification):
     except:
         pass
 
-    return redirect('labour_qualifications_view')
+    return redirect('labour:qualifications_view')
 
 
 def labour_profile_menu_items(request):
-    signups_url = reverse('labour_profile_signups_view')
+    signups_url = reverse('labour:profile_signups_view')
     signups_active = request.path.startswith(signups_url)
     signups_text = _('Volunteer work applications')
 
-    qualifications_url = reverse('labour_qualifications_view')
+    qualifications_url = reverse('labour:qualifications_view')
     qualifications_active = request.path.startswith(qualifications_url)
     qualifications_text = _('Qualifications')
 

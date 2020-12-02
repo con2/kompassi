@@ -11,41 +11,41 @@ from ..models import Invitation, ProgrammeFeedback, Programme
 def programme_admin_menu_items(request, event):
     t = now()
 
-    organizers_url = url('programme_admin_organizers_view', event.slug)
+    organizers_url = url('programme:admin_organizers_view', event.slug)
     organizers_active = request.path.startswith(organizers_url)
     organizers_text = _('Programme hosts')
 
-    offers_url = url('programme_admin_view', event.slug) + '?state=offered&sort=created_at'
+    offers_url = url('programme:admin_view', event.slug) + '?state=offered&sort=created_at'
     offers_active = request.get_full_path() == offers_url
     offers_text = _('New offers')
     offers_notifications = Programme.objects.filter(category__event=event, state='offered').count()
 
-    invitations_url = url('programme_admin_invitations_view', event.slug)
+    invitations_url = url('programme:admin_invitations_view', event.slug)
     invitations_active = request.path == invitations_url
     invitations_text = _('Open invitations')
     invitations_notifications = Invitation.objects.filter(programme__category__event=event, state='valid').count()
 
-    rooms_url = url('programme_admin_rooms_view', event.slug)
+    rooms_url = url('programme:admin_rooms_view', event.slug)
     rooms_active = request.path.startswith(rooms_url)
     rooms_text = _('Edit rooms')
 
-    schedule_url = url('programme_admin_schedule_view', event.slug)
+    schedule_url = url('programme:admin_schedule_view', event.slug)
     schedule_active = request.path.startswith(schedule_url)
     schedule_text = _('Edit schedule')
 
-    special_url = url('programme_admin_special_view', event.slug)
+    special_url = url('programme:admin_special_view', event.slug)
     special_active = request.path == special_url
     special_text = 'Ohjelmakartan ulkopuolisten esikatselu'
 
-    cold_offers_url = url('programme_admin_cold_offers_view', event.slug)
+    cold_offers_url = url('programme:admin_cold_offers_view', event.slug)
     cold_offers_active = request.path == cold_offers_url
     cold_offers_text = _('Cold offer period starting and ending times')
 
-    publish_url = url('programme_admin_publish_view', event.slug)
+    publish_url = url('programme:admin_publish_view', event.slug)
     publish_active = request.path == publish_url
     publish_text = _('Publish schedule')
 
-    feedback_url = url('programme_admin_feedback_view', event.slug)
+    feedback_url = url('programme:admin_feedback_view', event.slug)
     feedback_active = request.path == feedback_url
     feedback_text = _('Programme feedback')
     feedback_notifications = ProgrammeFeedback.objects.filter(
@@ -67,7 +67,7 @@ def programme_admin_menu_items(request, event):
 
     programmes_with_reservations = Programme.objects.filter(category__event=event, is_using_paikkala=True)
     if programmes_with_reservations.exists():
-        reservations_url = url('programme_admin_reservation_status_view', event.slug)
+        reservations_url = url('programme:admin_reservation_status_view', event.slug)
         reservations_active = request.path == reservations_url
         reservations_text = _('Seat reservations')
         reservations_notifications = programmes_with_reservations.filter(
@@ -79,7 +79,7 @@ def programme_admin_menu_items(request, event):
     else:
         reservations_active = False
 
-    index_url = url('programme_admin_view', event.slug)
+    index_url = url('programme:admin_view', event.slug)
     index_active = request.path.startswith(index_url) and not any((
         organizers_active,
         feedback_active,

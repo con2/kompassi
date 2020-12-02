@@ -7,7 +7,7 @@ from core.models import Event
 from core.utils import login_redirect
 
 from .models import Signup
-from .views.labour_admin_menu_items import labour_admin_menu_items
+from .views.admin_menu_items import labour_admin_menu_items
 
 
 def labour_admin_required(view_func):

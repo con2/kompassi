@@ -705,7 +705,7 @@ class Setup(object):
                     # '<strong>HUOM!</strong> Paikat kaatobusseihin varataan erikseen. Varaa paikkasi '
                     # f'<a href="{outward_coach_url}" target="_blank">menobussiin täältä</a> ja '
                     # f'<a href="{return_coach_url}" target="_blank">paluubussiin täältä</a>. '
-                    # f'Näet bussivarauksesi <a href="{reverse("programme_profile_reservations_view")}" target="_blank">paikkalippusivulta</a>.'
+                    # f'Näet bussivarauksesi <a href="{reverse("profile_reservations_view")}" target="_blank">paikkalippusivulta</a>.'
                 ),
                 override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
                 form_class_path='events.tracon2020.forms:AfterpartyParticipationSurvey',

@@ -15,19 +15,19 @@ from ..models import Invitation, ProgrammeRole, FreeformOrganizer
 
 @programme_event_required
 @person_required
-def programme_accept_invitation_view(request, event, code):
+def accept_invitation_view(request, event, code):
     invitation = get_object_or_404(Invitation, programme__category__event=event, code=code)
     programme = invitation.programme
 
     if invitation.state == 'used' and programme.host_can_edit:
         messages.warning(request, _('You have already accepted this invitation. You can edit the programme below.'))
-        return redirect('programme_profile_detail_view', programme.pk)
+        return redirect('profile_detail_view', programme.pk)
     elif invitation.state == 'used' and not programme.host_can_edit:
         messages.error(request, _('You have already accepted this invitation. You can no longer edit the programme.'))
-        return redirect('programme_profile_view')
+        return redirect('profile_view')
     elif not (invitation.state == 'valid' and programme.host_can_edit):
         messages.error(request, _('The invitation is no longer valid.'))
-        return redirect('programme_profile_view')
+        return redirect('profile_view')
 
     alternative_programme_form = programme.form_used
     if alternative_programme_form:
@@ -84,7 +84,7 @@ def programme_accept_invitation_view(request, event, code):
                 'information later from your profile.'
             ))
 
-            return redirect('programme_profile_detail_view', programme.pk)
+            return redirect('profile_detail_view', programme.pk)
         else:
             messages.error(request, _('Please check the form.'))
 

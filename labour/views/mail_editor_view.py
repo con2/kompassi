@@ -11,7 +11,7 @@ from ..helpers import labour_admin_required
 
 @labour_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
-def labour_admin_mail_editor_view(request, vars, event, message_id=None):
+def admin_mail_editor_view(request, vars, event, message_id=None):
     if message_id:
         message = get_object_or_404(Message, recipient__event=event, pk=int(message_id))
     else:
@@ -29,7 +29,7 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
                 message.delete()
                 messages.success(request, 'Viesti poistettiin.')
 
-            return redirect('labour_admin_mail_view', event.slug)
+            return redirect('admin_mail_view', event.slug)
 
         else:
             if form.is_valid():
@@ -53,7 +53,7 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
                 elif action == 'save-return':
                     message.save()
                     messages.success(request, 'Muutokset viestiin tallennettiin.')
-                    return redirect('labour_admin_mail_view', event.slug)
+                    return redirect('admin_mail_view', event.slug)
 
                 elif action == 'save-edit':
                     message.save()
@@ -62,7 +62,7 @@ def labour_admin_mail_editor_view(request, vars, event, message_id=None):
                 else:
                     messages.error(request, 'Tuntematon toiminto.')
 
-                return redirect('labour_admin_mail_editor_view', event.slug, message.pk)
+                return redirect('admin_mail_editor_view', event.slug, message.pk)
 
             else:
                 messages.error(request, 'Ole hyvä ja tarkasta lomake.')

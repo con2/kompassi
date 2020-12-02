@@ -40,7 +40,7 @@ from .view_helpers import initialize_signup_forms
 
 @labour_admin_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
-def labour_admin_signup_view(request, vars, event, person_id):
+def admin_signup_view(request, vars, event, person_id):
     person = get_object_or_404(Person, pk=int(person_id))
     signup = get_object_or_404(Signup, person=person, event=event)
 
@@ -75,9 +75,9 @@ def labour_admin_signup_view(request, vars, event, person_id):
             messages.success(request, 'Tiedot tallennettiin.')
 
             if 'save-return' in request.POST:
-                return redirect('labour_admin_signups_view', event.slug)
+                return redirect('admin_signups_view', event.slug)
             else:
-                return redirect('labour_admin_signup_view', event.slug, person.pk)
+                return redirect('admin_signup_view', event.slug, person.pk)
         else:
             # XXX Restore state just for shows, suboptimal but
             signup._state_flags = old_state_flags

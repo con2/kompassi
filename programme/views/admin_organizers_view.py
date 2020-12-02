@@ -21,7 +21,7 @@ EXPORT_FORMATS = EXPORT_FORMATS + [
 
 @programme_admin_required
 @require_safe
-def programme_admin_organizers_view(request, vars, event, format='screen'):
+def admin_organizers_view(request, vars, event, format='screen'):
     programme_roles = (
         ProgrammeRole.objects.filter(programme__category__event=event)
         .select_related('person')

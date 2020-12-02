@@ -21,7 +21,7 @@ FakeSignup = namedtuple('FakeSignup', 'event')
 @labour_event_required
 @person_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
-def labour_survey_view(request, event, survey_slug):
+def survey_view(request, event, survey_slug):
     survey = get_object_or_404(Survey, slug=survey_slug, event=event)
     person = request.user.person
 

@@ -52,7 +52,7 @@
                 button.btn.btn-xs.btn-danger(type='submit', name='action', value='cancel-invitation:{{ invitation.id }}', title='{% trans "Cancel invitation" %}')
                   i.fa.fa-trash
                 a.btn.btn-xs.btn-default(
-                  href='{% url "programme_accept_invitation_view" event.slug invitation.code %}'
+                  href='{% url "programme:accept_invitation_view" event.slug invitation.code %}'
                   target='_blank'
                   title='{% trans "Invitation link. If the invitation e-mail does not get through due to eg. Microsoft, you can give this link to the invitee over eg. an instant messenger." %}'
                 )

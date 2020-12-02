@@ -31,7 +31,7 @@ logger = logging.getLogger('kompassi')
 @labour_admin_required
 @require_safe
 @api_view
-def labour_api_job_categories_view(request, vars, event):
+def api_job_categories_view(request, vars, event):
     return [
         jc.as_dict(include_requirements=True)
         for jc in JobCategory.objects.filter(event=event, app_label='labour')
@@ -41,7 +41,7 @@ def labour_api_job_categories_view(request, vars, event):
 @labour_admin_required
 @require_safe
 @api_view
-def labour_api_job_category_view(request, vars, event, job_category_slug):
+def api_job_category_view(request, vars, event, job_category_slug):
     return get_object_or_404(JobCategory, event=event, slug=job_category_slug).as_dict(
         include_jobs=True,
         include_shifts=True,
@@ -51,7 +51,7 @@ def labour_api_job_category_view(request, vars, event, job_category_slug):
 
 @labour_admin_required
 @api_view
-def labour_api_job_view(request, vars, event, job_category_slug, job_slug=None):
+def api_job_view(request, vars, event, job_category_slug, job_slug=None):
     job_category = get_object_or_404(JobCategory, event=event, slug=job_category_slug)
 
     if request.method == 'POST' and job_slug is None:
@@ -75,7 +75,7 @@ def labour_api_job_view(request, vars, event, job_category_slug, job_slug=None):
 
 @labour_admin_required
 @api_view
-def labour_api_shift_view(request, vars, event, job_category_slug, shift_id=None):
+def api_shift_view(request, vars, event, job_category_slug, shift_id=None):
     job_category = get_object_or_404(JobCategory, event=event, slug=job_category_slug)
 
     if request.method == 'POST' and shift_id is None:
@@ -100,7 +100,7 @@ def labour_api_shift_view(request, vars, event, job_category_slug, shift_id=None
 @labour_admin_required
 @require_POST
 @api_view
-def labour_api_set_job_requirements_view(request, vars, event, job_category_slug, job_slug):
+def api_set_job_requirements_view(request, vars, event, job_category_slug, job_slug):
     job_category = get_object_or_404(JobCategory, event=event, slug=job_category_slug)
     job = get_object_or_404(Job, job_category=job_category, slug=job_slug)
 

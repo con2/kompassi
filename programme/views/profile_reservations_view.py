@@ -11,7 +11,7 @@ from ..models import Programme
 
 
 @login_required
-def programme_profile_reservations_view(request):
+def profile_reservations_view(request):
     t = now()
     valid_tickets = Ticket.objects.valid().filter(user=request.user)
     past_tickets = Ticket.objects.filter(user=request.user).exclude(id__in=valid_tickets)

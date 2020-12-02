@@ -9,7 +9,7 @@ from ..models import Programme
 from ..proxies.paikkala_ticket import PaikkalaTicketCsvExportProxy
 
 @programme_admin_required
-def programme_admin_reservations_export_view(request, vars, event, programme_id):
+def admin_reservations_export_view(request, vars, event, programme_id):
     programme = get_object_or_404(Programme, id=int(programme_id))
     tickets = PaikkalaTicketCsvExportProxy.objects.filter(program__kompassi_programme=programme)
     timestamp = now().strftime('%Y%m%d%H%M%S')

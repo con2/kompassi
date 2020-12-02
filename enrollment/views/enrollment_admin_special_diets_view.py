@@ -6,7 +6,7 @@ from django.db.models import Count, Case, When
 from django.shortcuts import render, redirect
 from django.utils.translation import ugettext_lazy as _
 
-from labour.views.labour_admin_special_diets_view import (
+from labour.views.admin_special_diets_view import (
     NO_SPECIAL_DIET_REPLIES,
     SpecialDiets
 )

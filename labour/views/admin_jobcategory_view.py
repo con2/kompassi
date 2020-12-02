@@ -13,7 +13,7 @@ from ..forms import JobCategoryForm
 
 @labour_admin_required
 @require_http_methods(["GET", "HEAD", "POST"])
-def labour_admin_jobcategory_view(request, vars, event, job_category_slug=None):
+def admin_jobcategory_view(request, vars, event, job_category_slug=None):
     meta = event.labour_event_meta
 
     if job_category_slug is not None:
@@ -34,9 +34,9 @@ def labour_admin_jobcategory_view(request, vars, event, job_category_slug=None):
                 messages.success(request, _("The job category was saved."))
 
                 if action == 'save-return':
-                    return redirect('labour_admin_jobcategories_view', event.slug)
+                    return redirect('admin_jobcategories_view', event.slug)
                 elif action == 'save-edit':
-                    return redirect('labour_admin_jobcategory_view', event.slug, job_category.slug)
+                    return redirect('admin_jobcategory_view', event.slug, job_category.slug)
                 else:
                     raise NotImplementedError(action)
             else:
@@ -44,7 +44,7 @@ def labour_admin_jobcategory_view(request, vars, event, job_category_slug=None):
         elif action == 'remove' and job_category.can_remove:
             job_category.delete()
             messages.success(request, _("The job category was removed."))
-            return redirect('labour_admin_jobcategories_view', event.slug)
+            return redirect('admin_jobcategories_view', event.slug)
         else:
             messages.error(request, _("Invalid request."))
 

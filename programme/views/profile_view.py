@@ -6,7 +6,7 @@ from ..models import Programme
 
 
 @person_required
-def programme_profile_view(request):
+def profile_view(request):
     person = request.user.person
 
     future_programmes = Programme.get_future_programmes(person)
