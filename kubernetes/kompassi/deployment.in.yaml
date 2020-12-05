@@ -56,9 +56,5 @@ spec:
                   value: !Lookup ingress_public_hostnames[0]
             initialDelaySeconds: 30
             periodSeconds: 30
-          volumeMounts:
-            - mountPath: /usr/src/app/media
-              name: kompassi-media
-            - mountPath: /tmp
-              name: kompassi-temp
-      volumes: !Var kompassi_media_volumes_definition
+          volumeMounts: !Var kompassi_volume_mounts
+      volumes: !Var kompassi_volumes

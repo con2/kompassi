@@ -177,12 +177,26 @@ kompassi_environment:
       separator: ' '
 
 # Common volumes for kompassi, celery and nginx pods.
-kompassi_media_volume_mounts:
+kompassi_volume_mounts:
   - mountPath: /usr/src/app/media
     name: kompassi-media
   - mountPath: /tmp
     name: kompassi-temp
-kompassi_media_volumes_definition:
+  - mountPath: /id_rsa
+    name: kompassi-secret
+    subPath: sshPrivateKey
+  - mountPath: /known_hosts
+    name: kompassi-secret
+    subPath: sshKnownHosts
+kompassi_volumes:
+  - name: kompassi-secret
+    secret:
+      secretName: kompassi
+      items:
+        - key: sshPrivateKey
+          path: sshPrivateKey
+        - key: sshKnownHosts
+          path: sshKnownHosts
   - name: kompassi-temp
     emptyDir: {}
   - !If

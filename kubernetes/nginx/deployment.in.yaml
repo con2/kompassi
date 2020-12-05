@@ -22,4 +22,4 @@ spec:
           volumeMounts:
             - mountPath: /usr/share/nginx/html/media
               name: kompassi-media
-      volumes: !Var kompassi_media_volumes_definition
+      volumes: !Var kompassi_volumes
