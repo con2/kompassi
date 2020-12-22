@@ -52,7 +52,7 @@
     "mocha": "^7.0.0",
     "moment": "^2.24.0",
     "nib": "^1.1.2",
-    "node-notifier": "^6.0.0",
+    "node-notifier": "^8.0.1",
     "page": "^1.11.5",
     "postcss-normalize-url": "4.0.1",
     "rimraf": "^3.0.0",
