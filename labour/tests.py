@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from core.models import Person
+from access.models import CBACEntry
 
 from .models import LabourEventMeta, Qualification, JobCategory, Signup
 
@@ -13,14 +14,18 @@ class LabourEventAdminTest(TestCase):
         assert not labour_event_meta.is_user_admin(person.user)
 
         labour_event_meta.admin_group.user_set.add(person.user)
+        CBACEntry.ensure_admin_group_privileges_for_event(labour_event_meta.event)
 
         assert labour_event_meta.is_user_admin(person.user)
 
     def test_event_adminship_superuser(self):
+        """
+        Under CBAC, superusers are no longer event managers by default (they can sudo though).
+        """
         person, unused = Person.get_or_create_dummy(superuser=True)
         labour_event_meta, unused = LabourEventMeta.get_or_create_dummy()
 
-        assert labour_event_meta.is_user_admin(person.user)
+        assert not labour_event_meta.is_user_admin(person.user)
 
 
 class QualificationTest(TestCase):
