@@ -217,7 +217,7 @@ class Event(models.Model):
     enrollment_event_meta = event_meta_property('enrollment')
     intra_event_meta = event_meta_property('intra')
 
-    def app_event_meta(self, app_label):
+    def get_app_event_meta(self, app_label: str):
         return getattr(self, '{}_event_meta'.format(app_label))
 
     def as_dict(self, format='default'):
@@ -243,3 +243,13 @@ class Event(models.Model):
             )
         else:
             raise NotImplementedError(format)
+
+    def get_claims(self, **extra_claims):
+        """
+        Shorthand for commonly used CBAC claims.
+        """
+        return dict(
+            organization=self.organization.slug,
+            event=self.slug,
+            **extra_claims
+        )

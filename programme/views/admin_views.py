@@ -30,7 +30,7 @@ logger = logging.getLogger('kompassi')
 
 
 @programme_admin_required
-def programme_admin_view(request, vars, event, format='screen'):
+def admin_view(request, vars, event, format='screen'):
     programmes = (
         Programme.objects.filter(category__event=event)
         .select_related('category__event')
@@ -137,7 +137,7 @@ def programme_admin_view(request, vars, event, format='screen'):
 
 @programme_admin_required
 @require_safe
-def programme_admin_special_view(request, vars, event):
+def admin_special_view(request, vars, event):
     from .public_views import actual_special_view
 
     return actual_special_view(
@@ -150,7 +150,7 @@ def programme_admin_special_view(request, vars, event):
 
 
 @programme_admin_required
-def programme_admin_email_list_view(request, vars, event):
+def admin_email_list_view(request, vars, event):
     addresses = (
         Person.objects.filter(programme__category__event=event)
         .order_by('email')

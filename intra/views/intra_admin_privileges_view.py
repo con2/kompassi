@@ -6,7 +6,15 @@ from core.utils import initialize_form
 
 from ..forms import PrivilegesForm
 from ..helpers import intra_admin_required
-from ..models.intra_event_meta import APP_NAMES
+
+
+APP_NAMES = dict(
+    labour=_('Volunteers'),
+    programme=_('Programme'),
+    tickets=_('Tickets'),
+    badges=_('Badges'),
+    intra=_('Intra'),
+)
 
 
 @intra_admin_required
@@ -21,8 +29,7 @@ def intra_admin_privileges_view(request, vars, event):
 
     if request.method == 'POST':
         if all(form.is_valid() for form in privileges_forms):
-            for form in privileges_forms:
-                form.save()
+            PrivilegesForm.save(privileges_forms)
             messages.success(request, _('The privileges were updated.'))
         else:
             messages.error(request, _('Please check the form.'))

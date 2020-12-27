@@ -1,15 +1,18 @@
-version: '2'
+version: '2.2'
 services:
   test:
     build: .
+    # NOTE: do not use entrypoint as it sets BROKER_URL making Kompassi expect there is a background worker, hanging tests
     entrypoint: []
-    command: python manage.py test --keepdb
+    command: scripts/wait-for-it.sh -s -t 60 postgres:5432 -- pytest --reuse-db
+    init: true
     links:
       # - rabbitmq
       - postgres
       # - memcache
     volumes:
       - .:/usr/src/app
+      - test-cache:/usr/src/app/.pytest_cache
     environment:
       DEBUG: 1
       DATABASE_URL: psql://kompassi:secret@postgres/kompassi
@@ -17,13 +20,16 @@ services:
       # CACHE_URL: memcache://memcache
       ALLOWED_HOSTS: '*'
   postgres:
-    image: postgres
+    # image: postgres
+    build: ./kompassi/sql/
+    init: true
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: kompassi
       POSTGRES_PASSWORD: secret
-      POSTGRES_DB: kompassi
+      POSTGRES_DB: test_kompassi
+
 volumes:
-  postgres-data:
-    driver: local
+  test-cache: {}
+  postgres-data: {}

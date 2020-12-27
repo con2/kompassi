@@ -30,7 +30,6 @@ class Setup(object):
         self.setup_intra()
         self.setup_tickets()
         self.setup_programme()
-        self.setup_payments()
         self.setup_badges()
 
     def setup_core(self):
@@ -723,9 +722,6 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
                 product.limit_groups.set(limit_groups)
                 product.save()
 
-    def setup_payments(self):
-        from payments.models import PaymentsEventMeta
-        PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta

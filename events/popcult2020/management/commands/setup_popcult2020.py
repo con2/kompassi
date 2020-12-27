@@ -30,7 +30,6 @@ class Setup(object):
         self.setup_badges()
         self.setup_programme()
         self.setup_tickets()
-        self.setup_payments()
         self.setup_intra()
 
     def setup_core(self):
@@ -354,9 +353,6 @@ class Setup(object):
                 ),
             )
 
-    def setup_payments(self):
-        from payments.models import PaymentsEventMeta
-        PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team

@@ -29,7 +29,6 @@ class Setup(object):
         self.setup_labour()
         self.setup_badges()
         self.setup_tickets()
-        self.setup_payments()
 
     def setup_core(self):
         from core.models import Venue, Event, Organization
@@ -329,9 +328,6 @@ class Setup(object):
                 product.limit_groups.set(limit_groups)
                 product.save()
 
-    def setup_payments(self):
-        from payments.models import PaymentsEventMeta
-        PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
 
 class Command(BaseCommand):

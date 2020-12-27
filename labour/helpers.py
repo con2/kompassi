@@ -3,25 +3,23 @@ from functools import wraps
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 
+from access.cbac import default_cbac_required
 from core.models import Event
-from core.utils import login_redirect
 
-from .models import Signup
-from .views.labour_admin_menu_items import labour_admin_menu_items
+from .views.admin_menu_items import labour_admin_menu_items
 
 
 def labour_admin_required(view_func):
     @wraps(view_func)
-    def wrapper(request, event_slug, *args, **kwargs):
-        event = get_object_or_404(Event, slug=event_slug)
+    @default_cbac_required
+    def wrapper(request, *args, **kwargs):
+        kwargs.pop('event_slug')
+        event = request.event
         meta = event.labour_event_meta
 
         if not meta:
             messages.error(request, "Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
             return redirect('core_event_view', event.slug)
-
-        if not event.labour_event_meta.is_user_admin(request.user):
-            return login_redirect(request)
 
         vars = dict(
             event=event,

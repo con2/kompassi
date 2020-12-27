@@ -6,7 +6,7 @@ msgstr "Linkki videotallenteeseen ohjelmasta ulkoisessa videopalvelussa kuten Yo
 msgid "A reference to the form class that implements the form. Example: hitpoint2017.forms:RolePlayingGameForm"
 msgstr "Viittaus lomakkeen toteuttavaan luokkaan. Esimerkki: hitpoint2017.forms:RpgForm"
 
-#: templates/programme_admin_detail_views/buttons.pug templates/programme_profile_detail_view.pug
+#: templates/admin_detail_views/buttons.pug templates/programme_profile_detail_view.pug
 msgid "Abandon changes and return"
 msgstr "Hylkää muutokset ja palaa"
 
@@ -42,11 +42,11 @@ msgstr "Käyttöaika alkaa"
 msgid "Active until"
 msgstr "Käyttöaika päättyy"
 
-#: templates/programme_admin_detail_views/freeform_host_modal.pug templates/programme_admin_detail_views/hosts_tab.pug
+#: templates/admin_detail_views/freeform_host_modal.pug templates/admin_detail_views/hosts_tab.pug
 msgid "Add free-form organizer"
 msgstr "Lisää vapaamuotoinen ohjelmanjärjestäjä"
 
-#: views/programme_admin_invitations_view.py
+#: views/admin_invitations_view.py
 msgid "All pending invitations were cancelled."
 msgstr "Kaikki avoimet kutsut on peruutettu."
 
@@ -94,11 +94,11 @@ msgstr "Et voi antaa palautetta omasta ohjelmanumerostasi anonyymisti."
 msgid "By clearing this tick box you can hide an abusive comment from the site."
 msgstr "Poistamalla valinnan tästä voit piilottaa pahantahtoisen kommentin sivustolta."
 
-#: templates/programme_admin_detail_views/change_host_role_modals.pug templates/programme_admin_detail_views/change_invitation_role_modals.pug templates/programme_admin_detail_views/freeform_host_modal.pug templates/programme_admin_detail_views/invitation_modal.pug
+#: templates/admin_detail_views/change_host_role_modals.pug templates/admin_detail_views/change_invitation_role_modals.pug templates/admin_detail_views/freeform_host_modal.pug templates/admin_detail_views/invitation_modal.pug
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug
+#: templates/admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug
 msgid "Cancel invitation"
 msgstr "Peruuta kutsu"
 
@@ -110,15 +110,15 @@ msgstr "Peruutettu"
 msgid "Cancelled and rejected programmes"
 msgstr "Peruutetut ja hylätyt ohjelmanumerot"
 
-#: templates/programme_admin_detail_views/change_host_role_modals.pug templates/programme_admin_detail_views/change_invitation_role_modals.pug
+#: templates/admin_detail_views/change_host_role_modals.pug templates/admin_detail_views/change_invitation_role_modals.pug
 msgid "Change role"
 msgstr "Vaihda roolia"
 
-#: templates/programme_admin_detail_views/change_host_role_modals.pug
+#: templates/admin_detail_views/change_host_role_modals.pug
 msgid "Change role of accepted host"
 msgstr "Vaihda ohjelmanjärjestäjän roolia"
 
-#: templates/programme_admin_detail_views/change_invitation_role_modals.pug
+#: templates/admin_detail_views/change_invitation_role_modals.pug
 msgid "Change role of invited host"
 msgstr "Vaihda ohjelmanjärjestäjäkutsun roolia"
 
@@ -138,7 +138,7 @@ msgstr "Tietokoneen käyttö"
 msgid "Contact information"
 msgstr "Yhteystiedot"
 
-#: models/programme.py templates/programme_admin_detail_views/internal_tab.pug
+#: models/programme.py templates/admin_detail_views/internal_tab.pug
 msgid "Created at"
 msgstr "Luontiaika"
 
@@ -166,7 +166,7 @@ msgstr "Hylkää muutokset ja palaa ohjelmakarttaan"
 msgid "Do you have tech requirements that are not covered by the previous questions?"
 msgstr "Onko ohjelmallasi tekniikkatarpeita joita edeltävät kysymykset eivät kata?"
 
-#: templates/programme_admin_detail_views/change_invitation_role_modals.pug templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug templates/core_contact_information_panel.pug
+#: templates/admin_detail_views/change_invitation_role_modals.pug templates/admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug templates/core_contact_information_panel.pug
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
@@ -206,7 +206,7 @@ msgstr "Vie"
 msgid "Extra invites"
 msgstr "Lisäkutsut"
 
-#: admin.py templates/programme_admin_feedback_view.pug templates/programme_feedback_table.pug views/programme_admin_detail_view.py
+#: admin.py templates/programme_admin_feedback_view.pug templates/programme_feedback_table.pug views/admin_detail_view.py
 msgid "Feedback"
 msgstr "Palaute"
 
@@ -214,7 +214,7 @@ msgstr "Palaute"
 msgid "Filter organizers"
 msgstr "Suodata ohjelmanjärjestäjiä"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
+#: templates/admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
@@ -222,7 +222,7 @@ msgstr "Etunimi"
 msgid "Format: YYYY-MM-DD HH:MM:SS"
 msgstr "Muoto: YYYY-MM-DD HH:MM:SS"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
+#: templates/admin_detail_views/hosts_tab.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Free-form organizer"
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 
@@ -238,7 +238,7 @@ msgstr "Koko leveys"
 msgid "Future programmes"
 msgstr "Tulevat ohjelmanumerot"
 
-#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_info_fragment.pug
+#: templates/admin_detail_views/feedback_tab.pug templates/programme_info_fragment.pug
 msgid "Give feedback"
 msgstr "Anna palautetta"
 
@@ -275,7 +275,7 @@ msgstr "Piilota valitut palautteet"
 msgid "Hosts can only be invited by the programme manager. If you have agreed with the programme manager to include people who are not listed here, please contact the programme manager. In order to receive speaker benefits, all hosts of the programme must be listed here."
 msgstr "Vain ohjelmavastaava voi kutsua ohjelmanjärjestäjiä. Mikäli olet sopinut ohjelmavastaavan kanssa useammasta järjestäjästä ohjelmaasi eikä heitä ole listattu tähän, ole hyvä ja ota yhteyttä ohjelmavastaavaan. Saadakseen ohjelmanjärjestäjän edut kaikkien ohjelmanjärjestäjien tulee olla listattu tässä."
 
-#: templates/programme_admin_detail_views/hosts_tab.pug
+#: templates/admin_detail_views/hosts_tab.pug
 msgid "Hosts shown in <i>italic</i> have not yet accepted their invitations."
 msgstr "<i>Kursivoidut</i> ohjelmanjärjestäjät eivät ole vielä hyväksyneet kutsujaan."
 
@@ -343,7 +343,7 @@ msgstr "Tässä kontekstissa fyysisellä fyysinen pelaaminen voi tarkoittaa esim
 msgid "Information about yourself"
 msgstr "Tietoja itsestäsi"
 
-#: templates/programme_admin_detail_views/internal_tab.pug views/programme_admin_detail_view.py
+#: templates/admin_detail_views/internal_tab.pug views/admin_detail_view.py
 msgid "Internal information"
 msgstr "Sisäiset tiedot"
 
@@ -355,15 +355,15 @@ msgstr "Sisäiset muistiinpanot"
 msgid "Internal programme idea"
 msgstr "Ideoitu sisäisesti"
 
-#: views/programme_admin_detail_view.py
+#: views/admin_detail_view.py
 msgid "Invalid action."
 msgstr "Kelvoton toiminto."
 
-#: views/programme_admin_invitations_view.py
+#: views/admin_invitations_view.py
 msgid "Invalid request."
 msgstr "Kelvoton pyyntö."
 
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug
+#: templates/admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug
 msgid "Invitation link. If the invitation e-mail does not get through due to eg. Microsoft, you can give this link to the invitee over eg. an instant messenger."
 msgstr "Kutsun linkki. Jos kutsusähköposti ei syystä tai toisesta (esim. Microsoft) mene läpi, voit antaa tämän linkin suoraan kutsutulle esim. pikaviestisovelluksen kautta."
 
@@ -371,7 +371,7 @@ msgstr "Kutsun linkki. Jos kutsusähköposti ei syystä tai toisesta (esim. Micr
 msgid "Invitation to organize programme"
 msgstr "Kutsu ohjelmanjärjestäjäksi"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_detail_views/invitation_modal.pug
+#: templates/admin_detail_views/hosts_tab.pug templates/admin_detail_views/invitation_modal.pug
 msgid "Invite host"
 msgstr "Kutsu ohjelmanjärjestäjä"
 
@@ -383,7 +383,7 @@ msgstr "Kutsun luontiaika"
 msgid "Invited by"
 msgstr "Kutsuja"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug
+#: templates/admin_detail_views/hosts_tab.pug
 msgid "Invites"
 msgstr "Kutsut"
 
@@ -447,7 +447,7 @@ msgstr "Ohjelmanumeroni ei sisällä tekijänoikeudella suojattua ääntä tai v
 msgid "My programme may be recorded and published"
 msgstr "Ohjelmanumeroni saa videoida ja julkaista"
 
-#: templates/programme_admin_detail_views/change_host_role_modals.pug
+#: templates/admin_detail_views/change_host_role_modals.pug
 msgid "Name"
 msgstr "Nimi"
 
@@ -467,7 +467,7 @@ msgstr "Uusi ohjelmanumero"
 msgid "Nick"
 msgstr "Nick"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
+#: templates/admin_detail_views/hosts_tab.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Nick name"
 msgstr "Nick"
 
@@ -479,7 +479,7 @@ msgstr "Ei"
 msgid "No computer required"
 msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
 
-#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug
+#: templates/admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug
 msgid "No feedback."
 msgstr "Tämä ohjelmanumero ei ole vielä saanut palautetta."
 
@@ -516,7 +516,7 @@ msgstr "Tarjoa ohjelmanumeroa"
 msgid "Offer received"
 msgstr "Ohjelmatarjous vastaanotettu"
 
-#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug
+#: templates/admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug
 #, python-format
 msgid "One feedback message."
 msgid_plural "%(num_feedback_messages)s feedback messages."
@@ -530,7 +530,7 @@ msgid_plural "%(num_organizers)s programme hosts (total %(num_total_organizers)s
 msgstr[0] "Näkyvissä yksi ohjelmanjärjestäjä (yhteensä %(num_total_organizers)s)."
 msgstr[1] "Näkyvissä %(num_organizers)s ohjelmanjärjestäjää (yhteensä %(num_total_organizers)s)."
 
-#: views/programme_profile_feedback_view.py
+#: views/profile_feedback_view.py
 msgid "Only an organizer of the programme may view its feedback."
 msgstr "Vain ohjelmanjärjestäjä voi nähdä ohjelmansa palautteen."
 
@@ -570,7 +570,7 @@ msgstr "Menneet ohjelmanumerot"
 msgid "Personnel class"
 msgstr "Henkilöstöluokka"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/core_contact_information_panel.pug
+#: templates/admin_detail_views/hosts_tab.pug templates/core_contact_information_panel.pug
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
@@ -582,7 +582,7 @@ msgstr "Ohjelman valokuvaus"
 msgid "Please bear in mind that only programmes that are in the \"Published\" state are shown in the schedule."
 msgstr "Muistathan, että ohjelmakartassa näytetään vain ohjelmanumerot jotka ovat Julkaistu-tilassa."
 
-#: views/programme_accept_invitation_view.py views/programme_admin_create_view.py views/programme_admin_detail_view.py views/programme_feedback_view.py views/programme_offer_view.py
+#: views/accept_invitation_view.py views/admin_create_view.py views/admin_detail_view.py views/feedback_view.py views/offer_view.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
@@ -630,11 +630,11 @@ msgstr "Järjestys"
 msgid "Programme"
 msgstr "Ohjelma"
 
-#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug views/programme_admin_menu_items.py
+#: templates/admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug views/programme_admin_menu_items.py
 msgid "Programme feedback"
 msgstr "Ohjelmapalaute"
 
-#: templates/programme_admin_detail_views/programme_tab.pug views/programme_admin_detail_view.py
+#: templates/admin_detail_views/programme_tab.pug views/admin_detail_view.py
 msgid "Programme form"
 msgstr "Ohjelmalomake"
 
@@ -642,7 +642,7 @@ msgstr "Ohjelmalomake"
 msgid "Programme host"
 msgstr "Ohjelmanjärjestäjä"
 
-#: models/programme_role.py templates/programme_accept_invitation_view.pug templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/programme_offer_form_view.pug templates/programme_profile_detail_view.pug views/programme_admin_detail_view.py views/programme_admin_menu_items.py
+#: models/programme_role.py templates/programme_accept_invitation_view.pug templates/admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/programme_offer_form_view.pug templates/programme_profile_detail_view.pug views/admin_detail_view.py views/programme_admin_menu_items.py
 msgid "Programme hosts"
 msgstr "Ohjelmanjärjestäjät"
 
@@ -690,11 +690,11 @@ msgstr "Videointilupa"
 msgid "Rejected"
 msgstr "Hylätty"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug
+#: templates/admin_detail_views/hosts_tab.pug
 msgid "Remove free-form host"
 msgstr "Poista vapaamuotoinen ohjelmanjärjestäjä"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug
+#: templates/admin_detail_views/hosts_tab.pug
 msgid "Remove host"
 msgstr "Poista ohjelmanjärjestäjä"
 
@@ -710,7 +710,7 @@ msgstr "Palauta valitut palautteet näkyviin"
 msgid "Revoke all open invitations"
 msgstr "Peru kaikki avoimet kutsut"
 
-#: models/invitation.py templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
+#: models/invitation.py templates/admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Role"
 msgstr "Rooli"
 
@@ -722,11 +722,11 @@ msgstr "Sali"
 msgid "Room requirements"
 msgstr "Tilatarpeet"
 
-#: templates/programme_admin_create_view.pug templates/programme_admin_detail_view.pug templates/programme_admin_detail_views/buttons.pug
+#: templates/programme_admin_create_view.pug templates/programme_admin_detail_view.pug templates/admin_detail_views/buttons.pug
 msgid "Save and continue"
 msgstr "Tallenna ja jatka"
 
-#: templates/programme_admin_cold_offers_view.pug templates/programme_admin_detail_views/buttons.pug templates/programme_admin_publish_view.pug templates/programme_profile_detail_view.pug
+#: templates/programme_admin_cold_offers_view.pug templates/admin_detail_views/buttons.pug templates/programme_admin_publish_view.pug templates/programme_profile_detail_view.pug
 msgid "Save and return"
 msgstr "Tallenna ja palaa"
 
@@ -734,7 +734,7 @@ msgstr "Tallenna ja palaa"
 msgid "Save changes"
 msgstr "Tallenna muutokset"
 
-#: templates/programme_admin_detail_views/schedule_tab.pug views/programme_admin_detail_view.py
+#: templates/admin_detail_views/schedule_tab.pug views/admin_detail_view.py
 msgid "Schedule information"
 msgstr "Ohjelmakarttatiedot"
 
@@ -746,7 +746,7 @@ msgstr "Ohjelmakartan asettelu"
 msgid "Select the form that will be used to edit the information of this programme. If this field is left blank, the default form will be used. Some events do not offer a choice of different forms, in which case this field will not have options and the default form will always be used. "
 msgstr "Valitse lomake, jota käytetään ohjelmanumeron tietojen syöttämiseen. Mikäli tämä kenttä jätetään tyhjäksi, käytetään oletuslomaketta. Jotkin tapahtumat eivät tarjoa valittavia lomakkeita lainkaan, jolloin tämä kenttä ei tarjoa vaihtoehtoja ja oletuslomaketta käytetään joka tapauksessa."
 
-#: templates/programme_admin_detail_views/invitation_modal.pug
+#: templates/admin_detail_views/invitation_modal.pug
 msgid "Send invitation"
 msgstr "Lähetä kutsu"
 
@@ -798,7 +798,7 @@ msgstr "Tila"
 msgid "Submit feedback"
 msgstr "Lähetä palaute"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
+#: templates/admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -810,15 +810,15 @@ msgstr "tägit"
 msgid "Text"
 msgstr "Teksti"
 
-#: views/programme_accept_invitation_view.py
+#: views/accept_invitation_view.py
 msgid "Thank you for accepting the invitation. You can change the information later from your profile."
 msgstr "Kiitos kutsun hyväksymisestä. Voit muuttaa tietoja myöhemmin profiilisi kautta."
 
-#: views/programme_offer_view.py
+#: views/offer_view.py
 msgid "Thank you for offering your programme. The programme managers will be in touch."
 msgstr "Kiitos ohjelmatarjouksesta. Ohjelmavastaavat ottavat sinuun yhteyttä."
 
-#: views/programme_feedback_view.py
+#: views/feedback_view.py
 msgid "Thank you for your feedback."
 msgstr "Kiitos palautteesasi!"
 
@@ -826,7 +826,7 @@ msgstr "Kiitos palautteesasi!"
 msgid "The IP address is only visible in the admin interface"
 msgstr "IP-osoite näkyy vain hallintakäyttöliittymässä."
 
-#: views/programme_admin_detail_view.py views/programme_profile_detail_view.py
+#: views/admin_detail_view.py views/profile_detail_view.py
 msgid "The changes were saved."
 msgstr "Muutokset tallennettiin."
 
@@ -834,11 +834,11 @@ msgstr "Muutokset tallennettiin."
 msgid "The closing time must be after the opening time."
 msgstr "Sulkeutumisajan täytyy olla avautumisajan jälkeen."
 
-#: views/programme_admin_cold_offers_view.py
+#: views/admin_cold_offers_view.py
 msgid "The cold offer period was ended."
 msgstr "Ohjelmahaku suljettiin."
 
-#: views/programme_admin_cold_offers_view.py
+#: views/admin_cold_offers_view.py
 msgid "The cold offer period was started."
 msgstr "Ohjelmahaku avattiin."
 
@@ -858,15 +858,15 @@ msgstr "Tapahtuma ottaa parhaillaan vastaan kylmiä ohjelmatarjouksia."
 msgid "The event is currently not accepting cold offers."
 msgstr "Tapahtuma ei tällä hetkellä ota vastaan kylmiä ohjelmatarjouksia."
 
-#: views/programme_admin_cold_offers_view.py
+#: views/admin_cold_offers_view.py
 msgid "The event was already accepting cold offers."
 msgstr "Tapahtuman ohjelmahaku oli jo käynnissä."
 
-#: views/programme_offer_view.py
+#: views/offer_view.py
 msgid "The form you specified is not currently open for cold offers. Please contact the programme managers directly."
 msgstr "Tämä tapahtuma ei tällä hetkellä ota vastaan ohjelmatarjouksia tämän sivuston kautta. Ole hyvä ja ota suoraan yhteyttä ohjelmavastaaviin."
 
-#: views/programme_admin_detail_view.py
+#: views/admin_detail_view.py
 msgid "The freeform organizer was successfully added."
 msgstr "Vapaamuotoinen ohjelmanjärjestäjä lisätty."
 
@@ -878,19 +878,19 @@ msgstr "Ohjelmanjärjestäjä voi lähettää näin monta kutsua ohjelmansa muil
 msgid "The host that spawned this invitation. Sired invitations consume the extra invite quota of the sire."
 msgstr "Ohjelmanjärjestäjä joka tämän kutsun loi. Ohjelmanjärjestäjän lähettämät lisäkutsut kuluttavat lisäkutsujen kiintiötä."
 
-#: views/programme_admin_detail_view.py
+#: views/admin_detail_view.py
 msgid "The host was removed."
 msgstr "Ohjelmanjärjestäjä poistettu."
 
-#: views/programme_admin_detail_view.py
+#: views/admin_detail_view.py
 msgid "The host was successfully invited."
 msgstr "Kutsu lähetettiin onnistuneesti."
 
-#: views/programme_accept_invitation_view.py
+#: views/accept_invitation_view.py
 msgid "The invitation is no longer valid."
 msgstr "Kutsu ei ole enää voimassa."
 
-#: views/programme_admin_detail_view.py views/programme_admin_invitations_view.py
+#: views/admin_detail_view.py views/admin_invitations_view.py
 msgid "The invitation was cancelled."
 msgstr "Kutsu peruutettu."
 
@@ -916,7 +916,7 @@ msgstr[1] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi %(num_invite)s mu
 msgid "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details."
 msgstr "Ohjelmavastaava on kutsunut sinut järjestämään ohjelmanumeron, joka on yksilöity alla. Saadaksesi ohjelmanjärjestäjän edut sinun tulee hyväksyä tämä kutsu ja täyttää pyydetyt lisätiedot."
 
-#: views/programme_admin_create_view.py
+#: views/admin_create_view.py
 msgid "The programme was created."
 msgstr "Ohjelmanumero luotiin."
 
@@ -924,11 +924,11 @@ msgstr "Ohjelmanumero luotiin."
 msgid "The programmes in the state \"Published\" will be visible to the general public, if the schedule has already been published."
 msgstr "Tilassa ”Julkaistu” olevat ohjelmanumerot näkyvät yleisölle, mikäli ohjelmakartta on julkaistu."
 
-#: views/programme_admin_publish_view.py
+#: views/admin_publish_view.py
 msgid "The publication time was saved."
 msgstr "Julkaisuaika tallennettiin."
 
-#: views/programme_admin_detail_view.py
+#: views/admin_detail_view.py
 msgid "The role was changed."
 msgstr "Rooli vaihdettiin."
 
@@ -940,19 +940,19 @@ msgstr "Ohjelmakartta on tällä hetkellä julkinen."
 msgid "The schedule is not currently published."
 msgstr "Ohjelmakartta ei ole tällä hetkellä julkinen."
 
-#: views/programme_admin_publish_view.py
+#: views/admin_publish_view.py
 msgid "The schedule was already public."
 msgstr "Ohjelmakartta oli jo julkinen."
 
-#: views/programme_admin_publish_view.py
+#: views/admin_publish_view.py
 msgid "The schedule was published."
 msgstr "Ohjelmakartta julkaistiin."
 
-#: views/programme_admin_publish_view.py
+#: views/admin_publish_view.py
 msgid "The schedule was un-published."
 msgstr "Ohjelmakartta palautettiin ei-julkaistuksi."
 
-#: views/programme_admin_cold_offers_view.py
+#: views/admin_cold_offers_view.py
 msgid "The times for cold offer period were saved."
 msgstr "Ohjelmahaun avautumis- ja sulkeutumisajat tallennettiin."
 
@@ -964,7 +964,7 @@ msgstr "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelm
 msgid "This event is currently open for programme offers. Please begin by selecting below the type of programme you are offering."
 msgstr "Tämä tapahtuma ottaa parhaillaan vastaan ohjelmatarjouksia. Aloita valitsemalla tarjottavan ohjelmanumeron tyyppi alta."
 
-#: views/programme_offer_view.py
+#: views/offer_view.py
 msgid "This event is not currently accepting offers via this site. Please contact the programme managers directly."
 msgstr "Tämä tapahtuma ei tällä hetkellä ota vastaan ohjelmatarjouksia tämän sivuston kautta. Ole hyvä ja ota suoraan yhteyttä ohjelmavastaaviin."
 
@@ -1020,7 +1020,7 @@ msgstr "Ellet päätä jättää palautettasi anonyymisti, nimesi ja sähköpost
 msgid "Update profile..."
 msgstr "Päivitä profiilia..."
 
-#: models/programme.py templates/programme_admin_detail_views/internal_tab.pug
+#: models/programme.py templates/admin_detail_views/internal_tab.pug
 msgid "Updated at"
 msgstr "Päivitysaika"
 
@@ -1116,15 +1116,15 @@ msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
 msgid "You can edit the details of this programme until it is published in the schedule."
 msgstr "Voit muokata tämän ohjelmanumeron tietoja kunnes se on julkaistu ohjelmakarttaan."
 
-#: views/programme_feedback_view.py
+#: views/feedback_view.py
 msgid "You cannot leave anonymous feedback about your own programme."
 msgstr "Et voi jättää anonyymiä palautetta omasta ohjelmastasi."
 
-#: views/programme_accept_invitation_view.py
+#: views/accept_invitation_view.py
 msgid "You have already accepted this invitation. You can edit the programme below."
 msgstr "Olet jo ottanut tämän kutsun vastaan. Voit muokata ohjelmanumeron tietoja alla."
 
-#: views/programme_accept_invitation_view.py
+#: views/accept_invitation_view.py
 msgid "You have already accepted this invitation. You can no longer edit the programme."
 msgstr "Olet jo ottanut tämän kutsun vastaan. Et voi enää muokata ohjelmanumeron tietoja."
 

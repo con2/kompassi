@@ -2,9 +2,12 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.urls import path
 from django.views.generic import RedirectView
 from django.views.i18n import set_language
 
+
+handler403 = 'access.views.permission_denied_view'
 
 urlpatterns = [
     url(r'', include('core.urls')),
@@ -38,7 +41,7 @@ for app_name in [
     'metrics',
 ]:
     if app_name in settings.INSTALLED_APPS:
-        urlpatterns.append(url(r'', include('{app_name}.urls'.format(app_name=app_name))))
+        urlpatterns.append(path(r'', include(f'{app_name}.urls')))
 
 if settings.DEBUG:
     urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))

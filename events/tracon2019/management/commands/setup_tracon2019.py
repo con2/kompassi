@@ -23,7 +23,6 @@ class Setup(object):
         self.setup_labour()
         self.setup_badges()
         self.setup_tickets()
-        self.setup_payments()
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
@@ -428,9 +427,6 @@ class Setup(object):
             meta.receipt_footer = "Tracon ry / Y-tunnus 2886274-5 / liput@tracon.fi"
             meta.save()
 
-    def setup_payments(self):
-        from payments.models import PaymentsEventMeta
-        PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
     def setup_programme(self):
         from core.utils import full_hours_between
@@ -703,8 +699,8 @@ class Setup(object):
             'osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen '
             '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
         )
-        outward_coach_url = reverse('paikkala_reservation_view', args=(self.event.slug, outward_coach.id))
-        return_coach_url = reverse('paikkala_reservation_view', args=(self.event.slug, return_coach.id))
+        outward_coach_url = reverse('programme:paikkala_reservation_view', args=(self.event.slug, outward_coach.id))
+        return_coach_url = reverse('programme:paikkala_reservation_view', args=(self.event.slug, return_coach.id))
         kaatoilmo, unused = Survey.objects.get_or_create(
             event=self.event,
             slug='kaatoilmo',
@@ -718,7 +714,7 @@ class Setup(object):
                     '<strong>HUOM!</strong> Paikat kaatobusseihin varataan erikseen. Varaa paikkasi '
                     f'<a href="{outward_coach_url}" target="_blank">menobussiin täältä</a> ja '
                     f'<a href="{return_coach_url}" target="_blank">paluubussiin täältä</a>. '
-                    f'Näet bussivarauksesi <a href="{reverse("programme_profile_reservations_view")}" target="_blank">paikkalippusivulta</a>.'
+                    f'Näet bussivarauksesi <a href="{reverse("programme:profile_reservations_view")}" target="_blank">paikkalippusivulta</a>.'
                 ),
                 override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
                 form_class_path='events.tracon2019.forms:AfterpartyParticipationSurvey',

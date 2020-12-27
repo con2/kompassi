@@ -30,6 +30,7 @@ phonenumberslite
 Pillow
 psycopg2
 pypugjs
+pytest-django
 python-dateutil
 python-memcached
 PyYAML

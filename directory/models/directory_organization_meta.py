@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models import GroupManagementMixin
+from core.models.group_management_mixin import GroupManagementMixin
 from core.utils import get_objects_within_period
 
 

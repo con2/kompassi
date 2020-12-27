@@ -1,17 +1,17 @@
 div
-  include labour_admin_roster_views/NoScript
-  include labour_admin_roster_views/TooSmall
+  include admin_roster_views/NoScript
+  include admin_roster_views/TooSmall
 
   .hidden(data-bind="css: {hidden: false}")
-    include labour_admin_roster_views/NotFound
+    include admin_roster_views/NotFound
 
     .kompassi-frozen-table-container
       table.table.table-striped.table-bordered
-        include labour_admin_roster_views/Header
+        include admin_roster_views/Header
 
-        include labour_admin_roster_views/Overview
-        include labour_admin_roster_views/JobCategory
+        include admin_roster_views/Overview
+        include admin_roster_views/JobCategory
 
-    include labour_admin_roster_views/JobModal
-    include labour_admin_roster_views/RequirementModal
-    include labour_admin_roster_views/ShiftModal
+    include admin_roster_views/JobModal
+    include admin_roster_views/RequirementModal
+    include admin_roster_views/ShiftModal

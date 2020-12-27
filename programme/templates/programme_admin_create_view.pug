@@ -13,5 +13,5 @@ block admin_content
           {% crispy form %}
         .panel-footer.clearfix
           .btn-group.pull-right
-            a(href='{% url "programme_admin_view" event.slug %}').btn.btn-default {% trans "Discard changes and return to the list" %}
+            a(href='{% url "programme:admin_view" event.slug %}').btn.btn-default {% trans "Discard changes and return to the list" %}
             button(type='submit', name='save', value='save').btn.btn-success {% trans "Save and continue" %}

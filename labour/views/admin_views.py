@@ -38,7 +38,7 @@ from .view_helpers import initialize_signup_forms
 
 
 @labour_admin_required
-def labour_admin_dashboard_view(request, vars, event):
+def admin_dashboard_view(request, vars, event):
     vars.update(
         # XXX state overhaul
         num_pending=event.signup_set.filter(is_active=True, time_accepted__isnull=True).count(),
@@ -51,7 +51,7 @@ def labour_admin_dashboard_view(request, vars, event):
 
 
 @labour_admin_required
-def labour_admin_roster_view(request, vars, event, job_category_slug=None):
+def admin_roster_view(request, vars, event, job_category_slug=None):
     if job_category_slug is not None:
         get_object_or_404(JobCategory, event=event, slug=job_category_slug)
 
@@ -66,8 +66,8 @@ def labour_admin_roster_view(request, vars, event, job_category_slug=None):
         ],
         lang='fi', # XXX I18N hardcoded
         urls=dict(
-            base=url('labour_admin_roster_view', event.slug),
-            jobCategoryApi=url('labour_api_job_categories_view', event.slug),
+            base=url('labour:admin_roster_view', event.slug),
+            jobCategoryApi=url('labour:api_job_categories_view', event.slug),
         )
     )
 
@@ -81,7 +81,7 @@ def labour_admin_roster_view(request, vars, event, job_category_slug=None):
 
 @labour_admin_required
 @require_safe
-def labour_admin_mail_view(request, vars, event):
+def admin_mail_view(request, vars, event):
     from mailings.models import Message
 
     messages = Message.objects.filter(recipient__event=event, recipient__app_label='labour')

@@ -1,3 +1,4 @@
+from access.models.cbac_entry import CBACEntry
 from django.contrib import admin
 
 from .models import (
@@ -86,6 +87,20 @@ class SMTPPasswordAdmin(admin.ModelAdmin):
     raw_id_fields = ('person',)
 
 
+class CBACEntryAdmin(admin.ModelAdmin):
+    search_fields = ('user__first_name', 'user__last_name', 'user__username', 'user__email')
+    list_display = ('user', 'claims', 'mode', 'valid_from', 'valid_until')
+    raw_id_fields = ('user',)
+    readonly_fields = ('created_by', 'created_at')
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk and not obj.created_by:
+            obj.created_by = request.user
+
+        obj.save()
+
+
+admin.site.register(CBACEntry, CBACEntryAdmin)
 admin.site.register(EmailAlias, EmailAliasAdmin)
 admin.site.register(EmailAliasDomain, EmailAliasDomainAdmin)
 admin.site.register(EmailAliasType, EmailAliasTypeAdmin)

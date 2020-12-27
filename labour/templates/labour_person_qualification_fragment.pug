@@ -1,9 +1,9 @@
 - load crispy_forms_tags
 h3 {{ person_qualification.qualification.name }}
-form(action='{% url "labour_person_qualification_view" person_qualification.qualification.slug %}', method='POST', role='form').form-horizontal
+form(action='{% url "labour:person_qualification_view" person_qualification.qualification.slug %}', method='POST', role='form').form-horizontal
   - crispy form
   .btn-group
     input.btn.btn-primary(type='submit', name='submit', value='Tallenna pätevyys')
     if person_qualification.pk
-      a.btn.btn-danger(href='{% url "labour_person_disqualify_view" person_qualification.qualification.slug %}') Poista pätevyys
-    a.btn.btn-default(href='{% url "labour_qualifications_view" %}') Peruuta
+      a.btn.btn-danger(href='{% url "labour:person_disqualify_view" person_qualification.qualification.slug %}') Poista pätevyys
+    a.btn.btn-default(href='{% url "labour:qualifications_view" %}') Peruuta

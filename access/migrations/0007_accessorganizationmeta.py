@@ -1,6 +1,5 @@
 from django.db import models, migrations
-import core.models
-
+import core.models.group_management_mixin
 
 class Migration(migrations.Migration):
 
@@ -21,6 +20,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'P\xe4\xe4synvalvonnan asetukset',
             },
-            bases=(models.Model, core.models.GroupManagementMixin),
+            bases=(models.Model, core.models.group_management_mixin.GroupManagementMixin),
         ),
     ]

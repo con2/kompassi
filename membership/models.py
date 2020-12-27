@@ -6,7 +6,8 @@ from django.contrib.auth.models import Group
 from django.db import models
 
 from core.csv_export import CsvExportMixin
-from core.models import GroupManagementMixin, Organization, Person
+from core.models import Organization, Person
+from core.models.group_management_mixin import GroupManagementMixin
 from core.utils import ensure_user_group_membership, format_date, url
 from tickets.utils import format_price, append_reference_number_checksum
 

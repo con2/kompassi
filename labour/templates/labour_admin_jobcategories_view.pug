@@ -18,7 +18,7 @@ block admin_content
           for job_category in job_categories
             tr
               td
-                a(href='{% url "labour_admin_jobcategory_view" event.slug job_category.slug %}')= job_category.name
+                a(href='{% url "labour:admin_jobcategory_view" event.slug job_category.slug %}')= job_category.name
               td
                 if job_category.public
                   .label.label-success {% trans "Yes" %}
@@ -36,6 +36,6 @@ block admin_content
 
       .panel-footer.clearfix
         .btn-group.pull-right
-          a.btn.btn-success(href='{% url "labour_admin_create_jobcategory_view" event.slug %}')
+          a.btn.btn-success(href='{% url "labour:admin_create_jobcategory_view" event.slug %}')
             i.fa.fa-plus.kompassi-icon-space-right
             {% trans "Add job category" %}

@@ -1,7 +1,7 @@
 ul.pager
   if previous_programme
     li.previous
-      a(href='{% url "programme_admin_detail_view" event.slug previous_programme.id %}') &larr; {{ previous_programme.title }}
+      a(href='{% url "programme:admin_detail_view" event.slug previous_programme.id %}') &larr; {{ previous_programme.title }}
 
   li.current
     .btn.disabled {{ programme.title }}
@@ -9,4 +9,4 @@ ul.pager
 
   if next_programme
     li.next
-      a(href='{% url "programme_admin_detail_view" event.slug next_programme.id %}') {{ next_programme.title }} &rarr;
+      a(href='{% url "programme:admin_detail_view" event.slug next_programme.id %}') {{ next_programme.title }} &rarr;

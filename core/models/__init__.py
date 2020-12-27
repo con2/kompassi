@@ -14,7 +14,6 @@ from .contact_email_mixin import contact_email_validator, ContactEmailMixin
 from .email_verification_token import EmailVerificationToken, EmailVerificationError
 from .event import Event
 from .event_meta_base import EventMetaBase
-from .group_management_mixin import GroupManagementMixin
 from .one_time_code import OneTimeCodeMixin, OneTimeCode, OneTimeCodeLite
 from .organization import Organization
 from .password_reset_token import PasswordResetToken, PasswordResetError

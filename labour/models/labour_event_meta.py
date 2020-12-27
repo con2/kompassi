@@ -69,6 +69,8 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
             'On suositeltavaa sisällyttää tähän omalle rivilleen allekirjoittajan tehtävänimike.'
     )
 
+    use_cbac = True
+
     class Meta:
         verbose_name = _('labour event meta')
         verbose_name_plural = _('labour event metas')

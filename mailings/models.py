@@ -199,7 +199,7 @@ class Message(models.Model):
 
     @property
     def app_event_meta(self):
-        return self.event.app_event_meta(self.app_label)
+        return self.event.get_app_event_meta(self.app_label)
 
     def __str__(self):
         return Template(self.subject_template).render(Context(dict(event=self.event)))

@@ -6,8 +6,8 @@ if person_qualifications
         | {{ person_qualification }}
         .btn-group.btn-group-xs.pull-right
           if person_qualification.qualification.qualification_extra_content_type
-            a.btn.btn-primary(href='{% url "labour_person_qualification_view" person_qualification.qualification.slug %}') Muokkaa tietoja...
-          a.btn.btn-danger(href='{% url "labour_person_disqualify_view" person_qualification.qualification.slug %}') Poista
+            a.btn.btn-primary(href='{% url "labour:person_qualification_view" person_qualification.qualification.slug %}') Muokkaa tietoja...
+          a.btn.btn-danger(href='{% url "labour:person_disqualify_view" person_qualification.qualification.slug %}') Poista
 
 if available_qualifications
   h3 Onko sinulla jokin seuraavista pätevyyksistä?
@@ -17,6 +17,6 @@ if available_qualifications
         | {{ available_qualification }}
         .btn-group.btn-group-xs.pull-right
           if available_qualification.qualification_extra_content_type
-            a.btn.btn-primary(href='{% url "labour_person_qualification_view" available_qualification.slug %}') Ilmoita tiedot...
+            a.btn.btn-primary(href='{% url "labour:person_qualification_view" available_qualification.slug %}') Ilmoita tiedot...
           else
-            a.btn.btn-primary(href='{% url "labour_person_qualify_view" available_qualification.slug %}') Lisää
+            a.btn.btn-primary(href='{% url "labour:person_qualify_view" available_qualification.slug %}') Lisää

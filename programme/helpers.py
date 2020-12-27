@@ -1,9 +1,9 @@
-from itertools import groupby
 from functools import wraps
 
 from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
+from access.cbac import default_cbac_required
 from core.utils import groupby_strict
 
 
@@ -40,9 +40,9 @@ def public_programme_required(view_func):
 
 def programme_admin_required(view_func):
     @wraps(view_func)
+    @default_cbac_required
     def wrapper(request, event_slug, *args, **kwargs):
         from core.models import Event
-        from core.utils import login_redirect
         from .views import programme_admin_menu_items
 
         event = get_object_or_404(Event, slug=event_slug)
@@ -51,9 +51,6 @@ def programme_admin_required(view_func):
         if not meta:
             messages.error(request, "Tämä tapahtuma ei käytä tätä sivustoa ohjelman hallintaan.")
             return redirect('core_event_view', event.slug)
-
-        if not event.programme_event_meta.is_user_admin(request.user):
-            return login_redirect(request)
 
         vars = dict(
             event=event,

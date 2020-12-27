@@ -22,7 +22,7 @@ block admin_content
         for programme, zones, total_reservation_status in programmes_with_reservation_status
           tr
             td(scope='row')
-              a(href='{% url "programme_admin_detail_view" event.slug programme.id %}')= programme.title
+              a(href='{% url "programme:admin_detail_view" event.slug programme.id %}')= programme.title
               if programme.paikkala_program.is_reservable
                 .label.label-primary
                   a(href='{% url "paikkala_reservation_view" programme.event.slug programme.id %}') {% trans "Reservable" %}
@@ -56,6 +56,6 @@ block admin_content
             th.kompassi-numeric-column(scope='column')= total_reservation_status.total_capacity
       .panel-footer.clearfix
         .btn-group.pull-right
-          a.btn.btn-default(href="{% url 'programme_admin_reservations_export_view' event.slug programme.id %}")
+          a.btn.btn-default(href="{% url 'admin_reservations_export_view' event.slug programme.id %}")
             i.fa.fa-cloud-download.kompassi-icon-space-right
             | {% trans "Export" %}

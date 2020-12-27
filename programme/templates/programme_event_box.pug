@@ -4,21 +4,21 @@ h3 Ohjelma
 if event.programme_event_meta.is_public
   h4 Tapahtuman ohjelmakartta on julkaistu
 
-  p: a(href='{% url "programme_schedule_view" event.slug %}').btn.btn-primary Tutustu ohjelma&shy;karttaan
+  p: a(href='{% url "programme:schedule_view" event.slug %}').btn.btn-primary Tutustu ohjelma&shy;karttaan
 else
   h4 Tapahtuman ohjelmakarttaa ei ole vielä julkaistu.
 
 if event.programme_event_meta.is_accepting_cold_offers
   h4 {% trans "The event is accepting programme offers" %}
 
-  p: a.btn.btn-primary(href='{% url "programme_offer_view" event.slug %}') {% trans "Offer programme" %}
+  p: a.btn.btn-primary(href='{% url "programme:offer_view" event.slug %}') {% trans "Offer programme" %}
 
 if event.programme_event_meta.has_open_reservations
   h4 {% trans "The event has programme with reservations open" %}
 
-  p: a.btn.btn-primary(href='{% url "programme_profile_reservations_view" %}') {% trans "Go to reservations" %}
+  p: a.btn.btn-primary(href='{% url "programme:profile_reservations_view" %}') {% trans "Go to reservations" %}
 
 if is_programme_admin
   h4 Sinulla on ohjelma&shy;vastaavan oikeudet tähän tapahtumaan
 
-  p: a(href='{% url "programme_admin_view" event.slug %}').btn.btn-primary Siirry ohjelman hallintaan
+  p: a(href='{% url "programme:admin_view" event.slug %}').btn.btn-primary Siirry ohjelman hallintaan

@@ -16,7 +16,7 @@ block admin_content
         - crispy form
       .panel-footer.clearfix
         .btn-group.pull-right
-          a.btn.btn-default(href='{% url "labour_admin_jobcategories_view" event.slug %}')
+          a.btn.btn-default(href='{% url "labour:admin_jobcategories_view" event.slug %}')
             i.fa.fa-undo.kompassi-icon-space-right
             {% trans "Abandon changes and return" %}
           if job_category.show_remove_button

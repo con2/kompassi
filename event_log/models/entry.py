@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import Q
 from django.template.loader import render_to_string
@@ -45,12 +46,19 @@ class Entry(models.Model):
     global_survey_result = models.ForeignKey('surveys.GlobalSurveyResult', **TARGET_FKEY_ATTRS)
     search_term = models.CharField(max_length=255, blank=True, default='')
 
+    # we should probably have shoved them in a jsonfield in the first place
+    other_fields = JSONField(blank=True, default=dict)
+
     @property
     def survey_result(self):
         """
         Shortcut for templates etc. that apply to both GlobalSurveyResults and EventSurveyResults.
         """
         return self.event_survey_result if self.event_survey_result else self.global_survey_result
+
+    @property
+    def cbac_claims(self):
+        return ", ".join(f"{key}={value}" for (key, value) in self.other_fields.get("claims", {}).items())
 
     @property
     def signup(self):

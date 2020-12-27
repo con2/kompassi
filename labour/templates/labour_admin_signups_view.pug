@@ -29,10 +29,10 @@ block admin_content
               i.fa.fa-caret-down.kompassi-icon-space-left
             ul.dropdown-menu#membership-admin-export-dropdown-menu(aria-labelledby='membership-admin-export-dropdown')
               for export_format in export_formats
-                li: a(href='{% url "labour_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+                li: a(href='{% url "labour:admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
                   i.fa.fa-cloud-download.kompassi-icon-space-right
                   |{{ export_format.name }}
-              li: a(href='{% url "labour_admin_export_view" event.slug "html" %}?{{ request.META.QUERY_STRING }}')
+              li: a(href='{% url "labour:admin_export_view" event.slug "html" %}?{{ request.META.QUERY_STRING }}')
                 i.fa.fa-print.kompassi-icon-space-right
                 {% trans "Print work certificates" %}
 
@@ -60,7 +60,7 @@ block admin_content
               h4.modal-title#labour-admin-mass-reject-modal-title Hylkää kaikki käsittelemättömät hakemukset
             .modal-body
               p Tällä toiminnolla voit hylätä nyt näkyvistä hakemuksista kaikki ne, jotka ovat tilassa <em>Uusi</em>.
-              p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Hylätyt</em>-ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
+              p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Hylätyt</em>-ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour:admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
             .modal-footer
               form(method='POST')
                 {% csrf_token %}
@@ -91,7 +91,7 @@ block admin_content
             .modal-body
               p Tällä toiminnolla voit vaatia tapahtuman vapaaehtoistyöntekijöitä vahvistamaan osallistumisensa tapahtumaan. Toiminto siirtää kaikki parhaillaan näkyvissä olevat <em>Hyväksytty, odottaa vuoroja</em> -tilassa olevat hakemukset tilaan <em>Hyväksytty, odottaa vahvistusta</em>.
               p Kunkin vapaaehtoistyöntekijän tulee tämän jälkeen käydä vahvistamassa osallistumisensa kirjautumalla sisään Kompassiin ja painamalla tapahtumasivulla tai profiilinsa työhakemussivulla <em>Vahvista osallistuminen</em> -nappia. Työvoimavastaava voi määräajan umpeuduttua hylätä ne hakijat, jotka eivät ole vahvistaneet osallistumistaan.
-              p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Vahvistusta vaadittu</em> -ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
+              p Tämä toiminto lähettää sähköpostia hylätyille hakijoille vain, mikäli <em>Vahvistusta vaadittu</em> -ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour:admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massahylkäämistä tai sen jälkeen.
             .modal-footer
               form(method='POST')
                 {% csrf_token %}
@@ -121,7 +121,7 @@ block admin_content
               h4.modal-title#labour-admin-mass-send-shifts-modal-title Lähetä vuorot
             .modal-body
               p Tällä toiminnolla voit julkaista työvuorot kerralla suurelle joukolle vapaaehtoistyöntekijöitä. Toiminto siirtää parhaillaan näkyvissä olevista <em>Hyväksytty, odottaa vuoroja</em> -tilassa olevista hakemuksista tilaan <em>Hyväksytty, vuorot lähetetty</em> ne, joille on määritelty työvuoroja joko työvuorotyökalulla tai työvuorojen vapaatekstikentässä.
-              p Tämä toiminto lähettää sähköpostia vuorotetuille hakijoille vain, mikäli <em>Vuorot valmiit</em> -ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour_admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massalähetystä tai sen jälkeen.
+              p Tämä toiminto lähettää sähköpostia vuorotetuille hakijoille vain, mikäli <em>Vuorot valmiit</em> -ryhmälle on olemassa työvoimaviesti, joka on lähetetty ja joka ei ole vanhentunut. Voit luoda viestin <a href='{% url "labour:admin_mail_view" event.slug %}'>työvoimaviestitoiminnolla</a> joko ennen massalähetystä tai sen jälkeen.
             .modal-footer
               form(method='POST')
                 {% csrf_token %}

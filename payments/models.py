@@ -14,7 +14,6 @@ from django.shortcuts import redirect
 from dateutil.parser import parse as parse_datetime
 import requests
 
-from core.models import EventMetaBase, GroupManagementMixin
 from tickets.utils import format_price
 
 from .utils import calculate_hmac
@@ -37,24 +36,6 @@ META_DEFAULTS = dict(
 )
 
 
-class PaymentsEventMeta(EventMetaBase):
-    """
-    Deprecated. PaymentsOrganizationMeta used instead.
-    """
-    checkout_password = models.CharField(max_length=255)
-    checkout_merchant = models.CharField(max_length=255)
-    checkout_delivery_date = models.CharField(max_length=9)
-
-    @classmethod
-    def get_or_create_dummy(cls, event):
-        """
-        Deprecated. But because it's used in an uwuton of places (that's, like, a thousand owotons),
-        we jury-rig it to produce PaymentsOrganizationMeta instead.
-        """
-        unused, created = PaymentsOrganizationMeta.get_or_create_dummy(event.organization)
-        return None, created
-
-
 class PaymentsOrganizationMeta(models.Model):
     organization = models.OneToOneField('core.Organization', on_delete=models.CASCADE, primary_key=True)
     checkout_password = models.CharField(max_length=255)
@@ -65,6 +46,8 @@ class PaymentsOrganizationMeta(models.Model):
         """
         Creates a POM with Checkout test merchant. Suitable for development, but try to use it in production and you'll get 500 ISE.
         """
+        from core.models import Organization
+
         if organization is None:
             organization, uwused = Organization.get_or_create_dummy()
 

@@ -55,7 +55,7 @@ class PaikkalAdapterMixin:
         )
 
     def get_success_url(self):
-        return reverse('programme_profile_reservations_view')
+        return reverse('profile_reservations_view')
 
 
 def handle_errors(view_func):
@@ -82,19 +82,19 @@ def handle_errors(view_func):
             message = _('This programme is currently full.')
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('programme_profile_reservations_view')
+            return redirect('profile_reservations_view')
 
         except MaxTicketsPerUserReached:
             message = _('You cannot reserve any more tickets for this programme.')
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('programme_profile_reservations_view')
+            return redirect('profile_reservations_view')
 
         except Unreservable:
             message = _('This programme does not allow reservations at this time.')
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('programme_profile_reservations_view')
+            return redirect('profile_reservations_view')
 
         except PermissionDenied:
             message = _('Permission denied.')
@@ -112,7 +112,7 @@ def handle_errors(view_func):
 
 
 class InspectionView(PaikkalAdapterMixin, BaseInspectionView):
-    template_name = 'paikkala_inspection_view.pug'
+    template_name = 'programme_paikkala_inspection_view.pug'
     require_same_user = True
     require_same_zone = True
 
@@ -124,7 +124,7 @@ class RelinquishView(PaikkalAdapterMixin, BaseRelinquishView):
 class ReservationView(PaikkalAdapterMixin, BaseReservationView):
     success_message_template = _('Seats successfully reserved.')
     form_class = ReservationForm
-    template_name = 'paikkala_reservation_view.pug'
+    template_name = 'programme_paikkala_reservation_view.pug'
 
     def get_object(self, queryset=None):
         """

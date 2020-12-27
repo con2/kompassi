@@ -108,7 +108,7 @@ block admin_content
           tr
             td {{ programme.formatted_start_time }}
             td {{ programme.room.name }}
-            td: a(href='{% url "programme_admin_detail_view" event.slug programme.pk %}') {{ programme.title }}
+            td: a(href='{% url "programme:admin_detail_view" event.slug programme.pk %}') {{ programme.title }}
             td {{ programme.formatted_hosts }}
             td
               include programme_state_label
@@ -118,7 +118,7 @@ block admin_content
         button.btn.btn-default(type='button', data-toggle='dropdown') Vie <span class='caret'></span>
         ul.dropdown-menu#programme-admin-export-dropdown-menu(aria-labelledby='programme-admin-export-dropdown')
           for export_format in export_formats
-            li: a(href='{% url "programme_admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+            li: a(href='{% url "programme:admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
               i.fa.fa-cloud-download.kompassi-icon-space-right
               |{{ export_format.name }}
-        a.btn.btn-primary(href='{% url "programme_admin_create_view" event.slug %}') Uusi ohjelma
+        a.btn.btn-primary(href='{% url "programme:admin_create_view" event.slug %}') Uusi ohjelma

@@ -9,7 +9,7 @@
         label.col-md-3.control-label {% trans "Volunteer work" %}:
         .col-md-9
           if involvement.current_user_is_labour_admin
-            a.kompassi-space-after(href='{% url "labour_admin_signup_view" involvement.event.slug person.pk %}') {{ involvement.signup.some_job_title }}
+            a.kompassi-space-after(href='{% url "labour:admin_signup_view" involvement.event.slug person.pk %}') {{ involvement.signup.some_job_title }}
           else
             span.kompassi-space-after {{ involvement.signup.some_job_title }}
           span.label(class='{{ involvement.signup.state_label_class }}') {{ involvement.signup.formatted_state }}
@@ -30,7 +30,7 @@
         label.col-md-3.control-label {% trans "Programme item" %}:
         .col-md-9
           if involvement.current_user_is_programme_admin
-            a.kompassi-space-after(href='{% url "programme_admin_detail_view" involvement.event.slug programme_role.programme.pk %}') {{ programme_role.programme.title }}
+            a.kompassi-space-after(href='{% url "programme:admin_detail_view" involvement.event.slug programme_role.programme.pk %}') {{ programme_role.programme.title }}
           else
             span.kompassi-space-after {{ programme_role.programme.title }}
           span.label(class='{{ programme_role.programme.state_css }}') {{ programme_role.programme.get_state_display }}

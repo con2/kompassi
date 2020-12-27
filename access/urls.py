@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.urls import path
 
 from .views import (
     access_admin_aliases_api,
@@ -8,6 +9,7 @@ from .views import (
     access_profile_privilege_view,
     access_profile_privileges_view,
     access_profile_request_privilege_view,
+    sudo_view,
 )
 
 
@@ -52,5 +54,11 @@ urlpatterns = [
         r'^organizations/(?P<organization_slug>[a-z0-9-]+)/admin/aliases/?$',
         access_admin_aliases_view,
         name='access_admin_aliases_view',
+    ),
+
+    path(
+        'sudo',
+        sudo_view,
+        name='sudo_view',
     ),
 ]

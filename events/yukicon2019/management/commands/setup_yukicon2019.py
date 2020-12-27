@@ -152,9 +152,6 @@ class Setup(object):
                 product.limit_groups.set(limit_groups)
                 product.save()
 
-    def setup_payments(self):
-        from payments.models import PaymentsEventMeta
-        PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
     def setup_programme(self):
         from labour.models import PersonnelClass

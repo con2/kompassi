@@ -2,11 +2,11 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models import GroupManagementMixin, Organization
+from core.models.group_management_mixin import GroupManagementMixin
 
 
 class AccessOrganizationMeta(models.Model, GroupManagementMixin):
-    organization = models.OneToOneField(Organization, on_delete=models.CASCADE, primary_key=True, verbose_name=_('organization'))
+    organization = models.OneToOneField('core.Organization', on_delete=models.CASCADE, primary_key=True, verbose_name=_('organization'))
     admin_group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name=_('administrator group'))
 
     def __str__(self):

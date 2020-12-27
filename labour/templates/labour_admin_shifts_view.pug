@@ -43,7 +43,7 @@ block admin_content
             i.fa.fa-caret-down.kompassi-icon-space-left
           ul.dropdown-menu#labour-admin-export-dropdown-menu(aria-labelledby='labour-admin-export-dropdown')
             for export_format in export_formats
-              li: a(href='{% url "labour_admin_export_shifts_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
+              li: a(href='{% url "labour:admin_export_shifts_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
                 i.fa.fa-cloud-download.kompassi-icon-space-right
                 |{{ export_format.name }}
       p.text-muted {% blocktrans with num_total_shifts=num_total_shifts count num_shifts=shifts.count %}Showing one shift (total {{ num_total_shifts}}).{% plural %}Showing {{ num_shifts}} shifts (total {{ num_total_shifts }}).{% endblocktrans %}
