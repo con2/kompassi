@@ -13,6 +13,7 @@ ENTRY_READ_ONLY_FIELDS = (
     'organization',
     'event',
     'person',
+    'other_fields',
 )
 
 

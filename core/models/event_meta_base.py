@@ -7,6 +7,8 @@ class EventMetaBase(models.Model, GroupManagementMixin):
     event = models.OneToOneField('core.Event', on_delete=models.CASCADE, primary_key=True, related_name='%(class)s')
     admin_group = models.ForeignKey('auth.Group', on_delete=models.CASCADE)
 
+    use_cbac = False
+
     class Meta:
         abstract = True
 
@@ -16,3 +18,14 @@ class EventMetaBase(models.Model, GroupManagementMixin):
         group_name = self.make_group_name(self.event, suffix)
 
         return Group.objects.get(name=group_name)
+
+    def is_user_admin(self, user):
+        """
+        Bridge between legacy access control and CBAC. Users that can do anything in an event are considered
+        admins of that event.
+        """
+        if self.use_cbac:
+            from access.models.cbac_entry import CBACEntry
+            return CBACEntry.is_allowed(user, self.event.get_claims(app=self._meta.app_label))
+        else:
+            return user.is_superuser or self.is_user_in_admin_group(user)

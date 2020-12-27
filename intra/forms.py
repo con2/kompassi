@@ -1,15 +1,20 @@
+
+from access.models.cbac_entry import CBACEntry
+from typing import List, Tuple, Dict
+
 from django import forms
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
-from core.models import Person
+from core.models import Person, Event
 from core.utils import horizontal_form_helper, indented_without_label, ensure_user_is_member_of_group
 from labour.models.constants import JOB_TITLE_LENGTH
 
 from .models import TeamMember, Team
-from .models.intra_event_meta import SUPPORTED_APPS
+from .constants import SUPPORTED_APPS
 
 
 class TeamMemberForm(forms.ModelForm):
@@ -136,7 +141,7 @@ class PrivilegesForm(forms.Form):
         self.active_apps = self.event.intra_event_meta.get_active_apps()
 
         kwargs['initial'] = dict(
-            (app_label, self.event.app_event_meta(app_label).is_user_in_admin_group(self.user))
+            (app_label, self.event.get_app_event_meta(app_label).is_user_in_admin_group(self.user))
             for app_label in self.active_apps
         )
 
@@ -152,21 +157,32 @@ class PrivilegesForm(forms.Form):
         layout_fields = [indented_without_label(app_label) for app_label in self.active_apps]
         self.helper.layout = Layout(Fieldset(_('Privileges'), *layout_fields))
 
-    def save(self):
+    @classmethod
+    def save(cls, forms: List['PrivilegesForm']):
+        if not forms:
+            return
+
+        event = forms[0].event
+
         if 'background_tasks' in settings.INSTALLED_APPS:
             from .tasks import privileges_form_save
-            privileges_form_save.delay(self.event.id, self.user.id, self.cleaned_data)
+            data = [(form.user.id, form.cleaned_data) for form in forms]
+            privileges_form_save.delay(event.id, data)
         else:
-            self._save(self.event, self.user, self.cleaned_data)
+            data = [(form.user, form.cleaned_data) for form in forms]
+            cls._save(event, data)
 
     @classmethod
-    def _save(cls, event, user, cleaned_data):
-        for app_label in event.intra_event_meta.get_active_apps():
-            ensure_user_is_member_of_group(
-                user,
-                event.app_event_meta(app_label).admin_group,
-                cleaned_data[app_label]
-            )
+    def _save(cls, event: Event, data: List[Tuple[AbstractUser, Dict[str, bool]]]):
+        for user, is_member_by_app in data:
+            for app_label in event.intra_event_meta.get_active_apps():
+                ensure_user_is_member_of_group(
+                    user,
+                    event.get_app_event_meta(app_label).admin_group,
+                    is_member_by_app[app_label]
+                )
+
+        CBACEntry.ensure_admin_group_privileges_for_event(event)
 
     @property
     def signup(self):

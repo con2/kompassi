@@ -1,5 +1,5 @@
 from .access_organization_meta import AccessOrganizationMeta
-from .cbac_entry import CBACEntry
+from .cbac_entry import CBACEntry, Claims
 from .email_alias import EmailAlias
 from .email_alias_domain import EmailAliasDomain
 from .email_alias_type import EmailAliasType

@@ -99,7 +99,7 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
                 'programme',
                 'tickets',
             ]:
-                meta = event.app_event_meta(app_label)
+                meta = event.get_app_event_meta(app_label)
                 if not meta:
                     continue
 

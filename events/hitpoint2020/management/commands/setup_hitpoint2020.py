@@ -27,7 +27,6 @@ class Setup(object):
         self.setup_tickets()
         self.setup_programme()
         self.setup_access()
-        self.setup_payments()
         self.setup_badges()
 
     def setup_core(self):
@@ -449,9 +448,6 @@ class Setup(object):
                 )
             )
 
-    def setup_payments(self):
-        from payments.models import PaymentsEventMeta
-        PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta

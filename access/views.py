@@ -1,19 +1,26 @@
+from datetime import timedelta
 import logging
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
-from django.urls import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.utils.timezone import now
 from django.views.decorators.http import require_POST, require_http_methods
 
 from api.utils import api_view, api_login_required, handle_api_errors
 from core.helpers import person_required
 from core.models import Person
 from core.utils import groupby_strict, url
+from event_log.utils import emit
 
+from .constants import CBAC_SUDO_VALID_MINUTES, CBAC_SUDO_CLAIMS
+from .exceptions import CBACPermissionDenied
 from .models import (
+    CBACEntry,
     EmailAlias,
     EmailAliasDomain,
     InternalEmailAlias,
@@ -204,3 +211,49 @@ def access_admin_menu_items(request, organization):
     aliases_text = 'Sähköpostialiakset'
 
     return [(aliases_active, aliases_url, aliases_text)]
+
+
+def permission_denied_view(request, exception):
+    sudo_claims = {}
+
+    if request.user.is_superuser and isinstance(exception, CBACPermissionDenied):
+        sudo_claims = {
+            k: v
+            for (k, v) in exception.claims.items()
+            if k in CBAC_SUDO_CLAIMS
+        }
+
+    vars = dict(
+        sudo_claims=sudo_claims,
+        next=request.path,
+    )
+
+    return render(request, '403.pug', vars)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def sudo_view(request):
+    next = request.GET.get('next') or '/'
+    claims = {
+        k: v
+        for (k, v) in request.POST.items()
+        if k in CBAC_SUDO_CLAIMS
+    }
+
+    cbac_entry = CBACEntry(
+        user=request.user,
+        valid_until=now() + timedelta(minutes=CBAC_SUDO_VALID_MINUTES),
+        claims=claims,
+        created_by=request.user,
+    )
+    cbac_entry.save()
+
+    messages.warning(request,
+        f'Käyttöoikeustarkastus ohitettu pääkäyttäjän oikeuksin. '
+        f'Väliaikainen käyttöoikeus on voimassa {CBAC_SUDO_VALID_MINUTES} minuuttia.'
+    )
+
+    emit('access.cbac.sudo', request=request, other_fields=cbac_entry.as_dict())
+    emit('access.cbacentry.created', request=request, other_fields=cbac_entry.as_dict())
+
+    return redirect(next)

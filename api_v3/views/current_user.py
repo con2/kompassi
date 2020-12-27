@@ -1,17 +1,9 @@
 from rest_framework.generics import RetrieveAPIView
-from rest_framework.permissions import IsAuthenticated
 
 from core.models import Person
 
 from ..serializers import UserSerializer
-
-
-class IsPerson(IsAuthenticated):
-    def has_permission(self, request, view):
-        try:
-            return super().has_permission(request, view) and request.user.person
-        except Person.DoesNotExist:
-            return False
+from ..permissions import IsPerson
 
 
 class CurrentUserView(RetrieveAPIView):

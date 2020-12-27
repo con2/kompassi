@@ -7,6 +7,8 @@ from django.views.generic import RedirectView
 from django.views.i18n import set_language
 
 
+handler403 = 'access.views.permission_denied_view'
+
 urlpatterns = [
     url(r'', include('core.urls')),
     url(r'^admin$', RedirectView.as_view(url='/admin/', permanent=False)),

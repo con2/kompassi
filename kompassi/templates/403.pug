@@ -1,6 +1,32 @@
 extends base
 block title
-  | Pääsy evätty
+  | Pääsy estetty
 block content
-  h2 Pääsy evätty
+  h2 Pääsy estetty
   p Sinulla ei ole käyttöoikeutta tähän näkymään.
+
+  if sudo_claims
+    p &nbsp;
+    form(method="POST", action="{% url 'sudo_view' %}?next={{ next|urlencode }}")
+      {% csrf_token %}
+      for claim in sudo_claims.items
+        input(type="hidden", name="{{ claim.0 }}", value="{{ claim.1 }}")
+
+      .panel.panel-default
+        .panel-heading: strong Ohita pääkäyttäjän oikeuksin
+        .panel-body Voit ohittaa tämän virheen pääkäyttäjän oikeuksin. Jos ohitat tämän virheen, sinulle kirjataan väliaikainen käyttöoikeus seuraavin rajauksin. Ohitus kirjataan tapahtumalokiin.
+        table.table.table-striped
+          thead
+            tr
+              th Rajaus
+              th Arvo
+          tbody
+            for claim in sudo_claims.items
+              tr
+                td: tt {{ claim.0 }}
+                td: tt {{ claim.1 }}
+        .panel-footer.clearfix
+          .btn-group.pull-right
+            button.btn.btn-danger(type="submit")
+              i.fa.fa-exclamation-triangle.kompassi-icon-space-right
+              | Ohita

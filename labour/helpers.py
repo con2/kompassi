@@ -5,9 +5,7 @@ from django.shortcuts import get_object_or_404, redirect
 
 from access.cbac import default_cbac_required
 from core.models import Event
-from core.utils import login_redirect
 
-from .models import Signup
 from .views.admin_menu_items import labour_admin_menu_items
 
 

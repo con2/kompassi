@@ -22,7 +22,6 @@ class Setup(object):
         self.setup_labour()
         self.setup_badges()
         self.setup_tickets()
-        self.setup_payments()
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
@@ -481,9 +480,6 @@ class Setup(object):
             meta.receipt_footer = "Tracon ry / Y-tunnus 2886274-5 / liput@tracon.fi"
             meta.save()
 
-    def setup_payments(self):
-        from payments.models import PaymentsEventMeta
-        PaymentsEventMeta.get_or_create_dummy(event=self.event)
 
     def setup_programme(self):
         from core.utils import full_hours_between

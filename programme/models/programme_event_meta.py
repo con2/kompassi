@@ -55,6 +55,8 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     paikkala_default_max_tickets_per_batch = models.IntegerField(default=5)
     paikkala_default_max_tickets_per_user = models.IntegerField(default=5)
 
+    use_cbac = True
+
     def __init__(self, *args, **kwargs):
         if 'public' in kwargs:
             public = kwargs.pop('public')

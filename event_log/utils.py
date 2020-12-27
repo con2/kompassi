@@ -5,8 +5,6 @@ from django.db.models.signals import post_save
 
 from core.utils import get_ip
 
-from .models import Entry
-
 
 logger = logging.getLogger('kompassi')
 INSTANCE = object()
@@ -69,8 +67,9 @@ def emit(entry_type_name, **kwargs):
 
     * `request`: If present, sets fields that can be deduced from the request.
     """
-    request = kwargs.pop('request', None)
-    if request is not None:
+    from .models import Entry
+
+    if request := kwargs.pop('request', None):
         kwargs = dict(attrs_from_request(request), **kwargs)
 
     logger.debug('event_log.utils.emit %s', entry_type_name)
