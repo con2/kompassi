@@ -182,12 +182,8 @@ kompassi_volume_mounts:
     name: kompassi-media
   - mountPath: /tmp
     name: kompassi-temp
-  - mountPath: /id_rsa
+  - mountPath: /mnt/secrets/kompassi
     name: kompassi-secret
-    subPath: sshPrivateKey
-  - mountPath: /known_hosts
-    name: kompassi-secret
-    subPath: sshKnownHosts
 kompassi_volumes:
   - name: kompassi-secret
     secret:

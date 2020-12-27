@@ -479,5 +479,5 @@ if 'listings' in INSTALLED_APPS:
 
 
 # Used by access.SMTPServer. Must be created with ssh-keygen -t rsa -m pem (will not work without -m pem).
-KOMPASSI_SSH_PRIVATE_KEY_FILE = env('KOMPASSI_SSH_PRIVATE_KEY_FILE', default='/id_rsa')
-KOMPASSI_SSH_KNOWN_HOSTS_FILE = env('KOMPASSI_SSH_KNOWN_HOSTS_FILE', default='/known_hosts')
+KOMPASSI_SSH_PRIVATE_KEY_FILE = env('KOMPASSI_SSH_PRIVATE_KEY_FILE', default='/mnt/secrets/kompassi/sshPrivateKey')
+KOMPASSI_SSH_KNOWN_HOSTS_FILE = env('KOMPASSI_SSH_KNOWN_HOSTS_FILE', default='/mnt/secrets/kompassi/sshKnownHosts')
