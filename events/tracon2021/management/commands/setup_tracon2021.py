@@ -627,7 +627,7 @@ class Setup(object):
             )
 
         for team in Team.objects.filter(event=self.event):
-            team.is_public = (team.slug == 'tracoff')
+            team.is_public = (team.slug != 'tracoff')
             team.save()
 
     def setup_directory(self):
