@@ -47,6 +47,36 @@ class CsvExportMixin(object):
     def get_csv_related(self):
         return dict()
 
+    @classmethod
+    def get_csv_header(cls, event, fields=None, m2m_mode='separate_columns'):
+        if fields is None:
+            fields = cls.get_csv_fields(event)
+
+        header_row = []
+
+        for (model, field) in fields:
+            if isinstance(field, str):
+                field_name = field
+                field_type = None
+            else:
+                field_name = field.name
+                field_type = type(field)
+
+            if field_type == models.ManyToManyField:
+                if m2m_mode == 'separate_columns':
+                    choices = get_m2m_choices(event, field)
+                    header_row.extend(
+                        "{field_name}: {choice}"
+                        .format(field_name=field_name, choice=choice.__str__())
+                        for choice in choices
+                    )
+                elif m2m_mode == 'comma_separated':
+                    header_row.append(field_name)
+                else:
+                    raise NotImplemented(m2m_mode)
+            else:
+                header_row.append(field_name)
+
     def get_csv_row(self, event, fields, m2m_mode='separate_columns'):
         result_row = []
         related = self.get_csv_related()
@@ -91,35 +121,6 @@ class CsvExportMixin(object):
         return result_row
 
 
-def write_header_row(event, writer, fields, m2m_mode='separate_columns'):
-    header_row = []
-
-    for (model, field) in fields:
-        if isinstance(field, str):
-            field_name = field
-            field_type = None
-        else:
-            field_name = field.name
-            field_type = type(field)
-
-        if field_type == models.ManyToManyField:
-            if m2m_mode == 'separate_columns':
-                choices = get_m2m_choices(event, field)
-                header_row.extend(
-                    "{field_name}: {choice}"
-                    .format(field_name=field_name, choice=choice.__str__())
-                    for choice in choices
-                )
-            elif m2m_mode == 'comma_separated':
-                header_row.append(field_name)
-            else:
-                raise NotImplemented(m2m_mode)
-        else:
-            header_row.append(field_name)
-
-    writer.writerow(header_row)
-
-
 def get_m2m_choices(event, field):
     target_model = field.related_model
     cache_key = (event.id, target_model._meta.app_label, target_model._meta.model_name)
@@ -161,8 +162,7 @@ def export_csv(event, model, model_instances, output_file, m2m_mode='separate_co
         # empty set, use the old way
         fields = model.get_csv_fields(event)
     writer = make_writer(output_file, dialect)
-
-    write_header_row(event, writer, fields, m2m_mode)
+    writer.writerow(model.get_csv_header(event, fields, m2m_mode))
 
     for model_instance in model_instances:
         if isinstance(model_instance, (str, int)):

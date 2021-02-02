@@ -36,6 +36,10 @@ services:
     init: true
     volumes:
       - postgres-data:/var/lib/postgresql/data
+<<<<<<< HEAD
+=======
+      #- ./kompassi-202012011746.sql:/docker-entrypoint-initdb.d/00-schema.sql
+>>>>>>> master
     environment:
       POSTGRES_USER: kompassi
       POSTGRES_PASSWORD: secret

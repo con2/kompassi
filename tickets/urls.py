@@ -1,3 +1,4 @@
+from tickets.views.admin_views import tickets_admin_export_view
 from django.conf import settings
 from django.conf.urls import include, url
 from django.shortcuts import redirect
@@ -36,6 +37,7 @@ urlpatterns = [
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/by-date/raw$', tickets_admin_stats_by_date_view, {'raw': True}, name="tickets_admin_stats_by_date_view"),
 
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders$', tickets_admin_orders_view, name="tickets_admin_orders_view"),
+    url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders\.(?P<format>xlsx|csv)$', tickets_admin_export_view, name="tickets_admin_export_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders/(?P<order_id>\d+)/$', tickets_admin_order_view, name="tickets_admin_order_view"),
     url(r'events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders/(?P<order_id>\d+)/etickets.pdf$', tickets_admin_etickets_view, name="tickets_admin_etickets_view"),
 
