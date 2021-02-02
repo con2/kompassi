@@ -551,7 +551,7 @@ def tickets_admin_export_view(request, vars, event, format='xlsx'):
         order__cancellation_time__isnull=True,
 
         count__gte=1,
-    ).order_by('payment_date', 'id')
+    ).order_by('order__payment_date', 'id')
 
     timestamp = now().strftime('%Y%m%d%H%M%S')
 
