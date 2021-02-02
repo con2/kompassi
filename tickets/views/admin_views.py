@@ -20,7 +20,7 @@ except ImportError:
     warn('Failed to import ReportLab. Generating receipts will fail.')
 
 from core.batches_view import batches_view
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
+from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS, export_csv
 from core.utils import url, initialize_form, slugify, login_redirect
 from event_log.utils import emit
 
@@ -38,7 +38,7 @@ from ..models import (
     AccommodationInformation,
     Batch,
     LimitGroup,
-    Order,
+    Order, OrderProduct,
     ShirtOrder,
     ShirtSize,
     UNPAID_CANCEL_HOURS,
@@ -534,3 +534,28 @@ def tickets_admin_menu_items(request, event):
         ])
 
     return items
+
+
+@tickets_admin_required
+def tickets_admin_export_view(request, vars, event, format='xlsx'):
+    ops = OrderProduct.objects.filter(
+        order__event=event,
+
+        # Order is confirmed
+        order__confirm_time__isnull=False,
+
+        # Order is paid
+        order__payment_date__isnull=False,
+
+        # Order is not cancelled
+        order__cancellation_time__isnull=True,
+
+        count__gte=1,
+    ).order_by('payment_date', 'id')
+
+    timestamp = now().strftime('%Y%m%d%H%M%S')
+
+    return csv_response(event, OrderProduct, ops,
+        dialect=next(fmt for fmt in EXPORT_FORMATS if fmt.extension == format).csv_dialect,
+        filename=f'{event.slug}_ticketsales_{timestamp}.{format}',
+    )
