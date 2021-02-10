@@ -18,7 +18,7 @@ bcrypt==3.2.0
     # via paramiko
 billiard==3.6.3.0
     # via celery
-bleach==3.2.1
+bleach==3.3.0
     # via -r requirements.in
 celery==5.0.1
     # via -r requirements.in
