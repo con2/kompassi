@@ -29,7 +29,7 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_programme()
+        self.setup_programme()
         # self.setup_tickets()
         # self.setup_payments()
         self.setup_badges()
@@ -354,7 +354,7 @@ class Setup(object):
                     view.save()
 
         role = Role.objects.get(personnel_class__event=self.event, title='Roolipelinjohtaja')
-        alternative_form, unused = AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='roolipeli',
             defaults=dict(
@@ -367,13 +367,8 @@ class Setup(object):
             )
         )
 
-        # v90
-        if alternative_form.role is None:
-            alternative_form.role = role
-            alternative_form.save()
-
         role = Role.objects.get(personnel_class__event=self.event, title='Larp-pelinjohtaja')
-        alternative_form, unused = AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='larp',
             defaults=dict(
@@ -386,13 +381,8 @@ class Setup(object):
             )
         )
 
-        # v90
-        if alternative_form.role is None:
-            alternative_form.role = role
-            alternative_form.save()
-
         role = Role.objects.get(personnel_class__event=self.event, title='Peliohjelmanjärjestäjä')
-        alternative_form, unused = AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='pelitiski',
             defaults=dict(
@@ -405,13 +395,8 @@ class Setup(object):
             )
         )
 
-        # v90
-        if alternative_form.role is None:
-            alternative_form.role = role
-            alternative_form.save()
-
         role = Role.objects.get(personnel_class__event=self.event, title='Ohjelmanjärjestäjä')
-        alternative_form, unused = AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug='default',
             defaults=dict(
@@ -425,11 +410,6 @@ class Setup(object):
             )
         )
 
-        # v90
-        if alternative_form.role is None:
-            alternative_form.role = role
-            alternative_form.save()
-
         for time_slot_name in [
             'Perjantaina iltapäivällä / Friday afternoon',
             'Perjantaina illalla / Friday evening',
@@ -441,6 +421,7 @@ class Setup(object):
             'Lauantain ja sunnuntain välisenä yönä / Saturday night',
             'Sunnuntaina aamupäivällä / Sunday morning',
             'Sunnuntaina päivällä / Sunday noon',
+            'Kaikki käy / Any time is fine',
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
 

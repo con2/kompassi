@@ -487,6 +487,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.helper.layout = Layout(
             'category',
             'ropecon2019_gaming_desk_subtype',
+            'ropecon2021_gamedesk_physical_or_virtual',
             'title',
             'approximate_length',
             'max_players',
@@ -522,8 +523,8 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'exp',
         ))
 
-
         self.fields['ropecon2019_gaming_desk_subtype'].required = True
+        self.fields['ropecon2021_gamedesk_physical_or_virtual'].required = True
         self.fields['max_players'].initial = 3
         self.fields['max_players'].required = True
         self.fields['description'].required = True
@@ -535,6 +536,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         fields = (
             'category',
             'ropecon2019_gaming_desk_subtype',
+            'ropecon2021_gamedesk_physical_or_virtual',
             'title',
             'approximate_length',
             'max_players',

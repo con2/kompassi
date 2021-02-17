@@ -137,6 +137,12 @@ ROPECON2018_KP_TABLE_COUNT_CHOICES = [
     ('4+', _('4+ tables')),
 ]
 
+ROPECON2021_GAMEDESK_PHYSICAL_OR_VIRTUAL_CHOICES = [
+    ('phys_only', _('I can organize my programme only at a physical con')),
+    ('virt_only', _('I can organize my programme only at a virtual con')),
+    ('phys_or_virt', _('I can organize my programme both at a physical con and at a virtual con')),
+]
+
 CSV_EXPORT_EXCLUDED_FIELDS = [
     'paikkala_icon',
     'paikkala_program',
@@ -795,6 +801,15 @@ class Programme(models.Model, CsvExportMixin):
         default=ROPECON2018_KP_TABLE_COUNT_CHOICES[0][0],
         verbose_name=_('How many tables do you need'),
         help_text=_('Table size is about 140 x 80 cm.'),
+        null=True,
+    )
+
+    ropecon2021_gamedesk_physical_or_virtual = models.CharField(
+        max_length=max(len(key) for (key, text) in ROPECON2021_GAMEDESK_PHYSICAL_OR_VIRTUAL_CHOICES),
+        choices=ROPECON2021_GAMEDESK_PHYSICAL_OR_VIRTUAL_CHOICES,
+        default=ROPECON2021_GAMEDESK_PHYSICAL_OR_VIRTUAL_CHOICES[0][0],
+        verbose_name=_('Physical or virtual programme?'),
+        help_text=_('The organizers of Ropecon strive to organize a physical con, and if the con can be held thusly, virtual programmes will not be organized. If the con cannot be face to face, we cannot organize physical programmes during a virtual con.<br><br>Specify here whether your programme can be organized face to face, virtually, or either way.'),
         null=True,
     )
 

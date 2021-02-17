@@ -1582,3 +1582,18 @@ msgstr "Siirry paikkavarauksiin"
 
 msgid "Full"
 msgstr "Täynnä"
+
+msgid "Physical or virtual programme?"
+msgstr "Lähi- vai etäohjelmaa?"
+
+msgid "The organizers of Ropecon strive to organize a physical con, and if the con can be held thusly, virtual programmes will not be organized. If the con cannot be face to face, we cannot organize physical programmes during a virtual con.<br><br>Specify here whether your programme can be organized face to face, virtually, or either way."
+msgstr "Ropeconin järjestäjien tavoitteena on järjestää lähicon, ja sen toteutuessa etäohjelmia ei pystytä järjestämään. Jos lähiconia ei voida järjestää, emme luonnollisesti voi järjestää lähiohjelmaa etäconissa.<br><br>Kerro tässä, voitko järjestää ohjelmasi lähiconissa, etäconissa vai molemmissa."
+
+msgid "I can organize my programme only at a physical con"
+msgstr "Voin järjestää ohjelmani vain lähiconissa"
+
+msgid "I can organize my programme only at a virtual con"
+msgstr "Voin järjestää ohjelmani vain etäconissa"
+
+msgid "I can organize my programme both at a physical con and at a virtual con"
+msgstr "Voin järjestää ohjelmani sekä lähi- että etäconissa"

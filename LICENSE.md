@@ -2,7 +2,7 @@
 
     The MIT License (MIT)
 
-    Copyright © 2009–2020 Santtu Pajukanta
+    Copyright © 2009–2021 Santtu Pajukanta
     Copyright © 2019 Mikko Hänninen
     Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö

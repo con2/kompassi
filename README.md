@@ -16,6 +16,8 @@ When the dependencies change, you need to add `--build` to `docker-compose up` t
 
 On first start-up the `web` and `celery` containers may fail on start-up due to a race condition between them and the `postgres` container. To work around this, just stop all the containers by hitting `Ctrl+C` and run `docker-compose up` again.
 
+#### Compiling internationalization files
+
 Also on first start-up you may notice internalization is broken. This is because your working copy is bind-mounted into the container in order to facilitate code reload, and your working copy probably does not contain compiled translation files.
 
 To fix this, and to update the translations when you change them (`django.po` files under `appname/locale`), run this in another terminal (with the app running under Docker Compose):
@@ -26,6 +28,12 @@ Run tests:
 
     alias dc-test="docker-compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from test"
     dc-test
+
+#### Running `manage.py makemigrations`
+
+Kompassi uses the standard Django DB migration facility. However, due to the development environment running under `docker-compose`, you need to hop through extra hoops to run the `manage.py makemigrations` command: namely, run it inside a container, and run it as `root` to be able to write migration files:
+
+    docker-compose exec --user=root web python manage.py makemigrations
 
 ### The Hard Way
 
@@ -87,7 +95,7 @@ All the words _hostname_, _database_, _username_ and _password_ are 8 characters
 
     The MIT License (MIT)
 
-    Copyright © 2009–2020 Santtu Pajukanta
+    Copyright © 2009–2021 Santtu Pajukanta
     Copyright © 2019 Mikko Hänninen
     Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö

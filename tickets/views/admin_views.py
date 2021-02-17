@@ -363,13 +363,14 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
     else:
         accommodees = []
         active_filter = None
+        limit_group = None
 
     format = request.GET.get('format', 'screen')
 
     if format in CSV_EXPORT_FORMATS:
         filename = "{event.slug}-{active_filter}-{timestamp}.{format}".format(
             event=event,
-            active_filter=slugify(limit_group.description),
+            active_filter=slugify(limit_group.description) if limit_group else "tickets",
             timestamp=now().strftime('%Y%m%d%H%M%S'),
             format=format,
         )
