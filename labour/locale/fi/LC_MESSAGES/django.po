@@ -54,11 +54,11 @@ msgstr "Kojelauta"
 msgid "Description"
 msgstr "Kuvaus"
 
-#: templates/labour_admin_shifts_table.pug templates/admin_signup_views/shifts_tab.pug templates/labour_profile_shifts_table.pug
+#: templates/labour_admin_shifts_table.pug templates/labour_admin_signup_views/shifts_tab.pug templates/labour_profile_shifts_table.pug
 msgid "Duration"
 msgstr "Kesto"
 
-#: templates/labour_admin_shifts_table.pug templates/admin_signup_views/shifts_tab.pug
+#: templates/labour_admin_shifts_table.pug templates/labour_admin_signup_views/shifts_tab.pug
 msgid "Edit"
 msgstr "Muokkaa"
 
@@ -74,7 +74,7 @@ msgstr "Muokkaa tehtäväaluetta"
 msgid "End now"
 msgstr "Sulje heti"
 
-#: templates/admin_signup_views/shifts_tab.pug
+#: templates/labour_admin_signup_views/shifts_tab.pug
 msgid "Ending time"
 msgstr "Päättymisaika"
 
@@ -114,7 +114,7 @@ msgstr "Mikäli alkamisaikaa ei ole asetettu, työvoimahaku pysyy suljettuna. Mi
 msgid "Invalid request."
 msgstr "Kelvoton pyyntö."
 
-#: templates/labour_admin_shifts_table.pug templates/admin_signup_views/shifts_tab.pug templates/labour_profile_shifts_table.pug
+#: templates/labour_admin_shifts_table.pug templates/labour_admin_signup_views/shifts_tab.pug templates/labour_profile_shifts_table.pug
 msgid "Job"
 msgstr "Tehtävä"
 
@@ -122,7 +122,7 @@ msgstr "Tehtävä"
 msgid "Job categories that are not accepting applications are not shown on the signup form. However, they may still be applied to using alternative signup forms."
 msgstr "Tehtäväalueisiin, jotka eivät ole julkisessa haussa, ei voi hakea tavallisen hakemuslomakkeen kautta. Niihin voi kuitenkin ilmoittautua vaihtoehtoisilla ilmoittautumislomakkeilla, jos sellaisia on määritelty."
 
-#: templates/labour_admin_jobcategories_view.pug templates/labour_admin_shifts_table.pug templates/labour_admin_shifts_view.pug templates/admin_signup_views/shifts_tab.pug templates/labour_profile_shifts_table.pug
+#: templates/labour_admin_jobcategories_view.pug templates/labour_admin_shifts_table.pug templates/labour_admin_shifts_view.pug templates/labour_admin_signup_views/shifts_tab.pug templates/labour_profile_shifts_table.pug
 msgid "Job category"
 msgstr "Tehtäväalue"
 
@@ -142,11 +142,11 @@ msgstr "Nimi"
 msgid "No"
 msgstr "Ei"
 
-#: templates/admin_signup_views/shifts_tab.pug
+#: templates/labour_admin_signup_views/shifts_tab.pug
 msgid "No shifts."
 msgstr "Ei työvuoroja."
 
-#: templates/admin_signup_views/shifts_tab.pug
+#: templates/labour_admin_signup_views/shifts_tab.pug
 #, python-format
 msgid "One shift, %(total_hours)s h."
 msgid_plural "%(num_shifts)s shifts, total %(total_hours)s h."
@@ -250,7 +250,7 @@ msgstr "Työvuorojen suunnittelu"
 msgid "Shift starts"
 msgstr "Työvuoro alkaa"
 
-#: templates/admin_signup_views/shifts_tab.pug
+#: templates/labour_admin_signup_views/shifts_tab.pug
 msgid "Shifts"
 msgstr "Työvuorot"
 
@@ -289,7 +289,7 @@ msgstr "Tyypilliset erikoisruokavaliot"
 msgid "Start now"
 msgstr "Avaa heti"
 
-#: templates/admin_signup_views/shifts_tab.pug
+#: templates/labour_admin_signup_views/shifts_tab.pug
 msgid "Starting time"
 msgstr "Alkamisaika"
 
