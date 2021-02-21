@@ -1,9 +1,16 @@
-# encoding: utf-8
+from contextlib import contextmanager
+import logging
+
 from django.conf import settings
+from django.core.cache import cache
 from django.core.management import call_command, get_commands
 from django.core.management.base import BaseCommand
 from django.db.transaction import atomic
-from contextlib import contextmanager
+
+from uuid import uuid4
+
+
+logger = logging.getLogger('kompassi')
 
 
 @contextmanager
@@ -11,12 +18,37 @@ def noop_context():
     yield
 
 
+def setup_should_run(run_id=settings.KOMPASSI_SETUP_RUN_ID, expire_seconds=settings.KOMPASSI_SETUP_EXPIRE_SECONDS):
+    """
+    When deployed under Kubernetes and using multiple replicas, we want only the first replica
+    to perform the setup. This is achieved using an environment variable KOMPASSI_SETUP_RUN_ID
+    that is filled in in the Deployment to contain the pod template hash.
+    """
+    if not run_id:
+        logger.info(f"manage.py setup: KOMPASSI_SETUP_RUN_ID not supplied, running unconditionally.")
+        return True
+
+    cache_key = f'kompassi:setup_should_run:{run_id}'
+    nonce = uuid4()
+
+    try:
+        # Redis SETNX: True iff the key wasn't already set and we were able to set it
+        return cache.set(cache_key, nonce, expire_seconds, nx=True)
+    except Exception:
+        logger.exception("manage.py setup: setup_should_run failed to determine, running anyway")
+        # Something went wrong. Perhaps the cache is not Redis or the cache is unable to perform.
+        # It's safer to run the setup than not run it.
+        return True
+
+
 class Command(BaseCommand):
     args = ''
     help = 'Setup all the things'
 
     def handle(self, *args, **options):
-        test = settings.DEBUG
+        if not setup_should_run():
+            logger.info(f"manage.py setup: has already run for {settings.KOMPASSI_SETUP_RUN_ID}, doing nothing")
+            return
 
         commands = get_commands()
 

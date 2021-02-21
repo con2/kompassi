@@ -176,6 +176,12 @@ kompassi_environment:
       items: !Var kompassi_cors_allowed_hosts
       separator: ' '
 
+  # used by python manage.py setup to do nothing if nothing has changed
+  - name: KOMPASSI_SETUP_RUN_ID
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.labels['pod-template-hash']
+
 # Common volumes for kompassi, celery and nginx pods.
 kompassi_volume_mounts:
   - mountPath: /usr/src/app/media
