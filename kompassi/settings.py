@@ -150,7 +150,6 @@ INSTALLED_APPS = (
     # 'nexmo',
     'django_babel',
     'rest_framework',
-    'guardian',
     'bootstrap3',
 
     'lippukala',
@@ -377,7 +376,6 @@ KOMPASSI_MAY_SEND_INFO_GROUP_NAME = 'kompassi-maysendinfo'
 AUTHENTICATION_BACKENDS = (
     'core.backends.PasswordlessLoginBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
 )
 
 
