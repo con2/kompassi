@@ -21,6 +21,6 @@ export BROKER_URL="${BROKER_URL:-redis://$REDIS_HOSTNAME/$REDIS_BROKER_DATABASE}
 export CACHE_URL="${CACHE_URL:-rediscache://$REDIS_HOSTNAME/$REDIS_CACHE_DATABASE}"
 
 # Wait for postgres to be up before continuing
-"$DIR/wait-for-it.sh" -s -t 60 "$POSTGRES_HOSTNAME:$POSTGRES_PORT"
+"$DIR/wait-for-it.sh" -s -t 120 "$POSTGRES_HOSTNAME:$POSTGRES_PORT"
 
 exec "$@"
