@@ -213,7 +213,7 @@ def access_admin_menu_items(request, organization):
     return [(aliases_active, aliases_url, aliases_text)]
 
 
-def permission_denied_view(request, exception):
+def permission_denied_view(request, exception=None):
     sudo_claims = {}
 
     if request.user.is_superuser and isinstance(exception, CBACPermissionDenied):
@@ -229,6 +229,13 @@ def permission_denied_view(request, exception):
     )
 
     return render(request, '403.pug', vars)
+
+
+def not_found_view(request, exception=None):
+    return render(request, '404.pug', {
+        'event': None,
+        'login_page': True,
+    })
 
 
 @user_passes_test(lambda u: u.is_superuser)

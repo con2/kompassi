@@ -7,6 +7,7 @@ from django.views.generic import RedirectView
 from django.views.i18n import set_language
 
 
+handler404 = 'access.views.not_found_view'
 handler403 = 'access.views.permission_denied_view'
 
 urlpatterns = [

@@ -78,13 +78,14 @@ STATICFILES_FINDERS = (
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-SECRET_KEY = env.str('SECRET_KEY', default=('' if not DEBUG else 'xxx'))
+SECRET_KEY = env.str('SECRET_KEY', default=('x' if not DEBUG else 'xxx'))
 
 MIDDLEWARE = (
     'corsheaders.middleware.CorsMiddleware',
     'csp.middleware.CSPMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'listings.middleware.ListingsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -472,12 +473,10 @@ if 'desuprofile_integration' in INSTALLED_APPS:
     KOMPASSI_DESUPROFILE_API_URL = '{KOMPASSI_DESUPROFILE_HOST}/api/user/me/'.format(**locals())
 
 
-if 'listings' in INSTALLED_APPS:
-    MIDDLEWARE = ('listings.middleware.ListingsMiddleware',) + MIDDLEWARE
-    KOMPASSI_LISTING_URLCONFS = {
-        'conit.fi': 'listings.site_urlconfs.conit_fi',
-        'animecon.fi': 'listings.site_urlconfs.animecon_fi',
-    }
+KOMPASSI_LISTING_URLCONFS = {
+    'conit.fi': 'listings.site_urlconfs.conit_fi',
+    'animecon.fi': 'listings.site_urlconfs.animecon_fi',
+}
 
 
 # Used by access.SMTPServer. Must be created with ssh-keygen -t rsa -m pem (will not work without -m pem).
