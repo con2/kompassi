@@ -38,6 +38,17 @@ spec:
             - --access-logfile=-
             - --capture-output
             - kompassi.wsgi
+          startupProbe:
+            httpGet:
+              path: /api/v1/status
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: !Lookup ingress_public_hostnames[0]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            # 5 * 12 seconds = 1 minute
+            failureThreshold: 12
           readinessProbe:
             httpGet:
               path: /api/v1/status
@@ -45,7 +56,7 @@ spec:
               httpHeaders:
                 - name: Host
                   value: !Lookup ingress_public_hostnames[0]
-            initialDelaySeconds: 15
+            initialDelaySeconds: 0
             periodSeconds: 30
           livenessProbe:
             httpGet:
@@ -54,7 +65,7 @@ spec:
               httpHeaders:
                 - name: Host
                   value: !Lookup ingress_public_hostnames[0]
-            initialDelaySeconds: 30
+            initialDelaySeconds: 15
             periodSeconds: 30
           volumeMounts: !Var kompassi_volume_mounts
       volumes: !Var kompassi_volumes
