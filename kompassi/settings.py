@@ -78,7 +78,7 @@ STATICFILES_FINDERS = (
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-SECRET_KEY = env.str('SECRET_KEY', default=('x' if not DEBUG else 'xxx'))
+SECRET_KEY = env.str('SECRET_KEY', default=('' if not DEBUG else 'xxx'))
 
 MIDDLEWARE = (
     'corsheaders.middleware.CorsMiddleware',
