@@ -519,6 +519,12 @@ class Programme(models.Model, CsvExportMixin):
         blank=True,
         related_name='+',
     )
+    ropecon2021_blocked_time_slots = models.ManyToManyField('ropecon2021.TimeSlot',
+        verbose_name=_('When are you NOT able to run your larp?'),
+        help_text=_('Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.'),
+        blank=True,
+        related_name='+',
+    )
     ropecon2019_preferred_time_slots = models.ManyToManyField('ropecon2019.TimeSlot',
         verbose_name=_('time preferences'),
         help_text=_('When would you like to host your game program? Check the times when you would like to host your game program. If you have more specific needs regarding the timing, please let us know in the Comments field below. We do not restrict your desired times, but we reserve the right to make changes. For example, we would rather have tournaments one after another than at the same time.'),

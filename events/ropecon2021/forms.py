@@ -115,7 +115,8 @@ RPG_FORM_FIELD_TEXTS = dict(
     ropecon2018_style_combat_driven=(_('Combat-driven'), None),
     description=(_('Description of your game'), _('Advertise your game for potential players. If your game includes any potentially shocking or distressing themes, please mention it here.<br><br>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.<br><br>Write the description in the language the game will be run in (Finnish, English). You can write the description in both languages if you want.')),
     three_word_description=(_('Slogan for your game'), _('Condense the essence of your game into one short sentence that will let players know what your game have to offer. For example, “A traditional D&D dungeon crawl”, or “Lovecraftian horror in Equestria”. We reserve the right to edit the slogan if necessary.')),
-    ropecon2019_blocked_time_slots=(_('When are you NOT able to run your game?'), _('Select the times when you are NOT able to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.')),
+    ropecon2021_programme_for_children=(_('Programme for children'), _('If your game is aimed at children and their guardians, please tick this box.')),
+    ropecon2021_blocked_time_slots=(_('When are you NOT able to run your game?'), _('Select the times when you are <b>NOT able</b> to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.')),
     ropecon2021_accessibility_video=(_('The game involves watching a video without subtitles for the hearing impaired'), None),
     ropecon2021_accessibility_colourblind=(_('Material used in the game can cause problems for the colourblind'), None),
     notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the RPG coordinators that doesn’t fit any of the fields above or would you like to clarify something?<br/>For example, if you are a beginner GM and would like some additional support, let us know and we will gladly help you out!')),
@@ -161,9 +162,9 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
                 'ropecon2018_style_combat_driven',
                 'description',
                 'three_word_description',
-                'ropecon2019_blocked_time_slots',
+                'ropecon2021_blocked_time_slots',
             ),
-            Fieldset(_('Accessibility'),
+            Fieldset(_('Accessibility and inclusivity'),
                 RenderTemplate('ropecon2021_rpg_form_accessibility.html'),
                 'ropecon2021_accessibility_loud_sounds',
                 'ropecon2021_accessibility_flashing_lights',
@@ -194,7 +195,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
         self.fields['max_players'].initial = 5
         self.fields['description'].required = True
         self.fields['three_word_description'].required = True
-        self.fields['ropecon2019_blocked_time_slots'].required = True
+        self.fields['ropecon2021_blocked_time_slots'].required = True
 
     class Meta:
         model = Programme
@@ -224,7 +225,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             'ropecon2018_style_combat_driven',
             'description',
             'three_word_description',
-            'ropecon2019_blocked_time_slots',
+            'ropecon2021_blocked_time_slots',
             'ropecon2021_accessibility_loud_sounds',
             'ropecon2021_accessibility_flashing_lights',
             'ropecon2021_accessibility_strong_smells',
@@ -241,7 +242,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
         ]
 
         widgets = dict(
-            ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2021_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
@@ -260,7 +261,7 @@ LARP_FORM_FIELD_TEXTS = dict(
     content_warnings=(_('Content warnings'), _('If your larp contains any heavy topics or themes that some players may find distressing, please mention them here.')),
     other_author=(_('Game designer (if other than GM)'), _('If the game was designed by someone other than the GM running it at Ropecon, please enter the name of the designer here.')),
     ropecon2018_signuplist=(_('Who makes the sign-up list - you or the Larp Desk?'), _('If you make the sign-up list for your larp yourself, you can ask more specific questions about player preferences. A sign-up list made by the Larp Desk is simply a list of names.')),
-    ropecon2019_blocked_time_slots=(_('When are you NOT able to run your game?'), _('Select the times when you are NOT able to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.')),
+    ropecon2021_blocked_time_slots=(_('When are you NOT able to run your game?'), _('Select the times when you are NOT able to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.')),
     notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the larp coordinators?<br><br>Please mention here if the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br><br>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br><br>You can also specify your preferred schedule here.')),
     is_in_english=(_('English OK'), _('If you are able, prepared and willing to run your larp in English if necessary, please tick this box.')),
     is_age_restricted=(_('For players over 18 only'), _('If your larp contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players.')),
@@ -295,7 +296,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2018_signuplist',
             'ropecon2018_space_requirements',
             'ropecon2018_prop_requirements',
-            'ropecon2019_blocked_time_slots',
+            'ropecon2021_blocked_time_slots',
             'notes_from_host',
 
             Fieldset(_('Who is your larp for?'),
@@ -321,7 +322,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields['description'].required = True
         self.fields["ropecon2018_signuplist"].choices = [('none', _('No sign-up')), ('tiski', _('The Larp Desk will make the sign-up list')), ('itse', _('I will make my own sign-up list')),]
         self.fields["ropecon2018_signuplist"].choices = [(k, t) for (k, t) in self.fields["ropecon2018_signuplist"].choices if k != 'none']
-        self.fields['ropecon2019_blocked_time_slots'].required = True
+        self.fields['ropecon2021_blocked_time_slots'].required = True
 
     class Meta:
         model = Programme
@@ -337,7 +338,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2018_signuplist',
             'ropecon2018_space_requirements',
             'ropecon2018_prop_requirements',
-            'ropecon2019_blocked_time_slots',
+            'ropecon2021_blocked_time_slots',
             'notes_from_host',
 
             'is_in_english',
@@ -353,7 +354,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         widgets = dict(
             content_warnings=forms.Textarea,
-            ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2021_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
@@ -382,7 +383,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
     max_players=(_('Number of participants'), _('If the number of participants in your workshop or other programme is limited, please provide the maximum number of participants.')),
     computer=(_('Laptop needs'), _('What kind of a laptop will you use? We strongly recommend using a laptop provided by Ropecon. Using your own laptop is possible only when notified in advance.')),
     tech_requirements=(_('Other technical needs'), None),
-    ropecon2019_blocked_time_slots=(_('When are you NOT able to host your programme?'), _('Select the times when you DO NOT want to host your programme. Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below.')),
+    ropecon2021_blocked_time_slots=(_('When are you NOT able to host your programme?'), _('Select the times when you DO NOT want to host your programme. Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below.')),
     notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the programme coordinators or organisers of Ropecon?')),
     is_available_for_panel=(_('Panel discussions'), _('I’m interested in participating in a panel discussion related to my field of expertise.')),
     video_permission=(_('Recording & publishing consent'), _('Do you give Ropecon permission to record your programme and publish it on the Internet?')),
@@ -417,7 +418,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'max_players',
             'computer',
             'tech_requirements',
-            'ropecon2019_blocked_time_slots',
+            'ropecon2021_blocked_time_slots',
             'notes_from_host',
             'is_available_for_panel',
             'field_of_expertise',
@@ -447,7 +448,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'other',
         ))
         self.fields['computer'].choices = [('con', _('Laptop provided by Ropecon')), ('pc', _('Own laptop (PC)')), ('mac', _('Own laptop (Mac)')),('none', _('No laptop is needed in my programme')),]
-        self.fields['ropecon2019_blocked_time_slots'].required = True
+        self.fields['ropecon2021_blocked_time_slots'].required = True
         self.fields['video_permission'].choices = [('public', _('I give permission to record and publish my programme')), ('forbidden', _('I do not give permission to record or publish my programme')),]
         self.fields['video_permission'].blank = True
 
@@ -472,7 +473,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'max_players',
             'computer',
             'tech_requirements',
-            'ropecon2019_blocked_time_slots',
+            'ropecon2021_blocked_time_slots',
             'notes_from_host',
             'is_available_for_panel',
             'field_of_expertise',
@@ -480,7 +481,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
-            ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2021_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
 
