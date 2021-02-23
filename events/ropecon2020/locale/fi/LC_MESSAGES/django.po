@@ -326,19 +326,19 @@ msgid "Suitable for children under 7"
 msgstr "Sopii alle 7-vuotiaille"
 
 msgid "If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "Suitable for children aged 7-12"
 msgstr "Sopii 7-12-vuotiaille"
 
 msgid "If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "Suitable for children aged 12+"
 msgstr "Sopii yli 12-vuotiaille"
 
 msgid "If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "Not suitable for children"
 msgstr "Ei sovellu lapsille"

@@ -17,7 +17,7 @@ def profile_feedback_view(request, programme_id):
 
     if not request.user.person in programme.organizers.all():
         messages.error(request, _('Only an organizer of the programme may view its feedback.'))
-        return redirect('profile_view')
+        return redirect('programme:profile_view')
 
     feedback = programme.visible_feedback
 

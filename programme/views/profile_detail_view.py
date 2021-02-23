@@ -82,7 +82,7 @@ def profile_detail_view(request, programme_id):
                     extra_invite.send(request)
 
             messages.success(request, _('The changes were saved.'))
-            return redirect('profile_view')
+            return redirect('programme:profile_view')
 
         else:
             messages.error(request, 'Please check the form.')

@@ -308,10 +308,13 @@ msgid "Consider the minimum number of players required to run your game carefull
 msgstr "Harkitse pelaajien vähimmäismäärä tarkkaan: Maksimoit pelin toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
 
 msgid "Revolving door RPG"
-msgstr "Pyöröovipeli (revolving door)"
+msgstr "Pyöröovipeli (revolving door) jee jee"
 
-msgid "If new players can join your game while it is already running and old players can leave freely before the game has ended, please tick this box. Mention this in the description of your game as well, and provide additional information in the Comments section below if needed. If you are not sure whether your game is a revolving door RPG or not, contact us and we will figure it out together!"
-msgstr "Ruksaa tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa käynnissä ja vanhat pelaajat voivat poistua (tai joutuvat poistumaan) pelistä ennen pelin loppua. Kerro tästä myös pelin kuvauksessa alla, ja anna tarvittaessa lisätietoja. Jos et ole varma onko sinulla pyöröovipeli, ole yhteydessä meihin niin katsotaan!"
+msgid "If new players can join your game while it is already running and old players can leave freely before the game has ended, please tick this box. Mention this in the description of your game as well, and provide additional information in the Comments section below if needed.<br/><b>Please note:</b> if your revolving door RPG is aimed at beginners, we recommend that you sign up to the Experience Point instead of role playing games.<br/>If you are not sure whether your game is a revolving door RPG or not, contact us and we will figure it out together!"
+msgstr "Rastita tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa jo käynnissä ja vanhat pelaajat voivat poistua pelistä ennen pelin loppua. Anna tarvittaessa lisätietoja lomakkeen lopussa.<br/><b>HUOM!</b> Jos pyöröovipelisi on suunnattu aloittelijoille, suosittelemme ilmoittamaan pelin roolipelien sijaan kokemuspisteelle. Jos et ole varma pelisi luonteesta, ole yhteydessä meihin niin katsotaan!"
+
+msgid "Who is your game for?"
+msgstr "Kenelle peli on tarkoitettu?"
 
 msgid "If your game can be run in English, please tick this box."
 msgstr "Ruksaa tämä ruutu, jos peli pelataan englanniksi."
@@ -326,25 +329,43 @@ msgid "Suitable for children under 7"
 msgstr "Sopii alle 7-vuotiaille"
 
 msgid "If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "Suitable for children aged 7-12"
 msgstr "Sopii 7-12-vuotiaille"
 
 msgid "If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "Suitable for children aged 12+"
 msgstr "Sopii yli 12-vuotiaille"
 
 msgid "If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
 
-msgid "Not suitable for children"
-msgstr "Ei sovellu lapsille"
+msgid "Not suitable for children below 15 years"
+msgstr "Ei sovellu alle 15-vuotiaille"
 
-msgid "If your game programme is not suitable for children under 15 years of age, please tick this box."
+msgid "If your game is not suitable for children under 15 years of age, please tick this box."
 msgstr "Ruksaa tämä ruutu, jos pelisi ei sovellu alle 15-vuotiaille lapsille."
+
+msgid "Programme for children"
+msgstr "Lastenohjelma"
+
+msgid "If your game is aimed at children and their guardians, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu lapsille ja heidän huoltajilleen."
+
+msgid "Theme: Elements"
+msgstr "Teema: Elementit"
+
+msgid "If your game is related to the theme of Ropecon 2021, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
+
+msgid "Any clarifications?"
+msgstr "Tarkennuksia?"
+
+msgid "Specify here is you have any clarifications or if you have anything to expand upon regarding the above questions."
+msgstr "Kirjoita tähän, mikäli haluat täsmentää tai tarkentaa ylläolevia soveltuvuuskysymyksiä."
 
 msgid "If your game is suitable for players with very limited or without any previous experience about RPGs, please tick this box."
 msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemusta roolipeleistä olisi hyvin vähän tai ei lainkaan."
@@ -400,14 +421,59 @@ msgstr "Tiivistä pelisi yhteen lauseeseen, joka kertoo pelaajalle pelin sisäll
 msgid "When are you NOT able to run your game?"
 msgstr "Milloin ET PYSTY pelauttamaan peliäsi?"
 
-msgid "Select the times when you are NOT able to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
+msgid "Select the times when you are <b>NOT able</b> to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
 msgstr "Merkitse tähän ne ajat, jolloin sinun ei ole mahdollista pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."
+
+msgid "Accessibility and inclusivity"
+msgstr "Esteettömyys, inklusiivisuus ja saavutettavuus"
+
+msgid "We face life as individuals, but together we can make Ropecon a safer, more comfortable space, where everyone can be themselves without limits, harassment or discrimination."
+msgstr "Kaikki me kohtaamme elämäämme yksilöllisesti, mutta yhdessä voimme tehdä Ropeconista turvallisemman tilan periaatteiden mukaisen, viihtyisän paikan, jossa jokainen saa olla oma itsensä ilman rajoituksia, häirintää tai syrjintää."
+
+msgid "Loud sounds"
+msgstr "Kovat äänet"
+
+msgid "Flashing or bright lights"
+msgstr "Välkkyvät tai voimakkaat valot"
+
+msgid "Strong smells"
+msgstr "Voimakkaat tuoksut"
+
+msgid "Materials or substances that irritate the skin"
+msgstr "Ihoa ärsyttävät aineet tai materiaalit"
+
+msgid "Physical contact and/or low chances of personal space"
+msgstr "Fyysinen kontakti ja/tai suppea henkilökohtaisen tilan mahdollisuus"
+
+msgid "Darkness/low lighting"
+msgstr "Pimeä/heikko valaistus"
+
+msgid "Participation involves a lot of moving around without a chance for sitting down"
+msgstr "Osallistuminen vaatii paljon liikkumista ilman mahdollisuutta istumiseen"
+
+msgid "The game involves watching a video without subtitles for the hearing impaired"
+msgstr "Pelissä katsotaan video, jossa ei ole tekstitystä kuulorajoitteisille"
+
+msgid "Participation requires listening to a recording that does not have a text version for the hearing impaired"
+msgstr "Osallistuminen edellyttää sellaisen äänitteen kuuntelemista, josta ei ole tekstiversiota kuulorajoitteisille"
+
+msgid "Participation involves reading long texts independently, and the texts are not available as recordings for those with visual impairment"
+msgstr "Osallistuminen vaatii pitkien tekstien itsenäistä lukemista, eikä tekstejä ole mahdollista saada äänitteinä näkörajoitteisille"
+
+msgid "Material used in the game can cause problems for the colourblind"
+msgstr "Pelissä käytettävät materiaalit voivat tuottaa haasteita värisokeille"
+
+msgid "Other questions"
+msgstr "Muut kysymykset"
 
 msgid "Comments"
 msgstr "Muuta tietoa roolipelivastaaville"
 
-msgid "Is there anything else you would like to tell the RPG coordinators? For example, if you are a beginner GM and would like some additional support, let us know and we will gladly help you out!"
-msgstr "Jos haluat kertoa roolipelivastaaville jotakin joka ei sisälly ylläoleviin kenttiin, kirjoita se tähän. Jos olet esimerkiksi aloitteleva pelinjohtaja, ja kaipaat lisätukea, autamme mielellämme!"
+msgid "Is there anything else you would like to tell the RPG coordinators that doesn’t fit any of the fields above or would you like to clarify something?<br/>For example, if you are a beginner GM and would like some additional support, let us know and we will gladly help you out!"
+msgstr "Jos haluat kertoa roolipelivastaaville jotakin joka ei sisälly ylläoleviin kenttiin tai tarkentaa jotain, kirjoita se tähän. Jos olet esimerkiksi aloitteleva pelinjohtaja, ja kaipaat lisätukea, autamme mielellämme!"
+
+msgid "If Ropecon is held virtually, I can run my game virtually"
+msgstr "Jos Ropecon siirtyy verkkoon, voin pelauttaa pelini etänä"
 
 # ropelomake
 

@@ -519,6 +519,12 @@ class Programme(models.Model, CsvExportMixin):
         blank=True,
         related_name='+',
     )
+    ropecon2021_blocked_time_slots = models.ManyToManyField('ropecon2021.TimeSlot',
+        verbose_name=_('When are you NOT able to run your larp?'),
+        help_text=_('Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.'),
+        blank=True,
+        related_name='+',
+    )
     ropecon2019_preferred_time_slots = models.ManyToManyField('ropecon2019.TimeSlot',
         verbose_name=_('time preferences'),
         help_text=_('When would you like to host your game program? Check the times when you would like to host your game program. If you have more specific needs regarding the timing, please let us know in the Comments field below. We do not restrict your desired times, but we reserve the right to make changes. For example, we would rather have tournaments one after another than at the same time.'),
@@ -578,6 +584,93 @@ class Programme(models.Model, CsvExportMixin):
         default='',
         blank=True,
         verbose_name=_('What language is used in the game materials?'),
+    )
+
+    ropecon2021_programme_for_children = models.BooleanField(
+        default=False,
+        verbose_name=_('Programme for children'),
+        help_text=_('If your programme is aimed at children and their guardians, please tick this box.'),
+    )
+
+    ropecon_theme = models.BooleanField(
+        default=False,
+        verbose_name=_('Theme: Elements'),
+        help_text=_('If your programme is related to the theme of Ropecon 2021, please tick this box.'),
+    )
+
+    ropecon2021_rpg_clarifications = models.TextField(
+        verbose_name=_('Any clarifications?'),
+        help_text=_('Specify here is you have any clarifications or if you have anything to expand upon regarding the above questions.'),
+        blank=True,
+        null=True,
+        default='',
+    )
+
+    ropecon2021_accessibility_loud_sounds = models.BooleanField(
+        default=False,
+        verbose_name=_('Loud sounds'),
+    )
+
+    ropecon2021_accessibility_flashing_lights = models.BooleanField(
+        default=False,
+        verbose_name=_('Flashing or bright lights'),
+    )
+
+    ropecon2021_accessibility_strong_smells = models.BooleanField(
+        default=False,
+        verbose_name=_('Strong smells'),
+    )
+
+    ropecon2021_accessibility_irritate_skin = models.BooleanField(
+        default=False,
+        verbose_name=_('Materials or substances that irritate the skin'),
+    )
+
+    ropecon2021_accessibility_physical_contact = models.BooleanField(
+        default=False,
+        verbose_name=_('Physical contact and/or low chances of personal space'),
+    )
+
+    ropecon2021_accessibility_low_lightning = models.BooleanField(
+        default=False,
+        verbose_name=_('Darkness/low lighting'),
+    )
+
+    ropecon2021_accessibility_moving_around = models.BooleanField(
+        default=False,
+        verbose_name=_('Participation involves a lot of moving around without a chance for sitting down'),
+    )
+
+    ropecon2021_accessibility_video = models.BooleanField(
+        default=False,
+        verbose_name=_('The programme involves watching a video without subtitles for the hearing impaired'),
+    )
+
+    ropecon2021_accessibility_recording = models.BooleanField(
+        default=False,
+        verbose_name=_('Participation requires listening to a recording that does not have a text version for the hearing impaired'),
+    )
+
+    ropecon2021_accessibility_text = models.BooleanField(
+        default=False,
+        verbose_name=_('Participation involves reading long texts independently, and the texts are not available as recordings for those with visual impairment'),
+    )
+
+    ropecon2021_accessibility_colourblind = models.BooleanField(
+        default=False,
+        verbose_name=_('Material used in the programme can cause problems for the colourblind'),
+    )
+
+    ropecon2021_accessibility_inaccessibility = models.TextField(
+        verbose_name=_('The program involves some other form of inaccessibility. Please clarify.'),
+        blank=True,
+        null=True,
+        default='',
+    )
+
+    ropecon2021_rpg_physical_or_virtual = models.BooleanField(
+        default=False,
+        verbose_name=_('If Ropecon is held virtually, I can run my game virtually'),
     )
 
     is_using_paikkala = models.BooleanField(
