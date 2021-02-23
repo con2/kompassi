@@ -1,13 +1,14 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from crispy_forms.layout import Layout, Fieldset
+from crispy_forms.layout import Layout, Fieldset, HTML
 
 from core.forms import horizontal_form_helper
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory
 from programme.forms import AlternativeProgrammeFormMixin
 from programme.models import Category, Programme
+from core.utils.form_utils import RenderTemplate
 
 from .models import SignupExtra
 
@@ -163,21 +164,22 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
                 'ropecon2019_blocked_time_slots',
             ),
             Fieldset(_('Accessibility'),
-            'ropecon2021_accessibility_loud_sounds',
-            'ropecon2021_accessibility_flashing_lights',
-            'ropecon2021_accessibility_strong_smells',
-            'ropecon2021_accessibility_irritate_skin',
-            'ropecon2021_accessibility_physical_contact',
-            'ropecon2021_accessibility_low_lightning',
-            'ropecon2021_accessibility_moving_around',
-            'ropecon2021_accessibility_video',
-            'ropecon2021_accessibility_recording',
-            'ropecon2021_accessibility_text',
-            'ropecon2021_accessibility_colourblind',
+                RenderTemplate('ropecon2021_rpg_form_accessibility.html'),
+                'ropecon2021_accessibility_loud_sounds',
+                'ropecon2021_accessibility_flashing_lights',
+                'ropecon2021_accessibility_strong_smells',
+                'ropecon2021_accessibility_irritate_skin',
+                'ropecon2021_accessibility_physical_contact',
+                'ropecon2021_accessibility_low_lightning',
+                'ropecon2021_accessibility_moving_around',
+                'ropecon2021_accessibility_video',
+                'ropecon2021_accessibility_recording',
+                'ropecon2021_accessibility_text',
+                'ropecon2021_accessibility_colourblind',
             ),
             Fieldset(_('Other questions'),
-            'notes_from_host',
-            'ropecon2021_rpg_physical_or_virtual',
+                'notes_from_host',
+                'ropecon2021_rpg_physical_or_virtual',
             ),
         )
 

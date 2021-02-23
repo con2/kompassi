@@ -1,4 +1,5 @@
 from django import forms
+from django.template.loader import get_template
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div
@@ -82,3 +83,19 @@ class DateField(forms.DateField):
         )
         my_kwargs = dict(defaults, **kwargs)
         super(DateField, self).__init__(*args, **my_kwargs)
+
+
+class RenderTemplate:
+    """
+    Like crispy_forms.layout.HTML, except instead of inlining the template contents,
+    you give it a template name.
+
+    Caveat: Does not expose any variables to the template, as `context` is a RequestContext
+    and whatever we get from `get_template` expects a `dict` as its context.
+    """
+
+    def __init__(self, template_name):
+        self.template_name = template_name
+
+    def render(self, form, form_style, context, template_pack=None, **kwargs):
+        return get_template(self.template_name).render({})
