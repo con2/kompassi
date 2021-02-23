@@ -14,6 +14,10 @@ class GroupManagementMixin(object):
     def is_user_in_admin_group(self, user):
         return self.is_user_in_group(user, self.admin_group)
 
+    # DEPRECATED: Once all applications have moved to CBAC, remove this
+    def is_user_admin(self, user):
+        return user.is_superuser or self.is_user_in_admin_group(user)
+
     @classmethod
     def make_group_name(cls, host, suffix):
         # to avoid cases where someone calls .get_or_create_groups(foo, 'admins')
