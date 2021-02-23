@@ -64,7 +64,7 @@ def profile_detail_view(request, programme_id):
     if request.method == 'POST':
         if not programme.host_can_edit:
             messages.error(request, programme.host_cannot_edit_explanation)
-            return redirect('profile_detail_view', programme.id)
+            return redirect('programme:profile_detail_view', programme.id)
 
         elif all(the_form.is_valid() for the_form in forms):
             with transaction.atomic():

@@ -21,7 +21,7 @@ def accept_invitation_view(request, event, code):
 
     if invitation.state == 'used' and programme.host_can_edit:
         messages.warning(request, _('You have already accepted this invitation. You can edit the programme below.'))
-        return redirect('profile_detail_view', programme.pk)
+        return redirect('programme:profile_detail_view', programme.pk)
     elif invitation.state == 'used' and not programme.host_can_edit:
         messages.error(request, _('You have already accepted this invitation. You can no longer edit the programme.'))
         return redirect('profile_view')
@@ -84,7 +84,7 @@ def accept_invitation_view(request, event, code):
                 'information later from your profile.'
             ))
 
-            return redirect('profile_detail_view', programme.pk)
+            return redirect('programme:profile_detail_view', programme.pk)
         else:
             messages.error(request, _('Please check the form.'))
 

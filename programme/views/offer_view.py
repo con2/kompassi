@@ -141,7 +141,7 @@ def offer_form_view(request, event, form_slug):
                 'Thank you for offering your programme. The programme managers will be in touch.'
             ))
 
-            return redirect('profile_detail_view', programme.pk)
+            return redirect('programme:profile_detail_view', programme.pk)
         else:
             messages.error(request, _('Please check the form.'))
 
