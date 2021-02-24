@@ -165,7 +165,7 @@ msgstr "Pelin perustiedot"
 #LARP 
 #: forms.py
 msgid "Think of a short title for your game. We reserve the right to alter the title."
-msgstr "Keksi ytimekäs otsikko pelillesi. Varaamme oikeuden muokata otsikkoa."
+msgstr "Keksi ytimekäs otsikko larpillesi. Varaamme oikeuden muokata otsikkoa."
 
 #LARP 
 #: forms.py
@@ -220,7 +220,7 @@ msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetä
 #LARP 
 #: forms.py
 msgid "Please let us know your preference. Due to the limited space we are not able to accommodate all requests. One four hour session gives you one weekend ticket. A second session gives you an additional day ticket."
-msgstr "Tässä voit esittää toiveen montako kertaa haluaisit pelisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita. Yhdellä neljän tunnin pelautuksella saat yhden viikonloppurannekkeen. Toisella pelautuksella saat lisäksi päivärannekkeen."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita. Yhdellä neljän tunnin pelautuksella saat yhden viikonloppurannekkeen. Toisella pelautuksella saat lisäksi päivärannekkeen."
 
 #LARP 
 #: forms.py
