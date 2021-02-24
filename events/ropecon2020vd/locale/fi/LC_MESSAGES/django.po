@@ -10,7 +10,7 @@ msgid "Describe your programme to your potential audience or participants in an 
 msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Jos ohjelmasi on humoristinen tai viihteellinen, annathan sen näkyä myös kuvauksessa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
 msgid "If your programme contains topics or themes that are heavy or distressing, please mention them here."
-msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
+msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita."
 
 msgid "Programme category"
 msgstr "Ohjelmaluokka"
@@ -215,13 +215,13 @@ msgid "Title of your larp"
 msgstr "Pelin nimi"
 
 msgid "Give your larp a catchy and concise title. We reserve the right to edit the title if necessary."
-msgstr "Keksi ytimekäs otsikko pelillesi. Varaamme oikeuden muokata otsikkoa."
+msgstr "Keksi ytimekäs otsikko larpillesi. Varaamme oikeuden muokata otsikkoa."
 
 msgid "For one run of a 3-4 hour original larp (180-240 minutes) you will receive a one-day ticket to Ropecon. This includes time for propping, brief and debrief, as well as the actual game."
-msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman pelisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman larppisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
 
 msgid "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour original larp or two runs of a pre-written scenario you will receive one weekend ticket as a GM. Additional runs of your larp will yield an extra one-day ticket."
-msgstr "Tässä voit esittää toiveen montako kertaa haluaisit pelisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita.<br><br>Yhdellä oman pelisi 3-4 tunnin pelautuksella tai kahdella skenaarion pelautuksella saat yhden viikonloppurannekkeen. Lisäpelautuksella saat lisäksi päivärannekkeen."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita.<br><br>Yhdellä itse kirjoitetun larpin 3-4 tunnin pelautuksella tai kahdella skenaarion pelautuksella saa yhden viikonloppurannekkeen. Lisäpelautuksella saa lisäksi päivärannekkeen."
 
 msgid "Number of characters"
 msgstr "Hahmojen lukumäärä"
@@ -230,13 +230,13 @@ msgid "If the design of your game requires gendered characters, please mention i
 msgstr "Jos pelin design vaatii sukupuolitettuja hahmoja, kerro siitä vapaamuotoisissa terveisissä."
 
 msgid "How many players must sign up for the larp to be able to run it?"
-msgstr "Kuinka monta pelaajaa peliin täytyy vähintään ilmoittautua, jotta peli toteutuu?"
+msgstr "Kuinka monta pelaajaa larppiin täytyy vähintään ilmoittautua, jotta larppi toteutuu?"
 
 msgid "Advertise your larp for potential players. Inform players about what is expected of them, and what themes your larp contains. If your larp includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br><br>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary."
 msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos pelissäsi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
 msgid "If your larp contains any heavy topics or themes that some players may find distressing, please mention them here."
-msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
+msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita."
 
 msgid "Game designer (if other than GM)"
 msgstr "Pelin kirjoittaja (jos muu kuin pelinjohtaja)"
@@ -263,25 +263,31 @@ msgid "Is there anything else you would like to tell the larp coordinators?<br><
 msgstr "Haluatko sanoa larp-coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä?<br><br>Mainitse tässä, jos pelisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br><br>Pyrimme, että kokonaisuudessaan conissa olevissa peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br><br>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
 
 msgid "If you are able, prepared and willing to run your larp in English if necessary, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään larppisi tarvittaessa englanniksi."
 
 msgid "If your larp contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
-msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+msgstr "Ruksaa tämä ruutu, mikäli larppisi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
 
 msgid "If your larp is aimed at children under 7 years of age, please tick this box. You can also tick this box if your larp is suitable for children under 7 years, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos larppisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "If your larp is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your larp is suitable for children aged 7-12 years, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos larppisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "If your larp is aimed at children over the age of 12, please tick this box. You can also tick this box if your larp is suitable for children aged 12 years and older, even if it is not specifically designed for them."
-msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos larppisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
 
 msgid "If your larp is not suitable for children under 15 years of age, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos pelisi ei sovellu alle 15-vuotiaille lapsille."
+msgstr "Ruksaa tämä ruutu, jos larppisi ei sovellu alle 15-vuotiaille lapsille."
+
+msgid "If your larp is aimed at children and their guardians, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu lapsille ja heidän huoltajilleen."
 
 msgid "If your larp is suitable for players with very limited or without any previous experience about larping, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos pelisi voi osallistua, vaikka aiempaa kokemusta larppauksesta olisi hyvin vähän tai ei lainkaan."
+msgstr "Ruksaa tämä ruutu, jos larppiisi voi osallistua, vaikka aiempaa kokemusta larppauksesta olisi hyvin vähän tai ei lainkaan."
+
+msgid "If your larp is related to the theme of Ropecon 2021, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos larppisi liittyy tämän vuoden teemaan."
 
 msgid "If your larp is related to the theme of Ropecon 2020 (end of the world), please tick this box."
 msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
@@ -495,19 +501,19 @@ msgid "Title of the larp"
 msgstr "Pelin nimi"
 
 msgid "Come up with a catchy and concise name for your larp. Ropecon reserves the right to edit the title."
-msgstr "Keksi ytimekäs otsikko pelillesi. Varaamme oikeuden muokata otsikkoa."
+msgstr "Keksi ytimekäs otsikko larpillesi. Varaamme oikeuden muokata otsikkoa."
 
 msgid "Estimated duration (minutes)"
 msgstr "Arvioitu pituus (minuuttia)"
 
 msgid "For one run of a 3-4 hour game (180-240 minutes) of your own writing you will receive one free weekend ticket. This includes time for propping, brief and debrief, as well as the actual game time."
-msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman pelisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman larppisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
 
 msgid "Number of runs"
 msgstr "Pelautusten lukumäärä"
 
 msgid "Here you can request how many times you would like to run your game during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour game of your own writing or two runs of a pre-written scenario you will receive one free weekend ticket. Additional runs of your game will yield an extra one-day ticket."
-msgstr "Tässä voit esittää toiveen montako kertaa haluaisit pelisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita.<br><br>Yhdellä oman pelisi 3-4 tunnin pelautuksella tai kahdella skenaarion pelautuksella saat yhden viikonloppurannekkeen. Lisäpelautuksella saat lisäksi päivärannekkeen."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita.<br><br>Yhdellä itse kirjoitetun larpin 3-4 tunnin pelautuksella tai kahdella skenaarion pelautuksella saa yhden viikonloppurannekkeen. Lisäpelautuksella saa lisäksi päivärannekkeen."
 
 msgid "Comments"
 msgstr "Vapaamuotoiset terveiset"

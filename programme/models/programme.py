@@ -142,6 +142,11 @@ ROPECON2021_GAMEDESK_PHYSICAL_OR_VIRTUAL_CHOICES = [
     ('virt_only', _('I can organize my programme only at a virtual con')),
     ('phys_or_virt', _('I can organize my programme both at a physical con and at a virtual con')),
 ]
+ROPECON2021_LARP_PHYSICAL_OR_VIRTUAL_CHOICES = [
+    ('physical_only', _('Physical con')),
+    ('virtual_only', _('Virtual con')),
+    ('physical_or_virtual', _('Both')),
+]
 
 CSV_EXPORT_EXCLUDED_FIELDS = [
     'paikkala_icon',
@@ -600,7 +605,7 @@ class Programme(models.Model, CsvExportMixin):
 
     ropecon2021_rpg_clarifications = models.TextField(
         verbose_name=_('Any clarifications?'),
-        help_text=_('Specify here is you have any clarifications or if you have anything to expand upon regarding the above questions.'),
+        help_text=_('Specify here if you have any clarifications or if you have anything to expand upon regarding the above questions.'),
         blank=True,
         null=True,
         default='',
@@ -903,6 +908,15 @@ class Programme(models.Model, CsvExportMixin):
         default=ROPECON2021_GAMEDESK_PHYSICAL_OR_VIRTUAL_CHOICES[0][0],
         verbose_name=_('Physical or virtual programme?'),
         help_text=_('The organizers of Ropecon strive to organize a physical con, and if the con can be held thusly, virtual programmes will not be organized. If the con cannot be face to face, we cannot organize physical programmes during a virtual con.<br><br>Specify here whether your programme can be organized face to face, virtually, or either way.'),
+        null=True,
+    )
+
+    ropecon2021_larp_physical_or_virtual = models.CharField(
+        max_length=max(len(key) for (key, text) in ROPECON2021_LARP_PHYSICAL_OR_VIRTUAL_CHOICES),
+        choices=ROPECON2021_LARP_PHYSICAL_OR_VIRTUAL_CHOICES,
+        default=ROPECON2021_LARP_PHYSICAL_OR_VIRTUAL_CHOICES[0][0],
+        verbose_name=_('I am submitting a larp for'),
+        help_text=_('Select the event form appropriate for the larp you have planned.'),
         null=True,
     )
 
