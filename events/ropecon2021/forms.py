@@ -104,7 +104,7 @@ RPG_FORM_FIELD_TEXTS = dict(
     is_in_english=(_('In English'), _('If your game can be run in English, please tick this box.')),
     is_age_restricted=(_('For players over 18 only'), _('If your game contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players.')),
     is_beginner_friendly=(_('Beginner-friendly'), _('If your game is suitable for players with very limited or without any previous experience about RPGs, please tick this box.')),
-    ropecon2020_not_suitable_for_children=(_('Not suitable for children below 15 years'), _('If your game is not suitable for children under 15 years of age, please tick this box.')),
+    ropecon2020_not_suitable_for_children=(_('Not suitable for children under 15'), _('If your game is not suitable for children under 15 years of age, please tick this box.')),
     ropecon_theme=(_('Theme: Elements'), _('If your game is related to the theme of Ropecon 2021, please tick this box.')),
     ropecon2018_style_serious=(_('Serious playstyle'), None),
     ropecon2018_style_light=(_('Lighthearted playstyle'), None),
@@ -268,7 +268,7 @@ LARP_FORM_FIELD_TEXTS = dict(
     ropecon2020_suitable_for_children_under_7=(_('Suitable for children under 7'), _('If your larp is aimed at children under 7 years of age, please tick this box. You can also tick this box if your larp is suitable for children under 7 years, even if it is not specifically designed for them.')),
     ropecon2020_suitable_for_children_aged_7_12=(_('Suitable for children aged 7-12'), _('If your larp is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your larp is suitable for children aged 7-12 years, even if it is not specifically designed for them.')),
     ropecon2020_suitable_for_children_aged_12_plus=(_('Suitable for children aged 12+'), _('If your larp is aimed at children over the age of 12, please tick this box. You can also tick this box if your larp is suitable for children aged 12 years and older, even if it is not specifically designed for them.')),
-    ropecon2020_not_suitable_for_children=(_('Not suitable for children aged below 15'), _('If your larp is not suitable for children under 15 years of age, please tick this box.')),
+    ropecon2020_not_suitable_for_children=(_('Not suitable for children under 15'), _('If your larp is not suitable for children under 15 years of age, please tick this box.')),
     ropecon2021_programme_for_children=(_('Programme for children'), _('If your larp is aimed at children and their guardians, please tick this box.')),
     is_beginner_friendly=(_('Beginner-friendly'), _('If your larp is suitable for players with very limited or without any previous experience about larping, please tick this box.')),
     ropecon_theme=(_('Theme: Elements'), _('If your larp is related to the theme of Ropecon 2021, please tick this box.')),
@@ -412,7 +412,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
     ropecon2020_suitable_for_children_under_7=(_('For children under 7'), _('If your programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your programme is suitable for children under 7 years, even if it is not specifically aimed at them.')),
     ropecon2020_suitable_for_children_aged_7_12=(_('For children aged 7-12'), _('If your programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your programme is suitable for children aged 7-12 years, even if it is not specifically aimed at them.')),
     ropecon2020_suitable_for_children_aged_12_plus=(_('For children aged 12+'), _('If your programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your programme is suitable for children aged 12 years and older, even if it is not specifically aimed at them.')),
-    ropecon2020_not_suitable_for_children=(_('Not suitable for children'), _('If your programme is not suitable for children under 15 years of age, please tick this box.')),
+    ropecon2020_not_suitable_for_children=(_('Not suitable for children under 15'), _('If your programme is not suitable for children under 15 years of age, please tick this box.')),
     is_age_restricted=(_('For 18+ only'), _('If your programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all participants.')),
     is_inaccessible=(_('Accessibility'), _('If your programme contains any loud noises, flashing lights or other elements that can limit accessibility, please tick this box. More details can be provided in the Comments section below if necessary.')),
     ropecon2020_theme_end_of_the_world=(_('Theme: End of the world'), _('If your programme is related to the theme of Ropecon 2021 (end of the world), please tick this box.')),
@@ -526,24 +526,24 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
     category=(_('Game category'), _('Which category does your game programme belong to?')),
     ropecon2019_gaming_desk_subtype=(_('Game programme type'), _('What type of game programme are you offering?<br><br>Tournament - organising your own game tournament or contest<br><br>Demonstration - showcasing, demonstrating and running demo games at the Experience Point<br><br>Open game - running games with or without specific scenarios by request<br><br>Other - Something other than mentioned above')),
     title=(_('Game programme title'), _('Give your game programme a catchy and concise title. We reserve the right to edit the title if necessary.')),
-    approximate_length=(_('Estimated duration (minutes)'), _('For 3 to 4 hours (180-240 minutes) of game programme you will receive a one-day ticket to Ropecon. For 6 to 8 hours (360-480 minutes) of game programme you will receive a weekend ticket to Ropecon.')),
+    approximate_length=(_('Estimated duration (minutes)'), _('For 3 to 5 hours (180-300 minutes) of game programme you will receive a one-day ticket to Ropecon.<br/><br/>For 6 to 8 hours (360-480 minutes) of game programme you will receive a weekend ticket to Ropecon.')),
     max_players=(_('Number of players'), _('How many players can participate in the game programme?')),
-    description=(_('Description'), _('Advertise your game for potential players. Inform players about what is expected of them, and what themes your game contains. If your game includes any heavy themes, such as physical violence or psychological abuse, please mention it here. Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.')),
+    description=(_('Description'), _('Advertise your game for potential players. Inform players about what is expected of them, and what themes your game contains. If your game includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br/><br/>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.')),
     content_warnings=(_('Content warnings'), _('If your game programme contains any heavy topics or themes that some players may find distressing, please mention them here.')),
     rpg_system=(_('Game system'), _('What game system is used? For example, “Magic the Gathering”. If you designed the game system yourself, describe it in a few words. For example, “4X, space battle, conquest”')),
-    ropecon2018_signuplist=(_('Sign-up process'), _('How will players sign up for your game programme?<br><br>No sign-up - No sign-up is required to participate.<br><br>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br><br>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option.')),
+    ropecon2018_signuplist=(_('Sign-up process'), _('How will players sign up for your game programme?<br/><br/>No sign-up - No sign-up is required to participate.<br/><br/>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br/><br/>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option.')),
     tech_requirements=(_('Space and technical needs'), _('How much table space and how many chairs do you need for your game programme? Do you have any technical needs (for example, electricity)? Please keep in mind that we may not be able to fulfill all requests, so please justify how yours would benefit your game programme. Table size is 70 cm x 200 cm.')),
-    ropecon2019_preferred_time_slots=(_('Preferred schedule'), _('When would you like to host your game programme? Select the times when you ARE ABLE to host your game programme.<br><br>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below.<br><br>There are no restrictions on when you can or cannot host your game programme, but we reserve the right to make changes if necessary (for example, we would prefer to schedule tournaments to be held one after another rather than at the same time).')),
+    ropecon2021_blocked_time_slots=(_('When are you NOT able to host your game programme?'), _('Select the times when you are <b>NOT able</b> to run your game programme.<br/><br/>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below (e.g. “I would like to run my game late in the evening”).<br/><br/>In this section, we wish that you would include information about restrictions set by e.g. work schedules or bus schedules (if you need to e.g. leave Messukeskus by 23 o’clock in order to get to your lodgings).')),
     notes_from_host=(_('Comments'), _('Is there anything else you would like to tell the organisers of Ropecon? You can also specify your preferred schedule here.')),
     is_in_english=(_('English OK'), _('If you are able, prepared and willing to host your game programme in English if necessary, please tick this box.')),
     is_age_restricted=(_('For players over 18 only'), _('If your game programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players.')),
     ropecon2020_suitable_for_children_under_7=(_('Suitable for children under 7'), _('If your game programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them.')),
     ropecon2020_suitable_for_children_aged_7_12=(_('Suitable for children aged 7-12'), _('If your game programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them.')),
     ropecon2020_suitable_for_children_aged_12_plus=(_('Suitable for children aged 12+'), _('If your game programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them.')),
-    ropecon2020_not_suitable_for_children=(_('Not suitable for children'), _('If your game programme is not suitable for children under 15 years of age, please tick this box.')),
+    ropecon2020_not_suitable_for_children=(_('Not suitable for children under 15'), _('If your game programme is not suitable for children under 15 years of age, please tick this box.')),
+    ropecon2021_programme_for_children=(_('Programme for children'), _('If your game programme is aimed at children and their guardians, tick this box.')),
     is_beginner_friendly=(_('Beginner-friendly'), _('If your game programme is suitable for players with very limited or without any previous knowledge about the game in question, please tick this box.')),
-    ropecon2020_theme_end_of_the_world=(_('Theme: End of the world'), _('If your game programme is related to the theme of Ropecon 2021 (end of the world), please tick this box.')),
-    ropecon2020_theme_dinosaurs=(_('Theme: Dinosaurs'), _('If your game programme is related to the children’s theme of Ropecon 2021 (dinosaurs), please tick this box.')),
+    ropecon_theme=(_('Theme: Elements'), _('If your game programme is related to this year’s theme, please tick this box.')),
 )
 
 
@@ -569,9 +569,10 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'content_warnings',
             'rpg_system',
             'ropecon2020_materials_language',
+            'ropecon2021_gamedesk_materials',
             'ropecon2018_signuplist',
             'tech_requirements',
-            'ropecon2019_preferred_time_slots',
+            'ropecon2021_blocked_time_slots',
             'notes_from_host',
 
             Fieldset(_('Who is your game programme for?'),
@@ -581,9 +582,24 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 'ropecon2020_suitable_for_children_aged_7_12',
                 'ropecon2020_suitable_for_children_aged_12_plus',
                 'ropecon2020_not_suitable_for_children',
+                'ropecon2021_programme_for_children',
                 'is_beginner_friendly',
-                'ropecon2020_theme_end_of_the_world',
-                'ropecon2020_theme_dinosaurs',
+                'ropecon_theme',
+            ),
+            Fieldset(_('Accessibility and inclusivity'),
+                RenderTemplate('ropecon2021_gamedesk_form_accessibility.html'),
+                'ropecon2021_accessibility_loud_sounds',
+                'ropecon2021_accessibility_flashing_lights',
+                'ropecon2021_accessibility_strong_smells',
+                'ropecon2021_accessibility_irritate_skin',
+                'ropecon2021_accessibility_physical_contact',
+                'ropecon2021_accessibility_low_lightning',
+                'ropecon2021_accessibility_moving_around',
+                'ropecon2021_accessibility_video',
+                'ropecon2021_accessibility_recording',
+                'ropecon2021_accessibility_text',
+                'ropecon2021_accessibility_colourblind',
+                'ropecon2021_accessibility_inaccessibility',
             ),
         )
 
@@ -603,7 +619,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields['max_players'].required = True
         self.fields['description'].required = True
         self.fields["ropecon2018_signuplist"].choices = [('none', _('No sign-up')), ('itse', _('Sign-up in advance')), ('tiski', _('Sign-up at the Gaming Desk')),]
-        self.fields['ropecon2019_preferred_time_slots'].required = True
+        self.fields['ropecon2021_blocked_time_slots'].required = True
 
     class Meta:
         model = Programme
@@ -618,9 +634,10 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'content_warnings',
             'rpg_system',
             'ropecon2020_materials_language',
+            'ropecon2021_gamedesk_materials',
             'ropecon2018_signuplist',
             'tech_requirements',
-            'ropecon2019_preferred_time_slots',
+            'ropecon2021_blocked_time_slots',
             'notes_from_host',
             'is_in_english',
             'is_age_restricted',
@@ -628,14 +645,26 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2020_suitable_for_children_aged_7_12',
             'ropecon2020_suitable_for_children_aged_12_plus',
             'ropecon2020_not_suitable_for_children',
+            'ropecon2021_programme_for_children',
             'is_beginner_friendly',
-            'ropecon2020_theme_end_of_the_world',
-            'ropecon2020_theme_dinosaurs',
+            'ropecon_theme',
+            'ropecon2021_accessibility_loud_sounds',
+            'ropecon2021_accessibility_flashing_lights',
+            'ropecon2021_accessibility_strong_smells',
+            'ropecon2021_accessibility_irritate_skin',
+            'ropecon2021_accessibility_physical_contact',
+            'ropecon2021_accessibility_low_lightning',
+            'ropecon2021_accessibility_moving_around',
+            'ropecon2021_accessibility_video',
+            'ropecon2021_accessibility_recording',
+            'ropecon2021_accessibility_text',
+            'ropecon2021_accessibility_colourblind',
+            'ropecon2021_accessibility_inaccessibility',
         )
 
         widgets = dict(
             content_warnings=forms.Textarea,
-            ropecon2019_preferred_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2021_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
 
