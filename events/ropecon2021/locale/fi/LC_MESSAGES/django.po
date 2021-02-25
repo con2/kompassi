@@ -10,7 +10,7 @@ msgid "Describe your programme to your potential audience or participants in an 
 msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Jos ohjelmasi on humoristinen tai viihteellinen, annathan sen näkyä myös kuvauksessa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
 msgid "If your programme contains topics or themes that are heavy or distressing, please mention them here."
-msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
 
 msgid "Programme category"
 msgstr "Ohjelmaluokka"
@@ -26,6 +26,12 @@ msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetä
 
 msgid "If your programme is suitable for people with very limited or without any previous knowledge about the subject, please tick this box."
 msgstr "Ruksaa tämä ruutu, mikäli ohjelmaan voi osallistua vaikka aiempaa kokemusta aiheesta olisi hyvin vähän tai ei lainkaan."
+
+msgid "If you are able, prepared and willing to organise your programme in English if necessary, please tick this box. If your programme is selected for the event, the programme team will be in contact with you in regards to your language choice."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään ohjelmasi tarvittaessa englanniksi. Mikäli ohjelmasi valitaan tapahtumaan, ohjelmatiimi on yhteydessä sinuun kielen valinnan suhteen."
+
+msgid "The organisers of Ropecon strive to organise a physical  con; if it can be organised thusly, virtual programmes cannot be organised. If a physical con cannot be organised, physical programmes cannot be organised, naturally.<br/><br/>Specify here whether you can organise your programme at a physical con, at a virtual con, or at both."
+msgstr "Ropeconin järjestäjien tavoitteena on järjestää lähicon, ja sen toteutuessa etäohjelmia ei pystytä järjestämään. Jos lähiconia ei voida järjestää, emme luonnollisesti voi järjestää lähiohjelmaa etäconissa.<br/><br/>Kerro tässä, voitko järjestää ohjelmasi lähiconissa, etäconissa vai molemmissa."
 
 msgid "For children under 7"
 msgstr "Sopii alle 7-vuotiaille"
@@ -60,7 +66,7 @@ msgstr "Esteellisyys"
 msgid "If your programme contains any loud noises, flashing lights or other elements that can limit accessibility, please tick this box. More details can be provided in the Comments section below if necessary."
 msgstr "Ruksaa tämä ruutu, jos ohjelma sisältää kovia ääniä, valoja tai muuta, mikä voi rajoittaa osallistumista. Tarkenna tarvittaessa viimeisessä avoimessa kentässä."
 
-msgid "If your programme is related to the theme of Ropecon 2021 (end of the world), please tick this box."
+msgid "If your programme is related to the theme of Ropecon 2021, please tick this box."
 msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden teemaan."
 
 msgid "If your programme is related to the children’s theme of Ropecon 2021 (dinosaurs), please tick this box."
@@ -99,8 +105,8 @@ msgstr "Ruksaa ne ajat, jolloin ET halua pitää ohjelmaasi. Aikaslotit ovat tar
 msgid "Is there anything else you would like to tell the programme coordinators or organisers of Ropecon?"
 msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
 
-msgid "I’m interested in participating in a panel discussion related to my field of expertise."
-msgstr "Voin osallistua erikoisalaani sivuavaan paneelikeskusteluun"
+msgid "I’m interested in participating in a panel discussion related to my field(s) of expertise."
+msgstr "Voin osallistua erikoisalaani/-alojani sivuavaan paneelikeskusteluun."
 
 msgid "Recording & publishing consent"
 msgstr "Videointilupa"

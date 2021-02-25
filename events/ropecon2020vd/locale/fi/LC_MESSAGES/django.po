@@ -10,7 +10,7 @@ msgid "Describe your programme to your potential audience or participants in an 
 msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Jos ohjelmasi on humoristinen tai viihteellinen, annathan sen näkyä myös kuvauksessa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
 msgid "If your programme contains topics or themes that are heavy or distressing, please mention them here."
-msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
 
 msgid "Programme category"
 msgstr "Ohjelmaluokka"
