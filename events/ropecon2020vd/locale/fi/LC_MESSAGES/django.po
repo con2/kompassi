@@ -10,7 +10,7 @@ msgid "Describe your programme to your potential audience or participants in an 
 msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Jos ohjelmasi on humoristinen tai viihteellinen, annathan sen näkyä myös kuvauksessa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
 msgid "If your programme contains topics or themes that are heavy or distressing, please mention them here."
-msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
 
 msgid "Programme category"
 msgstr "Ohjelmaluokka"
@@ -186,7 +186,7 @@ msgid "Who is your game programme for?"
 msgstr "Kenelle peli on tarkoitettu?"
 
 msgid "If you are able, prepared and willing to host your game programme in English if necessary, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
 
 msgid "If your game programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
 msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
@@ -525,7 +525,7 @@ msgid "The game can be run in English"
 msgstr "Pelin voi pelauttaa englanniksi"
 
 msgid "If you are able, prepared and willing to organise your program in English if necessary, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
 
 msgid "The game is intended for players over 18"
 msgstr "Peli on tarkoitettu vain täysi-ikäisille pelaajille"
@@ -635,7 +635,7 @@ msgid "The game can be run in English"
 msgstr "Pelin voi pelauttaa englanniksi"
 
 msgid "If you are able, prepared and willing to organise your program in English if necessary, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
 
 msgid "The game is intended for players over 18"
 msgstr "Peli on tarkoitettu vain täysi-ikäisille pelaajille"

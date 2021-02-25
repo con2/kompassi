@@ -667,7 +667,8 @@ class Programme(models.Model, CsvExportMixin):
     )
 
     ropecon2021_accessibility_inaccessibility = models.TextField(
-        verbose_name=_('The program involves some other form of inaccessibility. Please clarify.'),
+        verbose_name=_('Other inaccessibility'),
+        help_text=_('The program involves some other form of inaccessibility. Please clarify.'),
         blank=True,
         null=True,
         default='',
@@ -677,6 +678,15 @@ class Programme(models.Model, CsvExportMixin):
         default=False,
         verbose_name=_('If Ropecon is held virtually, I can run my game virtually'),
     )
+
+    ropecon2021_gamedesk_materials = models.TextField(
+        verbose_name=_('Does your programme require materials from the players?'),
+        help_text=_('Specify here whether your players are expected to bring their own game tools or other equipment and what that equipment is (e.g. card decks, figure armies).'),
+        blank=True,
+        null=True,
+        default='',
+    )
+
 
     is_using_paikkala = models.BooleanField(
         default=False,

@@ -215,7 +215,7 @@ msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa larpp
 #LARP 
 #: forms.py
 msgid "Check this box if you are capable, prepared and interested in running your game in English."
-msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
 
 #LARP 
 #: forms.py

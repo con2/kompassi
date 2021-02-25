@@ -109,7 +109,7 @@ msgid "The game can be run in English"
 msgstr "Pelin voi pelauttaa englanniksi"
 
 msgid "If you are able, prepared and willing to organise your program in English if necessary, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
 
 msgid "The game is intended for players over 18"
 msgstr "Peli on tarkoitettu vain täysi-ikäisille pelaajille"
@@ -219,7 +219,7 @@ msgid "The game can be run in English"
 msgstr "Pelin voi pelauttaa englanniksi"
 
 msgid "If you are able, prepared and willing to organise your program in English if necessary, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi englanniksi."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
 
 msgid "The game is intended for players over 18"
 msgstr "Peli on tarkoitettu vain täysi-ikäisille pelaajille"
