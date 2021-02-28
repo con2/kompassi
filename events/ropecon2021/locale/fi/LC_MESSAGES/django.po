@@ -54,10 +54,13 @@ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu yli 12-vuotiaille lapsil
 msgid "If your programme is not suitable for children under 15 years of age, please tick this box."
 msgstr "Ruksaa tämä ruutu, jos ohjelmasi ei sovellu alle 15-vuotiaille lapsille."
 
+msgid "If your programme is aimed at children and their guardians, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu lapsille ja heidän huoltajilleen."
+
 msgid "For 18+ only"
 msgstr "Vain täysi-ikäisille"
 
-msgid "If your programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all participants."
+msgid "If your programme contains themes that require participants to be 18 years or older, please tick this box. There will be an ID check for all participants."
 msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
 
 msgid "Accessibility"
@@ -361,7 +364,7 @@ msgstr "Kerro tässä, mitä tarvikkeita / proppeja larppisi tarvitsee ja mitä 
 msgid "When are you NOT able to run your larp?"
 msgstr "Milloin ET PYSTY pelauttamaan larppiasi?"
 
-msgid "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be <b>able</b> to run your larp unselected!<br/><br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
+msgid "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be <b>able</b> to run your larp unselected!<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.<br/><br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below."
 msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole</b> mahdollista pelauttaa larppiasi. Tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (esim. täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi.)<br/><br/>Alla vapaamuotoisissa terveisissä voit esittää toiveita sinulle parhaiten sopivista ajankohdista (esim. “en haluaisi pelauttaa aikaisin aamulla”)."
 
 msgid "The larp involves watching a video without subtitles for the hearing impaired"
