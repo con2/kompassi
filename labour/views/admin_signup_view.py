@@ -77,7 +77,7 @@ def admin_signup_view(request, vars, event, person_id):
             if 'save-return' in request.POST:
                 return redirect('admin_signups_view', event.slug)
             else:
-                return redirect('admin_signup_view', event.slug, person.pk)
+                return redirect('labour:admin_signup_view', event.slug, person.pk)
         else:
             # XXX Restore state just for shows, suboptimal but
             signup._state_flags = old_state_flags
