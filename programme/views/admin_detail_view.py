@@ -102,9 +102,9 @@ def admin_detail_view(request, vars, event, programme_id):
                 messages.success(request, _('The changes were saved.'))
 
                 if action == 'save-edit':
-                    return redirect('admin_detail_view', event.slug, programme_id)
+                    return redirect('programme:admin_detail_view', event.slug, programme_id)
                 elif action == 'save-return':
-                    return redirect('admin_view', event.slug)
+                    return redirect('programme:admin_view', event.slug)
                 else:
                     raise NotImplementedError(action)
             else:
@@ -121,7 +121,7 @@ def admin_detail_view(request, vars, event, programme_id):
 
                 messages.success(request, _('The host was successfully invited.'))
 
-                return redirect('admin_detail_view', event.slug, programme_id)
+                return redirect('programme:admin_detail_view', event.slug, programme_id)
             else:
                 messages.error(request, _('Please check the form.'))
 
@@ -133,7 +133,7 @@ def admin_detail_view(request, vars, event, programme_id):
 
                 messages.success(request, _('The freeform organizer was successfully added.'))
 
-                return redirect('admin_detail_view', event.slug, programme_id)
+                return redirect('programme:admin_detail_view', event.slug, programme_id)
             else:
                 messages.error(request, _('Please check the form.'))
 
@@ -174,7 +174,7 @@ def admin_detail_view(request, vars, event, programme_id):
                 else:
                     raise NotImplementedError(action)
 
-                return redirect('admin_detail_view', event.slug, programme_id)
+                return redirect('programme:admin_detail_view', event.slug, programme_id)
         else:
             messages.error(request, _('Invalid action.'))
 
@@ -250,7 +250,7 @@ def admin_change_host_role_view(request, vars, event, programme_id, programme_ro
 
     programme = change_role_form.instance.programme
 
-    return redirect('admin_detail_view', programme.event.slug, programme.pk)
+    return redirect('programme:admin_detail_view', programme.event.slug, programme.pk)
 
 
 @programme_admin_required
@@ -269,4 +269,4 @@ def admin_change_invitation_role_view(request, vars, event, programme_id, invita
 
     programme = change_role_form.instance.programme
 
-    return redirect('admin_detail_view', programme.event.slug, programme.pk)
+    return redirect('programme:admin_detail_view', programme.event.slug, programme.pk)
