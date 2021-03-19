@@ -147,7 +147,7 @@ phonenumberslite==8.12.15
     # via -r requirements.in
 pickleshare==0.7.5
     # via ipython
-pillow==8.0.1
+pillow==8.1.1
     # via
     #   -r requirements.in
     #   reportlab
