@@ -232,7 +232,7 @@ traitlets==5.0.5
     # via ipython
 unicodecsv==0.14.1
     # via -r requirements.in
-urllib3==1.26.2
+urllib3==1.26.3
     # via requests
 vine==5.0.0
     # via
