@@ -8,7 +8,7 @@ from django.contrib import messages
 from core.utils import initialize_form, url
 
 from ..helpers import membership_admin_required
-from ..models import Term
+from ..models import MembershipFeePayment, Term
 from ..forms import TermForm
 
 
@@ -53,6 +53,11 @@ def membership_admin_term_view(request, vars, organization, term_id=None):
     if request.method == 'POST':
         if form.is_valid():
             term = form.save()
+
+            # There may be unpaid membership fee entries. If membership fee was changed,
+            # these need to be invalidated.
+            MembershipFeePayment.objects.filter(term=term, payment_date__isnull=True).delete()
+
             return redirect('membership_admin_term_view', organization_slug=organization.slug, term_id=term.id)
         else:
             messages.error(request, _('Please check the form.'))

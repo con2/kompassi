@@ -31,9 +31,7 @@ def membership_admin_member_view(request, vars, organization, person_id):
         term__organization=organization, member=membership
     ).order_by('term__end_date')
     current_term = membership.meta.get_current_term()
-
-    if current_term:
-        current_term_payment = membership.get_payment_for_term(current_term)
+    current_term_payment = membership.get_payment_for_term(current_term) if current_term else None
 
     if current_term_payment:
         initial = dict(payment_date=current_term_payment.payment_date or date.today())

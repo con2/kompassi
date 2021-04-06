@@ -24,13 +24,16 @@
             td= payment.get_payment_type_display
             td= payment.formatted_amount
     .panel-footer.clearfix
-      if current_term
+      if membership_fee_payment_form
         .btn-group.pull-right
           button.btn.btn-primary(type='button', data-toggle='modal', data-target='#membership-payment-modal')
             i.fa.fa-money.kompassi-icon-space-right
             | Merkitse jäsenmaksu maksetuksi…
       else
-        p.text-danger Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä ennen jäsenmaksujen syöttämistä.
+        if not current_term
+          p.text-danger Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä ennen jäsenmaksujen syöttämistä.
+        if not membership.in_effect
+          p.text-danger Jäsenyys ei ole tällä hetkellä voimassa. Voit merkitä jäsenmaksun maksetuksi kun jäsenyys on asetettu voimaan.
 
 if membership_fee_payment_form
   .modal.fade#membership-payment-modal(tabindex="-1",
