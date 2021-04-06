@@ -21,7 +21,7 @@ def offer_view(request, event):
 
     if not meta.is_using_alternative_programme_forms:
         # event uses implicit default form
-        return redirect('offer_form_view', event.slug, 'default')
+        return redirect('programme:offer_form_view', event.slug, 'default')
 
     # event uses explicitly defined forms
     alternative_programme_forms = AlternativeProgrammeForm.objects.filter(event=event, is_active=True)
@@ -35,7 +35,7 @@ def offer_view(request, event):
         return redirect('core_event_view', event.slug)
 
     elif num_alternative_programme_forms == 1:
-        return redirect('offer_form_view', event.slug, alternative_programme_forms[0].slug)
+        return redirect('programme:offer_form_view', event.slug, alternative_programme_forms[0].slug)
 
     vars = dict(
         event=event,

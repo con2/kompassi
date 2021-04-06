@@ -22,7 +22,7 @@ def admin_create_view(request, vars, event):
             form.save_m2m()
 
             messages.success(request, _('The programme was created.'))
-            return redirect('admin_detail_view', event.slug, programme.pk)
+            return redirect('programme:admin_detail_view', event.slug, programme.pk)
         else:
             messages.error(request, _('Please check the form.'))
 

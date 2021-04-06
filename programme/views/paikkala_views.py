@@ -55,7 +55,7 @@ class PaikkalAdapterMixin:
         )
 
     def get_success_url(self):
-        return reverse('profile_reservations_view')
+        return reverse('programme:profile_reservations_view')
 
 
 def handle_errors(view_func):
@@ -82,19 +82,19 @@ def handle_errors(view_func):
             message = _('This programme is currently full.')
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('profile_reservations_view')
+            return redirect('programme:profile_reservations_view')
 
         except MaxTicketsPerUserReached:
             message = _('You cannot reserve any more tickets for this programme.')
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('profile_reservations_view')
+            return redirect('programme:profile_reservations_view')
 
         except Unreservable:
             message = _('This programme does not allow reservations at this time.')
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('profile_reservations_view')
+            return redirect('programme:profile_reservations_view')
 
         except PermissionDenied:
             message = _('Permission denied.')

@@ -30,12 +30,12 @@ def admin_invitations_view(request, vars, event):
                 invitation.programme.apply_state()
 
                 messages.success(request, _('The invitation was cancelled.'))
-                return redirect('admin_invitations_view', event.slug)
+                return redirect('programme:admin_invitations_view', event.slug)
 
         elif action == 'cancel-all-invitations':
             pending_invitations.update(state='revoked')
             messages.success(request, _('All pending invitations were cancelled.'))
-            return redirect('admin_invitations_view', event.slug)
+            return redirect('programme:admin_invitations_view', event.slug)
 
         messages.error(request, _('Invalid request.'))
 

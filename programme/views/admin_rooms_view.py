@@ -21,7 +21,7 @@ def admin_rooms_view(request, vars, event):
         else:
             messages.error(request, _("Invalid request."))
 
-        return redirect('admin_rooms_view', event.slug)
+        return redirect('programme:admin_rooms_view', event.slug)
 
     vars.update(rooms=rooms)
 

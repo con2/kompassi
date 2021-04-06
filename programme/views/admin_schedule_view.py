@@ -41,7 +41,7 @@ def admin_schedule_view(request, vars, event):
             if form.is_valid():
                 form.save()
                 messages.success(request, _('The schedule change was successful.'))
-                return redirect('admin_schedule_view', event_slug=event.slug)
+                return redirect('programme:admin_schedule_view', event_slug=event.slug)
             else:
                 messages.error(request, _('Please check the form.'))
         else:
@@ -81,10 +81,10 @@ def admin_schedule_update_view_view(request, vars, event, view_id):
         if form.is_valid():
             form.save()
             messages.success(request, _('The schedule change was successful.'))
-            return redirect('admin_schedule_view', event_slug=event.slug)
+            return redirect('programme:admin_schedule_view', event_slug=event.slug)
         else:
             messages.error(request, _('Please check the form.'))
     else:
         messages.error(request, _('Unknown action'))
 
-    return redirect('admin_schedule_view', event_slug=event.slug)
+    return redirect('programme:admin_schedule_view', event_slug=event.slug)
