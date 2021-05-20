@@ -1,4 +1,4 @@
-ARG KOMPASSI_IMAGE=tracon/kompassi
+ARG KOMPASSI_IMAGE
 FROM $KOMPASSI_IMAGE
 
 FROM nginx:1-alpine
