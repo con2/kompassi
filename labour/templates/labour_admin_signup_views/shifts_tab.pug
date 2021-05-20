@@ -33,7 +33,7 @@
               .btn-group
                 //- a.btn.btn-xs.btn-danger(title="{% trans 'Delete' %}")
                 //-   i.fa.fa-trash
-                a.btn.btn-xs.btn-primary(title="{% trans 'Edit' %}", href="{% url 'admin_roster_job_category_view' event.slug shift.job.job_category.slug %}")
+                a.btn.btn-xs.btn-primary(title="{% trans 'Edit' %}", href="{% url 'labour:admin_roster_job_category_view' event.slug shift.job.job_category.slug %}")
                   i.fa.fa-pencil-square-o
           if shift.notes
             tr
