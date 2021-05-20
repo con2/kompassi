@@ -29,7 +29,7 @@ def admin_mail_editor_view(request, vars, event, message_id=None):
                 message.delete()
                 messages.success(request, 'Viesti poistettiin.')
 
-            return redirect('admin_mail_view', event.slug)
+            return redirect('labour:admin_mail_view', event.slug)
 
         else:
             if form.is_valid():
@@ -53,7 +53,7 @@ def admin_mail_editor_view(request, vars, event, message_id=None):
                 elif action == 'save-return':
                     message.save()
                     messages.success(request, 'Muutokset viestiin tallennettiin.')
-                    return redirect('admin_mail_view', event.slug)
+                    return redirect('labour:admin_mail_view', event.slug)
 
                 elif action == 'save-edit':
                     message.save()
@@ -62,7 +62,7 @@ def admin_mail_editor_view(request, vars, event, message_id=None):
                 else:
                     messages.error(request, 'Tuntematon toiminto.')
 
-                return redirect('admin_mail_editor_view', event.slug, message.pk)
+                return redirect('labour:admin_mail_editor_view', event.slug, message.pk)
 
             else:
                 messages.error(request, 'Ole hyvä ja tarkasta lomake.')
