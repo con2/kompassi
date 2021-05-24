@@ -5,8 +5,22 @@ on:
     branches:
       - development
       - master
+  pull_request:
+    branches:
+      - development
+      - master
 
 jobs:
+  test:
+    runs-on: ubuntu-20.04
+    env:
+      DOCKER_BUILDKIT: "1"
+      COMPOSE_DOCKER_CLI_BUILD: "1"
+    steps:
+      - uses: actions/checkout@v1
+      - uses: docker/setup-buildx-action@v1
+      - run: docker-compose -f docker-compose.test.yml up --exit-code-from test
+
   build:
     runs-on: ubuntu-20.04
     env:
