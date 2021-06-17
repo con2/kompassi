@@ -236,13 +236,9 @@ INSTALLED_APPS = (
     'events.popcult2019',
     'events.hitpoint2019',
     'events.hypecon2019',
-    'events.traconjvk2019',
-    'events.traconjvp2019',
     'events.ropecon2019',
-    'events.ropeconjvp2019',
     'events.matsucon2019',
     'events.finncon2019',
-    'events.traconpaidat2019',
     'events.popcultnights2019',
     'events.frostbite2020',
     'events.desucon2020',
@@ -253,8 +249,6 @@ INSTALLED_APPS = (
     'events.tracrossf2019',
     'events.hypecon2020',
     'events.popcult2020',
-    'events.ropeconjvp2020',
-    'events.ropeconjvk2020',
     'events.concon17',
     'events.matsucon2020',
     'events.hitpoint2020',
@@ -262,6 +256,7 @@ INSTALLED_APPS = (
     'events.ropecon2021',
     'events.tracon2021',
     'events.kuplii2021',
+    'events.ropeconjvp2021',
 )
 
 LOGGING = {

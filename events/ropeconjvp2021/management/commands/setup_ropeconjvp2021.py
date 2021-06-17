@@ -16,17 +16,17 @@ class Command(BaseCommand):
             name_inessive='Ilmoitetaan myöhemmin',
         ))
         event, unused = Event.objects.get_or_create(
-            slug='ropeconjvp2019',
+            slug='ropeconjvp2021',
             defaults=dict(
                 public=False,
-                name='Ropeconin JV-peruskurssi 2019',
+                name='Ropeconin JV-peruskurssi 2021',
                 name_genitive='Ropeconin JV-peruskurssin',
                 name_illative='Ropeconin JV-peruskurssille',
                 name_inessive='Ropeconin JV-peruskurssilla',
                 homepage_url='http://ropecon.fi/hallitus',
                 organization=organization,
-                start_time=datetime(2019, 4, 25, 10, 0, tzinfo=tz),
-                end_time=datetime(2019, 4, 25, 22, 0, tzinfo=tz),
+                start_time=datetime(2021, 8, 9, 11, 0, tzinfo=tz),
+                end_time=datetime(2021, 8, 15, 19, 0, tzinfo=tz),
                 venue=venue,
             )
         )
@@ -37,7 +37,7 @@ class Command(BaseCommand):
             event=event,
             defaults=dict(
                 admin_group=admin_group,
-                form_class_path='events.ropeconjvp2019.forms:EnrollmentForm',
+                form_class_path='events.ropeconjvp2021.forms:EnrollmentForm',
                 is_participant_list_public=False,
                 is_official_name_required=True,
             ),
