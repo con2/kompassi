@@ -77,6 +77,8 @@ class CsvExportMixin(object):
             else:
                 header_row.append(field_name)
 
+        return header_row
+
     def get_csv_row(self, event, fields, m2m_mode='separate_columns'):
         result_row = []
         related = self.get_csv_related()

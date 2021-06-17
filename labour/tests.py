@@ -1,3 +1,6 @@
+from core.csv_export import export_csv
+from io import BytesIO
+
 from django.test import TestCase
 
 from core.models import Person
@@ -77,3 +80,12 @@ class JobCategoryTestCase(TestCase):
 
         rg = RecipientGroup.objects.get(job_category=jc)
         assert rg.verbose_name == jc.name
+
+
+class ExcelExportTestCase(TestCase):
+    def test_labour_excel_export(self):
+        signup, exists = Signup.get_or_create_dummy()
+        signups = Signup.objects.filter(id=signup.id)
+
+        with BytesIO() as output_file:
+            export_csv(signup.event, Signup, signups, output_file, m2m_mode='separate_columns', dialect='xlsx')
