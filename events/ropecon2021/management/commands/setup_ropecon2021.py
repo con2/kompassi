@@ -426,23 +426,24 @@ class Setup(object):
             TimeSlot.objects.get_or_create(name=time_slot_name)
 
         for tag_title in [
-            'Aloittelijaystävällinen',
-            'Demo',
-            'Ei sovellu lapsille',
-            'Figupelaaminen',
             'In English',
-            'Korttipelaaminen',
+            'Vain täysi-ikäisille',
+            'Sopii alle 7v.',
+            'Sopii 7-12v.',
+            'Sopii yli 12v.',
+            'Ei sovellu alle 15v.',
+            'Lastenohjelma',
+            'Aloittelijaystävällinen',
+            'Teema: Elementit',
+            'Demo',
+            'Kilpailu/Turnaus',
             'Kunniavieras',
             'Kutsuvieras',
-            'Sopii lapsille',
-            'Larppaaminen',
-            'Lautapelaaminen',
-            'Perheohjelma',
-            'Pöytäroolipelaaminen',
-            'Vain täysi-ikäisille',
-            'Kovaääninen',
-            'Teema',
-            'Kilpailu/Turnaus',
+            'Aihe: Figupelit',
+            'Aihe: Korttipelit', 
+            'Aihe: Larpit',
+            'Aihe: Lautapelit',
+            'Aihe: Pöytäroolipelit',
         ]:
             Tag.objects.get_or_create(event=self.event, title=tag_title)
 
