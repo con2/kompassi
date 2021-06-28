@@ -26,7 +26,7 @@ class EnrollmentForm(forms.ModelForm):
 Näiden ehtojen lisäksi järjestyksenvalvojakortin myöntäminen edellyttää todistusta tämän perus- tai kertauskurssin hyväksytystä suorituksesta.<br><br>
 
 Vakuutan täyttäväni järjestyksenvalvojaksi hyväksymiselle määritellyt ehdot, ja osallistuvani kurssin kaikille tunneille."""
-        self.fields['traconjv_solemnly_swear'].label = 'Vakuutan antamani tiedot oikeiksi. Ilmoittautumalla sitoudun osallistumaan peruskurssille ilmoitettuna päivinä pääkaupunkiseudulla ja järjestyksenvalvojana Ropecon 2021- ja Ropecon 2022 -tapahtumiin.'
+        self.fields['traconjv_solemnly_swear'].label = 'Vakuutan antamani tiedot oikeiksi. Ilmoittautumalla sitoudun osallistumaan peruskurssille ilmoitettuna päivinä pääkaupunkiseudulla ja järjestyksenvalvojana seuraavaan kahteen Ropecon-tapahtumaan.'
 
     class Meta:
         model = Enrollment
