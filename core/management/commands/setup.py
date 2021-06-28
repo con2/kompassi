@@ -29,7 +29,7 @@ def setup_should_run(run_id=settings.KOMPASSI_SETUP_RUN_ID, expire_seconds=setti
         return True
 
     cache_key = f'kompassi:setup_should_run:{run_id}'
-    nonce = uuid4()
+    nonce = str(uuid4())
 
     try:
         # Redis SETNX: True iff the key wasn't already set and we were able to set it
