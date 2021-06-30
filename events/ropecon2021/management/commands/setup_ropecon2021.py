@@ -143,8 +143,11 @@ class Setup(object):
         for jc_name, qualification_name in [
             ('Järjestyksenvalvoja', 'JV-kortti'),
         ]:
-            jc = JobCategory.objects.get(event=self.event, name=jc_name)
-            qual = Qualification.objects.get(name=qualification_name)
+            try:
+                jc = JobCategory.objects.get(event=self.event, name=jc_name)
+                qual = Qualification.objects.get(name=qualification_name)
+            except JobCategory.DoesNotExist:
+                pass
 
         for diet_name in [
             'Gluteeniton',
@@ -440,7 +443,7 @@ class Setup(object):
             'Kunniavieras',
             'Kutsuvieras',
             'Aihe: Figupelit',
-            'Aihe: Korttipelit', 
+            'Aihe: Korttipelit',
             'Aihe: Larpit',
             'Aihe: Lautapelit',
             'Aihe: Pöytäroolipelit',
