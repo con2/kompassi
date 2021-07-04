@@ -1,13 +1,7 @@
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 
-import {
-  canMoveDown,
-  canMoveUp,
-  moveDown,
-  moveUp,
-  removeField,
-} from "./formEditorLogic";
+import { canMoveDown, canMoveUp, moveDown, moveUp } from "./formEditorLogic";
 import { Field, FieldType, FormSchema } from "./models";
 import { T } from "../../translations";
 import AddFieldDropdown from "./AddFieldDropdown";
@@ -17,9 +11,10 @@ import "./FormEditor.scss";
 interface FormEditorControlsProps {
   schema: FormSchema;
   field: Field;
-  onAddField(fieldType: FieldType): void;
+  onAddField(fieldType: FieldType, aboveFieldName: string): void;
   onChangeFields(fields: Field[]): void;
   onRemoveField(fieldName: string): void;
+  onEditField(fieldName: string): void;
 }
 
 const FormEditorControls = ({
@@ -28,6 +23,7 @@ const FormEditorControls = ({
   onAddField,
   onChangeFields,
   onRemoveField,
+  onEditField,
 }: FormEditorControlsProps) => {
   const { fields } = schema;
   const t = T((r) => r.FormEditor);
@@ -36,7 +32,7 @@ const FormEditorControls = ({
     <div className="FormEditor-controls">
       <AddFieldDropdown
         title={t((r) => r.addFieldAbove) + "…"}
-        onSelect={onAddField}
+        onSelect={(fieldType) => onAddField(fieldType, field.name)}
       />
       <ButtonGroup className="mr-2">
         <Button
@@ -57,13 +53,13 @@ const FormEditorControls = ({
         </Button>
       </ButtonGroup>
       <ButtonGroup>
-        {/* <Button
-        size="sm"
-        onClick={() => handleAction("editField", field.name)}
-        variant="outline-secondary"
-      >
-        {t((r) => r.editField)}…
-      </Button> */}
+        <Button
+          size="sm"
+          onClick={() => onEditField(field.name)}
+          variant="outline-secondary"
+        >
+          {t((r) => r.editField)}…
+        </Button>
         <Button
           size="sm"
           onClick={() => onRemoveField(field.name)}

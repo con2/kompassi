@@ -7,7 +7,8 @@ const FormView = () => (
   <Container>
     <h1>{dummyForm.title}</h1>
     <SchemaForm
-      schema={dummyForm}
+      fields={dummyForm.fields}
+      layout={dummyForm.layout}
       initialValues={{}}
       onSubmit={(values) => console.log(values)}
     />

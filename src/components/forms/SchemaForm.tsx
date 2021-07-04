@@ -5,28 +5,25 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
-import { FormSchema } from "./models";
-import { schemaToYup } from "./validation";
+import { Field, Layout } from "./models";
+import { fieldsToYup } from "./validation";
 import SchemaFormInput from "./SchemaFormInput";
 import SchemaFormField from "./SchemaFormField";
 
 interface SchemaFormProps {
-  schema: FormSchema;
+  fields: Field[];
+  layout?: Layout;
   initialValues?: any;
   showSubmitButton?: boolean; // default true
   onSubmit(values: any): void;
 }
 
-const SchemaForm = ({
-  schema,
-  initialValues,
-  onSubmit,
-  showSubmitButton,
-}: SchemaFormProps) => {
-  initialValues = initialValues ?? {};
+const SchemaForm = (props: SchemaFormProps) => {
+  const { fields, onSubmit, showSubmitButton } = props;
+  const initialValues = props.initialValues ?? {};
+  const layout = props.layout ?? "vertical";
 
-  const validationSchema = React.useMemo(() => schemaToYup(schema), [schema]);
-  const { layout } = schema;
+  const validationSchema = React.useMemo(() => fieldsToYup(fields), [fields]);
   const { handleSubmit, handleChange, values, errors, isSubmitting } =
     useFormik({
       initialValues,
@@ -36,7 +33,7 @@ const SchemaForm = ({
 
   return (
     <Form noValidate onSubmit={handleSubmit}>
-      {schema.fields.map((field) => (
+      {fields.map((field) => (
         <SchemaFormField
           layout={layout}
           key={field.name}

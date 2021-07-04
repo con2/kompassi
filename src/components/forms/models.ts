@@ -121,3 +121,9 @@ export const dummyForm: FormSchema = {
     },
   ],
 };
+
+export const emptyField: Field = {
+  type: "SingleLineText",
+  title: "",
+  name: "",
+};

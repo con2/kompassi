@@ -4,33 +4,37 @@ import Button from "react-bootstrap/Button";
 import BsModal from "react-bootstrap/Modal";
 import { T } from "../../translations";
 
-type Resolve = (result: boolean) => void;
+type OnClose = (ok: boolean) => void;
 
 interface ModalProps {
+  // User settable props
   title?: React.ReactNode;
   okLabel?: React.ReactNode;
   cancelLabel?: React.ReactNode;
-  isOpen: boolean;
+  onClose?: OnClose;
+  children?: React.ReactNode;
+
+  // Public API usable from both inside and outside this component
   open(): void;
   ok(): void;
   cancel(): void;
-  execute(): Promise<boolean>;
-  children?: React.ReactNode;
 
-  // INTERNAL STATE, NICHT GEFINGERPOKEN BEI DUMMKOPFEN
-  resolve: Resolve | null;
+  // Read only public state
+  isOpen: boolean;
+
+  // XXX Hack: Internal state (no touch!)
+  onCloseRef: React.MutableRefObject<OnClose | null>;
 }
 
-export function useModal(defaults?: Partial<ModalProps>): ModalProps {
+export function useModal(): ModalProps {
   const [isOpen, setOpen] = React.useState(false);
-  const [resolve, setResolve] = React.useState<Resolve | null>(null);
+  const onCloseRef = React.useRef<OnClose | null>(null);
 
   const close = (ok = false) => {
-    if (resolve) {
-      resolve(ok);
-      setResolve(null);
-    }
     setOpen(false);
+    if (onCloseRef.current) {
+      onCloseRef.current(ok);
+    }
   };
 
   const open = () => {
@@ -38,9 +42,7 @@ export function useModal(defaults?: Partial<ModalProps>): ModalProps {
   };
 
   return {
-    ...defaults,
     isOpen,
-    resolve,
     open,
     ok() {
       close(true);
@@ -48,27 +50,24 @@ export function useModal(defaults?: Partial<ModalProps>): ModalProps {
     cancel() {
       close(false);
     },
-    async execute(): Promise<boolean> {
-      if (isOpen) {
-        throw new Error("Modal.execute called while already open");
-      }
 
-      open();
-
-      return new Promise<boolean>((_resolve) => {
-        // Extra layer of callable because if useState.set argument is a callable,
-        // React will call it with the current value :))) FUCKING REACT MAGIC
-        setResolve(() => _resolve);
-      });
-    },
+    onCloseRef,
   };
 }
 
+/**
+ * A modal dialog managed by the `useModal` hook.
+ * Always instantiate as `const modal = useModal(); <Modal {...modal}>`
+ * possibly setting other props listed under "user settable props" in `ModalProps`.
+ */
 export function Modal(props: ModalProps) {
-  const { title, isOpen, ok, cancel, children } = props;
+  const { title, isOpen, ok, cancel, children, onCloseRef, onClose } = props;
   const t = T((r) => r.Common);
   const okLabel = props.okLabel ?? t((r) => r.ok);
   const cancelLabel = props.cancelLabel ?? t((r) => r.cancel);
+
+  // XXX Hack
+  onCloseRef.current = onClose ?? null;
 
   return (
     <BsModal show={isOpen} onHide={cancel}>

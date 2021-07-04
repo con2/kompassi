@@ -31,6 +31,17 @@ const SchemaFormInput = ({
           readOnly={readOnly}
         />
       );
+    case "MultiLineText":
+      return (
+        <Form.Control
+          as="textarea"
+          value={value}
+          onChange={onChange}
+          required={field.required}
+          isInvalid={!!error}
+          readOnly={readOnly}
+        />
+      );
     case "SingleCheckbox":
       // FIXME: Required checkboxes fail in a funny way.
       return (

@@ -1,19 +1,16 @@
 import assert from "assert";
 import { dummyForm } from "./models";
-import { schemaToYup } from "./validation";
+import { fieldsToYup } from "./validation";
 
-describe(schemaToYup, () => {
+describe(fieldsToYup, () => {
   it("works for the empty form", async () => {
-    const emptyForm = JSON.parse(JSON.stringify(dummyForm));
-    emptyForm.fields = [];
-
-    const validator = schemaToYup(emptyForm);
+    const validator = fieldsToYup([]);
     assert(await validator.isValid({}));
     assert(!(await validator.isValid({ foo: 5 })));
   });
 
   it("works for the dummy form", async () => {
-    const validator = schemaToYup(dummyForm);
+    const validator = fieldsToYup(dummyForm.fields);
 
     const validExamples = [
       {

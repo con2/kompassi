@@ -7,7 +7,8 @@ describe(SchemaForm, () => {
   it("renders the dummy form", () => {
     const component = renderer.create(
       <SchemaForm
-        schema={dummyForm}
+        fields={dummyForm.fields}
+        layout={dummyForm.layout}
         onSubmit={(values) => console.log(values)}
       />
     );

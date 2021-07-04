@@ -19,10 +19,10 @@ function fieldToYup(field: Field) {
   return validator;
 }
 
-export function schemaToYup(schema: FormSchema) {
+export function fieldsToYup(fields: Field[]) {
   let validator = yup.object();
 
-  for (const field of schema.fields) {
+  for (const field of fields) {
     if (nonValueFieldTypes.includes(field.type)) {
       continue;
     }

@@ -34,3 +34,41 @@ export function removeField(fields: Field[], fieldName: string): Field[] {
 
   return fields.slice(0, index).concat(fields.slice(index + 1));
 }
+
+export function replaceField(
+  fields: Field[],
+  fieldName: string,
+  newField: Field
+) {
+  const index = fields.findIndex((field) => field.name === fieldName);
+
+  if (index < 0) {
+    throw new Error(`asked to edit nonexistent ${fieldName}`);
+  }
+
+  return fields
+    .slice(0, index)
+    .concat([newField])
+    .concat(fields.slice(index + 1));
+}
+
+export function addField(
+  fields: Field[],
+  newField: Field,
+  aboveFieldName?: string
+) {
+  if (aboveFieldName) {
+    const index = fields.findIndex((field) => field.name === aboveFieldName);
+
+    if (index < 0) {
+      throw new Error(`asked to addFieldAbove nonexistent ${aboveFieldName}`);
+    }
+
+    return fields
+      .slice(0, index)
+      .concat([newField])
+      .concat(fields.slice(index));
+  } else {
+    return fields.concat([newField]);
+  }
+}

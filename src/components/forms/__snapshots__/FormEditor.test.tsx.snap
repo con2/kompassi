@@ -82,6 +82,15 @@ exports[`FormEditor renders the dummy form 1`] = `
           role="group"
         >
           <button
+            className="btn btn-outline-secondary btn-sm"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            Edit field
+            …
+          </button>
+          <button
             className="btn btn-outline-danger btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -166,6 +175,15 @@ exports[`FormEditor renders the dummy form 1`] = `
           role="group"
         >
           <button
+            className="btn btn-outline-secondary btn-sm"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            Edit field
+            …
+          </button>
+          <button
             className="btn btn-outline-danger btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -234,6 +252,15 @@ exports[`FormEditor renders the dummy form 1`] = `
           className="btn-group"
           role="group"
         >
+          <button
+            className="btn btn-outline-secondary btn-sm"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            Edit field
+            …
+          </button>
           <button
             className="btn btn-outline-danger btn-sm"
             disabled={false}
@@ -330,6 +357,15 @@ exports[`FormEditor renders the dummy form 1`] = `
           role="group"
         >
           <button
+            className="btn btn-outline-secondary btn-sm"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            Edit field
+            …
+          </button>
+          <button
             className="btn btn-outline-danger btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -424,6 +460,15 @@ exports[`FormEditor renders the dummy form 1`] = `
           className="btn-group"
           role="group"
         >
+          <button
+            className="btn btn-outline-secondary btn-sm"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            Edit field
+            …
+          </button>
           <button
             className="btn btn-outline-danger btn-sm"
             disabled={false}
