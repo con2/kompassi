@@ -108,7 +108,7 @@ def admin_signups_view(request, vars, event, format='screen'):
         else:
             messages.error(request, 'Ei semmosta toimintoa oo.')
 
-        return redirect('admin_signups_view', event.slug)
+        return redirect('labour:admin_signups_view', event.slug)
 
     elif format in HTML_TEMPLATES:
         if archive_mode:

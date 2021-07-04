@@ -75,7 +75,7 @@ def admin_signup_view(request, vars, event, person_id):
             messages.success(request, 'Tiedot tallennettiin.')
 
             if 'save-return' in request.POST:
-                return redirect('admin_signups_view', event.slug)
+                return redirect('labour:admin_signups_view', event.slug)
             else:
                 return redirect('labour:admin_signup_view', event.slug, person.pk)
         else:
