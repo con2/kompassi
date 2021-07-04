@@ -47,7 +47,7 @@ const SchemaFormInput = ({
       return (
         <Form.Check.Input
           type="checkbox"
-          value={value}
+          checked={!!value}
           onChange={onChange}
           isInvalid={!!error}
           required={field.required}

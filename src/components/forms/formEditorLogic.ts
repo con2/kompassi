@@ -1,4 +1,4 @@
-import { Field } from "./models";
+import { Field, nonValueFieldTypes } from "./models";
 
 export function canMoveUp(fields: Field[], fieldName: string): boolean {
   return fieldName !== fields[0].name;
@@ -33,6 +33,10 @@ export function removeField(fields: Field[], fieldName: string): Field[] {
   }
 
   return fields.slice(0, index).concat(fields.slice(index + 1));
+}
+
+export function canEditField(field: Field) {
+  return !nonValueFieldTypes.includes(field.type);
 }
 
 export function replaceField(

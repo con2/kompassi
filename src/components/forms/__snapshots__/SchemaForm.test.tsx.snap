@@ -56,12 +56,12 @@ exports[`SchemaForm renders the dummy form 1`] = `
       className="form-check"
     >
       <input
+        checked={false}
         className="form-check-input"
         id="requiredCheckbox"
         onChange={[Function]}
         required={true}
         type="checkbox"
-        value=""
       />
       <label
         className="form-check-label"
@@ -84,12 +84,12 @@ exports[`SchemaForm renders the dummy form 1`] = `
       className="form-check"
     >
       <input
+        checked={false}
         className="form-check-input"
         id="optionalCheckbox"
         onChange={[Function]}
         required={false}
         type="checkbox"
-        value=""
       />
       <label
         className="form-check-label"

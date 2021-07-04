@@ -32,3 +32,17 @@ export function fieldsToYup(fields: Field[]) {
 
   return validator.noUnknown(true).required().strict();
 }
+
+export function getInitialValues(fields: Field[]) {
+  const result: any = {};
+
+  for (const field of fields) {
+    if (nonValueFieldTypes.includes(field.type)) {
+      continue;
+    }
+
+    result[field.name] = "";
+  }
+
+  return result;
+}

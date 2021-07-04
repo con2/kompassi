@@ -1,17 +1,16 @@
 import renderer from "react-test-renderer";
 
 import { dummyForm } from "./models";
-import SchemaForm from "./SchemaForm";
+import SchemaForm, { useSchemaForm } from "./SchemaForm";
+
+function DummyFormTest() {
+  const schemaForm = useSchemaForm(dummyForm);
+  return <SchemaForm {...schemaForm} />;
+}
 
 describe(SchemaForm, () => {
   it("renders the dummy form", () => {
-    const component = renderer.create(
-      <SchemaForm
-        fields={dummyForm.fields}
-        layout={dummyForm.layout}
-        onSubmit={(values) => console.log(values)}
-      />
-    );
+    const component = renderer.create(<DummyFormTest />);
     const tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });

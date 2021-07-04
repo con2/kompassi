@@ -254,7 +254,7 @@ exports[`FormEditor renders the dummy form 1`] = `
         >
           <button
             className="btn btn-outline-secondary btn-sm"
-            disabled={false}
+            disabled={true}
             onClick={[Function]}
             type="button"
           >
@@ -287,13 +287,13 @@ exports[`FormEditor renders the dummy form 1`] = `
           className="form-check"
         >
           <input
+            checked={false}
             className="form-check-input"
             disabled={true}
             id="requiredCheckbox"
             onChange={[Function]}
             required={true}
             type="checkbox"
-            value=""
           />
           <label
             className="form-check-label"
@@ -391,13 +391,13 @@ exports[`FormEditor renders the dummy form 1`] = `
           className="form-check"
         >
           <input
+            checked={false}
             className="form-check-input"
             disabled={true}
             id="optionalCheckbox"
             onChange={[Function]}
             required={false}
             type="checkbox"
-            value=""
           />
           <label
             className="form-check-label"

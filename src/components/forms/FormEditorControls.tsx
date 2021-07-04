@@ -1,7 +1,13 @@
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 
-import { canMoveDown, canMoveUp, moveDown, moveUp } from "./formEditorLogic";
+import {
+  canEditField,
+  canMoveDown,
+  canMoveUp,
+  moveDown,
+  moveUp,
+} from "./formEditorLogic";
 import { Field, FieldType, FormSchema } from "./models";
 import { T } from "../../translations";
 import AddFieldDropdown from "./AddFieldDropdown";
@@ -56,6 +62,7 @@ const FormEditorControls = ({
         <Button
           size="sm"
           onClick={() => onEditField(field.name)}
+          disabled={!canEditField(field)}
           variant="outline-secondary"
         >
           {t((r) => r.editField)}…
