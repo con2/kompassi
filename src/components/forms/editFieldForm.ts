@@ -1,13 +1,13 @@
 import { T } from "../../translations";
 import { Field } from "./models";
 
-const tEditor = T((r) => r.FormEditor.EditFieldForm);
+const t = T((r) => r.FormEditor.EditFieldForm);
 
 const nameField: Field = {
   type: "SingleLineText",
   name: "name",
-  title: tEditor((r) => r.name.title),
-  helpText: tEditor((r) => r.name.helpText),
+  title: t((r) => r.name.title),
+  helpText: t((r) => r.name.helpText),
   required: true,
 };
 
@@ -16,24 +16,32 @@ const baseFieldEditorFields: Field[] = [
   {
     type: "SingleLineText",
     name: "title",
-    title: tEditor((r) => r.title.title),
-    helpText: tEditor((r) => r.title.helpText),
+    title: t((r) => r.title.title),
+    helpText: t((r) => r.title.helpText),
     required: false,
   },
   {
     type: "MultiLineText",
     name: "helpText",
-    title: tEditor((r) => r.helpText.title),
-    helpText: tEditor((r) => r.helpText.helpText),
+    title: t((r) => r.helpText.title),
+    helpText: t((r) => r.helpText.helpText),
     required: false,
   },
   {
     type: "SingleCheckbox",
     name: "required",
-    title: tEditor((r) => r.required.title),
+    title: t((r) => r.required.title),
     required: false,
   },
 ];
+
+const optionsField: Field = {
+  type: "MultiLineText",
+  name: "options",
+  title: t((r) => r.options.title),
+  helpText: t((r) => r.options.helpText),
+  required: true,
+};
 
 export const fieldEditorMapping = {
   SingleLineText: baseFieldEditorFields,
@@ -41,5 +49,6 @@ export const fieldEditorMapping = {
   Divider: [nameField],
   StaticText: baseFieldEditorFields,
   SingleCheckbox: baseFieldEditorFields,
+  SingleSelect: baseFieldEditorFields.concat([optionsField]),
   Spacer: [nameField],
 };

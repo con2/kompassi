@@ -5,10 +5,11 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
-import { Field, Layout } from "./models";
+import { defaultLayout, Field, Layout } from "./models";
 import { fieldsToYup, getInitialValues } from "./validation";
 import SchemaFormInput from "./SchemaFormInput";
 import SchemaFormField from "./SchemaFormField";
+import { T } from "../../translations";
 
 interface SchemaFormConfig {
   fields: Field[];
@@ -39,14 +40,16 @@ export function useSchemaForm(
 type SchemaFormProps = ReturnType<typeof useSchemaForm>;
 
 export const SchemaForm = ({ formik, schemaFormConfig }: SchemaFormProps) => {
-  const { fields, layout, showSubmitButton } = schemaFormConfig;
+  const { fields, showSubmitButton } = schemaFormConfig;
+  const layout = schemaFormConfig.layout ?? defaultLayout;
   const { handleSubmit, handleChange, isSubmitting, errors, values } = formik;
+  const t = T((r) => r.Common);
 
   return (
     <Form noValidate onSubmit={handleSubmit}>
       {fields.map((field) => (
         <SchemaFormField
-          layout={layout ?? "vertical"}
+          layout={layout}
           key={field.name}
           field={field}
           error={errors[field.name]}
@@ -59,7 +62,7 @@ export const SchemaForm = ({ formik, schemaFormConfig }: SchemaFormProps) => {
           />
         </SchemaFormField>
       ))}
-      {showSubmitButton ?? (
+      {showSubmitButton && (
         <Button
           type="submit"
           disabled={isSubmitting}
@@ -70,7 +73,7 @@ export const SchemaForm = ({ formik, schemaFormConfig }: SchemaFormProps) => {
               <Spinner animation="border" size="sm" /> Submitting...
             </>
           )) ||
-            "Submit"}
+            t((r) => r.submit)}
         </Button>
       )}
     </Form>

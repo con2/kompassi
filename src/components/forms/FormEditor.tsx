@@ -2,9 +2,11 @@ import React from "react";
 
 import {
   FieldType,
-  FormSchema,
   emptyField,
   nonValueFieldTypes,
+  Field,
+  Layout,
+  defaultLayout,
 } from "./models";
 import { addField, removeField, replaceField } from "./formEditorLogic";
 import { Modal, useModal } from "../common/Modal";
@@ -19,14 +21,15 @@ import SchemaFormInput from "./SchemaFormInput";
 import "./FormEditor.scss";
 
 interface FormEditorProps {
-  value: FormSchema;
-  onChange(value: FormSchema): void;
+  value: Field[];
+  layout?: Layout;
+  onChange(fields: Field[]): void;
 }
 
 /** Fully controlled form editor component. */
-const FormEditor = ({ value: schema, onChange }: FormEditorProps) => {
-  const noop = React.useCallback(() => {}, []);
-  const { layout } = schema;
+const FormEditor = (props: FormEditorProps) => {
+  const { value: fields, onChange } = props;
+  const layout = props.layout ?? defaultLayout;
   const t = T((r) => r.FormEditor);
 
   const [targetFieldName, setTargetFieldName] = React.useState("");
@@ -36,23 +39,22 @@ const FormEditor = ({ value: schema, onChange }: FormEditorProps) => {
 
   const removeFieldModal = useModal();
 
+  const noop = React.useCallback(() => {}, []);
+
   const handleAddField = React.useCallback(
     (fieldType: FieldType, aboveFieldName?: string) => {
       const newField = {
         type: fieldType,
         name: generateUniqueIdentifier(
           fieldType,
-          schema.fields.map((field) => field.name)
+          fields.map((field) => field.name)
         ),
       };
 
       if (nonValueFieldTypes.includes(fieldType)) {
         // This field type has no options to be edited by the user,
         // so skip the edit dialog.
-        onChange({
-          ...schema,
-          fields: addField(schema.fields, newField, aboveFieldName),
-        });
+        onChange(addField(fields, newField, aboveFieldName));
       } else {
         setEditExisting(false);
         setTargetFieldName(aboveFieldName ?? "");
@@ -60,14 +62,12 @@ const FormEditor = ({ value: schema, onChange }: FormEditorProps) => {
         setEditFieldModalOpen(true);
       }
     },
-    [schema]
+    [fields]
   );
 
   const handleEditField = React.useCallback(
     (fieldName: string) => {
-      const fieldToEdit = schema.fields.find(
-        (field) => field.name === fieldName
-      );
+      const fieldToEdit = fields.find((field) => field.name === fieldName);
 
       if (!fieldToEdit) {
         throw new Error(
@@ -80,7 +80,7 @@ const FormEditor = ({ value: schema, onChange }: FormEditorProps) => {
       setFieldBeingEdited(fieldToEdit);
       setEditFieldModalOpen(true);
     },
-    [schema]
+    [fields]
   );
 
   const handleRemoveField = React.useCallback(
@@ -93,7 +93,7 @@ const FormEditor = ({ value: schema, onChange }: FormEditorProps) => {
 
   return (
     <div className="FormEditor">
-      {schema.fields.map((field) => (
+      {fields.map((field) => (
         <div key={field.name} className="FormEditor-field">
           <div className="FormEditor-background">
             <SchemaFormField
@@ -111,9 +111,9 @@ const FormEditor = ({ value: schema, onChange }: FormEditorProps) => {
               />
             </SchemaFormField>
             <FormEditorControls
-              schema={schema}
+              value={fields}
               field={field}
-              onChangeFields={(fields) => onChange({ ...schema, fields })}
+              onChange={onChange}
               onAddField={handleAddField}
               onRemoveField={handleRemoveField}
               onEditField={handleEditField}
@@ -131,12 +131,7 @@ const FormEditor = ({ value: schema, onChange }: FormEditorProps) => {
         title={t((r) => r.RemoveFieldModal.title)}
         okLabel={t((r) => r.RemoveFieldModal.yes)}
         cancelLabel={t((r) => r.RemoveFieldModal.no)}
-        onSubmit={() =>
-          onChange({
-            ...schema,
-            fields: removeField(schema.fields, targetFieldName),
-          })
-        }
+        onSubmit={() => onChange(removeField(fields, targetFieldName))}
       >
         {t((r) => r.RemoveFieldModal.message)}
       </Modal>
@@ -145,16 +140,13 @@ const FormEditor = ({ value: schema, onChange }: FormEditorProps) => {
         <EditFieldModal
           initialValues={fieldBeingEdited}
           onSubmit={(values) => {
-            const fields = editExisting
-              ? replaceField(schema.fields, targetFieldName, values)
-              : addField(schema.fields, values, targetFieldName);
+            const newFields = editExisting
+              ? replaceField(fields, targetFieldName, values)
+              : addField(fields, values, targetFieldName);
 
-            onChange({ ...schema, fields });
+            onChange(newFields);
           }}
-          onClose={() => {
-            console.log("onClose");
-            setEditFieldModalOpen(false);
-          }}
+          onClose={() => setEditFieldModalOpen(false)}
         />
       )}
     </div>

@@ -133,6 +133,10 @@ const translations: Translations = {
       required: {
         title: "Pakollinen",
       },
+      options: {
+        title: "Vaihtoehdot",
+        helpText: "arvo=teksti -pareja, yksi per rivi",
+      },
     },
 
     FieldTypes: {
@@ -142,6 +146,7 @@ const translations: Translations = {
       StaticText: "Kiinteä teksti",
       Spacer: "Tyhjä tila",
       SingleCheckbox: "Yksittäinen rasti ruutuun -kenttä",
+      SingleSelect: "Alasvetovalikko (yksi valinta)",
     },
 
     RemoveFieldModal: {

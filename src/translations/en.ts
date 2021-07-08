@@ -131,6 +131,10 @@ const translations = {
       required: {
         title: "Required",
       },
+      options: {
+        title: "Options",
+        helpText: "value=label pairs, separated by newline",
+      },
     },
 
     FieldTypes: {
@@ -140,6 +144,7 @@ const translations = {
       StaticText: "Static text",
       Spacer: "Empty space",
       SingleCheckbox: "Single check box",
+      SingleSelect: "Single select drop-down",
     },
 
     RemoveFieldModal: {

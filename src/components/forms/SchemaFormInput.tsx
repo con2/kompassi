@@ -54,6 +54,25 @@ const SchemaFormInput = ({
           disabled={readOnly}
         />
       );
+    case "SingleSelect":
+      return (
+        <Form.Control
+          as="select"
+          onChange={onChange}
+          required={field.required}
+          readOnly={readOnly}
+        >
+          {field.choices?.map((choice) => (
+            <option
+              value={choice.value}
+              key={choice.value}
+              selected={value === choice.value}
+            >
+              {choice.label}
+            </option>
+          ))}
+        </Form.Control>
+      );
     default:
       throw new Error(`field.type not implemented: ${field.type}`);
   }

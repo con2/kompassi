@@ -4,7 +4,8 @@ export type FieldType =
   | "Divider"
   | "StaticText"
   | "Spacer"
-  | "SingleCheckbox";
+  | "SingleCheckbox"
+  | "SingleSelect";
 
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
@@ -13,6 +14,7 @@ export const fieldTypes: FieldType[] = [
   "StaticText",
   "Divider",
   "Spacer",
+  "SingleSelect",
 ];
 
 /** These field types represent static elements on the form and don't have values. */
@@ -60,15 +62,27 @@ export interface SingleCheckbox extends BaseField {
   type: "SingleCheckbox";
 }
 
+export interface Choice {
+  value: string;
+  label: string;
+}
+
+export interface SingleSelect extends BaseField {
+  type: "SingleSelect";
+  choices?: Choice[];
+}
+
 export type Field =
   | SingleLineText
   | MultiLineText
   | Divider
   | Spacer
   | StaticText
-  | SingleCheckbox;
+  | SingleCheckbox
+  | SingleSelect;
 
 export type Layout = "horizontal" | "vertical";
+export const defaultLayout: Layout = "vertical";
 
 export interface FormSchema {
   title: string;
