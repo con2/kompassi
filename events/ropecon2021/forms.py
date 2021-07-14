@@ -276,6 +276,7 @@ LARP_FORM_FIELD_TEXTS = dict(
     ropecon2018_prop_requirements=(_('Equipment needed in your larp'), _('Tell us what kind of equipment or props are required in your larp and which of them you can provide yourself. Please keep in mind that due to limited resources we are not able to fulfill the most outlandish of requests. Water and cups will be provided for all larps.')),
     ropecon2021_accessibility_video=(_('The larp involves watching a video without subtitles for the hearing impaired'), None),
     ropecon2021_accessibility_colourblind=(_('Material used in the larp can cause problems for the colourblind'), None),
+    three_word_description=(_('Slogan for your game'), _('Condense the essence of your game into one short sentence that will let players know what your game have to offer. For example, “A traditional D&D dungeon crawl”, or “Lovecraftian horror in Equestria”. We reserve the right to edit the slogan if necessary.')),
 )
 
 
@@ -296,6 +297,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2018_characters',
             'min_players',
             'description',
+            'three_word_description',
             'content_warnings',
 
             Fieldset(_('Who is your larp for?'),
@@ -359,6 +361,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             'ropecon2018_characters',
             'min_players',
             'description',
+            'three_word_description',
             'content_warnings',
             'is_in_english',
             'is_age_restricted',
