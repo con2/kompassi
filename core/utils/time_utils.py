@@ -1,5 +1,6 @@
 import sys
 from datetime import date, datetime, timedelta
+from typing import Union
 
 from django.db.models import Q
 from django.utils.timezone import now
@@ -14,23 +15,27 @@ from .locale_utils import get_current_locale
 ONE_HOUR = timedelta(hours=1)
 
 
-def full_hours_between(start_time_inclusive, end_time_inclusive, unless=lambda x: False):
+def full_hours_between(
+    start_time_inclusive, end_time_inclusive, unless=lambda x: False
+):
     """
     Note that the parameters are start and end inclusive: ie. if you ask for full hours between
     3:00 PM and 5:00 PM, you get 3.00 PM, 4.00 PM and 5.00 PM.
     """
-    if any((
-        start_time_inclusive.minute,
-        start_time_inclusive.second,
-        start_time_inclusive.microsecond,
-        end_time_inclusive.minute,
-        end_time_inclusive.second,
-        end_time_inclusive.microsecond
-    )):
-        raise ValueError('expecting full hours')
+    if any(
+        (
+            start_time_inclusive.minute,
+            start_time_inclusive.second,
+            start_time_inclusive.microsecond,
+            end_time_inclusive.minute,
+            end_time_inclusive.second,
+            end_time_inclusive.microsecond,
+        )
+    ):
+        raise ValueError("expecting full hours")
 
     if start_time_inclusive > end_time_inclusive:
-        raise ValueError('start > end')
+        raise ValueError("start > end")
 
     result = []
 
@@ -47,17 +52,16 @@ def is_within_period(period_start, period_end, t=None):
     if t is None:
         t = now()
 
-    return period_start and period_start <= t and \
-        not (period_end and period_end <= t)
+    return period_start and period_start <= t and not (period_end and period_end <= t)
 
 
 def get_objects_within_period(
     Model,
     t=None,
-    start_field_name='active_from',
-    end_field_name='active_until',
+    start_field_name="active_from",
+    end_field_name="active_until",
     end_field_nullable=True,
-    **extra_criteria
+    **extra_criteria,
 ):
     """
     Given a Model with an activity period, return only those instances that are within the
@@ -72,20 +76,38 @@ def get_objects_within_period(
     if t is None:
         t = now()
 
-    q = Q(**{f'{start_field_name}__lte': t})
+    q = Q(**{f"{start_field_name}__lte": t})
 
     if end_field_nullable:
-        q &= Q(**{f'{end_field_name}__gt': t}) | Q(**{f'{end_field_name}__isnull': True})
+        q &= Q(**{f"{end_field_name}__gt": t}) | Q(
+            **{f"{end_field_name}__isnull": True}
+        )
     else:
-        q &= Q(**{f'{end_field_name}__gt': t})
+        q &= Q(**{f"{end_field_name}__gt": t})
 
     q &= Q(**extra_criteria)
 
     return Model.objects.filter(q)
 
 
-def format_date_range(start_date, end_date):
-    # XXX Finnish-specific
+def format_date_range(
+    start_date: Union[date, datetime],
+    end_date: Union[date, datetime],
+) -> str:
+    # FIXME Finnish-specific
+    # FIXME should use event.tz but we do not have one for now
+
+    # Special case: Time periods are start inclusive, end exclusive.
+    # If an event ends on the first second of a day, it is considered to
+    # end at the end of the previous day. This is time zone specific.
+    if (
+        isinstance(end_date, datetime)
+        and end_date.hour == 0
+        and end_date.minute == 0
+        and end_date.second == 0
+        # and end_date.microsecond == 0  # microseconds other than 0 are likely user error
+    ):
+        end_date = end_date - timedelta(seconds=1)
 
     range_format = "{start_date}–{end_date}"
     if sys.platform == "win32":
@@ -115,7 +137,7 @@ def format_date_range(start_date, end_date):
             # Y match, M, D differ
             return range_format.format(
                 start_date=start_date.strftime(dm_format),
-                end_date=end_date.strftime(full_format)
+                end_date=end_date.strftime(full_format),
             )
     else:
         # Y, M, D differ
@@ -125,7 +147,14 @@ def format_date_range(start_date, end_date):
         )
 
 
-def format_interval(start_dt, end_dt, locale=None, tz=None, date_skeletor="MEd", time_skeletor="Hm"):
+def format_interval(
+    start_dt,
+    end_dt,
+    locale=None,
+    tz=None,
+    date_skeletor="MEd",
+    time_skeletor="Hm",
+):
     # XXX Finnish-specific
 
     if tz is None:
@@ -152,14 +181,14 @@ def format_interval(start_dt, end_dt, locale=None, tz=None, date_skeletor="MEd",
 
 def format_date(date):
     if date is None:
-        return ''
+        return ""
 
     return defaultfilters.date(date, "SHORT_DATE_FORMAT")
 
 
 def format_datetime(datetime):
     if datetime is None:
-        return ''
+        return ""
 
     tz = tzlocal()
     return defaultfilters.date(datetime.astimezone(tz), "SHORT_DATETIME_FORMAT")
