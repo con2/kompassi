@@ -153,3 +153,20 @@ class CBACEntry(models.Model):
                         request=request,
                         other_fields=cbac_entry.as_dict(),
                     )
+
+    @classmethod
+    def prune_expired(cls, *, t: datetime = None, request=None):
+        if t is None:
+            t = now()
+
+        expired_entries = cls.objects.filter(valid_until__lte=t)
+        logger.info("Removing %d CBAC entries expired on or before %s", expired_entries.count(), t.isoformat())
+
+        for cbac_entry in expired_entries:
+            emit(
+                "access.cbacentry.deleted",
+                request=request,
+                other_fields=cbac_entry.as_dict(),
+            )
+
+        expired_entries.delete()

@@ -10,7 +10,7 @@ from django.db.transaction import atomic
 from uuid import uuid4
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 @contextmanager
@@ -28,7 +28,7 @@ def setup_should_run(run_id=settings.KOMPASSI_SETUP_RUN_ID, expire_seconds=setti
         logger.info(f"manage.py setup: KOMPASSI_SETUP_RUN_ID not supplied, running unconditionally.")
         return True
 
-    cache_key = f'kompassi:setup_should_run:{run_id}'
+    cache_key = f"kompassi:setup_should_run:{run_id}"
     nonce = str(uuid4())
 
     try:
@@ -42,8 +42,8 @@ def setup_should_run(run_id=settings.KOMPASSI_SETUP_RUN_ID, expire_seconds=setti
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup all the things'
+    args = ""
+    help = "Setup all the things"
 
     def handle(self, *args, **options):
         if not setup_should_run():
@@ -52,8 +52,12 @@ class Command(BaseCommand):
 
         commands = get_commands()
 
-        organizations = [app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("organizations.")]
-        organization_commands = [command for command in ("setup_%s" % organization for organization in organizations) if command in commands]
+        organizations = [
+            app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("organizations.")
+        ]
+        organization_commands = [
+            command for command in ("setup_%s" % organization for organization in organizations) if command in commands
+        ]
 
         events = [app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("events.")]
         event_commands = [command for command in ("setup_%s" % event for event in events) if command in commands]
@@ -61,22 +65,25 @@ class Command(BaseCommand):
         management_commands = [
             # (('kompassi_i18n', '-acv2'), dict()),
             # (('collectstatic',), dict(interactive=False)),
-            (('migrate',), dict(interactive=False)),
-            (('setup_core',), dict()),
-            (('setup_labour_common_qualifications',), dict()),
-            (('setup_api_v2',), dict()),
-            (('setup_api_v3',), dict()),
-            (('setup_access',), dict()),
+            (("migrate",), dict(interactive=False)),
+            (("setup_core",), dict()),
+            (("setup_labour_common_qualifications",), dict()),
+            (("setup_api_v2",), dict()),
+            (("setup_api_v3",), dict()),
+            (("setup_access",), dict()),
         ]
 
         management_commands.extend(((command,), dict()) for command in organization_commands)
         management_commands.extend(((command,), dict()) for command in event_commands)
 
-        management_commands.extend((
-            (('setup_listings',), dict()),
-            (('access_create_internal_aliases',), dict()),
-            (('access_create_missing_cbac_entries',), dict()),
-        ))
+        management_commands.extend(
+            (
+                (("setup_listings",), dict()),
+                (("access_create_internal_aliases",), dict()),
+                (("access_create_missing_cbac_entries",), dict()),
+                (("access_prune_expired_cbac_entries",), dict()),
+            )
+        )
 
         for pargs, opts in management_commands:
             print("** Running:", pargs[0])
