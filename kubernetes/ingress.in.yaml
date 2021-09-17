@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kompassi
@@ -12,15 +12,24 @@ spec:
       host: !Var hostname
       http:
         paths:
-          - path: /static
+          - pathType: Prefix
+            path: /static
             backend:
-              serviceName: nginx
-              servicePort: 80
-          - path: /media
+              service:
+                name: nginx
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /media
             backend:
-              serviceName: nginx
-              servicePort: 80
-          - path: /
+              service:
+                name: nginx
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /
             backend:
-              serviceName: kompassi
-              servicePort: 8000
+              service:
+                name: kompassi
+                port:
+                  number: 8000
