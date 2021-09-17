@@ -34,6 +34,8 @@ services:
     # image: postgres
     build: ./kompassi/sql/
     init: true
+    ports:
+      - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
       #- ./kompassi-202012011746.sql:/docker-entrypoint-initdb.d/00-schema.sql
