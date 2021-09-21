@@ -7,9 +7,12 @@ class Command(BaseCommand):
     args = '[event_slug...]'
     help = 'Create missing email aliases'
 
-    def handle(*args, **opts):
+    def add_arguments(self, parser):
+        parser.add_argument('event_slugs', nargs='+')
+
+    def handle(**options):
         from core.models import Event
-        for event_slug in args[1:]:
+        for event_slug in options['event_slugs']:
             event = Event.objects.get(slug=event_slug)
 
             for signup in event.signup_set.all():
