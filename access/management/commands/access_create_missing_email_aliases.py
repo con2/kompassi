@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('event_slugs', nargs='+')
 
-    def handle(**options):
+    def handle(self, **options):
         from core.models import Event
         for event_slug in options['event_slugs']:
             event = Event.objects.get(slug=event_slug)
