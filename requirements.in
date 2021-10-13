@@ -11,7 +11,6 @@ django-cors-headers
 django-crispy-forms
 django-environ
 django-filter
-django-guardian
 django-ipware
 django-localflavor
 django-oauth-toolkit
@@ -28,7 +27,8 @@ paramiko
 passlib
 phonenumberslite
 Pillow
-psycopg2
+# TODO(django 3): remove <2.9 ("AssertionError: database connection isn't set to UTC")
+psycopg2<2.9
 pypugjs
 pytest-django
 python-dateutil

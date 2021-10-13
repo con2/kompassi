@@ -1,4 +1,5 @@
-from collections import Iterable
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -7,10 +8,14 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.csv_export import CsvExportMixin
 
+if TYPE_CHECKING:
+    from surveys.models.survey import Survey, EventSurvey
+
 
 class SurveyResult(CsvExportMixin, models.Model):
     # Subclasses must provide a `survey` field
     # survey = models.ForeignKey(..., on_delete=models.CASCADE)
+    survey: "models.ForeignKey[Survey, Survey]"
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -20,24 +25,22 @@ class SurveyResult(CsvExportMixin, models.Model):
     author_ip_address = models.CharField(
         max_length=48,
         blank=True,
-        default='',
-        verbose_name=_('IP address'),
+        default="",
+        verbose_name=_("IP address"),
     )
 
     def get_csv_fields(self, event):
-        assert event == self.event
         return [(self.__class__, field_name) for field_name in self.survey.field_names]
 
-    def get_csv_row(self, event, fields, m2m_mode='comma_separated'):
-        assert event == self.event
-        assert m2m_mode == 'comma_separated'
+    def get_csv_row(self, event, fields, m2m_mode="comma_separated"):
+        assert m2m_mode == "comma_separated"
 
         def _generator():
             for (cls, field_name) in fields:
-                field_name = field_name.replace('.', ' ')  # XXX why does surveyjs do this
+                field_name = field_name.replace(".", " ")  # XXX why does surveyjs do this
                 value = self.model.get(field_name)
                 if isinstance(value, Iterable) and not isinstance(value, str):
-                    value = ', '.join(str(i) for i in value)
+                    value = ", ".join(str(i) for i in value)
                 yield value
 
         return list(_generator())
@@ -47,7 +50,9 @@ class SurveyResult(CsvExportMixin, models.Model):
 
 
 class EventSurveyResult(SurveyResult):
-    survey = models.ForeignKey('surveys.EventSurvey', on_delete=models.CASCADE, related_name='results')
+    survey: "models.ForeignKey[EventSurvey, EventSurvey]"
+
+    survey = models.ForeignKey("surveys.EventSurvey", on_delete=models.CASCADE, related_name="results")
 
     @property
     def event(self):
@@ -55,11 +60,12 @@ class EventSurveyResult(SurveyResult):
 
     def admin_get_event(self):
         return self.event
-    admin_get_event.admin_order_field = 'survey__event'
-    admin_get_event.short_description = _('Event')
+
+    admin_get_event.admin_order_field = "survey__event"
+    admin_get_event.short_description = _("Event")
 
 
 class GlobalSurveyResult(SurveyResult):
-    survey = models.ForeignKey('surveys.GlobalSurvey', on_delete=models.CASCADE, related_name='results')
+    survey = models.ForeignKey("surveys.GlobalSurvey", on_delete=models.CASCADE, related_name="results")
 
     event = None

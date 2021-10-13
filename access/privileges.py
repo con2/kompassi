@@ -1,16 +1,16 @@
 from django.conf import settings
+from django.contrib.auth.models import Group
 
 from core.utils import ensure_user_group_membership
-
-from .models import SlackAccess
-
 
 
 def invite_to_slack(privilege, person):
     """
     Invites the user to Slack.
+
+    NOTE: Nowadays done via invite link, so the server-side invite method is noop.
     """
-    privilege.slack_access.grant(person)
+    pass
 
 
 def add_to_group(privilege, person):
