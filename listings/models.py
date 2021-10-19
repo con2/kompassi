@@ -7,6 +7,12 @@ from core.utils import SLUG_FIELD_PARAMS, format_date_range, pick_attrs
 
 
 class Listing(models.Model):
+    """
+    The Listing class used to support separate listings for conit.fi and animecon.fi with
+    different events shown. But this was stupid and caused lots of administrative burden.
+    So currently our only listing has all public events and is only listed at conit.fi
+    with animecon.fi redirecting there.
+    """
     hostname = models.CharField(
         max_length=63,
         unique=True,
@@ -15,14 +21,11 @@ class Listing(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default='')
 
-    events = models.ManyToManyField('core.Event')
-    external_events = models.ManyToManyField('listings.ExternalEvent')
-
     def get_events(self, **criteria):
         from core.models import Event
 
-        external_events = self.external_events.filter(**criteria).order_by('start_time')
-        events = self.events.filter(start_time__isnull=False, **criteria).order_by('start_time')
+        external_events = ExternalEvent.objects.filter(**criteria).order_by('start_time')
+        events = Event.objects.filter(start_time__isnull=False, **criteria).order_by('start_time')
 
         return sorted(chain(external_events, events), key=lambda e: e.start_time)
 

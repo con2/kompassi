@@ -1,6 +1,5 @@
 ingress_public_hostnames:
   - kompassi.eu
-  - animecon.fi
   - conit.fi
 
 postgres_managed: false

@@ -21,62 +21,13 @@ class Command(BaseCommand):
         )
 
         # Setup default listings
-        for hostname, title, description, keywords, exclude_keywords in [
-            ('animecon.fi', 'Suomen animetapahtumat', (
-                'Tämä on listaus Suomessa järjestettävistä animetapahtumista. '
-                'Listaukseen lisätään kaikki voittoa tavoittelemattomalta pohjalta '
-                'vapaaehtoisvoimin järjestettävät animetapahtumat sitä mukaa kun ne '
-                'tulevat ylläpitäjän tietoon.'
-            ), (
-                'animeseminaari',
-                'desucon',
-                'hypecon',
-                'kawacon',
-                'kibecon',
-                'kitsunecon',
-                'kumakumacon',
-                'lakeuscon',
-                'matsucon',
-                'mimicon',
-                'nekocon',
-                'nippori',
-                'tracon',
-                'yukicon',
-            ), (
-                'hitpoint',
-            )),
+        for hostname, title, description in [
+            ('animecon.fi', 'Suomen animetapahtumat', 'HUOM! Animecon.fi-listaus on poistettu käytöstä. Katso osoite conit.fi.'),
             ('conit.fi', 'Suomen conitapahtumat', (
                 'Tämä on listaus Suomessa järjestettävistä conitapahtumista. '
                 'Listaukseen lisätään kaikki voittoa tavoittelemattomalta pohjalta '
                 'vapaaehtoisvoimin järjestettävät conitapahtumat sitä mukaa kun ne '
                 'tulevat ylläpitäjän tietoon.'
-            ), (
-                'aicon',
-                'animeseminaari',
-                'desucon',
-                'finncon',
-                'gingacon',
-                'hellocon',
-                'hypecon',
-                'k-con',
-                'kawacon',
-                'kibecon',
-                'kitsunecon',
-                'kummacon',
-                'kumakumacon',
-                'lakeuscon',
-                'matsucon',
-                'mimicon',
-                'nekocon',
-                'nippori',
-                'popcult',
-                'ropecon',
-                'sarjakuvafestivaalit',
-                'tampere kuplii',
-                'tracon',
-                'yukicon',
-            ), (
-                'nights',
             )),
         ]:
             listing, created = Listing.objects.get_or_create(
@@ -86,22 +37,3 @@ class Command(BaseCommand):
                     description=description,
                 ),
             )
-
-            def raeducci(keywords):
-                """
-                Given a list of keywords, returns a Q that matches objects that have any of those
-                keywords contained in their `name` attribute case-insensitively.
-                """
-                keywords = list(keywords)
-                return reduce((lambda q, k: q | Q(name__icontains=k)), keywords, Q(name__icontains=keywords.pop()))
-
-            q = Q(public=True) & raeducci(keywords)
-
-            if exclude_keywords:
-                q = q & ~raeducci(exclude_keywords)
-
-            events = Event.objects.filter(q)
-            external_events = ExternalEvent.objects.filter(q)
-
-            listing.events.set(events)
-            listing.external_events.set(external_events)
