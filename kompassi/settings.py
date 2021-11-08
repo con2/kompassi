@@ -259,15 +259,14 @@ INSTALLED_APPS = (
     "events.desucon2022",
     "events.ropecon2022",
     "events.tracon2022",
+    "events.kuplii2022",
 )
 
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {
-            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
-        },
+        "verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"},
         "simple": {"format": "%(levelname)s %(message)s"},
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
@@ -312,9 +311,7 @@ REST_FRAMEWORK = {
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"],
     "DEFAULT_RENDERER_CLASSES": (
         "api_v3.renderers.CamelCaseJSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
@@ -350,22 +347,12 @@ MESSAGE_TAGS = {
 
 KOMPASSI_APPLICATION_NAME = "Kompassi"
 KOMPASSI_INSTALLATION_NAME = env("KOMPASSI_INSTALLATION_NAME", default="Kompassi (DEV)")
-KOMPASSI_INSTALLATION_NAME_ILLATIVE = (
-    "Kompassin kehitys\u00ADinstanssiin" if DEBUG else "Kompassiin"
-)
-KOMPASSI_INSTALLATION_NAME_GENITIVE = (
-    "Kompassin kehitys\u00ADinstanssin" if DEBUG else "Kompassin"
-)
-KOMPASSI_INSTALLATION_NAME_PARTITIVE = (
-    "Kompassin kehitys\u00ADinstanssia" if DEBUG else "Kompassia"
-)
+KOMPASSI_INSTALLATION_NAME_ILLATIVE = "Kompassin kehitys\u00ADinstanssiin" if DEBUG else "Kompassiin"
+KOMPASSI_INSTALLATION_NAME_GENITIVE = "Kompassin kehitys\u00ADinstanssin" if DEBUG else "Kompassin"
+KOMPASSI_INSTALLATION_NAME_PARTITIVE = "Kompassin kehitys\u00ADinstanssia" if DEBUG else "Kompassia"
 KOMPASSI_INSTALLATION_SLUG = env("KOMPASSI_INSTALLATION_SLUG", default="turskadev")
-KOMPASSI_PRIVACY_POLICY_URL = (
-    "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi"
-)
-FEEDBACK_PRIVACY_POLICY_URL = (
-    "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute"
-)
+KOMPASSI_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi"
+FEEDBACK_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute"
 
 # Confluence & co. require a group of users
 KOMPASSI_NEW_USER_GROUPS = ["users"]
@@ -407,9 +394,7 @@ if "lippukala" in INSTALLED_APPS:
 
     # NOTE these will be overridden by the respective fields in TicketsEventMeta
     # however, they need to be defined in settings or lippukala will barf.
-    LIPPUKALA_PRINT_LOGO_PATH = mkpath(
-        "events", "mimicon2016", "static", "images", "mimicon2016_logo.png"
-    )
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath("events", "mimicon2016", "static", "images", "mimicon2016_logo.png")
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 
@@ -430,15 +415,11 @@ if env("BROKER_URL", default=""):
 
 
 if "api" in INSTALLED_APPS:
-    KOMPASSI_APPLICATION_USER_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-apps".format(
-        **locals()
-    )
+    KOMPASSI_APPLICATION_USER_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-apps".format(**locals())
 
 
 if "api_v2" in INSTALLED_APPS:
-    AUTHENTICATION_BACKENDS = (
-        "oauth2_provider.backends.OAuth2Backend",
-    ) + AUTHENTICATION_BACKENDS
+    AUTHENTICATION_BACKENDS = ("oauth2_provider.backends.OAuth2Backend",) + AUTHENTICATION_BACKENDS
 
     OAUTH2_PROVIDER = dict(
         SCOPES=dict(
@@ -460,15 +441,11 @@ if env("KOMPASSI_CROWD_APPLICATION_NAME", default=""):
     KOMPASSI_CROWD_APPLICATION_NAME = env("KOMPASSI_CROWD_APPLICATION_NAME")
     KOMPASSI_CROWD_APPLICATION_PASSWORD = env("KOMPASSI_CROWD_APPLICATION_PASSWORD")
     KOMPASSI_CROWD_HOST = env("KOMPASSI_CROWD_HOST", default="https://crowd.tracon.fi")
-    KOMPASSI_CROWD_BASE_URL = "{host}/crowd/rest/usermanagement/1".format(
-        host=KOMPASSI_CROWD_HOST
-    )
+    KOMPASSI_CROWD_BASE_URL = "{host}/crowd/rest/usermanagement/1".format(host=KOMPASSI_CROWD_HOST)
 
 
 if "desuprofile_integration" in INSTALLED_APPS:
-    KOMPASSI_DESUPROFILE_HOST = env(
-        "KOMPASSI_DESUPROFILE_HOST", default="https://desucon.fi"
-    )
+    KOMPASSI_DESUPROFILE_HOST = env("KOMPASSI_DESUPROFILE_HOST", default="https://desucon.fi")
     KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID = env(
         "KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID", default="kompassi_insecure_client_id"
     )
@@ -477,15 +454,9 @@ if "desuprofile_integration" in INSTALLED_APPS:
         default="kompassi_insecure_client_secret",
     )
     KOMPASSI_DESUPROFILE_OAUTH2_SCOPE = ["read"]
-    KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = (
-        "{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/".format(**locals())
-    )
-    KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = (
-        "{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/".format(**locals())
-    )
-    KOMPASSI_DESUPROFILE_API_URL = "{KOMPASSI_DESUPROFILE_HOST}/api/user/me/".format(
-        **locals()
-    )
+    KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = "{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/".format(**locals())
+    KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = "{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/".format(**locals())
+    KOMPASSI_DESUPROFILE_API_URL = "{KOMPASSI_DESUPROFILE_HOST}/api/user/me/".format(**locals())
 
 
 KOMPASSI_LISTING_URLCONFS = {
@@ -495,12 +466,8 @@ KOMPASSI_LISTING_URLCONFS = {
 
 
 # Used by access.SMTPServer. Must be created with ssh-keygen -t rsa -m pem (will not work without -m pem).
-KOMPASSI_SSH_PRIVATE_KEY_FILE = env(
-    "KOMPASSI_SSH_PRIVATE_KEY_FILE", default="/mnt/secrets/kompassi/sshPrivateKey"
-)
-KOMPASSI_SSH_KNOWN_HOSTS_FILE = env(
-    "KOMPASSI_SSH_KNOWN_HOSTS_FILE", default="/mnt/secrets/kompassi/sshKnownHosts"
-)
+KOMPASSI_SSH_PRIVATE_KEY_FILE = env("KOMPASSI_SSH_PRIVATE_KEY_FILE", default="/mnt/secrets/kompassi/sshPrivateKey")
+KOMPASSI_SSH_KNOWN_HOSTS_FILE = env("KOMPASSI_SSH_KNOWN_HOSTS_FILE", default="/mnt/secrets/kompassi/sshKnownHosts")
 
 # used by manage.py setup to noop if already run for this deploy
 KOMPASSI_SETUP_RUN_ID = env("KOMPASSI_SETUP_RUN_ID", default="")
