@@ -24,11 +24,11 @@ billiard==3.6.4.0
     # via celery
 bleach==4.1.0
     # via -r requirements.in
-celery==5.1.2
+celery==5.2.0
     # via -r requirements.in
 certifi==2021.10.8
     # via requests
-cffi==1.14.6
+cffi==1.15.0
     # via
     #   bcrypt
     #   cryptography
@@ -37,7 +37,7 @@ chardet==4.0.0
     # via pypugjs
 charset-normalizer==2.0.7
     # via requests
-click==7.1.2
+click==8.0.3
     # via
     #   celery
     #   click-didyoumean
@@ -76,7 +76,7 @@ django==2.2.24
     #   paikkala
 django-babel==0.6.2
     # via -r requirements.in
-django-bootstrap3==15.0.0
+django-bootstrap3==21.1
     # via -r requirements.in
 django-cors-headers==3.10.0
     # via -r requirements.in
@@ -84,7 +84,7 @@ django-crispy-forms==1.13.0
     # via -r requirements.in
 django-csp==3.7
     # via -r requirements.in
-django-environ==0.7.0
+django-environ==0.8.1
     # via -r requirements.in
 django-filter==21.1
     # via -r requirements.in
@@ -100,7 +100,7 @@ djangorestframework==3.12.4
     # via
     #   -r requirements.in
     #   drf-nested-routers
-drf-nested-routers==0.93.3
+drf-nested-routers==0.93.4
     # via -r requirements.in
 flake8==4.0.1
     # via -r requirements.in
@@ -112,19 +112,19 @@ iniconfig==1.1.1
     # via pytest
 ipdb==0.13.9
     # via -r requirements.in
-ipython==7.28.0
+ipython==7.29.0
     # via
     #   -r requirements.in
     #   ipdb
-isort==5.9.3
+isort==5.10.0
     # via -r requirements.in
 jedi==0.18.0
     # via ipython
-jsonschema==4.1.0
+jsonschema==4.2.1
     # via -r requirements.in
 jwcrypto==1.0
     # via django-oauth-toolkit
-kombu==5.1.0
+kombu==5.2.1
     # via celery
 lippukala @ git+https://github.com/kcsry/lippukala.git@v1.2.1
     # via -r requirements.in
@@ -136,7 +136,7 @@ oauthlib==3.1.1
     # via
     #   django-oauth-toolkit
     #   requests-oauthlib
-packaging==21.0
+packaging==21.2
     # via
     #   bleach
     #   pytest
@@ -150,17 +150,17 @@ passlib==1.7.4
     # via -r requirements.in
 pexpect==4.8.0
     # via ipython
-phonenumberslite==8.12.34
+phonenumberslite==8.12.36
     # via -r requirements.in
 pickleshare==0.7.5
     # via ipython
-pillow==8.3.2
+pillow==8.4.0
     # via
     #   -r requirements.in
     #   reportlab
 pluggy==1.0.0
     # via pytest
-prompt-toolkit==3.0.20
+prompt-toolkit==3.0.22
     # via
     #   click-repl
     #   ipython
@@ -168,11 +168,11 @@ psycopg2==2.8.6
     # via -r requirements.in
 ptyprocess==0.7.0
     # via pexpect
-py==1.10.0
+py==1.11.0
     # via pytest
 pycodestyle==2.8.0
     # via flake8
-pycparser==2.20
+pycparser==2.21
     # via cffi
 pyflakes==2.4.0
     # via flake8
@@ -203,13 +203,13 @@ pytz==2021.3
     #   babel
     #   celery
     #   django
-pyyaml==5.4.1
+pyyaml==6.0
     # via -r requirements.in
 redis==3.5.3
     # via django-redis
-regex==2021.10.8
+regex==2021.11.2
     # via -r requirements.in
-reportlab==3.6.1
+reportlab==3.6.2
     # via
     #   -r requirements.in
     #   lippukala
@@ -236,7 +236,7 @@ toml==0.10.2
     # via
     #   ipdb
     #   pytest
-traitlets==5.1.0
+traitlets==5.1.1
     # via
     #   ipython
     #   matplotlib-inline
@@ -255,9 +255,9 @@ wcwidth==0.2.5
     # via prompt-toolkit
 webencodings==0.5.1
     # via bleach
-wrapt==1.13.2
+wrapt==1.13.3
     # via deprecated
-xlsxwriter==3.0.1
+xlsxwriter==3.0.2
     # via -r requirements.in
 xlwt==1.2.0
     # via lippukala
