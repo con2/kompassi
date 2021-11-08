@@ -13,7 +13,7 @@ from django.views.decorators.http import require_POST, require_http_methods
 
 from csp.decorators import csp_exempt
 
-from api.utils import api_view, api_login_required, handle_api_errors
+from api.utils import api_login_required, handle_api_errors
 from core.helpers import person_required
 from core.models import Person
 from core.utils import groupby_strict, url
@@ -150,7 +150,7 @@ def access_profile_menu_items(request):
     privileges_active = request.path.startswith(privileges_url)
     privileges_text = "Käyttöoikeudet"
 
-    items = [
+    items: list[tuple[bool, str, str]] = [
         (privileges_active, privileges_url, privileges_text),
     ]
 
@@ -217,7 +217,8 @@ def access_admin_group_emails_api(request, group_name):
     group = get_object_or_404(Group, name=group_name)
 
     return HttpResponse(
-        "\n".join(user.email for user in group.user_set.all() if user.email), content_type="text/plain; charset=UTF-8"
+        "\n".join(user.email for user in group.user_set.all() if user.email),
+        content_type="text/plain; charset=UTF-8",
     )
 
 
