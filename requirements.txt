@@ -4,10 +4,8 @@
 #
 #    pip-compile
 #
-amqp==5.0.6
+amqp==5.0.9
     # via kombu
-appnope==0.1.2
-    # via ipython
 attrs==21.2.0
     # via
     #   jsonschema
@@ -24,7 +22,7 @@ billiard==3.6.4.0
     # via celery
 bleach==4.1.0
     # via -r requirements.in
-celery==5.2.0
+celery==5.2.2
     # via -r requirements.in
 certifi==2021.10.8
     # via requests
@@ -124,7 +122,7 @@ jsonschema==4.2.1
     # via -r requirements.in
 jwcrypto==1.0
     # via django-oauth-toolkit
-kombu==5.2.1
+kombu==5.2.3
     # via celery
 lippukala @ git+https://github.com/kcsry/lippukala.git@v1.2.1
     # via -r requirements.in
