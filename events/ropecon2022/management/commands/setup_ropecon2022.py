@@ -29,9 +29,9 @@ class Setup(object):
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_programme()
-        # self.setup_tickets()
-        # self.setup_payments()
+        self.setup_programme()
+    #    self.setup_tickets()
+    #    self.setup_payments()
         self.setup_badges()
 
     def setup_core(self):
@@ -301,6 +301,7 @@ class Setup(object):
                 ('Työpaja: musiikki / Workshop: music', 'music', 'color2'),
                 ('Työpaja: muu / Other workshop', 'workshop', 'color2'),
                 ('Tanssiohjelma / Dance programme', 'dance', 'color2'),
+                ('Esitysohjelma / Performance programme', 'perforprog', 'color2'),
                 ('Pelitiski: Figupeli / Miniature wargame', 'miniwar', 'color3'),
                 ('Pelitiski: Korttipeli / Card game', 'card', 'color3'),
                 ('Pelitiski: Lautapeli / Board game', 'board', 'color3'),
@@ -470,7 +471,7 @@ class Setup(object):
                 "lipunvaihtopisteessä.\n\n"
                 "Tervetuloa Ropeconiin!",
             front_page_text="<h2>Tervetuloa Ropeconin lippukauppaan!</h2>"
-                "<p>Liput maksetaan tilauksen yhteydessä käyttämällä suomalaia verkkopankkipalveluja.</p>"
+                "<p>Liput maksetaan tilauksen yhteydessä käyttämällä suomalaisia verkkopankkipalveluja.</p>"
                 "<p>Maksetut liput toimitetaan e-lippuina sähköpostitse asiakkaan antamaan osoitteeseen. E-liput vaihdetaan rannekkeiksi tapahtumaan saavuttaessa.</p>"
                 "<p>Lisätietoja lipuista saat tapahtuman verkkosivuilta. <a href='https://2022.ropecon.fi/liput/'>Siirry takaisin tapahtuman verkkosivuille</a>.</p>"
                 "<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "

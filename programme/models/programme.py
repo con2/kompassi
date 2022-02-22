@@ -687,6 +687,34 @@ class Programme(models.Model, CsvExportMixin):
         default='',
     )
 
+    ropecon2022_aimed_at_children_under_10 = models.BooleanField(
+        default=False,
+        verbose_name=_('Aimed at children under 10 years old'),
+        help_text=_('Tick this box if your programme is designed for children under the age of 10.'),
+    )
+    ropecon2022_aimed_at_underage_participants = models.BooleanField(
+        default=False,
+        verbose_name=_('Aimed at underage participants'),
+        help_text=_('Tick this box if your programme is designed for underage participants.'),
+    )
+    ropecon2022_aimed_at_adult_participants = models.BooleanField(
+        default=False,
+        verbose_name=_('Aimed at adult participants'),
+        help_text=_('Tick this box if your programme is designed for adult participants.'),
+    )
+
+    ropecon2022_accessibility_remaining_one_place = models.BooleanField(
+        default=False,
+        verbose_name=_('Participation involves a lot of remaining in one place without a chance to take breaks and move around'),
+    )
+
+    ropecon2022_content_warnings = models.CharField(
+        max_length=1023,
+        blank=True,
+        default='',
+        verbose_name=_('Tell us here if your game contains heavy subjects that may cause discomfort or distress in participants'),
+        help_text=_('Examples: spiders, violence, phobias or other possibly triggering themes'),
+    )
 
     is_using_paikkala = models.BooleanField(
         default=False,
