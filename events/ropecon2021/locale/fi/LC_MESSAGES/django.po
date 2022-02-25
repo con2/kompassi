@@ -365,7 +365,7 @@ msgid "When are you NOT able to run your larp?"
 msgstr "Milloin ET PYSTY pelauttamaan larppiasi?"
 
 msgid "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be <b>able</b> to run your larp unselected!<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.<br/><br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below."
-msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole</b> mahdollista pelauttaa larppiasi. Tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (esim. täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi.)<br/><br/>Alla vapaamuotoisissa terveisissä voit esittää toiveita sinulle parhaiten sopivista ajankohdista (esim. “en haluaisi pelauttaa aikaisin aamulla”)."
+msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa larppiasi. Tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (esim. täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi.)<br/><br/>Alla vapaamuotoisissa terveisissä voit esittää toiveita sinulle parhaiten sopivista ajankohdista (esim. “en haluaisi pelauttaa aikaisin aamulla”)."
 
 msgid "The larp involves watching a video without subtitles for the hearing impaired"
 msgstr "Larpissa katsotaan video, jossa ei ole tekstitystä kuulorajoitteisille"
@@ -508,7 +508,7 @@ msgid "When are you NOT able to run your game?"
 msgstr "Milloin ET PYSTY pelauttamaan peliäsi?"
 
 msgid "Select the times when you are <b>NOT able</b> to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
-msgstr "Merkitse tähän ne ajat, jolloin sinun ei ole mahdollista pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."
+msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."
 
 msgid "Accessibility and inclusivity"
 msgstr "Esteettömyys, inklusiivisuus ja saavutettavuus"
