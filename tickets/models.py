@@ -393,10 +393,10 @@ class ShirtSize(models.Model):
 class Product(models.Model):
     event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=150)
     override_electronic_ticket_title = models.CharField(max_length=100, default='', blank=True)
 
-    internal_description = models.CharField(max_length=255, null=True, blank=True)
+    internal_description = models.CharField(max_length=300, null=True, blank=True)
     description = models.TextField()
     mail_description = models.TextField(null=True, blank=True)
     limit_groups = models.ManyToManyField(LimitGroup, blank=True)
