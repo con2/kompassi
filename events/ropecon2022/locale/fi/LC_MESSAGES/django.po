@@ -144,8 +144,8 @@ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alaikäisille."
 msgid "Tick this box if your programme is designed for adult participants."
 msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
 
-msgid "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants"
-msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta"
+msgid "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your programme addresses themes or issues related to war."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta.<br>HUOM! Ukrainan tilanteesta johtuen, mainitse tässä jos ohjelmasi käsittelee sotaan liittyviä aiheita."
 
 msgid "In the open field, define if necessary what features of your programme may possibly limit participation."
 msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli ohjelmassasi/pelissäsi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
@@ -412,8 +412,8 @@ msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu alaikäisille."
 msgid "Tick this box if your larp is designed for adult participants."
 msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu täysi-ikäisille."
 
-msgid "Tell us here if your larp contains heavy subjects that may cause discomfort or distress in participants"
-msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta"
+msgid "Tell us here if your larp contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your larp addresses themes or issues related to war."
+msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta.<br>HUOM! Ukrainan tilanteesta johtuen, mainitse tässä jos larppisi käsittelee sotaan liittyviä aiheita."
 
 msgid "In the open field, define if necessary what features of your larp may possibly limit participation."
 msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli larpissasi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
@@ -630,8 +630,8 @@ msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemust
 msgid "Participation involves a lot of remaining in one place without a chance to take breaks and move around"
 msgstr "Ohjelmanumero/peli vaatii pitkää paikallaan oloa ilman mahdollisuutta taukoihin ja liikkumiseen"
 
-msgid "Tell us here if your game contains heavy subjects that may cause discomfort or distress in participants"
-msgstr "Kerro tässä, mikäli pelisi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta"
+msgid "Tell us here if your game contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your game addresses themes or issues related to war."
+msgstr "Kerro tässä, mikäli pelisi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta.<br>HUOM! Ukrainan tilanteesta johtuen, mainitse tässä jos pelisi käsittelee sotaan liittyviä aiheita."
 
 msgid "Examples: spiders, violence, phobias or other possibly triggering themes"
 msgstr "Esimerkkejä: hämähäkit, väkivalta, fobioita tai muita mahdollisesti triggeröiviä aiheita"

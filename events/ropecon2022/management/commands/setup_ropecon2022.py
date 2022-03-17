@@ -30,7 +30,7 @@ class Setup(object):
         self.setup_labour()
         self.setup_intra()
         self.setup_programme()
-    #    self.setup_tickets()
+        self.setup_tickets()
     #    self.setup_payments()
         self.setup_badges()
 
@@ -469,13 +469,42 @@ class Setup(object):
                 "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
                 "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
                 "lipunvaihtopisteessä.\n\n"
-                "Tervetuloa Ropeconiin!",
-            front_page_text="<h2>Tervetuloa Ropeconin lippukauppaan!</h2>"
-                "<p>Liput maksetaan tilauksen yhteydessä käyttämällä suomalaisia verkkopankkipalveluja.</p>"
+
+                "Mikäli tapahtuman aikana on voimassa koronaan liittyviä tapahtumarajoituksia, tapahtumassa saatetaan\n"
+                "kysyä koronatodistusta. Katsothan ajankohtaiset koronaan liittyvät ohjeistukset Ropeconin nettisivuilta\n"
+                "ennen tapahtumaan saapumista.\n\n"
+
+                "Jos tapahtuma joudutaan perumaan, lippusi käy sellaisenaan seuraavassa Ropeconissa tai voit saada\n"
+                "hyvityksen ottamalla yhteyttä: lipunmyynti@ropecon.fi.\n\n"
+
+                "Tervetuloa Ropeconiin!\n\n"
+
+                "---\n\n"
+                
+                "This is your electronic ticket to Ropecon 2022. The electronic ticket will be exchanged to a wrist band\n"
+                "at a ticket exchange desk on your arrival at the event. You can print this ticket or show it from the\n"
+                "screen of a smartphone or tablet. If neither is possible, please write down the four or five words from\n"
+                "beneath the bar code and show that at a ticket exchange desk.\n\n"
+                
+                "If there are corona related restrictions in place during the event, a COVID-19 passport might be\n"
+                "required. Please check the most recent updates related to corona safety from Ropecon's website before\n"
+                "arriving at the event.\n\n"
+
+                "In case the event has to be canceled your ticket will be valid for the next Ropecon or you can be\n"
+                "reimbursed for your ticket. For event cancellation related reimbursement please contact us at\n"
+                "lipunmyynti@ropecon.fi.\n\n"
+
+                "Welcome to Ropecon!",
+
+            front_page_text="<h2>Tervetuloa Ropeconin lippukauppaan! / Welcome to Ropecon's Ticket Store!</h2>"
+                "<p>Liput maksetaan oston yhteydessä Paytrailin kautta. Lippujen ostamiseen tarvitset suomalaiset verkkopankkitunnukset, luottokortin (Visa/Mastercard/American Express) tai MobilePayn. Pyydämme suosimaan verkkopankkia, mikäli mahdollista.</p>"
                 "<p>Maksetut liput toimitetaan e-lippuina sähköpostitse asiakkaan antamaan osoitteeseen. E-liput vaihdetaan rannekkeiksi tapahtumaan saavuttaessa.</p>"
                 "<p>Lisätietoja lipuista saat tapahtuman verkkosivuilta. <a href='https://2022.ropecon.fi/liput/'>Siirry takaisin tapahtuman verkkosivuille</a>.</p>"
-                "<p>Huom! Tämä verkkokauppa palvelee ainoastaan asiakkaita, joilla on osoite Suomessa. Mikäli tarvitset "
-                "toimituksen ulkomaille, ole hyvä ja ota sähköpostitse yhteyttä: <em>lipunmyynti@ropecon.fi</em>"
+                "<p>---</p>"
+                
+                "<p>The tickets must be paid at purchase using a Finnish online banking service, credit card (Visa/Mastercard/American Express) or MobilePay. We would prefer payment through online banking, if possible.</p>"
+                "<p>Paid tickets will be sent as e-tickets to the e-mail address provided by the costumer. E-tickets will be exchanged to wrist bands at the event venue.</p>"
+                "<p>More information about the tickets can be found on Ropecon's website. <a href='https://2022.ropecon.fi/eng/tickets/'> Go back to the event's website</a>.</p>"
         )
 
         if self.test:
@@ -498,8 +527,8 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name='Ropecon 2022 Christmas Dragon -viikonloppulippu',
-                description='Sisältää pääsyn Ropecon 2022 -tapahtumaan koko viikonlopun ajan. Jos haluat antaa lipun lahjaksi, voit ladata <a href="https://2022.ropecon.fi/wp-content/uploads/2019/11/joulukortti.pdf" target="_blank" rel="noopener nofollow">tästä</a> taitettavan kortin annettavaksi lipun kanssa.',
+                name='Ropecon 2022 Early Dragon viikonloppu / Weekend Ticket',
+                description='Sisältää pääsyn Ropecon 2022 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2022 for the weekend.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
@@ -510,8 +539,8 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2022 Lasten Christmas Dragon -viikonloppulippu',
-                description='Sisältää pääsyn lapselle (7–12 v) Ropecon 2022 -tapahtumaan koko viikonlopun ajan. Jos haluat antaa lipun lahjaksi, voit ladata <a href="https://2022.ropecon.fi/wp-content/uploads/2019/11/joulukortti.pdf" target="_blank" rel="noopener nofollow">tästä</a> taitettavan kortin annettavaksi lipun kanssa.',
+                name='Ropecon 2022 lasten Early Dragon viikonloppu / Children\'s Weekend Ticket',
+                description='Sisältää pääsyn lapselle (7-12v) Ropecon 2022 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2022 for children (aged 7-12) for the weekend.',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
@@ -522,8 +551,8 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2022 Perhelippu',
-                description='Sisältää pääsyn Ropecon 2022 -tapahtumaan 2 aikuiselle ja 1–3 lapselle (7–12 v) koko viikonlopun ajan.',
+                name='Ropecon 2022 Early Dragon perhelippu (vkl) / Family Ticket (wknd)',
+                description='Sisältää pääsyn Ropecon 2022 -tapahtumaan 2 aikuiselle ja 1 - 3 lapselle (7-12 v) koko viikonlopun ajan. / Includes the entrance to Ropecon 2022 for two adults and 1-3 children (aged 7-12) for the weekend',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
@@ -534,53 +563,77 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2022 Early Dragon -viikonloppulippu',
-                description='Sisältää pääsyn Ropecon 2022 -tapahtumaan koko viikonlopun ajan.',
+                name='Ropecon 2022 Academic Seminar and Friday Ticket',
+                description='Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2022 -tapahtumaan perjantaina. Rekisteröitymislinkki: ?? / Includes the entrance to the Academic seminar and Ropecon 2022 on friday. Please sign up to the event here: ???',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
-                price_cents=4000,
+                price_cents=5500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Ropecon 2022 Lasten Early Dragon -viikonloppulippu',
-                description='Sisältää pääsyn lapselle (7–12 v) Ropecon 2022 -tapahtumaan koko viikonlopun ajan.',
+                name='Ropecon 2022 Academic Seminar and Weekend Ticket',
+                description='Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2022 -tapahtumaan koko viikonlopun ajan. Rekisteröitymislinkki: ?? / Includes the entrance to the Academic seminar and Ropecon 2022 for the weekend. Please sign up to the event here: ???',
                 limit_groups=[
                     limit_group('Pääsyliput', 9999),
                 ],
-                price_cents=2000,
+                price_cents=6700,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
-            # dict(
-            #     name='Ropecon 2022 Sponsoriviikonloppulippu',
-            #     description='Sisältää pääsyn Ropecon 2022 -tapahtumaan koko viikonlopun ajan.',
-            #     limit_groups=[
-            #         limit_group('Pääsyliput', 9999),
-            #     ],
-            #     price_cents=10000,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name='Ropecon 2022 Akateeminen seminaari + perjantaipäivälippu',
-            #     description='Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2022 -tapahtumaan perjantaina. Muista myös <a href="https://goo.gl/forms/J9X1401lERxaX3M52">rekisteröityä</a>!',
-            #     limit_groups=[
-            #         limit_group('Pääsyliput', 9999),
-            #     ],
-            #     price_cents=5500,
-            #     requires_shipping=False,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name='Ropecon 2022 viikonloppu / Weekend Ticket',
+                description='Sisältää pääsyn Ropecon 2022 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2022 for the weekend.',
+                limit_groups=[
+                    limit_group('Pääsyliput', 9999),
+                ],
+                price_cents=4500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Ropecon 2022 lasten viikonloppu / Children\'s Weekend Ticket',
+                description='Sisältää pääsyn lapselle (7-12v) Ropecon 2022 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2022 for children (aged 7-12) for the weekend.',
+                limit_groups=[
+                    limit_group('Pääsyliput', 9999),
+                ],
+                price_cents=2500,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Ropecon 2022 perhelippu (vkl) / Family Ticket (wknd)',
+                description='Sisältää pääsyn Ropecon 2022 -tapahtumaan 2 aikuiselle ja 1 - 3 lapselle (7-12 v) koko viikonlopun ajan. / Includes the entrance to Ropecon 2022 for two adults and 1-3 children (aged 7-12) for the weekend',
+                limit_groups=[
+                    limit_group('Pääsyliput', 9999),
+                ],
+                price_cents=11000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Ropecon 2022 kannatuslippu (vkl) / Supporting Ticket (wknd)',
+                description='Sisältää pääsyn Ropecon 2022 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2022 for the weekend.',
+                limit_groups=[
+                    limit_group('Pääsyliput', 9999),
+                ],
+                price_cents=10000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
         ]:
             name = product_info.pop('name')
             limit_groups = product_info.pop('limit_groups')

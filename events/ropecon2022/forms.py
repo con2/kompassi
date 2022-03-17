@@ -122,6 +122,7 @@ RPG_FORM_FIELD_TEXTS = dict(
     ropecon2022_aimed_at_children_under_10=(_('Aimed at children under 10 years old'), _('Tick this box if your game is designed for children under the age of 10.')),
     ropecon2022_aimed_at_underage_participants=(_('Aimed at underage participants'), _('Tick this box if your game is designed for underage participants.')),
     ropecon2022_aimed_at_adult_participants=(_('Aimed at adult participants'), _('Tick this box if your game is designed for adult participants.')),
+    ropecon2022_content_warnings=(_('Tell us here if your game contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your game addresses themes or issues related to war.'), _('Examples: spiders, violence, phobias or other possibly triggering themes')),
 )
 
 
@@ -273,7 +274,7 @@ LARP_FORM_FIELD_TEXTS = dict(
     ropecon2022_aimed_at_children_under_10=(_('Aimed at children under 10 years old'), _('Tick this box if your larp is designed for children under the age of 10.')),
     ropecon2022_aimed_at_underage_participants=(_('Aimed at underage participants'), _('Tick this box if your larp is designed for underage participants.')),
     ropecon2022_aimed_at_adult_participants=(_('Aimed at adult participants'), _('Tick this box if your larp is designed for adult participants.')),
-    ropecon2022_content_warnings=(_('Tell us here if your larp contains heavy subjects that may cause discomfort or distress in participants'), _('Examples: spiders, violence, phobias or other possibly triggering themes')),
+    ropecon2022_content_warnings=(_('Tell us here if your larp contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your larp addresses themes or issues related to war.'), _('Examples: spiders, violence, phobias or other possibly triggering themes')),
     ropecon2021_accessibility_inaccessibility=(_('Other inaccessibility'), _('In the open field, define if necessary what features of your larp may possibly limit participation.')),
 )
 
@@ -412,7 +413,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
     field_of_expertise=(_('My field(s) of expertise'), None),
     video_permission=(_('Recording & publishing consent'), _('Do you give Ropecon permission to record your programme and publish it on the Internet?')),
     ropecon_theme=(_('Theme: Friendship'), _('If your programme is related to the theme of Ropecon 2022, please tick this box.')),
-    ropecon2022_content_warnings=(_('Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants'), _('Examples: spiders, violence, phobias or other possibly triggering themes')),
+    ropecon2022_content_warnings=(_('Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your programme addresses themes or issues related to war.'), _('Examples: spiders, violence, phobias or other possibly triggering themes')),
     ropecon2021_accessibility_inaccessibility=(_('Other inaccessibility'), _('In the open field, define if necessary what features of your programme may possibly limit participation.')),
 )
 
@@ -555,7 +556,7 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
     ropecon2022_aimed_at_children_under_10=(_('Aimed at children under 10 years old'), _('Tick this box if your game programme is designed for children under the age of 10.')),
     ropecon2022_aimed_at_underage_participants=(_('Aimed at underage participants'), _('Tick this box if your game programme is designed for underage participants.')),
     ropecon2022_aimed_at_adult_participants=(_('Aimed at adult participants'), _('Tick this box if your game programme is designed for adult participants.')),
-    ropecon2022_content_warnings=(_('Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants'), _('Examples: spiders, violence, phobias or other possibly triggering themes')),
+    ropecon2022_content_warnings=(_('Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your programme addresses themes or issues related to war.'), _('Examples: spiders, violence, phobias or other possibly triggering themes')),
     ropecon2021_accessibility_inaccessibility=(_('Other inaccessibility'), _('In the open field, define if necessary what features of your programme may possibly limit participation.')),
 )
 
