@@ -363,3 +363,6 @@ msgstr "Olet jo vahvistanut tilauksesi etkä siksi enää voi muuttaa sitä. Emm
 
 msgid "The order was aborted."
 msgstr "Tilaus keskeytettiin."
+
+msgid "Fields marked with an asterisk (*) are required."
+msgstr "Tähdellä (*) merkityt kentät ovat pakollisia."
