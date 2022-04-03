@@ -252,7 +252,7 @@ msgid "Please select those languages with which you feel comfortable doing custo
 msgstr "Valitse ne kielet, joilla koet pystyväsi antamaan asiakaspalvelua. Listaa vapaatekstikentässä ne kielet, joille ei ole omaa ruutua. Voit myös kuvailla kielitaitoasi tarkemmin vapaatekstikentässä."
 
 msgid "I give my consent for Ropecon to publish my name to my co-workers in the volunteer roster of my assigned station."
-msgstr "Ymmärrän, että ilmoittautumalla työvoimaksi annan luvan siihen, että nimeni saa näkyä työpisteellä olevassa työvuorolistassa muille työpisteen vapaaehtoisille."
+msgstr "Ymmärrän, että ilmoittautumalla vapaaehtoiseksi annan luvan siihen, että nimeni saa näkyä työpisteellä olevassa työvuorolistassa muille työpisteen vapaaehtoisille."
 
 msgid "Consent for information processing"
 msgstr "Suostumus tietojen käsittelyyn"
