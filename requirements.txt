@@ -140,7 +140,7 @@ packaging==21.2
     #   pytest
 paikkala @ git+https://github.com/tracon/paikkala.git@feature/zone-ordering
     # via -r requirements.in
-paramiko==2.8.0
+paramiko==2.10.1
     # via -r requirements.in
 parso==0.8.2
     # via jedi
@@ -224,6 +224,7 @@ six==1.16.0
     #   bleach
     #   click-repl
     #   django-oauth-toolkit
+    #   paramiko
     #   pynacl
     #   pypugjs
     #   python-dateutil
