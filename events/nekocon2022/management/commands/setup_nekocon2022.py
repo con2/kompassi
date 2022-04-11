@@ -27,7 +27,7 @@ class Setup(object):
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
         self.setup_badges()
         self.setup_intra()
@@ -253,9 +253,9 @@ class Setup(object):
                 name="Nekocon (2022) -pääsylippu",
                 description="Viikonloppuranneke Kuopiossa järjestettävään vuoden 2022 Nekoconiin. Huom. myynnissä vain viikonloppurannekkeita. E-lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Pääsyliput", 2000),
+                    limit_group("Pääsyliput", 1300),
                 ],
-                price_cents=2500,
+                price_cents=1700,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -265,8 +265,8 @@ class Setup(object):
                 name="Lattiamajoituspaikka (koko vkl)",
                 description="Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoitus aukeaa perjantaina 18:00 ja sulkeutuu sunnuntaina 12:00.",
                 limit_groups=[
-                    limit_group("Lattiamajoitus pe-la", 220),
-                    limit_group("Lattiamajoitus la-su", 220),
+                    limit_group("Lattiamajoitus pe-la", 210),
+                    limit_group("Lattiamajoitus la-su", 210),
                 ],
                 price_cents=1500,
                 requires_shipping=False,
@@ -275,30 +275,30 @@ class Setup(object):
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
-            # dict(
-            #     name='Lattiamajoituspaikka (pe-la)',
-            #     description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',
-            #     limit_groups=[
-            #         limit_group('Lattiamajoitus pe-la', 445),
-            #     ],
-            #     price_cents=700,
-            #     requires_shipping=False,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name='Lattiamajoituspaikka (la-su)',
-            #     description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',
-            #     limit_groups=[
-            #         limit_group('Lattiamajoitus la-su', 445),
-            #     ],
-            #     price_cents=700,
-            #     requires_shipping=False,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name='Lattiamajoituspaikka (pe-la)',
+                description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',
+                limit_groups=[
+                    limit_group('Lattiamajoitus pe-la', 210),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                electronic_ticket=False,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name='Lattiamajoituspaikka (la-su)',
+                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',
+                limit_groups=[
+                    limit_group('Lattiamajoitus la-su', 210),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                electronic_ticket=False,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
             # dict(
             #     name='Nekocon (2022) -konserttilippu',
             #     description='Lippu Nekoconin konserttiin. Mikäli tarvitset pyörätuolipaikkaa, otathan ennen ostoa yhteyttä <em>liput@nekocon.fi</em>, jotta voimme varmistaa paikkatilanteen.',
