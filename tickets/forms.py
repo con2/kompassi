@@ -1,8 +1,8 @@
 from django import forms
-from django.forms.formsets import formset_factory
+from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper, Layout
-from crispy_forms.layout import Fieldset, Submit
+from crispy_forms.layout import Submit
 
 from core.utils import horizontal_form_helper, indented_without_label, initialize_form
 
@@ -27,7 +27,7 @@ class AccommodationInformationForm(forms.ModelForm):
         self.helper.form_tag = False
 
         for field_name, field in self.fields.items():
-            if field_name != 'email':
+            if field_name != "email":
                 field.required = True
 
     @classmethod
@@ -37,14 +37,16 @@ class AccommodationInformationForm(forms.ModelForm):
 
     @classmethod
     def get_for_accommodation_information(cls, request, ai):
-        return initialize_form(cls, request,
+        return initialize_form(
+            cls,
+            request,
             instance=ai,
             prefix="a%d" % ai.pk,
         )
 
     class Meta:
         model = AccommodationInformation
-        fields = ('first_name', 'last_name', 'phone_number', 'email')
+        fields = ("first_name", "last_name", "phone_number", "email")
 
 
 class OrderProductForm(forms.ModelForm):
@@ -53,8 +55,8 @@ class OrderProductForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(OrderProductForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.label_class = 'sr-only'
-        self.helper.field_class = 'col-md-12'
+        self.helper.label_class = "sr-only"
+        self.helper.field_class = "col-md-12"
         self.helper.form_tag = False
 
     @classmethod
@@ -66,19 +68,23 @@ class OrderProductForm(forms.ModelForm):
 
         return [
             cls.get_for_order_and_product(request, order, product, admin=admin)
-            for product in Product.objects.filter(**product_criteria).order_by('ordering')
+            for product in Product.objects.filter(**product_criteria).order_by("ordering")
         ]
 
     @classmethod
     def get_for_order_and_product(cls, request, order, product, admin=False):
         order_product, unused = OrderProduct.objects.get_or_create(order=order, product=product)
 
-        return initialize_form(OrderProductForm, request,
+        return initialize_form(
+            OrderProductForm,
+            request,
             instance=order_product,
             prefix="o%d" % order_product.pk,
-
             # XXX disallow changing amounts of electronic tickets for now
-            readonly=admin and ((order.batch is not None and product.requires_shipping) or (order.is_paid and product.electronic_ticket)),
+            readonly=admin
+            and (
+                (order.batch is not None and product.requires_shipping) or (order.is_paid and product.electronic_ticket)
+            ),
         )
 
     class Meta:
@@ -87,32 +93,45 @@ class OrderProductForm(forms.ModelForm):
 
 
 class CustomerForm(forms.ModelForm):
+    accept_terms_and_conditions = forms.BooleanField(required=True)
+
     def __init__(self, *args, **kwargs):
+        order = kwargs.pop("order")
+        meta = order.event.tickets_event_meta
+
         super(CustomerForm, self).__init__(*args, **kwargs)
+
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
-        self.helper.layout = Layout(
-            'first_name',
-            'last_name',
-            # 'address',
-            # 'zip_code',
-            # 'city',
-            'phone_number',
-            'email',
-            indented_without_label('allow_marketing_email'),
-        )
+
+        layout_fields = [
+            "first_name",
+            "last_name",
+            "phone_number",
+            "email",
+            indented_without_label("allow_marketing_email"),
+        ]
+
+        if meta.terms_and_conditions_url:
+            layout_fields.append(
+                "accept_terms_and_conditions",
+            )
+            self.fields["accept_terms_and_conditions"].label = _(
+                "I accept the <a href='{}' target='_blank' rel='noreferer noopener'>terms and conditions</a> (required)."
+            ).format(meta.terms_and_conditions_url)
+        else:
+            del self.fields["accept_terms_and_conditions"]
+
+        self.helper.layout = Layout(*layout_fields)
 
     class Meta:
         model = Customer
         fields = [
-            'first_name',
-            'last_name',
-            # 'address',
-            # 'zip_code',
-            # 'city',
-            'phone_number',
-            'email',
-            'allow_marketing_email',
+            "first_name",
+            "last_name",
+            "phone_number",
+            "email",
+            "allow_marketing_email",
         ]
 
 
@@ -135,11 +154,11 @@ class SearchForm(forms.Form):
 
         self.helper = horizontal_form_helper()
         self.helper.layout = Layout(
-            'id',
-            'first_name',
-            'last_name',
-            'email',
-            indented_without_label(Submit('submit', 'Hae tilauksia', css_class='btn-primary')),
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            indented_without_label(Submit("submit", "Hae tilauksia", css_class="btn-primary")),
         )
 
 
@@ -149,24 +168,24 @@ class AdminOrderForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            'reference_number',
+            "reference_number",
             # 'start_time',
-            'confirm_time',
-            'payment_date',
-            'cancellation_time',
-            'ip_address',
-            'batch',
+            "confirm_time",
+            "payment_date",
+            "cancellation_time",
+            "ip_address",
+            "batch",
         )
 
     class Meta:
         model = Order
         fields = (
-            'batch',
-            'cancellation_time',
-            'confirm_time',
-            'ip_address',
-            'payment_date',
-            'reference_number',
+            "batch",
+            "cancellation_time",
+            "confirm_time",
+            "ip_address",
+            "payment_date",
+            "reference_number",
             # 'start_time',
         )
 
@@ -178,18 +197,18 @@ class CreateBatchForm(forms.Form):
         required=False,
         label="Tuote",
         help_text="Jos valitset tästä kentästä tuotteen, saat erän jossa on ainoastaan sellaisia "
-            "tilauksia jotka sisältävät vähintään yhden kappaleen valittua tuotetta.",
+        "tilauksia jotka sisältävät vähintään yhden kappaleen valittua tuotetta.",
     )
 
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
+        event = kwargs.pop("event")
 
         super(CreateBatchForm, self).__init__(*args, **kwargs)
 
-        self.fields['product'].queryset = Product.objects.filter(event=event)
+        self.fields["product"].queryset = Product.objects.filter(event=event)
 
 
 class ShirtOrderForm(forms.ModelForm):
     class Meta:
         model = ShirtOrder
-        fields = ('count',)
+        fields = ("count",)

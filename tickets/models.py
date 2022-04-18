@@ -27,30 +27,30 @@ from .utils import format_date, format_price, append_reference_number_checksum
 from .receipt import render_receipt
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 LOW_AVAILABILITY_THRESHOLD = 10
 UNPAID_CANCEL_HOURS = 24
 
 
 class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
     shipping_and_handling_cents = models.IntegerField(
-        verbose_name=_('Shipping and handling (cents)'),
+        verbose_name=_("Shipping and handling (cents)"),
         default=0,
     )
 
     due_days = models.IntegerField(
-        verbose_name=_('Payment due (days)'),
+        verbose_name=_("Payment due (days)"),
         default=14,
     )
 
     ticket_sales_starts = models.DateTimeField(
-        verbose_name=_('Ticket sales starts'),
+        verbose_name=_("Ticket sales starts"),
         null=True,
         blank=True,
     )
 
     ticket_sales_ends = models.DateTimeField(
-        verbose_name=_('Ticket sales ends'),
+        verbose_name=_("Ticket sales ends"),
         null=True,
         blank=True,
     )
@@ -58,78 +58,100 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
     reference_number_template = models.CharField(
         max_length=31,
         default="{:04d}",
-        verbose_name=_('Reference number template'),
-        help_text=_('Uses Python .format() string formatting.'),
+        verbose_name=_("Reference number template"),
+        help_text=_("Uses Python .format() string formatting."),
     )
 
     contact_email = models.CharField(
         max_length=255,
-        validators=[contact_email_validator,],
-        verbose_name=_('Contact e-mail address (with description)'),
-        help_text=_('Format: Fooevent Ticket Sales &lt;tickets@fooevent.example.com&gt;'),
+        validators=[
+            contact_email_validator,
+        ],
+        verbose_name=_("Contact e-mail address (with description)"),
+        help_text=_("Format: Fooevent Ticket Sales &lt;tickets@fooevent.example.com&gt;"),
         blank=True,
     )
 
     ticket_spam_email = models.CharField(
         max_length=255,
         blank=True,
-        verbose_name=_('Monitoring e-mail address'),
-        help_text=_('If set, all tickets-related e-mail messages will be also sent to this e-mail address.'),
+        verbose_name=_("Monitoring e-mail address"),
+        help_text=_("If set, all tickets-related e-mail messages will be also sent to this e-mail address."),
     )
 
     reservation_seconds = models.IntegerField(
-        verbose_name=_('Reservation period (seconds)'),
-        help_text=_('This is how long the customer has after confirmation to complete the payment. NOTE: Currently unimplemented.'),
+        verbose_name=_("Reservation period (seconds)"),
+        help_text=_(
+            "This is how long the customer has after confirmation to complete the payment. NOTE: Currently unimplemented."
+        ),
         default=1800,
     )
 
     ticket_free_text = models.TextField(
         blank=True,
-        verbose_name=_('E-ticket text'),
-        help_text=_('This text will be printed in the electronic ticket.'),
+        verbose_name=_("E-ticket text"),
+        help_text=_("This text will be printed in the electronic ticket."),
     )
 
     front_page_text = models.TextField(
         blank=True,
-        default='',
-        verbose_name=_('Front page text'),
-        help_text=_('This text will be shown on the front page of the web shop.'),
+        default="",
+        verbose_name=_("Front page text"),
+        help_text=_("This text will be shown on the front page of the web shop."),
     )
 
     print_logo_path = models.CharField(
         max_length=255,
         blank=True,
-        default='',
-        verbose_name=_('Logo path'),
-        help_text=_('The file system path to a logo that will be printed on the electronic ticket.'),
+        default="",
+        verbose_name=_("Logo path"),
+        help_text=_("The file system path to a logo that will be printed on the electronic ticket."),
     )
 
     print_logo_width_mm = models.IntegerField(
         default=0,
-        verbose_name=_('Logo width (mm)'),
-        help_text=_('The width of the logo to be printed on electronic tickets, in millimeters. Roughly 40 mm recommended.'),
+        verbose_name=_("Logo width (mm)"),
+        help_text=_(
+            "The width of the logo to be printed on electronic tickets, in millimeters. Roughly 40 mm recommended."
+        ),
     )
 
     print_logo_height_mm = models.IntegerField(
         default=0,
-        verbose_name=_('Logo height (mm)'),
-        help_text=_('The height of the logo to be printed on electronic tickets, in millimeters. Roughly 20 mm recommended.'),
+        verbose_name=_("Logo height (mm)"),
+        help_text=_(
+            "The height of the logo to be printed on electronic tickets, in millimeters. Roughly 20 mm recommended."
+        ),
     )
 
     receipt_footer = models.CharField(
         blank=True,
-        default='',
+        default="",
         max_length=1023,
-        verbose_name=_('Receipt footer'),
-        help_text=_('This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended.'),
+        verbose_name=_("Receipt footer"),
+        help_text=_(
+            "This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended."
+        ),
     )
 
-    pos_access_group = models.ForeignKey('auth.Group', on_delete=models.CASCADE,
+    pos_access_group = models.ForeignKey(
+        "auth.Group",
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
-        verbose_name=_('POS access group'),
-        help_text=_('Members of this group are granted access to the ticket exchange view without being ticket admins.'),
-        related_name='as_pos_access_group_for',
+        verbose_name=_("POS access group"),
+        help_text=_(
+            "Members of this group are granted access to the ticket exchange view without being ticket admins."
+        ),
+        related_name="as_pos_access_group_for",
+    )
+
+    terms_and_conditions_url = models.CharField(
+        blank=True,
+        default="",
+        max_length=1023,
+        verbose_name=_("Terms and conditions URL"),
+        help_text=_("If set, customers will be required to indicate acceptance to finish order."),
     )
 
     def __str__(self):
@@ -163,7 +185,7 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         from django.contrib.auth.models import Group
         from core.models import Event
 
-        group, unused = Group.objects.get_or_create(name='Dummy ticket admin group')
+        group, unused = Group.objects.get_or_create(name="Dummy ticket admin group")
         event, unused = Event.get_or_create_dummy()
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
@@ -174,12 +196,12 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         return self.pos_access_group and self.is_user_in_group(user, self.pos_access_group)
 
     class Meta:
-        verbose_name = _('ticket sales settings for event')
-        verbose_name_plural = _('ticket sales settings for events')
+        verbose_name = _("ticket sales settings for event")
+        verbose_name_plural = _("ticket sales settings for events")
 
 
 class Batch(models.Model):
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
 
     create_time = models.DateTimeField(auto_now=True)
     delivery_time = models.DateTimeField(null=True, blank=True)
@@ -210,15 +232,12 @@ class Batch(models.Model):
         orders = event.order_set.filter(
             # Order is confirmed
             confirm_time__isnull=False,
-
             # Order is paid
             payment_date__isnull=False,
-
             # Order has not yet been allocated into a Batch
             batch__isnull=True,
-
             # Order has not been cancelled
-            cancellation_time__isnull=True
+            cancellation_time__isnull=True,
         )
 
         if product is not None:
@@ -275,8 +294,9 @@ class Batch(models.Model):
         self.send_delivery_confirmation_messages()
 
     def send_delivery_confirmation_messages(self):
-        if 'background_tasks' in settings.INSTALLED_APPS:
+        if "background_tasks" in settings.INSTALLED_APPS:
             from .tasks import batch_send_delivery_confirmation_messages
+
             batch_send_delivery_confirmation_messages.delay(self.pk)
         else:
             self._send_delivery_confirmation_messages()
@@ -286,37 +306,32 @@ class Batch(models.Model):
             order.send_confirmation_message("delivery_confirmation")
 
     def __str__(self):
-        return "#%d (%s)" % (
-            self.pk,
-            self.readable_state
-        )
+        return "#%d (%s)" % (self.pk, self.readable_state)
 
     class Meta:
-        verbose_name = 'toimituserä'
-        verbose_name_plural = 'toimituserät'
+        verbose_name = "toimituserä"
+        verbose_name_plural = "toimituserät"
 
 
 class LimitGroup(models.Model):
     # REVERSE: product_set = ManyToMany(Product)
 
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name=_('Event'))
-    description = models.CharField(max_length=255, verbose_name=_('Description'))
-    limit = models.IntegerField(verbose_name=_('Maximum amount to sell'))
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, verbose_name=_("Event"))
+    description = models.CharField(max_length=255, verbose_name=_("Description"))
+    limit = models.IntegerField(verbose_name=_("Maximum amount to sell"))
 
     def __str__(self):
         return "{self.description} ({self.amount_available}/{self.limit})".format(self=self)
 
     class Meta:
-        verbose_name = _('limit group')
-        verbose_name_plural = _('limit groups')
+        verbose_name = _("limit group")
+        verbose_name_plural = _("limit groups")
 
     @property
     def amount_sold(self):
         amount_sold = OrderProduct.objects.filter(
-            product__limit_groups=self,
-            order__confirm_time__isnull=False,
-            order__cancellation_time__isnull=True
-        ).aggregate(models.Sum('count'))['count__sum']
+            product__limit_groups=self, order__confirm_time__isnull=False, order__cancellation_time__isnull=True
+        ).aggregate(models.Sum("count"))["count__sum"]
 
         return amount_sold if amount_sold is not None else 0
 
@@ -344,16 +359,21 @@ class LimitGroup(models.Model):
     @classmethod
     def get_or_create_dummies(cls):
         from core.models import Event
+
         event, unused = Event.get_or_create_dummy()
 
-        limit_saturday, unused = cls.objects.get_or_create(event=event, description='Testing saturday', defaults=dict(limit=5000))
-        limit_sunday, unused = cls.objects.get_or_create(event=event, description='Testing sunday', defaults=dict(limit=5000))
+        limit_saturday, unused = cls.objects.get_or_create(
+            event=event, description="Testing saturday", defaults=dict(limit=5000)
+        )
+        limit_sunday, unused = cls.objects.get_or_create(
+            event=event, description="Testing sunday", defaults=dict(limit=5000)
+        )
 
         return [limit_saturday, limit_sunday]
 
 
 class ShirtType(models.Model):
-    event = models.ForeignKey('core.event', on_delete=models.CASCADE)
+    event = models.ForeignKey("core.event", on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     available = models.BooleanField(default=True)
@@ -368,11 +388,11 @@ class ShirtType(models.Model):
         return super(ShirtType, self).save(*args, **kwargs)
 
     class Meta:
-        unique_together = [('event', 'slug')]
+        unique_together = [("event", "slug")]
 
 
 class ShirtSize(models.Model):
-    type = models.ForeignKey(ShirtType, on_delete=models.CASCADE, related_name='shirt_sizes')
+    type = models.ForeignKey(ShirtType, on_delete=models.CASCADE, related_name="shirt_sizes")
     name = models.CharField(max_length=255)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     available = models.BooleanField(default=True)
@@ -387,14 +407,14 @@ class ShirtSize(models.Model):
         return super(ShirtSize, self).save(*args, **kwargs)
 
     class Meta:
-        unique_together = [('type', 'slug')]
+        unique_together = [("type", "slug")]
 
 
 class Product(models.Model):
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
 
     name = models.CharField(max_length=150)
-    override_electronic_ticket_title = models.CharField(max_length=100, default='', blank=True)
+    override_electronic_ticket_title = models.CharField(max_length=100, default="", blank=True)
 
     internal_description = models.CharField(max_length=300, null=True, blank=True)
     description = models.TextField()
@@ -411,7 +431,7 @@ class Product(models.Model):
     ordering = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ('ordering', 'id')
+        ordering = ("ordering", "id")
 
     @property
     def electronic_ticket_title(self):
@@ -423,7 +443,12 @@ class Product(models.Model):
     @property
     def sell_limit(self):
         from warnings import warn
-        warn(DeprecationWarning('sell_limit is deprecated, convert everything to use LimitGroup and amount_available directly'))
+
+        warn(
+            DeprecationWarning(
+                "sell_limit is deprecated, convert everything to use LimitGroup and amount_available directly"
+            )
+        )
         return self.amount_available
 
     @property
@@ -432,11 +457,11 @@ class Product(models.Model):
 
     @property
     def in_stock(self):
-        return (self.amount_available > 0)
+        return self.amount_available > 0
 
     @property
     def availability_low(self):
-        return (self.amount_available < LOW_AVAILABILITY_THRESHOLD)
+        return self.amount_available < LOW_AVAILABILITY_THRESHOLD
 
     @property
     def amount_available(self):
@@ -445,36 +470,34 @@ class Product(models.Model):
     @property
     def amount_sold(self):
         cnt = OrderProduct.objects.filter(
-            product=self,
-            order__confirm_time__isnull=False,
-            order__cancellation_time__isnull=True
-        ).aggregate(models.Sum('count'))
+            product=self, order__confirm_time__isnull=False, order__cancellation_time__isnull=True
+        ).aggregate(models.Sum("count"))
 
-        sm = cnt['count__sum']
+        sm = cnt["count__sum"]
         return sm if sm is not None else 0
 
     def __str__(self):
         return "%s (%s)" % (self.name, self.formatted_price)
 
     class Meta:
-        verbose_name = _('product')
-        verbose_name_plural = _('products')
+        verbose_name = _("product")
+        verbose_name_plural = _("products")
 
     @classmethod
-    def get_or_create_dummy(cls, name='Dummy product', limit_groups=[]):
+    def get_or_create_dummy(cls, name="Dummy product", limit_groups=[]):
         meta, unused = TicketsEventMeta.get_or_create_dummy()
 
         dummy, created = cls.objects.get_or_create(
             event=meta.event,
             name=name,
             defaults=dict(
-                description='Dummy product for testing',
+                description="Dummy product for testing",
                 price_cents=1800,
                 requires_shipping=True,
                 available=True,
                 ordering=100,
-                electronic_ticket=True
-            )
+                electronic_ticket=True,
+            ),
         )
 
         if created:
@@ -486,9 +509,9 @@ class Product(models.Model):
     def get_or_create_dummies(cls):
         [limit_saturday, limit_sunday] = LimitGroup.get_or_create_dummies()
 
-        weekend, unused = cls.get_or_create_dummy('Weekend test product', [limit_saturday, limit_sunday])
-        saturday, unused = cls.get_or_create_dummy('Saturday test product', [limit_saturday])
-        sunday, unused = cls.get_or_create_dummy('Sunday test product', [limit_sunday])
+        weekend, unused = cls.get_or_create_dummy("Weekend test product", [limit_saturday, limit_sunday])
+        saturday, unused = cls.get_or_create_dummy("Saturday test product", [limit_saturday])
+        sunday, unused = cls.get_or_create_dummy("Sunday test product", [limit_sunday])
 
         return [weekend, saturday, sunday]
 
@@ -497,45 +520,39 @@ class Product(models.Model):
 class Customer(models.Model):
     # REVERSE: order = OneToOne(Order)
 
-    first_name = models.CharField(max_length=100, verbose_name=_('First name'))
-    last_name = models.CharField(max_length=100, verbose_name=_('Surname'))
-    address = models.CharField(max_length=200, verbose_name=_('Address'))
+    first_name = models.CharField(max_length=100, verbose_name=_("First name"))
+    last_name = models.CharField(max_length=100, verbose_name=_("Surname"))
+    address = models.CharField(max_length=200, verbose_name=_("Address"))
 
     zip_code = models.CharField(
         max_length=5,
-        verbose_name=_('Postal code'),
+        verbose_name=_("Postal code"),
     )
 
-    city = models.CharField(max_length=255, verbose_name=_('City'))
+    city = models.CharField(max_length=255, verbose_name=_("City"))
 
     email = models.EmailField(
-        verbose_name=_('E-mail address'),
+        verbose_name=_("E-mail address"),
         help_text=_(
-            'Check the e-mail address carefully. The order confirmation and any electronic tickets '
-            'will be sent to this e-mail address. NOTE: We have had significant trouble with e-mail '
-            'delivery to webmail services of Microsoft (Hotmail, Live.com, Outlook.com etc). If possible, '
-            'we recommend using an e-mail address other than one provided by Microsoft, such as GMail.'
+            "Check the e-mail address carefully. The order confirmation and any electronic tickets "
+            "will be sent to this e-mail address. NOTE: We have had significant trouble with e-mail "
+            "delivery to webmail services of Microsoft (Hotmail, Live.com, Outlook.com etc). If possible, "
+            "we recommend using an e-mail address other than one provided by Microsoft, such as GMail."
         ),
     )
 
     allow_marketing_email = models.BooleanField(
-        default=True,
+        default=False,
         blank=True,
-        verbose_name=_('Allow sending news and other information related to this event via e-mail'),
+        verbose_name=_("Allow sending news and other information related to this event via e-mail"),
     )
 
     phone_number = models.CharField(
-        max_length=30,
-        null=True,
-        blank=True,
-        validators=[phone_number_validator],
-        verbose_name=_('phone number')
+        max_length=30, null=True, blank=True, validators=[phone_number_validator], verbose_name=_("phone number")
     )
 
     def get_normalized_phone_number(
-        self,
-        region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION,
-        format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
+        self, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION, format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
     ):
         """
         Returns the phone number of this Customer in a normalized format. If the phone number is invalid,
@@ -545,7 +562,7 @@ class Customer(models.Model):
         try:
             return format_phone_number(self.phone_number, region=region, format=format)
         except phonenumbers.NumberParseException:
-            logger.exception('Customer %s has invalid phone number: %s', self, self.phone_number)
+            logger.exception("Customer %s has invalid phone number: %s", self, self.phone_number)
             return self.phone_number
 
     @property
@@ -556,8 +573,8 @@ class Customer(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('customer')
-        verbose_name_plural = _('customers')
+        verbose_name = _("customer")
+        verbose_name_plural = _("customers")
 
     @property
     def name(self):
@@ -565,8 +582,7 @@ class Customer(models.Model):
 
     @property
     def sanitized_name(self):
-        return "".join(i for i in self.name if i.isalpha() or i in
-            ('ä', 'Ä', 'ö', 'Ö', 'å', 'Å', '-', "'", " "))
+        return "".join(i for i in self.name if i.isalpha() or i in ("ä", "Ä", "ö", "Ö", "å", "Å", "-", "'", " "))
 
     @property
     def name_and_email(self):
@@ -575,21 +591,21 @@ class Customer(models.Model):
     @classmethod
     def get_or_create_dummy(cls):
         return cls.objects.get_or_create(
-            first_name='Dummy',
-            last_name='Testinen',
+            first_name="Dummy",
+            last_name="Testinen",
             defaults=dict(
-                email='dummy@example.com',
-                address='Testikuja 5 A 19',
-                zip_code='12354',
-                city='Testilä',
-            )
+                email="dummy@example.com",
+                address="Testikuja 5 A 19",
+                zip_code="12354",
+                city="Testilä",
+            ),
         )
 
 
 class Order(models.Model):
     # REVERSE: order_product_set = ForeignKeyFrom(OrderProduct)
 
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
 
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE, null=True, blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
@@ -597,38 +613,35 @@ class Order(models.Model):
     confirm_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name='Tilausaika',
+        verbose_name="Tilausaika",
     )
 
-    ip_address = models.CharField(
-        max_length=15,
-        null=True,
-        blank=True,
-        verbose_name='Tilaajan IP-osoite'
-    )
+    ip_address = models.CharField(max_length=15, null=True, blank=True, verbose_name="Tilaajan IP-osoite")
 
     payment_date = models.DateField(
         null=True,
         blank=True,
-        verbose_name='Maksupäivä',
+        verbose_name="Maksupäivä",
     )
 
     cancellation_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name='Peruutusaika',
+        verbose_name="Peruutusaika",
     )
 
-    batch = models.ForeignKey(Batch, on_delete=models.CASCADE,
+    batch = models.ForeignKey(
+        Batch,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
-        verbose_name='Toimituserä',
+        verbose_name="Toimituserä",
     )
 
     reference_number = models.CharField(
         max_length=31,
         blank=True,
-        verbose_name='Viitenumero',
+        verbose_name="Viitenumero",
         db_index=True,
     )
 
@@ -708,7 +721,7 @@ class Order(models.Model):
     def t_shirts(self):
         # TODO use db aggregate
         queryset = self.order_product_set.filter(count__gt=0, product__requires_shirt_size=True)
-        return queryset.aggregate(models.Sum('count'))['count__sum'] or 0
+        return queryset.aggregate(models.Sum("count"))["count__sum"] or 0
 
     @property
     def reference_number_base(self):
@@ -752,7 +765,7 @@ class Order(models.Model):
 
         self.save()
 
-        if 'lippukala' in settings.INSTALLED_APPS:
+        if "lippukala" in settings.INSTALLED_APPS:
             self.lippukala_create_codes()
 
         if send_email:
@@ -761,7 +774,7 @@ class Order(models.Model):
     def cancel(self, send_email=True):
         assert self.is_confirmed
 
-        if 'lippukala' in settings.INSTALLED_APPS:
+        if "lippukala" in settings.INSTALLED_APPS:
             self.lippukala_revoke_codes()
 
         self.cancellation_time = timezone.now()
@@ -773,7 +786,7 @@ class Order(models.Model):
     def uncancel(self, send_email=True):
         assert self.is_cancelled
 
-        if 'lippukala' in settings.INSTALLED_APPS:
+        if "lippukala" in settings.INSTALLED_APPS:
             self.lippukala_reinstate_codes()
 
         self.cancellation_time = None
@@ -812,7 +825,9 @@ class Order(models.Model):
     @property
     def due_date(self):
         if self.confirm_time:
-            return datetime.combine((self.confirm_time + timedelta(days=self.meta.due_days)).date(), dtime(23, 59, 59)).replace(tzinfo=tzlocal())
+            return datetime.combine(
+                (self.confirm_time + timedelta(days=self.meta.due_days)).date(), dtime(23, 59, 59)
+            ).replace(tzinfo=tzlocal())
         else:
             return None
 
@@ -822,14 +837,20 @@ class Order(models.Model):
 
     @property
     def formatted_address(self):
-        return "{self.customer.name}\n{self.customer.address}\n{self.customer.zip_code} {self.customer.city}".format(self=self)
+        return "{self.customer.name}\n{self.customer.address}\n{self.customer.zip_code} {self.customer.city}".format(
+            self=self
+        )
 
     def checkout_return_url(self, request):
-        return request.build_absolute_uri(url('payments_process_view', self.event.slug))
+        return request.build_absolute_uri(url("payments_process_view", self.event.slug))
 
     @property
     def reservation_valid_until(self):
-        return self.confirm_time + timedelta(seconds=self.event.tickets_event_meta.reservation_seconds) if self.confirm_time else None
+        return (
+            self.confirm_time + timedelta(seconds=self.event.tickets_event_meta.reservation_seconds)
+            if self.confirm_time
+            else None
+        )
 
     @property
     def contains_electronic_tickets(self):
@@ -841,8 +862,8 @@ class Order(models.Model):
 
     @property
     def lippukala_prefix(self):
-        if 'lippukala' not in settings.INSTALLED_APPS:
-            raise NotImplementedError('lippukala is not installed')
+        if "lippukala" not in settings.INSTALLED_APPS:
+            raise NotImplementedError("lippukala is not installed")
 
         from tickets.lippukala_integration import select_queue
 
@@ -858,8 +879,8 @@ class Order(models.Model):
             return ""
 
     def lippukala_create_codes(self):
-        if 'lippukala' not in settings.INSTALLED_APPS:
-            raise NotImplementedError('lippukala is not installed')
+        if "lippukala" not in settings.INSTALLED_APPS:
+            raise NotImplementedError("lippukala is not installed")
 
         if not self.contains_electronic_tickets:
             return
@@ -874,17 +895,20 @@ class Order(models.Model):
         )
 
         for op in self.order_product_set.filter(count__gt=0, product__electronic_ticket=True):
-            codes = [Code.objects.create(
-                order=lippukala_order,
-                prefix=self.lippukala_prefix,
-                product_text=op.product.electronic_ticket_title,
-            ) for i in range(op.count * op.product.electronic_tickets_per_product)]
+            codes = [
+                Code.objects.create(
+                    order=lippukala_order,
+                    prefix=self.lippukala_prefix,
+                    product_text=op.product.electronic_ticket_title,
+                )
+                for i in range(op.count * op.product.electronic_tickets_per_product)
+            ]
 
         return lippukala_order, codes
 
     def lippukala_revoke_codes(self):
-        if 'lippukala' not in settings.INSTALLED_APPS:
-            raise NotImplementedError('lippukala is not installed')
+        if "lippukala" not in settings.INSTALLED_APPS:
+            raise NotImplementedError("lippukala is not installed")
 
         if not self.lippukala_order:
             return
@@ -894,8 +918,8 @@ class Order(models.Model):
         self.lippukala_order.code_set.filter(status=UNUSED).update(status=MANUAL_INTERVENTION_REQUIRED)
 
     def lippukala_reinstate_codes(self):
-        if 'lippukala' not in settings.INSTALLED_APPS:
-            raise NotImplementedError('lippukala is not installed')
+        if "lippukala" not in settings.INSTALLED_APPS:
+            raise NotImplementedError("lippukala is not installed")
 
         if not self.lippukala_order:
             return
@@ -918,8 +942,8 @@ class Order(models.Model):
             return None
 
     def get_etickets_pdf(self):
-        if 'lippukala' not in settings.INSTALLED_APPS:
-            raise NotImplementedError('lippukala not installed')
+        if "lippukala" not in settings.INSTALLED_APPS:
+            raise NotImplementedError("lippukala not installed")
 
         from lippukala.printing import OrderPrinter
 
@@ -934,8 +958,9 @@ class Order(models.Model):
         return printer.finish()
 
     def send_confirmation_message(self, msgtype):
-        if 'background_tasks' in settings.INSTALLED_APPS:
+        if "background_tasks" in settings.INSTALLED_APPS:
             from .tasks import order_send_confirmation_message
+
             order_send_confirmation_message.delay(self.pk, msgtype)
         else:
             self._send_confirmation_message(msgtype)
@@ -955,8 +980,8 @@ class Order(models.Model):
         attachments = []
 
         if msgtype == "payment_confirmation":
-            if 'lippukala' in settings.INSTALLED_APPS and self.contains_electronic_tickets:
-                attachments.append(('e-lippu.pdf', self.get_etickets_pdf(), 'application/pdf'))
+            if "lippukala" in settings.INSTALLED_APPS and self.contains_electronic_tickets:
+                attachments.append(("e-lippu.pdf", self.get_etickets_pdf(), "application/pdf"))
 
                 msgsubject = "{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
                 msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
@@ -988,7 +1013,7 @@ class Order(models.Model):
             body=msgbody,
             from_email=self.event.tickets_event_meta.cloaked_contact_email,
             to=(self.customer.name_and_email,),
-            bcc=msgbcc
+            bcc=msgbcc,
         )
 
         for attachment in attachments:
@@ -1000,15 +1025,11 @@ class Order(models.Model):
         render_receipt(self, c)
 
     def __str__(self):
-        return "#%s %s (%s)" % (
-            self.pk,
-            self.formatted_price,
-            self.readable_state
-        )
+        return "#%s %s (%s)" % (self.pk, self.formatted_price, self.readable_state)
 
     class Meta:
-        verbose_name = 'tilaus'
-        verbose_name_plural = 'tilaukset'
+        verbose_name = "tilaus"
+        verbose_name_plural = "tilaukset"
 
     @classmethod
     def get_or_create_dummy(cls, event=None):
@@ -1066,20 +1087,17 @@ class OrderProduct(models.Model, CsvExportMixin):
 
     @property
     def description(self):
-        return "%dx %s" % (
-            self.count,
-            self.product.name if self.product is not None else None
-        )
+        return "%dx %s" % (self.count, self.product.name if self.product is not None else None)
 
     @classmethod
     def get_csv_fields(cls, event):
         return [
-            (Order, 'payment_date'),
-            (Order, 'formatted_order_number'),
-            (Product, 'name'),
-            (Product, 'price_cents'),
-            (cls, 'count'),
-            (cls, 'price_cents'),
+            (Order, "payment_date"),
+            (Order, "formatted_order_number"),
+            (Product, "name"),
+            (Product, "price_cents"),
+            (cls, "count"),
+            (cls, "price_cents"),
         ]
 
     @classmethod
@@ -1103,36 +1121,36 @@ class OrderProduct(models.Model, CsvExportMixin):
         return self.description
 
     class Meta:
-        verbose_name = 'tilausrivi'
-        verbose_name_plural = 'tilausrivit'
-        unique_together = [('order', 'product')]
+        verbose_name = "tilausrivi"
+        verbose_name_plural = "tilausrivit"
+        unique_together = [("order", "product")]
 
 
 class AccommodationInformation(models.Model, CsvExportMixin):
-    order_product = models.ForeignKey(OrderProduct, on_delete=models.CASCADE, blank=True, null=True, related_name="accommodation_information_set")
+    order_product = models.ForeignKey(
+        OrderProduct, on_delete=models.CASCADE, blank=True, null=True, related_name="accommodation_information_set"
+    )
 
     # XXX ugly hack: We hijack limit groups to represent (night, accommodation centre).
     limit_groups = models.ManyToManyField(LimitGroup, blank=True, related_name="accommodation_information_set")
 
     # allow blank because these are pre-created
-    first_name = models.CharField(max_length=100, blank=True, default='', verbose_name="Etunimi")
-    last_name = models.CharField(max_length=100, blank=True, default='', verbose_name="Sukunimi")
+    first_name = models.CharField(max_length=100, blank=True, default="", verbose_name="Etunimi")
+    last_name = models.CharField(max_length=100, blank=True, default="", verbose_name="Sukunimi")
 
     phone_number = models.CharField(
-        max_length=30,
-        blank=True,
-        default='',
-        validators=[phone_number_validator],
-        verbose_name="Puhelinnumero"
+        max_length=30, blank=True, default="", validators=[phone_number_validator], verbose_name="Puhelinnumero"
     )
 
-    email = models.EmailField(blank=True, default='', verbose_name='Sähköpostiosoite')
+    email = models.EmailField(blank=True, default="", verbose_name="Sähköpostiosoite")
 
     @classmethod
     def get_for_order(cls, order):
         ais = []
 
-        for order_product in order.order_product_set.filter(count__gt=0, product__requires_accommodation_information=True):
+        for order_product in order.order_product_set.filter(
+            count__gt=0, product__requires_accommodation_information=True
+        ):
             op_ais = list(order_product.accommodation_information_set.all())
 
             while len(op_ais) > order_product.count:
@@ -1157,35 +1175,35 @@ class AccommodationInformation(models.Model, CsvExportMixin):
 
     @property
     def formatted_order_number(self):
-        return self.order_product.order.formatted_order_number if self.order_product else ''
+        return self.order_product.order.formatted_order_number if self.order_product else ""
 
     @classmethod
     def get_csv_fields(cls, event):
         return (
-            (cls, 'formatted_order_number'),
-            (cls, 'last_name'),
-            (cls, 'first_name'),
-            (cls, 'phone_number'),
-            (cls, 'email'),
+            (cls, "formatted_order_number"),
+            (cls, "last_name"),
+            (cls, "first_name"),
+            (cls, "phone_number"),
+            (cls, "email"),
         )
 
     def get_csv_related(self):
         return {}
 
     def __str__(self):
-        return '{first_name} {last_name}'.format(
+        return "{first_name} {last_name}".format(
             first_name=self.first_name,
             last_name=self.last_name,
         )
 
     class Meta:
-        verbose_name = 'majoittujan tiedot'
-        verbose_name_plural = 'majoittujan tiedot'
+        verbose_name = "majoittujan tiedot"
+        verbose_name_plural = "majoittujan tiedot"
 
 
 class ShirtOrder(models.Model, CsvExportMixin):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='shirt_orders')
-    size = models.ForeignKey(ShirtSize, on_delete=models.CASCADE, related_name='shirt_orders')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="shirt_orders")
+    size = models.ForeignKey(ShirtSize, on_delete=models.CASCADE, related_name="shirt_orders")
     count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -1209,13 +1227,13 @@ class ShirtOrder(models.Model, CsvExportMixin):
     @classmethod
     def get_csv_fields(cls, event):
         return (
-            (Customer, 'last_name'),
-            (Customer, 'first_name'),
-            (Customer, 'email'),
-            (Customer, 'normalized_phone_number'),
-            (cls, 'csv_type'),
-            (cls, 'csv_size'),
-            (cls, 'count'),
+            (Customer, "last_name"),
+            (Customer, "first_name"),
+            (Customer, "email"),
+            (Customer, "normalized_phone_number"),
+            (cls, "csv_type"),
+            (cls, "csv_size"),
+            (cls, "count"),
         )
 
     def get_csv_related(self):

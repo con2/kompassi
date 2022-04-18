@@ -1,4 +1,3 @@
-
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -11,6 +10,7 @@ from payments.models import CHECKOUT_PAYMENT_WALL_ORIGIN
 
 from ..forms import *
 from ..helpers import *
+
 # XXX * imports
 from ..models import (
     OrderProduct,
@@ -21,10 +21,11 @@ from ..utils import *
 
 
 def multiform_validate(forms):
-    return ["syntax"] if not all(
-        i.is_valid() and (i.instance.target.available or i.cleaned_data["count"] == 0)
-        for i in forms
-    ) else []
+    return (
+        ["syntax"]
+        if not all(i.is_valid() and (i.instance.target.available or i.cleaned_data["count"] == 0) for i in forms)
+        else []
+    )
 
 
 def multiform_save(forms):
@@ -42,9 +43,11 @@ def decorate(view_obj):
     realized_phase = ClassBasedView()
     realized_view = decorate(realized_phase)
     """
+
     @tickets_event_required
     def wrapper(request, event, *args, **kwargs):
         return view_obj(request, event, *args, **kwargs)
+
     return wrapper
 
 
@@ -69,11 +72,11 @@ class Phase(object):
         if not self.available(request, event):
             if order.is_confirmed:
                 if order.is_paid:
-                    return redirect('tickets_thanks_view', event.slug)
+                    return redirect("tickets_thanks_view", event.slug)
                 else:
-                    return redirect('tickets_confirm_view', event.slug)
+                    return redirect("tickets_confirm_view", event.slug)
             else:
-                return redirect('tickets_welcome_view', event.slug)
+                return redirect("tickets_welcome_view", event.slug)
 
         form = self.make_form(request, event)
         errors = []
@@ -121,7 +124,7 @@ class Phase(object):
 
     def validate(self, request, event, form):
         if not form.is_valid():
-            messages.error(request, _('Please check the form.'))
+            messages.error(request, _("Please check the form."))
             return ["syntax"]
         else:
             return []
@@ -132,11 +135,9 @@ class Phase(object):
         phases = []
 
         for phase in ALL_PHASES:
-            phases.append(dict(
-                url=url(phase.name, event.slug),
-                friendly_name=phase.friendly_name,
-                current=phase is self
-            ))
+            phases.append(
+                dict(url=url(phase.name, event.slug), friendly_name=phase.friendly_name, current=phase is self)
+            )
 
         phase = dict(
             url=url(self.name, event.slug),
@@ -145,19 +146,19 @@ class Phase(object):
             can_cancel=self.can_cancel,
             can_go_back=self.can_go_back(request, event),
             payment_phase=self.payment_phase,
-            name=self.name
+            name=self.name,
         )
 
-        vars = dict(self.vars(request, event, form),
+        vars = dict(
+            self.vars(request, event, form),
             event=event,
             form=form,
             errors=errors,
             order=order,
             phase=phase,
             phases=phases,
-
             # XXX hack to hide the login form
-            login_page=True
+            login_page=True,
         )
 
         return render(request, self.template, vars)
@@ -188,7 +189,7 @@ class Phase(object):
 
 class WelcomePhase(Phase):
     name = "tickets_welcome_view"
-    friendly_name = _('Welcome')
+    friendly_name = _("Welcome")
     template = "tickets_welcome_phase.pug"
     prev_phase = None
     next_phase = "tickets_tickets_view"
@@ -210,7 +211,7 @@ tickets_welcome_view = decorate(tickets_welcome_phase)
 
 class TicketsPhase(Phase):
     name = "tickets_tickets_view"
-    friendly_name = _('Tickets')
+    friendly_name = _("Tickets")
     template = "tickets_tickets_phase.pug"
     prev_phase = "tickets_welcome_view"
     next_phase = "tickets_address_view"
@@ -224,16 +225,16 @@ class TicketsPhase(Phase):
 
         # If the above step failed, not all forms have cleaned_data.
         if errors:
-            messages.error(request, _('Please check the form.'))
+            messages.error(request, _("Please check the form."))
             return errors
 
         if sum(i.cleaned_data["count"] for i in form) <= 0:
-            messages.info(request, _('Please select at least one product.'))
+            messages.info(request, _("Please select at least one product."))
             errors.append("zero")
             return errors
 
         if any(i.instance.product.amount_available < i.cleaned_data["count"] for i in form):
-            messages.error(request, _('Unfortunately a product you have selected has just been sold out.'))
+            messages.error(request, _("Unfortunately a product you have selected has just been sold out."))
             errors.append("soldout")
             return errors
 
@@ -246,12 +247,11 @@ class TicketsPhase(Phase):
         order = get_order(request, event)
 
         if order.t_shirts > 0:
-            return redirect('tickets_shirts_view', event.slug)
+            return redirect("tickets_shirts_view", event.slug)
         elif order.requires_accommodation_information:
-            return redirect('tickets_accommodation_view', event.slug)
+            return redirect("tickets_accommodation_view", event.slug)
         else:
             return redirect(self.next_phase, event.slug)
-
 
 
 tickets_tickets_phase = TicketsPhase()
@@ -260,7 +260,7 @@ tickets_tickets_view = decorate(tickets_tickets_phase)
 
 class AccommodationPhase(Phase):
     name = "tickets_accommodation_view"
-    friendly_name = _('Additional info')
+    friendly_name = _("Additional info")
     template = "tickets_accommodation_phase.pug"
     prev_phase = "tickets_tickets_view"
     next_phase = "tickets_address_view"
@@ -270,11 +270,11 @@ class AccommodationPhase(Phase):
         return order.requires_accommodation_information and not order.is_confirmed
 
     def validate(self, request, event, form):
-        errors = ['syntax'] if not all(i.is_valid() for i in form) else []
+        errors = ["syntax"] if not all(i.is_valid() for i in form) else []
 
         # If the above step failed, not all forms have cleaned_data.
         if errors:
-            messages.error(request, _('Please check the form.'))
+            messages.error(request, _("Please check the form."))
             return errors
 
     def make_form(self, request, event):
@@ -291,7 +291,7 @@ class AccommodationPhase(Phase):
         order = get_order(request, event)
 
         if order.t_shirts > 0:
-            return redirect('tickets_shirts_view', event.slug)
+            return redirect("tickets_shirts_view", event.slug)
         else:
             return redirect(self.next_phase, event.slug)
 
@@ -307,16 +307,13 @@ class ShirtsPhase(Phase):
     """
 
     name = "tickets_shirts_view"
-    friendly_name = _('Shirt sizes')
+    friendly_name = _("Shirt sizes")
     template = "tickets_shirts_phase.html"
     next_phase = "tickets_address_view"
     prev_phase = "tickets_tickets_view"
 
     def _get_sizes(self, event, **kwargs):
-        return groupby_strict(
-            ShirtSize.objects.filter(type__event=event).order_by("id"),
-            lambda ss: ss.type
-        )
+        return groupby_strict(ShirtSize.objects.filter(type__event=event).order_by("id"), lambda ss: ss.type)
 
     def vars(self, request, event, form):
         order = get_order(request, event)
@@ -365,7 +362,7 @@ class ShirtsPhase(Phase):
         order = get_order(request, event)
 
         if order.requires_accommodation_information:
-            return redirect('tickets_accommodation_view', event.slug)
+            return redirect("tickets_accommodation_view", event.slug)
         else:
             return redirect(self.prev_phase, event.slug)
 
@@ -376,7 +373,7 @@ tickets_shirts_view = decorate(tickets_shirts_phase)
 
 class AddressPhase(Phase):
     name = "tickets_address_view"
-    friendly_name = _('Delivery address')
+    friendly_name = _("Delivery address")
     template = "tickets_address_phase.pug"
     prev_phase = "tickets_tickets_view"
     next_phase = "tickets_confirm_view"
@@ -384,7 +381,7 @@ class AddressPhase(Phase):
     def make_form(self, request, event):
         order = get_order(request, event)
 
-        return initialize_form(CustomerForm, request, instance=order.customer)
+        return initialize_form(CustomerForm, request, instance=order.customer, order=order)
 
     def save(self, request, event, form):
         order = get_order(request, event)
@@ -397,9 +394,9 @@ class AddressPhase(Phase):
         order = get_order(request, event)
 
         if order.t_shirts > 0:
-            return redirect('tickets_shirts_view', event.slug)
+            return redirect("tickets_shirts_view", event.slug)
         if order.requires_accommodation_information:
-            return redirect('tickets_accommodation_view', event.slug)
+            return redirect("tickets_accommodation_view", event.slug)
         else:
             return redirect(self.prev_phase, event.slug)
 
@@ -410,7 +407,7 @@ tickets_address_view = decorate(tickets_address_phase)
 
 class ConfirmPhase(Phase):
     name = "tickets_confirm_view"
-    friendly_name = _('Confirmation')
+    friendly_name = _("Confirmation")
     template = "tickets_confirm_phase.pug"
     prev_phase = "tickets_address_view"
     next_phase = "tickets_thanks_view"
@@ -423,7 +420,7 @@ class ConfirmPhase(Phase):
         order_products = order.order_product_set.filter(count__gt=0)
 
         if any(i.product.amount_available < i.count for i in order_products):
-            messages.error(request, 'Valitsemasi tuote on valitettavasti juuri myyty loppuun.')
+            messages.error(request, "Valitsemasi tuote on valitettavasti juuri myyty loppuun.")
             errors.append("soldout_confirm")
             return errors
 
@@ -445,7 +442,7 @@ class ConfirmPhase(Phase):
         order = get_order(request, event)
         action = request.POST.get("action", "cancel")
 
-        if action == 'next' and not order.is_confirmed:
+        if action == "next" and not order.is_confirmed:
             order.confirm_order()
 
     def can_go_back(self, request, event):
@@ -454,6 +451,7 @@ class ConfirmPhase(Phase):
 
     def next(self, request, event):
         from payments.models import CheckoutPayment
+
         order = get_order(request, event)
 
         payment = CheckoutPayment.from_order(order)
@@ -516,6 +514,4 @@ def tickets_event_box_context(request, event):
     else:
         is_tickets_admin = False
 
-    return dict(
-        is_tickets_admin=is_tickets_admin
-    )
+    return dict(is_tickets_admin=is_tickets_admin)
