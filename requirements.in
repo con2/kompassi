@@ -1,6 +1,7 @@
 git+https://github.com/kcsry/lippukala.git@v1.2.1#egg=lippukala==1.2.1
 git+https://github.com/tracon/paikkala.git@feature/zone-ordering#egg=paikkala==0.0
 Babel
+black
 bleach
 celery
 Django
@@ -13,7 +14,9 @@ django-environ
 django-filter
 django-ipware
 django-localflavor
+django-localized-fields
 django-oauth-toolkit
+django-postgres-extra
 django-redis
 djangorestframework
 drf-nested-routers

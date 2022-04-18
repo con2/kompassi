@@ -35,9 +35,16 @@ ADMINS = [parseaddr(addr) for addr in env("ADMINS", default="").split(",") if ad
 MANAGERS = ADMINS
 
 DATABASES = {
-    # NOTE: sqlite NOT supported! PostgreSQL is required.
-    # This is just for collectstatic etc. to work without database.
-    "default": env.db(default="sqlite://db.sqlite3"),
+    "default": {
+        "HOST": env("POSTGRES_HOSTNAME", default="postgres"),
+        "NAME": env("POSTGRES_DATABASE", default="kompassi"),
+        "USER": env("POSTGRES_USERNAME", default="kompassi"),
+        "PASSWORD": env("POSTGRES_PASSWORD", default="secret"),
+        "OPTIONS": {
+            "sslmode": env("POSTGRES_SSLMODE", default="allow"),
+        },
+        "ENGINE": "psqlextra.backend",
+    },
 }
 
 CACHES = {
@@ -147,6 +154,8 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "django.contrib.admin",
     "django.contrib.postgres",
+    "psqlextra",
+    "localized_fields",
     "pypugjs.ext.django",
     "crispy_forms",
     "oauth2_provider",

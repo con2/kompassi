@@ -97,11 +97,11 @@ kompassi_environment:
       secretKeyRef:
         name: postgres
         key: password
-  - !If
+  - name: POSTGRES_SSLMODE
+    value: !If
       test: !Var postgres_ssl
-      then:
-        name: POSTGRES_EXTRAS
-        value: '?sslmode=require'
+      then: require
+      else: allow
   - name: REDIS_HOSTNAME
     value: !Var redis_hostname
 

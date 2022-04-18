@@ -15,7 +15,6 @@ services:
     environment: &environment
       PYTHONUNBUFFERED: 1
       DEBUG: 1
-      DATABASE_URL: psql://kompassi:secret@postgres/kompassi
       BROKER_URL: redis://redis/1
       CACHE_URL: rediscache://redis/1
       ALLOWED_HOSTS: '*'

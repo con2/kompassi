@@ -112,13 +112,14 @@ class CustomerForm(forms.ModelForm):
             indented_without_label("allow_marketing_email"),
         ]
 
-        if meta.terms_and_conditions_url:
+        terms_and_conditions_url = meta.terms_and_conditions_url.translate()
+        if terms_and_conditions_url:
             layout_fields.append(
                 "accept_terms_and_conditions",
             )
             self.fields["accept_terms_and_conditions"].label = _(
                 "I accept the <a href='{}' target='_blank' rel='noreferer noopener'>terms and conditions</a> (required)."
-            ).format(meta.terms_and_conditions_url)
+            ).format(terms_and_conditions_url)
         else:
             del self.fields["accept_terms_and_conditions"]
 

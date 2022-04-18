@@ -10,8 +10,10 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from dateutil.tz import tzlocal
 import phonenumbers
+from localized_fields.models import LocalizedModel
+from localized_fields.fields import LocalizedCharField
+from dateutil.tz import tzlocal
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
@@ -32,7 +34,7 @@ LOW_AVAILABILITY_THRESHOLD = 10
 UNPAID_CANCEL_HOURS = 24
 
 
-class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
+class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
     shipping_and_handling_cents = models.IntegerField(
         verbose_name=_("Shipping and handling (cents)"),
         default=0,
@@ -146,9 +148,9 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         related_name="as_pos_access_group_for",
     )
 
-    terms_and_conditions_url = models.CharField(
+    terms_and_conditions_url = LocalizedCharField(
         blank=True,
-        default="",
+        default=dict,
         max_length=1023,
         verbose_name=_("Terms and conditions URL"),
         help_text=_("If set, customers will be required to indicate acceptance to finish order."),
