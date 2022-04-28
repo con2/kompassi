@@ -23,5 +23,4 @@ block admin_content
             for num_shirts in num_shirts_by_type
               td= num_shirts
     .panel-footer.clearfix
-      p.text-muted {{ num_shirts }} paita{{ num_shirts|pluralize:"a" }} (sisältää mahdolliset <em>Ei paitaa</em> -vastaukset). Vain hyväksytyt hakemukset lasketaan.
-
+      p.text-muted {{ num_shirts }} paita{{ num_shirts|pluralize:"a" }}. Vain hyväksytyt hakemukset lasketaan. Ei paitaa -vastauksia ei lasketa.
