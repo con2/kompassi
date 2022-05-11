@@ -397,6 +397,7 @@ class Setup(object):
                 programme_form_code='events.ropecon2022.forms:GamingDeskForm',
                 num_extra_invites=0,
                 order=60,
+                role=role,
             )
         )
 
