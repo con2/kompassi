@@ -889,24 +889,26 @@ class Order(models.Model):
 
         from lippukala.models import Code, Order as LippukalaOrder
 
-        lippukala_order = LippukalaOrder.objects.create(
-            address_text=self.formatted_address,
-            free_text=self.event.tickets_event_meta.ticket_free_text,
+        lippukala_order, created = LippukalaOrder.objects.get_or_create(
             reference_number=self.reference_number,
-            event=self.event.slug,
+            defaults=dict(
+                event=self.event.slug,
+                address_text=self.formatted_address,
+                free_text=self.event.tickets_event_meta.ticket_free_text,
+            ),
         )
 
+        if not created:
+            logger.debug("Lippukala order already exists")
+            return
+
         for op in self.order_product_set.filter(count__gt=0, product__electronic_ticket=True):
-            codes = [
+            for _ in range(op.count * op.product.electronic_tickets_per_product):
                 Code.objects.create(
                     order=lippukala_order,
                     prefix=self.lippukala_prefix,
                     product_text=op.product.electronic_ticket_title,
                 )
-                for i in range(op.count * op.product.electronic_tickets_per_product)
-            ]
-
-        return lippukala_order, codes
 
     def lippukala_revoke_codes(self):
         if "lippukala" not in settings.INSTALLED_APPS:
