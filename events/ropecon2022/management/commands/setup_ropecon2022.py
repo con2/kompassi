@@ -404,7 +404,7 @@ class Setup(object):
             ProgrammeRole.objects.filter(programme__form_used=form).update(role=role)
 
         role = Role.objects.get(personnel_class__event=self.event, title="Peliohjelmanjärjestäjä")
-        AlternativeProgrammeForm.objects.get_or_create(
+        form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="pelitiski",
             defaults=dict(
@@ -426,7 +426,7 @@ class Setup(object):
             ProgrammeRole.objects.filter(programme__form_used=form).update(role=role)
 
         role = Role.objects.get(personnel_class__event=self.event, title="Ohjelmanjärjestäjä")
-        AlternativeProgrammeForm.objects.get_or_create(
+        form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
