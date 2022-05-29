@@ -31,28 +31,34 @@ class Setup(object):
     def setup_core(self):
         from core.models import Venue, Event, Organization
 
-        self.venue, unused = Venue.objects.get_or_create(name='Lahden Sibeliustalo', defaults=dict(
-            name_inessive='Lahden Sibeliustalolla',  # not really inessive though
-        ))
-        self.organization, unused = Organization.objects.get_or_create(
-            slug='kehittyvien-conien-suomi-ry',
+        self.venue, unused = Venue.objects.get_or_create(
+            name="Lahden Sibeliustalo",
             defaults=dict(
-                name='Kehittyvien conien Suomi ry',
-                homepage_url='https://desucon.fi/kcs/',
-            )
+                name_inessive="Lahden Sibeliustalolla",  # not really inessive though
+            ),
         )
-        self.event, unused = Event.objects.get_or_create(slug='desucon2022', defaults=dict(
-            name='Desucon (2022)',
-            name_genitive='Desuconin',
-            name_illative='Desuconiin',
-            name_inessive='Desuconissa',
-            homepage_url='https://desucon.fi/desucon2022/',
-            organization=self.organization,
-            start_time=datetime(2022, 6, 17, 17, 0, 0, tzinfo=self.tz),
-            end_time=datetime(2022, 6, 19, 17, 0, 0, tzinfo=self.tz),
-            venue=self.venue,
-            panel_css_class='panel-success',
-        ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug="kehittyvien-conien-suomi-ry",
+            defaults=dict(
+                name="Kehittyvien conien Suomi ry",
+                homepage_url="https://desucon.fi/kcs/",
+            ),
+        )
+        self.event, unused = Event.objects.get_or_create(
+            slug="desucon2022",
+            defaults=dict(
+                name="Desucon (2022)",
+                name_genitive="Desuconin",
+                name_illative="Desuconiin",
+                name_inessive="Desuconissa",
+                homepage_url="https://desucon.fi/desucon2022/",
+                organization=self.organization,
+                start_time=datetime(2022, 6, 17, 17, 0, 0, tzinfo=self.tz),
+                end_time=datetime(2022, 6, 19, 17, 0, 0, tzinfo=self.tz),
+                venue=self.venue,
+                panel_css_class="panel-success",
+            ),
+        )
 
     def setup_labour(self):
         from core.models import Person, Event
@@ -68,7 +74,7 @@ class Setup(object):
         from django.contrib.auth import get_user_model
         from django.contrib.contenttypes.models import ContentType
 
-        labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
+        (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
@@ -81,7 +87,7 @@ class Setup(object):
             work_begins=self.event.start_time.replace(hour=8, minute=0, tzinfo=self.tz),
             work_ends=self.event.end_time.replace(hour=21, minute=0, tzinfo=self.tz),
             admin_group=labour_admin_group,
-            contact_email='Desuconin työvoimavastaava <tyovoima@desucon.fi>',
+            contact_email="Desuconin työvoimavastaava <tyovoima@desucon.fi>",
         )
 
         if self.test:
@@ -97,14 +103,14 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            ('Vastaava', 'vastaava', 'labour'),
-            ('Vuorovastaava', 'vuorovastaava', 'labour'),
-            ('Työvoima', 'tyovoima', 'labour'),
-            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            ('Guest of Honour', 'goh', 'programme'),
-            ('Media', 'media', 'badges'),
-            ('Myyjä', 'myyja', 'badges'),
-            ('Vieras', 'vieras', 'badges'),
+            ("Vastaava", "vastaava", "labour"),
+            ("Vuorovastaava", "vuorovastaava", "labour"),
+            ("Työvoima", "tyovoima", "labour"),
+            ("Ohjelmanjärjestäjä", "ohjelma", "programme"),
+            ("Guest of Honour", "goh", "programme"),
+            ("Media", "media", "badges"),
+            ("Myyjä", "myyja", "badges"),
+            ("Vieras", "vieras", "badges"),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -116,36 +122,35 @@ class Setup(object):
                 ),
             )
 
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
-        vastaava = PersonnelClass.objects.get(event=self.event, slug='vastaava')
+        tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
+        vastaava = PersonnelClass.objects.get(event=self.event, slug="vastaava")
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug='desucon2019'),
+                source_event=Event.objects.get(slug="desucon2019"),
                 target_event=self.event,
             )
 
-        for name in ['Vastaava']:
+        for name in ["Vastaava"]:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            ('Järjestyksenvalvoja', 'JV-kortti'),
+            ("Järjestyksenvalvoja", "JV-kortti"),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
 
             jc.required_qualifications.set([qual])
 
-
         labour_event_meta.create_groups()
 
         organizer_form, unused = AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug='vastaava',
+            slug="vastaava",
             defaults=dict(
-                title='Vastaavan ilmoittautumislomake',
-                signup_form_class_path='events.desucon2022.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='events.desucon2022.forms:OrganizerSignupExtraForm',
+                title="Vastaavan ilmoittautumislomake",
+                signup_form_class_path="events.desucon2022.forms:OrganizerSignupForm",
+                signup_extra_form_class_path="events.desucon2022.forms:OrganizerSignupExtraForm",
                 active_from=self.event.created_at,
                 active_until=self.event.start_time,
             ),
@@ -156,45 +161,45 @@ class Setup(object):
             organizer_form.save()
 
         for diet_name in [
-            'Gluteeniton',
-            'Laktoositon',
-            'Maidoton',
-            'Vegaaninen',
-            'Lakto-ovo-vegetaristinen',
+            "Gluteeniton",
+            "Laktoositon",
+            "Maidoton",
+            "Vegaaninen",
+            "Lakto-ovo-vegetaristinen",
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug='xxlomake',
+            slug="xxlomake",
             defaults=dict(
-                title='Erikoistehtävien ilmoittautumislomake',
-                signup_form_class_path='events.desucon2022.forms:SpecialistSignupForm',
-                signup_extra_form_class_path='events.desucon2022.forms:SpecialistSignupExtraForm',
+                title="Erikoistehtävien ilmoittautumislomake",
+                signup_form_class_path="events.desucon2022.forms:SpecialistSignupForm",
+                signup_extra_form_class_path="events.desucon2022.forms:SpecialistSignupExtraForm",
                 active_from=self.event.created_at,
                 active_until=self.event.start_time,
                 signup_message=(
-                    'Täytä tämä lomake vain, '
-                    'jos joku Desuconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella. '
+                    "Täytä tämä lomake vain, "
+                    "jos joku Desuconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella. "
                 ),
             ),
         )
 
-        # Survey.objects.get_or_create(
-        #     event=self.event,
-        #     slug='kaatoilmo',
-        #     defaults=dict(
-        #         title='Ilmoittautuminen kaatajaisiin',
-        #         description=(
-        #             'Voidaksemme ilmoittaa erikoisruokavaliot mahdollisimman tarkasti pitopalvelulle '
-        #             'pyydämme ilmoittamaan, aiotko osallistua kaatajaisiin Desuconin purun jälkeen '
-        #             'sunnuntaina 10. kesäkuuta 2019 noin kello 19:00.'
-        #         ),
-        #         form_class_path='events.desucon2022.forms:AfterpartyParticipationSurvey',
-        #         active_from=datetime(2019, 6, 2, 21, 34, 0, tzinfo=self.tz),
-        #         active_until=datetime(2019, 6, 10, 23, 59, 59, tzinfo=self.tz),
-        #     ),
-        # )
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug="kaatoilmo",
+            defaults=dict(
+                title="Ilmoittautuminen kaatajaisiin",
+                description=(
+                    "Voidaksemme ilmoittaa erikoisruokavaliot mahdollisimman tarkasti pitopalvelulle "
+                    "pyydämme ilmoittamaan, aiotko osallistua kaatajaisiin Desuconin purun jälkeen "
+                    "sunnuntaina 19. kesäkuuta 2022 noin kello 19:00."
+                ),
+                form_class_path="events.desucon2022.forms:AfterpartyParticipationSurvey",
+                active_from=now(),
+                active_until=self.event.start_time,
+            ),
+        )
 
         # User = get_user_model()
         # spam_group, = LabourEventMeta.get_or_create_groups(self.event, ['spam'])
@@ -212,14 +217,14 @@ class Setup(object):
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
-        badge_admin_group, = BadgesEventMeta.get_or_create_groups(self.event, ['admins'])
+        (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout='nick',
+                badge_layout="nick",
                 real_name_must_be_visible=True,
-            )
+            ),
         )
 
     def setup_programme(self):
@@ -236,56 +241,59 @@ class Setup(object):
             View,
         )
 
-        ProgrammeEventMeta.get_or_create_groups(self.event, ['hosts'])
-        programme_admin_group, = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins'])
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
-            public=False,
-            admin_group=programme_admin_group,
-            contact_email='Desuconin ohjelmavastaava <ohjelma@desucon.fi>',
-        ))
+        ProgrammeEventMeta.get_or_create_groups(self.event, ["hosts"])
+        (programme_admin_group,) = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins"])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                public=False,
+                admin_group=programme_admin_group,
+                contact_email="Desuconin ohjelmavastaava <ohjelma@desucon.fi>",
+            ),
+        )
 
-        personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
+        personnel_class = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
 
         role_priority = 0
         for role_title in [
-            'Ohjelmanjärjestäjä',
-            'Näkymätön ohjelmanjärjestäjä',
-            'Panelisti',
-            'Työpajanpitäjä',
-            'Keskustelupiirin vetäjä',
-            'Tuomari',
+            "Ohjelmanjärjestäjä",
+            "Näkymätön ohjelmanjärjestäjä",
+            "Panelisti",
+            "Työpajanpitäjä",
+            "Keskustelupiirin vetäjä",
+            "Tuomari",
         ]:
             role, unused = Role.objects.get_or_create(
                 personnel_class=personnel_class,
                 title=role_title,
                 defaults=dict(
-                    is_default=role_title == 'Ohjelmanjärjestäjä',
-                    is_public=role_title not in ['Näkymätön ohjelmanjärjestäjä', 'Tuomari'],
+                    is_default=role_title == "Ohjelmanjärjestäjä",
+                    is_public=role_title not in ["Näkymätön ohjelmanjärjestäjä", "Tuomari"],
                     require_contact_info=True,
                     priority=role_priority,
-                )
+                ),
             )
             role_priority += 10
 
         Role.objects.filter(
             personnel_class__event=self.event,
-            title='Näkymätön ohjelmanjärjestäjä',
-            override_public_title='',
+            title="Näkymätön ohjelmanjärjestäjä",
+            override_public_title="",
         ).update(
-            override_public_title='Ohjelmanjärjestäjä',
+            override_public_title="Ohjelmanjärjestäjä",
         )
 
         for title, slug, style in [
-            ('Muu ohjelma', 'other', 'color1'),
-            ('Paneeli', 'paneeli', 'color2'),
-            ('Luento', 'luento', 'color3'),
-            ('Keskustelupiiri', 'keskustelupiiri', 'color4'),
-            ('Paja', 'paja', 'color5'),
-            ('Pienluento', 'pienluento', 'color6'),
-            ('Esitys', 'esit', 'color7'),
-            ('Visa', 'visa', 'color7'),
-            ('Erikoisohjelma', 'erik', 'color7'),
-            ('Sisäinen ohjelma', 'sisainen-ohjelma', 'sisainen'),
+            ("Muu ohjelma", "other", "color1"),
+            ("Paneeli", "paneeli", "color2"),
+            ("Luento", "luento", "color3"),
+            ("Keskustelupiiri", "keskustelupiiri", "color4"),
+            ("Paja", "paja", "color5"),
+            ("Pienluento", "pienluento", "color6"),
+            ("Esitys", "esit", "color7"),
+            ("Visa", "visa", "color7"),
+            ("Erikoisohjelma", "erik", "color7"),
+            ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen"),
         ]:
             Category.objects.get_or_create(
                 event=self.event,
@@ -293,19 +301,19 @@ class Setup(object):
                 defaults=dict(
                     title=title,
                     style=style,
-                    public=style != 'sisainen',
-                )
+                    public=style != "sisainen",
+                ),
             )
 
         form, created = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
-            slug='default',
+            slug="default",
             defaults=dict(
-                title='Ohjelmalomake',
-                short_description='',
-                programme_form_code='events.desucon2022.forms:ProgrammeForm',
+                title="Ohjelmalomake",
+                short_description="",
+                programme_form_code="events.desucon2022.forms:ProgrammeForm",
                 num_extra_invites=0,
-            )
+            ),
         )
 
         if not TimeBlock.objects.filter(event=self.event).exists():
@@ -325,11 +333,7 @@ class Setup(object):
                 ),
             ]:
                 TimeBlock.objects.get_or_create(
-                    event=self.event,
-                    start_time=start_time,
-                    defaults=dict(
-                        end_time=end_time
-                    )
+                    event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
                 )
 
         for time_block in TimeBlock.objects.filter(event=self.event):
@@ -337,35 +341,37 @@ class Setup(object):
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
                 SpecialStartTime.objects.get_or_create(
-                    event=self.event,
-                    start_time=hour_start_time.replace(minute=30)  # look, no tz
+                    event=self.event, start_time=hour_start_time.replace(minute=30)  # look, no tz
                 )
 
         view, created = View.objects.get_or_create(
             event=self.event,
-            name='Ohjelmakartta',
+            name="Ohjelmakartta",
         )
         if created:
-            view.rooms = [Room.objects.get_or_create(
-                event=self.event,
-                name=room_name,
-            )[0] for room_name in [
-                'Pääsali',
-                'Kuusi',
-                'Puuseppä',
-                'Koivu',
-                'Honka',
-            ]]
+            view.rooms = [
+                Room.objects.get_or_create(
+                    event=self.event,
+                    name=room_name,
+                )[0]
+                for room_name in [
+                    "Pääsali",
+                    "Kuusi",
+                    "Puuseppä",
+                    "Koivu",
+                    "Honka",
+                ]
+            ]
             view.save()
 
         tag_order = 0
         for tag_title, tag_slug, tag_style in [
-            ('Cosplaypainotteinen ohjelma', 'cosplay', 'label-danger'),
-            ('Mangapainotteinen ohjelma', 'manga', 'label-success'),
-            ('Ohjelman tarkoitus on viihdyttää', 'viihde', 'label-primary'),
-            ('Ohjelma sisältää juonipaljastuksia', 'spoilers', 'label-warning'),
-            ('Ohjelma keskittyy analysoivampaan lähestymistapaan', 'analyysi', 'label-default'),
-            ('Animepainotteinen ohjelma', 'anime', 'label-info'),
+            ("Cosplaypainotteinen ohjelma", "cosplay", "label-danger"),
+            ("Mangapainotteinen ohjelma", "manga", "label-success"),
+            ("Ohjelman tarkoitus on viihdyttää", "viihde", "label-primary"),
+            ("Ohjelma sisältää juonipaljastuksia", "spoilers", "label-warning"),
+            ("Ohjelma keskittyy analysoivampaan lähestymistapaan", "analyysi", "label-default"),
+            ("Animepainotteinen ohjelma", "anime", "label-info"),
         ]:
             Tag.objects.get_or_create(
                 event=self.event,
@@ -382,41 +388,36 @@ class Setup(object):
         from access.models import Privilege, GroupPrivilege
 
         # Grant accepted workers and programme hosts access to Desucon Slack
-        privilege = Privilege.objects.get(slug='desuslack')
+        privilege = Privilege.objects.get(slug="desuslack")
         for group in [
-            self.event.labour_event_meta.get_group('accepted'),
-            self.event.programme_event_meta.get_group('hosts'),
+            self.event.labour_event_meta.get_group("accepted"),
+            self.event.programme_event_meta.get_group("hosts"),
         ]:
             GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team
 
-        admin_group, = IntraEventMeta.get_or_create_groups(self.event, ['admins'])
-        organizer_group = self.event.labour_event_meta.get_group('vastaava')
+        (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
+        organizer_group = self.event.labour_event_meta.get_group("vastaava")
         meta, unused = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
                 organizer_group=organizer_group,
-            )
+            ),
         )
 
         for team_slug, team_name in [
-            ('desucon', 'Vastaavat'),
+            ("desucon", "Vastaavat"),
         ]:
-            team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
-            email = '{}@desucon.fi'.format(team_slug)
+            (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            email = "{}@desucon.fi".format(team_slug)
 
             team, created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
-                defaults=dict(
-                    name=team_name,
-                    order=self.get_ordering_number(),
-                    group=team_group,
-                    email=email
-                )
+                defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
 
     def setup_directory(self):
@@ -424,7 +425,7 @@ class Setup(object):
 
         DirectoryOrganizationMeta.objects.get_or_create(organization=self.event.organization)
 
-        labour_admin_group = self.event.labour_event_meta.get_group('admins')
+        labour_admin_group = self.event.labour_event_meta.get_group("admins")
 
         DirectoryAccessGroup.objects.get_or_create(
             organization=self.event.organization,
@@ -435,8 +436,8 @@ class Setup(object):
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup desucon2022 specific stuff'
+    args = ""
+    help = "Setup desucon2022 specific stuff"
 
     def handle(self, *args, **opts):
         Setup().setup(test=settings.DEBUG)
