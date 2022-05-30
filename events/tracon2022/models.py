@@ -14,7 +14,7 @@ SHIRT_SIZES = [
     ("M", "M Unisex"),
     ("L", "L Unisex"),
     ("XL", "XL Unisex"),
-    ("XXL", "XXL Unisex"),
+    ("XXL", "2XL Unisex"),
     ("3XL", "3XL Unisex"),
     ("4XL", "4XL Unisex"),
     ("5XL", "5XL Unisex"),
@@ -23,6 +23,8 @@ SHIRT_SIZES = [
     ("LF_M", "M Ladyfit"),
     ("LF_L", "L Ladyfit"),
     ("LF_XL", "XL Ladyfit"),
+    ("LF_XXL", "2XL Ladyfit"),
+    ("LF_3XL", "3XL Ladyfit"),
 ]
 
 SHIFT_TYPE_CHOICES = [
