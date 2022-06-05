@@ -16,8 +16,22 @@ block profile_content
       p.help-block Olet sallinut <a href='{% url "core_profile_view" %}'>profiilissasi</a> työskentelyhistoriasi näyttämisen niille tapahtumille, joihin haet töihin.
     else
       p.help-block Et ole sallinut <a href='{% url "core_profile_view" %}'>profiilissasi</a> koko työskentelyhistoriasi näyttämistä niille tapahtumille, joihin haet töihin. Työvoimavastaava näkee ainoastaan työskentelyhistoriasi saman järjestäjätahon järjestämissa tapahtumissa.
-    for signup in signups_past_events
-      include labour_profile_historic_signup
+
+    table.table.table-striped
+      thead
+        tr
+          th Tapahtuma
+          th Ajankohta
+          th Tehtävänimike
+      tbody
+        for signup in signups_past_events
+          if signup.is_accepted
+            tr
+              td: a(href="{% url 'core_event_view' signup.event.slug %}") {{ signup.event.name }}
+              td {{ signup.event.formatted_start_and_end_date }}
+              td {{ signup.some_job_title }}
+
+
   if no_signups
     h3 Ei työvoima&shy;hakemuksia
     p Et ole hakenut töihin yhteenkään {{ settings.KOMPASSI_INSTALLATION_NAME_PARTITIVE }} työvoiman&shy;hallintaa käyttävään tapahtumaan.
