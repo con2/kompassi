@@ -15,7 +15,7 @@ def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         self._ordering = 0
 

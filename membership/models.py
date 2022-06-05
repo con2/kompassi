@@ -13,26 +13,30 @@ from tickets.utils import format_price, append_reference_number_checksum
 
 
 class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
-    organization = models.OneToOneField(Organization, on_delete=models.CASCADE, primary_key=True, verbose_name='Organisaatio')
-    admin_group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Ylläpitäjäryhmä', related_name='admin_group_for')
-    members_group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Jäsenryhmä', related_name='members_group_for')
+    organization = models.OneToOneField(
+        Organization, on_delete=models.CASCADE, primary_key=True, verbose_name="Organisaatio"
+    )
+    admin_group = models.ForeignKey(
+        Group, on_delete=models.CASCADE, verbose_name="Ylläpitäjäryhmä", related_name="admin_group_for"
+    )
+    members_group = models.ForeignKey(
+        Group, on_delete=models.CASCADE, verbose_name="Jäsenryhmä", related_name="members_group_for"
+    )
     receiving_applications = models.BooleanField(
         default=True,
-        verbose_name='Ottaa vastaan hakemuksia',
-        help_text='Tämä asetus kontrolloi, voiko yhdistyksen jäseneksi hakea suoraan Kompassin kautta.',
+        verbose_name="Ottaa vastaan hakemuksia",
+        help_text="Tämä asetus kontrolloi, voiko yhdistyksen jäseneksi hakea suoraan Kompassin kautta.",
     )
     membership_requirements = models.TextField(
-        blank=True,
-        verbose_name='Kuka voi hakea jäsenyyttä?',
-        help_text='Esim. copy-paste säännöistä.'
+        blank=True, verbose_name="Kuka voi hakea jäsenyyttä?", help_text="Esim. copy-paste säännöistä."
     )
 
     def __str__(self):
-        return self.organization.name if self.organization is not None else 'None'
+        return self.organization.name if self.organization is not None else "None"
 
     class Meta:
-        verbose_name = 'Jäsenrekisterin asetukset'
-        verbose_name = 'Jäsenrekisterien asetukset'
+        verbose_name = "Jäsenrekisterin asetukset"
+        verbose_name = "Jäsenrekisterien asetukset"
 
     def get_group(self, suffix):
         group_name = self.make_group_name(self.organization, suffix)
@@ -50,41 +54,43 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
 
 
 STATE_CHOICES = [
-    ('approval', 'Odottaa hyväksyntää'),
-    ('in_effect', 'Voimassa'),
-    ('discharged', 'Erotettu'),
-    ('declined', 'Hylätty'),
+    ("approval", "Odottaa hyväksyntää"),
+    ("in_effect", "Voimassa"),
+    ("discharged", "Erotettu"),
+    ("declined", "Hylätty"),
 ]
 
 STATE_CSS = dict(
-    approval='label-info',
-    in_effect='label-success',
-    discharged='label-danger',
-    declined='label-danger',
+    approval="label-info",
+    in_effect="label-success",
+    discharged="label-danger",
+    declined="label-danger",
 )
 
 PAYMENT_METHOD_CHOICES = [
-    ('bank_transfer', 'Tilisiirto'),
-    ('checkout', 'Checkout Finland'),
+    ("bank_transfer", "Tilisiirto"),
+    ("checkout", "Checkout Finland"),
 ]
 
 PAYMENT_TYPE_CHOICES = [
-    ('membership_fee_with_entrance_fee', 'Liittymismaksu ja jäsenmaksu'),
-    ('membership_fee', 'Jäsenmaksu'),
+    ("membership_fee_with_entrance_fee", "Liittymismaksu ja jäsenmaksu"),
+    ("membership_fee", "Jäsenmaksu"),
 ]
 
 
 class Membership(models.Model, CsvExportMixin):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, verbose_name='Yhdistys', related_name='memberships')
-    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name='Henkilö', related_name='memberships')
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, verbose_name="Yhdistys", related_name="memberships"
+    )
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name="Henkilö", related_name="memberships")
     state = models.CharField(
         max_length=max(len(key) for (key, val) in STATE_CHOICES),
         choices=STATE_CHOICES,
-        verbose_name='Tila',
+        verbose_name="Tila",
     )
     message = models.TextField(
         blank=True,
-        verbose_name='Viesti hakemuksen käsittelijälle',
+        verbose_name="Viesti hakemuksen käsittelijälle",
     )
 
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
@@ -96,19 +102,19 @@ class Membership(models.Model, CsvExportMixin):
 
     @property
     def is_pending_approval(self):
-        return self.state == 'approval'
+        return self.state == "approval"
 
     @property
     def is_in_effect(self):
-        return self.state == 'in_effect'
+        return self.state == "in_effect"
 
     @property
     def is_discharged(self):
-        return self.state == 'discharged'
+        return self.state == "discharged"
 
     @property
     def is_declined(self):
-        return self.state == 'declined'
+        return self.state == "declined"
 
     @property
     def formatted_state(self):
@@ -124,7 +130,7 @@ class Membership(models.Model, CsvExportMixin):
         return []
 
     def to_html_print(self):
-        return '{surname}, {official_first_names}, {muncipality}'.format(
+        return "{surname}, {official_first_names}, {muncipality}".format(
             surname=self.person.surname,
             official_first_names=self.person.official_first_names,
             muncipality=self.person.muncipality,
@@ -139,13 +145,13 @@ class Membership(models.Model, CsvExportMixin):
     @classmethod
     def get_csv_fields(cls, unused_organization):
         return [
-            (Person, 'surname'),
-            (Person, 'official_first_names_or_first_name'),
-            (Person, 'muncipality'),
-            (Person, 'email'),
-            (Person, 'phone'),
-            (Person, 'birth_date'),
-            (cls, 'formatted_state'),
+            (Person, "surname"),
+            (Person, "official_first_names_or_first_name"),
+            (Person, "muncipality"),
+            (Person, "email"),
+            (Person, "phone"),
+            (Person, "birth_date"),
+            (cls, "formatted_state"),
         ]
 
     def get_csv_related(self):
@@ -159,7 +165,9 @@ class Membership(models.Model, CsvExportMixin):
             return None, None
 
         # TODO inefficient, done using a list
-        memberships = list(self.organization.memberships.order_by('person__surname', 'person__official_first_names', 'id'))
+        memberships = list(
+            self.organization.memberships.order_by("person__surname", "person__official_first_names", "id")
+        )
 
         previous_membership = None
         current_membership = None
@@ -174,8 +182,9 @@ class Membership(models.Model, CsvExportMixin):
         return None, None
 
     def apply_state(self):
-        if 'background_tasks' in settings.INSTALLED_APPS:
+        if "background_tasks" in settings.INSTALLED_APPS:
             from .tasks import membership_apply_state
+
             membership_apply_state.delay(self.pk)
         else:
             self._apply_state()
@@ -198,10 +207,11 @@ class Membership(models.Model, CsvExportMixin):
             ensure_user_group_membership(self.person.user, groups_to_add, groups_to_remove)
 
     def _apply_state_email_aliases(self):
-        if 'access' not in settings.INSTALLED_APPS:
+        if "access" not in settings.INSTALLED_APPS:
             return
 
         from access.models import GroupEmailAliasGrant
+
         GroupEmailAliasGrant.ensure_aliases(self.person)
 
     def get_payment_for_term(self, term=None):
@@ -231,43 +241,42 @@ class Membership(models.Model, CsvExportMixin):
         return payment
 
     class Meta:
-        verbose_name = 'Jäsenyys'
-        verbose_name_plural = 'Jäsenyydet'
-        unique_together = [('organization', 'person')]
+        verbose_name = "Jäsenyys"
+        verbose_name_plural = "Jäsenyydet"
+        unique_together = [("organization", "person")]
 
 
 class Term(models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE,
-        verbose_name='Yhdistys',
-        related_name='terms'
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, verbose_name="Yhdistys", related_name="terms"
     )
-    title = models.CharField(max_length=63, verbose_name='Otsikko', help_text='Yleensä vuosiluku')
-    start_date = models.DateField(verbose_name='Alkamispäivä', help_text='Yleensä vuoden ensimmäinen päivä')
-    end_date = models.DateField(verbose_name='Päättymispäivä', help_text='Yleensä vuoden viimeinen päivä')
+    title = models.CharField(max_length=63, verbose_name="Otsikko", help_text="Yleensä vuosiluku")
+    start_date = models.DateField(verbose_name="Alkamispäivä", help_text="Yleensä vuoden ensimmäinen päivä")
+    end_date = models.DateField(verbose_name="Päättymispäivä", help_text="Yleensä vuoden viimeinen päivä")
 
     entrance_fee_cents = models.PositiveIntegerField(
         default=0,
         null=True,
         blank=True,
-        verbose_name='Liittymismaksu (snt)',
-        help_text='Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella liittymismaksua. '
-            'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa. (TODO: Se, että jäsenmaksut esitetään tässä sentteinä eikä euroina, on tiedostettu puute joka korjataan… joskus. Siihen asti kerro euromääräinen jäsenmaksu 100:lla.)',
+        verbose_name="Liittymismaksu (snt)",
+        help_text="Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella liittymismaksua. "
+        "Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa. (TODO: Se, että jäsenmaksut esitetään tässä sentteinä eikä euroina, on tiedostettu puute joka korjataan… joskus. Siihen asti kerro euromääräinen jäsenmaksu 100:lla.)",
     )
 
     membership_fee_cents = models.PositiveIntegerField(
         default=0,
         null=True,
         blank=True,
-        verbose_name='Jäsenmaksu (snt)',
-        help_text='Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella jäsenmaksua. '
-            'Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.',
+        verbose_name="Jäsenmaksu (snt)",
+        help_text="Arvo 0 (nolla senttiä) tarkoittaa, että yhdistyksellä ei ole tällä kaudella jäsenmaksua. "
+        "Arvon puuttuminen tarkoittaa, että liittymismaksu ei ole tiedossa.",
     )
 
     payment_method = models.CharField(
         max_length=max(len(key) for (key, val) in PAYMENT_METHOD_CHOICES),
         choices=PAYMENT_METHOD_CHOICES,
-        verbose_name='Maksutapa',
-        default='bank_transfer',
+        verbose_name="Maksutapa",
+        default="bank_transfer",
     )
 
     reference_number_template = models.TextField(blank=True)
@@ -275,20 +284,20 @@ class Term(models.Model):
     @property
     def formatted_entrance_fee(self):
         if self.entrance_fee_cents is None:
-            return 'Liittymismaksu ei ole tiedossa.'
+            return "Liittymismaksu ei ole tiedossa."
         elif self.entrance_fee_cents == 0:
-            return 'Ei liittymismaksua.'
+            return "Ei liittymismaksua."
         else:
             return format_price(self.entrance_fee_cents)
 
     @property
     def formatted_membership_fee(self):
         if self.membership_fee_cents is None:
-            return 'Jäsenmaksu ei ole tiedossa.'
+            return "Jäsenmaksu ei ole tiedossa."
         elif self.membership_fee_cents == 0:
-            return 'Ei jäsenmaksua kaudella {title}.'.format(title=self.title,)
+            return f"Ei jäsenmaksua kaudella {self.title}."
         else:
-            return '{money} (voimassa {end_date} asti).'.format(
+            return "{money} (voimassa {end_date} asti).".format(
                 money=format_price(self.membership_fee_cents),
                 end_date=format_date(self.end_date),
             )
@@ -300,7 +309,7 @@ class Term(models.Model):
         if self.start_date and not self.reference_number_template:
             self.reference_number_template = f"{self.start_date.year}66666666{{:06d}}"
 
-        return super(Term, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def get_reference_number_for_member(self, member):
         assert self.reference_number_template
@@ -308,26 +317,28 @@ class Term(models.Model):
 
     @property
     def display_payment_method(self):
-        if self.payment_method == 'bank_transfer':
-            return 'Tilisiirrolla. Yhdistyksen hallitus ohjeistaa jäsenmaksun maksamisen sähköpostitse liittymisen jälkeen.'
-        elif self.payment_method == 'checkout':
-            return 'Itsepalveluna Kompassissa. Maksun välittää Checkout Finland.'
+        if self.payment_method == "bank_transfer":
+            return "Tilisiirrolla. Yhdistyksen hallitus ohjeistaa jäsenmaksun maksamisen sähköpostitse liittymisen jälkeen."
+        elif self.payment_method == "checkout":
+            return "Itsepalveluna Kompassissa. Maksun välittää Checkout Finland."
         else:
-            return 'Maksutapa ei ole tiedossa.'
+            return "Maksutapa ei ole tiedossa."
 
     def get_absolute_url(self):
-        return url('membership_admin_term_view', self.organization.slug, self.pk)
+        return url("membership_admin_term_view", self.organization.slug, self.pk)
 
     def __str__(self):
         return self.title
 
     class Meta:
-        verbose_name = 'Toimikausi'
-        verbose_name_plural = 'Toimikaudet'
+        verbose_name = "Toimikausi"
+        verbose_name_plural = "Toimikaudet"
 
 
 class MembershipFeePayment(models.Model):
-    term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name="membership_fee_payments", verbose_name="Toimikausi")
+    term = models.ForeignKey(
+        Term, on_delete=models.CASCADE, related_name="membership_fee_payments", verbose_name="Toimikausi"
+    )
     member = models.ForeignKey(Membership, on_delete=models.CASCADE, related_name="membership_fee_payments")
 
     payment_date = models.DateField(
@@ -366,16 +377,17 @@ class MembershipFeePayment(models.Model):
 
     def admin_is_paid(self):
         return self.is_paid
+
     admin_is_paid.short_description = "Maksettu"
     admin_is_paid.boolean = True
 
     @property
     def can_pay_checkout(self):
         return (
-            self.amount_cents > 0 and
-            not self.is_paid and
-            self.term.payment_method == "checkout" and
-            self.member.state == "in_effect"
+            self.amount_cents > 0
+            and not self.is_paid
+            and self.term.payment_method == "checkout"
+            and self.member.state == "in_effect"
         )
 
     def confirm_payment(self, payment_date=None, payment_method="checkout"):
@@ -399,11 +411,13 @@ class MembershipFeePayment(models.Model):
 
     def admin_get_organization(self):
         return self.term.organization if self.term else None
+
     admin_get_organization.short_description = "Yhdistys"
     admin_get_organization.admin_order_field = "organization"
 
     def admin_get_official_name(self):
         return self.member.person.official_name if self.member else None
+
     admin_get_official_name.short_description = "Jäsen"
     admin_get_official_name.admin_order_field = "member"
 
@@ -413,6 +427,7 @@ class MembershipFeePayment(models.Model):
 
     def admin_get_formatted_amount(self):
         return self.formatted_amount
+
     admin_get_formatted_amount.short_description = "Summa"
     admin_get_formatted_amount.admin_order_field = "amount_cents"
 

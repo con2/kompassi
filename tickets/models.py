@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import phonenumbers
 from localized_fields.models import LocalizedModel
@@ -219,7 +219,7 @@ class Batch(models.Model):
     @property
     def readable_state(self):
         if self.is_delivered:
-            return "Delivered at %s" % format_date(self.delivery_time)
+            return f"Delivered at {format_date(self.delivery_time)}"
         else:
             return "Awaiting delivery"
 
@@ -387,7 +387,7 @@ class ShirtType(models.Model):
         if self.name and not self.slug:
             self.slug = slugify(self.name)
 
-        return super(ShirtType, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         unique_together = [("event", "slug")]
@@ -406,7 +406,7 @@ class ShirtSize(models.Model):
         if self.name and not self.slug:
             self.slug = slugify(self.name)
 
-        return super(ShirtSize, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     class Meta:
         unique_together = [("type", "slug")]
@@ -479,7 +479,7 @@ class Product(models.Model):
         return sm if sm is not None else 0
 
     def __str__(self):
-        return "%s (%s)" % (self.name, self.formatted_price)
+        return f"{self.name} ({self.formatted_price})"
 
     class Meta:
         verbose_name = _("product")
@@ -580,7 +580,7 @@ class Customer(models.Model):
 
     @property
     def name(self):
-        return "%s %s" % (self.first_name, self.last_name)
+        return f"{self.first_name} {self.last_name}"
 
     @property
     def sanitized_name(self):
@@ -588,7 +588,7 @@ class Customer(models.Model):
 
     @property
     def name_and_email(self):
-        return "%s <%s>" % (self.sanitized_name, self.email)
+        return f"{self.sanitized_name} <{self.email}>"
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -713,9 +713,9 @@ class Order(models.Model):
             return "Paid; awaiting allocation into batch"
         elif self.is_confirmed:
             if self.is_overdue:
-                return "Confirmed; payment overdue since %s" % self.formatted_due_date
+                return f"Confirmed; payment overdue since {self.formatted_due_date}"
             else:
-                return "Confirmed; payment due %s" % self.formatted_due_date
+                return f"Confirmed; payment due {self.formatted_due_date}"
         else:
             return "Unconfirmed"
 
@@ -738,7 +738,7 @@ class Order(models.Model):
 
     @property
     def formatted_order_number(self):
-        return "#{:06d}".format(self.pk)
+        return f"#{self.pk:06d}"
 
     def clean_up_order_products(self):
         self.order_product_set.filter(count__lte=0).delete()
@@ -1029,7 +1029,7 @@ class Order(models.Model):
         render_receipt(self, c)
 
     def __str__(self):
-        return "#%s %s (%s)" % (self.pk, self.formatted_price, self.readable_state)
+        return f"#{self.pk} {self.formatted_price} ({self.readable_state})"
 
     class Meta:
         verbose_name = "tilaus"
@@ -1195,10 +1195,7 @@ class AccommodationInformation(models.Model, CsvExportMixin):
         return {}
 
     def __str__(self):
-        return "{first_name} {last_name}".format(
-            first_name=self.first_name,
-            last_name=self.last_name,
-        )
+        return f"{self.first_name} {self.last_name}"
 
     class Meta:
         verbose_name = "majoittujan tiedot"
@@ -1211,10 +1208,7 @@ class ShirtOrder(models.Model, CsvExportMixin):
     count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return "{count}x{size}".format(
-            count=self.count,
-            size=self.size.name if self.size else None,
-        )
+        return f"{self.count}x{self.size.name if self.size else None}"
 
     @property
     def target(self):

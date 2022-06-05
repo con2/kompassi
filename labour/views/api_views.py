@@ -25,17 +25,14 @@ from ..models import (
 )
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 @labour_admin_required
 @require_safe
 @api_view
 def api_job_categories_view(request, vars, event):
-    return [
-        jc.as_dict(include_requirements=True)
-        for jc in JobCategory.objects.filter(event=event, app_label='labour')
-    ]
+    return [jc.as_dict(include_requirements=True) for jc in JobCategory.objects.filter(event=event, app_label="labour")]
 
 
 @labour_admin_required
@@ -54,13 +51,13 @@ def api_job_category_view(request, vars, event, job_category_slug):
 def api_job_view(request, vars, event, job_category_slug, job_slug=None):
     job_category = get_object_or_404(JobCategory, event=event, slug=job_category_slug)
 
-    if request.method == 'POST' and job_slug is None:
+    if request.method == "POST" and job_slug is None:
         body = EditJobRequest.from_json(request.body)
         job = Job(job_category=job_category)
-    elif request.method == 'PUT' and job_slug is not None:
+    elif request.method == "PUT" and job_slug is not None:
         body = EditJobRequest.from_json(request.body)
         job = get_object_or_404(Job, job_category=job_category, slug=job_slug)
-    elif request.method == 'DELETE' and job_slug is not None:
+    elif request.method == "DELETE" and job_slug is not None:
         job = get_object_or_404(Job, job_category=job_category, slug=job_slug)
         job.delete()
         return job_category.as_roster_api_dict()
@@ -78,13 +75,13 @@ def api_job_view(request, vars, event, job_category_slug, job_slug=None):
 def api_shift_view(request, vars, event, job_category_slug, shift_id=None):
     job_category = get_object_or_404(JobCategory, event=event, slug=job_category_slug)
 
-    if request.method == 'POST' and shift_id is None:
+    if request.method == "POST" and shift_id is None:
         shift = Shift()
         edit_shift_request = EditShiftRequest.from_json(request.body)
-    elif request.method == 'PUT' and shift_id is not None:
+    elif request.method == "PUT" and shift_id is not None:
         shift = get_object_or_404(Shift, id=int(shift_id), job__job_category=job_category)
         edit_shift_request = EditShiftRequest.from_json(request.body)
-    elif request.method == 'DELETE' and shift_id is not None:
+    elif request.method == "DELETE" and shift_id is not None:
         shift = get_object_or_404(Shift, id=int(shift_id), job__job_category=job_category)
         shift.delete()
         return job_category.as_roster_api_dict()
@@ -107,12 +104,12 @@ def api_set_job_requirements_view(request, vars, event, job_category_slug, job_s
     body = SetJobRequirementsRequest.from_json(request.body)
 
     start_time = parse_datetime(body.startTime)
-    end_time = start_time + timedelta(hours=body.hours - 1) # -1 due to end parameter being inclusive
+    end_time = start_time + timedelta(hours=body.hours - 1)  # -1 due to end parameter being inclusive
 
     start_time = max(start_time, event.labour_event_meta.work_begins)
     end_time = min(end_time, event.labour_event_meta.work_ends)
 
-    for hour in full_hours_between(start_time, end_time): # start/end inclusive
+    for hour in full_hours_between(start_time, end_time):  # start/end inclusive
         requirement, created = JobRequirement.objects.get_or_create(
             job=job,
             start_time=hour,

@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ...models import FreeformOrganizer
 from ..helpers import ProgrammeyThingamajieAdminHelperMixin
@@ -11,6 +11,6 @@ class FreeformOrganizerAdminProxy(FreeformOrganizer, ProgrammeyThingamajieAdminH
     """
 
     class Meta:
-        verbose_name = _('freeform organizer')
-        verbose_name_plural = _('freeform organizers')
+        verbose_name = _("freeform organizer")
+        verbose_name_plural = _("freeform organizers")
         proxy = True

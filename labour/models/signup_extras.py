@@ -1,11 +1,11 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
-class SignupExtraMixin(object):
+class SignupExtraMixin:
     @classmethod
     def get_form_class(cls):
-        raise NotImplementedError('Remember to implement form_class in your SignupExtra class')
+        raise NotImplementedError("Remember to implement form_class in your SignupExtra class")
 
     @classmethod
     def get_programme_form_class(cls):
@@ -13,15 +13,15 @@ class SignupExtraMixin(object):
 
     @classmethod
     def get_shirt_size_field(cls):
-        return cls.get_field('shirt_size', None)
+        return cls.get_field("shirt_size", None)
 
     @classmethod
     def get_shirt_type_field(cls):
-        return cls.get_field('shirt_type', None)
+        return cls.get_field("shirt_type", None)
 
     @classmethod
     def get_special_diet_field(cls):
-        return cls.get_m2m_field('special_diet', None)
+        return cls.get_m2m_field("special_diet", None)
 
     @classmethod
     def get_special_diet_model(cls):
@@ -31,25 +31,25 @@ class SignupExtraMixin(object):
     @property
     def formatted_special_diet(self):
         if not self.__class__.get_special_diet_field():
-            return ''
+            return ""
 
-        return ', '.join(sd.name for sd in self.special_diet.all())
+        return ", ".join(sd.name for sd in self.special_diet.all())
 
     @classmethod
     def get_special_diet_other_field(cls):
-        return cls.get_field('special_diet_other', None)
+        return cls.get_field("special_diet_other", None)
 
     @classmethod
     def get_field(cls, field_name, default=None):
-        if not hasattr(cls, '_fields_by_name'):
-            cls._fields_by_name = dict((field.name, field) for field in cls._meta.fields)
+        if not hasattr(cls, "_fields_by_name"):
+            cls._fields_by_name = {field.name: field for field in cls._meta.fields}
 
         return cls._fields_by_name.get(field_name, default)
 
     @classmethod
     def get_m2m_field(cls, field_name, default=None):
-        if not hasattr(cls, '_m2m_fields_by_name'):
-            cls._m2m_fields_by_name = dict((field.name, field) for field in cls._meta.many_to_many)
+        if not hasattr(cls, "_m2m_fields_by_name"):
+            cls._m2m_fields_by_name = {field.name: field for field in cls._meta.many_to_many}
 
         return cls._m2m_fields_by_name.get(field_name, default)
 
@@ -58,12 +58,12 @@ class SignupExtraMixin(object):
         self.save()
 
     def __str__(self):
-        return self.signup.__str__() if self.signup else 'None'
+        return self.signup.__str__() if self.signup else "None"
 
 
 class SignupExtraBase(SignupExtraMixin, models.Model):
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, related_name="%(app_label)s_signup_extras")
-    person = models.OneToOneField('core.Person', on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra")
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extras")
+    person = models.OneToOneField("core.Person", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra")
 
     is_active = models.BooleanField(default=True)
 
@@ -78,6 +78,7 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
         # See if this SignupExtra is active due to programme roles
         from programme.models.programme_role import ProgrammeRole
         from programme.models.programme import PROGRAMME_STATES_ACTIVE
+
         result = ProgrammeRole.objects.filter(
             programme__category__event=self.event,
             programme__state__in=PROGRAMME_STATES_ACTIVE,
@@ -130,6 +131,7 @@ class EmptySignupExtra(SignupExtraBase):
     @classmethod
     def get_form_class(cls):
         from ..forms import EmptySignupExtraForm
+
         return EmptySignupExtraForm
 
 
@@ -138,7 +140,10 @@ class ObsoleteSignupExtraBaseV1(SignupExtraMixin, models.Model):
     Because `signup` is the primary key, we choose to retain this abstract base model and make a new one
     that refers to `event` and `person` instead.
     """
-    signup = models.OneToOneField('labour.Signup', on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra", primary_key=True)
+
+    signup = models.OneToOneField(
+        "labour.Signup", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra", primary_key=True
+    )
     is_active = models.BooleanField(default=True)
 
     supports_programme = False
@@ -174,4 +179,5 @@ class ObsoleteEmptySignupExtraV1(ObsoleteSignupExtraBaseV1):
     @classmethod
     def get_form_class(cls):
         from ..forms import ObsoleteEmptySignupExtraV1Form
+
         return ObsoleteEmptySignupExtraV1Form

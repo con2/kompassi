@@ -10,8 +10,8 @@ def register(name, **kwargs):
 
 
 # Pseudo entry type for invalid entry types
-register('event_log.entrytype.invalid', message='Invalid entry type')
+register("event_log.entrytype.invalid", message="Invalid entry type")
 
 
 def get(entry_type_name):
-    return entry_types.get(entry_type_name, entry_types['event_log.entrytype.invalid'])
+    return entry_types.get(entry_type_name, entry_types["event_log.entrytype.invalid"])

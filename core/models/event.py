@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..utils import (
     format_date_range,
@@ -16,62 +16,64 @@ from ..utils import (
 )
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 class Event(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
 
-    name = models.CharField(max_length=63, verbose_name='Tapahtuman nimi')
+    name = models.CharField(max_length=63, verbose_name="Tapahtuman nimi")
 
-    organization = models.ForeignKey('core.Organization', on_delete=models.CASCADE, verbose_name='Järjestäjätaho', related_name='events')
+    organization = models.ForeignKey(
+        "core.Organization", on_delete=models.CASCADE, verbose_name="Järjestäjätaho", related_name="events"
+    )
 
     name_genitive = models.CharField(
         max_length=63,
-        verbose_name='Tapahtuman nimi genetiivissä',
-        help_text='Esimerkki: Susiconin',
+        verbose_name="Tapahtuman nimi genetiivissä",
+        help_text="Esimerkki: Susiconin",
     )
 
     name_illative = models.CharField(
         max_length=63,
-        verbose_name='Tapahtuman nimi illatiivissä',
-        help_text='Esimerkki: Susiconiin',
+        verbose_name="Tapahtuman nimi illatiivissä",
+        help_text="Esimerkki: Susiconiin",
     )
 
     name_inessive = models.CharField(
         max_length=63,
-        verbose_name='Tapahtuman nimi inessiivissä',
-        help_text='Esimerkki: Susiconissa',
+        verbose_name="Tapahtuman nimi inessiivissä",
+        help_text="Esimerkki: Susiconissa",
     )
 
-    description = models.TextField(blank=True, verbose_name='Kuvaus')
+    description = models.TextField(blank=True, verbose_name="Kuvaus")
 
-    venue = models.ForeignKey('core.Venue', on_delete=models.CASCADE,
-        verbose_name='Tapahtumapaikka',
+    venue = models.ForeignKey(
+        "core.Venue",
+        on_delete=models.CASCADE,
+        verbose_name="Tapahtumapaikka",
     )
 
     start_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name='Alkamisaika',
+        verbose_name="Alkamisaika",
     )
 
     end_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name='Päättymisaika',
+        verbose_name="Päättymisaika",
     )
 
     homepage_url = models.CharField(
         blank=True,
         max_length=255,
-        verbose_name='Tapahtuman kotisivu',
+        verbose_name="Tapahtuman kotisivu",
     )
 
     public = models.BooleanField(
-        default=True,
-        verbose_name='Julkinen',
-        help_text='Julkiset tapahtumat näytetään etusivulla.'
+        default=True, verbose_name="Julkinen", help_text="Julkiset tapahtumat näytetään etusivulla."
     )
 
     cancelled = models.BooleanField(
@@ -80,48 +82,48 @@ class Event(models.Model):
     )
 
     logo_file = models.FileField(
-        upload_to='event_logos',
+        upload_to="event_logos",
         blank=True,
-        verbose_name='Tapahtuman logo',
-        help_text='Näkyy tapahtumasivulla. Jos sekä tämä että logon URL -kenttä on täytetty, käytetään tätä.'
+        verbose_name="Tapahtuman logo",
+        help_text="Näkyy tapahtumasivulla. Jos sekä tämä että logon URL -kenttä on täytetty, käytetään tätä.",
     )
 
     logo_url = models.CharField(
         blank=True,
         max_length=255,
-        default='',
-        verbose_name='Tapahtuman logon URL',
-        help_text='Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)',
+        default="",
+        verbose_name="Tapahtuman logon URL",
+        help_text="Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)",
     )
 
     description = models.TextField(
         blank=True,
-        default='',
-        verbose_name='Tapahtuman kuvaus',
-        help_text='Muutaman kappaleen mittainen kuvaus tapahtumasta. Näkyy tapahtumasivulla.',
+        default="",
+        verbose_name="Tapahtuman kuvaus",
+        help_text="Muutaman kappaleen mittainen kuvaus tapahtumasta. Näkyy tapahtumasivulla.",
     )
 
     panel_css_class = models.CharField(
         blank=True,
         max_length=255,
-        default='panel-default',
-        verbose_name='Etusivun paneelin väri',
+        default="panel-default",
+        verbose_name="Etusivun paneelin väri",
         choices=[
-            ('panel-default', 'Harmaa'),
-            ('panel-primary', 'Kompassi (turkoosi)'),
-            ('panel-success', 'Desucon (vihreä)'),
-            ('panel-info', 'Yukicon (vaaleansininen)'),
-            ('panel-warning', 'Popcult (oranssi)'),
-            ('panel-danger', 'Tracon (punainen)'),
-        ]
+            ("panel-default", "Harmaa"),
+            ("panel-primary", "Kompassi (turkoosi)"),
+            ("panel-success", "Desucon (vihreä)"),
+            ("panel-info", "Yukicon (vaaleansininen)"),
+            ("panel-warning", "Popcult (oranssi)"),
+            ("panel-danger", "Tracon (punainen)"),
+        ],
     )
 
     created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
 
     class Meta:
-        verbose_name = 'Tapahtuma'
-        verbose_name_plural = 'Tapahtumat'
+        verbose_name = "Tapahtuma"
+        verbose_name_plural = "Tapahtumat"
 
     def __str__(self):
         return self.name
@@ -129,21 +131,18 @@ class Event(models.Model):
     def save(self, *args, **kwargs):
         if self.name:
             for field, suffix in [
-                ('name_genitive', 'in'),
-                ('name_illative', 'iin'),
-                ('name_inessive', 'issa'),
+                ("name_genitive", "in"),
+                ("name_illative", "iin"),
+                ("name_inessive", "issa"),
             ]:
                 if not getattr(self, field, None):
                     setattr(self, field, self.name + suffix)
 
-        return super(Event, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     @property
     def name_and_year(self):
-        return "{name} ({year})".format(
-            name=self.name,
-            year=self.start_time.year,
-        )
+        return f"{self.name} ({self.start_time.year})"
 
     @property
     def formatted_start_and_end_date(self):
@@ -157,19 +156,20 @@ class Event(models.Model):
         ]
         headline_parts = [part for part in headline_parts if part]
 
-        return ' '.join(headline_parts)
+        return " ".join(headline_parts)
 
     @property
     def venue_name(self):
         return self.venue.name if self.venue else None
 
     @classmethod
-    def get_or_create_dummy(cls, name='Dummy event'):
+    def get_or_create_dummy(cls, name="Dummy event"):
         from .venue import Venue
         from .organization import Organization
 
         # TODO not the best place for this, encap. see also admin command core_update_maysendinfo
         from django.contrib.auth.models import Group
+
         Group.objects.get_or_create(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME)
 
         venue, unused = Venue.get_or_create_dummy()
@@ -209,37 +209,38 @@ class Event(models.Model):
         else:
             return self.logo_url
 
-    labour_event_meta = event_meta_property('labour')
-    programme_event_meta = event_meta_property('programme')
-    badges_event_meta = event_meta_property('badges')
-    tickets_event_meta = event_meta_property('tickets')
-    sms_event_meta = event_meta_property('sms')
-    enrollment_event_meta = event_meta_property('enrollment')
-    intra_event_meta = event_meta_property('intra')
+    labour_event_meta = event_meta_property("labour")
+    programme_event_meta = event_meta_property("programme")
+    badges_event_meta = event_meta_property("badges")
+    tickets_event_meta = event_meta_property("tickets")
+    sms_event_meta = event_meta_property("sms")
+    enrollment_event_meta = event_meta_property("enrollment")
+    intra_event_meta = event_meta_property("intra")
 
     def get_app_event_meta(self, app_label: str):
-        return getattr(self, '{}_event_meta'.format(app_label))
+        return getattr(self, f"{app_label}_event_meta")
 
-    def as_dict(self, format='default'):
-        if format == 'default':
-            return pick_attrs(self,
-                'slug',
-                'name',
-                'homepage_url',
-                'headline',
-
+    def as_dict(self, format="default"):
+        if format == "default":
+            return pick_attrs(
+                self,
+                "slug",
+                "name",
+                "homepage_url",
+                "headline",
                 organization=self.organization.as_dict(),
             )
-        elif format == 'listing':
-            return pick_attrs(self,
-                'slug',
-                'name',
-                'headline',
-                'venue_name',
-                'homepage_url',
-                'start_time',
-                'end_time',
-                'cancelled',
+        elif format == "listing":
+            return pick_attrs(
+                self,
+                "slug",
+                "name",
+                "headline",
+                "venue_name",
+                "homepage_url",
+                "start_time",
+                "end_time",
+                "cancelled",
             )
         else:
             raise NotImplementedError(format)
@@ -248,8 +249,4 @@ class Event(models.Model):
         """
         Shorthand for commonly used CBAC claims.
         """
-        return dict(
-            organization=self.organization.slug,
-            event=self.slug,
-            **extra_claims
-        )
+        return dict(organization=self.organization.slug, event=self.slug, **extra_claims)

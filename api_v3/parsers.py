@@ -8,13 +8,13 @@ from django.conf import settings
 from rest_framework.parsers import JSONParser
 
 
-first_cap_re = re.compile('(.)([A-Z][a-z]+)')
-all_cap_re = re.compile('([a-z0-9])([A-Z])')
+first_cap_re = re.compile("(.)([A-Z][a-z]+)")
+all_cap_re = re.compile("([a-z0-9])([A-Z])")
 
 
 def camel_to_underscore(name):
-    s1 = first_cap_re.sub(r'\1_\2', name)
-    return all_cap_re.sub(r'\1_\2', s1).lower()
+    s1 = first_cap_re.sub(r"\1_\2", name)
+    return all_cap_re.sub(r"\1_\2", s1).lower()
 
 
 def underscoreize(data):
@@ -34,7 +34,7 @@ def underscoreize(data):
 class CamelCaseJSONRenderer(JSONParser):
     def parse(self, stream, media_type=None, parser_context=None):
         parser_context = parser_context or {}
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        encoding = parser_context.get("encoding", settings.DEFAULT_CHARSET)
 
         data = stream.read().decode(encoding)
         return underscoreize(json.loads(data))

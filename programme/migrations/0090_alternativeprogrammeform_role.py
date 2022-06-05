@@ -7,13 +7,20 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0089_auto_20190305_1945'),
+        ("programme", "0089_auto_20190305_1945"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='alternativeprogrammeform',
-            name='role',
-            field=models.ForeignKey(blank=True, help_text='If set, programme hosts entering programme using this form will by default gain this role.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='programme.Role', verbose_name='Role'),
+            model_name="alternativeprogrammeform",
+            name="role",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="If set, programme hosts entering programme using this form will by default gain this role.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="programme.Role",
+                verbose_name="Role",
+            ),
         ),
     ]

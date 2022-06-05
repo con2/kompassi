@@ -1,9 +1,8 @@
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.db import models
-from django.db.models import Q
+from django.db.models import JSONField, Q
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 TARGET_FKEY_ATTRS = dict(
@@ -25,26 +24,26 @@ class Entry(models.Model):
     context = models.CharField(
         max_length=1024,
         blank=True,
-        default='',
-        verbose_name=_('Context'),
-        help_text=_('The URL of the view in which the event occurred.'),
+        default="",
+        verbose_name=_("Context"),
+        help_text=_("The URL of the view in which the event occurred."),
     )
     ip_address = models.CharField(
         max_length=48,
         blank=True,
-        default='',
-        verbose_name=_('IP address'),
-        help_text=_('The IP address this action was performed from.'),
+        default="",
+        verbose_name=_("IP address"),
+        help_text=_("The IP address this action was performed from."),
     )
 
     # various target fkeys, sparse
-    event = models.ForeignKey('core.Event', **TARGET_FKEY_ATTRS)
-    person = models.ForeignKey('core.Person', **TARGET_FKEY_ATTRS)
-    organization = models.ForeignKey('core.Organization', **TARGET_FKEY_ATTRS)
-    feedback_message = models.ForeignKey('feedback.FeedbackMessage', **TARGET_FKEY_ATTRS)
-    event_survey_result = models.ForeignKey('surveys.EventSurveyResult', **TARGET_FKEY_ATTRS)
-    global_survey_result = models.ForeignKey('surveys.GlobalSurveyResult', **TARGET_FKEY_ATTRS)
-    search_term = models.CharField(max_length=255, blank=True, default='')
+    event = models.ForeignKey("core.Event", **TARGET_FKEY_ATTRS)
+    person = models.ForeignKey("core.Person", **TARGET_FKEY_ATTRS)
+    organization = models.ForeignKey("core.Organization", **TARGET_FKEY_ATTRS)
+    feedback_message = models.ForeignKey("feedback.FeedbackMessage", **TARGET_FKEY_ATTRS)
+    event_survey_result = models.ForeignKey("surveys.EventSurveyResult", **TARGET_FKEY_ATTRS)
+    global_survey_result = models.ForeignKey("surveys.GlobalSurveyResult", **TARGET_FKEY_ATTRS)
+    search_term = models.CharField(max_length=255, blank=True, default="")
 
     # we should probably have shoved them in a jsonfield in the first place
     other_fields = JSONField(blank=True, default=dict)
@@ -102,9 +101,9 @@ class Entry(models.Model):
                 pass
             else:
                 q &= (
-                    Q(job_category_filter__in=signup.job_categories.all()) |
-                    Q(job_category_filter__in=signup.job_categories_accepted.all()) |
-                    Q(job_category_filter__isnull=True)
+                    Q(job_category_filter__in=signup.job_categories.all())
+                    | Q(job_category_filter__in=signup.job_categories_accepted.all())
+                    | Q(job_category_filter__isnull=True)
                 )
 
         for subscription in Subscription.objects.filter(q):
@@ -112,8 +111,9 @@ class Entry(models.Model):
 
     @property
     def entry_type_metadata(self):
-        if not hasattr(self, '_entry_type_metadata'):
+        if not hasattr(self, "_entry_type_metadata"):
             from .. import registry
+
             self._entry_type_metadata = registry.get(self.entry_type)
 
         return self._entry_type_metadata
@@ -138,10 +138,7 @@ class Entry(models.Model):
 
     @property
     def email_subject(self):
-        return '[{app_name}] {message}'.format(
-            app_name=settings.KOMPASSI_INSTALLATION_NAME,
-            message=self.message,
-        )
+        return f"[{settings.KOMPASSI_INSTALLATION_NAME}] {self.message}"
 
     @property
     def email_body(self):
@@ -150,12 +147,15 @@ class Entry(models.Model):
         if callable(meta.email_body_template):
             return meta.email_body_template(self)
         else:
-            return render_to_string(meta.email_body_template, dict(
-                entry=self,
-                settings=settings,
-            ))
+            return render_to_string(
+                meta.email_body_template,
+                dict(
+                    entry=self,
+                    settings=settings,
+                ),
+            )
 
     class Meta:
-        verbose_name = _('log entry')
-        verbose_name_plural = _('log entries')
-        ordering = ('-created_at',)
+        verbose_name = _("log entry")
+        verbose_name_plural = _("log entries")
+        ordering = ("-created_at",)

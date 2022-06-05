@@ -35,10 +35,8 @@ def default_badge_factory(event, person):
         personnel_classes.extend(
             (programme_role.role.personnel_class, programme_role.role.public_title)
             for programme_role in ProgrammeRole.objects.filter(
-                person=person,
-                programme__category__event=event,
-                programme__state__in=['accepted', 'published']
-            ).order_by('role__priority')
+                person=person, programme__category__event=event, programme__state__in=["accepted", "published"]
+            ).order_by("role__priority")
         )
 
     if personnel_classes:
@@ -46,20 +44,18 @@ def default_badge_factory(event, person):
         personnel_class, job_title = personnel_classes[0]
     else:
         personnel_class = None
-        job_title = 'THIS BADGE SHOULD NOT PRINT' # This should never get printed.
+        job_title = "THIS BADGE SHOULD NOT PRINT"  # This should never get printed.
 
     meta = event.badges_event_meta
 
     return dict(
         first_name=person.first_name,
-        is_first_name_visible=meta.real_name_must_be_visible or 'firstname' in person.badge_name_display_style,
+        is_first_name_visible=meta.real_name_must_be_visible or "firstname" in person.badge_name_display_style,
         surname=person.surname,
-        is_surname_visible=meta.real_name_must_be_visible or 'surname' in person.badge_name_display_style,
+        is_surname_visible=meta.real_name_must_be_visible or "surname" in person.badge_name_display_style,
         nick=person.nick,
-
         # NOTE: Explicit cast required, or the empty string '' in person.nick will cause this predicate to return ''
-        is_nick_visible=bool(person.nick) and 'nick' in person.badge_name_display_style,
-
+        is_nick_visible=bool(person.nick) and "nick" in person.badge_name_display_style,
         personnel_class=personnel_class,
         job_title=job_title,
     )

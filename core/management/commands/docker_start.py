@@ -6,12 +6,12 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Docker development environment entry point'
+    args = ""
+    help = "Docker development environment entry point"
 
     def handle(self, *args, **options):
         from core.models import Event
@@ -23,6 +23,6 @@ class Command(BaseCommand):
             pass
 
         if event is None:
-            call_command('setup')
+            call_command("setup")
 
-        call_command('runserver', '0.0.0.0:8000')
+        call_command("runserver", "0.0.0.0:8000")

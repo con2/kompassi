@@ -37,53 +37,51 @@ from ..utils import (
 from ..helpers import person_required
 
 
-@sensitive_post_parameters('new_password', 'new_password_again')
-@require_http_methods(['GET', 'HEAD', 'POST'])
+@sensitive_post_parameters("new_password", "new_password_again")
+@require_http_methods(["GET", "HEAD", "POST"])
 def core_password_reset_view(request, code):
     if request.user.is_authenticated:
-        return redirect('core_password_view')
+        return redirect("core_password_view")
 
     form = initialize_form(PasswordResetForm, request)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             try:
-                PasswordResetToken.reset_password(code, form.cleaned_data['new_password'])
+                PasswordResetToken.reset_password(code, form.cleaned_data["new_password"])
             except PasswordResetError as e:
-                messages.error(request,
-                    'Salasanan nollaus epäonnistui. Ole hyvä ja yritä uudestaan. Tarvittaessa voit '
-                    'ottaa yhteyttä osoitteeseen {settings.DEFAULT_FROM_EMAIL}.'
-                    .format(settings=settings)
+                messages.error(
+                    request,
+                    "Salasanan nollaus epäonnistui. Ole hyvä ja yritä uudestaan. Tarvittaessa voit "
+                    "ottaa yhteyttä osoitteeseen {settings.DEFAULT_FROM_EMAIL}.".format(settings=settings),
                 )
-                return redirect('core_frontpage_view')
+                return redirect("core_frontpage_view")
 
-            messages.success(request,
-                'Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi.'
-            )
-            return redirect('core_login_view')
+            messages.success(request, "Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi.")
+            return redirect("core_login_view")
         else:
-            messages.error(request, 'Ole hyvä ja korjaa lomakkeen virheet.')
+            messages.error(request, "Ole hyvä ja korjaa lomakkeen virheet.")
 
     vars = dict(
         form=form,
         login_page=True,
     )
 
-    return render(request, 'core_password_reset_view.pug', vars)
+    return render(request, "core_password_reset_view.pug", vars)
 
 
-@require_http_methods(['GET', 'HEAD', 'POST'])
+@require_http_methods(["GET", "HEAD", "POST"])
 def core_password_reset_request_view(request):
     if request.user.is_authenticated:
-        return redirect('core_password_view')
+        return redirect("core_password_view")
 
     form = initialize_form(PasswordResetRequestForm, request)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             try:
                 person = Person.objects.get(
-                    email__iexact=form.cleaned_data['email'].strip(),
+                    email__iexact=form.cleaned_data["email"].strip(),
                     user__isnull=False,
                 )
             except Person.DoesNotExist:
@@ -93,15 +91,13 @@ def core_password_reset_request_view(request):
             else:
                 person.setup_password_reset(request)
 
-            messages.success(request,
-                'Ohjeet salasanan vaihtamiseksi on lähetetty antamaasi sähköpostiosoitteeseen.'
-            )
+            messages.success(request, "Ohjeet salasanan vaihtamiseksi on lähetetty antamaasi sähköpostiosoitteeseen.")
         else:
-            messages.error(request, 'Ole hyvä ja korjaa lomakkeen virheet.')
+            messages.error(request, "Ole hyvä ja korjaa lomakkeen virheet.")
 
     vars = dict(
         form=form,
         login_page=True,
     )
 
-    return render(request, 'core_password_reset_request_view.pug', vars)
+    return render(request, "core_password_reset_request_view.pug", vars)

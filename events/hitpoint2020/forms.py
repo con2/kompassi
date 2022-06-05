@@ -1,6 +1,5 @@
-
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
@@ -14,47 +13,48 @@ from .models import SignupExtra
 
 # TODO hitpoint2020: shirt_Size
 
+
 class SignupExtraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            'shift_type',
-            'total_work',
-            'night_work',
-            'construction',
-
-            Fieldset('Työtodistus',
-                'want_certificate',
-                'certificate_delivery_address',
+            "shift_type",
+            "total_work",
+            "night_work",
+            "construction",
+            Fieldset(
+                "Työtodistus",
+                "want_certificate",
+                "certificate_delivery_address",
             ),
-            Fieldset('Lisätiedot',
-                'shirt_size',
-                'special_diet',
-                'special_diet_other',
-                'prior_experience',
-                'shift_wishes',
-                'free_text',
-            )
+            Fieldset(
+                "Lisätiedot",
+                "shirt_size",
+                "special_diet",
+                "special_diet_other",
+                "prior_experience",
+                "shift_wishes",
+                "free_text",
+            ),
         )
-
 
     class Meta:
         model = SignupExtra
         fields = (
-            'shift_type',
-            'total_work',
-            'night_work',
-            'construction',
-            'want_certificate',
-            'certificate_delivery_address',
-            'shirt_size',
-            'special_diet',
-            'special_diet_other',
-            'prior_experience',
-            'shift_wishes',
-            'free_text',
+            "shift_type",
+            "total_work",
+            "night_work",
+            "construction",
+            "want_certificate",
+            "certificate_delivery_address",
+            "shirt_size",
+            "special_diet",
+            "special_diet_other",
+            "prior_experience",
+            "shift_wishes",
+            "free_text",
         )
 
         widgets = dict(
@@ -62,68 +62,68 @@ class SignupExtraForm(forms.ModelForm):
         )
 
     def clean_certificate_delivery_address(self):
-        want_certificate = self.cleaned_data['want_certificate']
-        certificate_delivery_address = self.cleaned_data['certificate_delivery_address']
+        want_certificate = self.cleaned_data["want_certificate"]
+        certificate_delivery_address = self.cleaned_data["certificate_delivery_address"]
 
         if want_certificate and not certificate_delivery_address:
-            raise forms.ValidationError('Koska olet valinnut haluavasi työtodistuksen, on '
-                'työtodistuksen toimitusosoite täytettävä.')
+            raise forms.ValidationError(
+                "Koska olet valinnut haluavasi työtodistuksen, on " "työtodistuksen toimitusosoite täytettävä."
+            )
 
         return certificate_delivery_address
 
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop('event')
-        admin = kwargs.pop('admin')
+        event = kwargs.pop("event")
+        admin = kwargs.pop("admin")
 
         assert not admin
 
-        super(OrganizerSignupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset('Tehtävän tiedot',
-                'job_title',
+            Fieldset(
+                "Tehtävän tiedot",
+                "job_title",
             ),
         )
 
-        self.fields['job_title'].help_text = "Mikä on tehtäväsi coniteassa? Printataan badgeen."
-        self.fields['job_title'].required = True
+        self.fields["job_title"].help_text = "Mikä on tehtäväsi coniteassa? Printataan badgeen."
+        self.fields["job_title"].required = True
 
     class Meta:
         model = Signup
-        fields = ('job_title',)
+        fields = ("job_title",)
 
         widgets = dict(
             job_categories=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_m2m_field_defaults(self):
-        return dict(
-            job_categories=JobCategory.objects.filter(event__slug='hitpoint2020', name='Conitea')
-        )
+        return dict(job_categories=JobCategory.objects.filter(event__slug="hitpoint2020", name="Conitea"))
 
 
 class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        super(OrganizerSignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset('Lisätiedot',
-                'special_diet',
-                'special_diet_other',
+            Fieldset(
+                "Lisätiedot",
+                "special_diet",
+                "special_diet_other",
             ),
         )
-
 
     class Meta:
         model = SignupExtra
         fields = (
-            'special_diet',
-            'special_diet_other',
+            "special_diet",
+            "special_diet_other",
         )
 
         widgets = dict(
@@ -132,91 +132,89 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            shift_type='kaikkikay',
-            total_work='yli12h',
-            night_work='miel',
+            shift_type="kaikkikay",
+            total_work="yli12h",
+            night_work="miel",
             construction=False,
             want_certificate=False,
-            certificate_delivery_address='',
-            prior_experience='',
-            free_text='Syötetty käyttäen coniitin ilmoittautumislomaketta',
+            certificate_delivery_address="",
+            prior_experience="",
+            free_text="Syötetty käyttäen coniitin ilmoittautumislomaketta",
         )
 
     def get_excluded_m2m_field_defaults(self):
-        return dict(
-        )
+        return dict()
 
 
 DESCRIPTION_HELP_TEXT = _(
-    'Advertise your game to potential players. Also explain, what is expected of players '
-    'and what kind of themes are involved. Be extra sure to inform about potentially '
-    'shocking themes. Recommended length is 300–500 characters. We reserve the right '
-    'to edit this as necessary (including but not limited to shortening).'
+    "Advertise your game to potential players. Also explain, what is expected of players "
+    "and what kind of themes are involved. Be extra sure to inform about potentially "
+    "shocking themes. Recommended length is 300–500 characters. We reserve the right "
+    "to edit this as necessary (including but not limited to shortening)."
 )
 APPROXIMATE_LENGTH_HELP_TEXT = _(
-    'In order to gain free entry, you are required to run at in total least four '
-    'hours of games.'
+    "In order to gain free entry, you are required to run at in total least four " "hours of games."
 )
 
 
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
-        kwargs.pop('admin') if 'admin' in kwargs else False
-        kwargs.pop('event')
+        kwargs.pop("admin") if "admin" in kwargs else False
+        kwargs.pop("event")
 
-        super(RpgForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
         self.helper.layout = Layout(
-            'title',
-            'rpg_system',
-            'approximate_length',
-            'min_players',
-            'max_players',
-            'description',
-            'three_word_description',
-            'hitpoint2020_preferred_time_slots',
-            'notes_from_host',
-
-            Fieldset(_('Whom is the game for?'),
-                'is_english_ok',
-                'is_children_friendly',
-                'is_age_restricted',
-                'is_beginner_friendly',
+            "title",
+            "rpg_system",
+            "approximate_length",
+            "min_players",
+            "max_players",
+            "description",
+            "three_word_description",
+            "hitpoint2020_preferred_time_slots",
+            "notes_from_host",
+            Fieldset(
+                _("Whom is the game for?"),
+                "is_english_ok",
+                "is_children_friendly",
+                "is_age_restricted",
+                "is_beginner_friendly",
             ),
         )
 
-        self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields["approximate_length"].help_text = APPROXIMATE_LENGTH_HELP_TEXT
 
-        self.fields['three_word_description'].required = True
-        self.fields['three_word_description'].label = _("Summary in one sentence")
-        self.fields['three_word_description'].help_text = _("Summarize the description of your game in one sentence.")
+        self.fields["three_word_description"].required = True
+        self.fields["three_word_description"].label = _("Summary in one sentence")
+        self.fields["three_word_description"].help_text = _("Summarize the description of your game in one sentence.")
 
-        self.fields['rpg_system'].required = True
+        self.fields["rpg_system"].required = True
 
-        self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
-        self.fields['description'].required = True
+        self.fields["description"].help_text = DESCRIPTION_HELP_TEXT
+        self.fields["description"].required = True
 
-        self.fields['is_english_ok'].label = _("In English")
-        self.fields['is_english_ok'].help_text = _("Check this box if your RPG is played in English.")
+        self.fields["is_english_ok"].label = _("In English")
+        self.fields["is_english_ok"].help_text = _("Check this box if your RPG is played in English.")
 
     class Meta:
         model = Programme
         fields = (
-            'title',
-            'rpg_system',
-            'approximate_length',
-            'min_players',
-            'max_players',
-            'three_word_description',
-            'description',
-            'hitpoint2020_preferred_time_slots',
-            'notes_from_host',
-            'is_english_ok',
-            'is_children_friendly',
-            'is_age_restricted',
-            'is_beginner_friendly',
+            "title",
+            "rpg_system",
+            "approximate_length",
+            "min_players",
+            "max_players",
+            "three_word_description",
+            "description",
+            "hitpoint2020_preferred_time_slots",
+            "notes_from_host",
+            "is_english_ok",
+            "is_children_friendly",
+            "is_age_restricted",
+            "is_beginner_friendly",
         )
 
         widgets = dict(
@@ -225,7 +223,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            category=Category.objects.get(event__slug='hitpoint2020', slug='roolipeli'),
+            category=Category.objects.get(event__slug="hitpoint2020", slug="roolipeli"),
         )
 
 
@@ -238,64 +236,60 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs.pop('admin') if 'admin' in kwargs else False
-        kwargs.pop('event')
+        kwargs.pop("admin") if "admin" in kwargs else False
+        kwargs.pop("event")
 
-        super(FreeformForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
         self.helper.layout = Layout(
-            'title',
-            'approximate_length',
-            'min_players',
-            'max_players',
-            'description',
-            'three_word_description',
-            'physical_play',
-            'other_author',
-
-            'hitpoint2020_preferred_time_slots',
-            'notes_from_host',
-
-            Fieldset(_('Whom is the game for?'),
-                'is_english_ok',
-                'is_age_restricted',
-                'is_beginner_friendly',
+            "title",
+            "approximate_length",
+            "min_players",
+            "max_players",
+            "description",
+            "three_word_description",
+            "physical_play",
+            "other_author",
+            "hitpoint2020_preferred_time_slots",
+            "notes_from_host",
+            Fieldset(
+                _("Whom is the game for?"),
+                "is_english_ok",
+                "is_age_restricted",
+                "is_beginner_friendly",
             ),
         )
 
-        self.fields['approximate_length'].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields["approximate_length"].help_text = APPROXIMATE_LENGTH_HELP_TEXT
 
-        self.fields['three_word_description'].required = True
-        self.fields['three_word_description'].label = _("Summary in one sentence")
-        self.fields['three_word_description'].help_text = _("Summarize the description of your game in one sentence.")
+        self.fields["three_word_description"].required = True
+        self.fields["three_word_description"].label = _("Summary in one sentence")
+        self.fields["three_word_description"].help_text = _("Summarize the description of your game in one sentence.")
 
-        self.fields['description'].required = True
-        self.fields['description'].help_text = DESCRIPTION_HELP_TEXT
+        self.fields["description"].required = True
+        self.fields["description"].help_text = DESCRIPTION_HELP_TEXT
 
-        self.fields['is_english_ok'].label = _("In English")
-        self.fields['is_english_ok'].help_text = _("Check this box if your RPG is played in English.")
+        self.fields["is_english_ok"].label = _("In English")
+        self.fields["is_english_ok"].help_text = _("Check this box if your RPG is played in English.")
 
     class Meta:
         model = Programme
         fields = (
-            'title',
-            'approximate_length',
-            'min_players',
-            'max_players',
-            'description',
-            'three_word_description',
-            'physical_play',
-            'other_author',
-
-            'hitpoint2020_preferred_time_slots',
-            'notes_from_host',
-
-            'is_english_ok',
-            'is_age_restricted',
-            'is_beginner_friendly',
-
+            "title",
+            "approximate_length",
+            "min_players",
+            "max_players",
+            "description",
+            "three_word_description",
+            "physical_play",
+            "other_author",
+            "hitpoint2020_preferred_time_slots",
+            "notes_from_host",
+            "is_english_ok",
+            "is_age_restricted",
+            "is_beginner_friendly",
         )
 
         widgets = dict(
@@ -304,13 +298,13 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            category=Category.objects.get(event__slug='hitpoint2020', slug='freeform'),
+            category=Category.objects.get(event__slug="hitpoint2020", slug="freeform"),
         )
 
 
 class SwagSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        kwargs.pop('event')
+        kwargs.pop("event")
 
         super().__init__(*args, **kwargs)
 
@@ -323,6 +317,4 @@ class SwagSurvey(forms.ModelForm):
 
     class Meta:
         model = SignupExtra
-        fields = (
-            'shirt_size',
-        )
+        fields = ("shirt_size",)

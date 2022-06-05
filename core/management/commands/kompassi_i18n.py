@@ -8,16 +8,16 @@ from babel.messages.extract import extract, extract_javascript, extract_python
 from django.apps import apps
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.translation import templatize
 from pypugjs import Compiler, process
 
 
-ACCEPTABLE_FILENAMES_RE = re.compile("^.*\.(js|py|pug|html)$", re.I)
+ACCEPTABLE_FILENAMES_RE = re.compile(r"^.*\.(js|py|pug|html)$", re.I)
 
 
 def extract_template(fileobj, keywords, comment_tags, options):
-    src = force_text(fileobj.read(), settings.FILE_CHARSET)
+    src = force_str(fileobj.read(), settings.FILE_CHARSET)
     if fileobj.name.endswith(".pug"):
         src = process(src, compiler=Compiler)
     src = templatize(src, "")
@@ -30,9 +30,10 @@ def extract_template(fileobj, keywords, comment_tags, options):
 def filtered_walk(root):
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [
-            dirname for dirname in dirnames if
-            dirname not in ("node_modules", "bower_components", "migrations", "management")
-            ]
+            dirname
+            for dirname in dirnames
+            if dirname not in ("node_modules", "bower_components", "migrations", "management")
+        ]
         if "site-packages" in dirpath:
             continue
         yield (dirpath, dirnames, filenames)
@@ -41,7 +42,7 @@ def filtered_walk(root):
 def _get_langs(langs, auto_lang):
     langs = set(langs or ())
     if auto_lang:
-        langs.update(set(l[0] for l in settings.LANGUAGES))
+        langs.update({l[0] for l in settings.LANGUAGES})
     if "en" in langs:  # Ignore `en` (as that's the source language)
         langs.remove("en")
     return langs
@@ -68,8 +69,9 @@ class Command(BaseCommand):
         """
         parser.add_argument("-l", "--lang", nargs="*", dest="lang", help="languages to consider for update mode")
         parser.add_argument("-a", "--auto-lang", dest="auto_lang", action="store_true", help="use LANGUAGES for `-l`")
-        parser.add_argument("-e", "--extract", dest="extract", action="store_true",
-                            help="extract messages from source?")
+        parser.add_argument(
+            "-e", "--extract", dest="extract", action="store_true", help="extract messages from source?"
+        )
         parser.add_argument("-u", "--update", dest="update", action="store_true", help="update .po files from .pots?")
         parser.add_argument("-c", "--compile", dest="compile", action="store_true", help="compile .po files to .mos?")
 
@@ -120,7 +122,7 @@ class Command(BaseCommand):
             for filename in filenames:
                 filename = os.path.join(dirpath, filename)
                 if ACCEPTABLE_FILENAMES_RE.match(filename):
-                    rel_filename = filename[len(os.path.commonprefix((app.path, filename))) + 1:].replace(os.sep, "/")
+                    rel_filename = filename[len(os.path.commonprefix((app.path, filename))) + 1 :].replace(os.sep, "/")
                     files[rel_filename] = filename
         self.log.info("%s: %d translatable files found", app.label, len(files))
         extractors = self.get_extractors()
@@ -155,7 +157,7 @@ class Command(BaseCommand):
                 filename = os.path.join(dirpath, filename)
                 print(filename)
                 if filename.endswith(".po"):
-                    with open(filename, "r") as infp:
+                    with open(filename) as infp:
                         catalog = pofile.read_po(infp)
                     if not len(catalog):
                         continue

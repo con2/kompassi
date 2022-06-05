@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class DirectoryAccessGroup(models.Model):
@@ -7,8 +7,8 @@ class DirectoryAccessGroup(models.Model):
     Grants expiring group access to the personnel directory.
     """
 
-    organization = models.ForeignKey('core.Organization', on_delete=models.CASCADE)
-    group = models.ForeignKey('auth.Group', on_delete=models.CASCADE)
+    organization = models.ForeignKey("core.Organization", on_delete=models.CASCADE)
+    group = models.ForeignKey("auth.Group", on_delete=models.CASCADE)
     active_from = models.DateTimeField(blank=True, null=True)
     active_until = models.DateTimeField(blank=True, null=True)
 
@@ -16,6 +16,6 @@ class DirectoryAccessGroup(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = _('directory access group')
-        verbose_name_plural = _('directory access groups')
-        ordering = ('organization', 'group')
+        verbose_name = _("directory access group")
+        verbose_name_plural = _("directory access groups")
+        ordering = ("organization", "group")

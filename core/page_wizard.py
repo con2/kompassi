@@ -16,36 +16,36 @@ def page_wizard_init(request, pages):
         else:
             name, title, cur_related = page
 
-        title = "{}. {}".format(index + 1, title)
+        title = f"{index + 1}. {title}"
 
         cur_related = set(cur_related)
         cur_related.add(name)
-        cur_related = list(i if i.startswith('/') else url(i) for i in cur_related)
+        cur_related = list(i if i.startswith("/") else url(i) for i in cur_related)
         all_related.update(cur_related)
 
         steps.append((name, title, cur_related))
 
-    request.session['core.utils.page_wizard.steps'] = steps
-    request.session['core.utils.page_wizard.related'] = list(all_related)
+    request.session["core.utils.page_wizard.steps"] = steps
+    request.session["core.utils.page_wizard.related"] = list(all_related)
 
 
 def page_wizard_clear(request):
-    if 'core.utils.page_wizard.steps' in request.session:
+    if "core.utils.page_wizard.steps" in request.session:
         # raise RuntimeError('WHO DARES CALL PAGE_WIZARD_CLEAR')
-        del request.session['core.utils.page_wizard.steps']
-        del request.session['core.utils.page_wizard.related']
+        del request.session["core.utils.page_wizard.steps"]
+        del request.session["core.utils.page_wizard.related"]
 
 
 def page_wizard_vars(request):
     next = get_next(request)
 
-    if 'core.utils.page_wizard.steps' in request.session:
+    if "core.utils.page_wizard.steps" in request.session:
         page_wizard = []
         active = False
 
-        for name, title, related in request.session['core.utils.page_wizard.steps']:
+        for name, title, related in request.session["core.utils.page_wizard.steps"]:
             if active:
-                next = name if name.startswith('/') else reverse(name)
+                next = name if name.startswith("/") else reverse(name)
 
             active = request.path in related
             page_wizard.append((title, active))

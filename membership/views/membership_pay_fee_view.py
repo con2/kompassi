@@ -10,7 +10,7 @@ from ..helpers import membership_required
 
 
 @membership_required
-@require_http_methods(['POST'])
+@require_http_methods(["POST"])
 def membership_pay_fee_view(request, membership):
     current_term_payment = membership.get_payment_for_term()
 

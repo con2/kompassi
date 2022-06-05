@@ -5,10 +5,9 @@ from datetime import datetime, timezone, date
 from uuid import uuid4
 
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.shortcuts import redirect
 
 from dateutil.parser import parse as parse_datetime
@@ -17,6 +16,7 @@ import requests
 from tickets.utils import format_price
 
 from .utils import calculate_hmac
+from django.db.models import JSONField
 
 
 logger = logging.getLogger("kompassi")
@@ -37,7 +37,7 @@ META_DEFAULTS = dict(
 
 
 class PaymentsOrganizationMeta(models.Model):
-    organization = models.OneToOneField('core.Organization', on_delete=models.CASCADE, primary_key=True)
+    organization = models.OneToOneField("core.Organization", on_delete=models.CASCADE, primary_key=True)
     checkout_password = models.CharField(max_length=255)
     checkout_merchant = models.CharField(max_length=255)
 
@@ -73,7 +73,8 @@ class Payment(models.Model):
     """
     Legacy payment, not used by v2 api
     """
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
+
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
 
     VERSION = models.CharField(max_length=4)
     STAMP = models.CharField(max_length=20)
@@ -90,8 +91,9 @@ class CheckoutPayment(models.Model):
 
     See https://checkoutfinland.github.io/psp-api/#/?id=request
     """
-    organization = models.ForeignKey('core.Organization', on_delete=models.CASCADE)
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, blank=True, null=True)
+
+    organization = models.ForeignKey("core.Organization", on_delete=models.CASCADE)
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, blank=True, null=True)
 
     # Fields sent in Create Payment request
     stamp = models.UUIDField(primary_key=True, default=uuid4, editable=False)
@@ -110,14 +112,14 @@ class CheckoutPayment(models.Model):
         default="new",
         editable=False,
         choices=CHECKOUT_STATUSES,
-        max_length=max(len(status) for (status, _) in CHECKOUT_STATUSES)
+        max_length=max(len(status) for (status, _) in CHECKOUT_STATUSES),
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ('-created_at',)
+        ordering = ("-created_at",)
 
     def save(self, *args, **kwargs):
         if self.event:
@@ -172,14 +174,16 @@ class CheckoutPayment(models.Model):
         ]
 
         if term.entrance_fee_cents and membership_fee_payment.payment_type == "membership_fee_with_entrance_fee":
-            items.append({
-                "unitPrice": term.entrance_fee_cents,
-                "units": 1,
-                "vatPercentage": 0,
-                "productCode": f"{organization.slug}-entrance-{term.title}",
-                "description": f"Liittymismaksu",
-                "deliveryDate": date.today().isoformat(),
-            })
+            items.append(
+                {
+                    "unitPrice": term.entrance_fee_cents,
+                    "units": 1,
+                    "vatPercentage": 0,
+                    "productCode": f"{organization.slug}-entrance-{term.title}",
+                    "description": f"Liittymismaksu",
+                    "deliveryDate": date.today().isoformat(),
+                }
+            )
 
         customer = {
             "email": person.email,
@@ -207,6 +211,7 @@ class CheckoutPayment(models.Model):
         """
         if not hasattr(self, "_tickets_order"):
             from tickets.models import Order
+
             self._tickets_order = Order.objects.filter(reference_number=self.reference).first()
 
         return self._tickets_order
@@ -215,6 +220,7 @@ class CheckoutPayment(models.Model):
     def membership_fee_payment(self):
         if not hasattr(self, "_membership_fee_payment"):
             from membership.models import MembershipFeePayment
+
             self._membership_fee_payment = MembershipFeePayment.objects.filter(reference_number=self.reference).first()
 
         return self._membership_fee_payment
@@ -235,7 +241,6 @@ class CheckoutPayment(models.Model):
                 "success": request.build_absolute_uri(reverse("payments_checkout_success_view")),
                 "cancel": request.build_absolute_uri(reverse("payments_checkout_cancel_view")),
             },
-
         }
 
         callback_urls = {
@@ -306,6 +311,7 @@ class CheckoutPayment(models.Model):
             return self.customer["email"]
         except (IndexError, KeyError, ValueError):
             return None
+
     admin_get_customer_email.short_description = "Customer E-mail"
 
     def admin_get_formatted_amount(self):
@@ -313,6 +319,7 @@ class CheckoutPayment(models.Model):
             return None
 
         return format_price(self.price_cents)
+
     admin_get_formatted_amount.short_description = "Amount"
     admin_get_formatted_amount.admin_order_field = "price_cents"
 

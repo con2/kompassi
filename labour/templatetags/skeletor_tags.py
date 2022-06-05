@@ -6,12 +6,12 @@ from dateutil.tz import tzlocal
 from core.utils import get_current_locale
 
 
-__all__ = ['skeletonfmt']
+__all__ = ["skeletonfmt"]
 register = Library()
 
 
 @register.filter
-def skeletonfmt(datetime=None, skeleton='yMEd', tz=None, locale=None):
+def skeletonfmt(datetime=None, skeleton="yMEd", tz=None, locale=None):
     if tz is None:
         tz = tzlocal()
 

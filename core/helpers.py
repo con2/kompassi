@@ -1,4 +1,3 @@
-
 from functools import wraps
 
 from django.contrib import messages
@@ -17,7 +16,7 @@ def person_required(view_func):
         try:
             person = request.user.person  # noqa
         except Person.DoesNotExist:
-            return login_redirect(request, view='core_personify_view')
+            return login_redirect(request, view="core_personify_view")
 
         return view_func(request, *args, **kwargs)
 
@@ -25,7 +24,7 @@ def person_required(view_func):
 
 
 # XXX WIP
-def app_admin_required(app_label, error_message='Tämä moduuli ei ole käytössä tälle tapahtumalle.'):
+def app_admin_required(app_label, error_message="Tämä moduuli ei ole käytössä tälle tapahtumalle."):
     def outer(view_func):
         @wraps(view_func)
         def inner(request, event, *args, **kwargs):
@@ -34,12 +33,12 @@ def app_admin_required(app_label, error_message='Tämä moduuli ei ole käytöss
             from .views import labour_admin_menu_items
 
             event = get_object_or_404(Event, slug=event)
-            event_meta_name = '{app_label}_event_meta'.format(app_label=app_label)
+            event_meta_name = f"{app_label}_event_meta"
             meta = getattr(event, event_meta_name, None)
 
             if not meta:
                 messages.error(request, "Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
-                return redirect('core_event_view', event.slug)
+                return redirect("core_event_view", event.slug)
 
             if not meta.is_user_admin(request.user):
                 return login_redirect(request)
@@ -47,11 +46,13 @@ def app_admin_required(app_label, error_message='Tämä moduuli ei ole käytöss
             vars = dict(
                 event=event,
                 # XXX this must differ from app to app?
-                admin_menu_items=labour_admin_menu_items(request, event)
+                admin_menu_items=labour_admin_menu_items(request, event),
             )
 
             return view_func(request, vars, event, *args, **kwargs)
+
         return inner
+
     return outer
 
 
@@ -64,10 +65,12 @@ def app_event_required(app_label, error_message):
 
             if not meta:
                 messages.error(request, "Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
-                return redirect('core_event_view', event.slug)
+                return redirect("core_event_view", event.slug)
 
             return view_func(request, event, *args, **kwargs)
+
         return inner
+
     return outer
 
 
@@ -99,7 +102,9 @@ def unperson_page_wizard(*pages):
                 return view_func(request, *args, **kwargs)
 
         return inner
+
     return outer
+
 
 def public_organization_required(view_func):
     @wraps(view_func)
@@ -107,7 +112,7 @@ def public_organization_required(view_func):
         if request.user.is_staff:
             organization = get_object_or_404(Organization, slug=organization_slug)
             if not organization.public:
-                messages.warning(request, 'Tämä yhdistys ei ole julkinen. Tämä sivu ei näy tavallisille käyttäjille.')
+                messages.warning(request, "Tämä yhdistys ei ole julkinen. Tämä sivu ei näy tavallisille käyttäjille.")
         else:
             organization = get_object_or_404(Organization, slug=organization_slug, public=True)
 

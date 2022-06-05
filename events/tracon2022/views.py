@@ -16,41 +16,46 @@ from .models import SignupExtra, Poison
 
 @default_cbac_required
 def tracon2022_afterparty_participants_view(request, vars, event):
-    assert event.slug == 'tracon2022'
+    assert event.slug == "tracon2022"
 
     participants = SignupExtraAfterpartyProxy.objects.filter(afterparty_participation=True)
 
     filename = "{event.slug}_afterparty_participants_{timestamp}.xlsx".format(
         event=event,
-        timestamp=now().strftime('%Y%m%d%H%M%S'),
+        timestamp=now().strftime("%Y%m%d%H%M%S"),
         format=format,
     )
 
-    emit('core.person.exported', request=request, event=event)
+    emit("core.person.exported", request=request, event=event)
 
-    return csv_response(event, SignupExtraAfterpartyProxy, participants,
-        dialect='xlsx',
+    return csv_response(
+        event,
+        SignupExtraAfterpartyProxy,
+        participants,
+        dialect="xlsx",
         filename=filename,
-        m2m_mode='separate_columns',
+        m2m_mode="separate_columns",
     )
 
 
 @default_cbac_required
 def tracon2022_afterparty_summary_view(request, event_slug):
-    assert event_slug == 'tracon2022'
+    assert event_slug == "tracon2022"
     event = Event.objects.get(slug=event_slug)
 
-    poisons = Poison.objects.all().annotate(victims=models.Sum(
-        models.Case(
-            models.When(signupextra__afterparty_participation=True, then=1),
-            default=0,
-            output_field=models.IntegerField()
+    poisons = Poison.objects.all().annotate(
+        victims=models.Sum(
+            models.Case(
+                models.When(signupextra__afterparty_participation=True, then=1),
+                default=0,
+                output_field=models.IntegerField(),
+            )
         )
-    ))
+    )
 
     vars = dict(
         event=event,
         poisons=poisons,
     )
 
-    return render(request, 'tracon2022_afterparty_summary_view.pug', vars)
+    return render(request, "tracon2022_afterparty_summary_view.pug", vars)

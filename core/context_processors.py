@@ -1,12 +1,11 @@
-
 from django.utils.translation import get_language_from_request
 
 
 def get_other_language(current_language_code):
-    if current_language_code == 'fi':
-        return 'en', 'In English…'
+    if current_language_code == "fi":
+        return "en", "In English…"
     else:
-        return 'fi', 'Suomeksi…'
+        return "fi", "Suomeksi…"
 
 
 def core_context(request):
@@ -22,8 +21,7 @@ def core_context(request):
         core_profile_menu_items=core_profile_menu_items(request),
         other_language_code=other_language_code,
         other_language_name=other_language_name,
-        show_language_warning=(other_language_code == 'fi'),
-
+        show_language_warning=(other_language_code == "fi"),
         # google analytics deactivated on admin pages for privacy
-        is_admin_page='/admin' in request.path,
+        is_admin_page="/admin" in request.path,
     )

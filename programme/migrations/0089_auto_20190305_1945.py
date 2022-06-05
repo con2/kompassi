@@ -6,28 +6,65 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0088_auto_20190301_2348'),
+        ("programme", "0088_auto_20190301_2348"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='programme',
-            name='ropecon2018_signuplist',
-            field=models.CharField(choices=[('none', 'No sign-up'), ('itse', 'I will collect sign-ups'), ('tiski', 'Sign up at the Gaming Desk')], default='none', help_text='A self-made signup sheet allows you to ask more detailed player preferences. Larp-desk-made signup sheet is a list of participant names.', max_length=15, null=True, verbose_name='Will you make your own signup sheet'),
+            model_name="programme",
+            name="ropecon2018_signuplist",
+            field=models.CharField(
+                choices=[
+                    ("none", "No sign-up"),
+                    ("itse", "I will collect sign-ups"),
+                    ("tiski", "Sign up at the Gaming Desk"),
+                ],
+                default="none",
+                help_text="A self-made signup sheet allows you to ask more detailed player preferences. Larp-desk-made signup sheet is a list of participant names.",
+                max_length=15,
+                null=True,
+                verbose_name="Will you make your own signup sheet",
+            ),
         ),
         migrations.AlterField(
-            model_name='programme',
-            name='ropecon2019_blocked_time_slots',
-            field=models.ManyToManyField(blank=True, help_text="Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time).", related_name='_programme_ropecon2019_blocked_time_slots_+', to='ropecon2019.TimeSlot', verbose_name='When are you unable to run your game?'),
+            model_name="programme",
+            name="ropecon2019_blocked_time_slots",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time).",
+                related_name="_programme_ropecon2019_blocked_time_slots_+",
+                to="ropecon2019.TimeSlot",
+                verbose_name="When are you unable to run your game?",
+            ),
         ),
         migrations.AlterField(
-            model_name='programme',
-            name='ropecon2019_gaming_desk_subtype',
-            field=models.CharField(blank=True, choices=[('tmnt', 'Tournament'), ('demo', 'Demonstration'), ('open', 'Open game'), ('pain', 'Miniature painting')], help_text='What type of game program are you offering? Tournament - organizing your own tournament or competition. Demonstration - showcasing, demonstrating and playing a game. Open game - playing a game with or without specific scenarios.', max_length=4, verbose_name='Game program type'),
+            model_name="programme",
+            name="ropecon2019_gaming_desk_subtype",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("tmnt", "Tournament"),
+                    ("demo", "Demonstration"),
+                    ("open", "Open game"),
+                    ("pain", "Miniature painting"),
+                ],
+                help_text="What type of game program are you offering? Tournament - organizing your own tournament or competition. Demonstration - showcasing, demonstrating and playing a game. Open game - playing a game with or without specific scenarios.",
+                max_length=4,
+                verbose_name="Game program type",
+            ),
         ),
         migrations.AlterField(
-            model_name='programme',
-            name='video_permission',
-            field=models.CharField(blank=True, choices=[('public', 'My programme may be recorded and published'), ('forbidden', 'I forbid recording my programme altogether')], help_text='May your programme be recorded and published in the Internet?', max_length=15, verbose_name='Recording permission'),
+            model_name="programme",
+            name="video_permission",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("public", "My programme may be recorded and published"),
+                    ("forbidden", "I forbid recording my programme altogether"),
+                ],
+                help_text="May your programme be recorded and published in the Internet?",
+                max_length=15,
+                verbose_name="Recording permission",
+            ),
         ),
     ]

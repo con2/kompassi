@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.http import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.models import Person
 from core.utils import initialize_form
@@ -23,7 +23,8 @@ def intra_admin_team_member_view(request, vars, event, team_slug=None, person_id
         team = None
 
     if person_id is not None:
-        person = get_object_or_404(Person,
+        person = get_object_or_404(
+            Person,
             id=int(person_id),
             user__groups=meta.organizer_group,
         )
@@ -43,38 +44,39 @@ def intra_admin_team_member_view(request, vars, event, team_slug=None, person_id
     if not team_member_form:
         team_member_form = initialize_form(TeamMemberForm, request, event=event, initial=initial_data)
 
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        if action in ['save-return', 'save-continue']:
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action in ["save-return", "save-continue"]:
             if team_member_form.is_valid():
                 creating_new = not team_member_form.instance.pk
 
                 team_member = team_member_form.save()
 
                 if creating_new:
-                    messages.success(request, _('The member was added to the team.'))
+                    messages.success(request, _("The member was added to the team."))
                 else:
-                    messages.success(request, _('The team member was updated.'))
+                    messages.success(request, _("The team member was updated."))
 
-                if action == 'save-return':
-                    return redirect('intra_organizer_view', event.slug)
-                elif action == 'save-continue':
-                    return redirect('intra_admin_team_member_view',
-                        event.slug, team_member.team.slug, team_member.person.id)
+                if action == "save-return":
+                    return redirect("intra_organizer_view", event.slug)
+                elif action == "save-continue":
+                    return redirect(
+                        "intra_admin_team_member_view", event.slug, team_member.team.slug, team_member.person.id
+                    )
             else:
-                messages.error(request, _('Please check the team_member_form.'))
-        elif action == 'delete':
+                messages.error(request, _("Please check the team_member_form."))
+        elif action == "delete":
             if not team_member.pk:
                 return HttpResponseNotFound()
 
             team_member.delete()
-            messages.success(request, _('The member was removed from the team.'))
-            return redirect('intra_organizer_view', event.slug)
+            messages.success(request, _("The member was removed from the team."))
+            return redirect("intra_organizer_view", event.slug)
         else:
-            messages.error(request, _('Invalid action.'))
+            messages.error(request, _("Invalid action."))
 
     vars.update(
         team_member_form=team_member_form,
     )
 
-    return render(request, 'intra_admin_team_member_view.pug', vars)
+    return render(request, "intra_admin_team_member_view.pug", vars)

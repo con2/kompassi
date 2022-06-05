@@ -1,4 +1,3 @@
-
 from labour.models import Signup
 from badges.models import Template
 from programme.models import Programme
@@ -12,7 +11,7 @@ def badge_factory(event, person):
         pass
     else:
         # Priority badges in order
-        template_names = ['Conitea', 'Ylivänkäri']
+        template_names = ["Conitea", "Ylivänkäri"]
 
         for template_name in template_names:
             if signup.job_categories_accepted.filter(name=template_name).exists():
@@ -23,15 +22,14 @@ def badge_factory(event, person):
 
         # Normal worker badge
         return dict(
-            template=Template.objects.get(event=event, name='Työvoima'),
+            template=Template.objects.get(event=event, name="Työvoima"),
             job_title=signup.some_job_title,
         )
 
     # Programme badges
     if Programme.objects.filter(category__event=event, organizers=person).exists():
         return dict(
-            template=Template.objects.get(event=event, name='Ohjelmanjärjestäjä'),
-            job_title='Ohjelmanjärjestäjä'
+            template=Template.objects.get(event=event, name="Ohjelmanjärjestäjä"), job_title="Ohjelmanjärjestäjä"
         )
 
     # Neither labour nor programme

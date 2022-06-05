@@ -1,10 +1,9 @@
-
 import re
 from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
@@ -14,69 +13,70 @@ from .constants import GROUP_VERBOSE_NAMES_BY_SUFFIX, SIGNUP_STATE_GROUPS
 
 
 class LabourEventMeta(ContactEmailMixin, EventMetaBase):
-    signup_extra_content_type = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE)
+    signup_extra_content_type = models.ForeignKey("contenttypes.ContentType", on_delete=models.CASCADE)
 
     registration_opens = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name=_("Registration opens"),
     )
-    public_from = alias_property('registration_opens')
+    public_from = alias_property("registration_opens")
 
     registration_closes = models.DateTimeField(
         null=True,
         blank=True,
         verbose_name=_("Registration closes"),
     )
-    public_until = alias_property('registration_closes')
+    public_until = alias_property("registration_closes")
 
-    work_begins = models.DateTimeField(verbose_name='Ensimmäiset työvuorot alkavat')
-    work_ends = models.DateTimeField(verbose_name='Viimeiset työvuorot päättyvät')
+    work_begins = models.DateTimeField(verbose_name="Ensimmäiset työvuorot alkavat")
+    work_ends = models.DateTimeField(verbose_name="Viimeiset työvuorot päättyvät")
 
     monitor_email = models.CharField(
         max_length=255,
         blank=True,
-        verbose_name='tarkkailusähköposti',
-        help_text='Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään myös '
-            'tähän osoitteeseen.',
+        verbose_name="tarkkailusähköposti",
+        help_text="Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään myös " "tähän osoitteeseen.",
     )
 
     contact_email = models.CharField(
         max_length=255,
         blank=True,
-        validators=[contact_email_validator,],
-        verbose_name='yhteysosoite',
-        help_text='Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään tästä '
-            'osoitteesta, ja tämä osoite näytetään työvoimalle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.',
+        validators=[
+            contact_email_validator,
+        ],
+        verbose_name="yhteysosoite",
+        help_text="Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään tästä "
+        "osoitteesta, ja tämä osoite näytetään työvoimalle yhteysosoitteena. Muoto: Selite &lt;osoite@esimerkki.fi&gt;.",
     )
 
     signup_message = models.TextField(
         null=True,
         blank=True,
-        default='',
-        verbose_name='Ilmoittautumisen huomautusviesti',
-        help_text='Tämä viesti näytetään kaikille työvoimailmoittautumisen alussa. Käytettiin '
-            'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
-            'erikoistehtäville.',
+        default="",
+        verbose_name="Ilmoittautumisen huomautusviesti",
+        help_text="Tämä viesti näytetään kaikille työvoimailmoittautumisen alussa. Käytettiin "
+        "esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja "
+        "erikoistehtäville.",
     )
 
     work_certificate_signer = models.TextField(
         null=True,
         blank=True,
-        default='',
-        verbose_name='Työtodistuksen allekirjoittaja',
-        help_text='Tämän kentän sisältö näkyy työtodistuksen allekirjoittajan nimenselvennyksenä. '
-            'On suositeltavaa sisällyttää tähän omalle rivilleen allekirjoittajan tehtävänimike.'
+        default="",
+        verbose_name="Työtodistuksen allekirjoittaja",
+        help_text="Tämän kentän sisältö näkyy työtodistuksen allekirjoittajan nimenselvennyksenä. "
+        "On suositeltavaa sisällyttää tähän omalle rivilleen allekirjoittajan tehtävänimike.",
     )
 
     use_cbac = True
 
     class Meta:
-        verbose_name = _('labour event meta')
-        verbose_name_plural = _('labour event metas')
+        verbose_name = _("labour event meta")
+        verbose_name_plural = _("labour event metas")
 
     def __str__(self):
-        return self.event.name if self.event else 'None'
+        return self.event.name if self.event else "None"
 
     @property
     def signup_extra_model(self):
@@ -85,6 +85,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
     @classmethod
     def events_registration_open(cls):
         from core.models import Event
+
         t = now()
         return Event.objects.filter(
             laboureventmeta__registration_opens__isnull=False,
@@ -102,7 +103,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
         event, unused = Event.get_or_create_dummy()
         content_type = ContentType.objects.get_for_model(EmptySignupExtra)
-        admin_group, = LabourEventMeta.get_or_create_groups(event, ['admins'])
+        (admin_group,) = LabourEventMeta.get_or_create_groups(event, ["admins"])
 
         t = now()
 
@@ -115,9 +116,9 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
                 registration_closes=t + timedelta(days=60),
                 work_begins=event.start_time - timedelta(days=1),
                 work_ends=event.end_time + timedelta(days=1),
-                contact_email='dummy@example.com',
-                monitor_email='dummy@example.com',
-            )
+                contact_email="dummy@example.com",
+                monitor_email="dummy@example.com",
+            ),
         )
 
         labour_event_meta.create_groups()
@@ -131,9 +132,9 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
             for jc_or_suffix in job_categories_or_suffixes
         ]
 
-        groups = super(LabourEventMeta, cls).get_or_create_groups(event, suffixes)
+        groups = super().get_or_create_groups(event, suffixes)
 
-        if 'mailings' in settings.INSTALLED_APPS:
+        if "mailings" in settings.INSTALLED_APPS:
             from mailings.models import RecipientGroup
             from .job_category import JobCategory
             from .personnel_class import PersonnelClass
@@ -154,7 +155,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
                 RecipientGroup.objects.get_or_create(
                     event=event,
-                    app_label='labour',
+                    app_label="labour",
                     group=group,
                     defaults=dict(
                         job_category=job_category,
@@ -166,8 +167,9 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         return groups
 
     def create_groups_async(self):
-        if 'background_tasks' in settings.INSTALLED_APPS:
+        if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import labour_event_meta_create_groups
+
             labour_event_meta_create_groups.delay(self.pk)
         else:
             self.create_groups()
@@ -178,14 +180,14 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
         job_categories_or_suffixes = list(SIGNUP_STATE_GROUPS)
         job_categories_or_suffixes.extend(JobCategory.objects.filter(event=self.event))
-        job_categories_or_suffixes.extend(PersonnelClass.objects.filter(event=self.event, app_label='labour'))
+        job_categories_or_suffixes.extend(PersonnelClass.objects.filter(event=self.event, app_label="labour"))
         return LabourEventMeta.get_or_create_groups(self.event, job_categories_or_suffixes)
 
     @property
     def is_registration_open(self):
         return is_within_period(self.registration_opens, self.registration_closes)
 
-    is_public = alias_property('is_registration_open')
+    is_public = alias_property("is_registration_open")
 
     def publish(self):
         """
@@ -228,16 +230,16 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
     @property
     def applicants_group(self):
-        return self.get_group('applicants')
+        return self.get_group("applicants")
 
     @property
     def accepted_group(self):
-        return self.get_group('accepted')
+        return self.get_group("accepted")
 
     @property
     def finished_group(self):
-        return self.get_group('finished')
+        return self.get_group("finished")
 
     @property
     def rejected_group(self):
-        return self.get_group('rejected')
+        return self.get_group("rejected")

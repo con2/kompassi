@@ -9,7 +9,7 @@ from dateutil.tz import tzlocal
 from core.utils import full_hours_between
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         self._ordering = 0
 
@@ -412,7 +412,7 @@ class Setup(object):
             ("desucon", "Vastaavat"),
         ]:
             (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
-            email = "{}@desucon.fi".format(team_slug)
+            email = f"{team_slug}@desucon.fi"
 
             team, created = Team.objects.get_or_create(
                 event=self.event,

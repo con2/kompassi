@@ -2,44 +2,45 @@ import logging
 
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from paramiko import SSHClient, RSAKey
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 class SMTPServer(models.Model):
     hostname = models.CharField(
         max_length=255,
-        verbose_name=_('SMTP server'),
+        verbose_name=_("SMTP server"),
     )
 
     crypto = models.CharField(
         max_length=5,
-        verbose_name=_('encryption'),
-        default='tls',
-        choices=[('plain', 'Ei salausta'), ('ssl', 'SSL'), ('tls', 'TLS')],
+        verbose_name=_("encryption"),
+        default="tls",
+        choices=[("plain", "Ei salausta"), ("ssl", "SSL"), ("tls", "TLS")],
     )
 
     port = models.IntegerField(
-        verbose_name=_('port number'),
+        verbose_name=_("port number"),
         default=587,
     )
 
-    domains = models.ManyToManyField('access.EmailAliasDomain',
-        verbose_name=_('domains'),
-        related_name='smtp_servers',
+    domains = models.ManyToManyField(
+        "access.EmailAliasDomain",
+        verbose_name=_("domains"),
+        related_name="smtp_servers",
     )
 
     ssh_server = models.CharField(
         max_length=255,
-        verbose_name=_('SSH server'),
+        verbose_name=_("SSH server"),
         blank=True,
         help_text=(
-            'If set, whenever the SMTP passwords for this server are changed, Kompassi will SSH to the server '
-            'and write the password file on the server.'
+            "If set, whenever the SMTP passwords for this server are changed, Kompassi will SSH to the server "
+            "and write the password file on the server."
         ),
     )
     ssh_port = models.IntegerField(default=22)
@@ -54,23 +55,26 @@ class SMTPServer(models.Model):
         lines = []
 
         for smtp_password in self.smtp_passwords.all():
-            lines.append('{username}:{password_hash}:{full_name}'.format(
-                username=smtp_password.person.user.username,
-                password_hash=smtp_password.password_hash,
-                full_name=smtp_password.person.full_name,
-            ))
+            lines.append(
+                "{username}:{password_hash}:{full_name}".format(
+                    username=smtp_password.person.user.username,
+                    password_hash=smtp_password.password_hash,
+                    full_name=smtp_password.person.full_name,
+                )
+            )
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def push_smtppasswd_file(self):
-        if 'background_tasks' in settings.INSTALLED_APPS:
+        if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import smtp_server_push_smtppasswd_file
+
             smtp_server_push_smtppasswd_file.delay(self.id)
         else:
             self._push_smtppaswd_file()
 
     def _push_smtppasswd_file(self):
-        logger.info('Pushing smtppasswd file for %s', self)
+        logger.info("Pushing smtppasswd file for %s", self)
 
         # do this early in order not to fail while connected
         contents = self.get_smtppasswd_file_contents()
@@ -87,14 +91,14 @@ class SMTPServer(models.Model):
             )
 
             with client.open_sftp() as sftp_client:
-                with sftp_client.file(self.password_file_path_on_server, 'w') as output_file:
-                    output_file.write(contents.encode('UTF-8'))
+                with sftp_client.file(self.password_file_path_on_server, "w") as output_file:
+                    output_file.write(contents.encode("UTF-8"))
 
-                with sftp_client.file(self.trigger_file_path_on_server, 'w') as trigger_file:
+                with sftp_client.file(self.trigger_file_path_on_server, "w") as trigger_file:
                     pass
 
-        logger.info('Successfully pushed smtppasswd file for %s', self)
+        logger.info("Successfully pushed smtppasswd file for %s", self)
 
     class Meta:
-        verbose_name = _('SMTP server')
-        verbose_name_plural = _('SMTP servers')
+        verbose_name = _("SMTP server")
+        verbose_name_plural = _("SMTP servers")

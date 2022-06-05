@@ -8,27 +8,37 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0034_event_cancelled'),
-        ('payments', '0004_checkout_v2'),
+        ("core", "0034_event_cancelled"),
+        ("payments", "0004_checkout_v2"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PaymentsOrganizationMeta',
+            name="PaymentsOrganizationMeta",
             fields=[
-                ('organization', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='core.Organization')),
-                ('checkout_password', models.CharField(max_length=255)),
-                ('checkout_merchant', models.CharField(max_length=255)),
+                (
+                    "organization",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        serialize=False,
+                        to="core.Organization",
+                    ),
+                ),
+                ("checkout_password", models.CharField(max_length=255)),
+                ("checkout_merchant", models.CharField(max_length=255)),
             ],
             bases=(models.Model, core.models.group_management_mixin.GroupManagementMixin),
         ),
         migrations.AlterModelOptions(
-            name='paymentseventmeta',
+            name="paymentseventmeta",
             options={},
         ),
         migrations.AddField(
-            model_name='checkoutpayment',
-            name='organization',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='core.Organization'),
+            model_name="checkoutpayment",
+            name="organization",
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to="core.Organization"
+            ),
         ),
     ]

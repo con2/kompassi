@@ -4,7 +4,7 @@ from functools import wraps
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.contrib import messages
 
@@ -29,24 +29,25 @@ from ..helpers import programme_event_required
 from ..models import Programme
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 class PaikkalAdapterMixin:
     """
     Translates between Kompassi and Paikkala.
     """
+
     def get_context_data(self, **kwargs):
         """
         Kompassi `base.pug` template needs `event`.
         """
         context = super().get_context_data(**kwargs)
-        context['event'] = self.kwargs['event']
+        context["event"] = self.kwargs["event"]
         return context
 
     def get_programme(self):
-        event = self.kwargs['event']
-        programme_id = self.kwargs['programme_id']  # NOTE: programme.Programme, not paikkala.Program
+        event = self.kwargs["event"]
+        programme_id = self.kwargs["programme_id"]  # NOTE: programme.Programme, not paikkala.Program
         return Programme.objects.get(
             id=int(programme_id),
             category__event=event,
@@ -55,7 +56,7 @@ class PaikkalAdapterMixin:
         )
 
     def get_success_url(self):
-        return reverse('programme:profile_reservations_view')
+        return reverse("programme:profile_reservations_view")
 
 
 def handle_errors(view_func):
@@ -67,43 +68,45 @@ def handle_errors(view_func):
             return view_func(request, *args, **kwargs)
 
         except UserRequired:
-            message = _('You need to log in before reserving tickets.')
+            message = _("You need to log in before reserving tickets.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('core_frontpage_view')
+            return redirect("core_frontpage_view")
 
         except BatchSizeOverflow:
-            message = _('The size of your reservation exceeds the allowed maximum. Please try a smaller reservation.')
+            message = _("The size of your reservation exceeds the allowed maximum. Please try a smaller reservation.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
             return redirect(request.path)
 
         except MaxTicketsReached:
-            message = _('This programme is currently full.')
+            message = _("This programme is currently full.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('programme:profile_reservations_view')
+            return redirect("programme:profile_reservations_view")
 
         except MaxTicketsPerUserReached:
-            message = _('You cannot reserve any more tickets for this programme.')
+            message = _("You cannot reserve any more tickets for this programme.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('programme:profile_reservations_view')
+            return redirect("programme:profile_reservations_view")
 
         except Unreservable:
-            message = _('This programme does not allow reservations at this time.')
+            message = _("This programme does not allow reservations at this time.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('programme:profile_reservations_view')
+            return redirect("programme:profile_reservations_view")
 
         except PermissionDenied:
-            message = _('Permission denied.')
+            message = _("Permission denied.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect('core_frontpage_view')
+            return redirect("core_frontpage_view")
 
         except (NoCapacity, NoRowCapacity):
-            message = _("There isn't sufficient space for your reservation in the selected zone. Please try another zone.")
+            message = _(
+                "There isn't sufficient space for your reservation in the selected zone. Please try another zone."
+            )
             messages.error(request, message)
             logger.warning(message, exc_info=True)
             return redirect(request.path)
@@ -112,19 +115,19 @@ def handle_errors(view_func):
 
 
 class InspectionView(PaikkalAdapterMixin, BaseInspectionView):
-    template_name = 'programme_paikkala_inspection_view.pug'
+    template_name = "programme_paikkala_inspection_view.pug"
     require_same_user = True
     require_same_zone = True
 
 
 class RelinquishView(PaikkalAdapterMixin, BaseRelinquishView):
-    success_message_template = _('Successfully relinquished the seat reservation.')
+    success_message_template = _("Successfully relinquished the seat reservation.")
 
 
 class ReservationView(PaikkalAdapterMixin, BaseReservationView):
-    success_message_template = _('Seats successfully reserved.')
+    success_message_template = _("Seats successfully reserved.")
     form_class = ReservationForm
-    template_name = 'programme_paikkala_reservation_view.pug'
+    template_name = "programme_paikkala_reservation_view.pug"
 
     def get_object(self, queryset=None):
         """
@@ -133,9 +136,8 @@ class ReservationView(PaikkalAdapterMixin, BaseReservationView):
         Using these, resolve and inject the `pk`, referring to `paikkala.Program`.
         """
         programme = self.get_programme()
-        self.kwargs['pk'] = programme.paikkala_program_id
+        self.kwargs["pk"] = programme.paikkala_program_id
         return super().get_object(queryset)
-
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)

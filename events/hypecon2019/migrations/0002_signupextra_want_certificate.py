@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('hypecon2019', '0001_initial'),
+        ("hypecon2019", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='signupextra',
-            name='want_certificate',
-            field=models.BooleanField(default=False, verbose_name='Haluan todistuksen työskentelystäni Hypeconissa'),
+            model_name="signupextra",
+            name="want_certificate",
+            field=models.BooleanField(default=False, verbose_name="Haluan todistuksen työskentelystäni Hypeconissa"),
         ),
     ]

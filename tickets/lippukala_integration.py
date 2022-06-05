@@ -1,5 +1,7 @@
 # https://docs.google.com/spreadsheet/ccc?key=0Annwjrq9JeBldGQ3aEFRakpJeGtISUVpTnpJRl92dUE&usp=drive_web#gid=0
-KEYSPACE = list(set("""
+KEYSPACE = list(
+    set(
+        """
 ahma    arkki   ääni    höyry   kulta   aita    piano   hylly   hame    kahvi   viiva
 ahven   hihna   aika    ilma    kumi    muuri   rumpu   kuori   huppu   maito   kaari
 eläin   johto   aste    päivä   lanka   talo    torvi   kynä    kenkä   liha    käyrä
@@ -34,10 +36,14 @@ siika       pohja
         ihme
         voima
         hissi
-""".split()))
+""".split()
+    )
+)
+
 
 class Queue:
-    ONE_QUEUE = '1'
+    ONE_QUEUE = "1"
+
 
 PREFIXES = {
     Queue.ONE_QUEUE: "kissa",

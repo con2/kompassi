@@ -16,11 +16,11 @@ from ..forms import ApplicationForm
 def membership_apply_view(request, organization):
     meta = organization.membership_organization_meta
     mandatory_information_missing = not (
-        request.user.person and
-        request.user.person.official_first_names and
-        request.user.person.surname and
-        request.user.person.muncipality and
-        request.user.person.email
+        request.user.person
+        and request.user.person.official_first_names
+        and request.user.person.surname
+        and request.user.person.muncipality
+        and request.user.person.email
     )
     already_member = Membership.objects.filter(
         organization=organization,
@@ -36,26 +36,27 @@ def membership_apply_view(request, organization):
     except Term.DoesNotExist:
         current_term = None
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if already_member:
-            messages.error(request, 'Olet jo jäsen tai jäsenhakemuksesi on jo käsiteltävänä.')
+            messages.error(request, "Olet jo jäsen tai jäsenhakemuksesi on jo käsiteltävänä.")
         elif mandatory_information_missing:
-            messages.error(request, 'Profiilistasi puuttuu pakollisia tietoja.')
+            messages.error(request, "Profiilistasi puuttuu pakollisia tietoja.")
         elif not form.is_valid():
-            messages.error(request, 'Tarkista lomakkeen tiedot.')
+            messages.error(request, "Tarkista lomakkeen tiedot.")
         else:
             membership = form.save(commit=False)
             membership.organization = organization
             membership.person = request.user.person
-            membership.state = 'approval'
+            membership.state = "approval"
             membership.save()
 
-            messages.success(request,
-                'Kiitos jäsenyyshakemuksestasi! Yhdistyksen hallitus käsittelee '
-                'hakemuksesi seuraavassa kokouksessaan.'
+            messages.success(
+                request,
+                "Kiitos jäsenyyshakemuksestasi! Yhdistyksen hallitus käsittelee "
+                "hakemuksesi seuraavassa kokouksessaan.",
             )
 
-        return redirect('core_organization_view', organization.slug)
+        return redirect("core_organization_view", organization.slug)
 
     vars = dict(
         already_member=already_member,
@@ -67,7 +68,7 @@ def membership_apply_view(request, organization):
         current_term=current_term,
     )
 
-    return render(request, 'membership_apply_view.pug', vars)
+    return render(request, "membership_apply_view.pug", vars)
 
 
 @person_required
@@ -84,7 +85,7 @@ def membership_profile_view(request):
         potential_organizations=potential_organizations,
     )
 
-    return render(request, 'membership_profile_view.pug', vars)
+    return render(request, "membership_profile_view.pug", vars)
 
 
 def membership_organization_box_context(request, organization):
@@ -113,8 +114,8 @@ def membership_organization_box_context(request, organization):
 
 
 def membership_profile_menu_items(request):
-    membership_profile_url = reverse('membership_profile_view')
+    membership_profile_url = reverse("membership_profile_view")
     membership_profile_active = request.path.startswith(membership_profile_url)
-    membership_profile_text = 'Yhdistysten jäsenyydet'
+    membership_profile_text = "Yhdistysten jäsenyydet"
 
     return [(membership_profile_active, membership_profile_url, membership_profile_text)]

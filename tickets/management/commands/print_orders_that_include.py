@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# encoding: utf-8
 # vim: shiftwidth=4 expandtab
 
 import csv
@@ -10,16 +9,16 @@ from tickets.models import Product
 
 
 class Command(BaseCommand):
-    args = '<id>'
-    help = 'Print orders that include the given product'
+    args = "<id>"
+    help = "Print orders that include the given product"
 
     def add_arguments(self, parser):
-        parser.add_argument('product', type=int, help='product id')
+        parser.add_argument("product", type=int, help="product id")
 
     def handle(*args, **options):
-        product_id = int(options['product'])
+        product_id = int(options["product"])
         writer = csv.writer(sys.stdout)
-        writer.writerow(['last_name', 'first_name', 'email', 'count'])
+        writer.writerow(["last_name", "first_name", "email", "count"])
 
         product = Product.objects.get(id=product_id)
         for op in product.order_product_set.filter(
@@ -27,11 +26,13 @@ class Command(BaseCommand):
             order__confirm_time__isnull=False,
             order__payment_date__isnull=False,
             order__cancellation_time__isnull=True,
-        ).order_by('order__customer__last_name', 'order__customer__first_name'):
+        ).order_by("order__customer__last_name", "order__customer__first_name"):
             customer = op.order.customer
-            writer.writerow([
-                customer.last_name,
-                customer.first_name,
-                customer.email,
-                op.count,
-            ])
+            writer.writerow(
+                [
+                    customer.last_name,
+                    customer.first_name,
+                    customer.email,
+                    op.count,
+                ]
+            )

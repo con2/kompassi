@@ -1,12 +1,12 @@
 from collections import namedtuple
 
 
-class Tab(object):
+class Tab:
     __slots__ = [
-        'id',
-        'title',
-        'active',
-        'notifications',
+        "id",
+        "title",
+        "active",
+        "notifications",
     ]
 
     def __init__(self, id: str, title: str, active=False, notifications=0):
@@ -20,6 +20,6 @@ class Tab(object):
     @property
     def active_css(self):
         if self.active:
-            return 'active'
+            return "active"
         else:
-            return ''
+            return ""

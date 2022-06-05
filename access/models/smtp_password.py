@@ -1,5 +1,5 @@
 from django.db import models, transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from passlib.hash import md5_crypt
 
@@ -7,25 +7,26 @@ from ..utils import generate_machine_password
 
 
 class SMTPPassword(models.Model):
-    smtp_server = models.ForeignKey('access.SMTPServer', on_delete=models.CASCADE,
-        related_name='smtp_passwords',
-        verbose_name=_('SMTP server'),
+    smtp_server = models.ForeignKey(
+        "access.SMTPServer",
+        on_delete=models.CASCADE,
+        related_name="smtp_passwords",
+        verbose_name=_("SMTP server"),
     )
 
-    person = models.ForeignKey('core.Person', on_delete=models.CASCADE,
-        related_name='smtp_passwords',
-        verbose_name=_('person'),
+    person = models.ForeignKey(
+        "core.Person",
+        on_delete=models.CASCADE,
+        related_name="smtp_passwords",
+        verbose_name=_("person"),
     )
 
     password_hash = models.CharField(
         max_length=255,
-        verbose_name=_('password hash'),
+        verbose_name=_("password hash"),
     )
 
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_('created at')
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("created at"))
 
     @classmethod
     def create_for_domain_and_person(cls, domain, person, hash_module=md5_crypt):
@@ -49,5 +50,5 @@ class SMTPPassword(models.Model):
         )
 
     class Meta:
-        verbose_name = _('SMTP password')
-        verbose_name_plural = _('SMTP passwords')
+        verbose_name = _("SMTP password")
+        verbose_name_plural = _("SMTP passwords")

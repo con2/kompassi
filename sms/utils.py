@@ -7,7 +7,7 @@ from nexmo.models import InboundMessage
 
 def fake_inbound_message(sender, message):
     return InboundMessage.new_message(
-        nexmo_message_id="{:04x}".format(randint(0, 20000)),
+        nexmo_message_id=f"{randint(0, 20000):04x}",
         message=message,
         sender=sender,
         concat_ref=None,

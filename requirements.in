@@ -1,12 +1,11 @@
-git+https://github.com/kcsry/lippukala.git@v1.2.1#egg=lippukala==1.2.1
-git+https://github.com/tracon/paikkala.git@feature/zone-ordering#egg=paikkala==0.0
+git+https://github.com/kcsry/lippukala.git
+git+https://github.com/kcsry/paikkala.git
 Babel
 black
 bleach
 celery
 Django
 django_csp
-django-babel
 django-bootstrap3
 django-cors-headers
 django-crispy-forms

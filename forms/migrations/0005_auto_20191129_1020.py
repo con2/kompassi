@@ -6,19 +6,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('forms', '0004_auto_20191126_1758'),
+        ("forms", "0004_auto_20191126_1758"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='formresponse',
-            name='created_by',
+            model_name="formresponse",
+            name="created_by",
         ),
         migrations.RemoveField(
-            model_name='formresponse',
-            name='form',
+            model_name="formresponse",
+            name="form",
         ),
         migrations.DeleteModel(
-            name='FormResponse',
+            name="FormResponse",
         ),
     ]

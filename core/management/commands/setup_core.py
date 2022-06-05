@@ -12,8 +12,8 @@ logger = logging.getLogger("kompassi")
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup core specific stuff'
+    args = ""
+    help = "Setup core specific stuff"
 
     def handle(self, *args, **options):
         if settings.DEBUG:

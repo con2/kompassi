@@ -55,11 +55,11 @@ class QualificationTest(TestCase):
 
 class SignupTest(TestCase):
     def test_get_state_query_params(self):
-        params = Signup.get_state_query_params('accepted')
+        params = Signup.get_state_query_params("accepted")
 
-        self.assertTrue(params['is_active'])
-        self.assertFalse(params['time_accepted__isnull'])
-        self.assertTrue(params['time_finished__isnull'])
+        self.assertTrue(params["is_active"])
+        self.assertFalse(params["time_accepted__isnull"])
+        self.assertTrue(params["time_finished__isnull"])
 
 
 class JobCategoryTestCase(TestCase):
@@ -88,4 +88,4 @@ class ExcelExportTestCase(TestCase):
         signups = Signup.objects.filter(id=signup.id)
 
         with BytesIO() as output_file:
-            export_csv(signup.event, Signup, signups, output_file, m2m_mode='separate_columns', dialect='xlsx')
+            export_csv(signup.event, Signup, signups, output_file, m2m_mode="separate_columns", dialect="xlsx")

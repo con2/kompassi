@@ -3,7 +3,7 @@ import io
 import xlsxwriter
 
 
-class XlsxWriter(object):
+class XlsxWriter:
     """
     An almost csv.writer compatible wrapper for XlsxWriter. Horribly inefficient.
 

@@ -14,7 +14,7 @@ def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         self._ordering = 0
 
@@ -203,7 +203,7 @@ class Setup(object):
                 event=self.event,
                 title=link_title,
                 defaults=dict(
-                    url="https://confluence.tracon.fi/display/{wiki_space}".format(wiki_space=wiki_space),
+                    url=f"https://confluence.tracon.fi/display/{wiki_space}",
                     group=labour_event_meta.get_group(link_group),
                 ),
             )
@@ -276,10 +276,10 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Lattiamajoituspaikka (pe-la)',
-                description='Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',
+                name="Lattiamajoituspaikka (pe-la)",
+                description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.",
                 limit_groups=[
-                    limit_group('Lattiamajoitus pe-la', 210),
+                    limit_group("Lattiamajoitus pe-la", 210),
                 ],
                 price_cents=1000,
                 requires_shipping=False,
@@ -288,10 +288,10 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Lattiamajoituspaikka (la-su)',
-                description='Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.',
+                name="Lattiamajoituspaikka (la-su)",
+                description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.",
                 limit_groups=[
-                    limit_group('Lattiamajoitus la-su', 210),
+                    limit_group("Lattiamajoitus la-su", 210),
                 ],
                 price_cents=1000,
                 requires_shipping=False,

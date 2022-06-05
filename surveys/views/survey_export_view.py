@@ -11,12 +11,12 @@ from ..models import EventSurvey, EventSurveyResult, GlobalSurvey, GlobalSurveyR
 
 
 @require_safe
-def survey_export_view(request, event_slug='', survey_slug='', format='xlsx'):
+def survey_export_view(request, event_slug="", survey_slug="", format="xlsx"):
     if event_slug:
         event = get_object_or_404(Event, slug=event_slug)
         survey = get_object_or_404(EventSurvey, event=event, slug=survey_slug, is_active=True)
         SurveyResult = EventSurveyResult
-        slug = f'{event.slug}-{survey.slug}'
+        slug = f"{event.slug}-{survey.slug}"
     else:
         event = None
         survey = get_object_or_404(GlobalSurvey, slug=survey_slug, is_active=True)
@@ -26,16 +26,11 @@ def survey_export_view(request, event_slug='', survey_slug='', format='xlsx'):
     if not (request.user.is_superuser or request.user == survey.owner):
         return HttpResponseForbidden()
 
-    results = SurveyResult.objects.filter(survey=survey).order_by('created_at')
-    timestamp = now().strftime('%Y%m%d%H%M%S')
+    results = SurveyResult.objects.filter(survey=survey).order_by("created_at")
+    timestamp = now().strftime("%Y%m%d%H%M%S")
 
-    filename = f'{slug}-results-{timestamp}.{format}'
+    filename = f"{slug}-results-{timestamp}.{format}"
 
     return csv_response(
-        event,
-        SurveyResult,
-        results,
-        filename=filename,
-        dialect=CSV_EXPORT_FORMATS[format],
-        m2m_mode='comma_separated'
+        event, SurveyResult, results, filename=filename, dialect=CSV_EXPORT_FORMATS[format], m2m_mode="comma_separated"
     )

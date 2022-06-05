@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.http import require_safe
 
@@ -25,13 +25,13 @@ from ..helpers import (
 
 
 def get_schedule_tabs(request, event):
-    schedule_url = url('programme:schedule_view', event.slug)
+    schedule_url = url("programme:schedule_view", event.slug)
     schedule_active = request.path == schedule_url
-    schedule_text = 'Ohjelmakartta'
+    schedule_text = "Ohjelmakartta"
 
-    special_url = url('programme:special_view', event.slug)
+    special_url = url("programme:special_view", event.slug)
     special_active = request.path == special_url
-    special_text = 'Ohjelmakartan ulkopuolinen ohjelma'
+    special_text = "Ohjelmakartan ulkopuolinen ohjelma"
 
     return [
         Tab(schedule_url, schedule_text, schedule_active, 0),
@@ -40,8 +40,8 @@ def get_schedule_tabs(request, event):
 
 
 SCHEDULE_TEMPLATES = dict(
-    reasonable='programme_schedule_view.pug',
-    full_width='programme_full_width_schedule_view.pug',
+    reasonable="programme_schedule_view.pug",
+    full_width="programme_full_width_schedule_view.pug",
 )
 
 
@@ -62,7 +62,9 @@ def schedule_view(
         tabs=get_schedule_tabs(request, event),
     )
 
-    return actual_schedule_view(request, event,
+    return actual_schedule_view(
+        request,
+        event,
         internal_programmes=internal_programmes,
         template=template,
         vars=vars,
@@ -83,7 +85,9 @@ def internal_schedule_view(
         tabs=get_schedule_tabs(request, event),
     )
 
-    return actual_schedule_view(request, event,
+    return actual_schedule_view(
+        request,
+        event,
         internal_programmes=internal_programmes,
         template=template,
         vars=vars,
@@ -129,10 +133,12 @@ def actual_schedule_view(
 def special_view(
     request,
     event,
-    template='programme_special_view.pug',
+    template="programme_special_view.pug",
     show_programme_actions=False,
 ):
-    return actual_special_view(request, event,
+    return actual_special_view(
+        request,
+        event,
         template=template,
         show_programme_actions=show_programme_actions,
     )
@@ -142,23 +148,23 @@ def actual_special_view(
     request,
     event,
     include_unpublished=False,
-    template='programme_special_view.pug',
+    template="programme_special_view.pug",
     vars=None,
     show_programme_actions=False,
 ):
     criteria = dict(include_unpublished=include_unpublished)
 
-    category_slug = request.GET.get('category')
+    category_slug = request.GET.get("category")
     if category_slug:
         criteria.update(category__slug=category_slug)
 
-    programmes = event.programme_event_meta.get_special_programmes(**criteria).order_by('start_time')
+    programmes = event.programme_event_meta.get_special_programmes(**criteria).order_by("start_time")
 
     categories_criteria = dict(event=event)
     if not include_unpublished:
         categories_criteria.update(public=True)
     categories = Category.objects.filter(**categories_criteria)
-    category_filters = Filter(request, 'category').add_objects('category__slug', categories)
+    category_filters = Filter(request, "category").add_objects("category__slug", categories)
     programmes = category_filters.filter_queryset(programmes)
 
     programmes_by_start_time = group_programmes_by_start_time(programmes)
@@ -184,8 +190,8 @@ def internal_dumpdata_view(request):
     from io import StringIO
 
     buffer = StringIO()
-    management.call_command('dumpdata', 'programme', stdout=buffer)
-    response = HttpResponse(buffer.getvalue(), 'application/json')
+    management.call_command("dumpdata", "programme", stdout=buffer)
+    response = HttpResponse(buffer.getvalue(), "application/json")
     buffer.close()
 
     return response
@@ -198,62 +204,61 @@ def internal_dumpdata_view(request):
 def mobile_schedule_view(request, event):
     vars = dict(event=event)
 
-    return render(request, 'programme_mobile_schedule.pug', vars)
+    return render(request, "programme_mobile_schedule.pug", vars)
 
 
 @programme_event_required
 @require_safe
 def internal_adobe_taggedtext_view(request, event):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).get_programmes_by_start_time(request=request))
-    data = render_to_string('programme_schedule.taggedtext', vars, request=request)
+    data = render_to_string("programme_schedule.taggedtext", vars, request=request)
 
     # force all line endings to CRLF (Windows)
-    data = data.replace('\r\n', '\n').replace('\n', '\r\n')
+    data = data.replace("\r\n", "\n").replace("\n", "\r\n")
 
     # encode to UTF-16; the LE at the end means no BOM, which is absolutely critical
-    data = data.encode('UTF-16LE')
+    data = data.encode("UTF-16LE")
 
-    return HttpResponse(data, 'text/plain; charset=utf-16')
+    return HttpResponse(data, "text/plain; charset=utf-16")
 
 
 @programme_event_required
 @require_safe
 def plaintext_view(request, event):
     vars = dict(programmes_by_start_time=AllRoomsPseudoView(event).get_programmes_by_start_time(request=request))
-    data = render_to_string('plaintext_view.txt', vars, request=request)
-    return HttpResponse(data, 'text/plain; charset=utf-8')
+    data = render_to_string("plaintext_view.txt", vars, request=request)
+    return HttpResponse(data, "text/plain; charset=utf-8")
 
 
 @programme_event_required
 @require_safe
 @api_view
-def json_view(request, event, format='default', include_unpublished=False):
+def json_view(request, event, format="default", include_unpublished=False):
     criteria = dict(category__event=event)
 
     if not include_unpublished:
-        criteria.update(state='published')
+        criteria.update(state="published")
 
     programmes = (
         Programme.objects.filter(**criteria)
-            .select_related('category__event')
-            .select_related('room')
-            .prefetch_related('tags')
-
-            # Does not do the needful due to formatted_organizers operating on the "through" model
-            # .prefetch_related('organizers')
+        .select_related("category__event")
+        .select_related("room")
+        .prefetch_related("tags")
+        # Does not do the needful due to formatted_organizers operating on the "through" model
+        # .prefetch_related('organizers')
     )
 
     return [programme.as_json(format=format) for programme in programmes]
 
 
 def programme_profile_menu_items(request):
-    programme_url = url('programme:profile_view')
+    programme_url = url("programme:profile_view")
     programme_active = request.path.startswith(programme_url)
-    programme_text = _('Programmes')
+    programme_text = _("Programmes")
 
-    reservations_url = url('programme:profile_reservations_view')
+    reservations_url = url("programme:profile_reservations_view")
     reservations_active = request.path.startswith(reservations_url)
-    reservations_text = _('Seat reservations')
+    reservations_text = _("Seat reservations")
 
     return [
         (programme_active, programme_url, programme_text),

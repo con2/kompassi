@@ -11,24 +11,22 @@ class PasswordResetError(RuntimeError):
 
 
 class PasswordResetToken(OneTimeCode):
-    ip_address = models.CharField(max_length=45, blank=True) # IPv6
+    ip_address = models.CharField(max_length=45, blank=True)  # IPv6
 
     def render_message_subject(self, request):
-        return '{settings.KOMPASSI_INSTALLATION_NAME}: Salasanan vaihto'.format(settings=settings)
+        return f"{settings.KOMPASSI_INSTALLATION_NAME}: Salasanan vaihto"
 
     def render_message_body(self, request):
-        vars = dict(
-            link=request.build_absolute_uri(url('core_password_reset_view', self.code))
-        )
+        vars = dict(link=request.build_absolute_uri(url("core_password_reset_view", self.code)))
 
-        return render_to_string('core_password_reset_message.eml', vars, request=request)
+        return render_to_string("core_password_reset_message.eml", vars, request=request)
 
     @classmethod
     def reset_password(cls, code, new_password):
         try:
-            code = cls.objects.get(code=code, state='valid')
+            code = cls.objects.get(code=code, state="valid")
         except cls.DoesNotExist:
-            raise PasswordResetError('invalid_code')
+            raise PasswordResetError("invalid_code")
 
         code.mark_used()
 

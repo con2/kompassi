@@ -3,17 +3,17 @@ from core.utils import url
 
 
 def membership_admin_menu_items(request, organization):
-    members_url = url('membership_admin_members_view', organization.slug)
+    members_url = url("membership_admin_members_view", organization.slug)
     members_active = request.path.startswith(members_url)
-    members_text = 'Jäsenrekisteri'
+    members_text = "Jäsenrekisteri"
 
-    term_text = 'Toimikauden tiedot'
+    term_text = "Toimikauden tiedot"
     current_term = organization.membership_organization_meta.get_current_term()
-    base_term_url = url('membership_admin_new_term_view', organization.slug)
+    base_term_url = url("membership_admin_new_term_view", organization.slug)
     term_active = request.path.startswith(base_term_url)
     if current_term:
         term_notifications = 0
-        term_url = url('membership_admin_term_view', organization.slug, current_term.pk)
+        term_url = url("membership_admin_term_view", organization.slug, current_term.pk)
     else:
         term_notifications = 1
         term_url = base_term_url

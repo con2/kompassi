@@ -8,8 +8,8 @@ from ..serializers import EventSerializer
 class EventViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Event.objects.filter(public=True)
     serializer_class = EventSerializer
-    lookup_field = 'slug'
+    lookup_field = "slug"
 
-    @action(detail=True, methods=['get', 'post'])
+    @action(detail=True, methods=["get", "post"])
     def badges(self, **TODO):
         pass

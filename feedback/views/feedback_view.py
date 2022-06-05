@@ -18,8 +18,8 @@ def feedback_view(request):
         if request.user.is_authenticated:
             feedback.author = request.user
 
-        feedback.context = request.META.get('HTTP_REFERER', '')
-        feedback.author_ip_address = get_ip(request) or ''
+        feedback.context = request.META.get("HTTP_REFERER", "")
+        feedback.author_ip_address = get_ip(request) or ""
         feedback.save()
 
         return HttpResponse(status=201)

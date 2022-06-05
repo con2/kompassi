@@ -6,14 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('hitpoint2020', '0002_remove_signupextra_overseer'),
-        ('programme', '0099_auto_20200223_1958'),
+        ("hitpoint2020", "0002_remove_signupextra_overseer"),
+        ("programme", "0099_auto_20200223_1958"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='programme',
-            name='hitpoint2020_preferred_time_slots',
-            field=models.ManyToManyField(help_text='When would you like to run your RPG? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them in the last open field.', to='hitpoint2020.TimeSlot', verbose_name='preferred time slots'),
+            model_name="programme",
+            name="hitpoint2020_preferred_time_slots",
+            field=models.ManyToManyField(
+                help_text="When would you like to run your RPG? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them in the last open field.",
+                to="hitpoint2020.TimeSlot",
+                verbose_name="preferred time slots",
+            ),
         ),
     ]

@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 
 from .models import (
@@ -11,24 +10,24 @@ from .models import (
 
 class EventSurveyAdmin(admin.ModelAdmin):
     model = EventSurvey
-    list_display = ('event', 'title', 'is_active')
-    list_filter = ('event', 'is_active')
-    raw_id_fields = ('owner',)
+    list_display = ("event", "title", "is_active")
+    list_filter = ("event", "is_active")
+    raw_id_fields = ("owner",)
 
 
 class GlobalSurveyAdmin(admin.ModelAdmin):
     model = GlobalSurvey
-    list_display = ('title', 'is_active')
-    list_filter = ('is_active',)
-    raw_id_fields = ('owner',)
+    list_display = ("title", "is_active")
+    list_filter = ("is_active",)
+    raw_id_fields = ("owner",)
 
 
 class EventSurveyResultAdmin(admin.ModelAdmin):
     model = EventSurveyResult
-    list_display = ('created_at', 'admin_get_event', 'survey', 'author')
-    list_filter = ('survey__event', 'survey')
+    list_display = ("created_at", "admin_get_event", "survey", "author")
+    list_filter = ("survey__event", "survey")
 
-    readonly_fields = ('admin_get_event', 'survey', 'created_at', 'author', 'author_ip_address', 'model')
+    readonly_fields = ("admin_get_event", "survey", "created_at", "author", "author_ip_address", "model")
 
     def has_add_permission(self, *args, **kwargs):
         return False
@@ -36,10 +35,10 @@ class EventSurveyResultAdmin(admin.ModelAdmin):
 
 class GlobalSurveyResultAdmin(admin.ModelAdmin):
     model = GlobalSurveyResult
-    list_display = ('created_at', 'survey', 'author')
-    list_filter = ('survey',)
+    list_display = ("created_at", "survey", "author")
+    list_filter = ("survey",)
 
-    readonly_fields = ('survey', 'created_at', 'author', 'author_ip_address', 'model')
+    readonly_fields = ("survey", "created_at", "author", "author_ip_address", "model")
 
     def has_add_permission(self, *args, **kwargs):
         return False

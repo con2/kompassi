@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 from django.db import models, transaction
 from django.utils.html import escape
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.csv_export import CsvExportMixin
 from core.utils import time_bool_property
@@ -11,118 +11,130 @@ from core.utils import time_bool_property
 from ..proxies.badge.privacy import BadgePrivacyAdapter
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 class Badge(models.Model, CsvExportMixin):
-    person = models.ForeignKey('core.Person', on_delete=models.CASCADE,
+    person = models.ForeignKey(
+        "core.Person",
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
-        verbose_name=_('Person'),
-        related_name='badges',
+        verbose_name=_("Person"),
+        related_name="badges",
     )
 
-    personnel_class = models.ForeignKey('labour.PersonnelClass', on_delete=models.CASCADE,
-        verbose_name=_('Personnel class'),
-        related_name='badges',
+    personnel_class = models.ForeignKey(
+        "labour.PersonnelClass",
+        on_delete=models.CASCADE,
+        verbose_name=_("Personnel class"),
+        related_name="badges",
     )
 
     printed_separately_at = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_('Printed separately at'),
+        verbose_name=_("Printed separately at"),
     )
 
-    revoked_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+    revoked_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name='badges_revoked',
-        verbose_name=_('Revoked by'),
+        related_name="badges_revoked",
+        verbose_name=_("Revoked by"),
     )
     revoked_at = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_('Revoked at'),
+        verbose_name=_("Revoked at"),
     )
 
     arrived_at = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_('Arrived at'),
+        verbose_name=_("Arrived at"),
     )
 
     first_name = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_('First name'),
+        verbose_name=_("First name"),
     )
     is_first_name_visible = models.BooleanField(
         default=True,
-        verbose_name=_('Is first name visible'),
+        verbose_name=_("Is first name visible"),
     )
 
     surname = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_('Surname'),
+        verbose_name=_("Surname"),
     )
     is_surname_visible = models.BooleanField(
         default=True,
-        verbose_name=_('Is surname visible'),
+        verbose_name=_("Is surname visible"),
     )
 
     nick = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_('Nick name'),
-        help_text=_('If you only have a single piece of information to print on the badge, use this field.'),
+        verbose_name=_("Nick name"),
+        help_text=_("If you only have a single piece of information to print on the badge, use this field."),
     )
     is_nick_visible = models.BooleanField(
         default=True,
-        verbose_name=_('Is nick visible'),
+        verbose_name=_("Is nick visible"),
     )
 
-    job_title = models.CharField(max_length=63,
+    job_title = models.CharField(
+        max_length=63,
         blank=True,
-        default='',
-        verbose_name=_('Job title'),
-        help_text=_('Please stay civil with the job title field.'),
+        default="",
+        verbose_name=_("Job title"),
+        help_text=_("Please stay civil with the job title field."),
     )
 
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name='badges_created',
-        verbose_name=_('Created by'),
+        related_name="badges_created",
+        verbose_name=_("Created by"),
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
-        verbose_name=_('Created at'),
+        verbose_name=_("Created at"),
     )
     updated_at = models.DateTimeField(
         auto_now=True,
-        verbose_name=_('Updated at'),
+        verbose_name=_("Updated at"),
     )
 
-    batch = models.ForeignKey('badges.Batch',
+    batch = models.ForeignKey(
+        "badges.Batch",
         null=True,
         blank=True,
         db_index=True,
-        verbose_name=_('Printing batch'),
+        verbose_name=_("Printing batch"),
         on_delete=models.SET_NULL,
-        related_name='badges',
+        related_name="badges",
     )
 
-    is_revoked = time_bool_property('revoked_at')
-    is_printed = time_bool_property('printed_at')
-    is_printed_separately = time_bool_property('printed_separately_at')
-    is_arrived = time_bool_property('arrived_at')
+    is_revoked = time_bool_property("revoked_at")
+    is_printed = time_bool_property("printed_at")
+    is_printed_separately = time_bool_property("printed_separately_at")
+    is_arrived = time_bool_property("arrived_at")
 
     notes = models.TextField(
-        default='',
+        default="",
         blank=True,
-        verbose_name=_('Internal notes'),
-        help_text=_('Internal notes are only visible to the event organizer. However, if the person in question requests a transcript of records, this field is also disclosed.'),
+        verbose_name=_("Internal notes"),
+        help_text=_(
+            "Internal notes are only visible to the event organizer. However, if the person in question requests a transcript of records, this field is also disclosed."
+        ),
     )
 
     @property
@@ -137,7 +149,7 @@ class Badge(models.Model, CsvExportMixin):
     @property
     def formatted_printed_at(self):
         # XXX not really "formatted"
-        return self.printed_at if self.printed_at is not None else ''
+        return self.printed_at if self.printed_at is not None else ""
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -182,7 +194,7 @@ class Badge(models.Model, CsvExportMixin):
                 else:
                     return existing_badge, False
 
-            if expected_badge_opts.get('personnel_class') is None:
+            if expected_badge_opts.get("personnel_class") is None:
                 # They should not have a badge.
                 return None, False
 
@@ -196,18 +208,18 @@ class Badge(models.Model, CsvExportMixin):
     @classmethod
     def get_csv_fields(cls, event):
         meta = event.badges_event_meta
-        if meta.badge_layout == 'trad':
+        if meta.badge_layout == "trad":
             # Chief Technology Officer
             # Santtu Pajukanta
             # Japsu
             return [
-                (cls, 'personnel_class_name'),
-                (BadgePrivacyAdapter, 'surname'),
-                (BadgePrivacyAdapter, 'first_name'),
-                (BadgePrivacyAdapter, 'nick'),
-                (cls, 'job_title'),
+                (cls, "personnel_class_name"),
+                (BadgePrivacyAdapter, "surname"),
+                (BadgePrivacyAdapter, "first_name"),
+                (BadgePrivacyAdapter, "nick"),
+                (cls, "job_title"),
             ]
-        elif meta.badge_layout == 'nick':
+        elif meta.badge_layout == "nick":
             # JAPSU
             # Santtu Pajukanta
             # Chief Technology Officer
@@ -216,11 +228,11 @@ class Badge(models.Model, CsvExportMixin):
             # Pajukanta
             # Chief Technology Officer
             return [
-                (cls, 'personnel_class_name'),
-                (BadgePrivacyAdapter, 'nick_or_first_name'),
-                (BadgePrivacyAdapter, 'surname_or_full_name'),
-                (cls, 'job_title'),
-                (BadgePrivacyAdapter, 'surname_for_sorting'),
+                (cls, "personnel_class_name"),
+                (BadgePrivacyAdapter, "nick_or_first_name"),
+                (BadgePrivacyAdapter, "surname_or_full_name"),
+                (cls, "job_title"),
+                (BadgePrivacyAdapter, "surname_for_sorting"),
             ]
         else:
             raise NotImplementedError(meta.badge_layout)
@@ -239,7 +251,7 @@ class Badge(models.Model, CsvExportMixin):
 
     @property
     def personnel_class_name(self):
-        return self.personnel_class.name if self.personnel_class else ''
+        return self.personnel_class.name if self.personnel_class else ""
 
     @property
     def event(self):
@@ -260,7 +272,7 @@ class Badge(models.Model, CsvExportMixin):
 
     @property
     def signup_extra(self):
-        if not hasattr(self, '_signup_extra'):
+        if not hasattr(self, "_signup_extra"):
             if self.person_id is None or self.event.labour_event_meta is None:
                 self._signup_extra = None
             else:
@@ -275,15 +287,15 @@ class Badge(models.Model, CsvExportMixin):
 
     @property
     def event_name(self):
-        return self.personnel_class.event.name if self.personnel_class else ''
+        return self.personnel_class.event.name if self.personnel_class else ""
 
     def get_printable_text(self, fields):
-        return '\n'.join(str(value) for value in self.get_csv_row(self.event, fields, 'comma_separated'))
+        return "\n".join(str(value) for value in self.get_csv_row(self.event, fields, "comma_separated"))
 
     def to_html_print(self):
         def format_name_field(value, is_visible):
             if is_visible:
-                return '<strong>{value}</strong>'.format(value=escape(value))
+                return f"<strong>{escape(value)}</strong>"
             else:
                 return escape(value)
 
@@ -334,9 +346,10 @@ class Badge(models.Model, CsvExportMixin):
         if self.nick:
             return '{self.first_name} "{self.nick}" {self.surname}'.format(self=self)
         else:
-            return '{self.first_name} {self.surname}'.format(self=self)
-    admin_get_full_name.short_description = _('Name')
-    admin_get_full_name.admin_order_field = ('surname', 'first_name', 'nick')
+            return "{self.first_name} {self.surname}".format(self=self)
+
+    admin_get_full_name.short_description = _("Name")
+    admin_get_full_name.admin_order_field = ("surname", "first_name", "nick")
 
     def __str__(self):
         return "{person_name} ({personnel_class_name}, {event_name})".format(

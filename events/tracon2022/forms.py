@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
@@ -16,7 +16,7 @@ from .models import SignupExtra
 
 class SignupExtraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -81,7 +81,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
         assert not admin
 
-        super(OrganizerSignupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -114,7 +114,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
 class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        super(OrganizerSignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -159,7 +159,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
 class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        super(ProgrammeSignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -192,7 +192,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         event = kwargs.pop("event")
         admin = kwargs.pop("admin") if "admin" in kwargs else False
 
-        super(ProgrammeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -258,7 +258,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         kwargs.pop("event")
         admin = kwargs.pop("admin") if "admin" in kwargs else False
 
-        super(RpgForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
@@ -363,7 +363,7 @@ class LodgingNeedsSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
 
-        super(LodgingNeedsSurvey, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -384,7 +384,7 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
 
-        super(AfterpartyParticipationSurvey, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields["afterparty_participation"].label = "Osallistun iltabileisiin"
         self.fields[

@@ -6,39 +6,53 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ropecon2019', '0001_initial'),
-        ('programme', '0080_alternativeprogrammeform_is_active'),
+        ("ropecon2019", "0001_initial"),
+        ("programme", "0080_alternativeprogrammeform_is_active"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='programme',
-            name='is_family_program',
+            model_name="programme",
+            name="is_family_program",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='programme',
-            name='is_in_english',
+            model_name="programme",
+            name="is_in_english",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='programme',
-            name='is_revolving_door',
-            field=models.BooleanField(default=False, help_text='Check this box if new players can join during gameplay and old players may (or must) leave before the game is over. Please mention this in the game description below, and give more details if necessary.', verbose_name='Revolving door game'),
+            model_name="programme",
+            name="is_revolving_door",
+            field=models.BooleanField(
+                default=False,
+                help_text="Check this box if new players can join during gameplay and old players may (or must) leave before the game is over. Please mention this in the game description below, and give more details if necessary.",
+                verbose_name="Revolving door game",
+            ),
         ),
         migrations.AddField(
-            model_name='programme',
-            name='ropecon2019_blocked_time_slots',
-            field=models.ManyToManyField(blank=True, help_text='When are you <strong>unable to run</strong> your game?<br><br>Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I’d like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time).', to='ropecon2019.TimeSlot', verbose_name='time preferences'),
+            model_name="programme",
+            name="ropecon2019_blocked_time_slots",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="When are you <strong>unable to run</strong> your game?<br><br>Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I’d like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time).",
+                to="ropecon2019.TimeSlot",
+                verbose_name="time preferences",
+            ),
         ),
         migrations.AddField(
-            model_name='programme',
-            name='ropecon2019_genre_adventure',
-            field=models.BooleanField(default=False, verbose_name='Adventure'),
+            model_name="programme",
+            name="ropecon2019_genre_adventure",
+            field=models.BooleanField(default=False, verbose_name="Adventure"),
         ),
         migrations.AlterField(
-            model_name='programme',
-            name='ropecon2018_preferred_time_slots',
-            field=models.ManyToManyField(blank=True, help_text='When would you like to run your RPG? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them in the last open field.', to='ropecon2018.TimeSlot', verbose_name='preferred time slots'),
+            model_name="programme",
+            name="ropecon2018_preferred_time_slots",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="When would you like to run your RPG? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them in the last open field.",
+                to="ropecon2018.TimeSlot",
+                verbose_name="preferred time slots",
+            ),
         ),
     ]

@@ -6,17 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('access', '0018_cbacentry'),
+        ("access", "0018_cbacentry"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='slackaccess',
-            name='api_token',
+            model_name="slackaccess",
+            name="api_token",
         ),
         migrations.AddField(
-            model_name='slackaccess',
-            name='invite_link',
-            field=models.CharField(default='https://example.com', help_text='Saat kutsulinkin Slackin sovelluksesta vasemman yläkulman valikosta valitsemalla "Invite people to …". Valitse "Edit link settings", aseta kutsulinkin kelpoisuusajaksi ikuinen ja poista ruksi ruudusta "Send me Slacbot message…".', max_length=255, verbose_name='Kutsulinkki'),
+            model_name="slackaccess",
+            name="invite_link",
+            field=models.CharField(
+                default="https://example.com",
+                help_text='Saat kutsulinkin Slackin sovelluksesta vasemman yläkulman valikosta valitsemalla "Invite people to …". Valitse "Edit link settings", aseta kutsulinkin kelpoisuusajaksi ikuinen ja poista ruksi ruudusta "Send me Slacbot message…".',
+                max_length=255,
+                verbose_name="Kutsulinkki",
+            ),
         ),
     ]

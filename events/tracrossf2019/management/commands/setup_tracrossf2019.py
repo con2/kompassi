@@ -9,7 +9,7 @@ from dateutil.tz import tzlocal
 from core.utils import slugify
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         self._ordering = 0
 
@@ -22,24 +22,33 @@ class Setup(object):
     def setup_core(self):
         from core.models import Organization, Venue, Event
 
-        self.organization, unused = Organization.objects.get_or_create(slug='tracon-ry', defaults=dict(
-            name='Tracon ry',
-            homepage_url='https://ry.tracon.fi',
-        ))
-        self.venue, unused = Venue.objects.get_or_create(name='Pormestarisauna (Tampere)', defaults=dict(
-            name_inessive='Pormestarisaunalla Tampereella', # not actually inessive lol
-        ))
-        self.event, unused = Event.objects.get_or_create(slug='tracrossf2019', defaults=dict(
-            name='Tracross Frontier (2019)',
-            name_genitive='Tracross Frontierin',
-            name_illative='Tracross Frontieriin',
-            name_inessive='Tracross Frontierissa',
-            homepage_url='https://r.tracon.fi/tracrossf',
-            organization=self.organization,
-            start_time=datetime(2019, 11, 2, 12, 0, tzinfo=self.tz),
-            end_time=datetime(2016, 11, 2, 22, 0, tzinfo=self.tz),
-            venue=self.venue,
-        ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug="tracon-ry",
+            defaults=dict(
+                name="Tracon ry",
+                homepage_url="https://ry.tracon.fi",
+            ),
+        )
+        self.venue, unused = Venue.objects.get_or_create(
+            name="Pormestarisauna (Tampere)",
+            defaults=dict(
+                name_inessive="Pormestarisaunalla Tampereella",  # not actually inessive lol
+            ),
+        )
+        self.event, unused = Event.objects.get_or_create(
+            slug="tracrossf2019",
+            defaults=dict(
+                name="Tracross Frontier (2019)",
+                name_genitive="Tracross Frontierin",
+                name_illative="Tracross Frontieriin",
+                name_inessive="Tracross Frontierissa",
+                homepage_url="https://r.tracon.fi/tracrossf",
+                organization=self.organization,
+                start_time=datetime(2019, 11, 2, 12, 0, tzinfo=self.tz),
+                end_time=datetime(2016, 11, 2, 22, 0, tzinfo=self.tz),
+                venue=self.venue,
+            ),
+        )
 
     def setup_enrollment(self):
         from enrollment.models import (
@@ -47,11 +56,11 @@ class Setup(object):
             SpecialDiet,
         )
 
-        enrollment_admin_group, = EnrollmentEventMeta.get_or_create_groups(self.event, ['admins'])
+        (enrollment_admin_group,) = EnrollmentEventMeta.get_or_create_groups(self.event, ["admins"])
 
         enrollment_event_meta_defaults = dict(
             admin_group=enrollment_admin_group,
-            form_class_path='events.tracrossf2019.forms:EnrollmentForm',
+            form_class_path="events.tracrossf2019.forms:EnrollmentForm",
         )
 
         if self.test:
@@ -71,18 +80,18 @@ class Setup(object):
         )
 
         for diet_name in [
-            'Gluteeniton',
-            'Laktoositon',
-            'Maidoton',
-            'Vegaaninen',
-            'Lakto-ovo-vegetaristinen',
+            "Gluteeniton",
+            "Laktoositon",
+            "Maidoton",
+            "Vegaaninen",
+            "Lakto-ovo-vegetaristinen",
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup Tracross Frontier 2019 specific stuff'
+    args = ""
+    help = "Setup Tracross Frontier 2019 specific stuff"
 
     def handle(self, *args, **opts):
         Setup().setup(test=settings.DEBUG)

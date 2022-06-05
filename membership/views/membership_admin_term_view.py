@@ -2,7 +2,7 @@ from datetime import date
 
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404, render, redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 
 from core.utils import initialize_form, url
@@ -15,7 +15,7 @@ from ..forms import TermForm
 class NewTerm:
     pk = None
     id = None
-    title = 'Uusi'
+    title = "Uusi"
 
     def __init__(self, organization):
         self.organization = organization
@@ -24,11 +24,11 @@ class NewTerm:
         return self.title
 
     def get_absolute_url(self):
-        return url('membership_admin_new_term_view', self.organization.slug)
+        return url("membership_admin_new_term_view", self.organization.slug)
 
 
 @membership_admin_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
+@require_http_methods(["GET", "HEAD", "POST"])
 def membership_admin_term_view(request, vars, organization, term_id=None):
     meta = organization.membership_organization_meta
 
@@ -44,13 +44,20 @@ def membership_admin_term_view(request, vars, organization, term_id=None):
     terms.append((NewTerm(organization), (term_id is None)))
 
     today = date.today()
-    form = initialize_form(TermForm, request, instance=term, initial={} if term.pk else dict(
-       title=today.year,
-       start_date=today.replace(month=1, day=1),
-       end_date=today.replace(month=12, day=31),
-    ))
+    form = initialize_form(
+        TermForm,
+        request,
+        instance=term,
+        initial={}
+        if term.pk
+        else dict(
+            title=today.year,
+            start_date=today.replace(month=1, day=1),
+            end_date=today.replace(month=12, day=31),
+        ),
+    )
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             term = form.save()
 
@@ -58,9 +65,9 @@ def membership_admin_term_view(request, vars, organization, term_id=None):
             # these need to be invalidated.
             MembershipFeePayment.objects.filter(term=term, payment_date__isnull=True).delete()
 
-            return redirect('membership_admin_term_view', organization_slug=organization.slug, term_id=term.id)
+            return redirect("membership_admin_term_view", organization_slug=organization.slug, term_id=term.id)
         else:
-            messages.error(request, _('Please check the form.'))
+            messages.error(request, _("Please check the form."))
 
     vars.update(
         form=form,
@@ -69,4 +76,4 @@ def membership_admin_term_view(request, vars, organization, term_id=None):
         terms=terms,
     )
 
-    return render(request, 'membership_admin_term_view.pug', vars)
+    return render(request, "membership_admin_term_view.pug", vars)

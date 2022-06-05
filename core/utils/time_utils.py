@@ -15,9 +15,7 @@ from .locale_utils import get_current_locale
 ONE_HOUR = timedelta(hours=1)
 
 
-def full_hours_between(
-    start_time_inclusive, end_time_inclusive, unless=lambda x: False
-):
+def full_hours_between(start_time_inclusive, end_time_inclusive, unless=lambda x: False):
     """
     Note that the parameters are start and end inclusive: ie. if you ask for full hours between
     3:00 PM and 5:00 PM, you get 3.00 PM, 4.00 PM and 5.00 PM.
@@ -79,9 +77,7 @@ def get_objects_within_period(
     q = Q(**{f"{start_field_name}__lte": t})
 
     if end_field_nullable:
-        q &= Q(**{f"{end_field_name}__gt": t}) | Q(
-            **{f"{end_field_name}__isnull": True}
-        )
+        q &= Q(**{f"{end_field_name}__gt": t}) | Q(**{f"{end_field_name}__isnull": True})
     else:
         q &= Q(**{f"{end_field_name}__gt": t})
 
@@ -91,8 +87,8 @@ def get_objects_within_period(
 
 
 def format_date_range(
-    start_date: Union[date, datetime],
-    end_date: Union[date, datetime],
+    start_date: date | datetime,
+    end_date: date | datetime,
 ) -> str:
     # FIXME Finnish-specific
     # FIXME should use event.tz but we do not have one for now

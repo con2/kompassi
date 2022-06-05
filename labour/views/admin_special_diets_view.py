@@ -2,16 +2,16 @@ from collections import defaultdict
 
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ..helpers import labour_admin_required
 
 
-NO_SPECIAL_DIET_REPLIES = ['', '-', 'N/A', 'Ei ole', 'Ei ole.']
+NO_SPECIAL_DIET_REPLIES = ["", "-", "N/A", "Ei ole", "Ei ole."]
 
 
-class DietRow(object):
-    __slots__ = ('name', 'count')
+class DietRow:
+    __slots__ = ("name", "count")
 
     def __init__(self, name):
         self.name = name
@@ -35,20 +35,18 @@ def admin_special_diets_view(request, vars, event):
     special_diet_other_field = SignupExtra.get_special_diet_other_field()
 
     if not any((special_diet_field, special_diet_other_field)):
-        messages.error(request, _('This event does not record special diets.'))
-        return redirect('admin_dashboard_view', event.slug)
+        messages.error(request, _("This event does not record special diets."))
+        return redirect("admin_dashboard_view", event.slug)
 
     # XXX Tracon 11 afterparty participation hack
-    if request.GET.get('afterparty_participation'):
-        messages.warning(request, 'Näytetään vain kaatajaisten osallistujien tiedot.')
+    if request.GET.get("afterparty_participation"):
+        messages.warning(request, "Näytetään vain kaatajaisten osallistujien tiedot.")
         signup_extras = SignupExtra.objects.filter(afterparty_participation=True)
     else:
         signup_extras = SignupExtra.objects.filter(is_active=True)
 
     if special_diet_field:
-        signup_extras_with_standard_special_diets = signup_extras.filter(
-            special_diet__isnull=False
-        ).distinct()
+        signup_extras_with_standard_special_diets = signup_extras.filter(special_diet__isnull=False).distinct()
 
         special_diets = SpecialDiets()
 
@@ -62,9 +60,7 @@ def admin_special_diets_view(request, vars, event):
 
     if special_diet_other_field:
         # TODO assumes name special_diet_other
-        signup_extras_with_other_special_diets = signup_extras.exclude(
-            special_diet_other__in=NO_SPECIAL_DIET_REPLIES
-        )
+        signup_extras_with_other_special_diets = signup_extras.exclude(special_diet_other__in=NO_SPECIAL_DIET_REPLIES)
     else:
         signup_extras_with_other_special_diets = []
 
@@ -75,4 +71,4 @@ def admin_special_diets_view(request, vars, event):
         special_diets=special_diets,
     )
 
-    return render(request, 'labour_admin_special_diets_view.pug', vars)
+    return render(request, "labour_admin_special_diets_view.pug", vars)

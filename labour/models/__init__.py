@@ -1,4 +1,3 @@
-# encoding: utf-8
 from .labour_event_meta import LabourEventMeta
 from .roster import (
     EditJobRequest,

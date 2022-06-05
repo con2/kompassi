@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0076_auto_20190207_1753'),
+        ("programme", "0076_auto_20190207_1753"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='programmeeventmeta',
-            name='paikkala_default_max_tickets_per_batch',
+            model_name="programmeeventmeta",
+            name="paikkala_default_max_tickets_per_batch",
             field=models.IntegerField(default=5),
         ),
         migrations.AddField(
-            model_name='programmeeventmeta',
-            name='paikkala_default_max_tickets_per_user',
+            model_name="programmeeventmeta",
+            name="paikkala_default_max_tickets_per_user",
             field=models.IntegerField(default=5),
         ),
     ]

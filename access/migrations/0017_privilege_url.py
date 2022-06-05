@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('access', '0016_auto_20190119_2213'),
+        ("access", "0016_auto_20190119_2213"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='privilege',
-            name='url',
+            model_name="privilege",
+            name="url",
             field=models.CharField(blank=True, max_length=255),
         ),
     ]

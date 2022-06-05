@@ -1,12 +1,11 @@
-
 from babel import Locale
 
 from django.conf import settings
 from django.utils.translation import get_language
-from django.utils.lru_cache import lru_cache
+from functools import cache
 
 
-@lru_cache()
+@cache
 def _get_babel_locale(lang):
     return Locale.parse(lang)
 

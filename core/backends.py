@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN = object()
 
 
-class PasswordlessLoginBackend(object):
+class PasswordlessLoginBackend:
     """
     Supports authentication without password for the impersonation feature.
 

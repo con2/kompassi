@@ -1,34 +1,34 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.models.constants import EMAIL_LENGTH
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs
 
 
 class Team(models.Model):
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE)
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
     order = models.IntegerField(
-        verbose_name=_('Order'),
+        verbose_name=_("Order"),
         default=0,
     )
     name = models.CharField(
         max_length=256,
-        verbose_name=_('Name'),
+        verbose_name=_("Name"),
     )
     description = models.TextField(
-        default='',
+        default="",
         blank=True,
-        verbose_name=_('Description'),
-        help_text=_('What is the team responsible for?'),
+        verbose_name=_("Description"),
+        help_text=_("What is the team responsible for?"),
     )
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    group = models.ForeignKey('auth.Group', on_delete=models.CASCADE)
+    group = models.ForeignKey("auth.Group", on_delete=models.CASCADE)
 
     email = models.EmailField(
         blank=True,
         max_length=EMAIL_LENGTH,
-        verbose_name=_('E-mail address'),
-        help_text=_('The primary contact e-mail of the team.'),
+        verbose_name=_("E-mail address"),
+        help_text=_("The primary contact e-mail of the team."),
     )
 
     is_public = models.BooleanField(default=True, verbose_name=_("Public"))
@@ -41,9 +41,9 @@ class Team(models.Model):
             self.slug = slugify(self.name)
 
         if self.slug and not self.group_id:
-            self.group, = self.event.intra_event_meta.get_or_create_groups(self.event, [self.slug])
+            (self.group,) = self.event.intra_event_meta.get_or_create_groups(self.event, [self.slug])
 
-        return super(Team, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -54,18 +54,19 @@ class Team(models.Model):
 
         return cls.objects.get_or_create(
             event=event,
-            slug='dummyteam',
+            slug="dummyteam",
             defaults=dict(
-                name='Dummy team',
+                name="Dummy team",
             ),
         )
 
     def as_dict(self, include_members=True):
-        result = pick_attrs(self,
-            'name',
-            'description',
-            'slug',
-            'email',
+        result = pick_attrs(
+            self,
+            "name",
+            "description",
+            "slug",
+            "email",
         )
 
         if include_members:
@@ -74,7 +75,7 @@ class Team(models.Model):
         return result
 
     class Meta:
-        verbose_name = _('Team')
-        verbose_name_plural = _('Teams')
-        ordering = ('event', 'order', 'name')
-        unique_together = [('event', 'slug')]
+        verbose_name = _("Team")
+        verbose_name_plural = _("Teams")
+        ordering = ("event", "order", "name")
+        unique_together = [("event", "slug")]

@@ -1,7 +1,6 @@
-
 from django.conf import settings
 from django.db import models, transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs, omit_keys
 
@@ -11,8 +10,8 @@ def format_job_categories(job_categories):
 
 
 class JobCategory(models.Model):
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name=_("event"))
-    app_label = models.CharField(max_length=63, blank=True, default='labour')
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, verbose_name=_("event"))
+    app_label = models.CharField(max_length=63, blank=True, default="labour")
 
     # TODO rename this to "title"
     name = models.CharField(max_length=63, verbose_name=_("Name"))
@@ -20,29 +19,37 @@ class JobCategory(models.Model):
 
     description = models.TextField(
         verbose_name=_("Description"),
-        help_text=_("This descriptions will be shown to the applicants on the signup form. If there are specific requirements to this job category, please mention them here."),
-        blank=True
+        help_text=_(
+            "This descriptions will be shown to the applicants on the signup form. If there are specific requirements to this job category, please mention them here."
+        ),
+        blank=True,
     )
 
     public = models.BooleanField(
         default=True,
         verbose_name=_("Publicly accepting applications"),
-        help_text=_("Job categories that are not accepting applications are not shown on the signup form. However, they may still be applied to using alternative signup forms."),
+        help_text=_(
+            "Job categories that are not accepting applications are not shown on the signup form. However, they may still be applied to using alternative signup forms."
+        ),
     )
 
-    required_qualifications = models.ManyToManyField('labour.Qualification',
+    required_qualifications = models.ManyToManyField(
+        "labour.Qualification",
         blank=True,
         verbose_name=_("Required qualifications"),
     )
 
-    personnel_classes = models.ManyToManyField('labour.PersonnelClass',
+    personnel_classes = models.ManyToManyField(
+        "labour.PersonnelClass",
         blank=True,
         verbose_name=_("Personnel classes"),
-        help_text=_("For most job categories, you should select the 'worker' and 'underofficer' classes here, if applicable."),
+        help_text=_(
+            "For most job categories, you should select the 'worker' and 'underofficer' classes here, if applicable."
+        ),
     )
 
     @classmethod
-    def get_or_create_dummy(cls, name='Courier'):
+    def get_or_create_dummy(cls, name="Courier"):
         from core.models import Event
         from .labour_event_meta import LabourEventMeta
         from .personnel_class import PersonnelClass
@@ -56,7 +63,7 @@ class JobCategory(models.Model):
         )
 
         if created:
-            personnel_class, unused = PersonnelClass.get_or_create_dummy(app_label='labour')
+            personnel_class, unused = PersonnelClass.get_or_create_dummy(app_label="labour")
             job_category.personnel_classes.add(personnel_class)
 
         meta.create_groups()
@@ -72,7 +79,7 @@ class JobCategory(models.Model):
                 new_job_category, created = cls.objects.get_or_create(
                     event=target_event,
                     slug=job_category.slug,
-                    defaults=omit_keys(vars(job_category), '_state', 'id', 'event_id', 'slug')
+                    defaults=omit_keys(vars(job_category), "_state", "id", "event_id", "slug"),
                 )
 
                 if not created:
@@ -87,7 +94,7 @@ class JobCategory(models.Model):
                     new_personnel_class, unused = PersonnelClass.objects.get_or_create(
                         event=target_event,
                         slug=personnel_class_slug,
-                        defaults=omit_keys(vars(personnel_class), '_state', 'id', 'event_id', 'slug')
+                        defaults=omit_keys(vars(personnel_class), "_state", "id", "event_id", "slug"),
                     )
                     new_job_category.personnel_classes.add(new_personnel_class)
 
@@ -97,6 +104,7 @@ class JobCategory(models.Model):
     @property
     def group(self):
         from django.contrib.auth.models import Group
+
         return Group.objects.get(name=self.event.labour_event_meta.make_group_name(self.event, self.slug))
 
     def is_person_qualified(self, person):
@@ -110,10 +118,10 @@ class JobCategory(models.Model):
     class Meta:
         verbose_name = _("job category")
         verbose_name_plural = _("job categories")
-        ordering = ('event', 'name')
+        ordering = ("event", "name")
 
         unique_together = [
-            ('event', 'slug'),
+            ("event", "slug"),
         ]
 
     def __str__(self):
@@ -122,6 +130,7 @@ class JobCategory(models.Model):
     @property
     def title(self):
         return self.name
+
     @title.setter
     def title(self, new_title):
         self.name = new_title
@@ -129,9 +138,10 @@ class JobCategory(models.Model):
     @classmethod
     def get_or_create_dummies(cls):
         from core.models import Event
+
         event, unused = Event.get_or_create_dummy()
-        jc1, unused = cls.objects.get_or_create(event=event, name="Dummy 1", slug='dummy-1')
-        jc2, unused = cls.objects.get_or_create(event=event, name="Dummy 2", slug='dummy-2')
+        jc1, unused = cls.objects.get_or_create(event=event, name="Dummy 1", slug="dummy-1")
+        jc2, unused = cls.objects.get_or_create(event=event, name="Dummy 2", slug="dummy-2")
 
         return [jc1, jc2]
 
@@ -141,11 +151,13 @@ class JobCategory(models.Model):
         where indexes correspond to those of work_hours for this event.
         """
         from .roster import JobRequirement
+
         requirements = JobRequirement.objects.filter(job__job_category=self)
         return JobRequirement.requirements_as_integer_array(self.event, requirements)
 
     def _make_allocated(self):
         from .roster import JobRequirement, Shift
+
         shifts = Shift.objects.filter(job__job_category=self)
         return JobRequirement.allocated_as_integer_array(self.event, shifts)
 
@@ -153,36 +165,41 @@ class JobCategory(models.Model):
         """
         Returns an array of accepted workers. Used by the Roster API.
         """
-        return [signup.as_dict() for signup in (
-            self.accepted_signup_set
-            .filter(is_active=True)
-            .order_by('person__surname', 'person__first_name')
-            .select_related('person')
-        )]
+        return [
+            signup.as_dict()
+            for signup in (
+                self.accepted_signup_set.filter(is_active=True)
+                .order_by("person__surname", "person__first_name")
+                .select_related("person")
+            )
+        ]
 
     def save(self, *args, **kwargs):
         if self.name and not self.slug:
             self.slug = slugify(self.name)
 
-        return super(JobCategory, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def as_dict(self, include_jobs=False, include_requirements=False, include_people=False, include_shifts=False):
-        assert not (include_shifts and not include_jobs), 'If include_shifts is specified, must specify also include_jobs'
+        assert not (
+            include_shifts and not include_jobs
+        ), "If include_shifts is specified, must specify also include_jobs"
 
-        doc = pick_attrs(self,
-            'title',
-            'slug',
+        doc = pick_attrs(
+            self,
+            "title",
+            "slug",
         )
 
         if include_jobs:
-            doc['jobs'] = [job.as_dict(include_shifts=include_shifts) for job in self.job_set.all()]
+            doc["jobs"] = [job.as_dict(include_shifts=include_shifts) for job in self.job_set.all()]
 
         if include_requirements:
-            doc['requirements'] = self._make_requirements()
-            doc['allocated'] = self._make_allocated()
+            doc["requirements"] = self._make_requirements()
+            doc["allocated"] = self._make_allocated()
 
         if include_people:
-            doc['people'] = self._make_people()
+            doc["people"] = self._make_people()
 
         return doc
 

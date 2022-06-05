@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import initialize_form
 
@@ -9,34 +9,33 @@ from ..helpers import intra_admin_required
 
 
 APP_NAMES = dict(
-    labour=_('Volunteers'),
-    programme=_('Programme'),
-    tickets=_('Tickets'),
-    badges=_('Badges'),
-    intra=_('Intra'),
+    labour=_("Volunteers"),
+    programme=_("Programme"),
+    tickets=_("Tickets"),
+    badges=_("Badges"),
+    intra=_("Intra"),
 )
 
 
 @intra_admin_required
 def intra_admin_privileges_view(request, vars, event):
     meta = event.intra_event_meta
-    users = meta.organizer_group.user_set.all().order_by('last_name', 'first_name')
+    users = meta.organizer_group.user_set.all().order_by("last_name", "first_name")
 
     privileges_forms = [
-        initialize_form(PrivilegesForm, request, event=event, user=user, prefix=f'u{user.id}')
-        for user in users
+        initialize_form(PrivilegesForm, request, event=event, user=user, prefix=f"u{user.id}") for user in users
     ]
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if all(form.is_valid() for form in privileges_forms):
             PrivilegesForm.save(privileges_forms)
-            messages.success(request, _('The privileges were updated.'))
+            messages.success(request, _("The privileges were updated."))
         else:
-            messages.error(request, _('Please check the form.'))
+            messages.error(request, _("Please check the form."))
 
     vars.update(
         app_names=[APP_NAMES[app_label] for app_label in meta.get_active_apps()],
         privileges_forms=privileges_forms,
     )
 
-    return render(request, 'intra_admin_privileges_view.pug', vars)
+    return render(request, "intra_admin_privileges_view.pug", vars)

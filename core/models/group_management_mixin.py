@@ -3,7 +3,7 @@ from django.conf import settings
 from ..utils import ensure_groups_exist
 
 
-class GroupManagementMixin(object):
+class GroupManagementMixin:
     @staticmethod
     def is_user_in_group(user, group):
         if not user.is_authenticated:
@@ -28,7 +28,7 @@ class GroupManagementMixin(object):
 
         ctype = ContentType.objects.get_for_model(cls)
 
-        return '{installation_slug}-{host_slug}-{app_label}-{suffix}'.format(
+        return "{installation_slug}-{host_slug}-{app_label}-{suffix}".format(
             installation_slug=settings.KOMPASSI_INSTALLATION_SLUG,
             host_slug=host.slug,
             app_label=ctype.app_label,

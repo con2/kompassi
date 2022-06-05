@@ -178,15 +178,10 @@ def access_admin_aliases_api(request, domain_name):
 
     # Personal aliases
     for person in Person.objects.filter(email_aliases__domain=domain).distinct():
-        lines.append("# {name}".format(name=person.full_name))
+        lines.append(f"# {person.full_name}")
 
         for alias in person.email_aliases.filter(domain=domain):
-            lines.append(
-                "{alias.account_name}: {person.email}".format(
-                    alias=alias,
-                    person=person,
-                )
-            )
+            lines.append(f"{alias.account_name}: {person.email}")
 
         lines.append("")
 

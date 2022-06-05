@@ -20,7 +20,7 @@ def membership_admin_required(view_func):
 
         if not meta:
             messages.error(request, "Tämä organisaatio ei käytä Kompassia jäsenrekisterin hallintaan.")
-            return redirect('core_organization_view', organization.slug)
+            return redirect("core_organization_view", organization.slug)
 
         if not organization.membership_organization_meta.is_user_admin(request.user):
             return login_redirect(request)
@@ -28,10 +28,11 @@ def membership_admin_required(view_func):
         vars = dict(
             organization=organization,
             admin_menu_items=organization_admin_menu_items(request, organization),
-            admin_title='Jäsenrekisterin ylläpito'
+            admin_title="Jäsenrekisterin ylläpito",
         )
 
         return view_func(request, vars, organization, *args, **kwargs)
+
     return wrapper
 
 
@@ -45,9 +46,10 @@ def membership_organization_required(view_func):
 
         if not meta:
             messages.error(request, "Tämä organisaatio ei käytä Kompassia jäsenrekisterin hallintaan.")
-            return redirect('core_organization_view', organization.slug)
+            return redirect("core_organization_view", organization.slug)
 
         return view_func(request, organization, *args, **kwargs)
+
     return wrapper
 
 
@@ -62,13 +64,13 @@ def membership_required(view_func):
 
         if not meta:
             messages.error(request, "Tämä organisaatio ei käytä Kompassia jäsenrekisterin hallintaan.")
-            return redirect('core_organization_view', organization.slug)
+            return redirect("core_organization_view", organization.slug)
 
         try:
             membership = Membership.objects.get(organization=organization, person=request.user.person)
         except Membership.DoesNotExist:
             messages.error(request, "Et ole tämän organisaation jäsen.")
-            return redirect('core_organization_view', organization.slug)
+            return redirect("core_organization_view", organization.slug)
 
         return view_func(request, membership, *args, **kwargs)
 

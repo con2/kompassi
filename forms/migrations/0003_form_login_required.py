@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('forms', '0002_form_layout'),
+        ("forms", "0002_form_layout"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='form',
-            name='login_required',
-            field=models.BooleanField(default=False, help_text='This switch only takes effect in a stand-alone context. In non-stand-alone contexts the use case will direct whether or not login is required.', verbose_name='Login required'),
+            model_name="form",
+            name="login_required",
+            field=models.BooleanField(
+                default=False,
+                help_text="This switch only takes effect in a stand-alone context. In non-stand-alone contexts the use case will direct whether or not login is required.",
+                verbose_name="Login required",
+            ),
         ),
     ]

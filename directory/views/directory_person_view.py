@@ -12,15 +12,18 @@ from enrollment.models import Enrollment
 from ..helpers import directory_access_required
 
 
-Involvement = namedtuple('Involvement', [
-    'event',
-    'signup',
-    'enrollment',
-    'programme_roles',
-    'current_user_is_labour_admin',
-    'current_user_is_programme_admin',
-    'current_user_is_enrollment_admin',
-])
+Involvement = namedtuple(
+    "Involvement",
+    [
+        "event",
+        "signup",
+        "enrollment",
+        "programme_roles",
+        "current_user_is_labour_admin",
+        "current_user_is_programme_admin",
+        "current_user_is_enrollment_admin",
+    ],
+)
 
 
 def get_involvement(request, event, person):
@@ -35,29 +38,24 @@ def get_involvement(request, event, person):
         signup=signup,
         enrollment=Enrollment.objects.filter(person=person, event=event).first(),
         programme_roles=ProgrammeRole.objects.filter(person=person, programme__category__event=event),
-        current_user_is_labour_admin=(
-            event.labour_event_meta and
-            event.labour_event_meta.is_user_admin(request.user)
-        ),
+        current_user_is_labour_admin=(event.labour_event_meta and event.labour_event_meta.is_user_admin(request.user)),
         current_user_is_programme_admin=(
-            event.programme_event_meta and
-            event.programme_event_meta.is_user_admin(request.user)
+            event.programme_event_meta and event.programme_event_meta.is_user_admin(request.user)
         ),
         current_user_is_enrollment_admin=(
-            event.enrollment_event_meta and
-            event.enrollment_event_meta.is_user_admin(request.user)
+            event.enrollment_event_meta and event.enrollment_event_meta.is_user_admin(request.user)
         ),
     )
 
 
 @directory_access_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
+@require_http_methods(["GET", "HEAD", "POST"])
 def directory_person_view(request, vars, organization, person_id):
     person = get_object_or_404(organization.people, id=int(person_id))
     membership = Membership.objects.filter(organization=organization, person=person).first()
 
     t = now()
-    past_events = person.get_events(end_time__lt=t, organization=organization).order_by('-start_time')
+    past_events = person.get_events(end_time__lt=t, organization=organization).order_by("-start_time")
     current_events = person.get_events(start_time__lte=t, end_time__gt=t, organization=organization)
     future_events = person.get_events(start_time__gte=t, organization=organization)
 
@@ -77,4 +75,4 @@ def directory_person_view(request, vars, organization, person_id):
 
     person.log_view(request, organization=organization)
 
-    return render(request, 'directory_person_view.pug', vars)
+    return render(request, "directory_person_view.pug", vars)

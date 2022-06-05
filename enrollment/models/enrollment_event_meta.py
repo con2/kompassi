@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
 from core.models import EventMetaBase
@@ -7,8 +7,8 @@ from core.utils import alias_property, is_within_period
 
 
 INITIAL_STATE_CHOICES = [
-    ('NEW', _('New')),
-    ('ACCEPTED', _('Accepted')),
+    ("NEW", _("New")),
+    ("ACCEPTED", _("Accepted")),
 ]
 
 
@@ -16,6 +16,7 @@ class EnrollmentEventMeta(EventMetaBase):
     """
     An event has an instance of this class to indicate use of the enrollment module.
     """
+
     form_class_path = models.CharField(
         max_length=63,
         help_text=_("Reference to form class. Example: events.yukicon2016.forms:EnrollmentForm"),
@@ -35,44 +36,45 @@ class EnrollmentEventMeta(EventMetaBase):
 
     override_enrollment_form_message = models.TextField(
         blank=True,
-        default='',
-        verbose_name=_('Enrollment form message'),
+        default="",
+        verbose_name=_("Enrollment form message"),
         help_text=_(
-            'Use this field to override the message that is shown in top of the enrollment form. '
-            'If this field is not filled in, a default message is shown.'
-        )
+            "Use this field to override the message that is shown in top of the enrollment form. "
+            "If this field is not filled in, a default message is shown."
+        ),
     )
 
     is_participant_list_public = models.BooleanField(
         default=False,
-        verbose_name=_('Participant list is public'),
+        verbose_name=_("Participant list is public"),
         help_text=_(
-            'If this option is selected, the names of participants who have given the permission to do so '
-            'will be published.'
-        )
+            "If this option is selected, the names of participants who have given the permission to do so "
+            "will be published."
+        ),
     )
 
     is_official_name_required = models.BooleanField(
         default=False,
-        verbose_name=_('Official name required'),
+        verbose_name=_("Official name required"),
         help_text=_(
-            'If this option is selected, participants will be required to fill in their official names '
-            'in their profile.'
+            "If this option is selected, participants will be required to fill in their official names "
+            "in their profile."
         ),
     )
 
     initial_state = models.CharField(
-        default='ACCEPTED',
+        default="ACCEPTED",
         choices=INITIAL_STATE_CHOICES,
         max_length=max(len(key) for (key, label) in INITIAL_STATE_CHOICES),
-        verbose_name=_('Initial state'),
-        help_text=_('Change this to New to require approval for new enrollments.'),
+        verbose_name=_("Initial state"),
+        help_text=_("Change this to New to require approval for new enrollments."),
     )
 
     @property
     def form_class(self):
-        if not getattr(self, '_form_class', None):
+        if not getattr(self, "_form_class", None):
             from core.utils import get_code
+
             self._form_class = get_code(self.form_class_path)
 
         return self._form_class

@@ -6,13 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('enrollment', '0007_auto_20190212_1708'),
+        ("enrollment", "0007_auto_20190212_1708"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='enrollment',
-            name='traconjv_solemnly_swear',
-            field=models.BooleanField(default=False, verbose_name='Vakuutan antamani tiedot oikeiksi. Sitoudun maksamaan kurssin hinnan täysimääräisenä, mikäli en pysty osallistumaan kurssille ja/tai järjestyksenvalvojana Tracon 2019 -tapahtumaan.'),
+            model_name="enrollment",
+            name="traconjv_solemnly_swear",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="Vakuutan antamani tiedot oikeiksi. Sitoudun maksamaan kurssin hinnan täysimääräisenä, mikäli en pysty osallistumaan kurssille ja/tai järjestyksenvalvojana Tracon 2019 -tapahtumaan.",
+            ),
         ),
     ]

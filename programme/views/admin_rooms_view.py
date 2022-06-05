@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from ..models import Room
@@ -13,7 +13,7 @@ from ..forms import DeleteRoomForm
 def admin_rooms_view(request, vars, event):
     rooms = Room.objects.filter(event=event)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         delete_room_form = DeleteRoomForm(request.POST, event=event)
         if delete_room_form.is_valid():
             delete_room_form.save()
@@ -21,8 +21,8 @@ def admin_rooms_view(request, vars, event):
         else:
             messages.error(request, _("Invalid request."))
 
-        return redirect('programme:admin_rooms_view', event.slug)
+        return redirect("programme:admin_rooms_view", event.slug)
 
     vars.update(rooms=rooms)
 
-    return render(request, 'programme_admin_rooms_view.pug', vars)
+    return render(request, "programme_admin_rooms_view.pug", vars)

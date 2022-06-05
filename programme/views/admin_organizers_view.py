@@ -15,40 +15,40 @@ from ..models import ProgrammeRole, Role, AlternativeProgrammeForm
 
 
 EXPORT_FORMATS = EXPORT_FORMATS + [
-    ExportFormat('Sähköpostiosoitteet', 'txt', 'txt'),
+    ExportFormat("Sähköpostiosoitteet", "txt", "txt"),
 ]
 
 
 @programme_admin_required
 @require_safe
-def admin_organizers_view(request, vars, event, format='screen'):
+def admin_organizers_view(request, vars, event, format="screen"):
     programme_roles = (
         ProgrammeRole.objects.filter(programme__category__event=event)
-        .select_related('person')
-        .select_related('programme')
-        .select_related('role')
-        .order_by('person__surname', 'person__first_name', 'programme__title')
+        .select_related("person")
+        .select_related("programme")
+        .select_related("role")
+        .order_by("person__surname", "person__first_name", "programme__title")
     )
 
     personnel_classes = PersonnelClass.objects.filter(
         event=event,
         role__personnel_class__event=event,
     )
-    personnel_class_filters = Filter(request, 'personnel_class')
-    personnel_class_filters.add_objects('role__personnel_class__slug', personnel_classes)
+    personnel_class_filters = Filter(request, "personnel_class")
+    personnel_class_filters.add_objects("role__personnel_class__slug", personnel_classes)
     programme_roles = personnel_class_filters.filter_queryset(programme_roles)
 
     roles = Role.objects.filter(personnel_class__event=event)
-    role_filters = Filter(request, 'role')
-    role_filters.add_objects('role__slug', roles)
+    role_filters = Filter(request, "role")
+    role_filters.add_objects("role__slug", roles)
     programme_roles = role_filters.filter_queryset(programme_roles)
 
     forms = AlternativeProgrammeForm.objects.filter(event=event)
-    form_filters = Filter(request, 'form')
-    form_filters.add_objects('programme__form_used__slug', forms)
+    form_filters = Filter(request, "form")
+    form_filters.add_objects("programme__form_used__slug", forms)
     programme_roles = form_filters.filter_queryset(programme_roles)
 
-    active_filters = Filter(request, 'active').add_booleans('is_active')
+    active_filters = Filter(request, "active").add_booleans("is_active")
     programme_roles = active_filters.filter_queryset(programme_roles)
 
     organizers = []
@@ -68,25 +68,28 @@ def admin_organizers_view(request, vars, event, format='screen'):
         role_filters=role_filters,
     )
 
-    if format == 'screen':
-        return render(request, 'programme_admin_organizers_view.pug', vars)
-    elif format == 'txt':
-        emails = '\n'.join(programme_roles.order_by('person__email').values_list('person__email', flat=True).distinct())
-        emit('core.person.exported', request=request, event=event)
-        return HttpResponse(emails, content_type='text/plain')
+    if format == "screen":
+        return render(request, "programme_admin_organizers_view.pug", vars)
+    elif format == "txt":
+        emails = "\n".join(programme_roles.order_by("person__email").values_list("person__email", flat=True).distinct())
+        emit("core.person.exported", request=request, event=event)
+        return HttpResponse(emails, content_type="text/plain")
     elif format in CSV_EXPORT_FORMATS:
         filename = "{event.slug}_programme_organizers_{timestamp}.{format}".format(
             event=event,
-            timestamp=now().strftime('%Y%m%d%H%M%S'),
+            timestamp=now().strftime("%Y%m%d%H%M%S"),
             format=format,
         )
 
-        emit('core.person.exported', request=request, event=event)
+        emit("core.person.exported", request=request, event=event)
 
-        return csv_response(event, ProgrammeRole, programme_roles,
+        return csv_response(
+            event,
+            ProgrammeRole,
+            programme_roles,
             dialect=CSV_EXPORT_FORMATS[format],
             filename=filename,
-            m2m_mode='separate_columns',
+            m2m_mode="separate_columns",
         )
     else:
         raise NotImplementedError(format)

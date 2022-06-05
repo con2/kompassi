@@ -6,35 +6,29 @@ from ...proxies import SignupExtraAfterpartyProxy
 
 
 class Command(BaseCommand):
-    help = 'Sends afterparty info mail'
+    help = "Sends afterparty info mail"
 
     def add_arguments(self, parser):
-        parser.add_argument('--really', default=False, action='store_true')
-        parser.add_argument('--template', type=str, default='tracon2019_afterparty_message.eml')
+        parser.add_argument("--really", default=False, action="store_true")
+        parser.add_argument("--template", type=str, default="tracon2019_afterparty_message.eml")
 
     def handle(self, *args, **options):
-        really = options['really']
+        really = options["really"]
         signup_extras = SignupExtraAfterpartyProxy.objects.filter(afterparty_participation=True)
 
         for signup_extra in signup_extras:
             vars = dict(signup_extra=signup_extra)
-            subject = 'Tracon (2019): Tervetuloa kaatajaisiin!'
-            sender = 'tracon2019-kaatajaiset@kompassi.eu'
+            subject = "Tracon (2019): Tervetuloa kaatajaisiin!"
+            sender = "tracon2019-kaatajaiset@kompassi.eu"
             recipient = signup_extra.person.name_and_email
-            body = render_to_string(options['template'], vars)
+            body = render_to_string(options["template"], vars)
 
             if really:
-                send_mail(
-                    subject,
-                    body,
-                    sender,
-                    [recipient],
-                    fail_silently=False
-                )
+                send_mail(subject, body, sender, [recipient], fail_silently=False)
                 print(recipient)
             else:
-                print('To:', recipient)
-                print('Subject:', subject)
+                print("To:", recipient)
+                print("Subject:", subject)
                 print()
                 print(body)
                 print()

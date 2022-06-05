@@ -16,7 +16,7 @@ def window(seq, n=2):
 
 
 def next_full_hour(t):
-  if (t.minute, t.second, t.microsecond) == (0, 0, 0):
-    return t
-  else:
-    return t.replace(hour=t.hour + 1, minute=0, second=0, microsecond=0)
+    if (t.minute, t.second, t.microsecond) == (0, 0, 0):
+        return t
+    else:
+        return t.replace(hour=t.hour + 1, minute=0, second=0, microsecond=0)

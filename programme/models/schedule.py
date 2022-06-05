@@ -5,7 +5,7 @@ from datetime import timedelta
 from django.contrib import messages
 from django.db import models
 from django.db.models import Max
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from dateutil.tz import tzlocal
 
@@ -14,37 +14,37 @@ from core.utils import format_datetime, get_previous_and_next
 from .programme import Programme
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 ONE_HOUR = timedelta(hours=1)
 
 
-class OrderingMixin(object):
+class OrderingMixin:
     @classmethod
     def get_next_order(cls, **kwargs):
-        cur_max_value = cls.objects.filter(**kwargs).aggregate(Max('order'))['order__max'] or 0
+        cur_max_value = cls.objects.filter(**kwargs).aggregate(Max("order"))["order__max"] or 0
         return cur_max_value + 10
 
     def move(self, queryset, direction):
         try:
-            if direction in ['left', 'up', 'previous', 'back']:
+            if direction in ["left", "up", "previous", "back"]:
                 swappee, unused = get_previous_and_next(queryset, self)
-            elif direction in ['right', 'down', 'next', 'forward']:
+            elif direction in ["right", "down", "next", "forward"]:
                 unused, swappee = get_previous_and_next(queryset, self)
             else:
-                raise AssertionError(f'Invalid direction: {direction}')
+                raise AssertionError(f"Invalid direction: {direction}")
         except self.__class__.DoesNotExist:
-            raise IndexError(f'Cannot go {direction} from here')
+            raise IndexError(f"Cannot go {direction} from here")
 
         if self.order == swappee.order:
-            raise ValueError(f'Unable to swap because {self} and {swappee} have same order: {self.order}')
+            raise ValueError(f"Unable to swap because {self} and {swappee} have same order: {self.order}")
 
         self.order, swappee.order = swappee.order, self.order
         self.save()
         swappee.save()
 
 
-class ViewMethodsMixin(object):
+class ViewMethodsMixin:
     @property
     def programmes_by_start_time(self):
         return self.get_programmes_by_start_time()
@@ -52,7 +52,7 @@ class ViewMethodsMixin(object):
     def get_programmes_by_start_time(self, include_unpublished=False, request=None):
         results = []
         prev_start_time = None
-        cont_criteria = dict() if include_unpublished else dict(state='published')
+        cont_criteria = dict() if include_unpublished else dict(state="published")
         rooms = self.rooms.all()
 
         criteria = dict(
@@ -62,16 +62,16 @@ class ViewMethodsMixin(object):
             room__in=rooms,
         )
         if not include_unpublished:
-            criteria.update(state='published')
+            criteria.update(state="published")
 
         # programme_index[start_time][room] = list of programmes
         # TODO select_related
         programme_index = defaultdict(lambda: defaultdict(list))
         programmes = (
             Programme.objects.filter(**criteria)
-                .select_related('category__event')
-                .select_related('room')
-                .prefetch_related('tags')
+            .select_related("category__event")
+            .select_related("room")
+            .prefetch_related("tags")
         )
         for programme in programmes:
             programme_index[programme.start_time][programme.room_id].append(programme)
@@ -80,7 +80,7 @@ class ViewMethodsMixin(object):
             cur_row = []
 
             incontinuity = prev_start_time and (start_time - prev_start_time > ONE_HOUR)
-            incontinuity = 'incontinuity' if incontinuity else ''
+            incontinuity = "incontinuity" if incontinuity else ""
             prev_start_time = start_time
 
             results.append((start_time, incontinuity, cur_row))
@@ -96,17 +96,15 @@ class ViewMethodsMixin(object):
                         cur_row.append((None, None))
                 else:
                     if num_programmes > 1:
-                        logger.warn('Room %s has multiple programs starting at %s', room, start_time)
+                        logger.warn("Room %s has multiple programs starting at %s", room, start_time)
 
-                        if (
-                            request is not None and
-                            self.event.programme_event_meta.is_user_admin(request.user)
-                        ):
-                            messages.warning(request,
-                                'Tilassa {room} on päällekkäisiä ohjelmanumeroita kello {start_time}'.format(
+                        if request is not None and self.event.programme_event_meta.is_user_admin(request.user):
+                            messages.warning(
+                                request,
+                                "Tilassa {room} on päällekkäisiä ohjelmanumeroita kello {start_time}".format(
                                     room=room,
                                     start_time=format_datetime(start_time.astimezone(tzlocal())),
-                                )
+                                ),
                             )
 
                     programme = programmes[0]
@@ -141,30 +139,31 @@ class ViewMethodsMixin(object):
 
 
 class View(models.Model, ViewMethodsMixin, OrderingMixin):
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, related_name='views')
-    name = models.CharField(max_length=32, verbose_name=_('Title'))
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="views")
+    name = models.CharField(max_length=32, verbose_name=_("Title"))
     public = models.BooleanField(default=True)
-    order = models.IntegerField(help_text=_('This will be automatically filled in if not provided.'))
+    order = models.IntegerField(help_text=_("This will be automatically filled in if not provided."))
     start_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_('Start time'),
+        verbose_name=_("Start time"),
     )
     end_time = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_('End time'),
+        verbose_name=_("End time"),
         help_text=_(
-            'If the start and end times are set, this view will be constrained to those times. '
-            'Use this for eg. day-specific views. If these are not set, the whole event will be '
-            'displayed in a single view.'
-        )
+            "If the start and end times are set, this view will be constrained to those times. "
+            "Use this for eg. day-specific views. If these are not set, the whole event will be "
+            "displayed in a single view."
+        ),
     )
 
     @property
     def rooms(self):
         from .room import Room
-        return Room.objects.filter(view_rooms__view=self).order_by('view_rooms__order')
+
+        return Room.objects.filter(view_rooms__view=self).order_by("view_rooms__order")
 
     @rooms.setter
     def rooms(self, rooms):
@@ -181,22 +180,24 @@ class View(models.Model, ViewMethodsMixin, OrderingMixin):
 
     def get_form(self, *args, **kwargs):
         from ..forms import ViewForm
+
         return ViewForm(*args, **kwargs, instance=self)
 
     def get_add_room_form(self, *args, **kwargs):
         from ..forms import AddRoomForm
+
         return AddRoomForm(*args, **kwargs, instance=self)
 
     class Meta:
-        verbose_name = _('schedule view')
-        verbose_name_plural = _('schedule views')
-        ordering = ['event', 'order']
+        verbose_name = _("schedule view")
+        verbose_name_plural = _("schedule views")
+        ordering = ["event", "order"]
 
 
 class ViewRoom(models.Model, OrderingMixin):
-    view = models.ForeignKey('programme.View', on_delete=models.CASCADE, related_name='view_rooms')
-    room = models.ForeignKey('programme.Room', on_delete=models.CASCADE, related_name='view_rooms')
-    order = models.IntegerField(help_text=_('This will be automatically filled in if not provided.'))
+    view = models.ForeignKey("programme.View", on_delete=models.CASCADE, related_name="view_rooms")
+    room = models.ForeignKey("programme.Room", on_delete=models.CASCADE, related_name="view_rooms")
+    order = models.IntegerField(help_text=_("This will be automatically filled in if not provided."))
 
     @property
     def event(self):
@@ -204,19 +205,20 @@ class ViewRoom(models.Model, OrderingMixin):
 
     def admin_get_event(self):
         return self.event
-    admin_get_event.short_description = _('Event')
-    admin_get_event.admin_order_field = 'view__event'
+
+    admin_get_event.short_description = _("Event")
+    admin_get_event.admin_order_field = "view__event"
 
     def __str__(self):
-        return f'{self.view} / {self.room}'
+        return f"{self.view} / {self.room}"
 
     class Meta:
-        ordering = ['view', 'order']
+        ordering = ["view", "order"]
 
 
 class AllRoomsPseudoView(ViewMethodsMixin):
     def __init__(self, event):
-        self.name = _('All rooms')
+        self.name = _("All rooms")
         self.public = True
         self.order = 0
         self.rooms = event.rooms.all()
@@ -226,23 +228,24 @@ class AllRoomsPseudoView(ViewMethodsMixin):
 
 
 class TimeBlock(models.Model):
-    event = models.ForeignKey('core.event', on_delete=models.CASCADE)
+    event = models.ForeignKey("core.event", on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
 
 
 class SpecialStartTime(models.Model):
-    event = models.ForeignKey('core.event', on_delete=models.CASCADE, verbose_name=_('event'))
-    start_time = models.DateTimeField(verbose_name=_('starting time'))
+    event = models.ForeignKey("core.event", on_delete=models.CASCADE, verbose_name=_("event"))
+    start_time = models.DateTimeField(verbose_name=_("starting time"))
 
     def __str__(self):
         from core.utils import format_datetime
-        return format_datetime(self.start_time) if self.start_time else 'None'
+
+        return format_datetime(self.start_time) if self.start_time else "None"
 
     class Meta:
-        verbose_name = _('special start time')
-        verbose_name_plural = _('special start times')
-        ordering = ['event', 'start_time']
+        verbose_name = _("special start time")
+        verbose_name_plural = _("special start times")
+        ordering = ["event", "start_time"]
         unique_together = [
-            ('event', 'start_time'),
+            ("event", "start_time"),
         ]

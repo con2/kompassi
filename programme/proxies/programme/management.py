@@ -9,11 +9,11 @@ from core.utils import (
 from ...models import Programme
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 def have_postgresql_time_range_functions():
-    if not hasattr(have_postgresql_time_range_functions, '_result'):
+    if not hasattr(have_postgresql_time_range_functions, "_result"):
         have_postgresql_time_range_functions._result = get_postgresql_version_num() >= 90200
 
     return have_postgresql_time_range_functions._result
@@ -25,30 +25,32 @@ class ProgrammeManagementProxy(Programme):
     """
 
     def get_overlapping_programmes(self):
-        if any((
-            self.id is None,
-            self.room is None,
-            self.start_time is None,
-            self.length is None,
-        )):
+        if any(
+            (
+                self.id is None,
+                self.room is None,
+                self.start_time is None,
+                self.length is None,
+            )
+        ):
             return ProgrammeManagementProxy.objects.none()
         elif have_postgresql_time_range_functions():
             return ProgrammeManagementProxy.objects.raw(
-                resource_string(__name__, 'sql/overlapping_programmes.sql'),
+                resource_string(__name__, "sql/overlapping_programmes.sql"),
                 (
                     self.category.event.id,
                     self.id,
                     self.room.id,
                     self.start_time,
                     self.end_time,
-                )
+                ),
             )
         else:
-            logger.warn('DB engine not PostgreSQL >= 9.2. Cannot detect overlapping programmes.')
+            logger.warn("DB engine not PostgreSQL >= 9.2. Cannot detect overlapping programmes.")
             return ProgrammeManagementProxy.objects.none()
 
     def get_previous_and_next_programme(self):
-        queryset = ProgrammeManagementProxy.objects.filter(category__event=self.category.event).order_by('title')
+        queryset = ProgrammeManagementProxy.objects.filter(category__event=self.category.event).order_by("title")
         return get_previous_and_next(queryset, self)
 
     class Meta:

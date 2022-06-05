@@ -16,7 +16,7 @@ def badges_admin_required(view_func):
 
         if not meta:
             messages.error(request, "Tämä tapahtuma ei käytä Kompassia kulkulupien hallintaan.")
-            return redirect('core_event_view', event.slug)
+            return redirect("core_event_view", event.slug)
 
         if not meta.is_user_admin(request.user):
             return login_redirect(request)
@@ -25,8 +25,9 @@ def badges_admin_required(view_func):
             event=event,
             meta=meta,
             admin_menu_items=badges_admin_menu_items(request, event),
-            admin_title='Badgejen ja nimilistojen hallinta'
+            admin_title="Badgejen ja nimilistojen hallinta",
         )
 
         return view_func(request, vars, event, *args, **kwargs)
+
     return wrapper

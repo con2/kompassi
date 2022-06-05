@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0082_auto_20190228_2127'),
+        ("programme", "0082_auto_20190228_2127"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='programme',
-            name='is_inaccessible',
-            field=models.BooleanField(default=False, help_text='If your program contains loud noises, flashing lights or other elements that can limit accessibility, please tick the checkbox. More details can be provided in the last text field if necessary.', verbose_name='Accessibility hazard'),
+            model_name="programme",
+            name="is_inaccessible",
+            field=models.BooleanField(
+                default=False,
+                help_text="If your program contains loud noises, flashing lights or other elements that can limit accessibility, please tick the checkbox. More details can be provided in the last text field if necessary.",
+                verbose_name="Accessibility hazard",
+            ),
         ),
     ]

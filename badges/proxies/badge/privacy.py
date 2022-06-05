@@ -1,4 +1,4 @@
-class BadgePrivacyAdapter(object):
+class BadgePrivacyAdapter:
     """
     Our CSV infrastructure has a nasty reversion of control: it getattrs us for the fields instead of
     asking us to supply whatever field values we want.
@@ -13,7 +13,7 @@ class BadgePrivacyAdapter(object):
     Not really a proxy model.
     """
 
-    __slots__ = ['badge']
+    __slots__ = ["badge"]
 
     def __init__(self, badge):
         self.badge = badge
@@ -23,22 +23,22 @@ class BadgePrivacyAdapter(object):
 
     @property
     def surname_for_sorting(self):
-        '''
+        """
         Always returns the surname regardless of privacy settings. For sorting purposes only.
-        '''
+        """
         return self.badge.surname.strip()
 
     @property
     def first_name(self):
-        return self.badge.first_name.strip() if self.badge.is_first_name_visible else ''
+        return self.badge.first_name.strip() if self.badge.is_first_name_visible else ""
 
     @property
     def surname(self):
-        return self.badge.surname.strip() if self.badge.is_surname_visible else ''
+        return self.badge.surname.strip() if self.badge.is_surname_visible else ""
 
     @property
     def nick(self):
-        return self.badge.nick.strip() if self.badge.is_nick_visible else ''
+        return self.badge.nick.strip() if self.badge.is_nick_visible else ""
 
     @property
     def nick_or_first_name(self):
@@ -63,10 +63,7 @@ class BadgePrivacyAdapter(object):
             # Chief Technology Officer
             if self.badge.is_surname_visible:
                 if self.badge.is_first_name_visible:
-                    return "{first_name} {surname}".format(
-                        first_name=self.badge.first_name,
-                        surname=self.badge.surname,
-                    )
+                    return f"{self.badge.first_name} {self.badge.surname}"
                 else:
                     return self.badge.surname
             else:

@@ -5,26 +5,48 @@ from django.db.models import F
 
 
 def populate_badge_name_display_style(apps, schema_editor):
-    Person = apps.get_model('core', 'Person')
-    Person.objects.all().update(badge_name_display_style=F('preferred_name_display_style'))
+    Person = apps.get_model("core", "Person")
+    Person.objects.all().update(badge_name_display_style=F("preferred_name_display_style"))
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0030_auto_20180926_1252'),
+        ("core", "0030_auto_20180926_1252"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='person',
-            name='badge_name_display_style',
-            field=models.CharField(blank=True, choices=[('firstname_nick_surname', 'Firstname "Nickname" Surname'), ('firstname_surname', 'Firstname Surname'), ('firstname', 'Firstname'), ('nick', 'Nickname')], help_text='Mikäli saat johonkin tapahtumaan nimikoidun henkilökortin (esim. työvoima- tai ohjelmabadgen), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä badgessa. Huomaathan kuitenkin, että jotkin tapahtumat saattavat vaatia etu- ja sukunimen painamista badgeen, jolloin tämä kenttä vaikuttaa ainoastaan siihen painetaanko badgeen myös nickisi vai ei.', max_length=31, verbose_name='Nimen esittäminen badgessa'),
+            model_name="person",
+            name="badge_name_display_style",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("firstname_nick_surname", 'Firstname "Nickname" Surname'),
+                    ("firstname_surname", "Firstname Surname"),
+                    ("firstname", "Firstname"),
+                    ("nick", "Nickname"),
+                ],
+                help_text="Mikäli saat johonkin tapahtumaan nimikoidun henkilökortin (esim. työvoima- tai ohjelmabadgen), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä badgessa. Huomaathan kuitenkin, että jotkin tapahtumat saattavat vaatia etu- ja sukunimen painamista badgeen, jolloin tämä kenttä vaikuttaa ainoastaan siihen painetaanko badgeen myös nickisi vai ei.",
+                max_length=31,
+                verbose_name="Nimen esittäminen badgessa",
+            ),
         ),
         migrations.AlterField(
-            model_name='person',
-            name='preferred_name_display_style',
-            field=models.CharField(blank=True, choices=[('firstname_nick_surname', 'Firstname "Nickname" Surname'), ('firstname_surname', 'Firstname Surname'), ('firstname', 'Firstname'), ('nick', 'Nickname')], help_text='Mikäli sinut mainitaan tapahtuman järjestäjä- tai ohjelmalistauksessa (esim. käsiohjelmassa tai web-sivuilla), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä listauksessa.', max_length=31, verbose_name='Nimen esittäminen listauksissa'),
+            model_name="person",
+            name="preferred_name_display_style",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("firstname_nick_surname", 'Firstname "Nickname" Surname'),
+                    ("firstname_surname", "Firstname Surname"),
+                    ("firstname", "Firstname"),
+                    ("nick", "Nickname"),
+                ],
+                help_text="Mikäli sinut mainitaan tapahtuman järjestäjä- tai ohjelmalistauksessa (esim. käsiohjelmassa tai web-sivuilla), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä listauksessa.",
+                max_length=31,
+                verbose_name="Nimen esittäminen listauksissa",
+            ),
         ),
-        migrations.RunPython(populate_badge_name_display_style)
+        migrations.RunPython(populate_badge_name_display_style),
     ]

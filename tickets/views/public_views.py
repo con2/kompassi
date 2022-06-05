@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import redirect, render
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from csp.decorators import csp_update
 
@@ -51,7 +51,7 @@ def decorate(view_obj):
     return wrapper
 
 
-class Phase(object):
+class Phase:
     name = "XXX_fill_me_in"
     friendly_name = "XXX Fill Me In"
     methods = ["GET", "POST"]
@@ -354,7 +354,7 @@ class ShirtsPhase(Phase):
 
     def available(self, request, event):
         order = get_order(request, event)
-        sup_available = super(ShirtsPhase, self).available(request, event)
+        sup_available = super().available(request, event)
 
         return sup_available and order.t_shirts > 0
 

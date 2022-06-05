@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class FreeformOrganizer(models.Model):
@@ -9,20 +9,22 @@ class FreeformOrganizer(models.Model):
     committees.
     """
 
-    programme = models.ForeignKey('programme.Programme', on_delete=models.CASCADE,
-        verbose_name=_('Programme'),
-        related_name='freeform_organizers',
+    programme = models.ForeignKey(
+        "programme.Programme",
+        on_delete=models.CASCADE,
+        verbose_name=_("Programme"),
+        related_name="freeform_organizers",
     )
 
     text = models.CharField(
         max_length=255,
-        verbose_name=_('Text'),
-        help_text=_('This text will be shown as-is in the schedule'),
+        verbose_name=_("Text"),
+        help_text=_("This text will be shown as-is in the schedule"),
     )
 
     def __str__(self):
-        return '{text} ({programme})'.format(text=self.text, programme=self.programme)
+        return f"{self.text} ({self.programme})"
 
     class Meta:
-        verbose_name = _('freeform organizer')
-        verbose_name_plural = _('freeform organizers')
+        verbose_name = _("freeform organizer")
+        verbose_name_plural = _("freeform organizers")

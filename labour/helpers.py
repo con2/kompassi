@@ -13,21 +13,20 @@ def labour_admin_required(view_func):
     @wraps(view_func)
     @default_cbac_required
     def wrapper(request, *args, **kwargs):
-        kwargs.pop('event_slug')
+        kwargs.pop("event_slug")
         event = request.event
         meta = event.labour_event_meta
 
         if not meta:
             messages.error(request, "Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
-            return redirect('core_event_view', event.slug)
+            return redirect("core_event_view", event.slug)
 
         vars = dict(
-            event=event,
-            admin_menu_items=labour_admin_menu_items(request, event),
-            admin_title='Työvoiman hallinta'
+            event=event, admin_menu_items=labour_admin_menu_items(request, event), admin_title="Työvoiman hallinta"
         )
 
         return view_func(request, vars, event, *args, **kwargs)
+
     return wrapper
 
 
@@ -39,7 +38,8 @@ def labour_event_required(view_func):
 
         if not meta:
             messages.error(request, "Tämä tapahtuma ei käytä Kompassia työvoiman hallintaan.")
-            return redirect('core_event_view', event.slug)
+            return redirect("core_event_view", event.slug)
 
         return view_func(request, event, *args, **kwargs)
+
     return wrapper

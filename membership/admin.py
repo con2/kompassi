@@ -13,29 +13,36 @@ class InlineMembershipOrganizationMetaAdmin(admin.StackedInline):
 
 
 class MembershipAdmin(admin.ModelAdmin):
-    list_display = ('organization', 'person')
-    list_filter = ('organization',)
+    list_display = ("organization", "person")
+    list_filter = ("organization",)
     search_fields = (
-        'person__surname',
-        'person__first_name',
-        'person__official_first_names',
-        'person__nick',
-        'person__email',
+        "person__surname",
+        "person__first_name",
+        "person__official_first_names",
+        "person__nick",
+        "person__email",
     )
-    raw_id_fields = ('person',)
-    ordering = ('organization', 'person__surname', 'person__official_first_names')
+    raw_id_fields = ("person",)
+    ordering = ("organization", "person__surname", "person__official_first_names")
 
 
 class TermAdmin(admin.ModelAdmin):
-    list_display = ('organization', 'title', 'start_date', 'end_date')
-    list_filter = ('organization',)
-    ordering = ('organization', 'start_date')
+    list_display = ("organization", "title", "start_date", "end_date")
+    list_filter = ("organization",)
+    ordering = ("organization", "start_date")
 
 
 class MembershipFeePaymentAdmin(admin.ModelAdmin):
-    list_display = ('admin_get_organization', 'term', 'admin_get_official_name', 'admin_get_formatted_amount', 'admin_is_paid', 'payment_date')
-    list_filter = ('term__organization',)
-    ordering = ('term__organization', 'member__person__surname', 'member__person__official_first_names')
+    list_display = (
+        "admin_get_organization",
+        "term",
+        "admin_get_official_name",
+        "admin_get_formatted_amount",
+        "admin_is_paid",
+        "payment_date",
+    )
+    list_filter = ("term__organization",)
+    ordering = ("term__organization", "member__person__surname", "member__person__official_first_names")
 
 
 admin.site.register(Membership, MembershipAdmin)

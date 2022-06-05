@@ -16,17 +16,19 @@ class Connection(models.Model):
     # no auto-increment
     id = models.IntegerField(
         primary_key=True,
-        verbose_name='Desuprofiilin numero',
+        verbose_name="Desuprofiilin numero",
     )
 
     desuprofile_username = models.CharField(
         max_length=DESUPROFILE_USERNAME_MAX_LENGTH,
         blank=True,
-        verbose_name='Desuprofiilin käyttäjänimi',
+        verbose_name="Desuprofiilin käyttäjänimi",
     )
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-        verbose_name='Käyttäjä',
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="Käyttäjä",
     )
 
     def __str__(self):
@@ -39,85 +41,93 @@ class ConfirmationCode(OneTimeCode):
     desuprofile_username = models.CharField(
         max_length=30,
         blank=True,
-        verbose_name='Desuprofiilin käyttäjänimi',
+        verbose_name="Desuprofiilin käyttäjänimi",
     )
 
-    next_url = models.CharField(max_length=1023, blank=True, default='')
+    next_url = models.CharField(max_length=1023, blank=True, default="")
 
     def render_message_subject(self, request):
-        return '{settings.KOMPASSI_INSTALLATION_NAME}: Desuprofiilin yhdistäminen'.format(settings=settings)
+        return f"{settings.KOMPASSI_INSTALLATION_NAME}: Desuprofiilin yhdistäminen"
 
     def render_message_body(self, request):
-        context = dict(
-            link=request.build_absolute_uri(url('desuprofile_integration_confirmation_view', self.code))
-        )
+        context = dict(link=request.build_absolute_uri(url("desuprofile_integration_confirmation_view", self.code)))
 
-        return render_to_string('desuprofile_integration_confirmation_message.eml', context=context, request=request)
+        return render_to_string("desuprofile_integration_confirmation_message.eml", context=context, request=request)
 
 
-DesuprofileBase = namedtuple('Desuprofile', 'id username first_name last_name nickname email phone birth_date')
+DesuprofileBase = namedtuple("Desuprofile", "id username first_name last_name nickname email phone birth_date")
+
+
 class Desuprofile(DesuprofileBase, JSONSchemaObject):
     schema = dict(
-        type='object',
+        type="object",
         properties=dict(
-            id=dict(type='number'),
-            username=dict(type='string', minLength=1, maxLength=150),
-            first_name=dict(type='string', minLength=1),
-            last_name=dict(type='string', minLength=1),
-            nickname=dict(type='string', optional=True),
-            email=dict(type='string', pattern=r'.+@.+\..+'),
-            phone=dict(type='string'),
-
+            id=dict(type="number"),
+            username=dict(type="string", minLength=1, maxLength=150),
+            first_name=dict(type="string", minLength=1),
+            last_name=dict(type="string", minLength=1),
+            nickname=dict(type="string", optional=True),
+            email=dict(type="string", pattern=r".+@.+\..+"),
+            phone=dict(type="string"),
             # XXX
-            birth_date=dict(anyOf=[
-                dict(type='string', pattern=r'\d{4}-\d{1,2}-\d{1,2}'),
-                dict(type='null'),
-            ]),
+            birth_date=dict(
+                anyOf=[
+                    dict(type="string", pattern=r"\d{4}-\d{1,2}-\d{1,2}"),
+                    dict(type="null"),
+                ]
+            ),
         ),
-        required=['id', 'username', 'first_name', 'last_name', 'email'],
+        required=["id", "username", "first_name", "last_name", "email"],
     )
 
 
-DesuprogrammeBase = namedtuple('Desuprogramme', 'identifier title description')
+DesuprogrammeBase = namedtuple("Desuprogramme", "identifier title description")
+
+
 class Desuprogramme(DesuprogrammeBase, JSONSchemaObject):
     schema = dict(
-        type='object',
+        type="object",
         properties=dict(
-            identifier=dict(type='string', minLength=1, maxLength=255, pattern=r'[a-z0-9-]+'),
-            title=dict(type='string', minLength=1, maxLength=1023),
-            description=dict(type='string'),
+            identifier=dict(type="string", minLength=1, maxLength=255, pattern=r"[a-z0-9-]+"),
+            title=dict(type="string", minLength=1, maxLength=1023),
+            description=dict(type="string"),
         ),
-        required=['identifier', 'title', 'description'],
+        required=["identifier", "title", "description"],
     )
 
     def get_or_create(self, category):
         from programme.models import Programme
+
         return Programme.objects.get_or_create(
-                category=category,
-                slug=self.identifier,
-                defaults=dict(
-                    title=self.title,
-                    description=self.description,
-                    state='accepted',
-                    notes='Tuotu automaattisesti Desusaitilta',
-                ),
-            )
+            category=category,
+            slug=self.identifier,
+            defaults=dict(
+                title=self.title,
+                description=self.description,
+                state="accepted",
+                notes="Tuotu automaattisesti Desusaitilta",
+            ),
+        )
 
 
-DesuprogrammeFeedbackBase = namedtuple('DesuprogrammeFeedback', 'feedback desucon_username anonymous ip_address')
+DesuprogrammeFeedbackBase = namedtuple("DesuprogrammeFeedback", "feedback desucon_username anonymous ip_address")
+
+
 class DesuprogrammeFeedback(DesuprogrammeFeedbackBase, JSONSchemaObject):
     schema = dict(
-        type='object',
+        type="object",
         properties=dict(
-            feedback=dict(type='string', minLength=1),
-            desucon_username=dict(type='string', maxLength=DESUPROFILE_USERNAME_MAX_LENGTH),
-            anonymous=dict(type='boolean'),
-            ip_address=dict(anyOf=[
-                dict(type='string', format='ipv4'),
-                dict(type='string', format='ipv6'),
-            ]),
+            feedback=dict(type="string", minLength=1),
+            desucon_username=dict(type="string", maxLength=DESUPROFILE_USERNAME_MAX_LENGTH),
+            anonymous=dict(type="boolean"),
+            ip_address=dict(
+                anyOf=[
+                    dict(type="string", format="ipv4"),
+                    dict(type="string", format="ipv6"),
+                ]
+            ),
         ),
-        required=['feedback'],
+        required=["feedback"],
     )
 
     def save(self, programme):
@@ -128,13 +138,13 @@ class DesuprogrammeFeedback(DesuprogrammeFeedbackBase, JSONSchemaObject):
 
         # XXX this must die
         if self.desucon_username is not None:
-            attrs['author_external_username'] = self.desucon_username
+            attrs["author_external_username"] = self.desucon_username
         if self.ip_address is not None:
-            attrs['author_ip_address'] = self.ip_address
+            attrs["author_ip_address"] = self.ip_address
         if connection:
-            attrs['author'] = connection.user.person
+            attrs["author"] = connection.user.person
         if self.anonymous is not None:
-            attrs['is_anonymous'] = self.anonymous
+            attrs["is_anonymous"] = self.anonymous
 
         return ProgrammeFeedback.objects.create(
             programme=programme,

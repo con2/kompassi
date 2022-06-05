@@ -13,19 +13,20 @@ class Listing(models.Model):
     So currently our only listing has all public events and is only listed at conit.fi
     with animecon.fi redirecting there.
     """
+
     hostname = models.CharField(
         max_length=63,
         unique=True,
     )
 
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, default='')
+    description = models.TextField(blank=True, default="")
 
     def get_events(self, **criteria):
         from core.models import Event
 
-        external_events = ExternalEvent.objects.filter(**criteria).order_by('start_time')
-        events = Event.objects.filter(start_time__isnull=False, **criteria).order_by('start_time')
+        external_events = ExternalEvent.objects.filter(**criteria).order_by("start_time")
+        events = Event.objects.filter(start_time__isnull=False, **criteria).order_by("start_time")
 
         return sorted(chain(external_events, events), key=lambda e: e.start_time)
 
@@ -35,29 +36,29 @@ class Listing(models.Model):
     def as_dict(self):
         t = now()
 
-        return pick_attrs(self,
-            'hostname',
-            'title',
-
-            events=[event.as_dict(format='listing') for event in self.get_events(public=True, end_time__gt=t)],
+        return pick_attrs(
+            self,
+            "hostname",
+            "title",
+            events=[event.as_dict(format="listing") for event in self.get_events(public=True, end_time__gt=t)],
         )
 
 
 class ExternalEvent(models.Model):
-    '''
+    """
     Minimal details about an external event. API is a subset of Event.
-    '''
+    """
 
     slug = models.CharField(**SLUG_FIELD_PARAMS)
-    name = models.CharField(max_length=63, verbose_name='Tapahtuman nimi')
-    description = models.TextField(blank=True, verbose_name='Kuvaus')
+    name = models.CharField(max_length=63, verbose_name="Tapahtuman nimi")
+    description = models.TextField(blank=True, verbose_name="Kuvaus")
     homepage_url = models.CharField(
         blank=True,
         max_length=255,
-        verbose_name='Tapahtuman kotisivu',
+        verbose_name="Tapahtuman kotisivu",
     )
     venue_name = models.CharField(max_length=63, blank=True)
-    logo_file = models.FileField(upload_to='external_event_logos', blank=True)
+    logo_file = models.FileField(upload_to="external_event_logos", blank=True)
 
     # should be named is_public but due to legacy
     public = models.BooleanField(default=True)
@@ -81,18 +82,19 @@ class ExternalEvent(models.Model):
         ]
         headline_parts = [part for part in headline_parts if part]
 
-        return ' '.join(headline_parts)
+        return " ".join(headline_parts)
 
-    def as_dict(self, format='listing'):
-        assert format == 'listing'
+    def as_dict(self, format="listing"):
+        assert format == "listing"
 
-        return pick_attrs(self,
-            'slug',
-            'name',
-            'headline',
-            'venue_name',
-            'homepage_url',
-            'start_time',
-            'end_time',
-            'cancelled',
+        return pick_attrs(
+            self,
+            "slug",
+            "name",
+            "headline",
+            "venue_name",
+            "homepage_url",
+            "start_time",
+            "end_time",
+            "cancelled",
         )

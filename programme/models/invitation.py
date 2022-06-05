@@ -1,6 +1,6 @@
 from django.db import models, transaction
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import url
 from core.models import OneTimeCodeLite
@@ -13,36 +13,46 @@ class Invitation(OneTimeCodeLite):
     ProgrammeRole, the Role will be filled in from the Invitation.
     """
 
-    programme = models.ForeignKey('programme.Programme', on_delete=models.CASCADE,
-        verbose_name=_('Programme'),
+    programme = models.ForeignKey(
+        "programme.Programme",
+        on_delete=models.CASCADE,
+        verbose_name=_("Programme"),
     )
 
-    role = models.ForeignKey('programme.Role', on_delete=models.CASCADE,
-        verbose_name=_('Role'),
+    role = models.ForeignKey(
+        "programme.Role",
+        on_delete=models.CASCADE,
+        verbose_name=_("Role"),
     )
 
-    created_by = models.ForeignKey('auth.User', on_delete=models.CASCADE,
+    created_by = models.ForeignKey(
+        "auth.User",
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
 
     extra_invites = models.PositiveIntegerField(
         default=0,
-        verbose_name=_('Extra invites'),
-        help_text=_('The host may send this many extra invites to other hosts of the programme.'),
+        verbose_name=_("Extra invites"),
+        help_text=_("The host may send this many extra invites to other hosts of the programme."),
     )
 
-    sire = models.ForeignKey('programme.ProgrammeRole', on_delete=models.CASCADE,
+    sire = models.ForeignKey(
+        "programme.ProgrammeRole",
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
-        verbose_name=_('Sire'),
-        help_text=_('The host that spawned this invitation. Sired invitations consume the extra invite quota of the sire.'),
+        verbose_name=_("Sire"),
+        help_text=_(
+            "The host that spawned this invitation. Sired invitations consume the extra invite quota of the sire."
+        ),
         db_index=True,
-        related_name='sired_invitation_set',
+        related_name="sired_invitation_set",
     )
 
     def __str__(self):
-        return '{email} ({programme})'.format(email=self.email, programme=self.programme)
+        return f"{self.email} ({self.programme})"
 
     @property
     def from_email(self):
@@ -53,21 +63,19 @@ class Invitation(OneTimeCodeLite):
         return self.programme.category.event if self.programme else None
 
     def render_message_subject(self, request):
-        return '{event_name}: Kutsu ohjelmanjärjestäjäksi'.format(
-            event_name=self.event.name,
-        )
+        return f"{self.event.name}: Kutsu ohjelmanjärjestäjäksi"
 
     def render_message_body(self, request):
         event = self.event
 
         vars = dict(
             event=event,
-            link=request.build_absolute_uri(url('programme:accept_invitation_view', event.slug, self.code)),
+            link=request.build_absolute_uri(url("programme:accept_invitation_view", event.slug, self.code)),
             meta=event.programme_event_meta,
             programme=self.programme,
         )
 
-        return render_to_string('programme_invitation_message.eml', vars, request=request)
+        return render_to_string("programme_invitation_message.eml", vars, request=request)
 
     def accept(self, person, sire=None):
         from .programme_role import ProgrammeRole
@@ -88,5 +96,5 @@ class Invitation(OneTimeCodeLite):
         return self.extra_invites
 
     class Meta:
-        verbose_name = _('invitation')
-        verbose_name_plural = _('invitations')
+        verbose_name = _("invitation")
+        verbose_name_plural = _("invitations")

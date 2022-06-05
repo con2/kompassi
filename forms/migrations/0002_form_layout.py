@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('forms', '0001_initial'),
+        ("forms", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='form',
-            name='layout',
-            field=models.CharField(choices=[('horizontal', 'Horizontal'), ('vertical', 'Vertical')], default='horizontal', max_length=10, verbose_name='Layout'),
+            model_name="form",
+            name="layout",
+            field=models.CharField(
+                choices=[("horizontal", "Horizontal"), ("vertical", "Vertical")],
+                default="horizontal",
+                max_length=10,
+                verbose_name="Layout",
+            ),
         ),
     ]

@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from six import text_type
 
@@ -28,7 +28,7 @@ class ProgrammeRole(models.Model, CsvExportMixin):
             raise ValidationError("Contacts of this type require some contact info")
 
     def __str__(self):
-        return "{person} ({programme})".format(person=self.person, programme=self.programme)
+        return f"{self.person} ({self.programme})"
 
     class Meta:
         verbose_name = _("Programme host")
@@ -77,12 +77,9 @@ class ProgrammeRole(models.Model, CsvExportMixin):
     @property
     def formatted_extra_invites(self):
         if self.extra_invites < 1:
-            return text_type(self.extra_invites)
+            return str(self.extra_invites)
         else:
-            return "{invites_used}/{invites}".format(
-                invites_used=self.extra_invites_used,
-                invites=self.extra_invites,
-            )
+            return f"{self.extra_invites_used}/{self.extra_invites}"
 
     @property
     def extra_invites_used(self):

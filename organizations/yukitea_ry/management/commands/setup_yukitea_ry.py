@@ -18,7 +18,7 @@ Yukitea ry on vuosittaisen Yukicon -anime- ja pelitapahtuman järjestäjä.
 """.strip()
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         pass
 
@@ -28,18 +28,18 @@ class Setup(object):
 
     def setup_core(self):
         self.organization, unused = Organization.objects.get_or_create(
-            slug='yukitea-ry',
+            slug="yukitea-ry",
             defaults=dict(
-                name='Yukitea ry',
-                homepage_url='http://www.yukicon.fi',
-                logo_url='',
+                name="Yukitea ry",
+                homepage_url="http://www.yukicon.fi",
+                logo_url="",
                 description=ORGANIZATION_DESCRIPTION,
-            )
+            ),
         )
 
         # v10
         if not self.organization.muncipality:
-            self.organization.muncipality = 'Espoo'
+            self.organization.muncipality = "Espoo"
         if self.organization.public is None:
             self.organization.public = True
         if not self.organization.description:
@@ -47,19 +47,22 @@ class Setup(object):
         self.organization.save()
 
     def setup_membership(self):
-        membership_admin_group, = MembershipOrganizationMeta.get_or_create_groups(self.organization, ['admins'])
-        members_group, = MembershipOrganizationMeta.get_or_create_groups(self.organization, ['members'])
+        (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
+        (members_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["members"])
 
-        self.meta, created = MembershipOrganizationMeta.objects.get_or_create(organization=self.organization, defaults=dict(
-            admin_group=membership_admin_group,
-            members_group=members_group,
-            receiving_applications=False,
-            membership_requirements="""
+        self.meta, created = MembershipOrganizationMeta.objects.get_or_create(
+            organization=self.organization,
+            defaults=dict(
+                admin_group=membership_admin_group,
+                members_group=members_group,
+                receiving_applications=False,
+                membership_requirements="""
 Yukitea ry hyväksyy varsinaisia ja kannatusjäseniä. Kompassin kautta on mahdollista liittyä vain kannatusjäseneksi. Kannatusjäsen on jäsen, joka tukee yhdistyksen toimintaa rahallisesti osallistumatta siihen aktiivisesti. Kannatusjäsenillä ei ole läsnäolo-, puhe- tai äänioikeutta yhdistyksen kokouksissa.
 
 Yhdistyksen varsinaisiksi jäseniksi voidaan hyväksyä henkilöitä, jotka osallistuvat yhdistyksen toimintaan. Jos haluat liittyä yhdistyksen varsinaiseksi jäseneksi, ota yhteyttä yhdistyksen hallitukseen yukicon@yukicon.fi.
 """.strip(),
-        ))
+            ),
+        )
 
         for year, membership_fee_cents in [
             (2016, 5000),
@@ -74,13 +77,13 @@ Yhdistyksen varsinaisiksi jäseniksi voidaan hyväksyä henkilöitä, jotka osal
                     end_date=end_date,
                     entrance_fee_cents=0,
                     membership_fee_cents=membership_fee_cents,
-                )
+                ),
             )
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup Yukitea ry specific stuff'
+    args = ""
+    help = "Setup Yukitea ry specific stuff"
 
     def handle(self, *args, **opts):
         Setup().setup()

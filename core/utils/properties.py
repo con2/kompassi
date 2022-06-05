@@ -11,7 +11,7 @@ def event_meta_property(app_label):
 
     def _get(self):
         try:
-            return getattr(self, '{}eventmeta'.format(app_label))
+            return getattr(self, f"{app_label}eventmeta")
         except ObjectDoesNotExist:
             return None
 

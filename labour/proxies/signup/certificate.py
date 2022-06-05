@@ -17,8 +17,8 @@ class SignupCertificateProxy(Signup):
 
         contains_name = self.person.firstname_surname.lower() in address.lower()
 
-        address = address.replace(',', '\n')
-        address_lines = address.split('\n')
+        address = address.replace(",", "\n")
+        address_lines = address.split("\n")
 
         if not contains_name:
             address_lines.insert(0, self.person.firstname_surname)

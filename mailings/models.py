@@ -17,42 +17,40 @@ from labour.models import JobCategory
 from labour.models import PersonnelClass
 
 
-logger = logging.getLogger('kompassi')
-APP_LABEL_CHOICES = [
-    ('labour', 'Työvoima')
-]
+logger = logging.getLogger("kompassi")
+APP_LABEL_CHOICES = [("labour", "Työvoima")]
 
 DELAY_PER_MESSAGE_FRAGMENT_MILLIS = 350
 
 
 class RecipientGroup(models.Model):
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name='Tapahtuma')
-    app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name='Sovellus')
-    group = models.ForeignKey('auth.Group', on_delete=models.CASCADE, verbose_name='Käyttäjäryhmä')
-    verbose_name = models.CharField(max_length=63, verbose_name='Nimi', blank=True, default='')
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, verbose_name="Tapahtuma")
+    app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name="Sovellus")
+    group = models.ForeignKey("auth.Group", on_delete=models.CASCADE, verbose_name="Käyttäjäryhmä")
+    verbose_name = models.CharField(max_length=63, verbose_name="Nimi", blank=True, default="")
     job_category = models.ForeignKey(JobCategory, on_delete=models.CASCADE, null=True, blank=True)
     personnel_class = models.ForeignKey(PersonnelClass, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        num_ppl = self.group.user_set.count() if self.group else '–'
+        num_ppl = self.group.user_set.count() if self.group else "–"
 
         if self.job_category:
-            kind = f' (tehtäväalue, {num_ppl} hlö)'
+            kind = f" (tehtäväalue, {num_ppl} hlö)"
         elif self.personnel_class:
-            kind = f' (henkilöstöluokka, {num_ppl} hlö)'
+            kind = f" (henkilöstöluokka, {num_ppl} hlö)"
         else:
-            kind = f' ({num_ppl} hlö)'
+            kind = f" ({num_ppl} hlö)"
 
-        return '{self.event.name}: {self.verbose_name}{kind}'.format(self=self, kind=kind)
+        return "{self.event.name}: {self.verbose_name}{kind}".format(self=self, kind=kind)
 
     class Meta:
-        verbose_name = 'vastaanottajaryhmä'
-        verbose_name_plural = 'vastaanottajaryhmät'
+        verbose_name = "vastaanottajaryhmä"
+        verbose_name_plural = "vastaanottajaryhmät"
 
 
 CHANNEL_CHOICES = [
-    ('email', 'Sähköposti'),
-    ('sms', 'Tekstiviesti'),
+    ("email", "Sähköposti"),
+    ("sms", "Tekstiviesti"),
 ]
 
 
@@ -84,25 +82,25 @@ def update_pc_recipient_group_verbose_name(sender, instance, created, **kwargs):
 class Message(models.Model):
     channel = models.CharField(
         max_length=5,
-        verbose_name='Kanava',
-        default='email',
+        verbose_name="Kanava",
+        default="email",
         choices=CHANNEL_CHOICES,
     )
-    recipient = models.ForeignKey(RecipientGroup, on_delete=models.CASCADE, verbose_name='Vastaanottajaryhmä')
+    recipient = models.ForeignKey(RecipientGroup, on_delete=models.CASCADE, verbose_name="Vastaanottajaryhmä")
 
     subject_template = models.CharField(
         max_length=255,
-        verbose_name='Otsikko',
-        help_text='HUOM! Otsikko näkyy vastaanottajalle ainoastaan, jos viesti lähetetään '
-            'sähköpostitse. Tekstiviestillä lähetettäville viesteille otsikkoa käytetään '
-            'ainoastaan viestin tunnistamiseen sisäisesti.',
+        verbose_name="Otsikko",
+        help_text="HUOM! Otsikko näkyy vastaanottajalle ainoastaan, jos viesti lähetetään "
+        "sähköpostitse. Tekstiviestillä lähetettäville viesteille otsikkoa käytetään "
+        "ainoastaan viestin tunnistamiseen sisäisesti.",
     )
     body_template = models.TextField(
-        verbose_name='Viestin teksti',
-        help_text='Teksti {{ signup.formatted_job_categories_accepted }} korvataan '
-            'listalla hyväksytyn vänkärin tehtäväalueista ja teksti '
-            '{{ signup.formatted_shifts }} korvataan vänkärin vuoroilla. '
-            'Käyttäessäsi näitä muotoilukoodeja laita ne omiksi kappaleikseen ts. reunusta ne tyhjillä riveillä.'
+        verbose_name="Viestin teksti",
+        help_text="Teksti {{ signup.formatted_job_categories_accepted }} korvataan "
+        "listalla hyväksytyn vänkärin tehtäväalueista ja teksti "
+        "{{ signup.formatted_shifts }} korvataan vänkärin vuoroilla. "
+        "Käyttäessäsi näitä muotoilukoodeja laita ne omiksi kappaleikseen ts. reunusta ne tyhjillä riveillä.",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -123,12 +121,11 @@ class Message(models.Model):
             self.sent_at = timezone.now()
             self.save()
 
-        if 'background_tasks' in settings.INSTALLED_APPS:
+        if "background_tasks" in settings.INSTALLED_APPS:
             from mailings.tasks import message_send
+
             message_send.delay(
-                self.pk,
-                [person.pk for person in recipients] if recipients is not None else None,
-                resend
+                self.pk, [person.pk for person in recipients] if recipients is not None else None, resend
             )
         else:
             self._send(recipients, resend)
@@ -149,11 +146,8 @@ class Message(models.Model):
                 )
             except PersonMessage.MultipleObjectsReturned:
                 # This actually happens sometimes.
-                logger.warning('A Person doth multiple PersonMessages for a single Message have!')
-                person_message = PersonMessage.objects.filter(
-                    person=person,
-                    message=self
-                ).first()
+                logger.warning("A Person doth multiple PersonMessages for a single Message have!")
+                person_message = PersonMessage.objects.filter(person=person, message=self).first()
                 created = False
 
             if created or resend:
@@ -163,14 +157,14 @@ class Message(models.Model):
                 delay += DELAY_PER_MESSAGE_FRAGMENT_MILLIS * delayfactor
 
     def expire(self):
-        assert self.expired_at is None, 're-expiring an expired message does not make sense'
-        assert self.sent_at is not None, 'expiring an unsent message does not make sense'
+        assert self.expired_at is None, "re-expiring an expired message does not make sense"
+        assert self.sent_at is not None, "expiring an unsent message does not make sense"
 
         self.expired_at = datetime.now()
         self.save()
 
     def unexpire(self):
-        assert self.expired_at is not None, 'cannot un-expire a non-expired message'
+        assert self.expired_at is not None, "cannot un-expire a non-expired message"
 
         self.expired_at = None
         self.save()
@@ -187,7 +181,12 @@ class Message(models.Model):
             sent_at__isnull=False,
             expired_at__isnull=True,
         ):
-            message.send(recipients=[person,], resend=False)
+            message.send(
+                recipients=[
+                    person,
+                ],
+                resend=False,
+            )
 
     @property
     def event(self):
@@ -205,24 +204,24 @@ class Message(models.Model):
         return Template(self.subject_template).render(Context(dict(event=self.event)))
 
     class Meta:
-        verbose_name = 'viesti'
-        verbose_name_plural = 'viestit'
+        verbose_name = "viesti"
+        verbose_name_plural = "viestit"
 
 
-class DedupMixin(object):
+class DedupMixin:
     @classmethod
     def get_or_create(cls, text):
-        the_hash = sha1(text.encode('UTF-8')).hexdigest()
+        the_hash = sha1(text.encode("UTF-8")).hexdigest()
 
         try:
             return cls.objects.get_or_create(
                 digest=the_hash,
                 defaults=dict(
                     text=text,
-                )
+                ),
             )
         except cls.MultipleObjectsReturned:
-            logger.warn('Multiple %s returned for hash %s', cls.__name__, the_hash)
+            logger.warn("Multiple %s returned for hash %s", cls.__name__, the_hash)
             return cls.objects.filter(digest=the_hash, text=text).first(), False
 
 
@@ -238,7 +237,7 @@ class PersonMessageBody(models.Model, DedupMixin):
 
 class PersonMessage(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
-    person = models.ForeignKey('core.Person', on_delete=models.CASCADE)
+    person = models.ForeignKey("core.Person", on_delete=models.CASCADE)
 
     # dedup
     subject = models.ForeignKey(PersonMessageSubject, on_delete=models.CASCADE)
@@ -250,18 +249,18 @@ class PersonMessage(models.Model):
         self.subject, unused = PersonMessageSubject.get_or_create(self.render_message(self.message.subject_template))
         self.body, unused = PersonMessageBody.get_or_create(self.render_message(self.message.body_template))
 
-        return super(PersonMessage, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     @property
     def message_vars(self):
-        if not hasattr(self, '_message_vars'):
+        if not hasattr(self, "_message_vars"):
             self._message_vars = dict(
                 event=self.message.event,
                 person=self.person,
             )
 
             # TODO need a way to make app-specific vars in the apps themselves
-            if 'labour' in settings.INSTALLED_APPS:
+            if "labour" in settings.INSTALLED_APPS:
                 from labour.models import Signup
 
                 try:
@@ -277,7 +276,7 @@ class PersonMessage(models.Model):
         return Template(template).render(Context(self.message_vars))
 
     def actually_send(self, delay=0):
-        if self.message.channel == 'email':
+        if self.message.channel == "email":
             self._actually_send_email()
         # elif self.message.channel == 'sms':
         #     self._actually_send_sms(delay)
@@ -301,7 +300,7 @@ class PersonMessage(models.Model):
             body=self.body.text,
             from_email=meta.cloaked_contact_email,
             to=(self.person.name_and_email,),
-            bcc=msgbcc
+            bcc=msgbcc,
         ).send(fail_silently=True)
 
     # def _actually_send_sms(self, delay=0):

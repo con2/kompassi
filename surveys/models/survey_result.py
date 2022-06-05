@@ -2,11 +2,11 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.csv_export import CsvExportMixin
+from django.db.models import JSONField
 
 if TYPE_CHECKING:
     from surveys.models.survey import Survey, EventSurvey

@@ -4,7 +4,7 @@ from collections import defaultdict
 from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.db.models import Sum, Q, Case, When, IntegerField
+from django.db.models import Case, IntegerField, Q, Sum, When
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
@@ -179,7 +179,7 @@ def tickets_admin_stats_by_date_view(request, vars, event, raw=False):
 
     while cur_date <= max_date:
         tickets = tickets_by_date[cur_date]
-        tsv.append("%s\t%s" % (cur_date.isoformat(), tickets))
+        tsv.append(f"{cur_date.isoformat()}\t{tickets}")
 
         cur_date += datetime.timedelta(1)
 
@@ -338,7 +338,7 @@ def tickets_admin_tools_view(request, vars, event):
     if request.method == "POST":
         if "cancel-unpaid" in request.POST:
             num_cancelled_orders = Order.cancel_unpaid_orders(event=event, hours=unpaid_cancel_hours)
-            messages.success(request, "{num_cancelled_orders} tilausta peruttiin.".format(**locals()))
+            messages.success(request, f"{num_cancelled_orders} tilausta peruttiin.")
         else:
             messages.error(request, "Tuntematon toiminto.")
 
@@ -482,11 +482,7 @@ def tickets_admin_shirts_view(request, vars, event, format="screen"):
 
         return render(request, "tickets_admin_shirts_view.pug", vars)
     elif format in CSV_EXPORT_FORMATS:
-        filename = "{event.slug}_shirts_{timestamp}.{format}".format(
-            event=event,
-            timestamp=now().strftime("%Y%m%d%H%M%S"),
-            format=format,
-        )
+        filename = f"{event.slug}_shirts_{now().strftime('%Y%m%d%H%M%S')}.{format}"
 
         return csv_response(
             event,

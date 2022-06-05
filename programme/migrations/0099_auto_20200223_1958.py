@@ -6,18 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0098_auto_20200210_2018'),
+        ("programme", "0098_auto_20200210_2018"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='programme',
-            name='rerun_extra',
-            field=models.TextField(blank=True, default='', help_text='Jos ohjelmasi on uusinta, kerro tarkemmin missä ja milloin olet sen aikaisemmin pitänyt. Aiotko tehdä muutoksia ohjelmaasi tätä esitystä varten? Millaisia?', verbose_name='Kuvaile uusintaohjelmaa tarkemmin'),
+            model_name="programme",
+            name="rerun_extra",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="Jos ohjelmasi on uusinta, kerro tarkemmin missä ja milloin olet sen aikaisemmin pitänyt. Aiotko tehdä muutoksia ohjelmaasi tätä esitystä varten? Millaisia?",
+                verbose_name="Kuvaile uusintaohjelmaa tarkemmin",
+            ),
         ),
         migrations.AlterField(
-            model_name='programme',
-            name='stream_permission',
-            field=models.CharField(blank=True, choices=[('please', 'Yes, I would like my programme to be streamed live'), ('okay', 'Yes, I allow streaming my programme live'), ('nope', 'No, I forbid streaming my programme')], help_text='May your programme be streamed live on YouTube? Streamed programmes will also be available afterwards on our channel.', max_length=6, verbose_name='Streaming permission'),
+            model_name="programme",
+            name="stream_permission",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("please", "Yes, I would like my programme to be streamed live"),
+                    ("okay", "Yes, I allow streaming my programme live"),
+                    ("nope", "No, I forbid streaming my programme"),
+                ],
+                help_text="May your programme be streamed live on YouTube? Streamed programmes will also be available afterwards on our channel.",
+                max_length=6,
+                verbose_name="Streaming permission",
+            ),
         ),
     ]

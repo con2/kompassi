@@ -3,7 +3,7 @@ from django.core.mail import EmailMessage
 
 
 def send_update_for_entry(subscription, entry):
-    assert subscription.channel == 'email'
+    assert subscription.channel == "email"
 
     subject = entry.email_subject
     body = entry.email_body
@@ -16,6 +16,6 @@ def send_update_for_entry(subscription, entry):
     )
 
     if settings.DEBUG:
-        print(body.encode('UTF-8'))
+        print(body.encode("UTF-8"))
 
     EmailMessage(**opts).send(fail_silently=False)

@@ -33,7 +33,7 @@ def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
     for group in groups_to_remove:
         group.user_set.remove(user)
 
-    if 'crowd_integration' in settings.INSTALLED_APPS:
+    if "crowd_integration" in settings.INSTALLED_APPS:
         from crowd_integration.utils import ensure_user_group_membership as cr_ensure_user_group_membership
 
         for group in groups_to_add:
@@ -56,15 +56,16 @@ def ensure_user_is_member_of_group(user, group, should_belong_to_group=True):
     else:
         group.user_set.remove(user)
 
-    if 'crowd_integration' in settings.INSTALLED_APPS:
+    if "crowd_integration" in settings.INSTALLED_APPS:
         from crowd_integration.utils import ensure_user_group_membership as cr_ensure_user_group_membership
+
         cr_ensure_user_group_membership(user, group.name, should_belong_to_group)
 
 
 def ensure_groups_exist(group_names):
     groups = [Group.objects.get_or_create(name=group_name)[0] for group_name in group_names]
 
-    if 'crowd_integration' in settings.INSTALLED_APPS:
+    if "crowd_integration" in settings.INSTALLED_APPS:
         from crowd_integration.utils import ensure_group_exists
 
         for group_name in group_names:
@@ -73,7 +74,7 @@ def ensure_groups_exist(group_names):
     return groups
 
 
-class AllowPasswordChangeWithoutOldPassword(object):
+class AllowPasswordChangeWithoutOldPassword:
     pass
 
 
@@ -81,8 +82,9 @@ def change_user_password(user, new_password, old_password=AllowPasswordChangeWit
     user.set_password(new_password)
     user.save()
 
-    if 'crowd_integration' in settings.INSTALLED_APPS:
+    if "crowd_integration" in settings.INSTALLED_APPS:
         from crowd_integration.utils import change_user_password as cr_change_user_password
+
         cr_change_user_password(user, new_password)
 
 
@@ -92,7 +94,8 @@ def get_code(path):
     "get_code" from it.
     """
     from importlib import import_module
-    module_name, member_name = path.split(':')
+
+    module_name, member_name = path.split(":")
     module = import_module(module_name)
     return getattr(module, member_name)
 
@@ -134,18 +137,12 @@ def simple_object_init(self, *args, **kwargs):
 def simple_object_repr(self):
     return "{class_name}({property_list})".format(
         class_name=self.__class__.__name__,
-        property_list=', '.join(
-            "{key}={value}".format(key=slot, value=repr(getattr(self, slot)))
-            for slot in self.__slots__
-        )
+        property_list=", ".join(f"{slot}={repr(getattr(self, slot))}" for slot in self.__slots__),
     )
 
 
 def pick_attrs(obj, *attr_names, **extra_attrs):
-    return dict(
-        ((attr_name, getattr(obj, attr_name)) for attr_name in attr_names),
-        **extra_attrs
-    )
+    return dict(((attr_name, getattr(obj, attr_name)) for attr_name in attr_names), **extra_attrs)
 
 
 def groups_of_n(iterable, n):
@@ -165,7 +162,7 @@ def groupby_strict(*args, **kwargs):
 
 
 def create_temporary_password():
-    return "".join(chr(randint(ord('0'), ord('z'))) for _ in range(64))
+    return "".join(chr(randint(ord("0"), ord("z"))) for _ in range(64))
 
 
 def mutate_query_params(request, mutations):
@@ -193,7 +190,7 @@ def mutate_query_params(request, mutations):
     return new_qs.urlencode()
 
 
-class class_property(object):
+class class_property:
     def __init__(self, f):
         self.f = f
 
@@ -202,10 +199,7 @@ class class_property(object):
 
 
 def omit_keys(mapping, *keys_to_omit, **keys_to_set):
-    return dict(
-        ((key, value) for (key, value) in mapping.items() if key not in keys_to_omit),
-        **keys_to_set
-    )
+    return dict(((key, value) for (key, value) in mapping.items() if key not in keys_to_omit), **keys_to_set)
 
 
 def get_ip(request):

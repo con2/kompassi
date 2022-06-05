@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
 from core.utils import initialize_form
@@ -27,4 +27,4 @@ def profile_reservations_view(request):
         reservable_programmes=reservable_programmes,
     )
 
-    return render(request, 'programme_profile_reservations_view.pug', vars)
+    return render(request, "programme_profile_reservations_view.pug", vars)

@@ -11,10 +11,10 @@ from core.utils import slugify
 
 
 def mkpath(*parts):
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *parts))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         self._ordering = 0
 
@@ -36,40 +36,46 @@ class Setup(object):
     def setup_core(self):
         from core.models import Venue, Event, Organization
 
-        self.venue, unused = Venue.objects.get_or_create(name='Messukeskus Siipi', defaults=dict(
-            name_inessive='Messukeskus Siivessä',
-        ))
-        self.organization, unused = Organization.objects.get_or_create(
-            slug='yukitea-ry',
+        self.venue, unused = Venue.objects.get_or_create(
+            name="Messukeskus Siipi",
             defaults=dict(
-                name='Yukitea ry',
-                homepage_url='http://www.yukicon.fi',
-            )
+                name_inessive="Messukeskus Siivessä",
+            ),
         )
-        self.event, unused = Event.objects.get_or_create(slug='yukicon2019', defaults=dict(
-            name='Yukicon 6.0 (2019)',
-            name_genitive='Yukicon 6.0 -tapahtuman',
-            name_illative='Yukicon 6.0 -tapahtumaan',
-            name_inessive='Yukicon 6.0 -tapahtumassa',
-            homepage_url='http://www.yukicon.fi',
-            organization=self.organization,
-            start_time=datetime(2019, 3, 9, 10, 0, tzinfo=self.tz),
-            end_time=datetime(2019, 3, 10, 18, 0, tzinfo=self.tz),
-            venue=self.venue,
-            panel_css_class='panel-info',
-        ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug="yukitea-ry",
+            defaults=dict(
+                name="Yukitea ry",
+                homepage_url="http://www.yukicon.fi",
+            ),
+        )
+        self.event, unused = Event.objects.get_or_create(
+            slug="yukicon2019",
+            defaults=dict(
+                name="Yukicon 6.0 (2019)",
+                name_genitive="Yukicon 6.0 -tapahtuman",
+                name_illative="Yukicon 6.0 -tapahtumaan",
+                name_inessive="Yukicon 6.0 -tapahtumassa",
+                homepage_url="http://www.yukicon.fi",
+                organization=self.organization,
+                start_time=datetime(2019, 3, 9, 10, 0, tzinfo=self.tz),
+                end_time=datetime(2019, 3, 10, 18, 0, tzinfo=self.tz),
+                venue=self.venue,
+                panel_css_class="panel-info",
+            ),
+        )
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, = TicketsEventMeta.get_or_create_groups(self.event, ['admins'])
+        (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
 
         defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
             shipping_and_handling_cents=0,
             reference_number_template="2019{:06d}",
-            contact_email='Yukicon <liput@yukicon.fi>',
+            contact_email="Yukicon <liput@yukicon.fi>",
             ticket_free_text=(
                 "Tämä on sähköinen lippusi. Sähköinen lippu vaihdetaan rannekkeeseen\n"
                 "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
@@ -84,9 +90,9 @@ class Setup(object):
                 "<p>Lue lisää tapahtumasta "
                 "<a href='http://www.yukicon.fi' target='_blank'>Yukiconin kotisivuilta</a>.</p>"
             ),
-            print_logo_path=mkpath('static', 'images', 'Yukicon_logo_taustaton.jpg'),
+            print_logo_path=mkpath("static", "images", "Yukicon_logo_taustaton.jpg"),
             print_logo_width_mm=50,
-            print_logo_height_mm=16
+            print_logo_height_mm=16,
         )
 
         if self.test:
@@ -109,14 +115,14 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name='Yukicon 6.0 – Early Access',
+                name="Yukicon 6.0 – Early Access",
                 description=(
-                    'Early Access -lipulla pääset Yukiconiin 9.–10.3.2019. Lippu oikeuttaa Early Access '
-                    '-etuuksien lunastuksen. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, '
-                    'jota vastaan saat rannekkeen tapahtuman ovelta.'
+                    "Early Access -lipulla pääset Yukiconiin 9.–10.3.2019. Lippu oikeuttaa Early Access "
+                    "-etuuksien lunastuksen. Maksettuasi sinulle lähetetään PDF-lippu antamaasi sähköpostiin, "
+                    "jota vastaan saat rannekkeen tapahtuman ovelta."
                 ),
                 limit_groups=[
-                    limit_group('Yuki19 VIP-liput', 100),
+                    limit_group("Yuki19 VIP-liput", 100),
                 ],
                 price_cents=4000,
                 requires_shipping=False,
@@ -125,12 +131,10 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Yukicon 6.0 viikonloppulippu',
-                description=(
-                    'Pääsylippu Yukicon 6.0 -tapahtumaan Helsingin Messukeskuksen Siivessä 9.-10.3.2019.'
-                ),
+                name="Yukicon 6.0 viikonloppulippu",
+                description=("Pääsylippu Yukicon 6.0 -tapahtumaan Helsingin Messukeskuksen Siivessä 9.-10.3.2019."),
                 limit_groups=[
-                    limit_group('Yuki19 tavalliset liput', 2658),
+                    limit_group("Yuki19 tavalliset liput", 2658),
                 ],
                 price_cents=3200,
                 requires_shipping=False,
@@ -139,19 +143,14 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
         ]:
-            name = product_info.pop('name')
-            limit_groups = product_info.pop('limit_groups')
+            name = product_info.pop("name")
+            limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(
-                event=self.event,
-                name=name,
-                defaults=product_info
-            )
+            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
                 product.save()
-
 
     def setup_programme(self):
         from labour.models import PersonnelClass
@@ -165,13 +164,16 @@ class Setup(object):
         )
         from core.utils import full_hours_between
 
-        admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
-            admin_group=admin_group,
-        ))
+        admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
 
         if not programme_event_meta.contact_email:
-            programme_event_meta.contact_email = 'Yukiconin ohjelmavastaava <ohjelma@yukicon.fi>'
+            programme_event_meta.contact_email = "Yukiconin ohjelmavastaava <ohjelma@yukicon.fi>"
             programme_event_meta.save()
 
         if settings.DEBUG:
@@ -180,7 +182,7 @@ class Setup(object):
             programme_event_meta.save()
 
         for pc_slug, role_title, role_is_default in [
-            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+            ("ohjelma", "Ohjelmanjärjestäjä", True),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
             role, unused = Role.objects.get_or_create(
@@ -188,30 +190,30 @@ class Setup(object):
                 title=role_title,
                 defaults=dict(
                     is_default=role_is_default,
-                )
+                ),
             )
 
         for category_name, category_style in [
-            ('Pelit', 'rope'),
-            ('Anime/manga', 'anime'),
-            ('Cosplay', 'cosplay'),
-            ('Muu', 'muu'),
+            ("Pelit", "rope"),
+            ("Anime/manga", "anime"),
+            ("Cosplay", "cosplay"),
+            ("Muu", "muu"),
         ]:
             Category.objects.get_or_create(
                 event=self.event,
                 title=category_name,
                 defaults=dict(
                     style=category_style,
-                )
+                ),
             )
 
         for tag_name, tag_style in [
-            ('Luento', 'label-default'),
-            ('Paneeli', 'label-success'),
-            ('Keskustelupiiri', 'label-info'),
-            ('Työpaja', 'label-warning'),
-            ("Let's Play", 'label-danger'),
-            ('Visa/leikki', 'label-primary'),
+            ("Luento", "label-default"),
+            ("Paneeli", "label-success"),
+            ("Keskustelupiiri", "label-info"),
+            ("Työpaja", "label-warning"),
+            ("Let's Play", "label-danger"),
+            ("Visa/leikki", "label-primary"),
         ]:
             Tag.objects.get_or_create(
                 event=self.event,
@@ -233,21 +235,14 @@ class Setup(object):
                 ),
             ]:
                 TimeBlock.objects.get_or_create(
-                    event=self.event,
-                    start_time=start_time,
-                    defaults=dict(
-                        end_time=end_time
-                    )
+                    event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
                 )
 
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(
-                    event=self.event,
-                    start_time=hour_start_time.replace(minute=30)
-                )
+                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
 
     def setup_labour(self):
         from core.models import Event, Person
@@ -262,7 +257,7 @@ class Setup(object):
         from ...models import SignupExtra, SpecialDiet, EventDay
         from django.contrib.contenttypes.models import ContentType
 
-        labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
+        (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
@@ -277,7 +272,7 @@ class Setup(object):
             work_begins=datetime(2019, 2, 1, 0, 0, 0, tzinfo=self.tz),
             work_ends=datetime(2019, 3, 31, 0, 0, 0, tzinfo=self.tz),
             admin_group=labour_admin_group,
-            contact_email='Yukiconin työvoimatiimi <yukicon@yukicon.fi>',
+            contact_email="Yukiconin työvoimatiimi <yukicon@yukicon.fi>",
         )
 
         if self.test:
@@ -295,12 +290,12 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            ('Conitea', 'conitea', 'labour'),
-            ('Työvoima', 'tyovoima', 'labour'),
-            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            ('Media', 'media', 'badges'),
-            ('Myyjä', 'myyja', 'badges'),
-            ('Vieras', 'vieras', 'badges'),
+            ("Conitea", "conitea", "labour"),
+            ("Työvoima", "tyovoima", "labour"),
+            ("Ohjelmanjärjestäjä", "ohjelma", "programme"),
+            ("Media", "media", "badges"),
+            ("Myyjä", "myyja", "badges"),
+            ("Vieras", "vieras", "badges"),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -312,8 +307,8 @@ class Setup(object):
                 ),
             )
 
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
-        conitea = PersonnelClass.objects.get(event=self.event, slug='conitea')
+        tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
+        conitea = PersonnelClass.objects.get(event=self.event, slug="conitea")
 
         # for name, description, pcs in [
         #     (
@@ -344,54 +339,53 @@ class Setup(object):
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug='yukicon2018'),
+                source_event=Event.objects.get(slug="yukicon2018"),
                 target_event=self.event,
             )
 
-        for name in ['Conitea']:
+        for name in ["Conitea"]:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            ('Järjestyksenvalvoja', 'JV-kortti'),
+            ("Järjestyksenvalvoja", "JV-kortti"),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
 
             jc.required_qualifications.set([qual])
 
-
         labour_event_meta.create_groups()
 
         for diet_name in [
-            'Gluteeniton',
-            'Laktoositon',
-            'Maidoton',
-            'Vegaaninen',
-            'Lakto-ovo-vegetaristinen',
+            "Gluteeniton",
+            "Laktoositon",
+            "Maidoton",
+            "Vegaaninen",
+            "Lakto-ovo-vegetaristinen",
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         for event_day in [
-            'Perjantai (rakennuspäivä)',
-            'Lauantai',
-            'Sunnuntai',
+            "Perjantai (rakennuspäivä)",
+            "Lauantai",
+            "Sunnuntai",
         ]:
             EventDay.objects.get_or_create(name=event_day)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug='conitea',
+            slug="conitea",
             defaults=dict(
-                title='Conitean ilmoittautumislomake',
-                signup_form_class_path='events.yukicon2019.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='events.yukicon2019.forms:OrganizerSignupExtraForm',
+                title="Conitean ilmoittautumislomake",
+                signup_form_class_path="events.yukicon2019.forms:OrganizerSignupForm",
+                signup_extra_form_class_path="events.yukicon2019.forms:OrganizerSignupExtraForm",
                 active_from=datetime(2018, 4, 26, 0, 0, 0, tzinfo=self.tz),
                 active_until=self.event.start_time,
             ),
         )
 
         for wiki_space, link_title, link_group in [
-            ('YUKICON2019', 'Coniteawiki', 'conitea'),
+            ("YUKICON2019", "Coniteawiki", "conitea"),
             # ('YUKIWORK', 'Työvoimawiki', 'accepted'),
             # ('YUKINFO', 'Infowiki', 'info'),
         ]:
@@ -399,62 +393,56 @@ class Setup(object):
                 event=self.event,
                 title=link_title,
                 defaults=dict(
-                    url='https://confluence.tracon.fi/display/{wiki_space}'.format(wiki_space=wiki_space),
+                    url=f"https://confluence.tracon.fi/display/{wiki_space}",
                     group=labour_event_meta.get_group(link_group),
-                )
+                ),
             )
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
-        badge_admin_group, = BadgesEventMeta.get_or_create_groups(self.event, ['admins'])
+        (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout='nick',
-            )
+                badge_layout="nick",
+            ),
         )
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team
 
-        admin_group, = IntraEventMeta.get_or_create_groups(self.event, ['admins'])
-        organizer_group = self.event.labour_event_meta.get_group('conitea')
+        (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
+        organizer_group = self.event.labour_event_meta.get_group("conitea")
         meta, unused = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
                 organizer_group=organizer_group,
-            )
+            ),
         )
 
         for team_slug, team_name in [
-            ('pirut', 'Pirut'),
-            ('ohjelma', 'Ohjelma'),
-            ('tuotanto', 'Tuotanto'),
-            ('talous', 'Talous'),
-            ('tiedotus', 'Tiedotus'),
+            ("pirut", "Pirut"),
+            ("ohjelma", "Ohjelma"),
+            ("tuotanto", "Tuotanto"),
+            ("talous", "Talous"),
+            ("tiedotus", "Tiedotus"),
         ]:
-            team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
-            email = '{}@yukicon.fi'.format(team_slug)
+            (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            email = f"{team_slug}@yukicon.fi"
 
             team, created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
-                defaults=dict(
-                    name=team_name,
-                    order=self.get_ordering_number(),
-                    group=team_group,
-                    email=email
-                )
+                defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
 
 
-
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup yukicon2019 specific stuff'
+    args = ""
+    help = "Setup yukicon2019 specific stuff"
 
     def handle(self, *args, **opts):
         Setup().setup(test=settings.DEBUG)

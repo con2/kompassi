@@ -3,8 +3,8 @@ from django.db import models
 from ...models import Signup
 
 
-STATE_ARRIVED = 'arrived'
-STATE_NOT_ARRIVED = 'finished'
+STATE_ARRIVED = "arrived"
+STATE_NOT_ARRIVED = "finished"
 
 
 class SignupOnboardingProxy(Signup):
@@ -22,11 +22,12 @@ class SignupOnboardingProxy(Signup):
     and returning people to the non-arrived state places them in the "finished" state. May those affected
     have patience and forgiveness. Once the Grand Order is abolished, this will be revisited.
     """
+
     class Meta:
         proxy = True
 
     def mark_arrived(self, is_arrived):
-        assert self.is_active, 'Will not mark an inactive Signup as arrived'
+        assert self.is_active, "Will not mark an inactive Signup as arrived"
 
         if is_arrived:
             self.state = STATE_ARRIVED

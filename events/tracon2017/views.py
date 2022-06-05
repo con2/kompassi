@@ -15,22 +15,25 @@ from .models import SignupExtra, Poison
 
 @labour_admin_required
 def tracon2017_afterparty_participants_view(request, vars, event):
-    assert event.slug == 'tracon2017'
+    assert event.slug == "tracon2017"
 
     participants = SignupExtraAfterpartyProxy.objects.filter(afterparty_participation=True)
 
     filename = "{event.slug}_afterparty_participants_{timestamp}.xlsx".format(
         event=event,
-        timestamp=now().strftime('%Y%m%d%H%M%S'),
+        timestamp=now().strftime("%Y%m%d%H%M%S"),
         format=format,
     )
 
-    emit('core.person.exported', request=request, event=event)
+    emit("core.person.exported", request=request, event=event)
 
-    return csv_response(event, SignupExtraAfterpartyProxy, participants,
-        dialect='xlsx',
+    return csv_response(
+        event,
+        SignupExtraAfterpartyProxy,
+        participants,
+        dialect="xlsx",
         filename=filename,
-        m2m_mode='separate_columns',
+        m2m_mode="separate_columns",
     )
 
 
@@ -48,13 +51,13 @@ def count_passengers(signup_extras, field_name):
 
 
 def tracon2017_afterparty_summary_view(request, event_slug):
-    assert event_slug == 'tracon2017'
+    assert event_slug == "tracon2017"
     event = Event.objects.get(slug=event_slug)
 
-    poisons = Poison.objects.all().annotate(victims=Count('signupextra'))
+    poisons = Poison.objects.all().annotate(victims=Count("signupextra"))
     signup_extras = SignupExtra.objects.filter(afterparty_participation=True)
-    outward_coaches = count_passengers(signup_extras, 'outward_coach_departure_time')
-    return_coaches = count_passengers(signup_extras, 'return_coach_departure_time')
+    outward_coaches = count_passengers(signup_extras, "outward_coach_departure_time")
+    return_coaches = count_passengers(signup_extras, "return_coach_departure_time")
 
     vars = dict(
         event=event,
@@ -63,4 +66,4 @@ def tracon2017_afterparty_summary_view(request, event_slug):
         return_coaches=return_coaches,
     )
 
-    return render(request, 'tracon2017_afterparty_summary_view.pug', vars)
+    return render(request, "tracon2017_afterparty_summary_view.pug", vars)

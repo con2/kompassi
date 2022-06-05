@@ -93,9 +93,8 @@ class UtilsTestCase(TestCase):
         # all events are assumed to be in the server timezone (EET/EEST) for now
         tz = get_current_timezone()
 
-        # NOTE: django.utils.timezone uses pytz so dt.replace(tzinfo=) will produce incorrect results
         def mkdt(*args, **kwargs) -> datetime:
-            return tz.localize(datetime(*args, **kwargs))
+            return datetime(*args, **kwargs, tzinfo=tz)
 
         examples = [
             # date
@@ -136,9 +135,7 @@ class UtilsTestCase(TestCase):
         d1 = datetime(2016, 4, 27, 23, 0, 0, tzinfo=tz)
         d2 = datetime(2016, 4, 28, 1, 0, 0, tzinfo=tz)
 
-        self.assertEqual(
-            format_interval(d0, d1, locale=locale), "ke 27.4. klo 21.00–23.00"
-        )
+        self.assertEqual(format_interval(d0, d1, locale=locale), "ke 27.4. klo 21.00–23.00")
 
         self.assertEqual(
             format_interval(d0, d2, locale=locale),

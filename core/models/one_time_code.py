@@ -4,24 +4,24 @@ from random import choice
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .constants import EMAIL_LENGTH
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 ONE_TIME_CODE_LENGTH = 40
-ONE_TIME_CODE_ALPHABET = '0123456789abcdef'
+ONE_TIME_CODE_ALPHABET = "0123456789abcdef"
 ONE_TIME_CODE_STATE_CHOICES = [
-    ('valid', _('Valid')),
-    ('used', _('Used')),
-    ('revoked', _('Revoked')),
+    ("valid", _("Valid")),
+    ("used", _("Used")),
+    ("revoked", _("Revoked")),
 ]
 
 
-class OneTimeCodeMixin(object):
+class OneTimeCodeMixin:
     @property
     def is_used(self):
         return self.used_at is not None
@@ -34,8 +34,8 @@ class OneTimeCodeMixin(object):
         return self.code
 
     def revoke(self):
-        assert self.state == 'valid'
-        self.state = 'revoked'
+        assert self.state == "valid"
+        self.state = "revoked"
         self.used_at = timezone.now()
         self.save()
 
@@ -58,8 +58,9 @@ class OneTimeCodeMixin(object):
 
         opts.update(kwargs)
 
-        if 'background_tasks' in settings.INSTALLED_APPS:
+        if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import send_email
+
             send_email.delay(**opts)
         else:
             from django.core.mail import EmailMessage
@@ -70,10 +71,10 @@ class OneTimeCodeMixin(object):
             EmailMessage(**opts).send(fail_silently=True)
 
     def mark_used(self):
-        assert self.state == 'valid'
+        assert self.state == "valid"
 
         self.used_at = timezone.now()
-        self.state = 'used'
+        self.state = "used"
         self.save()
 
     @classmethod
@@ -83,12 +84,12 @@ class OneTimeCodeMixin(object):
 
 class OneTimeCode(models.Model, OneTimeCodeMixin):
     code = models.CharField(max_length=63, unique=True)
-    person = models.ForeignKey('core.Person', on_delete=models.CASCADE)
+    person = models.ForeignKey("core.Person", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     used_at = models.DateTimeField(null=True, blank=True)
     state = models.CharField(
         max_length=8,
-        default='valid',
+        default="valid",
         choices=ONE_TIME_CODE_STATE_CHOICES,
     )
 
@@ -96,7 +97,7 @@ class OneTimeCode(models.Model, OneTimeCodeMixin):
         if not self.code:
             self.code = "".join(choice(ONE_TIME_CODE_ALPHABET) for _ in range(ONE_TIME_CODE_LENGTH))
 
-        return super(OneTimeCode, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     @property
     def name_and_email(self):
@@ -105,7 +106,7 @@ class OneTimeCode(models.Model, OneTimeCodeMixin):
     class Meta:
         abstract = True
         index_together = [
-            ('person', 'state'),
+            ("person", "state"),
         ]
 
 
@@ -118,13 +119,13 @@ class OneTimeCodeLite(models.Model, OneTimeCodeMixin):
     email = models.EmailField(
         blank=True,
         max_length=EMAIL_LENGTH,
-        verbose_name=_('E-mail address'),
+        verbose_name=_("E-mail address"),
     )
     created_at = models.DateTimeField(auto_now_add=True)
     used_at = models.DateTimeField(null=True, blank=True)
     state = models.CharField(
         max_length=8,
-        default='valid',
+        default="valid",
         choices=ONE_TIME_CODE_STATE_CHOICES,
     )
 
@@ -132,7 +133,7 @@ class OneTimeCodeLite(models.Model, OneTimeCodeMixin):
         if not self.code:
             self.code = self.generate_code()
 
-        return super(OneTimeCodeLite, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     @property
     def name_and_email(self):
@@ -141,5 +142,5 @@ class OneTimeCodeLite(models.Model, OneTimeCodeMixin):
     class Meta:
         abstract = True
         index_together = [
-            ('email', 'state'),
+            ("email", "state"),
         ]

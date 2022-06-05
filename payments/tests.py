@@ -30,20 +30,20 @@ class HMACTestCase(TestCase):
                     "units": 1,
                     "vatPercentage": 24,
                     "productCode": "#1234",
-                    "deliveryDate": "2018-09-01"
+                    "deliveryDate": "2018-09-01",
                 }
             ],
-            "customer": {
-                "email": "test.customer@example.com"
-            },
+            "customer": {"email": "test.customer@example.com"},
             "redirectUrls": {
                 "success": "https://ecom.example.com/cart/success",
-                "cancel": "https://ecom.example.com/cart/cancel"
-            }
+                "cancel": "https://ecom.example.com/cart/cancel",
+            },
         }
 
         # encoded here without spaces in the output to match known hmac from examples
         # https://checkoutfinland.github.io/psp-api/#/examples?id=hmac-calculation-node-js
         body = json.dumps(body, separators=(",", ":"))
 
-        assert calculate_hmac(secret, headers, body) == "3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6"
+        assert (
+            calculate_hmac(secret, headers, body) == "3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6"
+        )

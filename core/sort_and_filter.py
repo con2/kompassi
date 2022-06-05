@@ -1,17 +1,17 @@
 from collections import OrderedDict
 
-from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_text
+from django.utils.translation import gettext_lazy as _
+from django.utils.encoding import force_str
 
 from core.utils import mutate_query_params, simple_object_repr
 
 
-class Definition(object):
+class Definition:
     __slots__ = [
-        'slug',
-        'name',
-        'definition',
-        'owner',
+        "slug",
+        "name",
+        "definition",
+        "owner",
     ]
 
     def __init__(self, slug, name, definition, owner=None):
@@ -39,7 +39,7 @@ class Definition(object):
         return mutate_query_params(self.owner.request, {self.owner.request_param: None})
 
 
-class SortAndFilterBase(object):
+class SortAndFilterBase:
     default_to_first_added = False
 
     def __init__(self, request, request_param, default=None):
@@ -134,7 +134,7 @@ class Filter(SortAndFilterBase):
         :return: Self, for chaining
         """
         for obj in object_list:
-            self.add(slug=obj.slug, name=force_text(obj), definition={filter_field: obj.slug})
+            self.add(slug=obj.slug, name=force_str(obj), definition={filter_field: obj.slug})
         return self
 
     def add_choices(self, filter_field, choices):
@@ -150,4 +150,4 @@ class Filter(SortAndFilterBase):
         return self
 
     def add_booleans(self, filter_field):
-        return self.add_choices(filter_field, [("1", _('Yes')), ("0", _('No'))])
+        return self.add_choices(filter_field, [("1", _("Yes")), ("0", _("No"))])

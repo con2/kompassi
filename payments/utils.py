@@ -6,10 +6,10 @@ import requests
 
 def calculate_hmac(
     secret: str,
-    params: Dict[str, str],
+    params: dict[str, str],
     body: str = None,
-    encoding = 'UTF-8',
-    hash_algorithm = 'sha256',
+    encoding="UTF-8",
+    hash_algorithm="sha256",
 ):
     """
     :param secret: Merchant shared secret

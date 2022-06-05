@@ -17,13 +17,11 @@ class UtilsTestCase(TestCase):
         tz = tzlocal()
 
         self.assertEqual(
-            next_full_hour(datetime(2013, 8, 15, 19, 4, 25, tzinfo=tz)),
-            datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz)
+            next_full_hour(datetime(2013, 8, 15, 19, 4, 25, tzinfo=tz)), datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz)
         )
 
         self.assertEqual(
-            next_full_hour(datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)),
-            datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)
+            next_full_hour(datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)), datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)
         )
 
     def test_schedule_is_public(self):
@@ -75,7 +73,7 @@ class ProgrammeSignupExtraTestCase(TestCase):
         assert signup_extra.pk == signup_extra_pk
         assert signup_extra.is_active
 
-        programme.state = 'rejected'
+        programme.state = "rejected"
         programme.save()
         programme.apply_state()
         signup_extra = SignupExtra.for_event_and_person(event, person)
@@ -84,7 +82,7 @@ class ProgrammeSignupExtraTestCase(TestCase):
 
         signup.personnel_classes.set([])
         signup.job_categories_accepted.set([])
-        signup.state = 'cancelled'
+        signup.state = "cancelled"
         assert not signup.is_active
         signup.save()
         signup.apply_state()
@@ -100,7 +98,7 @@ class ProgrammeSlackAccessTestCase(TestCase):
         person = programme_role.person
         event = programme.category.event
         meta = event.programme_event_meta
-        group = meta.get_group('hosts')
+        group = meta.get_group("hosts")
 
         slack_access, unused = SlackAccess.get_or_create_dummy()
         privilege = slack_access.privilege
@@ -113,11 +111,11 @@ class ProgrammeSlackAccessTestCase(TestCase):
         assert person.user in group.user_set.all()
         assert privilege in Privilege.get_potential_privileges(person)
 
-        programme.state = 'rejected'
+        programme.state = "rejected"
         programme.save()
         programme.apply_state()
 
-        group = meta.get_group('hosts')
+        group = meta.get_group("hosts")
         assert person.user not in group.user_set.all()
         assert privilege not in Privilege.get_potential_privileges(person)
 

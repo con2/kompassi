@@ -14,20 +14,20 @@ from ..page_wizard import page_wizard_clear, page_wizard_vars
 from .email_verification_views import remind_email_verification_if_needed
 
 
-@sensitive_post_parameters('password')
-@require_http_methods(['GET', 'POST'])
+@sensitive_post_parameters("password")
+@require_http_methods(["GET", "POST"])
 @csp_exempt  # FIXME
 def core_login_view(request):
-    next = get_next(request, 'core_frontpage_view')
+    next = get_next(request, "core_frontpage_view")
     form = initialize_form(LoginForm, request, initial=dict(next=next))
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
 
             # Allow login via email address instead of username
-            if username and password and '@' in username:
+            if username and password and "@" in username:
                 try:
                     person = Person.objects.get(email=username, user__isnull=False)
                     username = person.user.username
@@ -39,36 +39,31 @@ def core_login_view(request):
             if user:
                 response = do_login(request, user=user, password=password, next=next)
                 page_wizard_clear(request)
-                messages.success(request, 'Olet nyt kirjautunut sisään.')
+                messages.success(request, "Olet nyt kirjautunut sisään.")
                 return response
             else:
-                messages.error(request, 'Sisäänkirjautuminen epäonnistui.')
+                messages.error(request, "Sisäänkirjautuminen epäonnistui.")
         else:
-            messages.error(request, 'Ole hyvä ja korjaa virheelliset kentät.')
+            messages.error(request, "Ole hyvä ja korjaa virheelliset kentät.")
 
     vars = page_wizard_vars(request)
 
-    vars.update(
-        form=form,
-        login_page=True
-    )
+    vars.update(form=form, login_page=True)
 
-    return render(request, 'core_login_view.pug', vars)
+    return render(request, "core_login_view.pug", vars)
 
 
-def do_login(request, user, password=None, next='core_frontpage_view'):
+def do_login(request, user, password=None, next="core_frontpage_view"):
     """
     Performs Django login, possible Crowd login and required post-login steps.
 
     `django.contrib.auth.authenticate` must be called first.
     """
 
-    if 'api' in settings.INSTALLED_APPS:
+    if "api" in settings.INSTALLED_APPS:
         if user.groups.filter(name=settings.KOMPASSI_APPLICATION_USER_GROUP).exists():
-            messages.error(request,
-                'API-käyttäjätunnuksilla sisäänkirjautuminen on estetty.'
-            )
-            return redirect('core_frontpage_view')
+            messages.error(request, "API-käyttäjätunnuksilla sisäänkirjautuminen on estetty.")
+            return redirect("core_frontpage_view")
 
     login(request, user)
 
@@ -88,10 +83,10 @@ def do_login(request, user, password=None, next='core_frontpage_view'):
     return redirect(next)
 
 
-@require_http_methods(['GET', 'HEAD', 'POST'])
+@require_http_methods(["GET", "HEAD", "POST"])
 @csp_exempt  # FIXME
 def core_logout_view(request):
     next = get_next(request)
     logout(request)
-    messages.success(request, 'Olet nyt kirjautunut ulos.')
+    messages.success(request, "Olet nyt kirjautunut ulos.")
     return redirect(next)

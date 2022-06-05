@@ -31,17 +31,17 @@ from labour.models import SignupExtraBase
 
 
 SHIFT_TYPE_CHOICES = [
-    ('yksipitka', 'Yksi pitkä vuoro'),
-    ('montalyhytta', 'Monta lyhyempää vuoroa'),
-    ('kaikkikay', 'Kumpi tahansa käy'),
+    ("yksipitka", "Yksi pitkä vuoro"),
+    ("montalyhytta", "Monta lyhyempää vuoroa"),
+    ("kaikkikay", "Kumpi tahansa käy"),
 ]
 
 TOTAL_WORK_CHOICES = [
-    ('4h', 'Minimi - 4 tuntia'),
-    ('6h', '6 tuntia'),
-    ('8h', '8 tuntia'),
-    ('12h', '10–12 tuntia'),
-#    (u'yli12h', 'Työn Sankari! Yli 12 tuntia!'),
+    ("4h", "Minimi - 4 tuntia"),
+    ("6h", "6 tuntia"),
+    ("8h", "8 tuntia"),
+    ("12h", "10–12 tuntia"),
+    #    (u'yli12h', 'Työn Sankari! Yli 12 tuntia!'),
 ]
 
 
@@ -60,28 +60,30 @@ class SpecialDiet(SimpleChoice):
 
 
 class SignupExtra(SignupExtraBase):
-    shift_type = models.CharField(max_length=15,
-        verbose_name='Toivottu työvuoron pituus',
-        help_text='Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?',
+    shift_type = models.CharField(
+        max_length=15,
+        verbose_name="Toivottu työvuoron pituus",
+        help_text="Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?",
         choices=SHIFT_TYPE_CHOICES,
     )
 
-    total_work = models.CharField(max_length=15,
-        verbose_name='Toivottu kokonaistyömäärä',
-        help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana?',
+    total_work = models.CharField(
+        max_length=15,
+        verbose_name="Toivottu kokonaistyömäärä",
+        help_text="Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana?",
         choices=TOTAL_WORK_CHOICES,
     )
 
     shift_setup = models.BooleanField(
         default=False,
-        verbose_name='Voin työskennellä aamulla klo 8 alkaen',
-        help_text='Ensimmäiset työtehtävät alkavat klo 8. Älä valitse tätä ruutua, jos et esimerkiksi kulkuyhteyksien vuoksi pysty saapumaan Malmitalolle klo 8:an mennessä.',
+        verbose_name="Voin työskennellä aamulla klo 8 alkaen",
+        help_text="Ensimmäiset työtehtävät alkavat klo 8. Älä valitse tätä ruutua, jos et esimerkiksi kulkuyhteyksien vuoksi pysty saapumaan Malmitalolle klo 8:an mennessä.",
     )
 
     shift_cleanup = models.BooleanField(
         default=False,
-        verbose_name='Voin työskennellä illalla klo 20 asti',
-        help_text='Viimeiset työtehtävät jatkuvat klo 20 asti. Älä valitse tätä ruutua, jos et esimerkiksi kulkuyhteyksien vuoksi pysty jäämään Malmitalolle klo 20:en asti.',
+        verbose_name="Voin työskennellä illalla klo 20 asti",
+        help_text="Viimeiset työtehtävät jatkuvat klo 20 asti. Älä valitse tätä ruutua, jos et esimerkiksi kulkuyhteyksien vuoksi pysty jäämään Malmitalolle klo 20:en asti.",
     )
 
     # night_work = models.CharField(max_length=5,
@@ -98,7 +100,7 @@ class SignupExtra(SignupExtraBase):
 
     want_certificate = models.BooleanField(
         default=False,
-        verbose_name='Haluan todistuksen työskentelystäni Tylyconissa',
+        verbose_name="Haluan todistuksen työskentelystäni Tylyconissa",
     )
 
     # certificate_delivery_address = models.TextField(
@@ -118,18 +120,14 @@ class SignupExtra(SignupExtraBase):
     #         u'target="_blank">ladyfit-paita</a>',
     # )
 
-    special_diet = models.ManyToManyField(
-        SpecialDiet,
-        blank=True,
-        verbose_name='Erikoisruokavalio'
-    )
+    special_diet = models.ManyToManyField(SpecialDiet, blank=True, verbose_name="Erikoisruokavalio")
 
     special_diet_other = models.TextField(
         blank=True,
-        verbose_name='Muu erikoisruokavalio',
-        help_text='Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, '
-            'ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot '
-            'huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.'
+        verbose_name="Muu erikoisruokavalio",
+        help_text="Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, "
+        "ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot "
+        "huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.",
     )
 
     # need_lodging = models.BooleanField(
@@ -139,10 +137,10 @@ class SignupExtra(SignupExtraBase):
 
     prior_experience = models.TextField(
         blank=True,
-        verbose_name='Työkokemus',
-        help_text='Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista '
-            'tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä '
-            'hakemassasi tehtävässä.'
+        verbose_name="Työkokemus",
+        help_text="Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista "
+        "tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä "
+        "hakemassasi tehtävässä.",
     )
 
     # shift_wishes = models.TextField(
@@ -153,24 +151,24 @@ class SignupExtra(SignupExtraBase):
     # )
 
     motivation = models.TextField(
-        blank=True,
-        verbose_name='Miksi haet Tylyconiin?',
-        help_text='Kerro, miksi haluat töihin juuri tähän coniin.'
+        blank=True, verbose_name="Miksi haet Tylyconiin?", help_text="Kerro, miksi haluat töihin juuri tähän coniin."
     )
 
     free_text = models.TextField(
         blank=True,
-        verbose_name='Vapaa alue',
-        help_text='Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole '
-            'omaa kenttää yllä, käytä tätä kenttää.'
+        verbose_name="Vapaa alue",
+        help_text="Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole "
+        "omaa kenttää yllä, käytä tätä kenttää.",
     )
 
     @classmethod
     def get_form_class(cls):
         from .forms import SignupExtraForm
+
         return SignupExtraForm
 
     @classmethod
     def get_programme_form_class(cls):
         from .forms import ProgrammeSignupExtraForm
+
         return ProgrammeSignupExtraForm

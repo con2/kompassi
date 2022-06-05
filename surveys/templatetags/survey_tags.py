@@ -3,7 +3,7 @@ from django.template import Library
 import yaml
 
 
-__all__ = ['to_yaml']
+__all__ = ["to_yaml"]
 register = Library()
 
 

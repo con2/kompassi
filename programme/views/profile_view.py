@@ -13,11 +13,14 @@ def profile_view(request):
     past_programmes = Programme.get_past_programmes(person)
     rejected_programmes = Programme.get_rejected_programmes(person)
 
-    no_programmes = not any(i.exists() for i in (
-        future_programmes,
-        past_programmes,
-        rejected_programmes,
-    ))
+    no_programmes = not any(
+        i.exists()
+        for i in (
+            future_programmes,
+            past_programmes,
+            rejected_programmes,
+        )
+    )
 
     vars = dict(
         future_programmes=future_programmes,
@@ -26,4 +29,4 @@ def profile_view(request):
         rejected_programmes=rejected_programmes,
     )
 
-    return render(request, 'programme_profile_view.pug', vars)
+    return render(request, "programme_profile_view.pug", vars)

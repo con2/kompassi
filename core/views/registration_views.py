@@ -15,23 +15,23 @@ from ..page_wizard import page_wizard_vars
 from .login_views import do_login
 
 
-@sensitive_post_parameters('registration-password', 'registration-password_again')
-@require_http_methods(['GET', 'HEAD', 'POST'])
+@sensitive_post_parameters("registration-password", "registration-password_again")
+@require_http_methods(["GET", "HEAD", "POST"])
 def core_registration_view(request):
     vars = page_wizard_vars(request)
-    next = vars['next']
+    next = vars["next"]
 
     if request.user.is_authenticated:
         return redirect(next)
 
-    person_form = initialize_form(RegistrationPersonForm, request, prefix='person')
-    registration_form = initialize_form(RegistrationForm, request, prefix='registration')
-    terms_and_conditions_form = initialize_form(TermsAndConditionsForm, request, prefix='terms')
+    person_form = initialize_form(RegistrationPersonForm, request, prefix="person")
+    registration_form = initialize_form(RegistrationForm, request, prefix="registration")
+    terms_and_conditions_form = initialize_form(TermsAndConditionsForm, request, prefix="terms")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if person_form.is_valid() and registration_form.is_valid() and terms_and_conditions_form.is_valid():
-            username = registration_form.cleaned_data['username']
-            password = registration_form.cleaned_data['password']
+            username = registration_form.cleaned_data["username"]
+            password = registration_form.cleaned_data["password"]
 
             with transaction.atomic():
                 person = person_form.save(commit=False)
@@ -56,34 +56,36 @@ def core_registration_view(request):
             # into Crowd, which in turn would cause a race between the task that creates the user
             # (with password, mind you) and the task that sets the password at login time.
             response = do_login(request, user=user, password=None, next=next)
-            messages.success(request,
-                'Käyttäjätunnuksesi on luotu. Tervetuloa {kompassiin}!'
-                .format(kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE)
+            messages.success(
+                request,
+                "Käyttäjätunnuksesi on luotu. Tervetuloa {kompassiin}!".format(
+                    kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE
+                ),
             )
             return response
         else:
-            messages.error(request, 'Ole hyvä ja tarkista lomake.')
+            messages.error(request, "Ole hyvä ja tarkista lomake.")
 
     vars.update(
         next=next,
         person_form=person_form,
         registration_form=registration_form,
         terms_and_conditions_form=terms_and_conditions_form,
-        login_page=True
+        login_page=True,
     )
 
-    return render(request, 'core_registration_view.pug', vars)
+    return render(request, "core_registration_view.pug", vars)
 
 
 @login_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
+@require_http_methods(["GET", "HEAD", "POST"])
 def core_personify_view(request):
     try:
         person = request.user.person
     except Person.DoesNotExist:
         pass
     else:
-        return redirect('core_profile_view')
+        return redirect("core_profile_view")
 
     initial = dict(
         first_name=request.user.first_name,
@@ -91,28 +93,26 @@ def core_personify_view(request):
         email=request.user.email,
     )
 
-    form = initialize_form(RegistrationPersonForm, request, initial=initial, prefix='person')
+    form = initialize_form(RegistrationPersonForm, request, initial=initial, prefix="person")
     next = get_next(request)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             person = form.save(commit=False)
             person.user = request.user
             person.save()
             person.setup_email_verification(request)
-            messages.success(request,
-                'Tietosi on tallennettu. Ole hyvä ja vahvista sähköpostiosoitteesi. Tarkista '
-                'postilaatikkosi ja noudata vahvistusviestissä olevia ohjeita.'
+            messages.success(
+                request,
+                "Tietosi on tallennettu. Ole hyvä ja vahvista sähköpostiosoitteesi. Tarkista "
+                "postilaatikkosi ja noudata vahvistusviestissä olevia ohjeita.",
             )
             return redirect(next)
         else:
-            messages.error(request, 'Ole hyvä ja korjaa virheelliset kentät.')
+            messages.error(request, "Ole hyvä ja korjaa virheelliset kentät.")
     else:
-        messages.info(request, 'Tämän toiminnon käyttäminen edellyttää, että täytät yhteystietosi.')
+        messages.info(request, "Tämän toiminnon käyttäminen edellyttää, että täytät yhteystietosi.")
 
-    vars = dict(
-        person_form=form,
-        next=next
-    )
+    vars = dict(person_form=form, next=next)
 
-    return render(request, 'core_personify_view.pug', vars)
+    return render(request, "core_personify_view.pug", vars)

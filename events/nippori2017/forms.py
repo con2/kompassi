@@ -8,18 +8,18 @@ from .models import SignupExtra
 
 class SignupExtraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-        self.fields['work_days'].help_text = 'Minä päivinä olet halukas työskentelemään?'
+        self.fields["work_days"].help_text = "Minä päivinä olet halukas työskentelemään?"
 
     class Meta:
         model = SignupExtra
         fields = (
-            'prior_experience',
-            'shift_wishes',
-            'free_text',
+            "prior_experience",
+            "shift_wishes",
+            "free_text",
         )
 
         widgets = dict(
@@ -30,7 +30,7 @@ class SignupExtraForm(forms.ModelForm):
 
 class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        super(ProgrammeSignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
@@ -40,5 +40,5 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            free_text='Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta',
+            free_text="Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta",
         )

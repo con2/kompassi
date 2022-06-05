@@ -8,19 +8,26 @@ import psqlextra.manager.manager
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tickets', '0029_auto_20220418_1531'),
+        ("tickets", "0029_auto_20220418_1531"),
     ]
 
     operations = [
         migrations.AlterModelManagers(
-            name='ticketseventmeta',
+            name="ticketseventmeta",
             managers=[
-                ('objects', psqlextra.manager.manager.PostgresManager()),
+                ("objects", psqlextra.manager.manager.PostgresManager()),
             ],
         ),
         migrations.AddField(
-            model_name='ticketseventmeta',
-            name='terms_and_conditions_url',
-            field=localized_fields.fields.char_field.LocalizedCharField(blank=True, default=dict, help_text='If set, customers will be required to indicate acceptance to finish order.', max_length=1023, required=[], verbose_name='Terms and conditions URL'),
+            model_name="ticketseventmeta",
+            name="terms_and_conditions_url",
+            field=localized_fields.fields.char_field.LocalizedCharField(
+                blank=True,
+                default=dict,
+                help_text="If set, customers will be required to indicate acceptance to finish order.",
+                max_length=1023,
+                required=[],
+                verbose_name="Terms and conditions URL",
+            ),
         ),
     ]

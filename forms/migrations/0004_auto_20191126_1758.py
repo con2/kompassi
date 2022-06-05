@@ -6,18 +6,18 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('forms', '0003_form_login_required'),
+        ("forms", "0003_form_login_required"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='form',
-            old_name='is_active',
-            new_name='active',
+            model_name="form",
+            old_name="is_active",
+            new_name="active",
         ),
         migrations.RenameField(
-            model_name='form',
-            old_name='is_standalone',
-            new_name='standalone',
+            model_name="form",
+            old_name="is_standalone",
+            new_name="standalone",
         ),
     ]

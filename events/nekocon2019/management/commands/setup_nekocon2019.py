@@ -11,10 +11,10 @@ from core.utils import slugify
 
 
 def mkpath(*parts):
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *parts))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         self._ordering = 0
 
@@ -35,27 +35,33 @@ class Setup(object):
     def setup_core(self):
         from core.models import Venue, Event, Organization
 
-        self.venue, unused = Venue.objects.get_or_create(name='Kuopion musiikkikeskus', defaults=dict(
-            name_inessive='Kuopion musiikkikeskuksessa',
-        ))
-        self.organization, unused = Organization.objects.get_or_create(
-            slug='nekocon-ry',
+        self.venue, unused = Venue.objects.get_or_create(
+            name="Kuopion musiikkikeskus",
             defaults=dict(
-                name='Nekocon ry',
-                homepage_url='https://nekocon.fi',
-            )
+                name_inessive="Kuopion musiikkikeskuksessa",
+            ),
         )
-        self.event, unused = Event.objects.get_or_create(slug='nekocon2019', defaults=dict(
-            name='Nekocon (2019)',
-            name_genitive='Nekoconin',
-            name_illative='Nekoconiin',
-            name_inessive='Nekoconissa',
-            homepage_url='https://nekocon.fi',
-            organization=self.organization,
-            start_time=datetime(2019, 7, 13, 10, 00, tzinfo=self.tz),
-            end_time=datetime(2019, 7, 14, 17, 0, tzinfo=self.tz),
-            venue=self.venue,
-        ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug="nekocon-ry",
+            defaults=dict(
+                name="Nekocon ry",
+                homepage_url="https://nekocon.fi",
+            ),
+        )
+        self.event, unused = Event.objects.get_or_create(
+            slug="nekocon2019",
+            defaults=dict(
+                name="Nekocon (2019)",
+                name_genitive="Nekoconin",
+                name_illative="Nekoconiin",
+                name_inessive="Nekoconissa",
+                homepage_url="https://nekocon.fi",
+                organization=self.organization,
+                start_time=datetime(2019, 7, 13, 10, 00, tzinfo=self.tz),
+                end_time=datetime(2019, 7, 14, 17, 0, tzinfo=self.tz),
+                venue=self.venue,
+            ),
+        )
 
     def setup_labour(self):
         from core.models import Person
@@ -73,10 +79,11 @@ class Setup(object):
         from ...models import SignupExtra, SpecialDiet, Night
         from django.contrib.contenttypes.models import ContentType
 
-        labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
+        (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
             from core.models import Person
+
             person, unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
@@ -87,7 +94,7 @@ class Setup(object):
             work_begins=datetime(2015, 7, 12, 12, 0, tzinfo=self.tz),
             work_ends=datetime(2015, 7, 14, 22, 0, tzinfo=self.tz),
             admin_group=labour_admin_group,
-            contact_email='Nekoconin työvoimatiimi <tyovoima@nekocon.fi>',
+            contact_email="Nekoconin työvoimatiimi <tyovoima@nekocon.fi>",
         )
 
         if self.test:
@@ -103,12 +110,12 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            ('Conitea', 'conitea', 'labour'),
-            ('Työvoima', 'tyovoima', 'labour'),
-            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            ('Kunniavieras', 'goh', 'programme'),
-            ('Media', 'media', 'badges'),
-            ('Myyjä', 'myyja', 'badges'),
+            ("Conitea", "conitea", "labour"),
+            ("Työvoima", "tyovoima", "labour"),
+            ("Ohjelmanjärjestäjä", "ohjelma", "programme"),
+            ("Kunniavieras", "goh", "programme"),
+            ("Media", "media", "badges"),
+            ("Myyjä", "myyja", "badges"),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -120,12 +127,16 @@ class Setup(object):
                 ),
             )
 
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug='tyovoima')
-        conitea = PersonnelClass.objects.get(event=self.event, slug='conitea')
+        tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
+        conitea = PersonnelClass.objects.get(event=self.event, slug="conitea")
 
         for name, description, pcs in [
-            ('Conitea', 'Tapahtuman järjestelytoimikunnan eli conitean jäsen', [conitea]),
-            ('Järjestyksenvalvoja', 'Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).', [tyovoima]),
+            ("Conitea", "Tapahtuman järjestelytoimikunnan eli conitean jäsen", [conitea]),
+            (
+                "Järjestyksenvalvoja",
+                "Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
+                [tyovoima],
+            ),
         ]:
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
@@ -133,20 +144,19 @@ class Setup(object):
                 defaults=dict(
                     description=description,
                     slug=slugify(name),
-                )
+                ),
             )
 
             if created:
                 job_category.personnel_classes.set(pcs)
 
-
         labour_event_meta.create_groups()
 
-        for name in ['Conitea']:
+        for name in ["Conitea"]:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            ('Järjestyksenvalvoja', 'JV-kortti'),
+            ("Järjestyksenvalvoja", "JV-kortti"),
             # (u'Green room', u'Hygieniapassi'),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
@@ -169,70 +179,70 @@ class Setup(object):
                 defaults=dict(
                     start_time=period_start,
                     end_time=(period_start + period_length) if period_start else None,
-                )
+                ),
             )
 
         for diet_name in [
-            'Gluteeniton',
-            'Laktoositon',
-            'Maidoton',
-            'Vegaaninen',
-            'Lakto-ovo-vegetaristinen',
+            "Gluteeniton",
+            "Laktoositon",
+            "Maidoton",
+            "Vegaaninen",
+            "Lakto-ovo-vegetaristinen",
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         for night in [
-            'Perjantain ja lauantain välinen yö',
-            'Lauantain ja sunnuntain välinen yö',
-            'Sunnuntain ja maanantain välinen yö',
+            "Perjantain ja lauantain välinen yö",
+            "Lauantain ja sunnuntain välinen yö",
+            "Sunnuntain ja maanantain välinen yö",
         ]:
             Night.objects.get_or_create(name=night)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug='conitea',
+            slug="conitea",
             defaults=dict(
-                title='Conitean ilmoittautumislomake',
-                signup_form_class_path='events.nekocon2019.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='events.nekocon2019.forms:OrganizerSignupExtraForm',
+                title="Conitean ilmoittautumislomake",
+                signup_form_class_path="events.nekocon2019.forms:OrganizerSignupForm",
+                signup_extra_form_class_path="events.nekocon2019.forms:OrganizerSignupExtraForm",
                 active_from=datetime(2018, 11, 13, 18, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2019, 7, 14, 23, 59, 59, tzinfo=self.tz),
             ),
         )
 
         for wiki_space, link_title, link_group in [
-            ('NEKOCON2019', 'Coniteawiki', 'conitea'),
+            ("NEKOCON2019", "Coniteawiki", "conitea"),
             # ('NEKOWORK', 'Työvoimawiki', 'accepted'),
         ]:
             InfoLink.objects.get_or_create(
                 event=self.event,
                 title=link_title,
                 defaults=dict(
-                    url='https://confluence.tracon.fi/display/{wiki_space}'.format(wiki_space=wiki_space),
+                    url=f"https://confluence.tracon.fi/display/{wiki_space}",
                     group=labour_event_meta.get_group(link_group),
-                )
+                ),
             )
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, = TicketsEventMeta.get_or_create_groups(self.event, ['admins'])
+        (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
 
         defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
             shipping_and_handling_cents=0,
             reference_number_template="2019{:06}",
-            contact_email='Nekocon (2019) <nekoconliput@gmail.com>',
+            contact_email="Nekocon (2019) <nekoconliput@gmail.com>",
             ticket_free_text="Tämä on sähköinen lippusi vuoden 2019 Nekoconiin. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-                "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-                "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-                "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
-                "lipunvaihtopisteessä.\n\n"
-                "Tervetuloa Nekocon (2019) -tapahtumaan!",
+            "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
+            "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
+            "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
+            "lipunvaihtopisteessä.\n\n"
+            "Tervetuloa Nekocon (2019) -tapahtumaan!",
             front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Nekoconiin!</h2>"
-                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-                "<p>Lue lisää tapahtumasta <a href='http://nekocon.fi'>Nekoconin kotisivuilta</a>.</p>"
+            "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+            "<p>Lue lisää tapahtumasta <a href='http://nekocon.fi'>Nekoconin kotisivuilta</a>.</p>",
         )
 
         if self.test:
@@ -255,10 +265,10 @@ class Setup(object):
 
         for product_info in [
             dict(
-                name='Nekocon (2019) -pääsylippu',
-                description='Viikonloppuranneke Kuopiossa järjestettävään vuoden 2019 Nekoconiin. Huom. myynnissä vain viikonloppurannekkeita. E-lippu vaihdetaan ovella rannekkeeseen.',
+                name="Nekocon (2019) -pääsylippu",
+                description="Viikonloppuranneke Kuopiossa järjestettävään vuoden 2019 Nekoconiin. Huom. myynnissä vain viikonloppurannekkeita. E-lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group('Pääsyliput', 3000),
+                    limit_group("Pääsyliput", 3000),
                 ],
                 price_cents=2200,
                 requires_shipping=False,
@@ -267,11 +277,11 @@ class Setup(object):
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name='Lattiamajoituspaikka (koko vkl)',
-                description='Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoitus aukeaa perjantaina 18:00 ja sulkeutuu sunnuntaina 12:00.',
+                name="Lattiamajoituspaikka (koko vkl)",
+                description="Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoitus aukeaa perjantaina 18:00 ja sulkeutuu sunnuntaina 12:00.",
                 limit_groups=[
-                    limit_group('Lattiamajoitus pe-la', 220),
-                    limit_group('Lattiamajoitus la-su', 220),
+                    limit_group("Lattiamajoitus pe-la", 220),
+                    limit_group("Lattiamajoitus la-su", 220),
                 ],
                 price_cents=1500,
                 requires_shipping=False,
@@ -317,19 +327,14 @@ class Setup(object):
             #     ordering=self.get_ordering_number(),
             # ),
         ]:
-            name = product_info.pop('name')
-            limit_groups = product_info.pop('limit_groups')
+            name = product_info.pop("name")
+            limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(
-                event=self.event,
-                name=name,
-                defaults=product_info
-            )
+            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
                 product.save()
-
 
     def setup_programme(self):
         from core.utils import full_hours_between
@@ -345,39 +350,42 @@ class Setup(object):
             View,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
-            public=False,
-            admin_group=programme_admin_group,
-            contact_email='Nekoconin ohjelmatiimi <ohjelma@nekocon.fi>',
-        ))
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                public=False,
+                admin_group=programme_admin_group,
+                contact_email="Nekoconin ohjelmatiimi <ohjelma@nekocon.fi>",
+            ),
+        )
 
-        personnel_class = PersonnelClass.objects.get(event=self.event, slug='ohjelma')
+        personnel_class = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
 
         role, unused = Role.objects.get_or_create(
             personnel_class=personnel_class,
-            title='Ohjelmanjärjestäjä',
+            title="Ohjelmanjärjestäjä",
             defaults=dict(
                 is_default=True,
                 require_contact_info=True,
-            )
+            ),
         )
 
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
             for title, style in [
-                ('Anime ja manga', 'anime'),
-                ('Cosplay', 'cosplay'),
-                ('Paja', 'miitti'),
-                ('Muu ohjelma', 'muu'),
-                ('Kunniavieras', 'rope'),
+                ("Anime ja manga", "anime"),
+                ("Cosplay", "cosplay"),
+                ("Paja", "miitti"),
+                ("Muu ohjelma", "muu"),
+                ("Kunniavieras", "rope"),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
                     style=style,
                     defaults=dict(
                         title=title,
-                    )
+                    ),
                 )
 
         for start_time, end_time in [
@@ -390,13 +398,7 @@ class Setup(object):
                 self.event.end_time,
             ),
         ]:
-            TimeBlock.objects.get_or_create(
-                event=self.event,
-                start_time=start_time,
-                defaults=dict(
-                    end_time=end_time
-                )
-            )
+            TimeBlock.objects.get_or_create(event=self.event, start_time=start_time, defaults=dict(end_time=end_time))
 
         SpecialStartTime.objects.get_or_create(
             event=self.event,
@@ -406,28 +408,25 @@ class Setup(object):
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(
-                    event=self.event,
-                    start_time=hour_start_time.replace(minute=30)
-                )
+                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team
 
-        admin_group, = IntraEventMeta.get_or_create_groups(self.event, ['admins'])
-        organizer_group = self.event.labour_event_meta.get_group('conitea')
+        (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
+        organizer_group = self.event.labour_event_meta.get_group("conitea")
         meta, unused = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
                 organizer_group=organizer_group,
-            )
+            ),
         )
 
         for team_slug, team_name in [
             # ('vastaavat', 'Vastaavat'),
         ]:
-            team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
 
             team, created = Team.objects.get_or_create(
                 event=self.event,
@@ -436,26 +435,26 @@ class Setup(object):
                     name=team_name,
                     order=self.get_ordering_number(),
                     group=team_group,
-                )
+                ),
             )
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
-        badge_admin_group, = BadgesEventMeta.get_or_create_groups(self.event, ['admins'])
+        (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout='nick',
+                badge_layout="nick",
                 real_name_must_be_visible=True,
-            )
+            ),
         )
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup nekocon2019 specific stuff'
+    args = ""
+    help = "Setup nekocon2019 specific stuff"
 
     def handle(self, *args, **opts):
         Setup().setup(test=settings.DEBUG)

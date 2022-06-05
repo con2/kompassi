@@ -12,10 +12,14 @@ def enrollment_event_box_context(request, event):
 
         try:
             person = request.user.person
-            enrollment = Enrollment.objects.get(event=event, person=person, state__in=[
-                'NEW',
-                'ACCEPTED',
-            ])
+            enrollment = Enrollment.objects.get(
+                event=event,
+                person=person,
+                state__in=[
+                    "NEW",
+                    "ACCEPTED",
+                ],
+            )
         except (Person.DoesNotExist, Enrollment.DoesNotExist):
             pass
 

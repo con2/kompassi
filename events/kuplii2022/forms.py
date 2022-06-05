@@ -11,7 +11,7 @@ from .models import SignupExtra
 
 class SignupExtraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -49,7 +49,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
         assert not admin
 
-        super(OrganizerSignupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -77,7 +77,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
 class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        super(OrganizerSignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -113,7 +113,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
 class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        super(ProgrammeSignupExtraForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(

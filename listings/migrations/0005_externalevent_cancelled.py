@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('listings', '0004_externalevent_logo_file'),
+        ("listings", "0004_externalevent_logo_file"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='externalevent',
-            name='cancelled',
+            model_name="externalevent",
+            name="cancelled",
             field=models.BooleanField(default=False),
         ),
     ]

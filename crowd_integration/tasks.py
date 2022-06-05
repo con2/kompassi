@@ -1,5 +1,3 @@
-
-
 import logging
 
 from celery import shared_task
@@ -13,7 +11,7 @@ from .utils import (
 )
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 @shared_task(ignore_result=True)

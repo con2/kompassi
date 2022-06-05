@@ -14,16 +14,16 @@ def get_year(event):
 def events(*args, **kwargs):
     return (
         Event.objects.filter(*args, **kwargs)
-            .order_by('-start_time')
-            .select_related('venue')
-            .select_related('enrollmenteventmeta')
-            .select_related('ticketseventmeta')
-            .select_related('laboureventmeta')
-            .select_related('programmeeventmeta')
+        .order_by("-start_time")
+        .select_related("venue")
+        .select_related("enrollmenteventmeta")
+        .select_related("ticketseventmeta")
+        .select_related("laboureventmeta")
+        .select_related("programmeeventmeta")
     )
 
 
-def core_frontpage_view(request, template='core_frontpage_view.pug', include_past_events=False):
+def core_frontpage_view(request, template="core_frontpage_view.pug", include_past_events=False):
     t = now()
 
     if include_past_events:
@@ -32,9 +32,11 @@ def core_frontpage_view(request, template='core_frontpage_view.pug', include_pas
         past_events = Event.objects.none()
 
     current_events = events(public=True, start_time__lte=t, end_time__gt=t)
-    future_events = events((Q(start_time__gt=t) | Q(start_time__isnull=True)) & Q(public=True)).order_by('start_time')
+    future_events = events((Q(start_time__gt=t) | Q(start_time__isnull=True)) & Q(public=True)).order_by("start_time")
 
-    past_events_rows_by_year = [(year, list(groups_of_n(year_events, 4))) for (year, year_events) in groupby_strict(past_events, get_year)]
+    past_events_rows_by_year = [
+        (year, list(groups_of_n(year_events, 4))) for (year, year_events) in groupby_strict(past_events, get_year)
+    ]
 
     vars = dict(
         carousel_slides=CarouselSlide.get_active_slides(),

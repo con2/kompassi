@@ -12,8 +12,8 @@ class InlineDirectoryOrganizationMetaAdmin(admin.StackedInline):
 
 class DirectoryAccessGroupAdmin(admin.ModelAdmin):
     model = DirectoryAccessGroup
-    list_display = ('organization', 'group', 'active_from', 'active_until')
-    list_filter = ('organization',)
+    list_display = ("organization", "group", "active_from", "active_until")
+    list_filter = ("organization",)
 
 
 admin.site.register(DirectoryAccessGroup, DirectoryAccessGroupAdmin)

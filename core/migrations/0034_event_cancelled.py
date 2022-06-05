@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0033_auto_20191111_1851'),
+        ("core", "0033_auto_20191111_1851"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='cancelled',
-            field=models.BooleanField(default=False, verbose_name='Cancelled'),
+            model_name="event",
+            name="cancelled",
+            field=models.BooleanField(default=False, verbose_name="Cancelled"),
         ),
     ]

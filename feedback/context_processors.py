@@ -1,4 +1,3 @@
-
 from core.utils import initialize_form
 
 from .forms import FeedbackForm

@@ -6,10 +6,10 @@ from .models.constants import SIGNUP_STATE_NAMES
 
 class SignupStateFilter(Filter):
     def __init__(self, *args, **kwargs):
-        super(SignupStateFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         for state_slug in SIGNUP_STATE_NAMES.keys():
-            if state_slug != 'archived':
+            if state_slug != "archived":
                 self._add_state(state_slug)
 
     def _add_state(self, state):

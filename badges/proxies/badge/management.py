@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ...models import Badge
 
@@ -7,6 +7,7 @@ class BadgeManagementProxy(Badge):
     """
     Contains extra methods for Badge used by the management views.
     """
+
     @property
     def can_revoke(self):
         """

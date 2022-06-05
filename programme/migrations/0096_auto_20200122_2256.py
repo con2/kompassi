@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0095_auto_20190919_2136'),
+        ("programme", "0095_auto_20190919_2136"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='alternativeprogrammeform',
-            name='title',
-            field=models.CharField(help_text='This title is visible to the programme host.', max_length=1023, verbose_name='title'),
+            model_name="alternativeprogrammeform",
+            name="title",
+            field=models.CharField(
+                help_text="This title is visible to the programme host.", max_length=1023, verbose_name="title"
+            ),
         ),
     ]

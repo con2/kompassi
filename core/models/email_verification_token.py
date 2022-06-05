@@ -17,14 +17,12 @@ class EmailVerificationToken(OneTimeCode):
         if self.person and not self.email:
             self.email = self.person.email
 
-        return super(EmailVerificationToken, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def render_message_subject(self, request):
-        return '{settings.KOMPASSI_INSTALLATION_NAME}: Vahvista sähköpostiosoitteesi!'.format(settings=settings)
+        return f"{settings.KOMPASSI_INSTALLATION_NAME}: Vahvista sähköpostiosoitteesi!"
 
     def render_message_body(self, request):
-        vars = dict(
-            link=request.build_absolute_uri(url('core_email_verification_view', self.code))
-        )
+        vars = dict(link=request.build_absolute_uri(url("core_email_verification_view", self.code)))
 
-        return render_to_string('core_email_verification_message.eml', vars, request=request)
+        return render_to_string("core_email_verification_message.eml", vars, request=request)

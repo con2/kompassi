@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracon2019', '0003_auto_20190910_1347'),
+        ("tracon2019", "0003_auto_20190910_1347"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='signupextra',
-            name='afterparty_help',
-            field=models.TextField(blank=True, default='', help_text='Oletko valmis auttamaan kaadon järjestelyissä, esim. logistiikassa, roudauksessa tai juomien kaatamisessa? Jos olet, kirjoita tähän, millaisia hommia olisit valmis tekemään ja kuinka paljon (karkea tuntimäärä illan aikana).', verbose_name='Työskentely kaatajaisissa'),
+            model_name="signupextra",
+            name="afterparty_help",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="Oletko valmis auttamaan kaadon järjestelyissä, esim. logistiikassa, roudauksessa tai juomien kaatamisessa? Jos olet, kirjoita tähän, millaisia hommia olisit valmis tekemään ja kuinka paljon (karkea tuntimäärä illan aikana).",
+                verbose_name="Työskentely kaatajaisissa",
+            ),
         ),
     ]

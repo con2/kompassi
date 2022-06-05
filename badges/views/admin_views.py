@@ -1,9 +1,8 @@
-
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_safe
 
 from core.batches_view import batches_view
@@ -41,8 +40,7 @@ def badges_admin_dashboard_view(request, vars, event):
 
     vars.update(
         personnel_classes=[
-            PersonnelClassProxy(personnel_class)
-            for personnel_class in PersonnelClass.objects.filter(event=event)
+            PersonnelClassProxy(personnel_class) for personnel_class in PersonnelClass.objects.filter(event=event)
         ],
         num_badges_total=meta.count_badges(),
         num_badges_printed=meta.count_printed_badges(),
@@ -51,50 +49,48 @@ def badges_admin_dashboard_view(request, vars, event):
         num_badges_revoked=meta.count_revoked_badges(),
     )
 
-    return render(request, 'badges_admin_dashboard_view.pug', vars)
+    return render(request, "badges_admin_dashboard_view.pug", vars)
 
 
-badges_admin_batches_view = badges_admin_required(batches_view(
-    Batch=Batch,
-    CreateBatchForm=CreateBatchForm,
-    template='badges_admin_batches_view.pug',
-))
+badges_admin_batches_view = badges_admin_required(
+    batches_view(
+        Batch=Batch,
+        CreateBatchForm=CreateBatchForm,
+        template="badges_admin_batches_view.pug",
+    )
+)
 
 
 @badges_admin_required
 @require_safe
-def badges_admin_export_view(request, vars, event, batch_id, format='csv'):
+def badges_admin_export_view(request, vars, event, batch_id, format="csv"):
     if format not in CSV_EXPORT_FORMATS:
         raise NotImplemented(format)
 
     batch = get_object_or_404(Batch, pk=int(batch_id), event=event)
     badges = batch.badges.all()
 
-    filename = "{event.slug}-badges-batch{batch.pk}.{format}".format(
-        event=event,
-        batch=batch,
-        format=format,
-    )
+    filename = f"{event.slug}-badges-batch{batch.pk}.{format}"
 
     return csv_response(event, Badge, badges, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
 
 
 def badges_admin_menu_items(request, event):
-    dashboard_url = url('badges_admin_dashboard_view', event.slug)
+    dashboard_url = url("badges_admin_dashboard_view", event.slug)
     dashboard_active = request.path == dashboard_url
-    dashboard_text = _('Dashboard')
+    dashboard_text = _("Dashboard")
 
-    batches_url = url('badges_admin_batches_view', event.slug)
+    batches_url = url("badges_admin_batches_view", event.slug)
     batches_active = request.path.startswith(batches_url)
-    batches_text = _('Batches')
+    batches_text = _("Batches")
 
-    badges_url = url('badges_admin_badges_view', event.slug)
+    badges_url = url("badges_admin_badges_view", event.slug)
     badges_active = request.path.startswith(badges_url)
-    badges_text = _('Entrance lists')
+    badges_text = _("Entrance lists")
 
-    onboarding_url = url('badges_admin_onboarding_view', event.slug)
+    onboarding_url = url("badges_admin_onboarding_view", event.slug)
     onboarding_active = request.path.startswith(onboarding_url)
-    onboarding_text = _('Onboarding')
+    onboarding_text = _("Onboarding")
 
     return [
         (dashboard_active, dashboard_url, dashboard_text),

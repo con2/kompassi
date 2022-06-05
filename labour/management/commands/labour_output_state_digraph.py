@@ -10,20 +10,22 @@ class Command(BaseCommand):
     """
 
     def handle(self, *opts, **args):
-        print('digraph foo {')
+        print("digraph foo {")
         for originating_state in SIGNUP_STATE_NAMES.keys():
-            if originating_state == 'beyond_logic':
+            if originating_state == "beyond_logic":
                 continue
 
             signup = Signup()
             signup.state = originating_state
             for destination_state in signup.next_states:
-                if destination_state == 'beyond_logic':
+                if destination_state == "beyond_logic":
                     continue
 
-                print('    "{src}" -> "{dest}";'.format(
-                    src=SIGNUP_STATE_NAMES[originating_state],
-                    dest=SIGNUP_STATE_NAMES[destination_state],
-                ).encode('UTF-8'))
+                print(
+                    '    "{src}" -> "{dest}";'.format(
+                        src=SIGNUP_STATE_NAMES[originating_state],
+                        dest=SIGNUP_STATE_NAMES[destination_state],
+                    ).encode("UTF-8")
+                )
             print()
-        print('}')
+        print("}")

@@ -18,64 +18,66 @@ from ..models import STATE_CHOICES, Membership, MembershipFeePayment
 
 
 @membership_admin_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
+@require_http_methods(["GET", "HEAD", "POST"])
 def membership_admin_member_view(request, vars, organization, person_id):
     membership = get_object_or_404(Membership, organization=organization, person=int(person_id))
     read_only = membership.person.user is not None
-    member_form = initialize_form(MemberForm, request, instance=membership.person, readonly=read_only, prefix='member')
-    membership_form = initialize_form(MembershipForm, request, instance=membership, prefix='membership')
+    member_form = initialize_form(MemberForm, request, instance=membership.person, readonly=read_only, prefix="member")
+    membership_form = initialize_form(MembershipForm, request, instance=membership, prefix="membership")
 
     forms = [membership_form] if read_only else [membership_form, member_form]
 
     membership_fee_payments = MembershipFeePayment.objects.filter(
         term__organization=organization, member=membership
-    ).order_by('term__end_date')
+    ).order_by("term__end_date")
     current_term = membership.meta.get_current_term()
     current_term_payment = membership.get_payment_for_term(current_term) if current_term else None
 
     if current_term_payment:
         initial = dict(payment_date=current_term_payment.payment_date or date.today())
-        membership_fee_payment_form = initialize_form(MembershipFeePaymentForm, request, instance=current_term_payment, initial=initial)
+        membership_fee_payment_form = initialize_form(
+            MembershipFeePaymentForm, request, instance=current_term_payment, initial=initial
+        )
     else:
         membership_fee_payment_form = None
 
-    if request.method == 'POST':
-        action = request.POST['action']
+    if request.method == "POST":
+        action = request.POST["action"]
 
-        if action in ['save-edit', 'save-return']:
+        if action in ["save-edit", "save-return"]:
             if all(form.is_valid() for form in forms):
                 for form in forms:
                     form.save()
 
                 membership.apply_state()
 
-                messages.success(request, 'Jäsenen tiedot tallennettiin.')
+                messages.success(request, "Jäsenen tiedot tallennettiin.")
 
-                if action == 'save-return':
-                    return redirect('membership_admin_members_view', organization.slug)
+                if action == "save-return":
+                    return redirect("membership_admin_members_view", organization.slug)
                 else:
-                    return redirect('membership_admin_member_view', organization.slug, membership.person.id)
+                    return redirect("membership_admin_member_view", organization.slug, membership.person.id)
             else:
-                messages.error(request, 'Tarkista lomakkeen tiedot.')
-        elif action == 'mark-paid':
+                messages.error(request, "Tarkista lomakkeen tiedot.")
+        elif action == "mark-paid":
             payment = membership_fee_payment_form.save(commit=False)
             payment.save()
 
-            messages.success(request, 'Jäsenmaksu päivitetty.')
-            return redirect('membership_admin_member_view', organization.slug, membership.person.id)
+            messages.success(request, "Jäsenmaksu päivitetty.")
+            return redirect("membership_admin_member_view", organization.slug, membership.person.id)
         else:
             raise NotImplementedError(action)
 
     previous_membership, next_membership = membership.get_previous_and_next()
 
     tabs = [
-        Tab('membership-admin-person-tab', 'Jäsenen tiedot', active=True),
-        Tab('membership-admin-state-tab', 'Jäsenyyden tila'),
+        Tab("membership-admin-person-tab", "Jäsenen tiedot", active=True),
+        Tab("membership-admin-state-tab", "Jäsenyyden tila"),
         # Tab('membership-admin-events-tab', 'Jäsenyyteen liittyvät tapahtumat'),
-        Tab('membership-admin-payments-tab', 'Jäsenmaksut'),
+        Tab("membership-admin-payments-tab", "Jäsenmaksut"),
     ]
 
-    emit('core.person.viewed', request=request, organization=organization, person=membership.person)
+    emit("core.person.viewed", request=request, organization=organization, person=membership.person)
 
     vars.update(
         current_term=current_term,
@@ -93,4 +95,4 @@ def membership_admin_member_view(request, vars, organization, person_id):
 
     membership.person.log_view(request)
 
-    return render(request, 'membership_admin_member_view.pug', vars)
+    return render(request, "membership_admin_member_view.pug", vars)

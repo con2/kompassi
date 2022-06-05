@@ -9,4 +9,4 @@ kompassi_up{} 1
 
 
 def dummy_metrics_view(request):
-    return HttpResponse(METRICS_RESPONSE, content_type='text/plain')
+    return HttpResponse(METRICS_RESPONSE, content_type="text/plain")

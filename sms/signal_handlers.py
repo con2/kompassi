@@ -25,39 +25,43 @@ from .models import (
 # 2. an SMS voting handler
 @receiver(message_received)
 def sms_received_handler(sender, **kwargs):
-    messages = InboundMessage.objects.filter(nexmo_message_id=kwargs['nexmo_message_id'])
+    messages = InboundMessage.objects.filter(nexmo_message_id=kwargs["nexmo_message_id"])
     message = messages[0]  # If nexmo has delivered same message multiple times.
     now = timezone.now()
     hotwords = Hotword.objects.filter(valid_from__lte=now, valid_to__gte=now)
-    match = regex.match(r'(?P<hotword>[a-z]+) ((?P<category>[a-z]*)(?:\s?)(?P<vote>\d+))', message.message.lower())  # doesn't work with pythons re. Recursive patterns are not allowed.
+    match = regex.match(
+        r"(?P<hotword>[a-z]+) ((?P<category>[a-z]*)(?:\s?)(?P<vote>\d+))", message.message.lower()
+    )  # doesn't work with pythons re. Recursive patterns are not allowed.
     if match is not None:
         # Message with hotword
         found = False
         for hotword in hotwords:
-            if hotword.slug == match.group('hotword'):
+            if hotword.slug == match.group("hotword"):
                 found = hotword
                 break
         if found is not False:
             # Valid hotword found, check category.
-            if match.group('category') == '':
+            if match.group("category") == "":
                 # no category, checking if there should be
                 try:
-                    nominee = Nominee.objects.get(number=int(match.group('vote')), category__hotword=found)
+                    nominee = Nominee.objects.get(number=int(match.group("vote")), category__hotword=found)
                 except Nominee.DoesNotExist:
                     # Ok,  there was none,  or vote value out of scope, vote rejected.
                     vote = "rejected"
                 except Nominee.MultipleObjectsReturned:
                     try:
-                        nominee = Nominee.objects.get(number=match.group('vote'), category__primary=True, category__hotword=found)
+                        nominee = Nominee.objects.get(
+                            number=match.group("vote"), category__primary=True, category__hotword=found
+                        )
                     except Nominee.DoesNotExist:
                         vote = "rejected"
                     else:
                         try:
-                            category = VoteCategory.objects.get(nominee=nominee,primary=True)
-                            existing_vote = Vote.objects.get(message__sender=message.sender,category=category)
+                            category = VoteCategory.objects.get(nominee=nominee, primary=True)
+                            existing_vote = Vote.objects.get(message__sender=message.sender, category=category)
                         except Vote.DoesNotExist:
                             # No old vote
-                            vote = Vote(category=category,vote=nominee,message=message)
+                            vote = Vote(category=category, vote=nominee, message=message)
                             vote.save()
                         else:
                             existing_vote.vote = nominee
@@ -67,10 +71,10 @@ def sms_received_handler(sender, **kwargs):
                 else:
                     try:
                         category = nominee.category.all()[0]
-                        existing_vote = Vote.objects.get(message__sender=message.sender,category=category)
+                        existing_vote = Vote.objects.get(message__sender=message.sender, category=category)
                     except Vote.DoesNotExist:
                         # No old vote
-                        vote = Vote(category=category,vote=nominee,message=message)
+                        vote = Vote(category=category, vote=nominee, message=message)
                         vote.save()
                     else:
                         existing_vote.vote = nominee
@@ -80,16 +84,18 @@ def sms_received_handler(sender, **kwargs):
 
             else:
                 try:
-                    nominee = Nominee.objects.get(number=match.group('vote'), category__slug=match.group('category'), category__hotword=found)
+                    nominee = Nominee.objects.get(
+                        number=match.group("vote"), category__slug=match.group("category"), category__hotword=found
+                    )
                 except Nominee.DoesNotExist:
                     vote = "rejected"
                 else:
                     try:
-                        category = VoteCategory.objects.get(slug=match.group('category'))
-                        existing_vote = Vote.objects.get(message__sender=message.sender,vote=nominee)
+                        category = VoteCategory.objects.get(slug=match.group("category"))
+                        existing_vote = Vote.objects.get(message__sender=message.sender, vote=nominee)
                     except Vote.DoesNotExist:
                         # No old vote
-                        vote = Vote(category=category,vote=nominee,message=message)
+                        vote = Vote(category=category, vote=nominee, message=message)
                         vote.save()
                     else:
                         existing_vote.vote = nominee
@@ -109,7 +115,7 @@ def sms_received_handler(sender, **kwargs):
                 new_message = SMSMessageIn(message=message, SMSEventMeta=event)
                 new_message.save()
     else:
-        #regular message with no hotword.
+        # regular message with no hotword.
         try:
             event = SMSEventMeta.objects.get(current=True, sms_enabled=True)
         except SMSEventMeta.DoesNotExist:

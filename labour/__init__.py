@@ -1,1 +1,1 @@
-default_app_config = 'labour.apps.LabourAppConfig'
+

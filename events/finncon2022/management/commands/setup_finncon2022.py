@@ -14,7 +14,7 @@ def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         self._ordering = 0
 
@@ -266,7 +266,7 @@ class Setup(object):
                 event=self.event,
                 title=link_title,
                 defaults=dict(
-                    url="https://confluence.tracon.fi/display/{wiki_space}".format(wiki_space=wiki_space),
+                    url=f"https://confluence.tracon.fi/display/{wiki_space}",
                     group=labour_event_meta.get_group(link_group),
                 ),
             )

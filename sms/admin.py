@@ -5,47 +5,62 @@ from .models import SMSMessageOut, SMSMessageIn, SMSEventMeta, Hotword, VoteCate
 
 def get_event(obj):
     return obj.SMSEventMeta.event
+
+
 get_event.short_description = "Tapahtuma"
+
 
 def get_sender(obj):
     return obj.message.sender
+
+
 get_sender.short_description = "Lähettäjä"
+
 
 def get_message(obj):
     return obj.message.message
+
+
 get_message.short_description = "Viesti"
+
 
 def get_send_time(obj):
     return obj.message.receive_timestamp
+
+
 get_send_time.short_description = "Vastaanotettu"
+
 
 def format_price(obj):
     return "%d,%02d €" % divmod(obj.used_credit, 100)
+
+
 format_price.short_description = "Käytetty krediitti"
 
+
 class SMSRecipientGroupAdmin(admin.ModelAdmin):
-    list_display = ('app_label', 'event', 'verbose_name')
-    list_filter = ('app_label', 'event')
+    list_display = ("app_label", "event", "verbose_name")
+    list_filter = ("app_label", "event")
 
 
 class HotwordAdmin(admin.ModelAdmin):
     model = Hotword
-    fields = ('hotword', 'slug', 'valid_from', 'valid_to', 'assigned_event')
-    list_display = ('hotword', 'slug', 'valid_from', 'valid_to', 'assigned_event')
-    list_filter = ('valid_from', 'valid_to', 'assigned_event')
+    fields = ("hotword", "slug", "valid_from", "valid_to", "assigned_event")
+    list_display = ("hotword", "slug", "valid_from", "valid_to", "assigned_event")
+    list_filter = ("valid_from", "valid_to", "assigned_event")
 
 
 class VoteCategoryAdmin(admin.ModelAdmin):
     model = VoteCategory
-    fields = ('category', 'slug', 'hotword','primary')
-    list_display = ('category', 'slug', 'hotword', 'primary')
-    list_filter = ('hotword',)
+    fields = ("category", "slug", "hotword", "primary")
+    list_display = ("category", "slug", "hotword", "primary")
+    list_filter = ("hotword",)
 
 
 class VoteAdmin(admin.ModelAdmin):
     model = Vote
-    list_display = ('category', 'vote', 'message', get_send_time)
-    readonly_fields = ('category', 'vote', 'message', get_send_time)
+    list_display = ("category", "vote", "message", get_send_time)
+    readonly_fields = ("category", "vote", "message", get_send_time)
 
     def has_add_permission(self, request):
         return False
@@ -53,8 +68,8 @@ class VoteAdmin(admin.ModelAdmin):
 
 class SMSEventMetaAdmin(admin.ModelAdmin):
     model = SMSEventMeta
-    list_display = ('event', 'sms_enabled', 'current', format_price)
-    readonly_fields = ('used_credit', )
+    list_display = ("event", "sms_enabled", "current", format_price)
+    readonly_fields = ("used_credit",)
 
 
 class SMSMessageInAdmin(admin.ModelAdmin):
@@ -64,12 +79,12 @@ class SMSMessageInAdmin(admin.ModelAdmin):
 
 class NomineeAdmin(admin.ModelAdmin):
     model = Nominee
-    list_display = ('name', 'number')
+    list_display = ("name", "number")
 
 
 class SMSMessageOutAdmin(admin.ModelAdmin):
     model = SMSMessageOut
-    list_display = ('to', 'message', 'event')
+    list_display = ("to", "message", "event")
 
 
 admin.site.register(SMSMessageOut, SMSMessageOutAdmin)

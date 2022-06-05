@@ -4,4 +4,4 @@ BADGE_ELIGIBLE_FOR_BATCHING = dict(
     revoked_at__isnull=True,
 )
 
-PROGRESS_ELEMENT_MIN_WIDTH = 4 # %
+PROGRESS_ELEMENT_MIN_WIDTH = 4  # %

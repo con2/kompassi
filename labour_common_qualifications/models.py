@@ -5,17 +5,17 @@ from django.utils.dateformat import format as format_date
 
 from labour.models import QualificationExtraBase
 
-validate_jv_card_number = RegexValidator(
-    regex=r'.+/.+/.+',
-    message="Tarkista JV-kortin numero"
-)
+validate_jv_card_number = RegexValidator(regex=r".+/.+/.+", message="Tarkista JV-kortin numero")
+
 
 class JVKortti(QualificationExtraBase):
     card_number = models.CharField(
         max_length=13,
-        validators=[validate_jv_card_number,],
+        validators=[
+            validate_jv_card_number,
+        ],
         verbose_name="JV-kortin numero",
-        help_text="Muoto: 0000/J0000/00 tai XX/0000/00"
+        help_text="Muoto: 0000/J0000/00 tai XX/0000/00",
     )
 
     expiration_date = models.DateField(verbose_name="Viimeinen voimassaolopäivä")
@@ -24,11 +24,12 @@ class JVKortti(QualificationExtraBase):
         n = self.card_number
         d = format_date(self.expiration_date, settings.DATE_FORMAT)
 
-        return "{n}, voimassa {d} asti".format(**locals())
+        return f"{n}, voimassa {d} asti"
 
     @classmethod
     def get_form_class(cls):
         from .forms import JVKorttiForm
+
         return JVKorttiForm
 
     class Meta:

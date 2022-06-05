@@ -4,55 +4,52 @@ import os
 from django.db import models
 from django.db.models import Max
 from django.db.transaction import atomic
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 
 
 ROOM_NAME_MAX_LENGTH = 1023
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 class Room(models.Model):
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, null=True, blank=True, related_name='rooms')
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, null=True, blank=True, related_name="rooms")
     name = models.CharField(max_length=ROOM_NAME_MAX_LENGTH)
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
-    paikkala_room = models.ForeignKey('paikkala.Room', on_delete=models.SET_NULL, null=True)
+    paikkala_room = models.ForeignKey("paikkala.Room", on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name
 
     def programme_continues_at(self, the_time, **conditions):
-        criteria = dict(
-            start_time__lt=the_time,
-            length__isnull=False,
-            **conditions
-        )
+        criteria = dict(start_time__lt=the_time, length__isnull=False, **conditions)
 
-        latest_programme = self.programmes.filter(**criteria).order_by('-start_time')[:1]
+        latest_programme = self.programmes.filter(**criteria).order_by("-start_time")[:1]
         if latest_programme:
             return the_time < latest_programme[0].end_time
         else:
             return False
 
     class Meta:
-        ordering = ['event', 'name']
-        verbose_name = _('Room')
-        verbose_name_plural = _('Rooms')
+        ordering = ["event", "name"]
+        verbose_name = _("Room")
+        verbose_name_plural = _("Rooms")
         unique_together = [
-            ('event', 'slug'),
+            ("event", "slug"),
         ]
 
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
+
         event, unused = Event.get_or_create_dummy()
         return cls.objects.get_or_create(
             event=event,
-            name='Iso sali',
+            name="Iso sali",
         )
 
     @property
@@ -66,7 +63,8 @@ class Room(models.Model):
     @property
     def paikkala_schema_path(self):
         from pkg_resources import resource_filename
-        return resource_filename(__name__, f'paikkala_data/{self.event.venue.slug}/{self.slug}.csv')
+
+        return resource_filename(__name__, f"paikkala_data/{self.event.venue.slug}/{self.slug}.csv")
 
     @atomic
     def paikkalize(self):
@@ -75,14 +73,14 @@ class Room(models.Model):
         from uuid import uuid4
 
         if self.paikkala_room:
-            logger.info('Room %s is alredy paikkalized, not re-paikkalizing', self)
+            logger.info("Room %s is alredy paikkalized, not re-paikkalizing", self)
             return self.paikkala_room
 
         # hack: dun wanna mess up with same-named rooms
         paikkala_room_name = str(uuid4())
 
-        with open(self.paikkala_schema_path, 'r', encoding='UTF-8') as infp:
-            import_zones(read_csv(infp), default_room_name=paikkala_room_name)
+        with open(self.paikkala_schema_path, encoding="UTF-8") as infp:
+            import_zones(row_csv_list=read_csv(infp), default_room_name=paikkala_room_name)
 
         self.paikkala_room = PaikkalaRoom.objects.get(name=paikkala_room_name)
         self.paikkala_room.name = self.name

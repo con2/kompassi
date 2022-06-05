@@ -12,14 +12,14 @@ class PaikkalaTicketCsvExportProxy(CsvExportMixin, Ticket):
         from core.models import Person
 
         return [
-            (cls, 'zone'),
-            (cls, 'row'),
-            (cls, 'number'),
-            (Person, 'surname'),
-            (Person, 'first_name'),
-            (Person, 'nick'),
-            (Person, 'normalized_phone_number'),
-            (Person, 'email'),
+            (cls, "zone"),
+            (cls, "row"),
+            (cls, "number"),
+            (Person, "surname"),
+            (Person, "first_name"),
+            (Person, "nick"),
+            (Person, "normalized_phone_number"),
+            (Person, "email"),
         ]
 
     @property

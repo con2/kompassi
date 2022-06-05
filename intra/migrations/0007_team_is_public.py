@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('intra', '0006_auto_20171113_2158'),
+        ("intra", "0006_auto_20171113_2158"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='team',
-            name='is_public',
-            field=models.BooleanField(default=True, verbose_name='Public'),
+            model_name="team",
+            name="is_public",
+            field=models.BooleanField(default=True, verbose_name="Public"),
         ),
     ]

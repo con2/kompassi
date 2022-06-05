@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, set_defaults, set_attrs
 
@@ -23,47 +23,43 @@ class AlternativeSignupForm(models.Model):
     OrganizerSignupForm and OrganizerSignupExtraForm.
     """
 
-    event = models.ForeignKey('core.Event', on_delete=models.CASCADE, verbose_name='Tapahtuma')
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, verbose_name="Tapahtuma")
 
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
-    title = models.CharField(
-        max_length=63,
-        verbose_name='Otsikko',
-        help_text='Tämä otsikko näkyy käyttäjälle.'
-    )
+    title = models.CharField(max_length=63, verbose_name="Otsikko", help_text="Tämä otsikko näkyy käyttäjälle.")
 
     signup_form_class_path = models.CharField(
         max_length=63,
-        help_text='Viittaus ilmoittautumislomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupForm',
+        help_text="Viittaus ilmoittautumislomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupForm",
     )
 
     signup_extra_form_class_path = models.CharField(
         max_length=63,
-        default='labour.forms:ObsoleteEmptySignupExtraV1Form',
-        help_text='Viittaus lisätietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm',
+        default="labour.forms:ObsoleteEmptySignupExtraV1Form",
+        help_text="Viittaus lisätietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm",
     )
 
     active_from = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_('Active from'),
+        verbose_name=_("Active from"),
     )
 
     active_until = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_('Active until'),
+        verbose_name=_("Active until"),
     )
 
     signup_message = models.TextField(
         null=True,
         blank=True,
-        default='',
-        verbose_name='Ilmoittautumisen huomautusviesti',
-        help_text='Tämä viesti näytetään kaikille tätä lomaketta käyttäville työvoimailmoittautumisen alussa. Käytettiin '
-            'esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja '
-            'erikoistehtäville.',
+        default="",
+        verbose_name="Ilmoittautumisen huomautusviesti",
+        help_text="Tämä viesti näytetään kaikille tätä lomaketta käyttäville työvoimailmoittautumisen alussa. Käytettiin "
+        "esimerkiksi Tracon 9:ssä kertomaan, että työvoimahaku on avoinna enää JV:ille ja "
+        "erikoistehtäville.",
     )
 
     def __str__(self):
@@ -71,16 +67,18 @@ class AlternativeSignupForm(models.Model):
 
     @property
     def signup_form_class(self):
-        if not getattr(self, '_signup_form_class', None):
+        if not getattr(self, "_signup_form_class", None):
             from core.utils import get_code
+
             self._signup_form_class = get_code(self.signup_form_class_path)
 
         return self._signup_form_class
 
     @property
     def signup_extra_form_class(self):
-        if not getattr(self, '_signup_extra_form_class', None):
+        if not getattr(self, "_signup_extra_form_class", None):
             from core.utils import get_code
+
             self._signup_extra_form_class = get_code(self.signup_extra_form_class_path)
 
         return self._signup_extra_form_class
@@ -90,14 +88,14 @@ class AlternativeSignupForm(models.Model):
         return is_within_period(self.active_from, self.active_until)
 
     class Meta:
-        verbose_name = _('alternative signup form')
-        verbose_name_plural = _('alternative signup forms')
+        verbose_name = _("alternative signup form")
+        verbose_name_plural = _("alternative signup forms")
         unique_together = [
-            ('event', 'slug'),
+            ("event", "slug"),
         ]
 
 
-class AlternativeFormMixin(object):
+class AlternativeFormMixin:
     """
     Stub implementations of required methods for alternative signup form implementations.
     Alternative signup form implementations should inherit from `django.forms.ModelForm` and this
@@ -114,6 +112,7 @@ class AlternativeFormMixin(object):
         can be applied to. For a default implementation, consult SignupForm.
         """
         from .job_category import JobCategory
+
         return JobCategory.objects.none()
 
     def get_excluded_field_defaults(self):

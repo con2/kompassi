@@ -6,24 +6,25 @@ from core.utils import groups_of_n
 
 
 EMAILIFY_DIFFERENCES_TO_SLUGIFY = {
-    ' ': '.',
-    '.': '.',
+    " ": ".",
+    ".": ".",
 }
 EMAILIFY_CHAR_MAP = dict(SLUGIFY_CHAR_MAP, **EMAILIFY_DIFFERENCES_TO_SLUGIFY)
-EMAILIFY_FORBANNAD_RE = re.compile(r'[^a-z0-9-\.]', re.UNICODE)
-EMAILIFY_MULTIDOT_RE = re.compile(r'\.+', re.UNICODE)
+EMAILIFY_FORBANNAD_RE = re.compile(r"[^a-z0-9-\.]", re.UNICODE)
+EMAILIFY_MULTIDOT_RE = re.compile(r"\.+", re.UNICODE)
 
 
 def emailify(ustr):
     ustr = ustr.lower()
-    ustr = ''.join(EMAILIFY_CHAR_MAP.get(c, c) for c in ustr)
-    ustr = EMAILIFY_FORBANNAD_RE.sub('', ustr)
-    ustr = EMAILIFY_MULTIDOT_RE.sub('.', ustr)
-    ustr = SLUGIFY_MULTIDASH_RE.sub('-', ustr)
+    ustr = "".join(EMAILIFY_CHAR_MAP.get(c, c) for c in ustr)
+    ustr = EMAILIFY_FORBANNAD_RE.sub("", ustr)
+    ustr = EMAILIFY_MULTIDOT_RE.sub(".", ustr)
+    ustr = SLUGIFY_MULTIDASH_RE.sub("-", ustr)
     return ustr
 
 
-PASSWORD_ALPHABET = 'bcdfghjklmnpqrstvwxz0123456789'
+PASSWORD_ALPHABET = "bcdfghjklmnpqrstvwxz0123456789"
+
 
 def generate_machine_password(alphabet=PASSWORD_ALPHABET, num_chars=20, group_len=4):
     len_alphabet = len(PASSWORD_ALPHABET)

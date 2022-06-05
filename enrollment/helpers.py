@@ -1,7 +1,6 @@
-
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from functools import wraps
 
@@ -15,10 +14,11 @@ def enrollment_event_required(view_func):
         meta = event.enrollment_event_meta
 
         if not meta:
-            messages.error(request, _('This event does not use this site to manage enrollment.'))
-            return redirect('core_event_view', event.slug)
+            messages.error(request, _("This event does not use this site to manage enrollment."))
+            return redirect("core_event_view", event.slug)
 
         return view_func(request, event, *args, **kwargs)
+
     return wrapper
 
 
@@ -33,22 +33,23 @@ def enrollment_admin_required(view_func):
         meta = event.enrollment_event_meta
 
         if not meta:
-            messages.error(request, _('This event does not use this site to manage enrollment.'))
-            return redirect('core_event_view', event.slug)
+            messages.error(request, _("This event does not use this site to manage enrollment."))
+            return redirect("core_event_view", event.slug)
 
         if not request.user.is_authenticated:
             return login_redirect(request)
 
         if not event.enrollment_event_meta.is_user_admin(request.user):
-            messages.error(request, _('You are not allowed to manage enrollment for this event.'))
-            return redirect('core_event_view', event.slug)
+            messages.error(request, _("You are not allowed to manage enrollment for this event."))
+            return redirect("core_event_view", event.slug)
 
         vars = dict(
             admin_menu_items=enrollment_admin_menu_items(request, event),
-            admin_title=_('Manage enrollment'),
+            admin_title=_("Manage enrollment"),
             event=event,
             meta=meta,
         )
 
         return view_func(request, vars, event, *args, **kwargs)
+
     return wrapper

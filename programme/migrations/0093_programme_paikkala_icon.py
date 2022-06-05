@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0092_programmefeedback_author_external_username'),
+        ("programme", "0092_programmefeedback_author_external_username"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='programme',
-            name='paikkala_icon',
-            field=models.FileField(blank=True, help_text='The programme icon is used to make it harder to mix up reservations of different programmes during inspection.', upload_to='paikkala_icons', verbose_name='Programme icon'),
+            model_name="programme",
+            name="paikkala_icon",
+            field=models.FileField(
+                blank=True,
+                help_text="The programme icon is used to make it harder to mix up reservations of different programmes during inspection.",
+                upload_to="paikkala_icons",
+                verbose_name="Programme icon",
+            ),
         ),
     ]

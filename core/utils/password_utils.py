@@ -3,7 +3,7 @@ from hashlib import sha1
 
 from django.core.cache import caches
 from django.forms import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import requests
 from requests.exceptions import Timeout, HTTPError
@@ -11,12 +11,12 @@ from requests.exceptions import Timeout, HTTPError
 from zxcvbn import zxcvbn
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 MINIMUM_SCORE = 3
 HIBP_PREFIX_LENGTH = 5
-HIBP_BASE_URL = 'https://api.pwnedpasswords.com/range'
+HIBP_BASE_URL = "https://api.pwnedpasswords.com/range"
 HIBP_CACHE_EXPIRY_SECONDS = 7 * 24 * 60 * 60
 HIBP_TIMEOUT_SECONDS = 5
 
@@ -30,15 +30,17 @@ def validate_password(password, user_inputs=[]):
     """
     result = zxcvbn(password, user_inputs=user_inputs)
 
-    if result['score'] < MINIMUM_SCORE:
-        raise ValidationError(_('Password too weak. Please use a stronger password.'))
+    if result["score"] < MINIMUM_SCORE:
+        raise ValidationError(_("Password too weak. Please use a stronger password."))
 
     if is_password_compromised(password):
-        raise ValidationError(_(
-            'We check passwords securely against a database of known leaked passwords. '
-            'This password has been compromised in a known leak. '
-            'Please use another password.'
-        ))
+        raise ValidationError(
+            _(
+                "We check passwords securely against a database of known leaked passwords. "
+                "This password has been compromised in a known leak. "
+                "Please use another password."
+            )
+        )
 
 
 def is_password_compromised(password):
@@ -53,20 +55,20 @@ def is_password_compromised(password):
 
     https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/
     """
-    password_hash = sha1(password.encode('UTF-8')).hexdigest().upper()
+    password_hash = sha1(password.encode("UTF-8")).hexdigest().upper()
     hash_prefix, hash_suffix = password_hash[:HIBP_PREFIX_LENGTH], password_hash[HIBP_PREFIX_LENGTH:]
 
     try:
         page_str = get_hibp_page(hash_prefix)
     except Timeout:
         logger.exception(
-            'is_password_compromised: HIBPv2 API timed out while trying to query for page %s',
+            "is_password_compromised: HIBPv2 API timed out while trying to query for page %s",
             hash_prefix,
         )
         return None
     except HTTPError as e:
         logger.exception(
-            'is_password_compromised: HIBPv2 API returned status %d while trying to query for page %s',
+            "is_password_compromised: HIBPv2 API returned status %d while trying to query for page %s",
             e.response.status_code,
             hash_prefix,
         )
@@ -75,7 +77,7 @@ def is_password_compromised(password):
     try:
         hibp_page = parse_hibp_page(page_str)
     except (ValueError, IndexError, KeyError):
-        logger.exception('is_password_compromised: Failed to parse HIBPv2 page %s', hash_prefix)
+        logger.exception("is_password_compromised: Failed to parse HIBPv2 page %s", hash_prefix)
         return None
 
     return hibp_page.get(hash_suffix, 0) > 0
@@ -91,22 +93,22 @@ def get_hibp_page(hash_prefix):
     """
     # TODO Use a cache decorator
 
-    assert len(hash_prefix) == HIBP_PREFIX_LENGTH, 'Hash prefix length mismatch'
+    assert len(hash_prefix) == HIBP_PREFIX_LENGTH, "Hash prefix length mismatch"
 
     try:
         int(hash_prefix, 16)
     except ValueError:
-        raise AssertionError('Hash prefix is not valid hex')
+        raise AssertionError("Hash prefix is not valid hex")
 
     hash_prefix = hash_prefix.upper()
 
-    cache = caches['default']
-    cache_key = f'get_hibp_page:{hash_prefix}'
+    cache = caches["default"]
+    cache_key = f"get_hibp_page:{hash_prefix}"
     cached = cache.get(cache_key)
     if cached:
         return cached
 
-    result = requests.get(f'{HIBP_BASE_URL}/{hash_prefix}')
+    result = requests.get(f"{HIBP_BASE_URL}/{hash_prefix}")
     result.raise_for_status()
 
     page_str = result.text
@@ -122,7 +124,7 @@ def parse_hibp_page(page_str):
     {'A8C4A624898B4221FC963986F9DC19CF42E': 1, 'AA18199A6DB91A7A4BB1C4B2A89068DAAFC': 1}
     """
 
-    return dict(
-        (hash_suffix, int(frequency))
-        for (hash_suffix, frequency) in (line.split(':', 1) for line in page_str.splitlines())
-    )
+    return {
+        hash_suffix: int(frequency)
+        for (hash_suffix, frequency) in (line.split(":", 1) for line in page_str.splitlines())
+    }

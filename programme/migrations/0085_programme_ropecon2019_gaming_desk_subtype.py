@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0084_auto_20190228_2215'),
+        ("programme", "0084_auto_20190228_2215"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='programme',
-            name='ropecon2019_gaming_desk_subtype',
-            field=models.CharField(blank=True, choices=[('tmnt', 'Tournament'), ('demo', 'Demonstration'), ('open', 'Open game')], help_text='What type of game program are you offering? Tournament - organizing your own tournament or competition. Demonstration - showcasing, demonstrating and playing a game. Open game - playing a game with or without specific scenarios.', max_length=4, verbose_name='Game program type'),
+            model_name="programme",
+            name="ropecon2019_gaming_desk_subtype",
+            field=models.CharField(
+                blank=True,
+                choices=[("tmnt", "Tournament"), ("demo", "Demonstration"), ("open", "Open game")],
+                help_text="What type of game program are you offering? Tournament - organizing your own tournament or competition. Demonstration - showcasing, demonstrating and playing a game. Open game - playing a game with or without specific scenarios.",
+                max_length=4,
+                verbose_name="Game program type",
+            ),
         ),
     ]

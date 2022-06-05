@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 from django.utils import timezone
 
@@ -24,7 +24,7 @@ from .constants import (
 )
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 def birth_date_validator(value):
@@ -39,23 +39,25 @@ def birth_date_validator(value):
 
 
 class Person(models.Model):
-    first_name = models.CharField(max_length=1023, verbose_name=_('First name'))
+    first_name = models.CharField(max_length=1023, verbose_name=_("First name"))
     official_first_names = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_('Official first names'),
+        verbose_name=_("Official first names"),
     )
-    surname = models.CharField(max_length=1023, verbose_name=_('Surname'))
+    surname = models.CharField(max_length=1023, verbose_name=_("Surname"))
     nick = models.CharField(
         blank=True,
         max_length=1023,
-        verbose_name=_('Nick name'),
-        help_text=_('If you go by a nick name or handle that you want printed in your badge and programme details, enter it here.')
+        verbose_name=_("Nick name"),
+        help_text=_(
+            "If you go by a nick name or handle that you want printed in your badge and programme details, enter it here."
+        ),
     )
     birth_date = models.DateField(
         null=True,
         blank=True,
-        verbose_name='Syntymäaika',
+        verbose_name="Syntymäaika",
         help_text=BIRTH_DATE_HELP_TEXT,
         validators=[birth_date_validator],
     )
@@ -63,87 +65,86 @@ class Person(models.Model):
     muncipality = models.CharField(
         blank=True,
         max_length=127,
-        verbose_name='Kotikunta',
-        help_text='Virallinen kotikuntasi eli kunta jossa olet kirjoilla. Kotikunta ja väestörekisteriin '
-        'merkityt etunimesi (kaikki) ovat pakollisia tietoja, mikäli kuulut '
-        'tai haluat liittyä johonkin yhdistykseen joka käyttää tätä sivustoa jäsenrekisterin '
-        'hallintaan.'
+        verbose_name="Kotikunta",
+        help_text="Virallinen kotikuntasi eli kunta jossa olet kirjoilla. Kotikunta ja väestörekisteriin "
+        "merkityt etunimesi (kaikki) ovat pakollisia tietoja, mikäli kuulut "
+        "tai haluat liittyä johonkin yhdistykseen joka käyttää tätä sivustoa jäsenrekisterin "
+        "hallintaan.",
     )
 
     email = models.EmailField(
         blank=True,
         max_length=EMAIL_LENGTH,
-        verbose_name='Sähköpostiosoite',
-        help_text='Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä asioissa.',
+        verbose_name="Sähköpostiosoite",
+        help_text="Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä asioissa.",
     )
 
     phone = models.CharField(
         blank=True,
         max_length=PHONE_NUMBER_LENGTH,
         validators=[phone_number_validator],
-        verbose_name='Puhelinnumero',
-        help_text='Puhelinnumeroasi käytetään tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan.',
+        verbose_name="Puhelinnumero",
+        help_text="Puhelinnumeroasi käytetään tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan.",
     )
 
     may_send_info = models.BooleanField(
         default=False,
-        verbose_name='Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>',
+        verbose_name="Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>",
     )
 
     allow_work_history_sharing = models.BooleanField(
         default=False,
-        verbose_name='Työskentelyhistoriani saa näyttää kokonaisuudessaan niille tapahtumille, joihin haen vapaaehtoistyöhön <i>(vapaaehtoinen)</i>',
-        help_text='Mikäli et anna tähän lupaa, tapahtuman työvoimavastaavalle näytetään ainoastaan työskentelysi aikaisemmissa saman organisaation järjestämissä tapahtumissa.'
+        verbose_name="Työskentelyhistoriani saa näyttää kokonaisuudessaan niille tapahtumille, joihin haen vapaaehtoistyöhön <i>(vapaaehtoinen)</i>",
+        help_text="Mikäli et anna tähän lupaa, tapahtuman työvoimavastaavalle näytetään ainoastaan työskentelysi aikaisemmissa saman organisaation järjestämissä tapahtumissa.",
     )
 
     preferred_name_display_style = models.CharField(
         max_length=31,
-        verbose_name='Nimen esittäminen listauksissa',
-        help_text='Mikäli sinut mainitaan tapahtuman järjestäjä- tai ohjelmalistauksessa (esim. käsiohjelmassa tai web-sivuilla), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä listauksessa.',
+        verbose_name="Nimen esittäminen listauksissa",
+        help_text="Mikäli sinut mainitaan tapahtuman järjestäjä- tai ohjelmalistauksessa (esim. käsiohjelmassa tai web-sivuilla), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä listauksessa.",
         blank=True,
         choices=NAME_DISPLAY_STYLE_CHOICES,
     )
 
     preferred_badge_name_display_style = models.CharField(
         max_length=31,
-        verbose_name='Nimen esittäminen badgessa',
-        help_text='Mikäli saat johonkin tapahtumaan nimikoidun henkilökortin (esim. työvoima- tai ohjelmabadgen), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä badgessa. Huomaathan kuitenkin, että jotkin tapahtumat saattavat vaatia etu- ja sukunimen painamista badgeen, jolloin tämä kenttä vaikuttaa ainoastaan siihen painetaanko badgeen myös nickisi vai ei.',
+        verbose_name="Nimen esittäminen badgessa",
+        help_text="Mikäli saat johonkin tapahtumaan nimikoidun henkilökortin (esim. työvoima- tai ohjelmabadgen), voit tässä vaikuttaa siihen miten nimesi esitetään kyseisessä badgessa. Huomaathan kuitenkin, että jotkin tapahtumat saattavat vaatia etu- ja sukunimen painamista badgeen, jolloin tämä kenttä vaikuttaa ainoastaan siihen painetaanko badgeen myös nickisi vai ei.",
         blank=True,
         choices=NAME_DISPLAY_STYLE_CHOICES,
     )
 
-    notes = models.TextField(blank=True, verbose_name='Käsittelijän merkinnät')
+    notes = models.TextField(blank=True, verbose_name="Käsittelijän merkinnät")
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     email_verified_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ['surname']
-        verbose_name = 'Henkilö'
-        verbose_name_plural = 'Henkilöt'
+        ordering = ["surname"]
+        verbose_name = "Henkilö"
+        verbose_name_plural = "Henkilöt"
 
     def __str__(self):
         return self.full_name
 
     def clean(self):
         if not self.nick and (
-            'nick' in self.preferred_name_display_style or
-            'nick' in self.preferred_badge_name_display_style
+            "nick" in self.preferred_name_display_style or "nick" in self.preferred_badge_name_display_style
         ):
-            raise ValidationError('Jos nick on tarkoitus näyttää, se myös täytyy syöttää.')
+            raise ValidationError("Jos nick on tarkoitus näyttää, se myös täytyy syöttää.")
 
     @property
     def full_name(self):
         if self.nick:
-            style = 'firstname_nick_surname'
+            style = "firstname_nick_surname"
         else:
-            style = 'firstname_surname'
+            style = "firstname_surname"
 
         return NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
 
     @property
     def firstname_surname(self):
-        return NAME_DISPLAY_STYLE_FORMATS['firstname_surname'].format(self=self)
+        return NAME_DISPLAY_STYLE_FORMATS["firstname_surname"].format(self=self)
 
     @property
     def official_name(self):
@@ -152,17 +153,11 @@ class Person(models.Model):
         else:
             first_name = self.first_name
 
-        return "{surname}, {first_name}".format(
-            surname=self.surname,
-            first_name=first_name,
-        )
+        return f"{self.surname}, {first_name}"
 
     @property
     def official_name_short(self):
-        return "{surname}, {first_name}".format(
-            surname=self.surname,
-            first_name=self.first_name,
-        )
+        return f"{self.surname}, {self.first_name}"
 
     @property
     def official_first_names_or_first_name(self):
@@ -180,9 +175,9 @@ class Person(models.Model):
             return preferred_name_display_style
         else:
             if self.nick:
-                return 'firstname_nick_surname'
+                return "firstname_nick_surname"
             else:
-                return 'firstname_surname'
+                return "firstname_surname"
 
     @property
     def name_display_style(self):
@@ -204,15 +199,15 @@ class Person(models.Model):
 
     @property
     def is_first_name_visible(self):
-        return 'firstname' in self.name_display_style
+        return "firstname" in self.name_display_style
 
     @property
     def is_surname_visible(self):
-        return 'surname' in self.name_display_style
+        return "surname" in self.name_display_style
 
     @property
     def is_nick_visible(self):
-        return 'nick' in self.name_display_style
+        return "nick" in self.name_display_style
 
     @property
     def username(self):
@@ -220,7 +215,7 @@ class Person(models.Model):
 
     @property
     def nick_or_first_name(self):
-        if 'nick' in self.preferred_name_display_style and self.nick:
+        if "nick" in self.preferred_name_display_style and self.nick:
             return self.nick
         else:
             return self.first_name
@@ -230,17 +225,17 @@ class Person(models.Model):
         User = get_user_model()
 
         user, unused = User.objects.get_or_create(
-            username='mahti',
+            username="mahti",
             defaults=dict(
-                first_name='Markku',
-                last_name='Mahtinen',
+                first_name="Markku",
+                last_name="Mahtinen",
                 is_staff=superuser,
                 is_superuser=superuser,
             ),
         )
 
         if not user.password:
-            user.set_password('mahti')
+            user.set_password("mahti")
             user.save()
 
         return cls.objects.get_or_create(
@@ -248,22 +243,22 @@ class Person(models.Model):
             defaults=dict(
                 first_name=user.first_name,
                 surname=user.last_name,
-                nick='Mahti',
+                nick="Mahti",
                 birth_date=date(1984, 1, 1),
-                email='mahti@example.com',
-                phone='+358 50 555 1234'
-            )
+                email="mahti@example.com",
+                phone="+358 50 555 1234",
+            ),
         )
 
     def save(self, *args, **kwargs):
-        ret_val = super(Person, self).save(*args, **kwargs)
+        ret_val = super().save(*args, **kwargs)
 
         if self.user:
             # Update first_name, last_name and email in User if they differ from those in Person
             for person_attr, user_attr in [
-                ('first_name', 'first_name'),
-                ('surname', 'last_name'),
-                ('email', 'email'),
+                ("first_name", "first_name"),
+                ("surname", "last_name"),
+                ("email", "email"),
             ]:
                 setattr(self.user, user_attr, getattr(self, person_attr))
 
@@ -276,9 +271,7 @@ class Person(models.Model):
         return self.email_verified_at is not None
 
     def get_normalized_phone_number(
-        self,
-        region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION,
-        format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
+        self, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION, format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
     ):
         """
         Returns the phone number of this Person in a normalized format. If the phone number is invalid,
@@ -288,7 +281,7 @@ class Person(models.Model):
         try:
             return format_phone_number(self.phone, region=region, format=format)
         except phonenumbers.NumberParseException:
-            logger.exception('Person %s has invalid phone number: %s', self, self.phone)
+            logger.exception("Person %s has invalid phone number: %s", self, self.phone)
             return self.phone
 
     @property
@@ -297,8 +290,8 @@ class Person(models.Model):
 
     @property
     def desuprofile_connection(self):
-        if not hasattr(self, '_desuprofile_connection'):
-            if 'desuprofile_integration' not in settings.INSTALLED_APPS or self.user is None:
+        if not hasattr(self, "_desuprofile_connection"):
+            if "desuprofile_integration" not in settings.INSTALLED_APPS or self.user is None:
                 self._desuprofile_connection = None
 
             from desuprofile_integration.models import Connection
@@ -312,18 +305,20 @@ class Person(models.Model):
 
     def get_pending_code(self, CodeModel):
         try:
-            return CodeModel.objects.get(person=self, state='valid')
+            return CodeModel.objects.get(person=self, state="valid")
         except CodeModel.DoesNotExist:
             return None
 
     @property
     def pending_email_verification(self):
         from .email_verification_token import EmailVerificationToken
+
         return self.get_pending_code(EmailVerificationToken)
 
     @property
     def pending_password_reset(self):
         from .password_reset_token import PasswordResetToken
+
         return self.get_pending_code(PasswordResetToken)
 
     def setup_code(self, request, CodeModel, **kwargs):
@@ -347,34 +342,34 @@ class Person(models.Model):
         from core.utils import get_ip
         from .password_reset_token import PasswordResetToken
 
-        self.setup_code(request, PasswordResetToken, ip_address=get_ip(request) or '')
+        self.setup_code(request, PasswordResetToken, ip_address=get_ip(request) or "")
 
     def verify_email(self, code=None):
         from .email_verification_token import EmailVerificationToken, EmailVerificationError
 
         if self.is_email_verified:
-            raise EmailVerificationError('already_verified')
+            raise EmailVerificationError("already_verified")
 
         if isinstance(code, str):
             try:
                 code = EmailVerificationToken.objects.get(code=code)
             except EmailVerificationToken.DoesNotExist as e:
-                raise EmailVerificationError('invalid_code')
+                raise EmailVerificationError("invalid_code")
 
         if code:
             # Verify with a single code. The code needs to be checked.
 
             if code.person != self:
-                raise EmailVerificationError('wrong_person')
-            elif code.state != 'valid':
-                raise EmailVerificationError('code_not_valid')
+                raise EmailVerificationError("wrong_person")
+            elif code.state != "valid":
+                raise EmailVerificationError("code_not_valid")
             elif code.email != self.email:
-                raise EmailVerificationError('email_changed')
+                raise EmailVerificationError("email_changed")
             else:
                 code.mark_used()
         else:
             # Forcibly verify, regardless of codes.
-            EmailVerificationToken.objects.filter(person=self, state='valid').update(state='revoked')
+            EmailVerificationToken.objects.filter(person=self, state="valid").update(state="revoked")
 
         self.email_verified_at = timezone.now()
         self.save()
@@ -413,21 +408,19 @@ class Person(models.Model):
 
     def as_dict(self):
         return dict(
-            pick_attrs(self,
-                'id',
-                'first_name',
-                'surname',
-                'nick',
-                'full_name',
-                'display_name',
-                'preferred_name_display_style',
-
-                'email',
-                'birth_date',
-
+            pick_attrs(
+                self,
+                "id",
+                "first_name",
+                "surname",
+                "nick",
+                "full_name",
+                "display_name",
+                "preferred_name_display_style",
+                "email",
+                "birth_date",
                 phone=self.normalized_phone_number,
             ),
-
             username=self.user.username if self.user else None,
             groups=[group.name for group in self.user.groups.all()] if self.user else [],
         )
@@ -455,7 +448,7 @@ class Person(models.Model):
         self.apply_state_update_badges()
 
     def apply_state_update_badges(self):
-        if 'badges' not in settings.INSTALLED_APPS:
+        if "badges" not in settings.INSTALLED_APPS:
             return
 
         from badges.models import Badge
@@ -465,8 +458,9 @@ class Person(models.Model):
             Badge.ensure(person=self, event=badge.personnel_class.event)
 
     def apply_state_async(self):
-        if 'background_tasks' in settings.INSTALLED_APPS:
+        if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import person_apply_state_async
+
             person_apply_state_async(self.pk)
         else:
             self._apply_state_async()
@@ -476,14 +470,16 @@ class Person(models.Model):
         self.apply_state_update_may_send_info_group_membership()
 
     def apply_state_update_crowd(self):
-        if 'crowd_integration' not in settings.INSTALLED_APPS:
+        if "crowd_integration" not in settings.INSTALLED_APPS:
             return
 
         from crowd_integration.utils import update_user
+
         update_user(self.user)
 
     def apply_state_update_may_send_info_group_membership(self):
         from ..utils import ensure_user_is_member_of_group
+
         ensure_user_is_member_of_group(
             user=self.user,
             group=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME,
@@ -509,20 +505,22 @@ class Person(models.Model):
         self.ensure_basic_groups()
 
     def apply_state_new_user_async(self, password):
-        if 'background_tasks' in settings.INSTALLED_APPS:
+        if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import person_apply_state_new_user_async
+
             person_apply_state_new_user_async.delay(self.pk, password)
         else:
             self._apply_state_new_user_async(password)
 
     def _apply_state_new_user_async(self, password):
-        if 'crowd_integration' in settings.INSTALLED_APPS:
+        if "crowd_integration" in settings.INSTALLED_APPS:
             self.crowd_create_user(password)
             self.crowd_sync_groups()
 
     def crowd_create_user(self, password):
-        assert 'crowd_integration' in settings.INSTALLED_APPS
+        assert "crowd_integration" in settings.INSTALLED_APPS
         from crowd_integration.utils import create_user
+
         create_user(self.user, password)
 
     def crowd_sync_groups(self):
@@ -536,8 +534,9 @@ class Person(models.Model):
         TODO Propagate django-admin group changes to Crowd
         https://docs.djangoproject.com/en/1.10/ref/signals/#m2m-changed
         """
-        assert 'crowd_integration' in settings.INSTALLED_APPS
+        assert "crowd_integration" in settings.INSTALLED_APPS
         from crowd_integration.utils import ensure_user_group_membership
+
         for group in self.user.groups.all():
             ensure_user_group_membership(self.user, group.name)
 
@@ -552,19 +551,19 @@ class Person(models.Model):
     def as_vcard(self, event=None):
         vcard = vobject.vCard()
 
-        vcard.add('n')
+        vcard.add("n")
         vcard.n.value = vobject.vcard.Name(family=self.surname, given=self.first_name)
 
-        vcard.add('fn')
+        vcard.add("fn")
         vcard.fn.value = self.firstname_surname
 
-        vcard.add('email')
+        vcard.add("email")
         vcard.email.value = self.get_email_for_event(event) if event is not None else self.email
-        vcard.email.type_param = 'INTERNET'
+        vcard.email.type_param = "INTERNET"
 
-        vcard.add('tel')
+        vcard.add("tel")
         vcard.tel.value = self.normalized_phone_number
-        vcard.tel.type_param = 'cell'
+        vcard.tel.type_param = "cell"
 
         return vcard.serialize()
 
@@ -574,17 +573,14 @@ class Person(models.Model):
         another user.
         """
         from event_log.utils import emit
-        emit(
-            'core.person.viewed',
-            person=self,
-            request=request,
-            **extra_attrs
-        )
+
+        emit("core.person.viewed", person=self, request=request, **extra_attrs)
 
     @property
     def with_privacy(self):
-        if not hasattr(self, '_privacy_adapter'):
+        if not hasattr(self, "_privacy_adapter"):
             # XXX generify
             from badges.proxies.badge.privacy import BadgePrivacyAdapter
+
             self._privacy_adapter = BadgePrivacyAdapter(self)
         return self._privacy_adapter

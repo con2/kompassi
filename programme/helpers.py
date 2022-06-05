@@ -17,9 +17,10 @@ def programme_event_required(view_func):
 
         if not meta:
             messages.error(request, "Tämä tapahtuma ei käytä tätä sivustoa ohjelman hallintaan.")
-            return redirect('core_event_view', event.slug)
+            return redirect("core_event_view", event.slug)
 
         return view_func(request, event=event, *args, **kwargs)
+
     return wrapper
 
 
@@ -32,9 +33,10 @@ def public_programme_required(view_func):
         if not meta.is_public:
             if not meta.is_user_admin(request.user):
                 messages.error(request, "Tämän tapahtuman ohjelma ei ole vielä julkinen.")
-                return redirect('core_event_view', event.slug)
+                return redirect("core_event_view", event.slug)
 
         return view_func(request, event=event, *args, **kwargs)
+
     return wrapper
 
 
@@ -50,15 +52,14 @@ def programme_admin_required(view_func):
 
         if not meta:
             messages.error(request, "Tämä tapahtuma ei käytä tätä sivustoa ohjelman hallintaan.")
-            return redirect('core_event_view', event.slug)
+            return redirect("core_event_view", event.slug)
 
         vars = dict(
-            event=event,
-            admin_menu_items=programme_admin_menu_items(request, event),
-            admin_title='Ohjelman hallinta'
+            event=event, admin_menu_items=programme_admin_menu_items(request, event), admin_title="Ohjelman hallinta"
         )
 
         return view_func(request, vars, event, *args, **kwargs)
+
     return wrapper
 
 

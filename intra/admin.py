@@ -9,14 +9,14 @@ class InlineIntraEventMetaAdmin(admin.StackedInline):
 
 class TeamAdmin(admin.ModelAdmin):
     model = Team
-    list_display = ('event', 'name')
-    list_filter = ('event',)
+    list_display = ("event", "name")
+    list_filter = ("event",)
 
 
 class TeamMemberAdmin(admin.ModelAdmin):
     model = Team
-    list_display = ('admin_get_event', 'team', 'person')
-    list_filter = ('team__event',)
+    list_display = ("admin_get_event", "team", "person")
+    list_filter = ("team__event",)
 
 
 admin.site.register(Team, TeamAdmin)

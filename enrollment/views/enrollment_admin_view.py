@@ -10,11 +10,11 @@ from ..models.enrollment import Enrollment, STATE_CHOICES
 def enrollment_admin_view(request, vars, event):
     enrollments = (
         Enrollment.objects.filter(event=event)
-        .select_related('person')
-        .order_by('person__surname', 'person__first_name')
+        .select_related("person")
+        .order_by("person__surname", "person__first_name")
     )
 
-    state_filters = Filter(request, 'state').add_choices('state', STATE_CHOICES)
+    state_filters = Filter(request, "state").add_choices("state", STATE_CHOICES)
     enrollments = state_filters.filter_queryset(enrollments)
 
     vars.update(
@@ -24,4 +24,4 @@ def enrollment_admin_view(request, vars, event):
         state_filters=state_filters,
     )
 
-    return render(request, 'enrollment_admin_view.pug', vars)
+    return render(request, "enrollment_admin_view.pug", vars)

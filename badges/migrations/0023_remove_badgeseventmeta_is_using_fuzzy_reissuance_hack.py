@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('badges', '0022_badge_notes'),
+        ("badges", "0022_badge_notes"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='badgeseventmeta',
-            name='is_using_fuzzy_reissuance_hack',
+            model_name="badgeseventmeta",
+            name="is_using_fuzzy_reissuance_hack",
         ),
     ]

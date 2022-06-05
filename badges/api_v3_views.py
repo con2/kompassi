@@ -9,5 +9,5 @@ from .serializers import BadgeSerializer
 class BadgeViewSet(ModelViewSet):
     queryset = Badge.objects.all()
     serializer_class = BadgeSerializer
-    lookup_field = 'id'
+    lookup_field = "id"
     permission_classes = (DjangoObjectPermissions,)

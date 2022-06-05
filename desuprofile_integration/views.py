@@ -1,4 +1,3 @@
-
 import json
 import logging
 from datetime import datetime
@@ -28,14 +27,15 @@ from programme.models import Programme
 from .models import Connection, ConfirmationCode, Desuprofile, Desuprogramme, DesuprogrammeFeedback
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 def get_session(request, **kwargs):
-    return OAuth2Session(settings.KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID,
-        redirect_uri=request.build_absolute_uri(reverse('desuprofile_integration_oauth2_callback_view')),
+    return OAuth2Session(
+        settings.KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID,
+        redirect_uri=request.build_absolute_uri(reverse("desuprofile_integration_oauth2_callback_view")),
         scope=settings.KOMPASSI_DESUPROFILE_OAUTH2_SCOPE,  # XXX hardcoded scope
-        **kwargs
+        **kwargs,
     )
 
 
@@ -53,9 +53,10 @@ class LoginView(View):
 
     def get(self, request):
         authorization_url, state = get_session(request).authorization_url(
-            settings.KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL)
-        request.session['desuprofile_oauth_state'] = state
-        request.session['desuprofile_oauth_next'] = get_next(request)
+            settings.KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL
+        )
+        request.session["desuprofile_oauth_state"] = state
+        request.session["desuprofile_oauth_next"] = get_next(request)
         return redirect(authorization_url)
 
 
@@ -77,31 +78,35 @@ class CallbackView(View):
     """
 
     def get(self, request):
-        if 'desuprofile_oauth_state' not in request.session or 'desuprofile_oauth_next' not in request.session:
-            return HttpResponse('OAuth2 callback accessed outside OAuth2 authorization flow', status=400)
+        if "desuprofile_oauth_state" not in request.session or "desuprofile_oauth_next" not in request.session:
+            return HttpResponse("OAuth2 callback accessed outside OAuth2 authorization flow", status=400)
 
-        session = get_session(request, state=request.session['desuprofile_oauth_state'])
-        session.fetch_token(settings.KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL,
+        session = get_session(request, state=request.session["desuprofile_oauth_state"])
+        session.fetch_token(
+            settings.KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL,
             client_secret=settings.KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET,
             authorization_response=request.build_absolute_uri(),
         )
 
-        next_url = request.session['desuprofile_oauth_next']
+        next_url = request.session["desuprofile_oauth_next"]
 
-        del request.session['desuprofile_oauth_state']
-        del request.session['desuprofile_oauth_next']
+        del request.session["desuprofile_oauth_state"]
+        del request.session["desuprofile_oauth_next"]
 
         try:
             desuprofile = get_desuprofile(session)
         except JSONSchemaValidationError:
-            logger.exception('Desuprofile failed validation')
-            messages.error(request, (
-                'Etunimi, sukunimi ja sähköpostiosoite ovat Kompassin kannalta välttämättömiä '
-                'kenttiä Desuprofiilissa. Kirjaudu '
-                '<a href="https://desucon.fi/desuprofiili" target="_blank">Desuprofiiliisi</a> '
-                'ja korjaa nämä kentät, ja yritä sitten uudelleen.'
-            ))
-            return redirect('core_login_view')
+            logger.exception("Desuprofile failed validation")
+            messages.error(
+                request,
+                (
+                    "Etunimi, sukunimi ja sähköpostiosoite ovat Kompassin kannalta välttämättömiä "
+                    "kenttiä Desuprofiilissa. Kirjaudu "
+                    '<a href="https://desucon.fi/desuprofiili" target="_blank">Desuprofiiliisi</a> '
+                    "ja korjaa nämä kentät, ja yritä sitten uudelleen."
+                ),
+            )
+            return redirect("core_login_view")
 
         try:
             connection = Connection.objects.get(id=int(desuprofile.id))
@@ -118,7 +123,8 @@ class CallbackView(View):
         # Update desuprofile username on record
         # This field was added later, and Desuprofile usernames might change by admin action.
         if connection.desuprofile_username != desuprofile.username:
-            logger.warn('Desuprofile %d changed username from %s to %s',
+            logger.warn(
+                "Desuprofile %d changed username from %s to %s",
                 desuprofile.id,
                 connection.desuprofile_username,
                 desuprofile.username,
@@ -168,7 +174,7 @@ class CallbackView(View):
                 username = None
 
         if username is None:
-            username = "desuprofile_{id}".format(id=desuprofile.id)
+            username = f"desuprofile_{desuprofile.id}"
 
         with transaction.atomic():
             user = User(
@@ -188,11 +194,11 @@ class CallbackView(View):
                 email=desuprofile.email.strip(),
                 phone=desuprofile.phone.strip(),
                 birth_date=(
-                    datetime.strptime(desuprofile.birth_date.strip(), '%Y-%m-%d').date()
+                    datetime.strptime(desuprofile.birth_date.strip(), "%Y-%m-%d").date()
                     if desuprofile.birth_date
                     else None
                 ),
-                notes='Luotu Desuprofiilista',
+                notes="Luotu Desuprofiilista",
                 user=user,
             )
 
@@ -206,14 +212,14 @@ class CallbackView(View):
             connection.save()
 
         person.apply_state_new_user(request, password)
-        messages.success(request, 'Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!')
+        messages.success(request, "Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!")
 
         return respond_with_connection(request, next_url, connection)
 
     def respond_with_existing_user(self, request, next_url, desuprofile, user):
         code, created = ConfirmationCode.objects.get_or_create(
             person=user.person,
-            state='valid',
+            state="valid",
             desuprofile_id=int(desuprofile.id),
             desuprofile_username=desuprofile.username,
             next_url=next_url,
@@ -221,12 +227,12 @@ class CallbackView(View):
 
         code.send(request)
 
-        return redirect('desuprofile_integration_confirmation_required_view')
+        return redirect("desuprofile_integration_confirmation_required_view")
 
 
 def respond_with_connection(request, next_url, connection):
     user = connection.user
-    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    user.backend = "django.contrib.auth.backends.ModelBackend"
 
     return do_login(request, user, next=next_url)
 
@@ -240,19 +246,22 @@ class ConfirmationView(View):
 
     def get(self, request, code):
         try:
-            code = ConfirmationCode.objects.get(code=code, state='valid')
+            code = ConfirmationCode.objects.get(code=code, state="valid")
         except ConfirmationCode.DoesNotExist:
-            messages.error(request, 'Vahvistuskoodi ei kelpaa.')
-            return redirect('core_frontpage_view')
+            messages.error(request, "Vahvistuskoodi ei kelpaa.")
+            return redirect("core_frontpage_view")
 
         code.mark_used()
 
         if Connection.objects.filter(user=code.person.user).exists():
-            messages.error(request, (
-                'Kompassi-tunnukseesi on jo liitetty Desuprofiili. Jos haluat vaihtaa '
-                'Kompassi-tunnukseesi liitettyä Desuprofiilia, ota yhteyttä ylläpitoon: {email}'
-            ).format(email=settings.DEFAULT_FROM_EMAIL))
-            return redirect('core_frontpage_view')
+            messages.error(
+                request,
+                (
+                    "Kompassi-tunnukseesi on jo liitetty Desuprofiili. Jos haluat vaihtaa "
+                    "Kompassi-tunnukseesi liitettyä Desuprofiilia, ota yhteyttä ylläpitoon: {email}"
+                ).format(email=settings.DEFAULT_FROM_EMAIL),
+            )
+            return redirect("core_frontpage_view")
 
         connection = Connection(
             id=code.desuprofile_id,
@@ -265,10 +274,13 @@ class ConfirmationView(View):
         if not code.person.is_email_verified:
             code.person.verify_email()
 
-        messages.success(request, (
-            'Desuprofiilisi on liitetty Kompassi-tunnukseesi ja sinut on kirjattu sisään. Jatkossa voit '
-            'kirjautua sisään Kompassiin käyttäen Desuprofiiliasi.'
-        ))
+        messages.success(
+            request,
+            (
+                "Desuprofiilisi on liitetty Kompassi-tunnukseesi ja sinut on kirjattu sisään. Jatkossa voit "
+                "kirjautua sisään Kompassiin käyttäen Desuprofiiliasi."
+            ),
+        )
         return respond_with_connection(request, code.next_url, connection)
 
 
@@ -283,11 +295,11 @@ def desuprogramme_import_view(request, event):
     from .utils import import_programme
 
     payload = json.loads(request.body)
-    validate(payload, {'type': 'array', 'items': Desuprogramme.schema})
+    validate(payload, {"type": "array", "items": Desuprogramme.schema})
 
     import_programme(event, payload)
 
-    return HttpResponse('', status=202)
+    return HttpResponse("", status=202)
 
 
 @api_view
@@ -303,4 +315,4 @@ def desuprogramme_feedback_view(request, event, programme_slug):
     feedback = DesuprogrammeFeedback.from_json(request.body)
     feedback.save(programme)
 
-    return HttpResponse('', status=201)
+    return HttpResponse("", status=201)

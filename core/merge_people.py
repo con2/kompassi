@@ -9,14 +9,14 @@ from django.db.transaction import atomic
 from core.models import Person
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 IDENTICAL_FIELDS_REQUIRED_FOR_MERGE = (
-    'first_name',
-    'surname',
-    'nick',
-    'email',
+    "first_name",
+    "surname",
+    "nick",
+    "email",
 )
 
 
@@ -24,11 +24,11 @@ def make_key(person):
     return tuple(getattr(person, field.lower()) for field in IDENTICAL_FIELDS_REQUIRED_FOR_MERGE)
 
 
-@lru_cache()
+@lru_cache
 def get_reference_fields(related_model=Person):
-    '''
+    """
     Returns ForeignKeys, OneToOneFields and ManyToManyFields that reference the given model.
-    '''
+    """
     reference_fields = []
 
     for content_type in ContentType.objects.all():
@@ -36,7 +36,9 @@ def get_reference_fields(related_model=Person):
 
         if not ModelClass:
             # wtf is south.migrationhistory still doing in our database?
-            logger.warning('get_reference_fields: ContentType without ModelClass: %s.%s', content_type.app_label, content_type.name)
+            logger.warning(
+                "get_reference_fields: ContentType without ModelClass: %s.%s", content_type.app_label, content_type.name
+            )
             continue
 
         meta = ModelClass._meta
@@ -109,11 +111,11 @@ def merge_people(people_to_merge, into):
 
 
 def merge(mergee, into):
-    '''
+    """
     Updates all references to `mergee` to point to `into` and deletes `mergee`.
-    '''
+    """
     ModelClass = mergee._meta.model
-    assert into._meta.model is ModelClass, 'thou shalt not merge instances of different models'
+    assert into._meta.model is ModelClass, "thou shalt not merge instances of different models"
 
     for RelatedModel, field in get_reference_fields(ModelClass):
         if field.many_to_many:
@@ -122,7 +124,7 @@ def merge(mergee, into):
         criteria = {field.name: mergee}
         update = {field.name: into}
 
-        logger.debug('Updating %s by %r with %r', RelatedModel, criteria, update)
+        logger.debug("Updating %s by %r with %r", RelatedModel, criteria, update)
 
         RelatedModel.objects.filter(**criteria).update(**update)
 

@@ -56,11 +56,11 @@ class Command(BaseCommand):
             app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("organizations.")
         ]
         organization_commands = [
-            command for command in ("setup_%s" % organization for organization in organizations) if command in commands
+            command for command in (f"setup_{organization}" for organization in organizations) if command in commands
         ]
 
         events = [app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("events.")]
-        event_commands = [command for command in ("setup_%s" % event for event in events) if command in commands]
+        event_commands = [command for command in (f"setup_{event}" for event in events) if command in commands]
 
         management_commands = [
             # (('kompassi_i18n', '-acv2'), dict()),

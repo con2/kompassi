@@ -4,8 +4,8 @@ from .group_management_mixin import GroupManagementMixin
 
 
 class EventMetaBase(models.Model, GroupManagementMixin):
-    event = models.OneToOneField('core.Event', on_delete=models.CASCADE, primary_key=True, related_name='%(class)s')
-    admin_group = models.ForeignKey('auth.Group', on_delete=models.CASCADE)
+    event = models.OneToOneField("core.Event", on_delete=models.CASCADE, primary_key=True, related_name="%(class)s")
+    admin_group = models.ForeignKey("auth.Group", on_delete=models.CASCADE)
 
     use_cbac = False
 
@@ -26,6 +26,7 @@ class EventMetaBase(models.Model, GroupManagementMixin):
         """
         if self.use_cbac:
             from access.models.cbac_entry import CBACEntry
+
             return CBACEntry.is_allowed(user, self.event.get_claims(app=self._meta.app_label))
         else:
             return user.is_superuser or self.is_user_in_admin_group(user)

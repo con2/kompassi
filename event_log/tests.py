@@ -21,11 +21,11 @@ class EventFilterTestCase(TestCase):
 
     def test_event_filter(self):
         event, unused = Event.get_or_create_dummy()
-        event2, unused = Event.get_or_create_dummy(name='Dummy event 2')
+        event2, unused = Event.get_or_create_dummy(name="Dummy event 2")
 
         kwargs = dict(
-            channel='callback',
-            callback_code=f'{__name__}:notification_callback',
+            channel="callback",
+            callback_code=f"{__name__}:notification_callback",
         )
 
         subscription_with_event_filter, unused = Subscription.get_or_create_dummy(event_filter=event, **kwargs)
@@ -45,13 +45,13 @@ class EventSurveyFilterTestCase(TestCase):
         notifications = []
 
     def test_event_survey_filter(self):
-        survey, unused = EventSurvey.get_or_create_dummy(title='Dummy survey')
-        survey2, unused = EventSurvey.get_or_create_dummy(title='Dummy survey 2')
+        survey, unused = EventSurvey.get_or_create_dummy(title="Dummy survey")
+        survey2, unused = EventSurvey.get_or_create_dummy(title="Dummy survey 2")
 
         kwargs = dict(
-            entry_type='surveys.eventsurveyresult.created',
-            channel='callback',
-            callback_code=f'{__name__}:notification_callback',
+            entry_type="surveys.eventsurveyresult.created",
+            channel="callback",
+            callback_code=f"{__name__}:notification_callback",
         )
 
         subscription_with_filter, unused = Subscription.get_or_create_dummy(event_survey_filter=survey, **kwargs)

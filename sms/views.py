@@ -18,12 +18,17 @@ def sms_admin_votes_view(request, vars, event):
     vars.update(
         hotwords=Hotword.objects.filter(assigned_event=event),
         categories=VoteCategory.objects.filter(hotword__assigned_event=event),
-        nominees=Nominee.objects.filter(category__hotword__assigned_event=event).values('category','name','number').annotate(votes=Count('vote__vote__category')).order_by('-votes'),
-        total_votes=Vote.objects.filter(category__hotword__assigned_event=event).values('category').annotate(votes=Count('vote')),
-        number=settings.NEXMO_FROM
+        nominees=Nominee.objects.filter(category__hotword__assigned_event=event)
+        .values("category", "name", "number")
+        .annotate(votes=Count("vote__vote__category"))
+        .order_by("-votes"),
+        total_votes=Vote.objects.filter(category__hotword__assigned_event=event)
+        .values("category")
+        .annotate(votes=Count("vote")),
+        number=settings.NEXMO_FROM,
     )
 
-    return render(request, 'sms_admin_votes_view.pug', vars)
+    return render(request, "sms_admin_votes_view.pug", vars)
 
 
 @sms_admin_required
@@ -32,17 +37,17 @@ def sms_admin_received_view(request, vars, event):
     vars.update(
         received_messages=SMSMessageIn.objects.filter(SMSEventMeta__event=event),
     )
-    return render(request, 'sms_admin_received_view.pug', vars)
+    return render(request, "sms_admin_received_view.pug", vars)
 
 
 def sms_admin_menu_items(request, event):
-    votes_url = url('sms_admin_votes_view', event.slug)
+    votes_url = url("sms_admin_votes_view", event.slug)
     votes_active = request.path == votes_url
-    votes_text = 'Äänestykset'
+    votes_text = "Äänestykset"
 
-    received_url = url('sms_admin_received_view', event.slug)
+    received_url = url("sms_admin_received_view", event.slug)
     received_active = request.path == received_url
-    received_text = 'Vastaanotetut viestit'
+    received_text = "Vastaanotetut viestit"
 
     return [
         (votes_active, votes_url, votes_text),

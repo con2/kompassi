@@ -25,29 +25,25 @@ class JVKorttiTest(TestCase):
         today = date.today()
 
         valid_examples = [
-            '8330/J1234/09',
-            '8520/J0000/13',
+            "8330/J1234/09",
+            "8520/J0000/13",
         ]
 
         for valid_example in valid_examples:
             JVKortti(
-                personqualification=personqualification,
-                card_number=valid_example,
-                expiration_date=today
+                personqualification=personqualification, card_number=valid_example, expiration_date=today
             ).full_clean()
 
         invalid_examples = [
-            'lol',
+            "lol",
             # '8330/J1234/0', # need more lax validation due to new cards having a new format
             None,
-            ''
+            "",
         ]
 
         for invalid_example in invalid_examples:
             invalid = JVKortti(
-                personqualification=personqualification,
-                card_number=invalid_example,
-                expiration_date=today
+                personqualification=personqualification, card_number=invalid_example, expiration_date=today
             )
 
             self.assertRaises(ValidationError, lambda: invalid.full_clean())

@@ -2,28 +2,25 @@ import logging
 
 from django.db import models
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 class GroupEmailAliasGrant(models.Model):
-    group = models.ForeignKey('auth.Group', on_delete=models.CASCADE, verbose_name='Ryhmä')
-    type = models.ForeignKey('access.EmailAliasType', on_delete=models.CASCADE, verbose_name='Tyyppi')
+    group = models.ForeignKey("auth.Group", on_delete=models.CASCADE, verbose_name="Ryhmä")
+    type = models.ForeignKey("access.EmailAliasType", on_delete=models.CASCADE, verbose_name="Tyyppi")
     active_until = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return '{group_name}: {type}'.format(
-            group_name=self.group.name if self.group else None,
-            type=self.type,
-        )
+        return f"{self.group.name if self.group else None}: {self.type}"
 
     @classmethod
     def ensure_aliases(cls, person, t=None):
         if person.user is None:
-            logger.warn('Cannot ensure_aliases for Person without User: %s', person.full_name)
+            logger.warn("Cannot ensure_aliases for Person without User: %s", person.full_name)
             return
 
         if t is None:
@@ -39,9 +36,10 @@ class GroupEmailAliasGrant(models.Model):
 
     def admin_get_organization(self):
         return self.type.domain.organization
-    admin_get_organization.short_description = _('organization')
-    admin_get_organization.admin_order_field = 'type__domain__organization'
+
+    admin_get_organization.short_description = _("organization")
+    admin_get_organization.admin_order_field = "type__domain__organization"
 
     class Meta:
-        verbose_name = _('group e-mail alias grant')
-        verbose_name_plural = ('group e-mail alias grants')
+        verbose_name = _("group e-mail alias grant")
+        verbose_name_plural = "group e-mail alias grants"

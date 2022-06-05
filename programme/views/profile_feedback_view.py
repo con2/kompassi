@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.helpers import person_required
 from core.utils import initialize_form
@@ -16,8 +16,8 @@ def profile_feedback_view(request, programme_id):
     event = programme.event
 
     if not request.user.person in programme.organizers.all():
-        messages.error(request, _('Only an organizer of the programme may view its feedback.'))
-        return redirect('programme:profile_view')
+        messages.error(request, _("Only an organizer of the programme may view its feedback."))
+        return redirect("programme:profile_view")
 
     feedback = programme.visible_feedback
 
@@ -27,4 +27,4 @@ def profile_feedback_view(request, programme_id):
         feedback=feedback,
     )
 
-    return render(request, 'programme_profile_feedback_view.pug', vars)
+    return render(request, "programme_profile_feedback_view.pug", vars)

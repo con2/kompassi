@@ -1,7 +1,7 @@
 SUPPORTED_APPS = [
-    'labour',
-    'programme',
-    'tickets',
-    'badges',
-    'intra',
+    "labour",
+    "programme",
+    "tickets",
+    "badges",
+    "intra",
 ]

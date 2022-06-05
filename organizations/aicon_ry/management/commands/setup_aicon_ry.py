@@ -12,7 +12,7 @@ from core.utils import slugify
 from membership.models import MembershipOrganizationMeta, Term
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         pass
 
@@ -23,26 +23,29 @@ class Setup(object):
 
     def setup_core(self):
         self.organization, unused = Organization.objects.get_or_create(
-            slug='aicon-ry',
+            slug="aicon-ry",
             defaults=dict(
-                name='Aicon ry',
-                homepage_url='https://aicon.fi',
-            )
+                name="Aicon ry",
+                homepage_url="https://aicon.fi",
+            ),
         )
 
         # v10
-        self.organization.muncipality = 'Tampere'
+        self.organization.muncipality = "Tampere"
         self.organization.public = True
         self.organization.save()
 
-        self.group, unused = Group.objects.get_or_create(name='aicon-staff')
+        self.group, unused = Group.objects.get_or_create(name="aicon-staff")
 
     def setup_membership(self):
-        members_group, = MembershipOrganizationMeta.get_or_create_groups(self.organization, ['members'])
-        self.meta, created = MembershipOrganizationMeta.objects.get_or_create(organization=self.organization, defaults=dict(
-            admin_group=self.group,
-            members_group=members_group,
-        ))
+        (members_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["members"])
+        self.meta, created = MembershipOrganizationMeta.objects.get_or_create(
+            organization=self.organization,
+            defaults=dict(
+                admin_group=self.group,
+                members_group=members_group,
+            ),
+        )
 
         for year, membership_fee_cents in [
             (2015, 500),
@@ -57,7 +60,7 @@ class Setup(object):
                     end_date=end_date,
                     entrance_fee_cents=0,
                     membership_fee_cents=membership_fee_cents,
-                )
+                ),
             )
 
     def setup_access(self):
@@ -65,32 +68,32 @@ class Setup(object):
             organization=self.organization,
             defaults=dict(
                 admin_group=self.group,
-            )
+            ),
         )
 
         domain, created = EmailAliasDomain.objects.get_or_create(
-            domain_name='aicon.fi',
+            domain_name="aicon.fi",
             defaults=dict(
                 organization=self.organization,
-            )
+            ),
         )
 
         for type_code, type_metavar in [
-            ('access.email_aliases:firstname_surname', 'etunimi.sukunimi'),
-            ('access.email_aliases:nick', 'nick'),
+            ("access.email_aliases:firstname_surname", "etunimi.sukunimi"),
+            ("access.email_aliases:nick", "nick"),
         ]:
             alias_type, created = EmailAliasType.objects.get_or_create(
                 domain=domain,
                 account_name_code=type_code,
                 defaults=dict(
                     metavar=type_metavar,
-                )
+                ),
             )
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup Aicon ry specific stuff'
+    args = ""
+    help = "Setup Aicon ry specific stuff"
 
     def handle(self, *args, **opts):
         Setup().setup()

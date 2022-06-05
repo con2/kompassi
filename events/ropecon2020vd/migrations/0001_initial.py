@@ -10,40 +10,110 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0034_event_cancelled'),
+        ("core", "0034_event_cancelled"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TimeSlot',
+            name="TimeSlot",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=63)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=63)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='SignupExtra',
+            name="SignupExtra",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('total_work', models.CharField(choices=[('8h', 'Minimi - 8 tuntia'), ('12h', '10–12 tuntia'), ('yli12h', 'Työn Sankari! Yli 12 tuntia!')], help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).', max_length=15, verbose_name='Toivottu kokonaistyömäärä')),
-                ('want_certificate', models.BooleanField(default=False, verbose_name='Haluan todistuksen työskentelystäni Ropeconissa')),
-                ('certificate_delivery_address', models.TextField(blank=True, help_text='Todistukset toimitetaan ensisijaisesti sähköpostitse, mutta jos haluat todistuksesi paperilla kirjaa tähän postiosoite(katuosoite, postinumero ja toimipaikka), johon haluat todistuksen toimitettavan.', verbose_name='Työtodistuksen toimitusosoite')),
-                ('can_finnish', models.BooleanField(default=False, verbose_name='Finnish')),
-                ('can_english', models.BooleanField(default=False, verbose_name='English')),
-                ('other_languages', models.TextField(blank=True, help_text='Please select those languages with which you feel comfortable doing customer service work and list those not listed in the free text field. You can also describe how proficient you are with those languages in the text field.', verbose_name='Other languages')),
-                ('prior_experience', models.TextField(blank=True, help_text='Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä hakemassasi tehtävässä.', verbose_name='Työkokemus')),
-                ('shift_wishes', models.TextField(blank=True, help_text='Jos tiedät nyt jo, ettet pääse paikalle johonkin tiettyyn aikaan tai haluat osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.', verbose_name='Alustavat työvuorotoiveet')),
-                ('free_text', models.TextField(blank=True, help_text='Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole omaa kenttää yllä, käytä tätä kenttää.', verbose_name='Vapaa alue')),
-                ('roster_publish_consent', models.BooleanField(default=False, verbose_name='I give my consent for Ropecon to publish my name to my co-workers in the volunteer roster of my assigned station.')),
-                ('is_active', models.BooleanField(default=True)),
-                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ropecon2020vd_signup_extras', to='core.Event')),
-                ('person', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='ropecon2020vd_signup_extra', to='core.Person')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "total_work",
+                    models.CharField(
+                        choices=[
+                            ("8h", "Minimi - 8 tuntia"),
+                            ("12h", "10–12 tuntia"),
+                            ("yli12h", "Työn Sankari! Yli 12 tuntia!"),
+                        ],
+                        help_text="Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Useimmissa tehtävistä minimi on kahdeksan tuntia, mutta joissain tehtävissä se voi olla myös vähemmän (esim. majoitusvalvonta 6 h).",
+                        max_length=15,
+                        verbose_name="Toivottu kokonaistyömäärä",
+                    ),
+                ),
+                (
+                    "want_certificate",
+                    models.BooleanField(default=False, verbose_name="Haluan todistuksen työskentelystäni Ropeconissa"),
+                ),
+                (
+                    "certificate_delivery_address",
+                    models.TextField(
+                        blank=True,
+                        help_text="Todistukset toimitetaan ensisijaisesti sähköpostitse, mutta jos haluat todistuksesi paperilla kirjaa tähän postiosoite(katuosoite, postinumero ja toimipaikka), johon haluat todistuksen toimitettavan.",
+                        verbose_name="Työtodistuksen toimitusosoite",
+                    ),
+                ),
+                ("can_finnish", models.BooleanField(default=False, verbose_name="Finnish")),
+                ("can_english", models.BooleanField(default=False, verbose_name="English")),
+                (
+                    "other_languages",
+                    models.TextField(
+                        blank=True,
+                        help_text="Please select those languages with which you feel comfortable doing customer service work and list those not listed in the free text field. You can also describe how proficient you are with those languages in the text field.",
+                        verbose_name="Other languages",
+                    ),
+                ),
+                (
+                    "prior_experience",
+                    models.TextField(
+                        blank=True,
+                        help_text="Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä hakemassasi tehtävässä.",
+                        verbose_name="Työkokemus",
+                    ),
+                ),
+                (
+                    "shift_wishes",
+                    models.TextField(
+                        blank=True,
+                        help_text="Jos tiedät nyt jo, ettet pääse paikalle johonkin tiettyyn aikaan tai haluat osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.",
+                        verbose_name="Alustavat työvuorotoiveet",
+                    ),
+                ),
+                (
+                    "free_text",
+                    models.TextField(
+                        blank=True,
+                        help_text="Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole omaa kenttää yllä, käytä tätä kenttää.",
+                        verbose_name="Vapaa alue",
+                    ),
+                ),
+                (
+                    "roster_publish_consent",
+                    models.BooleanField(
+                        default=False,
+                        verbose_name="I give my consent for Ropecon to publish my name to my co-workers in the volunteer roster of my assigned station.",
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "event",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ropecon2020vd_signup_extras",
+                        to="core.Event",
+                    ),
+                ),
+                (
+                    "person",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ropecon2020vd_signup_extra",
+                        to="core.Person",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
             bases=(labour.models.signup_extras.SignupExtraMixin, models.Model),
         ),

@@ -15,7 +15,7 @@ from intra.constants import SUPPORTED_APPS
 from ..constants import CBAC_VALID_AFTER_EVENT_DAYS
 
 
-Claims = Dict[str, str]
+Claims = dict[str, str]
 logger = logging.getLogger("kompassi")
 
 
@@ -54,7 +54,7 @@ class CBACEntry(models.Model):
 
         return super().save(*args, **kwargs)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         return dict(
             user=self.user.username,
             valid_from=self.valid_from.isoformat(),

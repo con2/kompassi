@@ -6,17 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tickets', '0028_ticketseventmeta_terms_and_conditions_url'),
+        ("tickets", "0028_ticketseventmeta_terms_and_conditions_url"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='ticketseventmeta',
-            name='terms_and_conditions_url',
+            model_name="ticketseventmeta",
+            name="terms_and_conditions_url",
         ),
         migrations.AlterField(
-            model_name='customer',
-            name='allow_marketing_email',
-            field=models.BooleanField(blank=True, default=False, verbose_name='Allow sending news and other information related to this event via e-mail'),
+            model_name="customer",
+            name="allow_marketing_email",
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                verbose_name="Allow sending news and other information related to this event via e-mail",
+            ),
         ),
     ]

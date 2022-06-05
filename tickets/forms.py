@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Submit
@@ -22,7 +22,7 @@ class NullForm(forms.Form):
 
 class AccommodationInformationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(AccommodationInformationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
@@ -53,7 +53,7 @@ class OrderProductForm(forms.ModelForm):
     count = forms.IntegerField(label="Määrä", min_value=0, max_value=99)
 
     def __init__(self, *args, **kwargs):
-        super(OrderProductForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_class = "sr-only"
         self.helper.field_class = "col-md-12"
@@ -99,7 +99,7 @@ class CustomerForm(forms.ModelForm):
         order = kwargs.pop("order")
         meta = order.event.tickets_event_meta
 
-        super(CustomerForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -151,7 +151,7 @@ class SearchForm(forms.Form):
     email = forms.CharField(label="Sähköpostiosoite", required=False)
 
     def __init__(self, *args, **kwargs):
-        super(SearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.layout = Layout(
@@ -165,7 +165,7 @@ class SearchForm(forms.Form):
 
 class AdminOrderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(AdminOrderForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -204,7 +204,7 @@ class CreateBatchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
 
-        super(CreateBatchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields["product"].queryset = Product.objects.filter(event=event)
 

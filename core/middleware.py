@@ -5,8 +5,8 @@ from .models import Event, Organization
 NEVER_BLOW_PAGE_WIZARD_PREFIXES = [
     # we have addresses like /desuprofile/confirm/475712413a0ddc3c7a57c6721652b75449bf3c89
     # that should not blow the page wizard when used within a signup page wizard flow
-    '/desuprofile/confirm/',
-    '/oauth2/',
+    "/desuprofile/confirm/",
+    "/oauth2/",
 ]
 
 
@@ -28,11 +28,11 @@ class PageWizardMiddleware:
         return self.get_response(request)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        related = request.session.get('core.utils.page_wizard.related', None)
+        related = request.session.get("core.utils.page_wizard.related", None)
 
         if related is None:
             pass
-        elif request.method != 'GET':
+        elif request.method != "GET":
             pass
         elif request.path in related:
             pass
@@ -42,7 +42,6 @@ class PageWizardMiddleware:
             page_wizard_clear(request)
 
         None
-
 
 
 class EventOrganizationMiddleware:

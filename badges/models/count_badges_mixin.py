@@ -1,29 +1,33 @@
 from itertools import cycle
 
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .constants import BADGE_ELIGIBLE_FOR_BATCHING, PROGRESS_ELEMENT_MIN_WIDTH
 
 
-class Progress(object):
+class Progress:
     __slots__ = [
-        'css_class',
-        'max',
-        'text',
-        'value',
-        'width',
-        'inflated',
+        "css_class",
+        "max",
+        "text",
+        "value",
+        "width",
+        "inflated",
     ]
     from core.utils import simple_object_init as __init__
     from core.utils import simple_object_repr as __repr__
 
 
-class CountBadgesMixin(object):
+class CountBadgesMixin:
     def count_printed_badges(self):
-        return self.badges.filter(
-            Q(batch__isnull=False, batch__printed_at__isnull=False) | Q(printed_separately_at__isnull=False)
-        ).distinct().count()
+        return (
+            self.badges.filter(
+                Q(batch__isnull=False, batch__printed_at__isnull=False) | Q(printed_separately_at__isnull=False)
+            )
+            .distinct()
+            .count()
+        )
 
     def count_badges_waiting_in_batch(self):
         return self.badges.filter(batch__isnull=False, batch__printed_at__isnull=True, revoked_at__isnull=True).count()
@@ -54,10 +58,10 @@ class CountBadgesMixin(object):
         percentace_consumed_for_inflation = 0
 
         for pb_class, pb_text, pb_value in [
-            ('progress-bar-success', _('Printed'), self.count_printed_badges()),
-            ('progress-bar-danger', _('Revoked'), self.count_revoked_badges()),
-            ('progress-bar-info', _('Waiting in batch'), self.count_badges_waiting_in_batch()),
-            ('progress-bar-grey', _('Awaiting allocation into batch'), self.count_badges_awaiting_batch()),
+            ("progress-bar-success", _("Printed"), self.count_printed_badges()),
+            ("progress-bar-danger", _("Revoked"), self.count_revoked_badges()),
+            ("progress-bar-info", _("Waiting in batch"), self.count_badges_waiting_in_batch()),
+            ("progress-bar-grey", _("Awaiting allocation into batch"), self.count_badges_awaiting_batch()),
         ]:
 
             if pb_value > 0:
@@ -71,23 +75,24 @@ class CountBadgesMixin(object):
                 else:
                     inflated = False
 
-                progress.append(Progress(
-                    css_class=pb_class,
-                    max=pb_max,
-                    text=pb_text,
-                    value=pb_value,
-                    width=width,
-                    inflated=inflated,
-                ))
+                progress.append(
+                    Progress(
+                        css_class=pb_class,
+                        max=pb_max,
+                        text=pb_text,
+                        value=pb_value,
+                        width=width,
+                        inflated=inflated,
+                    )
+                )
 
         if sum(p.width for p in progress) > 100:
             candidates_for_deflation = [p for p in progress if p.width > PROGRESS_ELEMENT_MIN_WIDTH]
             candidates_for_deflation.sort(key=lambda p: -p.width)
 
             for p in cycle(candidates_for_deflation):
-                if (
-                    sum(p.width for p in progress) <= 100 or
-                    all(p.width <= PROGRESS_ELEMENT_MIN_WIDTH for p in candidates_for_deflation)
+                if sum(p.width for p in progress) <= 100 or all(
+                    p.width <= PROGRESS_ELEMENT_MIN_WIDTH for p in candidates_for_deflation
                 ):
                     break
 
@@ -96,6 +101,6 @@ class CountBadgesMixin(object):
                     percentace_consumed_for_inflation -= 1
 
         # FIXME sometime this assert blows
-        #assert sum(p.width for p in progress) in [100, 0], "Missing percentage"
+        # assert sum(p.width for p in progress) in [100, 0], "Missing percentage"
 
         return progress

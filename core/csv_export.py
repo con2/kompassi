@@ -1,4 +1,3 @@
-# encoding: utf-8
 from collections import namedtuple
 
 import unicodecsv as csv
@@ -7,31 +6,34 @@ from django.http import HttpResponse
 from django.db import models
 
 
-ENCODING = 'ISO-8859-15'
+ENCODING = "ISO-8859-15"
 
 
-ExportFormat = namedtuple('ExportFormat', [
-    'name',
-    'csv_dialect',
-    'extension',
-])
+ExportFormat = namedtuple(
+    "ExportFormat",
+    [
+        "name",
+        "csv_dialect",
+        "extension",
+    ],
+)
 
 # TODO better naming
 EXPORT_FORMATS = [
-    ExportFormat('XLSX', 'xlsx', 'xlsx'),
-    ExportFormat('CSV', 'excel', 'csv'),
-    ExportFormat('TSV', 'excel-tab', 'tsv'),
+    ExportFormat("XLSX", "xlsx", "xlsx"),
+    ExportFormat("CSV", "excel", "csv"),
+    ExportFormat("TSV", "excel-tab", "tsv"),
 ]
 
 # Deprecated
 CSV_EXPORT_FORMATS = dict(
-    csv='excel',
-    tsv='excel-tab',
-    xlsx='xlsx',
+    csv="excel",
+    tsv="excel-tab",
+    xlsx="xlsx",
 )
 
 
-class CsvExportMixin(object):
+class CsvExportMixin:
     @classmethod
     def get_csv_fields(cls, event):
         fields = []
@@ -48,7 +50,7 @@ class CsvExportMixin(object):
         return dict()
 
     @classmethod
-    def get_csv_header(cls, event, fields=None, m2m_mode='separate_columns'):
+    def get_csv_header(cls, event, fields=None, m2m_mode="separate_columns"):
         if fields is None:
             fields = cls.get_csv_fields(event)
 
@@ -63,14 +65,10 @@ class CsvExportMixin(object):
                 field_type = type(field)
 
             if field_type == models.ManyToManyField:
-                if m2m_mode == 'separate_columns':
+                if m2m_mode == "separate_columns":
                     choices = get_m2m_choices(event, field)
-                    header_row.extend(
-                        "{field_name}: {choice}"
-                        .format(field_name=field_name, choice=choice.__str__())
-                        for choice in choices
-                    )
-                elif m2m_mode == 'comma_separated':
+                    header_row.extend(f"{field_name}: {choice.__str__()}" for choice in choices)
+                elif m2m_mode == "comma_separated":
                     header_row.append(field_name)
                 else:
                     raise NotImplemented(m2m_mode)
@@ -79,7 +77,7 @@ class CsvExportMixin(object):
 
         return header_row
 
-    def get_csv_row(self, event, fields, m2m_mode='separate_columns'):
+    def get_csv_row(self, event, fields, m2m_mode="separate_columns"):
         result_row = []
         related = self.get_csv_related()
 
@@ -99,19 +97,17 @@ class CsvExportMixin(object):
             field_value = getattr(source_instance, field_name) if source_instance is not None else None
 
             if field_type is models.ManyToManyField and field_value is not None:
-                if m2m_mode == 'separate_columns':
+                if m2m_mode == "separate_columns":
                     choices = get_m2m_choices(event, field)
 
-                    result_row.extend(
-                        field_value.filter(pk=choice.pk).exists()
-                        for choice in choices
-                    )
-                elif m2m_mode == 'comma_separated':
-                    result_row.append(', '.join(item.__str__() for item in field_value.all()))
+                    result_row.extend(field_value.filter(pk=choice.pk).exists() for choice in choices)
+                elif m2m_mode == "comma_separated":
+                    result_row.append(", ".join(item.__str__() for item in field_value.all()))
                 else:
                     raise NotImplemented(m2m_mode)
             elif field_type is models.DateTimeField and field_value is not None:
                 from django.utils.timezone import localtime
+
                 result_row.append(localtime(field_value).replace(tzinfo=None))
             elif field_type is models.ForeignKey:
                 result_row.append(str(field_value))
@@ -129,12 +125,12 @@ def get_m2m_choices(event, field):
 
     if cache_key not in get_m2m_choices.cache:
 
-        if any(f.name == 'event' for f in target_model._meta.fields):
+        if any(f.name == "event" for f in target_model._meta.fields):
             choices = target_model.objects.filter(event=event)
         else:
             choices = target_model.objects.all()
 
-        get_m2m_choices.cache[cache_key] = choices.order_by('pk')
+        get_m2m_choices.cache[cache_key] = choices.order_by("pk")
 
     return get_m2m_choices.cache[cache_key]
 
@@ -148,14 +144,15 @@ def write_row(event, writer, fields, model_instance, m2m_mode):
 
 
 def make_writer(output_stream, dialect):
-    if dialect == 'xlsx':
+    if dialect == "xlsx":
         from .excel_export import XlsxWriter
+
         return XlsxWriter(output_stream)
     else:
-        return csv.writer(output_stream, encoding=ENCODING, dialect=dialect, errors='ignore')
+        return csv.writer(output_stream, encoding=ENCODING, dialect=dialect, errors="ignore")
 
 
-def export_csv(event, model, model_instances, output_file, m2m_mode='separate_columns', dialect='excel-tab'):
+def export_csv(event, model, model_instances, output_file, m2m_mode="separate_columns", dialect="excel-tab"):
     # XXX Horrible hack.
     try:
         # EventSurveys force us to get this from an instance instead of the model class because they may differ
@@ -172,25 +169,23 @@ def export_csv(event, model, model_instances, output_file, m2m_mode='separate_co
 
         write_row(event, writer, fields, model_instance, m2m_mode)
 
-    if getattr(writer, 'must_close', False):
+    if getattr(writer, "must_close", False):
         writer.close()
 
 
 CONTENT_TYPES = dict(
-    xlsx='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    xlsx="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 )
 
 
 def csv_response(*args, **kwargs):
-    filename = kwargs.pop('filename')
-    dialect = kwargs.get('dialect', 'excel')
+    filename = kwargs.pop("filename")
+    dialect = kwargs.get("dialect", "excel")
 
-    response = HttpResponse(content_type=CONTENT_TYPES.get(dialect, 'text/csv'))
-    response['Content-Disposition'] = 'attachment; filename="{filename}"'.format(
-        filename=filename
-    )
+    response = HttpResponse(content_type=CONTENT_TYPES.get(dialect, "text/csv"))
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-    kwargs['output_file'] = response
+    kwargs["output_file"] = response
 
     export_csv(*args, **kwargs)
 

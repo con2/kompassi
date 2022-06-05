@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404, render
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_safe
 
 from core.utils import initialize_form
@@ -14,8 +14,6 @@ from ..models import ProgrammeFeedback
 def admin_feedback_view(request, vars, event):
     feedback = ProgrammeFeedback.get_visible_feedback_for_event(event)
 
-    vars.update(
-        feedback=feedback
-    )
+    vars.update(feedback=feedback)
 
-    return render(request, 'programme_admin_feedback_view.pug', vars)
+    return render(request, "programme_admin_feedback_view.pug", vars)

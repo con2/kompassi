@@ -12,8 +12,9 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
     @property
     def personnel_class_name(self):
         from badges.models import Badge
+
         badge, unused = Badge.ensure(event=self.event, person=self.person)
-        return badge.personnel_class.name if badge else ''
+        return badge.personnel_class.name if badge else ""
 
     @property
     def afterparty_signup_time_local(self):
@@ -21,8 +22,8 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
 
         try:
             record = SurveyRecord.objects.get(
-                survey__event__slug='tracon2017',
-                survey__slug='kaatoilmo',
+                survey__event__slug="tracon2017",
+                survey__slug="kaatoilmo",
                 person=self.person,
             )
             return record.created_at.astimezone(tzlocal()).replace(tzinfo=None)
@@ -31,21 +32,21 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
 
     @classmethod
     def get_csv_fields(cls, event):
-        assert event.slug == 'tracon2017'
+        assert event.slug == "tracon2017"
         from core.models import Person
 
         return [
-            (cls, 'afterparty_signup_time_local'),
-            (cls, 'personnel_class_name'),
-            (Person, 'surname'),
-            (Person, 'first_name'),
-            (Person, 'nick'),
-            (Person, 'email'),
-            (Person, 'normalized_phone_number'),
-            (cls, 'outward_coach_departure_time'),
-            (cls, 'return_coach_departure_time'),
-            (cls, 'formatted_special_diet'),
-            (cls, 'special_diet_other'),
+            (cls, "afterparty_signup_time_local"),
+            (cls, "personnel_class_name"),
+            (Person, "surname"),
+            (Person, "first_name"),
+            (Person, "nick"),
+            (Person, "email"),
+            (Person, "normalized_phone_number"),
+            (cls, "outward_coach_departure_time"),
+            (cls, "return_coach_departure_time"),
+            (cls, "formatted_special_diet"),
+            (cls, "special_diet_other"),
         ]
 
     def get_csv_related(self):

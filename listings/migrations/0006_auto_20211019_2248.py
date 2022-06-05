@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('listings', '0005_externalevent_cancelled'),
+        ("listings", "0005_externalevent_cancelled"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='listing',
-            name='events',
+            model_name="listing",
+            name="events",
         ),
         migrations.RemoveField(
-            model_name='listing',
-            name='external_events',
+            model_name="listing",
+            name="external_events",
         ),
     ]

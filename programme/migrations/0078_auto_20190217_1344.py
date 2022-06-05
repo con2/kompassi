@@ -6,33 +6,90 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0077_auto_20190207_1809'),
+        ("programme", "0077_auto_20190207_1809"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='programme',
-            name='stream_permission',
-            field=models.CharField(blank=True, choices=[('please', 'Yes, I would like my programme to be streamed live'), ('okay', 'Yes, I allow streaming my programme live'), ('nope', 'No, I forbid streaming my programme')], help_text='May your programme be streamed live to the Internet (eg. YouTube)?', max_length=6, verbose_name='Streaming permission'),
+            model_name="programme",
+            name="stream_permission",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("please", "Yes, I would like my programme to be streamed live"),
+                    ("okay", "Yes, I allow streaming my programme live"),
+                    ("nope", "No, I forbid streaming my programme"),
+                ],
+                help_text="May your programme be streamed live to the Internet (eg. YouTube)?",
+                max_length=6,
+                verbose_name="Streaming permission",
+            ),
         ),
         migrations.AlterField(
-            model_name='programme',
-            name='encumbered_content',
-            field=models.CharField(blank=True, choices=[('yes', 'My programme contains copyright-encumbered audio or video'), ('no', 'My programme does not contain copyright-encumbered audio or video'), ('notsure', "I'm not sure whether my programme contains copyright-encumbered content or not")], help_text='Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings.', max_length=7, verbose_name='Encumbered content'),
+            model_name="programme",
+            name="encumbered_content",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("yes", "My programme contains copyright-encumbered audio or video"),
+                    ("no", "My programme does not contain copyright-encumbered audio or video"),
+                    ("notsure", "I'm not sure whether my programme contains copyright-encumbered content or not"),
+                ],
+                help_text="Encumbered content cannot be displayed on our YouTube channel. Encumbered content will be edited out of video recordings.",
+                max_length=7,
+                verbose_name="Encumbered content",
+            ),
         ),
         migrations.AlterField(
-            model_name='programme',
-            name='photography',
-            field=models.CharField(blank=True, choices=[('please', 'Please photograph my programme'), ('okay', "It's OK to photograph my programme"), ('nope', 'Please do not photograph my programme')], help_text='Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed.', max_length=6, verbose_name='Photography of your prorgmme'),
+            model_name="programme",
+            name="photography",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("please", "Please photograph my programme"),
+                    ("okay", "It's OK to photograph my programme"),
+                    ("nope", "Please do not photograph my programme"),
+                ],
+                help_text="Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed.",
+                max_length=6,
+                verbose_name="Photography of your prorgmme",
+            ),
         ),
         migrations.AlterField(
-            model_name='programme',
-            name='rerun',
-            field=models.CharField(blank=True, choices=[('already', 'Yes. The programme has previously been presented in another convention.'), ('will', 'Yes. The programme will be presented in a convention that takes place before this one.'), ('might', 'Maybe. The programme might be presented in a convention that takes place before this one.'), ('original', 'No. The programme is original to this convention and I promise not to present it elsewhere before.')], help_text='Have you presented this same programme at another event before the event you are offering it to now, or do you intend to present it in another event before this one? If you are unsure about the re-run policy of this event, please consult the programme managers.', max_length=8, verbose_name='Is this a re-run?'),
+            model_name="programme",
+            name="rerun",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("already", "Yes. The programme has previously been presented in another convention."),
+                    ("will", "Yes. The programme will be presented in a convention that takes place before this one."),
+                    (
+                        "might",
+                        "Maybe. The programme might be presented in a convention that takes place before this one.",
+                    ),
+                    (
+                        "original",
+                        "No. The programme is original to this convention and I promise not to present it elsewhere before.",
+                    ),
+                ],
+                help_text="Have you presented this same programme at another event before the event you are offering it to now, or do you intend to present it in another event before this one? If you are unsure about the re-run policy of this event, please consult the programme managers.",
+                max_length=8,
+                verbose_name="Is this a re-run?",
+            ),
         ),
         migrations.AlterField(
-            model_name='programme',
-            name='video_permission',
-            field=models.CharField(blank=True, choices=[('public', 'My programme may be recorded and published'), ('private', 'I forbid publishing my programme, but it may be recorded for archiving purposes'), ('forbidden', 'I forbid recording my programme altogether')], help_text='May your programme be recorded and published in the Internet?', max_length=15, verbose_name='Recording permission'),
+            model_name="programme",
+            name="video_permission",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("public", "My programme may be recorded and published"),
+                    ("private", "I forbid publishing my programme, but it may be recorded for archiving purposes"),
+                    ("forbidden", "I forbid recording my programme altogether"),
+                ],
+                help_text="May your programme be recorded and published in the Internet?",
+                max_length=15,
+                verbose_name="Recording permission",
+            ),
         ),
     ]

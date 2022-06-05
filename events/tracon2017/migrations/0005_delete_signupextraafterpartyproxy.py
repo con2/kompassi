@@ -6,11 +6,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracon2017', '0004_auto_20171113_2158'),
+        ("tracon2017", "0004_auto_20171113_2158"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='SignupExtraAfterpartyProxy',
+            name="SignupExtraAfterpartyProxy",
         ),
     ]

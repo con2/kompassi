@@ -6,28 +6,35 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ropecon2019', '0002_auto_20190226_2146'),
+        ("ropecon2019", "0002_auto_20190226_2146"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='signupextra',
-            name='can_english',
-            field=models.BooleanField(default=False, verbose_name='English'),
+            model_name="signupextra",
+            name="can_english",
+            field=models.BooleanField(default=False, verbose_name="English"),
         ),
         migrations.AddField(
-            model_name='signupextra',
-            name='can_finnish',
-            field=models.BooleanField(default=False, verbose_name='Finnish'),
+            model_name="signupextra",
+            name="can_finnish",
+            field=models.BooleanField(default=False, verbose_name="Finnish"),
         ),
         migrations.AddField(
-            model_name='signupextra',
-            name='other_languages',
-            field=models.TextField(blank=True, help_text='Please select those languages with which you feel comfortable doing customer service work and list those not listed in the free text field. You can also describe how proficient you are with those languages in the text field.', verbose_name='Other languages'),
+            model_name="signupextra",
+            name="other_languages",
+            field=models.TextField(
+                blank=True,
+                help_text="Please select those languages with which you feel comfortable doing customer service work and list those not listed in the free text field. You can also describe how proficient you are with those languages in the text field.",
+                verbose_name="Other languages",
+            ),
         ),
         migrations.AddField(
-            model_name='signupextra',
-            name='roster_publish_consent',
-            field=models.BooleanField(default=False, verbose_name='I give my consent for Ropecon to publish my name to my co-workers in the volunteer roster of my assigned station.'),
+            model_name="signupextra",
+            name="roster_publish_consent",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="I give my consent for Ropecon to publish my name to my co-workers in the volunteer roster of my assigned station.",
+            ),
         ),
     ]

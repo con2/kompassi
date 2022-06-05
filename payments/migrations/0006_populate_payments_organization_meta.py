@@ -2,10 +2,10 @@ from django.db import migrations
 
 
 def populate_payments_organization_meta(apps, schema_editor):
-    PaymentsOrganizationMeta = apps.get_model('payments', 'PaymentsOrganizationMeta')
-    PaymentsEventMeta = apps.get_model('payments', 'PaymentsEventMeta')
+    PaymentsOrganizationMeta = apps.get_model("payments", "PaymentsOrganizationMeta")
+    PaymentsEventMeta = apps.get_model("payments", "PaymentsEventMeta")
 
-    for payments_event_meta in PaymentsEventMeta.objects.all().order_by('-event__start_time'):
+    for payments_event_meta in PaymentsEventMeta.objects.all().order_by("-event__start_time"):
         PaymentsOrganizationMeta.objects.get_or_create(
             organization=payments_event_meta.event.organization,
             defaults=dict(
@@ -14,7 +14,7 @@ def populate_payments_organization_meta(apps, schema_editor):
             ),
         )
 
-    CheckoutPayment = apps.get_model('payments', 'CheckoutPayment')
+    CheckoutPayment = apps.get_model("payments", "CheckoutPayment")
     for payment in CheckoutPayment.objects.all():
         payment.organization = payment.event.organization
         payment.save()
@@ -23,7 +23,7 @@ def populate_payments_organization_meta(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('payments', '0005_payments_organization_meta'),
+        ("payments", "0005_payments_organization_meta"),
     ]
 
     operations = [

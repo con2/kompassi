@@ -11,10 +11,10 @@ from core.utils import slugify
 
 
 def mkpath(*parts):
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *parts))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         self._ordering = 0
 
@@ -34,27 +34,33 @@ class Setup(object):
     def setup_core(self):
         from core.models import Venue, Event, Organization
 
-        self.venue, unused = Venue.objects.get_or_create(name='Jyväskylän yliopisto', defaults=dict(
-            name_inessive='Jyväskylän yliopistolla',
-        ))
-        self.organization, unused = Organization.objects.get_or_create(
-            slug='Finncon-yhdistys ry',
+        self.venue, unused = Venue.objects.get_or_create(
+            name="Jyväskylän yliopisto",
             defaults=dict(
-                name='Finncon-yhdistys ry',
-                homepage_url='http://www.finncon.org/',
-            )
+                name_inessive="Jyväskylän yliopistolla",
+            ),
         )
-        self.event, unused = Event.objects.get_or_create(slug='finncon2019', defaults=dict(
-            name='Finncon 2019',
-            name_genitive='Finncon 2019 -tapahtuman',
-            name_illative='Finncon 2019 -tapahtumaan',
-            name_inessive='Finncon 2019 -tapahtumassa',
-            homepage_url='http://2019.finncon.org',
-            organization=self.organization,
-            start_time=datetime(2019, 7, 5, 10, 0, tzinfo=self.tz),
-            end_time=datetime(2019, 7, 7, 18, 0, tzinfo=self.tz),
-            venue=self.venue,
-        ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug="Finncon-yhdistys ry",
+            defaults=dict(
+                name="Finncon-yhdistys ry",
+                homepage_url="http://www.finncon.org/",
+            ),
+        )
+        self.event, unused = Event.objects.get_or_create(
+            slug="finncon2019",
+            defaults=dict(
+                name="Finncon 2019",
+                name_genitive="Finncon 2019 -tapahtuman",
+                name_illative="Finncon 2019 -tapahtumaan",
+                name_inessive="Finncon 2019 -tapahtumassa",
+                homepage_url="http://2019.finncon.org",
+                organization=self.organization,
+                start_time=datetime(2019, 7, 5, 10, 0, tzinfo=self.tz),
+                end_time=datetime(2019, 7, 7, 18, 0, tzinfo=self.tz),
+                venue=self.venue,
+            ),
+        )
 
     def setup_programme(self):
         from labour.models import PersonnelClass
@@ -69,13 +75,16 @@ class Setup(object):
         )
         from core.utils import full_hours_between
 
-        admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ['admins', 'hosts'])
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(event=self.event, defaults=dict(
-            admin_group=admin_group,
-        ))
+        admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
 
         if not programme_event_meta.contact_email:
-            programme_event_meta.contact_email = 'Finnconin ohjelmavastaava <ohjelma@2019.finncon.org>'
+            programme_event_meta.contact_email = "Finnconin ohjelmavastaava <ohjelma@2019.finncon.org>"
             programme_event_meta.save()
 
         if settings.DEBUG:
@@ -84,7 +93,7 @@ class Setup(object):
             programme_event_meta.save()
 
         for pc_slug, role_title, role_is_default in [
-            ('ohjelma', 'Ohjelmanjärjestäjä', True),
+            ("ohjelma", "Ohjelmanjärjestäjä", True),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
             role, unused = Role.objects.get_or_create(
@@ -92,24 +101,23 @@ class Setup(object):
                 title=role_title,
                 defaults=dict(
                     is_default=role_is_default,
-                )
+                ),
             )
 
         for category_name, category_style in [
-            ('Luento', 'color1'),
-            ('Paneeli', 'color2'),
-            ('Muu', 'color3'),
+            ("Luento", "color1"),
+            ("Paneeli", "color2"),
+            ("Muu", "color3"),
         ]:
             Category.objects.get_or_create(
                 event=self.event,
                 title=category_name,
                 defaults=dict(
                     style=category_style,
-                )
+                ),
             )
 
-        for tag_name, tag_style in [
-        ]:
+        for tag_name, tag_style in []:
             Tag.objects.get_or_create(
                 event=self.event,
                 title=tag_name,
@@ -130,28 +138,21 @@ class Setup(object):
                 ),
             ]:
                 TimeBlock.objects.get_or_create(
-                    event=self.event,
-                    start_time=start_time,
-                    defaults=dict(
-                        end_time=end_time
-                    )
+                    event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
                 )
 
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(
-                    event=self.event,
-                    start_time=hour_start_time.replace(minute=30)
-                )
+                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
 
         default_form, created = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
-            slug='default',
+            slug="default",
             defaults=dict(
-                title='Tarjoa ohjelmaa',
-                programme_form_code='events.finncon2019.forms:ProgrammeForm',
+                title="Tarjoa ohjelmaa",
+                programme_form_code="events.finncon2019.forms:ProgrammeForm",
                 num_extra_invites=3,
             ),
         )
@@ -169,7 +170,7 @@ class Setup(object):
         from ...models import SignupExtra, SpecialDiet
         from django.contrib.contenttypes.models import ContentType
 
-        labour_admin_group, = LabourEventMeta.get_or_create_groups(self.event, ['admins'])
+        (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
@@ -179,12 +180,10 @@ class Setup(object):
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-
             work_begins=datetime(2019, 7, 5, 8, 0, tzinfo=self.tz),
             work_ends=datetime(2019, 7, 7, 22, 0, tzinfo=self.tz),
-
             admin_group=labour_admin_group,
-            contact_email='Finnconin työvoimavastaava <tyovoima@2019.finncon.org>',
+            contact_email="Finnconin työvoimavastaava <tyovoima@2019.finncon.org>",
         )
 
         if self.test:
@@ -202,12 +201,12 @@ class Setup(object):
         )
 
         for pc_name, pc_slug, pc_app_label in [
-            ('Conitea', 'conitea', 'labour'),
-            ('Työvoima', 'tyovoima', 'labour'),
-            ('Ohjelmanjärjestäjä', 'ohjelma', 'programme'),
-            ('Media', 'media', 'badges'),
-            ('Myyjä', 'myyja', 'badges'),
-            ('Kunniavieras', 'goh', 'badges'),
+            ("Conitea", "conitea", "labour"),
+            ("Työvoima", "tyovoima", "labour"),
+            ("Ohjelmanjärjestäjä", "ohjelma", "programme"),
+            ("Media", "media", "badges"),
+            ("Myyjä", "myyja", "badges"),
+            ("Kunniavieras", "goh", "badges"),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -221,40 +220,39 @@ class Setup(object):
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug='finncon2018'),
+                source_event=Event.objects.get(slug="finncon2018"),
                 target_event=self.event,
             )
 
-        for name in ['Conitea']:
+        for name in ["Conitea"]:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
 
         for jc_name, qualification_name in [
-            ('Järjestyksenvalvoja', 'JV-kortti'),
+            ("Järjestyksenvalvoja", "JV-kortti"),
         ]:
             jc = JobCategory.objects.get(event=self.event, name=jc_name)
             qual = Qualification.objects.get(name=qualification_name)
 
             jc.required_qualifications.set([qual])
 
-
         labour_event_meta.create_groups()
 
         for diet_name in [
-            'Gluteeniton',
-            'Laktoositon',
-            'Maidoton',
-            'Vegaaninen',
-            'Lakto-ovo-vegetaristinen',
+            "Gluteeniton",
+            "Laktoositon",
+            "Maidoton",
+            "Vegaaninen",
+            "Lakto-ovo-vegetaristinen",
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
-            slug='conitea',
+            slug="conitea",
             defaults=dict(
-                title='Conitean ilmoittautumislomake',
-                signup_form_class_path='events.finncon2019.forms:OrganizerSignupForm',
-                signup_extra_form_class_path='events.finncon2019.forms:OrganizerSignupExtraForm',
+                title="Conitean ilmoittautumislomake",
+                signup_form_class_path="events.finncon2019.forms:OrganizerSignupForm",
+                signup_extra_form_class_path="events.finncon2019.forms:OrganizerSignupExtraForm",
                 active_from=datetime(2019, 4, 9, 0, 0, 0, tzinfo=self.tz),
                 active_until=self.event.start_time,
             ),
@@ -267,40 +265,38 @@ class Setup(object):
                 event=self.event,
                 title=link_title,
                 defaults=dict(
-                    url='https://confluence.tracon.fi/display/{wiki_space}'.format(wiki_space=wiki_space),
+                    url=f"https://confluence.tracon.fi/display/{wiki_space}",
                     group=labour_event_meta.get_group(link_group),
-                )
+                ),
             )
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
-        badge_admin_group, = BadgesEventMeta.get_or_create_groups(self.event, ['admins'])
+        (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout='nick',
-            )
+                badge_layout="nick",
+            ),
         )
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team
 
-        admin_group, = IntraEventMeta.get_or_create_groups(self.event, ['admins'])
-        organizer_group = self.event.labour_event_meta.get_group('conitea')
+        (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
+        organizer_group = self.event.labour_event_meta.get_group("conitea")
         meta, unused = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
                 organizer_group=organizer_group,
-            )
+            ),
         )
 
-        for team_slug, team_name in [
-            ('conitea', 'Conitea')
-        ]:
-            team_group, = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+        for team_slug, team_name in [("conitea", "Conitea")]:
+            (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
 
             team, created = Team.objects.get_or_create(
                 event=self.event,
@@ -309,13 +305,13 @@ class Setup(object):
                     name=team_name,
                     order=self.get_ordering_number(),
                     group=team_group,
-                )
+                ),
             )
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup finncon2019 specific stuff'
+    args = ""
+    help = "Setup finncon2019 specific stuff"
 
     def handle(self, *args, **opts):
         Setup().setup(test=settings.DEBUG)

@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from dateutil.tz import tzlocal
 
 
-class Setup(object):
+class Setup:
     def __init__(self):
         self._ordering = 0
 
@@ -24,24 +24,33 @@ class Setup(object):
     def setup_core(self):
         from core.models import Organization, Venue, Event
 
-        self.organization, unused = Organization.objects.get_or_create(slug='tutka', defaults=dict(
-            name='Tracon ry',
-            homepage_url='https://ry.tracon.fi/',
-        ))
-        self.venue, unused = Venue.objects.get_or_create(name='Suvilahti (Helsinki)', defaults=dict(
-            name_inessive='Helsingin Suvilahdessa',
-        ))
-        self.event, unused = Event.objects.get_or_create(slug='concon17', defaults=dict(
-            name='Concon 17',
-            name_genitive='Concon 17 -seminaarin',
-            name_illative='Concon 17 -seminaariin',
-            name_inessive='Concon 17 -seminaarissa',
-            homepage_url='https://con2.fi/concon',
-            organization=self.organization,
-            start_time=datetime(2020, 3, 14, 10, 0, tzinfo=self.tz),
-            end_time=datetime(2020, 3, 14, 18, 0, tzinfo=self.tz),
-            venue=self.venue,
-        ))
+        self.organization, unused = Organization.objects.get_or_create(
+            slug="tutka",
+            defaults=dict(
+                name="Tracon ry",
+                homepage_url="https://ry.tracon.fi/",
+            ),
+        )
+        self.venue, unused = Venue.objects.get_or_create(
+            name="Suvilahti (Helsinki)",
+            defaults=dict(
+                name_inessive="Helsingin Suvilahdessa",
+            ),
+        )
+        self.event, unused = Event.objects.get_or_create(
+            slug="concon17",
+            defaults=dict(
+                name="Concon 17",
+                name_genitive="Concon 17 -seminaarin",
+                name_illative="Concon 17 -seminaariin",
+                name_inessive="Concon 17 -seminaarissa",
+                homepage_url="https://con2.fi/concon",
+                organization=self.organization,
+                start_time=datetime(2020, 3, 14, 10, 0, tzinfo=self.tz),
+                end_time=datetime(2020, 3, 14, 18, 0, tzinfo=self.tz),
+                venue=self.venue,
+            ),
+        )
 
     def setup_enrollment(self):
         from enrollment.models import (
@@ -50,11 +59,11 @@ class Setup(object):
             ConconPart,
         )
 
-        enrollment_admin_group, = EnrollmentEventMeta.get_or_create_groups(self.event, ['admins'])
+        (enrollment_admin_group,) = EnrollmentEventMeta.get_or_create_groups(self.event, ["admins"])
 
         enrollment_event_meta_defaults = dict(
             admin_group=enrollment_admin_group,
-            form_class_path='events.concon17.forms:EnrollmentForm',
+            form_class_path="events.concon17.forms:EnrollmentForm",
             is_participant_list_public=True,
         )
 
@@ -70,24 +79,24 @@ class Setup(object):
         )
 
         for diet_name in [
-            'Gluteeniton',
-            'Laktoositon',
-            'Maidoton',
-            'Vegaaninen',
-            'Lakto-ovo-vegetaristinen',
+            "Gluteeniton",
+            "Laktoositon",
+            "Maidoton",
+            "Vegaaninen",
+            "Lakto-ovo-vegetaristinen",
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
         for part_name in [
-            'Luento-ohjelma',
-            'Jatkot',
+            "Luento-ohjelma",
+            "Jatkot",
         ]:
             ConconPart.objects.get_or_create(name=part_name)
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Setup Concon 17 specific stuff'
+    args = ""
+    help = "Setup Concon 17 specific stuff"
 
     def handle(self, *args, **opts):
         Setup().setup(test=settings.DEBUG)

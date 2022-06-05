@@ -12,20 +12,16 @@ class EnrollmentStartForm(forms.ModelForm):
     """
 
     def __init__(self, *args, **kwargs):
-        super(EnrollmentStartForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
     def clean_registration_closes(self):
-        enrollment_opens = self.cleaned_data.get('enrollment_opens')
-        enrollment_closes = self.cleaned_data.get('enrollment_closes')
+        enrollment_opens = self.cleaned_data.get("enrollment_opens")
+        enrollment_closes = self.cleaned_data.get("enrollment_closes")
 
-        if (
-            enrollment_opens and
-            enrollment_closes and
-            enrollment_opens >= enrollment_closes
-        ):
+        if enrollment_opens and enrollment_closes and enrollment_opens >= enrollment_closes:
             raise forms.ValidationError(_("The closing time must be after the opening time."))
 
         return enrollment_closes
@@ -33,6 +29,6 @@ class EnrollmentStartForm(forms.ModelForm):
     class Meta:
         model = EnrollmentEventMeta
         fields = (
-            'enrollment_opens',
-            'enrollment_closes',
+            "enrollment_opens",
+            "enrollment_closes",
         )

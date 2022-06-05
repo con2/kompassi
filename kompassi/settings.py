@@ -2,7 +2,7 @@ import os
 import warnings
 from email.utils import parseaddr
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.messages import constants as messages
 
 import environ
@@ -47,6 +47,8 @@ DATABASES = {
     },
 }
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 CACHES = {
     "default": env.cache(default="locmemcache://"),
 }
@@ -70,7 +72,6 @@ LANGUAGES = (
 )
 SITE_ID = 1
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 MEDIA_ROOT = mkpath("media")
@@ -102,7 +103,6 @@ MIDDLEWARE = (
     "core.middleware.PageWizardMiddleware",
     "core.middleware.EventOrganizationMiddleware",
     "django.middleware.locale.LocaleMiddleware",
-    "django_babel.middleware.LocaleMiddleware",
 )
 
 ROOT_URLCONF = "kompassi.urls"
@@ -160,7 +160,6 @@ INSTALLED_APPS = (
     "crispy_forms",
     "oauth2_provider",
     # 'nexmo',
-    "django_babel",
     "rest_framework",
     "bootstrap3",
     "lippukala",
@@ -426,7 +425,7 @@ if env("BROKER_URL", default=""):
 
 
 if "api" in INSTALLED_APPS:
-    KOMPASSI_APPLICATION_USER_GROUP = "{KOMPASSI_INSTALLATION_SLUG}-apps".format(**locals())
+    KOMPASSI_APPLICATION_USER_GROUP = f"{KOMPASSI_INSTALLATION_SLUG}-apps"
 
 
 if "api_v2" in INSTALLED_APPS:
@@ -452,7 +451,7 @@ if env("KOMPASSI_CROWD_APPLICATION_NAME", default=""):
     KOMPASSI_CROWD_APPLICATION_NAME = env("KOMPASSI_CROWD_APPLICATION_NAME")
     KOMPASSI_CROWD_APPLICATION_PASSWORD = env("KOMPASSI_CROWD_APPLICATION_PASSWORD")
     KOMPASSI_CROWD_HOST = env("KOMPASSI_CROWD_HOST", default="https://crowd.tracon.fi")
-    KOMPASSI_CROWD_BASE_URL = "{host}/crowd/rest/usermanagement/1".format(host=KOMPASSI_CROWD_HOST)
+    KOMPASSI_CROWD_BASE_URL = f"{KOMPASSI_CROWD_HOST}/crowd/rest/usermanagement/1"
 
 
 if "desuprofile_integration" in INSTALLED_APPS:
@@ -465,9 +464,9 @@ if "desuprofile_integration" in INSTALLED_APPS:
         default="kompassi_insecure_client_secret",
     )
     KOMPASSI_DESUPROFILE_OAUTH2_SCOPE = ["read"]
-    KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = "{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/".format(**locals())
-    KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = "{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/".format(**locals())
-    KOMPASSI_DESUPROFILE_API_URL = "{KOMPASSI_DESUPROFILE_HOST}/api/user/me/".format(**locals())
+    KOMPASSI_DESUPROFILE_OAUTH2_AUTHORIZATION_URL = f"{KOMPASSI_DESUPROFILE_HOST}/oauth2/authorize/"
+    KOMPASSI_DESUPROFILE_OAUTH2_TOKEN_URL = f"{KOMPASSI_DESUPROFILE_HOST}/oauth2/token/"
+    KOMPASSI_DESUPROFILE_API_URL = f"{KOMPASSI_DESUPROFILE_HOST}/api/user/me/"
 
 
 KOMPASSI_LISTING_URLCONFS = {

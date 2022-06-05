@@ -7,13 +7,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('event_log', '0008_subscription_job_category_filter'),
+        ("event_log", "0008_subscription_job_category_filter"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='entry',
-            name='other_fields',
+            model_name="entry",
+            name="other_fields",
             field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict),
         ),
     ]

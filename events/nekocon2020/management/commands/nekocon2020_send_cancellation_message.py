@@ -6,7 +6,7 @@ from django.core.mail import EmailMessage
 
 from tickets.models import Order
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 FROM = "nekocon2020-tickets@kompassi.eu"
 SUBJECT = "Nekocon 2020: Tapahtuma on peruttu"
@@ -47,8 +47,8 @@ Nekoconin conitea
 
 
 class Command(BaseCommand):
-    args = ''
-    help = 'Send nekocon2020 cancellation message'
+    args = ""
+    help = "Send nekocon2020 cancellation message"
 
     def handle(self, *args, **opts):
         for order in Order.objects.filter(

@@ -8,7 +8,7 @@ from core.models import Person, Event
 
 
 class MyselfResource(ReadWriteScopedResourceView):
-    http_method_names = ['get', 'head']
+    http_method_names = ["get", "head"]
 
     def get(self, request, *args, **kwargs):
         person = get_object_or_404(Person, user=request.user)
@@ -16,7 +16,7 @@ class MyselfResource(ReadWriteScopedResourceView):
 
 
 class EventResource(View):
-    http_method_names = ['get', 'head']
+    http_method_names = ["get", "head"]
 
     def get(self, request, event_slug):
         event = get_object_or_404(Event, slug=event_slug)

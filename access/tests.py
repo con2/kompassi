@@ -11,30 +11,30 @@ from .email_aliases import firstname_surname
 from .models import Claims, CBACEntry, EmailAlias, GroupEmailAliasGrant, EmailAliasType
 
 
-class FakePerson(object):
-    first_name = 'Santtu'
-    surname = 'Pajukanta'
+class FakePerson:
+    first_name = "Santtu"
+    surname = "Pajukanta"
 
 
 class EmailifyTestCase(NonDatabaseTestCase):
     def test_emailify(self):
-        self.assertEqual(emailify(''), '')
-        self.assertEqual(emailify('Santtu Pajukanta'), 'santtu.pajukanta')
-        self.assertEqual(emailify('Kalle-Jooseppi Mäki-Kangas-Ketelä'), 'kalle-jooseppi.maki-kangas-ketela')
+        self.assertEqual(emailify(""), "")
+        self.assertEqual(emailify("Santtu Pajukanta"), "santtu.pajukanta")
+        self.assertEqual(emailify("Kalle-Jooseppi Mäki-Kangas-Ketelä"), "kalle-jooseppi.maki-kangas-ketela")
 
     def test_firstname_surname(self):
-        self.assertEqual(firstname_surname(FakePerson()), 'santtu.pajukanta')
+        self.assertEqual(firstname_surname(FakePerson()), "santtu.pajukanta")
 
 
 class EmailAliasesTestCase(TestCase):
     def setUp(self):
         self.meta, unused = LabourEventMeta.get_or_create_dummy()
-        self.group = self.meta.get_group('admins')
+        self.group = self.meta.get_group("admins")
         self.person, unused = Person.get_or_create_dummy()
 
     def test_email_alias_create(self):
         email_alias, unused = EmailAlias.get_or_create_dummy()
-        self.assertEqual(email_alias.email_address, 'markku.mahtinen@example.com')
+        self.assertEqual(email_alias.email_address, "markku.mahtinen@example.com")
 
     def test_ensure_aliases(self):
         alias_type, unused = EmailAliasType.get_or_create_dummy()
@@ -50,11 +50,14 @@ class EmailAliasesTestCase(TestCase):
         self.assertEqual(alias_type.email_aliases.count(), 1)
 
     def test_account_name_generator_returning_none(self):
-        alias_type, unused = EmailAliasType.get_or_create_dummy(metavar='nick', defaults=dict(
-            account_name_code='access.email_aliases:nick',
-        ))
+        alias_type, unused = EmailAliasType.get_or_create_dummy(
+            metavar="nick",
+            defaults=dict(
+                account_name_code="access.email_aliases:nick",
+            ),
+        )
 
-        self.person.nick = ''
+        self.person.nick = ""
         self.person.save()
 
         self.assertEqual(alias_type.email_aliases.count(), 0)
@@ -94,11 +97,11 @@ def test_ensure_admin_group_privileges(db):
     meta.admin_group.user_set.add(person.user)
     CBACEntry.ensure_admin_group_privileges()
 
-    assert CBACEntry.is_allowed(person.user, get_claims(event, 'labour'))
-    assert not CBACEntry.is_allowed(person.user, get_claims(event, 'programme'))
+    assert CBACEntry.is_allowed(person.user, get_claims(event, "labour"))
+    assert not CBACEntry.is_allowed(person.user, get_claims(event, "programme"))
 
     meta.admin_group.user_set.remove(person.user)
     CBACEntry.ensure_admin_group_privileges()
 
-    assert not CBACEntry.is_allowed(person.user, get_claims(event, 'labour'))
-    assert not CBACEntry.is_allowed(person.user, get_claims(event, 'programme'))
+    assert not CBACEntry.is_allowed(person.user, get_claims(event, "labour"))
+    assert not CBACEntry.is_allowed(person.user, get_claims(event, "programme"))

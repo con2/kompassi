@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from core.utils import initialize_form
@@ -11,7 +11,7 @@ from ..helpers import badges_admin_required
 
 
 @badges_admin_required
-@require_http_methods(['GET', 'HEAD', 'POST'])
+@require_http_methods(["GET", "HEAD", "POST"])
 def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
     initial = dict()
 
@@ -19,9 +19,9 @@ def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
         personnel_class = get_object_or_404(PersonnelClass, event=event, slug=personnel_class_slug)
         initial.update(personnel_class=personnel_class)
 
-    form = initialize_form(BadgeForm, request, prefix='badge_type', event=event, initial=initial)
+    form = initialize_form(BadgeForm, request, prefix="badge_type", event=event, initial=initial)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             badge = form.save(commit=False)
 
@@ -38,13 +38,13 @@ def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
             else:
                 badge.save()
 
-                messages.success(request, _('The badge has been added.'))
-                return redirect('badges_admin_dashboard_view', event.slug)
+                messages.success(request, _("The badge has been added."))
+                return redirect("badges_admin_dashboard_view", event.slug)
         else:
-            messages.error(request, _('Please check the form.'))
+            messages.error(request, _("Please check the form."))
 
     vars.update(
         form=form,
     )
 
-    return render(request, 'badges_admin_create_view.pug', vars)
+    return render(request, "badges_admin_create_view.pug", vars)

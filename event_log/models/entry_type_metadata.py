@@ -1,19 +1,19 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
-class EntryTypeMetadata(object):
+class EntryTypeMetadata:
     __slots__ = [
-        'name',
-        'message',
-        'email_body_template',
-        'email_reply_to',
+        "name",
+        "message",
+        "email_body_template",
+        "email_reply_to",
     ]
 
     def __init__(
         self,
         name,
-        message=lambda entry: _('An event of type {entry.entry_type} occurred').format(entry=entry),
-        email_body_template='event_log_default.eml',
+        message=lambda entry: _("An event of type {entry.entry_type} occurred").format(entry=entry),
+        email_body_template="event_log_default.eml",
         email_reply_to=None,
         get_event=lambda instance: instance.event,
     ):
@@ -23,7 +23,7 @@ class EntryTypeMetadata(object):
         self.email_reply_to = email_reply_to
 
     @classmethod
-    def get_or_create_dummy(self, name='eventlog.dummy', **attrs):
+    def get_or_create_dummy(self, name="eventlog.dummy", **attrs):
         from ..registry import register, get
 
         try:

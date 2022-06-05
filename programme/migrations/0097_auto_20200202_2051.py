@@ -6,38 +6,62 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('programme', '0096_auto_20200122_2256'),
+        ("programme", "0096_auto_20200122_2256"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='programme',
-            name='ropecon2020_not_suitable_for_children',
-            field=models.BooleanField(default=False, help_text='If your game programme is not suitable for children under 15 years of age, please tick this box.', verbose_name='Not suitable for children'),
+            model_name="programme",
+            name="ropecon2020_not_suitable_for_children",
+            field=models.BooleanField(
+                default=False,
+                help_text="If your game programme is not suitable for children under 15 years of age, please tick this box.",
+                verbose_name="Not suitable for children",
+            ),
         ),
         migrations.AddField(
-            model_name='programme',
-            name='ropecon2020_suitable_for_children_aged_12_plus',
-            field=models.BooleanField(default=False, help_text='If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them.', verbose_name='Suitable for children aged 12+'),
+            model_name="programme",
+            name="ropecon2020_suitable_for_children_aged_12_plus",
+            field=models.BooleanField(
+                default=False,
+                help_text="If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them.",
+                verbose_name="Suitable for children aged 12+",
+            ),
         ),
         migrations.AddField(
-            model_name='programme',
-            name='ropecon2020_suitable_for_children_aged_7_12',
-            field=models.BooleanField(default=False, help_text='If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them.', verbose_name='Suitable for children aged 7-12'),
+            model_name="programme",
+            name="ropecon2020_suitable_for_children_aged_7_12",
+            field=models.BooleanField(
+                default=False,
+                help_text="If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them.",
+                verbose_name="Suitable for children aged 7-12",
+            ),
         ),
         migrations.AddField(
-            model_name='programme',
-            name='ropecon2020_suitable_for_children_under_7',
-            field=models.BooleanField(default=False, help_text='If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them.', verbose_name='Suitable for children under 7'),
+            model_name="programme",
+            name="ropecon2020_suitable_for_children_under_7",
+            field=models.BooleanField(
+                default=False,
+                help_text="If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them.",
+                verbose_name="Suitable for children under 7",
+            ),
         ),
         migrations.AddField(
-            model_name='programme',
-            name='ropecon2020_theme_dinosaurs',
-            field=models.BooleanField(default=False, help_text='If your game is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box.', verbose_name='Theme: Dinosaurs'),
+            model_name="programme",
+            name="ropecon2020_theme_dinosaurs",
+            field=models.BooleanField(
+                default=False,
+                help_text="If your game is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box.",
+                verbose_name="Theme: Dinosaurs",
+            ),
         ),
         migrations.AddField(
-            model_name='programme',
-            name='ropecon2020_theme_end_of_the_world',
-            field=models.BooleanField(default=False, help_text='If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box.', verbose_name='Theme: End of the world'),
+            model_name="programme",
+            name="ropecon2020_theme_end_of_the_world",
+            field=models.BooleanField(
+                default=False,
+                help_text="If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box.",
+                verbose_name="Theme: End of the world",
+            ),
         ),
     ]

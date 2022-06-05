@@ -10,7 +10,7 @@ from programme.models import ProgrammeEventMeta, Programme, ProgrammeRole, Role
 from .models import BadgesEventMeta, Badge, Batch
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 class BadgesTestCase(TestCase):
@@ -29,8 +29,8 @@ class BadgesTestCase(TestCase):
 
         We assume this setting is not changed midway. If it is, all badges must be revoked.
         """
-        self.person.preferred_name_display_style = 'firstname_nick_lastname'
-        self.person.preferred_badge_name_display_style = 'nick'
+        self.person.preferred_name_display_style = "firstname_nick_lastname"
+        self.person.preferred_badge_name_display_style = "nick"
         self.person.save()
 
         signup, unused = Signup.get_or_create_dummy(accepted=True)
@@ -62,7 +62,7 @@ class BadgesTestCase(TestCase):
         signup, unused = Signup.get_or_create_dummy(accepted=True)
 
         # No explicit job title
-        signup.job_title = ''
+        signup.job_title = ""
         signup.save()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
@@ -71,7 +71,7 @@ class BadgesTestCase(TestCase):
         jc1 = signup.job_categories_accepted.first()
         assert badge.job_title == jc1.name
 
-        jc2, unused = JobCategory.get_or_create_dummy(name='Hitman')
+        jc2, unused = JobCategory.get_or_create_dummy(name="Hitman")
         signup.job_categories_accepted.set([jc2])
         signup.save()
         signup.apply_state()
@@ -81,7 +81,7 @@ class BadgesTestCase(TestCase):
         assert badge.job_title == jc2.name
 
         # Explicit job title should override
-        title = 'Chief Hitman Commander to the Queen'
+        title = "Chief Hitman Commander to the Queen"
         signup.job_title = title
         signup.save()
         signup.apply_state()
@@ -91,7 +91,7 @@ class BadgesTestCase(TestCase):
         assert badge.job_title == title
 
         # Removing explicit job title should reset to job category based title
-        signup.job_title = ''
+        signup.job_title = ""
         signup.save()
         signup.apply_state()
 
@@ -153,10 +153,7 @@ class BadgesTestCase(TestCase):
         assert badge.personnel_class == pc1
 
         # Create another personnel class that is guaranteed to be higher in priority than the current one.
-        pc2, unused = PersonnelClass.get_or_create_dummy(
-            name='Sehr Wichtig Fellow',
-            priority=pc1.priority - 10
-        )
+        pc2, unused = PersonnelClass.get_or_create_dummy(name="Sehr Wichtig Fellow", priority=pc1.priority - 10)
 
         self.event.labour_event_meta.create_groups()
 
@@ -193,7 +190,7 @@ class BadgesTestCase(TestCase):
         # Now cancel the worker signup and make sure they go back to having a programme badge
         signup.personnel_classes.set([])
         signup.job_categories_accepted.set([])
-        signup.state = 'cancelled'
+        signup.state = "cancelled"
         signup.save()
         signup.apply_state()
 
@@ -215,7 +212,7 @@ class BadgesTestCase(TestCase):
         # Now cancel the worker signup and make sure they go back to having a programme badge
         signup.personnel_classes.set([])
         signup.job_categories_accepted.set([])
-        signup.state = 'cancelled'
+        signup.state = "cancelled"
         signup.save()
         signup.apply_state()
 
@@ -235,7 +232,7 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.personnel_class == programme_role.role.personnel_class
 
-        programme.state = 'rejected'
+        programme.state = "rejected"
         programme.save()
         programme.apply_state()
 
@@ -255,14 +252,13 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.first_name == self.person.first_name
 
-        self.person.first_name = 'Matilda'
+        self.person.first_name = "Matilda"
         self.person.save()
         self.person.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge.first_name == self.person.first_name
-
 
     def test_programme_roles(self):
         """
@@ -278,11 +274,11 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.job_title == role.title
 
-        programme2, unused = Programme.get_or_create_dummy(title='Cosplay-deitti')
+        programme2, unused = Programme.get_or_create_dummy(title="Cosplay-deitti")
         role2, unused = Role.get_or_create_dummy(
             personnel_class=personnel_class,
             priority=role.priority - 10,
-            title='More Importanter Programme Person',
+            title="More Importanter Programme Person",
         )
         programme_Role2, unused = ProgrammeRole.get_or_create_dummy(programme=programme2, role=role2)
 

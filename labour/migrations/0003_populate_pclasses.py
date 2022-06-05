@@ -2,9 +2,9 @@ from django.db import models, migrations
 
 
 def forwards_func(apps, schema_editor):
-    Badge = apps.get_model('badges', 'Badge')
-    Signup = apps.get_model('labour', 'Signup')
-    PersonnelClass = apps.get_model('labour', 'PersonnelClass')
+    Badge = apps.get_model("badges", "Badge")
+    Signup = apps.get_model("labour", "Signup")
+    PersonnelClass = apps.get_model("labour", "PersonnelClass")
 
     for signup in Signup.objects.all():
         event = signup.event
@@ -15,30 +15,31 @@ def forwards_func(apps, schema_editor):
         except Badge.DoesNotExist:
             personnel_class, unused = PersonnelClass.objects.get_or_create(
                 event=event,
-                slug='tyovoima',
+                slug="tyovoima",
                 defaults=dict(
-                    app_label='labour',
-                    name='Työvoima',
-                )
+                    app_label="labour",
+                    name="Työvoima",
+                ),
             )
         else:
             personnel_class, unused = PersonnelClass.objects.get_or_create(
                 event=event,
                 slug=badge.template.slug,
                 defaults=dict(
-                    app_label='labour',
+                    app_label="labour",
                     name=badge.template.name,
-                )
+                ),
             )
 
         signup.personnel_classes = [personnel_class]
         signup.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('labour', '0002_auto_20141115_1102'),
-        ('badges', '0001_initial'),
+        ("labour", "0002_auto_20141115_1102"),
+        ("badges", "0001_initial"),
     ]
 
     operations = [

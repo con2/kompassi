@@ -14,8 +14,9 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
     @property
     def personnel_class_name(self):
         from badges.models import Badge
+
         badge, unused = Badge.ensure(event=self.event, person=self.person)
-        return badge.personnel_class.name if badge else ''
+        return badge.personnel_class.name if badge else ""
 
     @property
     def afterparty_signup_time_local(self):
@@ -23,8 +24,8 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
 
         try:
             record = SurveyRecord.objects.get(
-                survey__event__slug='tracon2020',
-                survey__slug='kaatoilmo',
+                survey__event__slug="tracon2020",
+                survey__slug="kaatoilmo",
                 person=self.person,
             )
             return record.created_at.astimezone(tzlocal()).replace(tzinfo=None)
@@ -37,7 +38,7 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
         try:
             programme = Programme.objects.get(category__event=self.event, title=title)
         except Programme.DoesNotExist:
-            logger.exception('Programme %r not found', title)
+            logger.exception("Programme %r not found", title)
             return None
 
         try:
@@ -50,33 +51,32 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
 
     @property
     def outward_coach(self):
-        return self.get_coach_by_programme_title('Kaatobussin paikkavaraus, menomatka')
+        return self.get_coach_by_programme_title("Kaatobussin paikkavaraus, menomatka")
 
     @property
     def return_coach(self):
-        return self.get_coach_by_programme_title('Kaatobussin paikkavaraus, paluumatka')
+        return self.get_coach_by_programme_title("Kaatobussin paikkavaraus, paluumatka")
 
     @classmethod
     def get_csv_fields(cls, event):
-        assert event.slug == 'tracon2020'
+        assert event.slug == "tracon2020"
         from core.models import Person
 
         return [
-            (cls, 'afterparty_signup_time_local'),
-            (cls, 'personnel_class_name'),
-            (Person, 'surname'),
-            (Person, 'first_name'),
-            (Person, 'nick'),
-            (Person, 'email'),
-            (Person, 'normalized_phone_number'),
-            (cls, 'outward_coach'),
-            (cls, 'return_coach'),
-            (cls, 'formatted_special_diet'),
-            (cls, 'special_diet_other'),
-            (cls, 'afterparty_help'),
-
+            (cls, "afterparty_signup_time_local"),
+            (cls, "personnel_class_name"),
+            (Person, "surname"),
+            (Person, "first_name"),
+            (Person, "nick"),
+            (Person, "email"),
+            (Person, "normalized_phone_number"),
+            (cls, "outward_coach"),
+            (cls, "return_coach"),
+            (cls, "formatted_special_diet"),
+            (cls, "special_diet_other"),
+            (cls, "afterparty_help"),
             # TODO FIX THIS IN csv_export
-            (cls, next(f for f in cls._meta.many_to_many if f.name == 'pick_your_poison')),
+            (cls, next(f for f in cls._meta.many_to_many if f.name == "pick_your_poison")),
         ]
 
     def get_csv_related(self):

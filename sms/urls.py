@@ -1,22 +1,22 @@
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.shortcuts import redirect
 
 from .views import (
     sms_admin_votes_view,
     sms_admin_received_view,
 )
+from django.urls import re_path
 
 
 urlpatterns = [
-    url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/sms/admin/?$',
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/sms/admin/?$",
         sms_admin_votes_view,
-        name='sms_admin_votes_view',
+        name="sms_admin_votes_view",
     ),
-
-    url(
-        r'^events/(?P<event_slug>[a-z0-9-]+)/sms/admin/received/?$',
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/sms/admin/received/?$",
         sms_admin_received_view,
-        name='sms_admin_received_view',
+        name="sms_admin_received_view",
     ),
 ]

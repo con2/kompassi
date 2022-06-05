@@ -6,29 +6,39 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('membership', '0014_term_payment_type'),
+        ("membership", "0014_term_payment_type"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='term',
-            old_name='payment_type',
-            new_name='payment_method',
+            model_name="term",
+            old_name="payment_type",
+            new_name="payment_method",
         ),
         migrations.AddField(
-            model_name='membershipfeepayment',
-            name='amount_cents',
-            field=models.PositiveIntegerField(default=0, verbose_name='Maksettu (snt)'),
+            model_name="membershipfeepayment",
+            name="amount_cents",
+            field=models.PositiveIntegerField(default=0, verbose_name="Maksettu (snt)"),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='membershipfeepayment',
-            name='payment_method',
-            field=models.CharField(choices=[('bank_transfer', 'Tilisiirto')], default='bank_transfer', max_length=13, verbose_name='Maksutapa'),
+            model_name="membershipfeepayment",
+            name="payment_method",
+            field=models.CharField(
+                choices=[("bank_transfer", "Tilisiirto")],
+                default="bank_transfer",
+                max_length=13,
+                verbose_name="Maksutapa",
+            ),
         ),
         migrations.AddField(
-            model_name='membershipfeepayment',
-            name='payment_type',
-            field=models.CharField(choices=[('entrance_fee', 'Liittymismaksu'), ('membership_fee', 'Jäsenmaksu')], default='membership_fee', max_length=14, verbose_name='Maksun tyyppi'),
+            model_name="membershipfeepayment",
+            name="payment_type",
+            field=models.CharField(
+                choices=[("entrance_fee", "Liittymismaksu"), ("membership_fee", "Jäsenmaksu")],
+                default="membership_fee",
+                max_length=14,
+                verbose_name="Maksun tyyppi",
+            ),
         ),
     ]

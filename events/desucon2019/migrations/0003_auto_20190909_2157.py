@@ -6,18 +6,44 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('desucon2019', '0002_auto_20190102_1625'),
+        ("desucon2019", "0002_auto_20190102_1625"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='signupextra',
-            name='free_text',
-            field=models.TextField(blank=True, help_text='Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole omaa kenttää yllä, käytä tätä kenttää. ', verbose_name='Vapaa alue'),
+            model_name="signupextra",
+            name="free_text",
+            field=models.TextField(
+                blank=True,
+                help_text="Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole omaa kenttää yllä, käytä tätä kenttää. ",
+                verbose_name="Vapaa alue",
+            ),
         ),
         migrations.AlterField(
-            model_name='signupextra',
-            name='shirt_size',
-            field=models.CharField(choices=[('NO_SHIRT', 'Ei paitaa'), ('XS', 'XS Unisex'), ('S', 'S Unisex'), ('M', 'M Unisex'), ('L', 'L Unisex'), ('XL', 'XL Unisex'), ('XXL', 'XXL Unisex'), ('3XL', '3XL Unisex'), ('4XL', '4XL Unisex'), ('5XL', '5XL Unisex'), ('LF_XS', 'XS Ladyfit'), ('LF_S', 'S Ladyfit'), ('LF_M', 'M Ladyfit'), ('LF_L', 'L Ladyfit'), ('LF_XL', 'XL Ladyfit')], default='NO_SHIRT', help_text='Ajoissa ilmoittautuneet saavat maksuttoman työvoimapaidan. Kokotaulukot: <a href="http://dc-collection.fi/index.php?dispatch=products.view&product_id=460" target="_blank">unisex-paita</a>, <a href="http://dc-collection.fi/index.php?dispatch=products.view&product_id=461" target="_blank">ladyfit-paita</a>', max_length=8, verbose_name='Paidan koko'),
+            model_name="signupextra",
+            name="shirt_size",
+            field=models.CharField(
+                choices=[
+                    ("NO_SHIRT", "Ei paitaa"),
+                    ("XS", "XS Unisex"),
+                    ("S", "S Unisex"),
+                    ("M", "M Unisex"),
+                    ("L", "L Unisex"),
+                    ("XL", "XL Unisex"),
+                    ("XXL", "XXL Unisex"),
+                    ("3XL", "3XL Unisex"),
+                    ("4XL", "4XL Unisex"),
+                    ("5XL", "5XL Unisex"),
+                    ("LF_XS", "XS Ladyfit"),
+                    ("LF_S", "S Ladyfit"),
+                    ("LF_M", "M Ladyfit"),
+                    ("LF_L", "L Ladyfit"),
+                    ("LF_XL", "XL Ladyfit"),
+                ],
+                default="NO_SHIRT",
+                help_text='Ajoissa ilmoittautuneet saavat maksuttoman työvoimapaidan. Kokotaulukot: <a href="http://dc-collection.fi/index.php?dispatch=products.view&product_id=460" target="_blank">unisex-paita</a>, <a href="http://dc-collection.fi/index.php?dispatch=products.view&product_id=461" target="_blank">ladyfit-paita</a>',
+                max_length=8,
+                verbose_name="Paidan koko",
+            ),
         ),
     ]

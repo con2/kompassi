@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.views.generic.base import TemplateView
 
 from .views import (
@@ -8,43 +8,38 @@ from .views import (
     desuprogramme_import_view,
     desuprogramme_feedback_view,
 )
+from django.urls import re_path
 
 
 urlpatterns = [
-    url(
-        r'^desuprofile/oauth2/login/?$',
+    re_path(
+        r"^desuprofile/oauth2/login/?$",
         LoginView.as_view(),
-        name='desuprofile_integration_oauth2_login_view',
+        name="desuprofile_integration_oauth2_login_view",
     ),
-
-    url(
-        r'^desuprofile/oauth2/callback/?$',
+    re_path(
+        r"^desuprofile/oauth2/callback/?$",
         CallbackView.as_view(),
-        name='desuprofile_integration_oauth2_callback_view',
+        name="desuprofile_integration_oauth2_callback_view",
     ),
-
-
-    url(
-        r'^desuprofile/confirm/?$',
-        TemplateView.as_view(template_name='desuprofile_integration_confirmation_required_view.pug'),
-        name='desuprofile_integration_confirmation_required_view',
+    re_path(
+        r"^desuprofile/confirm/?$",
+        TemplateView.as_view(template_name="desuprofile_integration_confirmation_required_view.pug"),
+        name="desuprofile_integration_confirmation_required_view",
     ),
-
-    url(
-        r'^desuprofile/confirm/(?P<code>[a-f0-9]+)/?$',
+    re_path(
+        r"^desuprofile/confirm/(?P<code>[a-f0-9]+)/?$",
         ConfirmationView.as_view(),
-        name='desuprofile_integration_confirmation_view',
+        name="desuprofile_integration_confirmation_view",
     ),
-
-    url(
-        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/(?:desu)+/?',
+    re_path(
+        r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/(?:desu)+/?",
         desuprogramme_import_view,
-        name='desuprogramme_import_view',
+        name="desuprogramme_import_view",
     ),
-
-    url(
-        r'^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_slug>[a-z0-9-]+)/feedback/?$',
+    re_path(
+        r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_slug>[a-z0-9-]+)/feedback/?$",
         desuprogramme_feedback_view,
-        name='desuprogramme_feedback_view',
+        name="desuprogramme_feedback_view",
     ),
 ]

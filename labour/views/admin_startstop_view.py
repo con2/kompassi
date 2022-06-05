@@ -1,8 +1,7 @@
-
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from core.utils import initialize_form
@@ -14,9 +13,11 @@ from ..forms import StartStopForm
 @labour_admin_required
 def admin_startstop_view(request, vars, event):
     return generic_publish_unpublish_view(
-        request, vars, event,
+        request,
+        vars,
+        event,
         meta=event.labour_event_meta,
-        template='labour_admin_startstop_view.pug',
+        template="labour_admin_startstop_view.pug",
         FormClass=StartStopForm,
     )
 
@@ -42,9 +43,9 @@ def generic_publish_unpublish_view(
 ):
     form = initialize_form(FormClass, request, instance=meta)
 
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        if action == 'save':
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "save":
             if form.is_valid():
                 form.save()
                 messages.success(request, save_success_message)
@@ -52,7 +53,7 @@ def generic_publish_unpublish_view(
             else:
                 messages.error(request, _("Please check the form."))
 
-        elif action == 'start-now':
+        elif action == "start-now":
             if not meta.is_public:
                 if meta.publish():
                     messages.warning(request, end_time_clear_message)
@@ -63,7 +64,7 @@ def generic_publish_unpublish_view(
 
             return redirect(request.path)
 
-        elif action == 'stop-now':
+        elif action == "stop-now":
             if meta.is_public:
                 meta.unpublish()
                 messages.success(request, stop_now_success_message)

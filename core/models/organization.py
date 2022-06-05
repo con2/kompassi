@@ -7,35 +7,35 @@ from django.db.models import Q
 from ..utils import SLUG_FIELD_PARAMS, slugify, pick_attrs
 
 
-logger = logging.getLogger('kompassi')
+logger = logging.getLogger("kompassi")
 
 
 class Organization(models.Model):
     slug = models.CharField(**SLUG_FIELD_PARAMS)
 
-    name = models.CharField(max_length=255, verbose_name='Nimi')
-    name_genitive = models.CharField(max_length=255, verbose_name='Nimi genetiivissä')
+    name = models.CharField(max_length=255, verbose_name="Nimi")
+    name_genitive = models.CharField(max_length=255, verbose_name="Nimi genetiivissä")
 
-    description = models.TextField(blank=True, verbose_name='Kuvaus')
-    homepage_url = models.CharField(blank=True, max_length=255, verbose_name='Kotisivu')
+    description = models.TextField(blank=True, verbose_name="Kuvaus")
+    homepage_url = models.CharField(blank=True, max_length=255, verbose_name="Kotisivu")
     muncipality = models.CharField(
         blank=True,
         max_length=127,
-        verbose_name='Yhdistyksen kotipaikka',
-        help_text='Kunta, johon yhdistys on rekisteröity.',
+        verbose_name="Yhdistyksen kotipaikka",
+        help_text="Kunta, johon yhdistys on rekisteröity.",
     )
     public = models.BooleanField(
         default=False,
-        verbose_name='Julkinen',
-        help_text='Julkisilla yhdistyksillä on yhdistyssivu ja ne näytetään etusivulla.',
+        verbose_name="Julkinen",
+        help_text="Julkisilla yhdistyksillä on yhdistyssivu ja ne näytetään etusivulla.",
     )
 
     logo_url = models.CharField(
         blank=True,
         max_length=255,
-        default='',
-        verbose_name='Organisaation logon URL',
-        help_text='Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)',
+        default="",
+        verbose_name="Organisaation logon URL",
+        help_text="Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)",
     )
 
     def save(self, *args, **kwargs):
@@ -43,12 +43,12 @@ class Organization(models.Model):
             self.slug = slugify(self.name)
 
         if self.name and not self.name_genitive:
-            if self.name.endswith(' ry'):
-                self.name_genitive = self.name + ':n'
+            if self.name.endswith(" ry"):
+                self.name_genitive = self.name + ":n"
             else:
-                self.name_genitive = self.name + 'n'
+                self.name_genitive = self.name + "n"
 
-        return super(Organization, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -56,11 +56,11 @@ class Organization(models.Model):
     @classmethod
     def get_or_create_dummy(cls):
         return cls.objects.get_or_create(
-            slug='dummy-organization',
+            slug="dummy-organization",
             defaults=dict(
-                name='Dummy organization',
-                homepage_url='http://example.com',
-            )
+                name="Dummy organization",
+                homepage_url="http://example.com",
+            ),
         )
 
     @property
@@ -124,12 +124,13 @@ class Organization(models.Model):
         return Person.objects.filter(q).distinct()
 
     def as_dict(self):
-        return pick_attrs(self,
-            'slug',
-            'name',
-            'homepage_url',
+        return pick_attrs(
+            self,
+            "slug",
+            "name",
+            "homepage_url",
         )
 
     class Meta:
-        verbose_name = 'Organisaatio'
-        verbose_name_plural = 'Organisaatiot'
+        verbose_name = "Organisaatio"
+        verbose_name_plural = "Organisaatiot"
