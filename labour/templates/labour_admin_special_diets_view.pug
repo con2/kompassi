@@ -17,6 +17,10 @@ block admin_content
             tr
               td= special_diet.name
               td= special_diet.count
+        tfoot
+          tr
+            th Ilmoittautuneet yhteensä (oli erikoisruokavaliota tai ei)
+            th= total_count
 
   if special_diet_other_field
     .panel.panel-default

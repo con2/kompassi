@@ -58,6 +58,8 @@ def admin_special_diets_view(request, vars, event):
     else:
         special_diets = []
 
+    total_count = signup_extras.count()
+
     if special_diet_other_field:
         # TODO assumes name special_diet_other
         signup_extras_with_other_special_diets = signup_extras.exclude(special_diet_other__in=NO_SPECIAL_DIET_REPLIES)
@@ -69,6 +71,7 @@ def admin_special_diets_view(request, vars, event):
         special_diet_field=special_diet_field,
         special_diet_other_field=special_diet_other_field,
         special_diets=special_diets,
+        total_count=total_count,
     )
 
     return render(request, "labour_admin_special_diets_view.pug", vars)
