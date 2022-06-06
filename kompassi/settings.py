@@ -435,7 +435,8 @@ if "api_v2" in INSTALLED_APPS:
         SCOPES=dict(
             read="Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi",
             write="Muokata käyttäjä- ja henkilötietojasi",
-        )
+        ),
+        PKCE_REQUIRED=False,
     )
 
 
