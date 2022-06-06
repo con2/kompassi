@@ -14,6 +14,8 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 from django.utils import timezone
 
+from crowd_integration.utils import CrowdError
+
 from ..utils import pick_attrs, calculate_age, format_phone_number, phone_number_validator
 from .constants import (
     EMAIL_LENGTH,
@@ -461,7 +463,7 @@ class Person(models.Model):
         if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import person_apply_state_async
 
-            person_apply_state_async(self.pk)
+            person_apply_state_async.delay(self.pk)
         else:
             self._apply_state_async()
 
@@ -475,7 +477,12 @@ class Person(models.Model):
 
         from crowd_integration.utils import update_user
 
-        update_user(self.user)
+        # FIXME: Changing e-mail address via Crowd API does not work
+        # {"reason":"APPLICATION_PERMISSION_DENIED","message":"External applications are not allowed to change user emails"}
+        try:
+            update_user(self.user)
+        except CrowdError:
+            logger.error("Failed to update Crowd user", exc_info=True)
 
     def apply_state_update_may_send_info_group_membership(self):
         from ..utils import ensure_user_is_member_of_group
