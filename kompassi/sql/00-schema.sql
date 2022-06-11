@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.1 (Debian 13.1-1.pgdg100+1)
--- Dumped by pg_dump version 13.1 (Debian 13.1-1.pgdg100+1)
+-- Dumped from database version 14.3 (Debian 14.3-1.pgdg110+1)
+-- Dumped by pg_dump version 14.3 (Debian 14.3-1.pgdg110+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -360,8 +360,8 @@ ALTER SEQUENCE public.access_privilege_id_seq OWNED BY public.access_privilege.i
 CREATE TABLE public.access_slackaccess (
     id integer NOT NULL,
     team_name character varying(255) NOT NULL,
-    api_token character varying(255) NOT NULL,
-    privilege_id integer NOT NULL
+    privilege_id integer NOT NULL,
+    invite_link character varying(255) NOT NULL
 );
 
 
@@ -1027,7 +1027,7 @@ CREATE TABLE public.auth_user (
     last_login timestamp with time zone,
     is_superuser boolean NOT NULL,
     username character varying(150) NOT NULL,
-    first_name character varying(30) NOT NULL,
+    first_name character varying(150) NOT NULL,
     last_name character varying(150) NOT NULL,
     email character varying(254) NOT NULL,
     is_staff boolean NOT NULL,
@@ -1422,7 +1422,8 @@ CREATE TABLE public.core_person (
     muncipality character varying(127) NOT NULL,
     official_first_names character varying(1023) NOT NULL,
     allow_work_history_sharing boolean NOT NULL,
-    preferred_badge_name_display_style character varying(31) NOT NULL
+    preferred_badge_name_display_style character varying(31) NOT NULL,
+    discord_handle character varying(63) NOT NULL
 );
 
 
@@ -2033,6 +2034,107 @@ ALTER SEQUENCE public.desucon2020_specialdiet_id_seq OWNED BY public.desucon2020
 
 
 --
+-- Name: desucon2022_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.desucon2022_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    special_diet_other text NOT NULL,
+    shirt_size character varying(8) NOT NULL,
+    shirt_type character varying(8) NOT NULL,
+    night_work boolean NOT NULL,
+    afterparty_participation boolean NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: desucon2022_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.desucon2022_signupextra_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: desucon2022_signupextra_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.desucon2022_signupextra_id_seq OWNED BY public.desucon2022_signupextra.id;
+
+
+--
+-- Name: desucon2022_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.desucon2022_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: desucon2022_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.desucon2022_signupextra_special_diet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: desucon2022_signupextra_special_diet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.desucon2022_signupextra_special_diet_id_seq OWNED BY public.desucon2022_signupextra_special_diet.id;
+
+
+--
+-- Name: desucon2022_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.desucon2022_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: desucon2022_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.desucon2022_specialdiet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: desucon2022_specialdiet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.desucon2022_specialdiet_id_seq OWNED BY public.desucon2022_specialdiet.id;
+
+
+--
 -- Name: desuprofile_integration_confirmationcode; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2467,7 +2569,8 @@ CREATE TABLE public.event_log_entry (
     person_id integer,
     organization_id integer,
     search_term character varying(255) NOT NULL,
-    ip_address character varying(48) NOT NULL
+    ip_address character varying(48) NOT NULL,
+    other_fields jsonb NOT NULL
 );
 
 
@@ -2919,6 +3022,107 @@ CREATE SEQUENCE public.finncon2020_specialdiet_id_seq
 --
 
 ALTER SEQUENCE public.finncon2020_specialdiet_id_seq OWNED BY public.finncon2020_specialdiet.id;
+
+
+--
+-- Name: finncon2022_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.finncon2022_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    shirt_size character varying(8),
+    dead_dog boolean NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    language_skills text NOT NULL,
+    free_text text NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: finncon2022_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.finncon2022_signupextra_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: finncon2022_signupextra_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.finncon2022_signupextra_id_seq OWNED BY public.finncon2022_signupextra.id;
+
+
+--
+-- Name: finncon2022_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.finncon2022_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: finncon2022_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.finncon2022_signupextra_special_diet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: finncon2022_signupextra_special_diet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.finncon2022_signupextra_special_diet_id_seq OWNED BY public.finncon2022_signupextra_special_diet.id;
+
+
+--
+-- Name: finncon2022_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.finncon2022_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: finncon2022_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.finncon2022_specialdiet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: finncon2022_specialdiet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.finncon2022_specialdiet_id_seq OWNED BY public.finncon2022_specialdiet.id;
 
 
 --
@@ -5071,6 +5275,202 @@ ALTER SEQUENCE public.kuplii2020_specialdiet_id_seq OWNED BY public.kuplii2020_s
 
 
 --
+-- Name: kuplii2021_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2021_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: kuplii2021_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.kuplii2021_signupextra_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: kuplii2021_signupextra_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.kuplii2021_signupextra_id_seq OWNED BY public.kuplii2021_signupextra.id;
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2021_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.kuplii2021_signupextra_special_diet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.kuplii2021_signupextra_special_diet_id_seq OWNED BY public.kuplii2021_signupextra_special_diet.id;
+
+
+--
+-- Name: kuplii2021_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2021_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: kuplii2021_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.kuplii2021_specialdiet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: kuplii2021_specialdiet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.kuplii2021_specialdiet_id_seq OWNED BY public.kuplii2021_specialdiet.id;
+
+
+--
+-- Name: kuplii2022_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2022_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: kuplii2022_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.kuplii2022_signupextra_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: kuplii2022_signupextra_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.kuplii2022_signupextra_id_seq OWNED BY public.kuplii2022_signupextra.id;
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2022_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.kuplii2022_signupextra_special_diet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.kuplii2022_signupextra_special_diet_id_seq OWNED BY public.kuplii2022_signupextra_special_diet.id;
+
+
+--
+-- Name: kuplii2022_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2022_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: kuplii2022_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.kuplii2022_specialdiet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: kuplii2022_specialdiet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.kuplii2022_specialdiet_id_seq OWNED BY public.kuplii2022_specialdiet.id;
+
+
+--
 -- Name: labour_alternativesignupform; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -6139,68 +6539,6 @@ CREATE TABLE public.listings_listing (
     title character varying(255) NOT NULL,
     description text NOT NULL
 );
-
-
---
--- Name: listings_listing_events; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.listings_listing_events (
-    id integer NOT NULL,
-    listing_id integer NOT NULL,
-    event_id integer NOT NULL
-);
-
-
---
--- Name: listings_listing_events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.listings_listing_events_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: listings_listing_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.listings_listing_events_id_seq OWNED BY public.listings_listing_events.id;
-
-
---
--- Name: listings_listing_external_events; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.listings_listing_external_events (
-    id integer NOT NULL,
-    listing_id integer NOT NULL,
-    externalevent_id integer NOT NULL
-);
-
-
---
--- Name: listings_listing_external_events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.listings_listing_external_events_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: listings_listing_external_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.listings_listing_external_events_id_seq OWNED BY public.listings_listing_external_events.id;
 
 
 --
@@ -7338,6 +7676,169 @@ ALTER SEQUENCE public.nekocon2020_specialdiet_id_seq OWNED BY public.nekocon2020
 
 
 --
+-- Name: nekocon2022_night; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nekocon2022_night (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: nekocon2022_night_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.nekocon2022_night_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: nekocon2022_night_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.nekocon2022_night_id_seq OWNED BY public.nekocon2022_night.id;
+
+
+--
+-- Name: nekocon2022_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nekocon2022_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    total_work character varying(15) NOT NULL,
+    want_certificate boolean NOT NULL,
+    afterparty_participation boolean NOT NULL,
+    certificate_delivery_address text NOT NULL,
+    shirt_size character varying(8) NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    shift_wishes text NOT NULL,
+    free_text text NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: nekocon2022_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.nekocon2022_signupextra_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: nekocon2022_signupextra_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.nekocon2022_signupextra_id_seq OWNED BY public.nekocon2022_signupextra.id;
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nekocon2022_signupextra_lodging_needs (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    night_id integer NOT NULL
+);
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.nekocon2022_signupextra_lodging_needs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.nekocon2022_signupextra_lodging_needs_id_seq OWNED BY public.nekocon2022_signupextra_lodging_needs.id;
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nekocon2022_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.nekocon2022_signupextra_special_diet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.nekocon2022_signupextra_special_diet_id_seq OWNED BY public.nekocon2022_signupextra_special_diet.id;
+
+
+--
+-- Name: nekocon2022_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nekocon2022_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: nekocon2022_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.nekocon2022_specialdiet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: nekocon2022_specialdiet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.nekocon2022_specialdiet_id_seq OWNED BY public.nekocon2022_specialdiet.id;
+
+
+--
 -- Name: nippori2017_signupextra; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7385,7 +7886,8 @@ CREATE TABLE public.oauth2_provider_accesstoken (
     user_id integer,
     created timestamp with time zone NOT NULL,
     updated timestamp with time zone NOT NULL,
-    source_refresh_token_id bigint
+    source_refresh_token_id bigint,
+    id_token_id bigint
 );
 
 
@@ -7423,7 +7925,8 @@ CREATE TABLE public.oauth2_provider_application (
     user_id integer,
     skip_authorization boolean NOT NULL,
     created timestamp with time zone NOT NULL,
-    updated timestamp with time zone NOT NULL
+    updated timestamp with time zone NOT NULL,
+    algorithm character varying(5) NOT NULL
 );
 
 
@@ -7454,14 +7957,16 @@ CREATE TABLE public.oauth2_provider_grant (
     id bigint NOT NULL,
     code character varying(255) NOT NULL,
     expires timestamp with time zone NOT NULL,
-    redirect_uri character varying(255) NOT NULL,
+    redirect_uri text NOT NULL,
     scope text NOT NULL,
     application_id bigint NOT NULL,
     user_id integer NOT NULL,
     created timestamp with time zone NOT NULL,
     updated timestamp with time zone NOT NULL,
     code_challenge character varying(128) NOT NULL,
-    code_challenge_method character varying(10) NOT NULL
+    code_challenge_method character varying(10) NOT NULL,
+    nonce character varying(255) NOT NULL,
+    claims text NOT NULL
 );
 
 
@@ -7482,6 +7987,41 @@ CREATE SEQUENCE public.oauth2_provider_grant_id_seq
 --
 
 ALTER SEQUENCE public.oauth2_provider_grant_id_seq OWNED BY public.oauth2_provider_grant.id;
+
+
+--
+-- Name: oauth2_provider_idtoken; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth2_provider_idtoken (
+    id bigint NOT NULL,
+    jti uuid NOT NULL,
+    expires timestamp with time zone NOT NULL,
+    scope text NOT NULL,
+    created timestamp with time zone NOT NULL,
+    updated timestamp with time zone NOT NULL,
+    application_id bigint,
+    user_id integer
+);
+
+
+--
+-- Name: oauth2_provider_idtoken_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.oauth2_provider_idtoken_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: oauth2_provider_idtoken_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.oauth2_provider_idtoken_id_seq OWNED BY public.oauth2_provider_idtoken.id;
 
 
 --
@@ -7852,19 +8392,6 @@ CREATE SEQUENCE public.payments_payment_id_seq
 --
 
 ALTER SEQUENCE public.payments_payment_id_seq OWNED BY public.payments_payment.id;
-
-
---
--- Name: payments_paymentseventmeta; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.payments_paymentseventmeta (
-    event_id integer NOT NULL,
-    checkout_password character varying(255) NOT NULL,
-    checkout_merchant character varying(255) NOT NULL,
-    checkout_delivery_date character varying(9) NOT NULL,
-    admin_group_id integer NOT NULL
-);
 
 
 --
@@ -8397,6 +8924,30 @@ CREATE TABLE public.programme_programme (
     ropecon2020_theme_end_of_the_world boolean NOT NULL,
     ropecon2020_materials_language character varying(1023) NOT NULL,
     rerun_extra text NOT NULL,
+    ropecon2021_gamedesk_physical_or_virtual character varying(12),
+    ropecon2021_accessibility_colourblind boolean NOT NULL,
+    ropecon2021_accessibility_flashing_lights boolean NOT NULL,
+    ropecon2021_accessibility_inaccessibility text,
+    ropecon2021_accessibility_irritate_skin boolean NOT NULL,
+    ropecon2021_accessibility_loud_sounds boolean NOT NULL,
+    ropecon2021_accessibility_low_lightning boolean NOT NULL,
+    ropecon2021_accessibility_moving_around boolean NOT NULL,
+    ropecon2021_accessibility_physical_contact boolean NOT NULL,
+    ropecon2021_accessibility_recording boolean NOT NULL,
+    ropecon2021_accessibility_strong_smells boolean NOT NULL,
+    ropecon2021_accessibility_text boolean NOT NULL,
+    ropecon2021_accessibility_video boolean NOT NULL,
+    ropecon2021_programme_for_children boolean NOT NULL,
+    ropecon2021_rpg_clarifications text,
+    ropecon2021_rpg_physical_or_virtual boolean NOT NULL,
+    ropecon_theme boolean NOT NULL,
+    ropecon2021_larp_physical_or_virtual character varying(19),
+    ropecon2021_gamedesk_materials text,
+    ropecon2022_accessibility_remaining_one_place boolean NOT NULL,
+    ropecon2022_aimed_at_adult_participants boolean NOT NULL,
+    ropecon2022_aimed_at_children_under_10 boolean NOT NULL,
+    ropecon2022_aimed_at_underage_participants boolean NOT NULL,
+    ropecon2022_content_warnings character varying(1023) NOT NULL,
     CONSTRAINT programme_programme_max_players_check CHECK ((max_players >= 0)),
     CONSTRAINT programme_programme_min_players_check CHECK ((min_players >= 0)),
     CONSTRAINT programme_programme_ropecon2018_characters_check CHECK ((ropecon2018_characters >= 0)),
@@ -8577,6 +9128,37 @@ CREATE SEQUENCE public.programme_programme_ropecon2019_preferred_time_slots_id_s
 --
 
 ALTER SEQUENCE public.programme_programme_ropecon2019_preferred_time_slots_id_seq OWNED BY public.programme_programme_ropecon2019_preferred_time_slots.id;
+
+
+--
+-- Name: programme_programme_ropecon2021_blocked_time_slots; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.programme_programme_ropecon2021_blocked_time_slots (
+    id integer NOT NULL,
+    programme_id integer NOT NULL,
+    timeslot_id integer NOT NULL
+);
+
+
+--
+-- Name: programme_programme_ropecon2021_blocked_time_slots_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.programme_programme_ropecon2021_blocked_time_slots_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: programme_programme_ropecon2021_blocked_time_slots_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.programme_programme_ropecon2021_blocked_time_slots_id_seq OWNED BY public.programme_programme_ropecon2021_blocked_time_slots.id;
 
 
 --
@@ -9523,6 +10105,141 @@ ALTER SEQUENCE public.ropecon2021_timeslot_id_seq OWNED BY public.ropecon2021_ti
 
 
 --
+-- Name: ropecon2022_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2022_signupextra (
+    id integer NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    want_certificate boolean NOT NULL,
+    certificate_delivery_address text NOT NULL,
+    can_finnish boolean NOT NULL,
+    can_english boolean NOT NULL,
+    other_languages text NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    shift_wishes text NOT NULL,
+    free_text text NOT NULL,
+    roster_publish_consent boolean NOT NULL,
+    is_active boolean NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: ropecon2022_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ropecon2022_signupextra_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ropecon2022_signupextra_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ropecon2022_signupextra_id_seq OWNED BY public.ropecon2022_signupextra.id;
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2022_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ropecon2022_signupextra_special_diet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ropecon2022_signupextra_special_diet_id_seq OWNED BY public.ropecon2022_signupextra_special_diet.id;
+
+
+--
+-- Name: ropecon2022_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2022_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: ropecon2022_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ropecon2022_specialdiet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ropecon2022_specialdiet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ropecon2022_specialdiet_id_seq OWNED BY public.ropecon2022_specialdiet.id;
+
+
+--
+-- Name: ropecon2022_timeslot; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2022_timeslot (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: ropecon2022_timeslot_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ropecon2022_timeslot_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ropecon2022_timeslot_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ropecon2022_timeslot_id_seq OWNED BY public.ropecon2022_timeslot.id;
+
+
+--
 -- Name: shippocon2016_signupextra; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -10007,8 +10724,8 @@ ALTER SEQUENCE public.tickets_orderproduct_id_seq OWNED BY public.tickets_orderp
 
 CREATE TABLE public.tickets_product (
     id integer NOT NULL,
-    name character varying(100) NOT NULL,
-    internal_description character varying(255),
+    name character varying(150) NOT NULL,
+    internal_description character varying(300),
     description text NOT NULL,
     mail_description text,
     price_cents integer NOT NULL,
@@ -10197,7 +10914,8 @@ CREATE TABLE public.tickets_ticketseventmeta (
     print_logo_path character varying(255) NOT NULL,
     print_logo_width_mm integer NOT NULL,
     receipt_footer character varying(1023) NOT NULL,
-    pos_access_group_id integer
+    pos_access_group_id integer,
+    terms_and_conditions_url public.hstore NOT NULL
 );
 
 
@@ -11446,6 +12164,204 @@ CREATE SEQUENCE public.tracon2021_signupextra_special_diet_id_seq
 --
 
 ALTER SEQUENCE public.tracon2021_signupextra_special_diet_id_seq OWNED BY public.tracon2021_signupextra_special_diet.id;
+
+
+--
+-- Name: tracon2022_night; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2022_night (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: tracon2022_night_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tracon2022_night_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tracon2022_night_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tracon2022_night_id_seq OWNED BY public.tracon2022_night.id;
+
+
+--
+-- Name: tracon2022_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2022_poison (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: tracon2022_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tracon2022_poison_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tracon2022_poison_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tracon2022_poison_id_seq OWNED BY public.tracon2022_poison.id;
+
+
+--
+-- Name: tracon2022_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2022_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    overseer boolean NOT NULL,
+    want_certificate boolean NOT NULL,
+    certificate_delivery_address text NOT NULL,
+    shirt_size character varying(8) NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    shift_wishes text NOT NULL,
+    email_alias character varying(32) NOT NULL,
+    afterparty_participation boolean NOT NULL,
+    afterparty_help text NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: tracon2022_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tracon2022_signupextra_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tracon2022_signupextra_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tracon2022_signupextra_id_seq OWNED BY public.tracon2022_signupextra.id;
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2022_signupextra_lodging_needs (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    night_id integer NOT NULL
+);
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tracon2022_signupextra_lodging_needs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tracon2022_signupextra_lodging_needs_id_seq OWNED BY public.tracon2022_signupextra_lodging_needs.id;
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2022_signupextra_pick_your_poison (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    poison_id integer NOT NULL
+);
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tracon2022_signupextra_pick_your_poison_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tracon2022_signupextra_pick_your_poison_id_seq OWNED BY public.tracon2022_signupextra_pick_your_poison.id;
+
+
+--
+-- Name: tracon2022_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2022_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: tracon2022_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tracon2022_signupextra_special_diet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tracon2022_signupextra_special_diet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tracon2022_signupextra_special_diet_id_seq OWNED BY public.tracon2022_signupextra_special_diet.id;
 
 
 --
@@ -12860,6 +13776,27 @@ ALTER TABLE ONLY public.desucon2020_specialdiet ALTER COLUMN id SET DEFAULT next
 
 
 --
+-- Name: desucon2022_signupextra id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra ALTER COLUMN id SET DEFAULT nextval('public.desucon2022_signupextra_id_seq'::regclass);
+
+
+--
+-- Name: desucon2022_signupextra_special_diet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra_special_diet ALTER COLUMN id SET DEFAULT nextval('public.desucon2022_signupextra_special_diet_id_seq'::regclass);
+
+
+--
+-- Name: desucon2022_specialdiet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_specialdiet ALTER COLUMN id SET DEFAULT nextval('public.desucon2022_specialdiet_id_seq'::regclass);
+
+
+--
 -- Name: desuprofile_integration_confirmationcode id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -13025,6 +13962,27 @@ ALTER TABLE ONLY public.finncon2020_signupextra_special_diet ALTER COLUMN id SET
 --
 
 ALTER TABLE ONLY public.finncon2020_specialdiet ALTER COLUMN id SET DEFAULT nextval('public.finncon2020_specialdiet_id_seq'::regclass);
+
+
+--
+-- Name: finncon2022_signupextra id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra ALTER COLUMN id SET DEFAULT nextval('public.finncon2022_signupextra_id_seq'::regclass);
+
+
+--
+-- Name: finncon2022_signupextra_special_diet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra_special_diet ALTER COLUMN id SET DEFAULT nextval('public.finncon2022_signupextra_special_diet_id_seq'::regclass);
+
+
+--
+-- Name: finncon2022_specialdiet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_specialdiet ALTER COLUMN id SET DEFAULT nextval('public.finncon2022_specialdiet_id_seq'::regclass);
 
 
 --
@@ -13455,6 +14413,48 @@ ALTER TABLE ONLY public.kuplii2020_specialdiet ALTER COLUMN id SET DEFAULT nextv
 
 
 --
+-- Name: kuplii2021_signupextra id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra ALTER COLUMN id SET DEFAULT nextval('public.kuplii2021_signupextra_id_seq'::regclass);
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra_special_diet ALTER COLUMN id SET DEFAULT nextval('public.kuplii2021_signupextra_special_diet_id_seq'::regclass);
+
+
+--
+-- Name: kuplii2021_specialdiet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_specialdiet ALTER COLUMN id SET DEFAULT nextval('public.kuplii2021_specialdiet_id_seq'::regclass);
+
+
+--
+-- Name: kuplii2022_signupextra id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra ALTER COLUMN id SET DEFAULT nextval('public.kuplii2022_signupextra_id_seq'::regclass);
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra_special_diet ALTER COLUMN id SET DEFAULT nextval('public.kuplii2022_signupextra_special_diet_id_seq'::regclass);
+
+
+--
+-- Name: kuplii2022_specialdiet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_specialdiet ALTER COLUMN id SET DEFAULT nextval('public.kuplii2022_specialdiet_id_seq'::regclass);
+
+
+--
 -- Name: labour_alternativesignupform id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -13669,20 +14669,6 @@ ALTER TABLE ONLY public.listings_externalevent ALTER COLUMN id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY public.listings_listing ALTER COLUMN id SET DEFAULT nextval('public.listings_listing_id_seq'::regclass);
-
-
---
--- Name: listings_listing_events id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_events ALTER COLUMN id SET DEFAULT nextval('public.listings_listing_events_id_seq'::regclass);
-
-
---
--- Name: listings_listing_external_events id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_external_events ALTER COLUMN id SET DEFAULT nextval('public.listings_listing_external_events_id_seq'::regclass);
 
 
 --
@@ -13910,6 +14896,41 @@ ALTER TABLE ONLY public.nekocon2020_specialdiet ALTER COLUMN id SET DEFAULT next
 
 
 --
+-- Name: nekocon2022_night id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_night ALTER COLUMN id SET DEFAULT nextval('public.nekocon2022_night_id_seq'::regclass);
+
+
+--
+-- Name: nekocon2022_signupextra id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra ALTER COLUMN id SET DEFAULT nextval('public.nekocon2022_signupextra_id_seq'::regclass);
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_lodging_needs ALTER COLUMN id SET DEFAULT nextval('public.nekocon2022_signupextra_lodging_needs_id_seq'::regclass);
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_special_diet ALTER COLUMN id SET DEFAULT nextval('public.nekocon2022_signupextra_special_diet_id_seq'::regclass);
+
+
+--
+-- Name: nekocon2022_specialdiet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_specialdiet ALTER COLUMN id SET DEFAULT nextval('public.nekocon2022_specialdiet_id_seq'::regclass);
+
+
+--
 -- Name: nippori2017_signupextra id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -13935,6 +14956,13 @@ ALTER TABLE ONLY public.oauth2_provider_application ALTER COLUMN id SET DEFAULT 
 --
 
 ALTER TABLE ONLY public.oauth2_provider_grant ALTER COLUMN id SET DEFAULT nextval('public.oauth2_provider_grant_id_seq'::regclass);
+
+
+--
+-- Name: oauth2_provider_idtoken id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_idtoken ALTER COLUMN id SET DEFAULT nextval('public.oauth2_provider_idtoken_id_seq'::regclass);
 
 
 --
@@ -14134,6 +15162,13 @@ ALTER TABLE ONLY public.programme_programme_ropecon2019_preferred_time_slots ALT
 
 
 --
+-- Name: programme_programme_ropecon2021_blocked_time_slots id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.programme_programme_ropecon2021_blocked_time_slots ALTER COLUMN id SET DEFAULT nextval('public.programme_programme_ropecon2021_blocked_time_slots_id_seq'::regclass);
+
+
+--
 -- Name: programme_programme_tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -14320,6 +15355,34 @@ ALTER TABLE ONLY public.ropecon2021_specialdiet ALTER COLUMN id SET DEFAULT next
 --
 
 ALTER TABLE ONLY public.ropecon2021_timeslot ALTER COLUMN id SET DEFAULT nextval('public.ropecon2021_timeslot_id_seq'::regclass);
+
+
+--
+-- Name: ropecon2022_signupextra id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra ALTER COLUMN id SET DEFAULT nextval('public.ropecon2022_signupextra_id_seq'::regclass);
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra_special_diet ALTER COLUMN id SET DEFAULT nextval('public.ropecon2022_signupextra_special_diet_id_seq'::regclass);
+
+
+--
+-- Name: ropecon2022_specialdiet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_specialdiet ALTER COLUMN id SET DEFAULT nextval('public.ropecon2022_specialdiet_id_seq'::regclass);
+
+
+--
+-- Name: ropecon2022_timeslot id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_timeslot ALTER COLUMN id SET DEFAULT nextval('public.ropecon2022_timeslot_id_seq'::regclass);
 
 
 --
@@ -14715,6 +15778,48 @@ ALTER TABLE ONLY public.tracon2021_signupextra_special_diet ALTER COLUMN id SET 
 
 
 --
+-- Name: tracon2022_night id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_night ALTER COLUMN id SET DEFAULT nextval('public.tracon2022_night_id_seq'::regclass);
+
+
+--
+-- Name: tracon2022_poison id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_poison ALTER COLUMN id SET DEFAULT nextval('public.tracon2022_poison_id_seq'::regclass);
+
+
+--
+-- Name: tracon2022_signupextra id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra ALTER COLUMN id SET DEFAULT nextval('public.tracon2022_signupextra_id_seq'::regclass);
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_lodging_needs ALTER COLUMN id SET DEFAULT nextval('public.tracon2022_signupextra_lodging_needs_id_seq'::regclass);
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_pick_your_poison ALTER COLUMN id SET DEFAULT nextval('public.tracon2022_signupextra_pick_your_poison_id_seq'::regclass);
+
+
+--
+-- Name: tracon2022_signupextra_special_diet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_special_diet ALTER COLUMN id SET DEFAULT nextval('public.tracon2022_signupextra_special_diet_id_seq'::regclass);
+
+
+--
 -- Name: tracon9_night id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -15008,7 +16113,7 @@ COPY public.access_privilege (id, slug, title, description, request_success_mess
 -- Data for Name: access_slackaccess; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.access_slackaccess (id, team_name, api_token, privilege_id) FROM stdin;
+COPY public.access_slackaccess (id, team_name, privilege_id, invite_link) FROM stdin;
 \.
 
 
@@ -16325,6 +17430,78 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 1138	Can change signup extra	285	change_signupextra
 1139	Can delete signup extra	285	delete_signupextra
 1140	Can view signup extra	285	view_signupextra
+1141	Can add id token	286	add_idtoken
+1142	Can change id token	286	change_idtoken
+1143	Can delete id token	286	delete_idtoken
+1144	Can view id token	286	view_idtoken
+1145	Can add special diet	287	add_specialdiet
+1146	Can change special diet	287	change_specialdiet
+1147	Can delete special diet	287	delete_specialdiet
+1148	Can view special diet	287	view_specialdiet
+1149	Can add signup extra	288	add_signupextra
+1150	Can change signup extra	288	change_signupextra
+1151	Can delete signup extra	288	delete_signupextra
+1152	Can view signup extra	288	view_signupextra
+1153	Can add special diet	289	add_specialdiet
+1154	Can change special diet	289	change_specialdiet
+1155	Can delete special diet	289	delete_specialdiet
+1156	Can view special diet	289	view_specialdiet
+1157	Can add signup extra	290	add_signupextra
+1158	Can change signup extra	290	change_signupextra
+1159	Can delete signup extra	290	delete_signupextra
+1160	Can view signup extra	290	view_signupextra
+1161	Can add special diet	291	add_specialdiet
+1162	Can change special diet	291	change_specialdiet
+1163	Can delete special diet	291	delete_specialdiet
+1164	Can view special diet	291	view_specialdiet
+1165	Can add time slot	292	add_timeslot
+1166	Can change time slot	292	change_timeslot
+1167	Can delete time slot	292	delete_timeslot
+1168	Can view time slot	292	view_timeslot
+1169	Can add signup extra	293	add_signupextra
+1170	Can change signup extra	293	change_signupextra
+1171	Can delete signup extra	293	delete_signupextra
+1172	Can view signup extra	293	view_signupextra
+1173	Can add night	294	add_night
+1174	Can change night	294	change_night
+1175	Can delete night	294	delete_night
+1176	Can view night	294	view_night
+1177	Can add poison	295	add_poison
+1178	Can change poison	295	change_poison
+1179	Can delete poison	295	delete_poison
+1180	Can view poison	295	view_poison
+1181	Can add signup extra	296	add_signupextra
+1182	Can change signup extra	296	change_signupextra
+1183	Can delete signup extra	296	delete_signupextra
+1184	Can view signup extra	296	view_signupextra
+1185	Can add special diet	297	add_specialdiet
+1186	Can change special diet	297	change_specialdiet
+1187	Can delete special diet	297	delete_specialdiet
+1188	Can view special diet	297	view_specialdiet
+1189	Can add signup extra	298	add_signupextra
+1190	Can change signup extra	298	change_signupextra
+1191	Can delete signup extra	298	delete_signupextra
+1192	Can view signup extra	298	view_signupextra
+1193	Can add special diet	299	add_specialdiet
+1194	Can change special diet	299	change_specialdiet
+1195	Can delete special diet	299	delete_specialdiet
+1196	Can view special diet	299	view_specialdiet
+1197	Can add signup extra	300	add_signupextra
+1198	Can change signup extra	300	change_signupextra
+1199	Can delete signup extra	300	delete_signupextra
+1200	Can view signup extra	300	view_signupextra
+1201	Can add night	301	add_night
+1202	Can change night	301	change_night
+1203	Can delete night	301	delete_night
+1204	Can view night	301	view_night
+1205	Can add special diet	302	add_specialdiet
+1206	Can change special diet	302	change_specialdiet
+1207	Can delete special diet	302	delete_specialdiet
+1208	Can view special diet	302	view_specialdiet
+1209	Can add signup extra	303	add_signupextra
+1210	Can change signup extra	303	change_signupextra
+1211	Can delete signup extra	303	delete_signupextra
+1212	Can view signup extra	303	view_signupextra
 \.
 
 
@@ -16421,7 +17598,7 @@ COPY public.core_passwordresettoken (id, code, created_at, used_at, state, ip_ad
 -- Data for Name: core_person; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.core_person (id, first_name, surname, nick, birth_date, email, phone, may_send_info, preferred_name_display_style, notes, email_verified_at, user_id, muncipality, official_first_names, allow_work_history_sharing, preferred_badge_name_display_style) FROM stdin;
+COPY public.core_person (id, first_name, surname, nick, birth_date, email, phone, may_send_info, preferred_name_display_style, notes, email_verified_at, user_id, muncipality, official_first_names, allow_work_history_sharing, preferred_badge_name_display_style, discord_handle) FROM stdin;
 \.
 
 
@@ -16566,6 +17743,30 @@ COPY public.desucon2020_signupextra_special_diet (id, signupextra_id, specialdie
 --
 
 COPY public.desucon2020_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: desucon2022_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.desucon2022_signupextra (id, is_active, shift_type, prior_experience, free_text, special_diet_other, shirt_size, shirt_type, night_work, afterparty_participation, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: desucon2022_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.desucon2022_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: desucon2022_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.desucon2022_specialdiet (id, name) FROM stdin;
 \.
 
 
@@ -16899,6 +18100,24 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 283	tracon2021	night
 284	tracon2021	poison
 285	tracon2021	signupextra
+286	oauth2_provider	idtoken
+287	kuplii2021	specialdiet
+288	kuplii2021	signupextra
+289	desucon2022	specialdiet
+290	desucon2022	signupextra
+291	ropecon2022	specialdiet
+292	ropecon2022	timeslot
+293	ropecon2022	signupextra
+294	tracon2022	night
+295	tracon2022	poison
+296	tracon2022	signupextra
+297	kuplii2022	specialdiet
+298	kuplii2022	signupextra
+299	finncon2022	specialdiet
+300	finncon2022	signupextra
+301	nekocon2022	night
+302	nekocon2022	specialdiet
+303	nekocon2022	signupextra
 \.
 
 
@@ -17463,6 +18682,38 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 554	yukicon2018	0002_auto_20170824_2310	2020-12-02 15:26:56.766109+00
 555	yukicon2018	0003_auto_20170824_2323	2020-12-02 15:26:56.987739+00
 556	yukicon2019	0001_initial	2020-12-02 15:26:57.746115+00
+557	access	0019_auto_20211013_1702	2022-06-11 07:23:22.991086+00
+558	auth	0012_alter_user_first_name_max_length	2022-06-11 07:23:23.061668+00
+559	core	0035_person_discord_handle	2022-06-11 07:23:23.11956+00
+560	desucon2022	0001_initial	2022-06-11 07:23:23.249738+00
+561	event_log	0009_entry_other_fields	2022-06-11 07:23:23.37159+00
+562	finncon2022	0001_initial	2022-06-11 07:23:23.492435+00
+563	hitpoint2020	0003_auto_20201227_1620	2022-06-11 07:23:23.521796+00
+564	kuplii2021	0001_initial	2022-06-11 07:23:23.736473+00
+565	kuplii2022	0001_initial	2022-06-11 07:23:23.887551+00
+566	listings	0006_auto_20211019_2248	2022-06-11 07:23:24.105766+00
+567	localized_fields	0001_initial	2022-06-11 07:23:24.113829+00
+568	nekocon2022	0001_initial	2022-06-11 07:23:24.252695+00
+569	oauth2_provider	0003_auto_20201211_1314	2022-06-11 07:23:24.273271+00
+570	oauth2_provider	0004_auto_20200902_2022	2022-06-11 07:23:24.645833+00
+571	oauth2_provider	0005_auto_20211222_2352	2022-06-11 07:23:25.349801+00
+572	oauth2_provider	0006_alter_application_client_secret	2022-06-11 07:23:25.554586+00
+573	payments	0009_delete_paymentseventmeta	2022-06-11 07:23:25.564026+00
+574	programme	0101_programme_ropecon2021_gamedesk_physical_or_virtual	2022-06-11 07:23:25.617743+00
+575	programme	0102_auto_20210222_2104	2022-06-11 07:23:26.773762+00
+576	programme	0103_programme_ropecon2021_blocked_time_slots	2022-06-11 07:23:26.996107+00
+577	programme	0104_auto_20210223_2306	2022-06-11 07:23:27.206789+00
+578	programme	0105_programme_ropecon2021_gamedesk_materials	2022-06-11 07:23:27.277302+00
+579	programme	0106_auto_20210914_1548	2022-06-11 07:23:27.514029+00
+580	programme	0107_auto_20220221_2251	2022-06-11 07:23:27.926905+00
+581	programme	0108_auto_20220313_1906	2022-06-11 07:23:28.099041+00
+582	ropecon2022	0001_initial	2022-06-11 07:23:28.377601+00
+583	tickets	0027_auto_20220316_2255	2022-06-11 07:23:28.487017+00
+584	tickets	0028_ticketseventmeta_terms_and_conditions_url	2022-06-11 07:23:28.544405+00
+585	tickets	0029_auto_20220418_1531	2022-06-11 07:23:28.605451+00
+586	tickets	0030_auto_20220418_1553	2022-06-11 07:23:28.854569+00
+587	tracon2022	0001_initial	2022-06-11 07:23:28.994899+00
+588	tracon2022	0002_auto_20220530_1429	2022-06-11 07:23:29.055693+00
 \.
 
 
@@ -17535,7 +18786,7 @@ COPY public.enrollment_specialdiet (id, name) FROM stdin;
 -- Data for Name: event_log_entry; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.event_log_entry (id, created_at, entry_type, created_by_id, feedback_message_id, event_id, event_survey_result_id, global_survey_result_id, context, person_id, organization_id, search_term, ip_address) FROM stdin;
+COPY public.event_log_entry (id, created_at, entry_type, created_by_id, feedback_message_id, event_id, event_survey_result_id, global_survey_result_id, context, person_id, organization_id, search_term, ip_address, other_fields) FROM stdin;
 \.
 
 
@@ -17648,6 +18899,30 @@ COPY public.finncon2020_signupextra_special_diet (id, signupextra_id, specialdie
 --
 
 COPY public.finncon2020_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: finncon2022_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.finncon2022_signupextra (id, is_active, shift_type, total_work, shirt_size, dead_dog, special_diet_other, prior_experience, language_skills, free_text, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: finncon2022_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.finncon2022_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: finncon2022_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.finncon2022_specialdiet (id, name) FROM stdin;
 \.
 
 
@@ -18220,6 +19495,54 @@ COPY public.kuplii2020_specialdiet (id, name) FROM stdin;
 
 
 --
+-- Data for Name: kuplii2021_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2021_signupextra (id, is_active, shift_type, total_work, special_diet_other, prior_experience, free_text, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2021_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2021_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2021_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2021_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2022_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2022_signupextra (id, is_active, shift_type, total_work, special_diet_other, prior_experience, free_text, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2022_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2022_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2022_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2022_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
 -- Data for Name: labour_alternativesignupform; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -18496,22 +19819,6 @@ COPY public.listings_externalevent (id, slug, name, description, homepage_url, v
 --
 
 COPY public.listings_listing (id, hostname, title, description) FROM stdin;
-\.
-
-
---
--- Data for Name: listings_listing_events; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.listings_listing_events (id, listing_id, event_id) FROM stdin;
-\.
-
-
---
--- Data for Name: listings_listing_external_events; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.listings_listing_external_events (id, listing_id, externalevent_id) FROM stdin;
 \.
 
 
@@ -18796,6 +20103,46 @@ COPY public.nekocon2020_specialdiet (id, name) FROM stdin;
 
 
 --
+-- Data for Name: nekocon2022_night; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.nekocon2022_night (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: nekocon2022_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.nekocon2022_signupextra (id, is_active, total_work, want_certificate, afterparty_participation, certificate_delivery_address, shirt_size, special_diet_other, prior_experience, shift_wishes, free_text, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: nekocon2022_signupextra_lodging_needs; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.nekocon2022_signupextra_lodging_needs (id, signupextra_id, night_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: nekocon2022_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.nekocon2022_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: nekocon2022_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.nekocon2022_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
 -- Data for Name: nippori2017_signupextra; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -18807,7 +20154,7 @@ COPY public.nippori2017_signupextra (id, is_active, prior_experience, shift_wish
 -- Data for Name: oauth2_provider_accesstoken; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth2_provider_accesstoken (id, token, expires, scope, application_id, user_id, created, updated, source_refresh_token_id) FROM stdin;
+COPY public.oauth2_provider_accesstoken (id, token, expires, scope, application_id, user_id, created, updated, source_refresh_token_id, id_token_id) FROM stdin;
 \.
 
 
@@ -18815,7 +20162,7 @@ COPY public.oauth2_provider_accesstoken (id, token, expires, scope, application_
 -- Data for Name: oauth2_provider_application; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth2_provider_application (id, client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, user_id, skip_authorization, created, updated) FROM stdin;
+COPY public.oauth2_provider_application (id, client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, user_id, skip_authorization, created, updated, algorithm) FROM stdin;
 \.
 
 
@@ -18823,7 +20170,15 @@ COPY public.oauth2_provider_application (id, client_id, redirect_uris, client_ty
 -- Data for Name: oauth2_provider_grant; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth2_provider_grant (id, code, expires, redirect_uri, scope, application_id, user_id, created, updated, code_challenge, code_challenge_method) FROM stdin;
+COPY public.oauth2_provider_grant (id, code, expires, redirect_uri, scope, application_id, user_id, created, updated, code_challenge, code_challenge_method, nonce, claims) FROM stdin;
+\.
+
+
+--
+-- Data for Name: oauth2_provider_idtoken; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.oauth2_provider_idtoken (id, jti, expires, scope, created, updated, application_id, user_id) FROM stdin;
 \.
 
 
@@ -18912,14 +20267,6 @@ COPY public.payments_checkoutpayment (stamp, reference, price_cents, items, cust
 --
 
 COPY public.payments_payment (id, "VERSION", "STAMP", "REFERENCE", "PAYMENT", "STATUS", "ALGORITHM", "MAC", event_id) FROM stdin;
-\.
-
-
---
--- Data for Name: payments_paymentseventmeta; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.payments_paymentseventmeta (event_id, checkout_password, checkout_merchant, checkout_delivery_date, admin_group_id) FROM stdin;
 \.
 
 
@@ -19031,7 +20378,7 @@ COPY public.programme_invitation (id, email, programme_id, role_id, code, create
 -- Data for Name: programme_programme; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.programme_programme (id, title, description, room_requirements, tech_requirements, requested_time_slot, video_permission, notes_from_host, start_time, length, notes, category_id, room_id, state, end_time, created_at, updated_at, slug, computer, encumbered_content, number_of_microphones, photography, use_audio, use_video, frozen, video_link, rerun, approximate_length, is_age_restricted, is_beginner_friendly, is_children_friendly, is_english_ok, is_intended_for_experienced_participants, max_players, min_players, other_author, physical_play, rpg_system, three_word_description, form_used_id, signup_link, length_from_host, long_description, ropecon2018_audience_size, ropecon2018_characters, ropecon2018_genre_drama, ropecon2018_genre_exploration, ropecon2018_genre_fantasy, ropecon2018_genre_historical, ropecon2018_genre_horror, ropecon2018_genre_humor, ropecon2018_genre_modern, ropecon2018_genre_mystery, ropecon2018_genre_scifi, ropecon2018_genre_war, ropecon2018_is_no_language, ropecon2018_is_panel_attendance_ok, ropecon2018_prop_requirements, ropecon2018_sessions, ropecon2018_signuplist, ropecon2018_space_requirements, ropecon2018_speciality, ropecon2018_style_character_driven, ropecon2018_style_combat_driven, ropecon2018_style_light, ropecon2018_style_rules_heavy, ropecon2018_style_rules_light, ropecon2018_style_serious, ropecon2018_style_story_driven, ropecon2018_kp_difficulty, ropecon2018_kp_length, ropecon2018_kp_tables, language, is_using_paikkala, paikkala_program_id, stream_permission, is_family_program, is_in_english, is_revolving_door, ropecon2019_genre_adventure, content_warnings, is_inaccessible, field_of_expertise, is_available_for_panel, ropecon2019_gaming_desk_subtype, paikkala_icon, is_paikkala_public, is_paikkala_time_visible, ropecon2020_not_suitable_for_children, ropecon2020_suitable_for_children_aged_12_plus, ropecon2020_suitable_for_children_aged_7_12, ropecon2020_suitable_for_children_under_7, ropecon2020_theme_dinosaurs, ropecon2020_theme_end_of_the_world, ropecon2020_materials_language, rerun_extra) FROM stdin;
+COPY public.programme_programme (id, title, description, room_requirements, tech_requirements, requested_time_slot, video_permission, notes_from_host, start_time, length, notes, category_id, room_id, state, end_time, created_at, updated_at, slug, computer, encumbered_content, number_of_microphones, photography, use_audio, use_video, frozen, video_link, rerun, approximate_length, is_age_restricted, is_beginner_friendly, is_children_friendly, is_english_ok, is_intended_for_experienced_participants, max_players, min_players, other_author, physical_play, rpg_system, three_word_description, form_used_id, signup_link, length_from_host, long_description, ropecon2018_audience_size, ropecon2018_characters, ropecon2018_genre_drama, ropecon2018_genre_exploration, ropecon2018_genre_fantasy, ropecon2018_genre_historical, ropecon2018_genre_horror, ropecon2018_genre_humor, ropecon2018_genre_modern, ropecon2018_genre_mystery, ropecon2018_genre_scifi, ropecon2018_genre_war, ropecon2018_is_no_language, ropecon2018_is_panel_attendance_ok, ropecon2018_prop_requirements, ropecon2018_sessions, ropecon2018_signuplist, ropecon2018_space_requirements, ropecon2018_speciality, ropecon2018_style_character_driven, ropecon2018_style_combat_driven, ropecon2018_style_light, ropecon2018_style_rules_heavy, ropecon2018_style_rules_light, ropecon2018_style_serious, ropecon2018_style_story_driven, ropecon2018_kp_difficulty, ropecon2018_kp_length, ropecon2018_kp_tables, language, is_using_paikkala, paikkala_program_id, stream_permission, is_family_program, is_in_english, is_revolving_door, ropecon2019_genre_adventure, content_warnings, is_inaccessible, field_of_expertise, is_available_for_panel, ropecon2019_gaming_desk_subtype, paikkala_icon, is_paikkala_public, is_paikkala_time_visible, ropecon2020_not_suitable_for_children, ropecon2020_suitable_for_children_aged_12_plus, ropecon2020_suitable_for_children_aged_7_12, ropecon2020_suitable_for_children_under_7, ropecon2020_theme_dinosaurs, ropecon2020_theme_end_of_the_world, ropecon2020_materials_language, rerun_extra, ropecon2021_gamedesk_physical_or_virtual, ropecon2021_accessibility_colourblind, ropecon2021_accessibility_flashing_lights, ropecon2021_accessibility_inaccessibility, ropecon2021_accessibility_irritate_skin, ropecon2021_accessibility_loud_sounds, ropecon2021_accessibility_low_lightning, ropecon2021_accessibility_moving_around, ropecon2021_accessibility_physical_contact, ropecon2021_accessibility_recording, ropecon2021_accessibility_strong_smells, ropecon2021_accessibility_text, ropecon2021_accessibility_video, ropecon2021_programme_for_children, ropecon2021_rpg_clarifications, ropecon2021_rpg_physical_or_virtual, ropecon_theme, ropecon2021_larp_physical_or_virtual, ropecon2021_gamedesk_materials, ropecon2022_accessibility_remaining_one_place, ropecon2022_aimed_at_adult_participants, ropecon2022_aimed_at_children_under_10, ropecon2022_aimed_at_underage_participants, ropecon2022_content_warnings) FROM stdin;
 \.
 
 
@@ -19072,6 +20419,14 @@ COPY public.programme_programme_ropecon2019_blocked_time_slots (id, programme_id
 --
 
 COPY public.programme_programme_ropecon2019_preferred_time_slots (id, programme_id, timeslot_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: programme_programme_ropecon2021_blocked_time_slots; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.programme_programme_ropecon2021_blocked_time_slots (id, programme_id, timeslot_id) FROM stdin;
 \.
 
 
@@ -19308,6 +20663,38 @@ COPY public.ropecon2021_timeslot (id, name) FROM stdin;
 
 
 --
+-- Data for Name: ropecon2022_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2022_signupextra (id, shift_type, total_work, want_certificate, certificate_delivery_address, can_finnish, can_english, other_languages, special_diet_other, prior_experience, shift_wishes, free_text, roster_publish_consent, is_active, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2022_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2022_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2022_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2022_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2022_timeslot; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2022_timeslot (id, name) FROM stdin;
+\.
+
+
+--
 -- Data for Name: shippocon2016_signupextra; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -19463,7 +20850,7 @@ COPY public.tickets_shirttype (id, name, slug, available, event_id) FROM stdin;
 -- Data for Name: tickets_ticketseventmeta; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.tickets_ticketseventmeta (event_id, shipping_and_handling_cents, due_days, ticket_sales_starts, ticket_sales_ends, reference_number_template, contact_email, ticket_spam_email, reservation_seconds, ticket_free_text, admin_group_id, front_page_text, print_logo_height_mm, print_logo_path, print_logo_width_mm, receipt_footer, pos_access_group_id) FROM stdin;
+COPY public.tickets_ticketseventmeta (event_id, shipping_and_handling_cents, due_days, ticket_sales_starts, ticket_sales_ends, reference_number_template, contact_email, ticket_spam_email, reservation_seconds, ticket_free_text, admin_group_id, front_page_text, print_logo_height_mm, print_logo_path, print_logo_width_mm, receipt_footer, pos_access_group_id, terms_and_conditions_url) FROM stdin;
 \.
 
 
@@ -19768,6 +21155,54 @@ COPY public.tracon2021_signupextra_pick_your_poison (id, signupextra_id, poison_
 --
 
 COPY public.tracon2021_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2022_night; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2022_night (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2022_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2022_poison (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2022_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2022_signupextra (id, is_active, shift_type, total_work, overseer, want_certificate, certificate_delivery_address, shirt_size, special_diet_other, prior_experience, free_text, shift_wishes, email_alias, afterparty_participation, afterparty_help, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2022_signupextra_lodging_needs; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2022_signupextra_lodging_needs (id, signupextra_id, night_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2022_signupextra_pick_your_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2022_signupextra_pick_your_poison (id, signupextra_id, poison_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2022_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2022_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
 \.
 
 
@@ -20228,7 +21663,7 @@ SELECT pg_catalog.setval('public.auth_group_permissions_id_seq', 1, false);
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.auth_permission_id_seq', 1140, true);
+SELECT pg_catalog.setval('public.auth_permission_id_seq', 1212, true);
 
 
 --
@@ -20428,6 +21863,27 @@ SELECT pg_catalog.setval('public.desucon2020_specialdiet_id_seq', 1, false);
 
 
 --
+-- Name: desucon2022_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.desucon2022_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: desucon2022_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.desucon2022_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: desucon2022_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.desucon2022_specialdiet_id_seq', 1, false);
+
+
+--
 -- Name: desuprofile_integration_confirmationcode_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -20452,14 +21908,14 @@ SELECT pg_catalog.setval('public.django_admin_log_id_seq', 1, false);
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.django_content_type_id_seq', 285, true);
+SELECT pg_catalog.setval('public.django_content_type_id_seq', 303, true);
 
 
 --
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.django_migrations_id_seq', 556, true);
+SELECT pg_catalog.setval('public.django_migrations_id_seq', 588, true);
 
 
 --
@@ -20593,6 +22049,27 @@ SELECT pg_catalog.setval('public.finncon2020_signupextra_special_diet_id_seq', 1
 --
 
 SELECT pg_catalog.setval('public.finncon2020_specialdiet_id_seq', 1, false);
+
+
+--
+-- Name: finncon2022_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.finncon2022_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: finncon2022_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.finncon2022_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: finncon2022_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.finncon2022_specialdiet_id_seq', 1, false);
 
 
 --
@@ -21023,6 +22500,48 @@ SELECT pg_catalog.setval('public.kuplii2020_specialdiet_id_seq', 1, false);
 
 
 --
+-- Name: kuplii2021_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2021_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2021_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2021_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2021_specialdiet_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2022_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2022_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2022_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2022_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2022_specialdiet_id_seq', 1, false);
+
+
+--
 -- Name: labour_alternativesignupform_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -21230,20 +22749,6 @@ SELECT pg_catalog.setval('public.lippukala_order_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.listings_externalevent_id_seq', 1, false);
-
-
---
--- Name: listings_listing_events_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.listings_listing_events_id_seq', 1, false);
-
-
---
--- Name: listings_listing_external_events_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.listings_listing_external_events_id_seq', 1, false);
 
 
 --
@@ -21478,6 +22983,41 @@ SELECT pg_catalog.setval('public.nekocon2020_specialdiet_id_seq', 1, false);
 
 
 --
+-- Name: nekocon2022_night_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.nekocon2022_night_id_seq', 1, false);
+
+
+--
+-- Name: nekocon2022_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.nekocon2022_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.nekocon2022_signupextra_lodging_needs_id_seq', 1, false);
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.nekocon2022_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: nekocon2022_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.nekocon2022_specialdiet_id_seq', 1, false);
+
+
+--
 -- Name: nippori2017_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -21503,6 +23043,13 @@ SELECT pg_catalog.setval('public.oauth2_provider_application_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.oauth2_provider_grant_id_seq', 1, false);
+
+
+--
+-- Name: oauth2_provider_idtoken_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.oauth2_provider_idtoken_id_seq', 1, false);
 
 
 --
@@ -21702,6 +23249,13 @@ SELECT pg_catalog.setval('public.programme_programme_ropecon2019_preferred_time_
 
 
 --
+-- Name: programme_programme_ropecon2021_blocked_time_slots_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.programme_programme_ropecon2021_blocked_time_slots_id_seq', 1, false);
+
+
+--
 -- Name: programme_programme_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -21888,6 +23442,34 @@ SELECT pg_catalog.setval('public.ropecon2021_specialdiet_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.ropecon2021_timeslot_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2022_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2022_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2022_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2022_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2022_specialdiet_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2022_timeslot_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2022_timeslot_id_seq', 1, false);
 
 
 --
@@ -22280,6 +23862,48 @@ SELECT pg_catalog.setval('public.tracon2021_signupextra_pick_your_poison_id_seq'
 --
 
 SELECT pg_catalog.setval('public.tracon2021_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: tracon2022_night_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2022_night_id_seq', 1, false);
+
+
+--
+-- Name: tracon2022_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2022_poison_id_seq', 1, false);
+
+
+--
+-- Name: tracon2022_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2022_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2022_signupextra_lodging_needs_id_seq', 1, false);
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2022_signupextra_pick_your_poison_id_seq', 1, false);
+
+
+--
+-- Name: tracon2022_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2022_signupextra_special_diet_id_seq', 1, false);
 
 
 --
@@ -23277,6 +24901,46 @@ ALTER TABLE ONLY public.desucon2020_specialdiet
 
 
 --
+-- Name: desucon2022_signupextra_special_diet desucon2022_signupextra__signupextra_id_specialdi_c920f634_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra_special_diet
+    ADD CONSTRAINT desucon2022_signupextra__signupextra_id_specialdi_c920f634_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: desucon2022_signupextra desucon2022_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra
+    ADD CONSTRAINT desucon2022_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: desucon2022_signupextra desucon2022_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra
+    ADD CONSTRAINT desucon2022_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: desucon2022_signupextra_special_diet desucon2022_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra_special_diet
+    ADD CONSTRAINT desucon2022_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: desucon2022_specialdiet desucon2022_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_specialdiet
+    ADD CONSTRAINT desucon2022_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: desuprofile_integration_confirmationcode desuprofile_integration_confirmationcode_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -23610,6 +25274,46 @@ ALTER TABLE ONLY public.finncon2020_signupextra_special_diet
 
 ALTER TABLE ONLY public.finncon2020_specialdiet
     ADD CONSTRAINT finncon2020_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: finncon2022_signupextra_special_diet finncon2022_signupextra__signupextra_id_specialdi_0e4ed54c_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra_special_diet
+    ADD CONSTRAINT finncon2022_signupextra__signupextra_id_specialdi_0e4ed54c_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: finncon2022_signupextra finncon2022_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra
+    ADD CONSTRAINT finncon2022_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: finncon2022_signupextra finncon2022_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra
+    ADD CONSTRAINT finncon2022_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: finncon2022_signupextra_special_diet finncon2022_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra_special_diet
+    ADD CONSTRAINT finncon2022_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: finncon2022_specialdiet finncon2022_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_specialdiet
+    ADD CONSTRAINT finncon2022_specialdiet_pkey PRIMARY KEY (id);
 
 
 --
@@ -24477,6 +26181,86 @@ ALTER TABLE ONLY public.kuplii2020_specialdiet
 
 
 --
+-- Name: kuplii2021_signupextra kuplii2021_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra
+    ADD CONSTRAINT kuplii2021_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: kuplii2021_signupextra kuplii2021_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra
+    ADD CONSTRAINT kuplii2021_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet kuplii2021_signupextra_s_signupextra_id_specialdi_229afada_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra_special_diet
+    ADD CONSTRAINT kuplii2021_signupextra_s_signupextra_id_specialdi_229afada_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet kuplii2021_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra_special_diet
+    ADD CONSTRAINT kuplii2021_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2021_specialdiet kuplii2021_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_specialdiet
+    ADD CONSTRAINT kuplii2021_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2022_signupextra kuplii2022_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra
+    ADD CONSTRAINT kuplii2022_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: kuplii2022_signupextra kuplii2022_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra
+    ADD CONSTRAINT kuplii2022_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet kuplii2022_signupextra_s_signupextra_id_specialdi_debef17e_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra_special_diet
+    ADD CONSTRAINT kuplii2022_signupextra_s_signupextra_id_specialdi_debef17e_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet kuplii2022_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra_special_diet
+    ADD CONSTRAINT kuplii2022_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2022_specialdiet kuplii2022_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_specialdiet
+    ADD CONSTRAINT kuplii2022_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: labour_alternativesignupform labour_alternativesignupform_event_id_slug_6c915f19_uniq; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -24914,38 +26698,6 @@ ALTER TABLE ONLY public.listings_externalevent
 
 ALTER TABLE ONLY public.listings_externalevent
     ADD CONSTRAINT listings_externalevent_slug_key UNIQUE (slug);
-
-
---
--- Name: listings_listing_events listings_listing_events_listing_id_event_id_0f94d8c8_uniq; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_events
-    ADD CONSTRAINT listings_listing_events_listing_id_event_id_0f94d8c8_uniq UNIQUE (listing_id, event_id);
-
-
---
--- Name: listings_listing_events listings_listing_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_events
-    ADD CONSTRAINT listings_listing_events_pkey PRIMARY KEY (id);
-
-
---
--- Name: listings_listing_external_events listings_listing_externa_listing_id_externalevent_3ed45dca_uniq; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_external_events
-    ADD CONSTRAINT listings_listing_externa_listing_id_externalevent_3ed45dca_uniq UNIQUE (listing_id, externalevent_id);
-
-
---
--- Name: listings_listing_external_events listings_listing_external_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_external_events
-    ADD CONSTRAINT listings_listing_external_events_pkey PRIMARY KEY (id);
 
 
 --
@@ -25389,6 +27141,70 @@ ALTER TABLE ONLY public.nekocon2020_specialdiet
 
 
 --
+-- Name: nekocon2022_night nekocon2022_night_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_night
+    ADD CONSTRAINT nekocon2022_night_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs nekocon2022_signupextra__signupextra_id_night_id_e0666484_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_lodging_needs
+    ADD CONSTRAINT nekocon2022_signupextra__signupextra_id_night_id_e0666484_uniq UNIQUE (signupextra_id, night_id);
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet nekocon2022_signupextra__signupextra_id_specialdi_a227420c_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_special_diet
+    ADD CONSTRAINT nekocon2022_signupextra__signupextra_id_specialdi_a227420c_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs nekocon2022_signupextra_lodging_needs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_lodging_needs
+    ADD CONSTRAINT nekocon2022_signupextra_lodging_needs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nekocon2022_signupextra nekocon2022_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra
+    ADD CONSTRAINT nekocon2022_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: nekocon2022_signupextra nekocon2022_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra
+    ADD CONSTRAINT nekocon2022_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet nekocon2022_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_special_diet
+    ADD CONSTRAINT nekocon2022_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nekocon2022_specialdiet nekocon2022_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_specialdiet
+    ADD CONSTRAINT nekocon2022_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: nippori2017_signupextra nippori2017_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -25402,6 +27218,14 @@ ALTER TABLE ONLY public.nippori2017_signupextra
 
 ALTER TABLE ONLY public.nippori2017_signupextra
     ADD CONSTRAINT nippori2017_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth2_provider_accesstoken oauth2_provider_accesstoken_id_token_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_accesstoken
+    ADD CONSTRAINT oauth2_provider_accesstoken_id_token_id_key UNIQUE (id_token_id);
 
 
 --
@@ -25458,6 +27282,22 @@ ALTER TABLE ONLY public.oauth2_provider_grant
 
 ALTER TABLE ONLY public.oauth2_provider_grant
     ADD CONSTRAINT oauth2_provider_grant_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth2_provider_idtoken oauth2_provider_idtoken_jti_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_idtoken
+    ADD CONSTRAINT oauth2_provider_idtoken_jti_key UNIQUE (jti);
+
+
+--
+-- Name: oauth2_provider_idtoken oauth2_provider_idtoken_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_idtoken
+    ADD CONSTRAINT oauth2_provider_idtoken_pkey PRIMARY KEY (id);
 
 
 --
@@ -25602,14 +27442,6 @@ ALTER TABLE ONLY public.payments_checkoutpayment
 
 ALTER TABLE ONLY public.payments_payment
     ADD CONSTRAINT payments_payment_pkey PRIMARY KEY (id);
-
-
---
--- Name: payments_paymentseventmeta payments_paymentseventmeta_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.payments_paymentseventmeta
-    ADD CONSTRAINT payments_paymentseventmeta_pkey PRIMARY KEY (event_id);
 
 
 --
@@ -25861,6 +27693,14 @@ ALTER TABLE ONLY public.programme_programme_ropecon2019_blocked_time_slots
 
 
 --
+-- Name: programme_programme_ropecon2021_blocked_time_slots programme_programme_rope_programme_id_timeslot_id_a422679b_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.programme_programme_ropecon2021_blocked_time_slots
+    ADD CONSTRAINT programme_programme_rope_programme_id_timeslot_id_a422679b_uniq UNIQUE (programme_id, timeslot_id);
+
+
+--
 -- Name: programme_programme_ropecon2018_preferred_time_slots programme_programme_rope_programme_id_timeslot_id_bb2edc4f_uniq; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -25898,6 +27738,14 @@ ALTER TABLE ONLY public.programme_programme_ropecon2019_blocked_time_slots
 
 ALTER TABLE ONLY public.programme_programme_ropecon2019_preferred_time_slots
     ADD CONSTRAINT programme_programme_ropecon2019_preferred_time_slots_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: programme_programme_ropecon2021_blocked_time_slots programme_programme_ropecon2021_blocked_time_slots_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.programme_programme_ropecon2021_blocked_time_slots
+    ADD CONSTRAINT programme_programme_ropecon2021_blocked_time_slots_pkey PRIMARY KEY (id);
 
 
 --
@@ -26226,6 +28074,54 @@ ALTER TABLE ONLY public.ropecon2021_specialdiet
 
 ALTER TABLE ONLY public.ropecon2021_timeslot
     ADD CONSTRAINT ropecon2021_timeslot_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet ropecon2022_signupextra__signupextra_id_specialdi_fb16b65d_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra_special_diet
+    ADD CONSTRAINT ropecon2022_signupextra__signupextra_id_specialdi_fb16b65d_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: ropecon2022_signupextra ropecon2022_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra
+    ADD CONSTRAINT ropecon2022_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: ropecon2022_signupextra ropecon2022_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra
+    ADD CONSTRAINT ropecon2022_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet ropecon2022_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra_special_diet
+    ADD CONSTRAINT ropecon2022_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2022_specialdiet ropecon2022_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_specialdiet
+    ADD CONSTRAINT ropecon2022_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2022_timeslot ropecon2022_timeslot_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_timeslot
+    ADD CONSTRAINT ropecon2022_timeslot_pkey PRIMARY KEY (id);
 
 
 --
@@ -26970,6 +28866,86 @@ ALTER TABLE ONLY public.tracon2021_signupextra_special_diet
 
 ALTER TABLE ONLY public.tracon2021_signupextra_special_diet
     ADD CONSTRAINT tracon2021_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2022_night tracon2022_night_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_night
+    ADD CONSTRAINT tracon2022_night_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2022_poison tracon2022_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_poison
+    ADD CONSTRAINT tracon2022_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs tracon2022_signupextra_l_signupextra_id_night_id_c40b3603_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_lodging_needs
+    ADD CONSTRAINT tracon2022_signupextra_l_signupextra_id_night_id_c40b3603_uniq UNIQUE (signupextra_id, night_id);
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs tracon2022_signupextra_lodging_needs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_lodging_needs
+    ADD CONSTRAINT tracon2022_signupextra_lodging_needs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison tracon2022_signupextra_p_signupextra_id_poison_id_8c3bdfca_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_pick_your_poison
+    ADD CONSTRAINT tracon2022_signupextra_p_signupextra_id_poison_id_8c3bdfca_uniq UNIQUE (signupextra_id, poison_id);
+
+
+--
+-- Name: tracon2022_signupextra tracon2022_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra
+    ADD CONSTRAINT tracon2022_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison tracon2022_signupextra_pick_your_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_pick_your_poison
+    ADD CONSTRAINT tracon2022_signupextra_pick_your_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2022_signupextra tracon2022_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra
+    ADD CONSTRAINT tracon2022_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2022_signupextra_special_diet tracon2022_signupextra_s_signupextra_id_specialdi_2253d5d5_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_special_diet
+    ADD CONSTRAINT tracon2022_signupextra_s_signupextra_id_specialdi_2253d5d5_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: tracon2022_signupextra_special_diet tracon2022_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_special_diet
+    ADD CONSTRAINT tracon2022_signupextra_special_diet_pkey PRIMARY KEY (id);
 
 
 --
@@ -27955,6 +29931,27 @@ CREATE INDEX desucon2020_signupextra_special_diet_specialdiet_id_582847e9 ON pub
 
 
 --
+-- Name: desucon2022_signupextra_event_id_3d8c0cec; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX desucon2022_signupextra_event_id_3d8c0cec ON public.desucon2022_signupextra USING btree (event_id);
+
+
+--
+-- Name: desucon2022_signupextra_special_diet_signupextra_id_4d5d5b02; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX desucon2022_signupextra_special_diet_signupextra_id_4d5d5b02 ON public.desucon2022_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: desucon2022_signupextra_special_diet_specialdiet_id_44498e96; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX desucon2022_signupextra_special_diet_specialdiet_id_44498e96 ON public.desucon2022_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
 -- Name: desuprofile_integration__person_id_state_756dd8a0_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -28239,6 +30236,27 @@ CREATE INDEX finncon2020_signupextra_special_diet_signupextra_id_43b50ad1 ON pub
 --
 
 CREATE INDEX finncon2020_signupextra_special_diet_specialdiet_id_857e4166 ON public.finncon2020_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: finncon2022_signupextra_event_id_f3a0a869; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX finncon2022_signupextra_event_id_f3a0a869 ON public.finncon2022_signupextra USING btree (event_id);
+
+
+--
+-- Name: finncon2022_signupextra_special_diet_signupextra_id_f0a6035d; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX finncon2022_signupextra_special_diet_signupextra_id_f0a6035d ON public.finncon2022_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: finncon2022_signupextra_special_diet_specialdiet_id_e3b143c7; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX finncon2022_signupextra_special_diet_specialdiet_id_e3b143c7 ON public.finncon2022_signupextra_special_diet USING btree (specialdiet_id);
 
 
 --
@@ -28739,6 +30757,48 @@ CREATE INDEX kuplii2020_signupextra_special_diet_specialdiet_id_e4cc5206 ON publ
 
 
 --
+-- Name: kuplii2021_signupextra_event_id_c5269689; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2021_signupextra_event_id_c5269689 ON public.kuplii2021_signupextra USING btree (event_id);
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet_signupextra_id_55604af9; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2021_signupextra_special_diet_signupextra_id_55604af9 ON public.kuplii2021_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet_specialdiet_id_742610fd; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2021_signupextra_special_diet_specialdiet_id_742610fd ON public.kuplii2021_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: kuplii2022_signupextra_event_id_93c3bd98; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2022_signupextra_event_id_93c3bd98 ON public.kuplii2022_signupextra USING btree (event_id);
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet_signupextra_id_3435e7c7; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2022_signupextra_special_diet_signupextra_id_3435e7c7 ON public.kuplii2022_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet_specialdiet_id_61180ea4; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2022_signupextra_special_diet_specialdiet_id_61180ea4 ON public.kuplii2022_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
 -- Name: labour_alternativesignupform_event_id_8bbc0126; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -29096,34 +31156,6 @@ CREATE INDEX listings_externalevent_slug_a28283c3_like ON public.listings_extern
 
 
 --
--- Name: listings_listing_events_event_id_797e1061; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX listings_listing_events_event_id_797e1061 ON public.listings_listing_events USING btree (event_id);
-
-
---
--- Name: listings_listing_events_listing_id_82df5bb7; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX listings_listing_events_listing_id_82df5bb7 ON public.listings_listing_events USING btree (listing_id);
-
-
---
--- Name: listings_listing_external_events_externalevent_id_779259ec; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX listings_listing_external_events_externalevent_id_779259ec ON public.listings_listing_external_events USING btree (externalevent_id);
-
-
---
--- Name: listings_listing_external_events_listing_id_771c58ae; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX listings_listing_external_events_listing_id_771c58ae ON public.listings_listing_external_events USING btree (listing_id);
-
-
---
 -- Name: listings_listing_hostname_d54965b7_like; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -29474,6 +31506,41 @@ CREATE INDEX nekocon2020_signupextra_special_diet_specialdiet_id_62a1d0dd ON pub
 
 
 --
+-- Name: nekocon2022_signupextra_event_id_438689a6; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX nekocon2022_signupextra_event_id_438689a6 ON public.nekocon2022_signupextra USING btree (event_id);
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs_night_id_587923db; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX nekocon2022_signupextra_lodging_needs_night_id_587923db ON public.nekocon2022_signupextra_lodging_needs USING btree (night_id);
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs_signupextra_id_01baa0da; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX nekocon2022_signupextra_lodging_needs_signupextra_id_01baa0da ON public.nekocon2022_signupextra_lodging_needs USING btree (signupextra_id);
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet_signupextra_id_e1c3d300; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX nekocon2022_signupextra_special_diet_signupextra_id_e1c3d300 ON public.nekocon2022_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet_specialdiet_id_5acc6927; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX nekocon2022_signupextra_special_diet_specialdiet_id_5acc6927 ON public.nekocon2022_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
 -- Name: nippori2017_signupextra_event_id_7c6fe68c; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -29548,6 +31615,20 @@ CREATE INDEX oauth2_provider_grant_code_49ab4ddf_like ON public.oauth2_provider_
 --
 
 CREATE INDEX oauth2_provider_grant_user_id_e8f62af8 ON public.oauth2_provider_grant USING btree (user_id);
+
+
+--
+-- Name: oauth2_provider_idtoken_application_id_08c5ff4f; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_provider_idtoken_application_id_08c5ff4f ON public.oauth2_provider_idtoken USING btree (application_id);
+
+
+--
+-- Name: oauth2_provider_idtoken_user_id_dd512b59; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_provider_idtoken_user_id_dd512b59 ON public.oauth2_provider_idtoken USING btree (user_id);
 
 
 --
@@ -29674,13 +31755,6 @@ CREATE INDEX payments_checkoutpayment_organization_id_03336c60 ON public.payment
 --
 
 CREATE INDEX payments_payment_event_id_1aa1e2db ON public.payments_payment USING btree (event_id);
-
-
---
--- Name: payments_paymentseventmeta_admin_group_id_eabdf94c; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX payments_paymentseventmeta_admin_group_id_eabdf94c ON public.payments_paymentseventmeta USING btree (admin_group_id);
 
 
 --
@@ -29908,6 +31982,13 @@ CREATE INDEX programme_programme_ropeco_programme_id_a771e964 ON public.programm
 
 
 --
+-- Name: programme_programme_ropeco_programme_id_fde647ec; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX programme_programme_ropeco_programme_id_fde647ec ON public.programme_programme_ropecon2021_blocked_time_slots USING btree (programme_id);
+
+
+--
 -- Name: programme_programme_ropeco_timeslot_id_7086e98d; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -29926,6 +32007,13 @@ CREATE INDEX programme_programme_ropeco_timeslot_id_c54a73c2 ON public.programme
 --
 
 CREATE INDEX programme_programme_ropeco_timeslot_id_e44e5f21 ON public.programme_programme_ropecon2019_preferred_time_slots USING btree (timeslot_id);
+
+
+--
+-- Name: programme_programme_ropeco_timeslot_id_fda631c5; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX programme_programme_ropeco_timeslot_id_fda631c5 ON public.programme_programme_ropecon2021_blocked_time_slots USING btree (timeslot_id);
 
 
 --
@@ -30143,6 +32231,27 @@ CREATE INDEX ropecon2021_signupextra_special_diet_signupextra_id_511d6657 ON pub
 --
 
 CREATE INDEX ropecon2021_signupextra_special_diet_specialdiet_id_9da50b27 ON public.ropecon2021_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: ropecon2022_signupextra_event_id_d99c4530; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2022_signupextra_event_id_d99c4530 ON public.ropecon2022_signupextra USING btree (event_id);
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet_signupextra_id_2a050d47; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2022_signupextra_special_diet_signupextra_id_2a050d47 ON public.ropecon2022_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet_specialdiet_id_61d3924f; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2022_signupextra_special_diet_specialdiet_id_61d3924f ON public.ropecon2022_signupextra_special_diet USING btree (specialdiet_id);
 
 
 --
@@ -30668,6 +32777,55 @@ CREATE INDEX tracon2021_signupextra_special_diet_signupextra_id_87256c98 ON publ
 --
 
 CREATE INDEX tracon2021_signupextra_special_diet_specialdiet_id_e808a1f3 ON public.tracon2021_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: tracon2022_signupextra_event_id_d73677d6; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2022_signupextra_event_id_d73677d6 ON public.tracon2022_signupextra USING btree (event_id);
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs_night_id_655355bd; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2022_signupextra_lodging_needs_night_id_655355bd ON public.tracon2022_signupextra_lodging_needs USING btree (night_id);
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs_signupextra_id_0c80df72; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2022_signupextra_lodging_needs_signupextra_id_0c80df72 ON public.tracon2022_signupextra_lodging_needs USING btree (signupextra_id);
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison_poison_id_7a67350a; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2022_signupextra_pick_your_poison_poison_id_7a67350a ON public.tracon2022_signupextra_pick_your_poison USING btree (poison_id);
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison_signupextra_id_7ee8ca6c; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2022_signupextra_pick_your_poison_signupextra_id_7ee8ca6c ON public.tracon2022_signupextra_pick_your_poison USING btree (signupextra_id);
+
+
+--
+-- Name: tracon2022_signupextra_special_diet_signupextra_id_116d1961; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2022_signupextra_special_diet_signupextra_id_116d1961 ON public.tracon2022_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: tracon2022_signupextra_special_diet_specialdiet_id_da128318; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2022_signupextra_special_diet_specialdiet_id_da128318 ON public.tracon2022_signupextra_special_diet USING btree (specialdiet_id);
 
 
 --
@@ -31568,6 +33726,38 @@ ALTER TABLE ONLY public.desucon2020_signupextra
 
 
 --
+-- Name: desucon2022_signupextra_special_diet desucon2022_signupex_signupextra_id_4d5d5b02_fk_desucon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra_special_diet
+    ADD CONSTRAINT desucon2022_signupex_signupextra_id_4d5d5b02_fk_desucon20 FOREIGN KEY (signupextra_id) REFERENCES public.desucon2022_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: desucon2022_signupextra_special_diet desucon2022_signupex_specialdiet_id_44498e96_fk_desucon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra_special_diet
+    ADD CONSTRAINT desucon2022_signupex_specialdiet_id_44498e96_fk_desucon20 FOREIGN KEY (specialdiet_id) REFERENCES public.desucon2022_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: desucon2022_signupextra desucon2022_signupextra_event_id_3d8c0cec_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra
+    ADD CONSTRAINT desucon2022_signupextra_event_id_3d8c0cec_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: desucon2022_signupextra desucon2022_signupextra_person_id_b2340a60_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2022_signupextra
+    ADD CONSTRAINT desucon2022_signupextra_person_id_b2340a60_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: desuprofile_integration_confirmationcode desuprofile_integrat_person_id_30adca39_fk_core_pers; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -31893,6 +34083,38 @@ ALTER TABLE ONLY public.finncon2020_signupextra
 
 ALTER TABLE ONLY public.finncon2020_signupextra
     ADD CONSTRAINT finncon2020_signupextra_person_id_5cddc076_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: finncon2022_signupextra_special_diet finncon2022_signupex_signupextra_id_f0a6035d_fk_finncon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra_special_diet
+    ADD CONSTRAINT finncon2022_signupex_signupextra_id_f0a6035d_fk_finncon20 FOREIGN KEY (signupextra_id) REFERENCES public.finncon2022_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: finncon2022_signupextra_special_diet finncon2022_signupex_specialdiet_id_e3b143c7_fk_finncon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra_special_diet
+    ADD CONSTRAINT finncon2022_signupex_specialdiet_id_e3b143c7_fk_finncon20 FOREIGN KEY (specialdiet_id) REFERENCES public.finncon2022_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: finncon2022_signupextra finncon2022_signupextra_event_id_f3a0a869_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra
+    ADD CONSTRAINT finncon2022_signupextra_event_id_f3a0a869_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: finncon2022_signupextra finncon2022_signupextra_person_id_0395b396_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.finncon2022_signupextra
+    ADD CONSTRAINT finncon2022_signupextra_person_id_0395b396_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -32600,6 +34822,70 @@ ALTER TABLE ONLY public.kuplii2020_signupextra
 
 
 --
+-- Name: kuplii2021_signupextra_special_diet kuplii2021_signupext_signupextra_id_55604af9_fk_kuplii202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra_special_diet
+    ADD CONSTRAINT kuplii2021_signupext_signupextra_id_55604af9_fk_kuplii202 FOREIGN KEY (signupextra_id) REFERENCES public.kuplii2021_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2021_signupextra_special_diet kuplii2021_signupext_specialdiet_id_742610fd_fk_kuplii202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra_special_diet
+    ADD CONSTRAINT kuplii2021_signupext_specialdiet_id_742610fd_fk_kuplii202 FOREIGN KEY (specialdiet_id) REFERENCES public.kuplii2021_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2021_signupextra kuplii2021_signupextra_event_id_c5269689_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra
+    ADD CONSTRAINT kuplii2021_signupextra_event_id_c5269689_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2021_signupextra kuplii2021_signupextra_person_id_d72e9f4d_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2021_signupextra
+    ADD CONSTRAINT kuplii2021_signupextra_person_id_d72e9f4d_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet kuplii2022_signupext_signupextra_id_3435e7c7_fk_kuplii202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra_special_diet
+    ADD CONSTRAINT kuplii2022_signupext_signupextra_id_3435e7c7_fk_kuplii202 FOREIGN KEY (signupextra_id) REFERENCES public.kuplii2022_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2022_signupextra_special_diet kuplii2022_signupext_specialdiet_id_61180ea4_fk_kuplii202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra_special_diet
+    ADD CONSTRAINT kuplii2022_signupext_specialdiet_id_61180ea4_fk_kuplii202 FOREIGN KEY (specialdiet_id) REFERENCES public.kuplii2022_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2022_signupextra kuplii2022_signupextra_event_id_93c3bd98_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra
+    ADD CONSTRAINT kuplii2022_signupextra_event_id_93c3bd98_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2022_signupextra kuplii2022_signupextra_person_id_d058d43b_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2022_signupextra
+    ADD CONSTRAINT kuplii2022_signupextra_person_id_d058d43b_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: labour_alternativesignupform labour_alternativesignupform_event_id_8bbc0126_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -33005,38 +35291,6 @@ ALTER TABLE ONLY public.lakeuscon2016_signupextra_special_diet
 
 ALTER TABLE ONLY public.lippukala_code
     ADD CONSTRAINT lippukala_code_order_id_919a620c_fk_lippukala_order_id FOREIGN KEY (order_id) REFERENCES public.lippukala_order(id) DEFERRABLE INITIALLY DEFERRED;
-
-
---
--- Name: listings_listing_events listings_listing_eve_listing_id_82df5bb7_fk_listings_; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_events
-    ADD CONSTRAINT listings_listing_eve_listing_id_82df5bb7_fk_listings_ FOREIGN KEY (listing_id) REFERENCES public.listings_listing(id) DEFERRABLE INITIALLY DEFERRED;
-
-
---
--- Name: listings_listing_events listings_listing_events_event_id_797e1061_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_events
-    ADD CONSTRAINT listings_listing_events_event_id_797e1061_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
-
-
---
--- Name: listings_listing_external_events listings_listing_ext_externalevent_id_779259ec_fk_listings_; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_external_events
-    ADD CONSTRAINT listings_listing_ext_externalevent_id_779259ec_fk_listings_ FOREIGN KEY (externalevent_id) REFERENCES public.listings_externalevent(id) DEFERRABLE INITIALLY DEFERRED;
-
-
---
--- Name: listings_listing_external_events listings_listing_ext_listing_id_771c58ae_fk_listings_; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.listings_listing_external_events
-    ADD CONSTRAINT listings_listing_ext_listing_id_771c58ae_fk_listings_ FOREIGN KEY (listing_id) REFERENCES public.listings_listing(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -33448,6 +35702,54 @@ ALTER TABLE ONLY public.nekocon2020_signupextra
 
 
 --
+-- Name: nekocon2022_signupextra_lodging_needs nekocon2022_signupex_night_id_587923db_fk_nekocon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_lodging_needs
+    ADD CONSTRAINT nekocon2022_signupex_night_id_587923db_fk_nekocon20 FOREIGN KEY (night_id) REFERENCES public.nekocon2022_night(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: nekocon2022_signupextra_lodging_needs nekocon2022_signupex_signupextra_id_01baa0da_fk_nekocon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_lodging_needs
+    ADD CONSTRAINT nekocon2022_signupex_signupextra_id_01baa0da_fk_nekocon20 FOREIGN KEY (signupextra_id) REFERENCES public.nekocon2022_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet nekocon2022_signupex_signupextra_id_e1c3d300_fk_nekocon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_special_diet
+    ADD CONSTRAINT nekocon2022_signupex_signupextra_id_e1c3d300_fk_nekocon20 FOREIGN KEY (signupextra_id) REFERENCES public.nekocon2022_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: nekocon2022_signupextra_special_diet nekocon2022_signupex_specialdiet_id_5acc6927_fk_nekocon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra_special_diet
+    ADD CONSTRAINT nekocon2022_signupex_specialdiet_id_5acc6927_fk_nekocon20 FOREIGN KEY (specialdiet_id) REFERENCES public.nekocon2022_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: nekocon2022_signupextra nekocon2022_signupextra_event_id_438689a6_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra
+    ADD CONSTRAINT nekocon2022_signupextra_event_id_438689a6_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: nekocon2022_signupextra nekocon2022_signupextra_person_id_6fae16f1_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nekocon2022_signupextra
+    ADD CONSTRAINT nekocon2022_signupextra_person_id_6fae16f1_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: nippori2017_signupextra nippori2017_signupextra_event_id_7c6fe68c_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -33469,6 +35771,14 @@ ALTER TABLE ONLY public.nippori2017_signupextra
 
 ALTER TABLE ONLY public.oauth2_provider_accesstoken
     ADD CONSTRAINT oauth2_provider_acce_application_id_b22886e1_fk_oauth2_pr FOREIGN KEY (application_id) REFERENCES public.oauth2_provider_application(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: oauth2_provider_accesstoken oauth2_provider_acce_id_token_id_85db651b_fk_oauth2_pr; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_accesstoken
+    ADD CONSTRAINT oauth2_provider_acce_id_token_id_85db651b_fk_oauth2_pr FOREIGN KEY (id_token_id) REFERENCES public.oauth2_provider_idtoken(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -33509,6 +35819,22 @@ ALTER TABLE ONLY public.oauth2_provider_grant
 
 ALTER TABLE ONLY public.oauth2_provider_grant
     ADD CONSTRAINT oauth2_provider_grant_user_id_e8f62af8_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: oauth2_provider_idtoken oauth2_provider_idto_application_id_08c5ff4f_fk_oauth2_pr; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_idtoken
+    ADD CONSTRAINT oauth2_provider_idto_application_id_08c5ff4f_fk_oauth2_pr FOREIGN KEY (application_id) REFERENCES public.oauth2_provider_application(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: oauth2_provider_idtoken oauth2_provider_idtoken_user_id_dd512b59_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_idtoken
+    ADD CONSTRAINT oauth2_provider_idtoken_user_id_dd512b59_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -33653,22 +35979,6 @@ ALTER TABLE ONLY public.payments_checkoutpayment
 
 ALTER TABLE ONLY public.payments_payment
     ADD CONSTRAINT payments_payment_event_id_1aa1e2db_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
-
-
---
--- Name: payments_paymentseventmeta payments_paymentseve_admin_group_id_eabdf94c_fk_auth_grou; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.payments_paymentseventmeta
-    ADD CONSTRAINT payments_paymentseve_admin_group_id_eabdf94c_fk_auth_grou FOREIGN KEY (admin_group_id) REFERENCES public.auth_group(id) DEFERRABLE INITIALLY DEFERRED;
-
-
---
--- Name: payments_paymentseventmeta payments_paymentseventmeta_event_id_945aaefa_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.payments_paymentseventmeta
-    ADD CONSTRAINT payments_paymentseventmeta_event_id_945aaefa_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -33920,6 +36230,14 @@ ALTER TABLE ONLY public.programme_programme_hitpoint2017_preferred_time_slots
 
 
 --
+-- Name: programme_programme_ropecon2021_blocked_time_slots programme_programme__programme_id_fde647ec_fk_programme; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.programme_programme_ropecon2021_blocked_time_slots
+    ADD CONSTRAINT programme_programme__programme_id_fde647ec_fk_programme FOREIGN KEY (programme_id) REFERENCES public.programme_programme(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: programme_programme_ropecon2019_blocked_time_slots programme_programme__timeslot_id_7086e98d_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -33957,6 +36275,14 @@ ALTER TABLE ONLY public.programme_programme_ropecon2018_preferred_time_slots
 
 ALTER TABLE ONLY public.programme_programme_ropecon2019_preferred_time_slots
     ADD CONSTRAINT programme_programme__timeslot_id_e44e5f21_fk_ropecon20 FOREIGN KEY (timeslot_id) REFERENCES public.ropecon2019_timeslot(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: programme_programme_ropecon2021_blocked_time_slots programme_programme__timeslot_id_fda631c5_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.programme_programme_ropecon2021_blocked_time_slots
+    ADD CONSTRAINT programme_programme__timeslot_id_fda631c5_fk_ropecon20 FOREIGN KEY (timeslot_id) REFERENCES public.ropecon2021_timeslot(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -34277,6 +36603,38 @@ ALTER TABLE ONLY public.ropecon2021_signupextra
 
 ALTER TABLE ONLY public.ropecon2021_signupextra
     ADD CONSTRAINT ropecon2021_signupextra_person_id_fed1509d_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet ropecon2022_signupex_signupextra_id_2a050d47_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra_special_diet
+    ADD CONSTRAINT ropecon2022_signupex_signupextra_id_2a050d47_fk_ropecon20 FOREIGN KEY (signupextra_id) REFERENCES public.ropecon2022_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2022_signupextra_special_diet ropecon2022_signupex_specialdiet_id_61d3924f_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra_special_diet
+    ADD CONSTRAINT ropecon2022_signupex_specialdiet_id_61d3924f_fk_ropecon20 FOREIGN KEY (specialdiet_id) REFERENCES public.ropecon2022_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2022_signupextra ropecon2022_signupextra_event_id_d99c4530_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra
+    ADD CONSTRAINT ropecon2022_signupextra_event_id_d99c4530_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2022_signupextra ropecon2022_signupextra_person_id_07407a85_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2022_signupextra
+    ADD CONSTRAINT ropecon2022_signupextra_person_id_07407a85_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -34933,6 +37291,70 @@ ALTER TABLE ONLY public.tracon2021_signupextra
 
 ALTER TABLE ONLY public.tracon2021_signupextra
     ADD CONSTRAINT tracon2021_signupextra_person_id_a0f4eb8e_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs tracon2022_signupext_night_id_655355bd_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_lodging_needs
+    ADD CONSTRAINT tracon2022_signupext_night_id_655355bd_fk_tracon202 FOREIGN KEY (night_id) REFERENCES public.tracon2022_night(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison tracon2022_signupext_poison_id_7a67350a_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_pick_your_poison
+    ADD CONSTRAINT tracon2022_signupext_poison_id_7a67350a_fk_tracon202 FOREIGN KEY (poison_id) REFERENCES public.tracon2022_poison(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2022_signupextra_lodging_needs tracon2022_signupext_signupextra_id_0c80df72_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_lodging_needs
+    ADD CONSTRAINT tracon2022_signupext_signupextra_id_0c80df72_fk_tracon202 FOREIGN KEY (signupextra_id) REFERENCES public.tracon2022_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2022_signupextra_special_diet tracon2022_signupext_signupextra_id_116d1961_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_special_diet
+    ADD CONSTRAINT tracon2022_signupext_signupextra_id_116d1961_fk_tracon202 FOREIGN KEY (signupextra_id) REFERENCES public.tracon2022_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2022_signupextra_pick_your_poison tracon2022_signupext_signupextra_id_7ee8ca6c_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_pick_your_poison
+    ADD CONSTRAINT tracon2022_signupext_signupextra_id_7ee8ca6c_fk_tracon202 FOREIGN KEY (signupextra_id) REFERENCES public.tracon2022_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2022_signupextra_special_diet tracon2022_signupext_specialdiet_id_da128318_fk_enrollmen; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra_special_diet
+    ADD CONSTRAINT tracon2022_signupext_specialdiet_id_da128318_fk_enrollmen FOREIGN KEY (specialdiet_id) REFERENCES public.enrollment_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2022_signupextra tracon2022_signupextra_event_id_d73677d6_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra
+    ADD CONSTRAINT tracon2022_signupextra_event_id_d73677d6_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2022_signupextra tracon2022_signupextra_person_id_c9edfbf7_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2022_signupextra
+    ADD CONSTRAINT tracon2022_signupextra_person_id_c9edfbf7_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --

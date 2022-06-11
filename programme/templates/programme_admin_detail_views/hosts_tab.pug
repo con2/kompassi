@@ -10,6 +10,7 @@
         th {% trans "Nick name" %}
         th {% trans "Phone number" %}
         th {% trans "E-mail address" %}
+        th {% trans "Discord handle" %}
         th {% trans "Role" %}
         th {% trans "Invites" %}
         th
@@ -21,6 +22,7 @@
             td= programme_role.person.nick
             td= programme_role.person.normalized_phone_number
             td= programme_role.person.email
+            td= programme_role.person.discord_handle
             td
               a(href="", data-toggle="modal", data-target="#programme-admin-change-host-role-modal-{{ programme_role.pk }}")
                 |{{programme_role.role}}

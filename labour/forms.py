@@ -47,6 +47,7 @@ class AdminPersonForm(PersonForm):
             "age_event_start",  # not in PersonForm
             "phone",
             "email",
+            "discord_handle",
             "may_send_info",
         )
 
@@ -61,6 +62,7 @@ class AdminPersonForm(PersonForm):
             "age_event_start",  # not in PersonForm
             "phone",
             "email",
+            "discord_handle",
             "may_send_info",
         )
 

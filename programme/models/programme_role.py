@@ -111,6 +111,7 @@ class ProgrammeRole(models.Model, CsvExportMixin):
             (Person, "nick"),
             (Person, "email"),
             (Person, "phone"),
+            (Person, "discord_handle"),
             (Person, "may_send_info"),
             (Programme, "title"),
             (Programme, "get_state_display"),

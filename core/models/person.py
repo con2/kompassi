@@ -4,15 +4,16 @@ from datetime import date, datetime
 import phonenumbers
 import vobject
 
-from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
-from django.utils.timezone import now
 from django.utils import timezone
+from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
 
 from crowd_integration.utils import CrowdError
 
@@ -27,6 +28,7 @@ from .constants import (
 
 
 logger = logging.getLogger("kompassi")
+discord_handle_validator = RegexValidator(regex=r"^.{3,32}#[0-9]{4,6}$")
 
 
 def birth_date_validator(value):
@@ -55,6 +57,17 @@ class Person(models.Model):
         help_text=_(
             "If you go by a nick name or handle that you want printed in your badge and programme details, enter it here."
         ),
+    )
+    discord_handle = models.CharField(
+        blank=True,
+        max_length=63,  # actually 32 + 1 + 5 but to be safe
+        verbose_name=_("Discord handle"),
+        help_text=_(
+            "Full discord handle with number, ie. handle#0000. Events may use this to give you roles based on your participation."
+        ),
+        validators=[
+            discord_handle_validator,
+        ],
     )
     birth_date = models.DateField(
         null=True,

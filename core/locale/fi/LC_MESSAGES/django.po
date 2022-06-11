@@ -359,3 +359,9 @@ msgstr "Lisätietoja löydät"
 
 msgid "event home page"
 msgstr "tapahtuman kotisivulta"
+
+msgid "Discord handle"
+msgstr "Discord-tunnus"
+
+msgid "Full discord handle with number, ie. handle#0000. Events may use this to give you roles based on your participation."
+msgstr "Discord-tunnus täydessä muodossa, esim. handle#0000. Tapahtumat voivat käyttää tätä esimerkiksi antamaan sinulle rooleja Discord-serverillään."

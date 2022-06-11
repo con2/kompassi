@@ -126,6 +126,7 @@ class PersonForm(PersonFormMixin, forms.ModelForm):
                 _("Contact information"),
                 "phone",
                 "email",
+                "discord_handle",
             ),
             Fieldset(
                 _("Privacy"),
@@ -147,6 +148,7 @@ class PersonForm(PersonFormMixin, forms.ModelForm):
             "muncipality",
             "phone",
             "email",
+            "discord_handle",
             "preferred_badge_name_display_style",
             "preferred_name_display_style",
             "may_send_info",

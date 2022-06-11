@@ -27,6 +27,11 @@
       .control-group
         label.control-label.col-md-2 {% trans "E-mail address" %}
         .col-md-10= request.user.person.email
+    if request.user.person.discord_handle
+      .row
+        .control-group
+          label.control-label.col-md-2 {% trans "Discord handle" %}
+          .col-md-10= request.user.person.discord_handle
   .panel-footer.clearfix
     .btn-group.pull-right
       a.btn.btn-default(target='_blank', href='{% url "core_profile_view" %}')
