@@ -135,9 +135,9 @@ class UtilsTestCase(TestCase):
         d1 = datetime(2016, 4, 27, 23, 0, 0, tzinfo=tz)
         d2 = datetime(2016, 4, 28, 1, 0, 0, tzinfo=tz)
 
-        self.assertEqual(format_interval(d0, d1, locale=locale), "ke 27.4. klo 21.00–23.00")
+        self.assertEqual(format_interval(d0, d1, locale=locale), "ke 27.4. 21.00–23.00")
 
         self.assertEqual(
             format_interval(d0, d2, locale=locale),
-            "ke 27.4. klo 21.00 – to 28.4. klo 1.00",
+            "ke 27.4. 21.00 – to 28.4. 1.00",
         )
