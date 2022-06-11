@@ -17,6 +17,7 @@ from core.utils import (
     slugify,
     url,
 )
+from core.utils.time_utils import format_interval
 
 
 logger = logging.getLogger("kompassi")
@@ -1168,7 +1169,7 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def formatted_times(self):
-        return f"{format_datetime(self.start_time)} – {format_datetime(self.end_time)}"
+        return format_interval(self.start_time, self.end_time)
 
     # for json
     @property

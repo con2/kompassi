@@ -163,9 +163,9 @@ def format_interval(
     end_dt = end_dt.astimezone(tz)
 
     if start_dt.date() == end_dt.date():
-        interval_format = "{start_date} klo {start_time}–{end_time}"
+        interval_format = "{start_date} {start_time}–{end_time}"
     else:
-        interval_format = "{start_date} klo {start_time} – {end_date} klo {end_time}"
+        interval_format = "{start_date} {start_time} – {end_date} {end_time}"
 
     return interval_format.format(
         start_date=format_skeleton(date_skeletor, start_dt, locale=locale),
