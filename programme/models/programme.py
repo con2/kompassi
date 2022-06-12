@@ -1234,49 +1234,33 @@ class Programme(models.Model, CsvExportMixin):
                 content_warnings=self.content_warnings if self.category.slug == "larp" else None,
                 other_author=self.other_author if self.category.slug == "larp" else None,
                 min_players=self.min_players if self.category.slug == "rpg" or self.category.slug == "larp" else None,
-                max_players=self.max_players if self.category.slug == "rpg" else None,
+                max_players=self.max_players,
                 ropecon2018_characters=self.ropecon2018_characters if self.category.slug == "larp" else None,
                 identifier=f"p{self.id}",
                 tags=list(self.tags.values_list("slug", flat=True)),
                 genres=self.ropecon_genres,
                 styles=self.ropecon_styles,
+                type_of_game_program=self.ropecon2019_gaming_desk_subtype
+                if self. form_used.slug == "pelitiski"
+                else None,
                 revolving_door=self.is_revolving_door if self.category.slug == "rpg" else None,
                 short_blurb=self.three_word_description
                 if self.category.slug == "rpg" or self.category.slug == "larp"
                 else None,
-                ropecon2021_accessibility_loud_sounds=self.ropecon2021_accessibility_loud_sounds
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_flashing_lights=self.ropecon2021_accessibility_flashing_lights
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_strong_smells=self.ropecon2021_accessibility_strong_smells
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_irritate_skin=self.ropecon2021_accessibility_irritate_skin
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_physical_contact=self.ropecon2021_accessibility_physical_contact
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_low_lightning=self.ropecon2021_accessibility_low_lightning
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_moving_around=self.ropecon2021_accessibility_moving_around
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_video=self.ropecon2021_accessibility_video
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_recording=self.ropecon2021_accessibility_recording
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_text=self.ropecon2021_accessibility_text
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
-                ropecon2021_accessibility_colourblind=self.ropecon2021_accessibility_colourblind
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
+                ropecon2021_accessibility_loud_sounds=self.ropecon2021_accessibility_loud_sounds,
+                ropecon2021_accessibility_flashing_lights=self.ropecon2021_accessibility_flashing_lights,
+                ropecon2021_accessibility_strong_smells=self.ropecon2021_accessibility_strong_smells,
+                ropecon2021_accessibility_irritate_skin=self.ropecon2021_accessibility_irritate_skin,
+                ropecon2021_accessibility_physical_contact=self.ropecon2021_accessibility_physical_contact,
+                ropecon2021_accessibility_low_lightning=self.ropecon2021_accessibility_low_lightning,
+                ropecon2021_accessibility_moving_around=self.ropecon2021_accessibility_moving_around,
+                ropecon2022_accessibility_remaining_one_place=self.ropecon2022_accessibility_remaining_one_place,
+                ropecon2021_accessibility_video=self.ropecon2021_accessibility_video,
+                ropecon2021_accessibility_recording=self.ropecon2021_accessibility_recording,
+                ropecon2021_accessibility_text=self.ropecon2021_accessibility_text,
+                ropecon2021_accessibility_colourblind=self.ropecon2021_accessibility_colourblind,
+                ropecon2022_content_warnings=self.ropecon2022_content_warnings,
+                ropecon2021_accessibility_inaccessibility=self.ropecon2021_accessibility_inaccessibility,
             )
         elif format == "hitpoint":
             return pick_attrs(
