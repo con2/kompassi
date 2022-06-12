@@ -152,14 +152,25 @@ def format_interval(
     time_skeletor="Hm",
 ):
     # XXX Finnish-specific
-
     if tz is None:
         tz = tzlocal()
 
     if locale is None:
         locale = get_current_locale()
 
+    if start_dt is None:
+        return ""
+
     start_dt = start_dt.astimezone(tz)
+
+    if end_dt is None:
+        # be consistent at the expense of making sense in all locales
+        interval_format = "{start_date} {start_time}"
+        return interval_format.format(
+            start_date=format_skeleton(date_skeletor, start_dt, locale=locale),
+            start_time=format_skeleton(time_skeletor, start_dt, locale=locale),
+        )
+
     end_dt = end_dt.astimezone(tz)
 
     if start_dt.date() == end_dt.date():
