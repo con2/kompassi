@@ -1241,7 +1241,7 @@ class Programme(models.Model, CsvExportMixin):
                 genres=self.ropecon_genres,
                 styles=self.ropecon_styles,
                 type_of_game_program=self.ropecon2019_gaming_desk_subtype
-                if self. form_used.slug == "pelitiski"
+                if (self.form_used and self.form_used.slug == "pelitiski")
                 else None,
                 revolving_door=self.is_revolving_door if self.category.slug == "rpg" else None,
                 short_blurb=self.three_word_description
