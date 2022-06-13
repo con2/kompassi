@@ -270,11 +270,12 @@ def profile_signups_view(request):
     )
 
     vars = dict(
+        no_signups=no_signups,
+        num_signups_past_events=len(signups_past_events),
         person=person,
-        signups_past_events=signups_past_events,
         signups_current_events=signups_current_events,
         signups_future_events=signups_future_events,
-        no_signups=no_signups,
+        signups_past_events=signups_past_events,
     )
 
     return render(request, "labour_profile_signups_view.pug", vars)
