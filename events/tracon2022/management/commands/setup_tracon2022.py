@@ -523,7 +523,8 @@ class Setup:
             # Quarter hours
             # [:-1] – discard 18:00 to 19:00
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                for minute in [15, 30, 45]:
+                # for minute in [15, 30, 45]:
+                for minute in [30]:
                     SpecialStartTime.objects.get_or_create(
                         event=self.event,
                         start_time=hour_start_time.replace(minute=minute),
