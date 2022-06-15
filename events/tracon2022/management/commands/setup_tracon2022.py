@@ -207,18 +207,16 @@ class Setup:
             ),
         )
 
-        for wiki_space, link_title, link_group in [
+        for url, link_title, link_group in [
             # ("TRACON2022", "Coniteawiki", "conitea"),
-            ("TERA", "Työvoimawiki", "accepted"),
-            ("INFO", "Infowiki", "info"),
+            ("https://wiki.tracon.fi/collection/traconin-tyovoimawiki-Oinc2anefS", "Työvoimawiki", "accepted"),
+            # ("INFO", "Infowiki", "info"),
         ]:
             InfoLink.objects.get_or_create(
                 event=self.event,
                 title=link_title,
                 defaults=dict(
-                    url="https://atlasso.tracon.fi/crowd?next=https://confluence.tracon.fi/display/{wiki_space}".format(
-                        wiki_space=wiki_space
-                    ),
+                    url=url,
                     group=labour_event_meta.get_group(link_group),
                 ),
             )
