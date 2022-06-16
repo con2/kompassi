@@ -214,6 +214,11 @@ kompassi_volumes:
         nfs:
           server: !Var kompassi_storage_nfs
           path: !Var kompassi_storage_nfs_path
+  - !If
+      test: !Not,Any [!Var kompassi_storage_pvc, !Var kompassi_storage_nfs]
+      then:
+        name: kompassi-media
+        emptyDir: {}
 
 # Default annotations work for nginx ingress with or without LetsEncrypt TLS. Override if you need something else.
 ingress_annotations: !Merge
