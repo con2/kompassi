@@ -483,3 +483,15 @@ KOMPASSI_SSH_KNOWN_HOSTS_FILE = env("KOMPASSI_SSH_KNOWN_HOSTS_FILE", default="/m
 # used by manage.py setup to noop if already run for this deploy
 KOMPASSI_SETUP_RUN_ID = env("KOMPASSI_SETUP_RUN_ID", default="")
 KOMPASSI_SETUP_EXPIRE_SECONDS = 300
+
+
+if env("SENTRY_DSN", default=""):
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=env("SENTRY_DSN", default=""),
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
+        send_default_pii=True,
+    )
