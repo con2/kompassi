@@ -462,25 +462,26 @@ class Setup:
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
 
-        for tag_title in [
-            "In English",
-            "Suunnattu alle 10 vuotiaille",
-            "Suunnattu alaikäisille",
-            "Suunnattu täysi-ikäisille",
-            "Vain täysi-ikäisille",
-            "Aloittelijaystävällinen",
-            "Teema: Ystävyys",
-            "Demo",
-            "Kilpailu/Turnaus",
-            "Kunniavieras",
-            "Historia",
-            "Aihe: Figupelit",
-            "Aihe: Korttipelit",
-            "Aihe: Larpit",
-            "Aihe: Lautapelit",
-            "Aihe: Pöytäroolipelit",
-        ]:
-            Tag.objects.get_or_create(event=self.event, title=tag_title)
+        if not Tag.objects.filter(event=self.event).exists():
+            for tag_title in [
+                "In English",
+                "Suunnattu alle 10 vuotiaille",
+                "Suunnattu alaikäisille",
+                "Suunnattu täysi-ikäisille",
+                "Vain täysi-ikäisille",
+                "Aloittelijaystävällinen",
+                "Teema: Ystävyys",
+                "Demo",
+                "Kilpailu/Turnaus",
+                "Kunniavieras",
+                "Historia",
+                "Aihe: Figupelit",
+                "Aihe: Korttipelit",
+                "Aihe: Larpit",
+                "Aihe: Lautapelit",
+                "Aihe: Pöytäroolipelit",
+            ]:
+                Tag.objects.get_or_create(event=self.event, title=tag_title)
 
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
