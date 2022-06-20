@@ -248,6 +248,21 @@ class Setup:
             ),
         )
 
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug="swag",
+            defaults=dict(
+                title="Swag",
+                description=(
+                    "Tarjoamme työvoimatuotteeksi joko juomapullon tai paidan. Valitse tässä kumpi, "
+                    "sekä paidan tapauksessa paitakokosi."
+                ),
+                form_class_path="events.tracon2022.forms:SwagSurvey",
+                active_from=now(),
+                active_until=datetime(2022, 6, 22, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
+
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
