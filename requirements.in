@@ -3,6 +3,7 @@ git+https://github.com/kcsry/paikkala.git
 Babel
 black
 bleach
+boto3
 celery
 Django
 django_csp
@@ -17,6 +18,7 @@ django-localized-fields
 django-oauth-toolkit
 django-postgres-extra
 django-redis
+django-storages
 djangorestframework
 drf-nested-routers
 flake8

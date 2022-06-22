@@ -80,12 +80,14 @@ STATIC_ROOT = mkpath("static")
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = ()
-
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 SECRET_KEY = env.str("SECRET_KEY", default=("" if not DEBUG else "xxx"))
 
@@ -495,3 +497,8 @@ if env("SENTRY_DSN", default=""):
         traces_sample_rate=1.0,
         send_default_pii=True,
     )
+
+AWS_STORAGE_BUCKET_NAME = env("MINIO_BUCKET_NAME", default="kompassi")
+AWS_ACCESS_KEY_ID = env("MINIO_ACCESS_KEY_ID", default="kompassi")
+AWS_SECRET_ACCESS_KEY = env("MINIO_SECRET_ACCESS_KEY", default="kompassi")
+AWS_S3_ENDPOINT_URL = env("MINIO_ENDPOINT_URL", default="http://minio:9000")
