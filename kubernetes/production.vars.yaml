@@ -34,3 +34,6 @@ setup_should_run: true
 
 ingress_letsencrypt_enabled: true
 ingress_letsencrypt_cluster_issuer: letsencrypt-prod
+
+minio_bucket_name: kompassi
+minio_endpoint_url: https://minio.con2.fi

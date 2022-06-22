@@ -54,6 +54,13 @@ postgres_username: kompassi
 postgres_password: ''
 postgres_storage_pvc_storageclass: !Void
 
+minio_bucket_name: kompassi
+minio_endpoint_url: http://minio:9000
+
+# these only take effect if kompassi_secret_managed: true
+minio_access_key_id: kompassi
+minio_secret_access_key: kompassi
+
 # note: managed postgres doesn't provide ssl, only enable if using external postgres
 postgres_ssl: false
 
@@ -186,6 +193,21 @@ kompassi_environment:
     valueFrom:
       fieldRef:
         fieldPath: metadata.labels['pod-template-hash']
+
+  - name: MINIO_BUCKET_NAME
+    value: !Var minio_bucket_name
+  - name: MINIO_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: minioAccessKeyId
+  - name: MINIO_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: minioSecretAccessKey
+  - name: MINIO_ENDPOINT_URL
+    value: !Var minio_endpoint_url
 
 # Common volumes for kompassi, celery and nginx pods.
 kompassi_volume_mounts:

@@ -80,12 +80,14 @@ STATIC_ROOT = mkpath("static")
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = ()
-
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 SECRET_KEY = env.str("SECRET_KEY", default=("" if not DEBUG else "xxx"))
 
@@ -337,12 +339,17 @@ LOGIN_URL = "/login"
 
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 
+AWS_STORAGE_BUCKET_NAME = env("MINIO_BUCKET_NAME", default="kompassi")
+AWS_ACCESS_KEY_ID = env("MINIO_ACCESS_KEY_ID", default="kompassi")
+AWS_SECRET_ACCESS_KEY = env("MINIO_SECRET_ACCESS_KEY", default="kompassi")
+AWS_S3_ENDPOINT_URL = env("MINIO_ENDPOINT_URL", default="http://minio:9000")
+
 # TODO script-src unsafe-inline needed at least by feedback.js. unsafe-eval needed by Knockout (roster.js).
 # XXX style-src unsafe-inline is just basic plebbery and should be eradicated.
 CSP_DEFAULT_SRC = "'none'"
 CSP_SCRIPT_SRC = "'self' 'unsafe-inline' 'unsafe-eval'"
 CSP_CONNECT_SRC = "'self'"
-CSP_IMG_SRC = "'self'"
+CSP_IMG_SRC = f"'self' {AWS_S3_ENDPOINT_URL}"
 CSP_STYLE_SRC = "'self' 'unsafe-inline'"
 CSP_FONT_SRC = "'self'"
 CSP_FORM_ACTION = "'self'"
