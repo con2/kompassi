@@ -13,7 +13,7 @@ redis_broker_database: 7
 redis_cache_database: 7
 
 kompassi_secret_managed: false
-kompassi_storage_pvc: true
+kompassi_storage_pvc: false
 kompassi_storage_pvc_storageclass: longhorn-nfs
 kompassi_installation_name: Kompassi (DEV)
 kompassi_installation_slug: turskadev
