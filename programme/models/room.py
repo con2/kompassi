@@ -20,7 +20,12 @@ class Room(models.Model):
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
 
-    paikkala_room = models.ForeignKey("paikkala.Room", on_delete=models.SET_NULL, null=True)
+    paikkala_room = models.ForeignKey(
+        "paikkala.Room",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.name
