@@ -56,6 +56,6 @@ block admin_content
             th.kompassi-numeric-column(scope='column')= total_reservation_status.total_capacity
       .panel-footer.clearfix
         .btn-group.pull-right
-          a.btn.btn-default(href="{% url 'admin_reservations_export_view' event.slug programme.id %}")
+          a.btn.btn-default(href="{% url 'programme:admin_reservations_export_view' event.slug programme.id %}")
             i.fa.fa-cloud-download.kompassi-icon-space-right
             | {% trans "Export" %}
