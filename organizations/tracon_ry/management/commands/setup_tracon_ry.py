@@ -7,9 +7,10 @@ from django.utils.timezone import now
 from dateutil.tz import tzlocal
 
 from access.models import EmailAliasDomain, EmailAliasType, AccessOrganizationMeta, SMTPServer
-from core.models import Organization
+from core.models import Organization, organization
 from core.utils import slugify
 from membership.models import MembershipOrganizationMeta, Term
+from payments.models import META_DEFAULTS
 
 
 class Setup:
@@ -21,6 +22,7 @@ class Setup:
         self.setup_membership()
         self.setup_access()
         self.setup_directory()
+        self.setup_payments()
 
     def setup_core(self):
         self.organization, unused = Organization.objects.get_or_create(
@@ -138,6 +140,14 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
         from directory.models import DirectoryOrganizationMeta
 
         DirectoryOrganizationMeta.objects.get_or_create(organization=self.organization)
+
+    def setup_payments(self):
+        from payments.models import PaymentsOrganizationMeta
+
+        PaymentsOrganizationMeta.objects.get_or_create(
+            organization=self.organization,
+            defaults=META_DEFAULTS,
+        )
 
 
 class Command(BaseCommand):
