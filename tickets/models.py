@@ -917,7 +917,7 @@ class Order(models.Model):
         if not self.lippukala_order:
             return
 
-        from lippukala.models import UNUSED, MANUAL_INTERVENTION_REQUIRED
+        from lippukala.consts import UNUSED, MANUAL_INTERVENTION_REQUIRED
 
         self.lippukala_order.code_set.filter(status=UNUSED).update(status=MANUAL_INTERVENTION_REQUIRED)
 
@@ -928,7 +928,7 @@ class Order(models.Model):
         if not self.lippukala_order:
             return
 
-        from lippukala.models import UNUSED, MANUAL_INTERVENTION_REQUIRED
+        from lippukala.consts import UNUSED, MANUAL_INTERVENTION_REQUIRED
 
         self.lippukala_order.code_set.filter(status=MANUAL_INTERVENTION_REQUIRED).update(status=UNUSED)
 
