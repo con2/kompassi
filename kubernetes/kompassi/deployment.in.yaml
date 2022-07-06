@@ -13,6 +13,18 @@ spec:
         stack: kompassi
         component: kompassi
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - kompassi
+              topologyKey: "kubernetes.io/hostname"
       enableServiceLinks: false
       securityContext: !Var kompassi_pod_security_context
       initContainers:
