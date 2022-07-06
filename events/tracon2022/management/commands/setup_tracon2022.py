@@ -372,7 +372,7 @@ class Setup:
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name="Iltabilelippu",
+                name="K18 Iltabilelippu",
                 description="Voimassa Traconin iltabileiden ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
                 limit_groups=[
                     limit_group("Iltabileliput", 1400),
