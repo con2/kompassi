@@ -82,6 +82,22 @@ kompassi_container_security_context:
   readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
 
+# macro to render pod affinity
+# this goes into spec/template/spec/affinity in deployment with param_component_name set to component name
+# override with !Void to disable affinity
+macro_pod_affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 50
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: component
+            operator: In
+            values:
+            - !Var param_component_name
+        topologyKey: "kubernetes.io/hostname"
+
 # Common environment vars for both kompassi and celery pods.
 kompassi_environment:
   - name: POSTGRES_HOSTNAME

@@ -13,18 +13,10 @@ spec:
         stack: kompassi
         component: celery
     spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 50
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: component
-                  operator: In
-                  values:
-                  - celery
-              topologyKey: "kubernetes.io/hostname"
+      affinity: !With
+        vars:
+          param_component_name: celery
+        template: !Var macro_pod_affinity
       enableServiceLinks: false
       securityContext: !Var kompassi_pod_security_context
       containers:
