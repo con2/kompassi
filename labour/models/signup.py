@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from functools import cached_property
 
 from django.conf import settings
 from django.db import models
@@ -303,6 +304,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     is_applicants = alias_property("is_active")  # group is called applicants for historical purposes
     is_confirmation = alias_property("is_confirmation_requested")
     is_processed = property(lambda self: self.state != "new")
+    is_alive = property(lambda self: self.is_active and self.is_accepted and not self.is_cancelled)
 
     class Meta:
         verbose_name = _("signup")
@@ -325,13 +327,10 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     def signup_extra_model(self):
         return self.event.labour_event_meta.signup_extra_model
 
-    @property
+    @cached_property
     def signup_extra(self):
-        if not hasattr(self, "_signup_extra"):
-            SignupExtra = self.signup_extra_model
-            self._signup_extra = SignupExtra.for_signup(self)
-
-        return self._signup_extra
+        SignupExtra = self.signup_extra_model
+        return SignupExtra.for_signup(self)
 
     def get_first_categories(self):
         return self.job_categories.all()[:NUM_FIRST_CATEGORIES]

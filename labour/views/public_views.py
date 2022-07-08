@@ -167,10 +167,8 @@ def actual_signup_view(request, event, alternative_form_slug):
         return redirect("core_event_view", event.slug)
 
     if signup.pk is not None:
-        old_state = signup.state
         submit_text = _("Update application")
     else:
-        old_state = None
         submit_text = _("Submit application")
 
     signup_extra = signup.signup_extra
@@ -199,8 +197,6 @@ def actual_signup_view(request, event, alternative_form_slug):
 
             with transaction.atomic():
                 signup = signup_form.save()
-
-                signup_extra.signup = signup
                 signup_extra = signup_extra_form.save()
 
                 if alternative_signup_form is not None:

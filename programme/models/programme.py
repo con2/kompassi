@@ -104,6 +104,7 @@ PHYSICAL_PLAY_CHOICES = [
 ]
 
 PROGRAMME_STATES_ACTIVE = ["idea", "asked", "offered", "accepted", "published"]
+PROGRAMME_STATES_LIVE = ["accepted", "published"]
 PROGRAMME_STATES_INACTIVE = ["rejected", "cancelled"]
 
 LANGUAGE_CHOICES = [

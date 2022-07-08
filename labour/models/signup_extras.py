@@ -1,5 +1,9 @@
+from functools import cached_property
+from typing import Literal
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from core.utils.misc_utils import pick_attrs
 
 
 class SignupExtraMixin:
@@ -72,7 +76,7 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
 
     def determine_is_active(self):
         # See if this SignupExtra is active due to participation in volunteer work
-        if self.signup is not None and self.signup.is_active:
+        if self.signup and self.signup.is_active:
             return True
 
         # See if this SignupExtra is active due to programme roles
@@ -87,6 +91,34 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
 
         return result
 
+    @cached_property
+    def discord_roles(self):
+        result = []
+
+        if self.signup and self.signup.is_alive:
+            result.extend(pc.name for pc in self.signup.personnel_classes.all())
+
+        from programme.models.programme_role import ProgrammeRole
+        from programme.models.programme import PROGRAMME_STATES_LIVE
+
+        programme_roles = ProgrammeRole.objects.filter(
+            programme__category__event=self.event,
+            programme__state__in=PROGRAMME_STATES_LIVE,
+            person=self.person,
+        ).select_related("role")
+
+        result.extend(pr.role.public_title for pr in programme_roles)
+
+        return result
+
+    def as_dict(self, format: Literal["discord"]):
+        assert format == "discord", "not implemented"
+        return dict(
+            handle=self.person.discord_handle,
+            roles=self.discord_roles,
+        )
+
+    # NOTE: changing this to cached_property will break a test. beware
     @property
     def signup(self):
         from .signup import Signup
@@ -95,15 +127,6 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
             return Signup.objects.get(event=self.event, person=self.person)
         except Signup.DoesNotExist:
             return None
-
-    @signup.setter
-    def signup(self, the_signup):
-        if the_signup is not None:
-            self.event = the_signup.event
-            self.person = the_signup.person
-        else:
-            self.event = None
-            self.person = None
 
     @classmethod
     def get_for_event_and_person(cls, event, person):
