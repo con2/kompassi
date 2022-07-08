@@ -288,24 +288,6 @@ class ConfirmationView(View):
 @api_login_required
 @programme_event_required
 @require_POST
-def desuprogramme_import_view(request, event):
-    """
-    Processes a programme import from Desusite.
-    """
-    from .utils import import_programme
-
-    payload = json.loads(request.body)
-    validate(payload, {"type": "array", "items": Desuprogramme.schema})
-
-    import_programme(event, payload)
-
-    return HttpResponse("", status=202)
-
-
-@api_view
-@api_login_required
-@programme_event_required
-@require_POST
 def desuprogramme_feedback_view(request, event, programme_slug):
     """
     Processes programme feedback from Desusite.

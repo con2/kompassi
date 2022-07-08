@@ -5,7 +5,6 @@ from .views import (
     CallbackView,
     LoginView,
     ConfirmationView,
-    desuprogramme_import_view,
     desuprogramme_feedback_view,
 )
 from django.urls import re_path
@@ -31,11 +30,6 @@ urlpatterns = [
         r"^desuprofile/confirm/(?P<code>[a-f0-9]+)/?$",
         ConfirmationView.as_view(),
         name="desuprofile_integration_confirmation_view",
-    ),
-    re_path(
-        r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/(?:desu)+/?",
-        desuprogramme_import_view,
-        name="desuprogramme_import_view",
     ),
     re_path(
         r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_slug>[a-z0-9-]+)/feedback/?$",
