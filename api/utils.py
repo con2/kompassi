@@ -13,6 +13,8 @@ from django.forms import ValidationError as DjangoValidationError
 from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 
+from access.cbac import default_cbac_required
+
 
 logger = logging.getLogger("kompassi")
 
@@ -113,6 +115,17 @@ def api_login_required(view_func):
             raise NotAuthorized()
 
     return _decorator
+
+
+def cbac_api_view(view_func):
+    """
+    An API view that uses CBAC for authentication.
+
+    Authentication can use either:
+    1. HTTP Basic authentication for users in app group, or
+    2. session authentication for superusers only.
+    """
+    return api_view(api_login_required(default_cbac_required(view_func)))
 
 
 class JSONSchemaObject:

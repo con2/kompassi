@@ -6,7 +6,7 @@ from access.cbac import default_cbac_required
 from core.models import Person
 from labour.helpers import labour_event_required
 
-from .utils import api_view, api_login_required
+from .utils import api_view, api_login_required, cbac_api_view
 
 
 @require_safe
@@ -20,9 +20,8 @@ def api_person_view(request, username):
 
 
 @require_safe
-@api_view
+@cbac_api_view
 @labour_event_required
-@default_cbac_required
 def api_discord_view(request, event):
     """
     Supplies discord handles for role bot integration.
