@@ -15,7 +15,11 @@ class Command(BaseCommand):
     args = ""
     help = "Extract solmukohta2020 participants from google sheets"
 
-    def handle(self, *args, **opts):
+    def add_arguments(self, parser):
+        parser.add_argument("--really", default=False, action="store_true")
+
+    def handle(self, *args, **options):
+        really = options["really"]
         event = Event.objects.get(slug="ropecon2022")
         personnel_class = PersonnelClass.objects.get(event=event, name="Vapaalippu")
         signup_data = json.load(stdin)
@@ -42,10 +46,15 @@ class Command(BaseCommand):
                     continue
 
                 # Match neither, create one
-                Badge(
+                badge = Badge(
                     personnel_class=personnel_class,
                     first_name=ptp.first_name,
                     surname=ptp.surname,
                     job_title="Solmukohta 2020",
-                ).save()
-                print("BADGE_CREATED", ptp, sep="\t")
+                )
+
+                if really:
+                    badge.save()
+                    print("BADGE_CREATED", ptp, sep="\t")
+                else:
+                    print("WOULD_CREATE", ptp, sep="\t")
