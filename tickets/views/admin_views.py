@@ -12,13 +12,9 @@ from django.views.decorators.http import require_safe, require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 
 from csp.decorators import csp_exempt
-
-try:
-    from reportlab.pdfgen import canvas
-except ImportError:
-    from warnings import warn
-
-    warn("Failed to import ReportLab. Generating receipts will fail.")
+from lippukala.views import POSView
+from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC
+from reportlab.pdfgen import canvas
 
 from core.batches_view import batches_view
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS, export_csv
@@ -494,27 +490,31 @@ def tickets_admin_shirts_view(request, vars, event, format="screen"):
         )
 
 
-if "lippukala" in settings.INSTALLED_APPS:
-    from lippukala.views import POSView
+class KompassiPOSView(POSView):
+    def get_valid_codes(self, request):
+        # Kompassi uses the MIR state for cancelled orders.
+        return super().get_valid_codes(request).exclude(status__in=(MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC))
 
-    lippukala_pos_view = POSView.as_view()
 
-    @csrf_exempt
-    @tickets_event_required
-    def tickets_admin_pos_view(request, event):
-        # XXX kala expects event filter via &event=foo; we specify it via /events/foo
-        request.GET = request.GET.copy()
-        request.GET["event"] = event.slug
+lippukala_pos_view = KompassiPOSView.as_view()
 
-        meta = event.tickets_event_meta
-        if not meta:
-            messages.error(request, "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
-            return redirect("core_event_view", event.slug)
 
-        if not meta.is_user_allowed_pos_access(request.user):
-            return login_redirect(request)
+@csrf_exempt
+@tickets_event_required
+def tickets_admin_pos_view(request, event):
+    # XXX kala expects event filter via &event=foo; we specify it via /events/foo
+    request.GET = request.GET.copy()
+    request.GET["event"] = event.slug
 
-        return lippukala_pos_view(request)
+    meta = event.tickets_event_meta
+    if not meta:
+        messages.error(request, "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
+        return redirect("core_event_view", event.slug)
+
+    if not meta.is_user_allowed_pos_access(request.user):
+        return login_redirect(request)
+
+    return lippukala_pos_view(request)
 
 
 def tickets_admin_menu_items(request, event):
