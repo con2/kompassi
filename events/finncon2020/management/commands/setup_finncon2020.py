@@ -56,8 +56,8 @@ class Setup:
                 name_inessive="Finncon 2020 -tapahtumassa",
                 homepage_url="http://2020.finncon.org",
                 organization=self.organization,
-                # start_time=datetime(2020, 7, 14, 10, 0, tzinfo=self.tz),
-                # end_time=datetime(2020, 7, 15, 18, 0, tzinfo=self.tz),
+                start_time=datetime(2020, 7, 14, 10, 0, tzinfo=self.tz),
+                end_time=datetime(2020, 7, 15, 18, 0, tzinfo=self.tz),
                 venue=self.venue,
             ),
         )
