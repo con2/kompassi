@@ -40,12 +40,13 @@ class IntraEventMeta(EventMetaBase):
     @property
     def unassigned_organizers(self):
         if not hasattr(self, "_unassigned_organizers"):
-            self._unassigned_organizers = [
-                UnassignedOrganizer(person=person, signup=Signup.objects.get(event=self.event, person=person))
-                for person in Person.objects.filter(user__groups=self.organizer_group,).exclude(
-                    user__person__team_memberships__team__event_id=self.event.id,
-                )
-            ]
+            self._unassigned_organizers = []
+            for person in Person.objects.filter(user__groups=self.organizer_group,).exclude(
+                user__person__team_memberships__team__event_id=self.event.id,
+            ):
+                signup = Signup.objects.filter(event=self.event, person=person).first()
+                if signup:
+                    self._unassigned_organizers.append(UnassignedOrganizer(person=person, signup=signup))
 
         return self._unassigned_organizers
 
