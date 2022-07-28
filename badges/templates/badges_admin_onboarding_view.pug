@@ -1,9 +1,9 @@
-extends core_admin_base
+extends base
 - load trans from i18n
 block title
   {% trans "Onboarding" %}
 
-block admin_content
+block content
   .panel.panel-default
     .panel-heading: strong {% trans "Onboarding" %}
     .panel-body
@@ -56,30 +56,6 @@ block admin_content
                 td.shirt= badge.signup_extra.get_shirt_size_display
               else
                 td.shirt
-
-  //- for badge in badges
-  //-   .modal.fade(tabindex="-1", role="dialog")#badge-modal
-  //-     .modal-dialog(role="document")
-  //-       .modal-content
-  //-         .modal-header
-  //-           button(type="button", class="close", data-dismiss="modal", aria-label="{% trans 'Close' %}")
-  //-             span(aria-hidden="true") &times;
-  //-           h4.modal-title Saapuneeksi kirjaaminen
-  //-         .modal-body
-  //-           {{ badge }}
-  //-           .text-center
-  //-             if event.badges_event_meta.is_traditional_layout
-  //-               h4 {{ badge.job_title }}
-  //-               h3 {{ badge.with_privacy.first_name }} {{ badge.with_privacy.surname }}
-  //-               h4 {{ badge.with_privacy.nick }}
-  //-             else
-  //-               h4 {{ badge.job_title }}
-  //-               h3 {{ badge.with_privacy.first_name_or_nick }}
-  //-               h4 {{ badge.with_privacy.surname_or_full_name }}
-  //-         .modal-footer
-  //-           button.btn.btn-default(data-dismiss="modal") {% trans 'Close' %}
-  //-           button.btn.btn-primary(class='{% if badge.is_arrived %}hidden{% endif %}') Merkitse saapuneeksi
-  //-           button.btn.btn-danger(class='{% if not badge.is_arrived %}hidden{% endif %}') Peru saapuneeksi merkintä
 
 block extra_head
   style.

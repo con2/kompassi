@@ -3,17 +3,23 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 
 from csp.decorators import csp_update
+from core.utils.view_utils import login_redirect
 
 from labour.proxies.signup.onboarding import SignupOnboardingProxy
 
-from ..helpers import badges_admin_required
+from ..helpers import badges_event_required
 from ..models import Badge
 
 
-@badges_admin_required
 @require_http_methods(["GET", "HEAD", "POST"])
 @csp_update(SCRIPT_SRC=["cdn.jsdelivr.net"])
-def badges_admin_onboarding_view(request, vars, event):
+@badges_event_required
+def badges_admin_onboarding_view(request, event):
+    meta = event.badges_event_meta
+
+    if not meta.is_user_allowed_onboarding_access(request.user):
+        return login_redirect(request)
+
     if request.method in ("GET", "HEAD"):
         badges = (
             Badge.objects.filter(
@@ -45,7 +51,8 @@ def badges_admin_onboarding_view(request, vars, event):
                 for badge in badges:
                     badge._signup_extra = signup_extras_by_person_id.get(badge.person_id)
 
-        vars.update(
+        vars = dict(
+            event=event,
             badges=badges,
             shirt_type_field=shirt_type_field,
             shirt_size_field=shirt_size_field,

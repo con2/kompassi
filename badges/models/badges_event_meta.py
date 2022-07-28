@@ -30,6 +30,16 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         ),
     )
 
+    onboarding_access_group = models.ForeignKey(
+        "auth.Group",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Onboarding access group"),
+        help_text=_("Members of this group are granted access to the onboarding view without being badges admins."),
+        related_name="as_onboarding_access_group_for",
+    )
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
@@ -44,3 +54,9 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         from .badge import Badge
 
         return Badge.objects.filter(personnel_class__event=self.event)
+
+    def is_user_allowed_onboarding_access(self, user):
+        if self.is_user_admin(user):
+            return True
+
+        return self.onboarding_access_group and self.is_user_in_group(user, self.onboarding_access_group)

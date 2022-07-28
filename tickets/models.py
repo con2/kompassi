@@ -138,7 +138,7 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
 
     pos_access_group = models.ForeignKey(
         "auth.Group",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name=_("POS access group"),

@@ -31,3 +31,20 @@ def badges_admin_required(view_func):
         return view_func(request, vars, event, *args, **kwargs)
 
     return wrapper
+
+
+def badges_event_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, event_slug, *args, **kwargs):
+        from core.models import Event
+
+        event = get_object_or_404(Event, slug=event_slug)
+        meta = event.badges_event_meta
+
+        if not meta:
+            messages.error(request, "Tämä tapahtuma ei käytä Kompassia kulkulupien hallintaan.")
+            return redirect("core_event_view", event.slug)
+
+        return view_func(request, event, *args, **kwargs)
+
+    return wrapper
