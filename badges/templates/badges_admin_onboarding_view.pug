@@ -34,7 +34,7 @@ block content
                 strong {{ badge.first_name }}
               else
                 span.text-muted {{ badge.first_name }}
-              if badge.is_nick_visible
+              if badge.is_nick_visible and badge.nick
                 | &#32;
                 strong ”{{ badge.nick }}”
               if badge.is_surname_visible
