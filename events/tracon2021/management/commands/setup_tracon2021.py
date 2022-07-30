@@ -54,7 +54,6 @@ class Setup:
                 start_time=datetime(2021, 9, 3, 16, 0, tzinfo=self.tz),
                 end_time=datetime(2021, 9, 5, 18, 0, tzinfo=self.tz),
                 venue=self.venue,
-                panel_css_class="panel-danger",
             ),
         )
 

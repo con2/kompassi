@@ -60,7 +60,6 @@ class Setup:
                 start_time=datetime(2020, 8, 15, 10, 0, tzinfo=self.tz),
                 end_time=datetime(2020, 8, 16, 18, 0, tzinfo=self.tz),
                 venue=self.venue,
-                panel_css_class="panel-warning",
             ),
         )
 

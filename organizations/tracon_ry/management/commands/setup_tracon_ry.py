@@ -40,6 +40,7 @@ Yhdistys toimii läheisessä yhteistyössä muiden tamperelaisten alan kerhojen 
 
 Tracon ry:n yhdistysrekisteritunnus on 194.820.
                 """.strip(),
+                panel_css_class="panel-danger",
             ),
         )
 

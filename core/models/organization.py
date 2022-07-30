@@ -38,6 +38,22 @@ class Organization(models.Model):
         help_text="Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)",
     )
 
+    panel_css_class = models.CharField(
+        blank=True,
+        max_length=255,
+        default="panel-default",
+        verbose_name="Etusivun paneelin väri",
+        choices=[
+            ("panel-default", "Harmaa"),
+            ("panel-primary", "Kompassi (turkoosi)"),
+            ("panel-success", "Desucon (vihreä)"),
+            ("panel-info", "Yukicon (vaaleansininen)"),
+            ("panel-warning", "Popcult (oranssi)"),
+            ("panel-danger", "Tracon (punainen)"),
+            ("panel-ropecon panel-default", "Ropecon (violetti)"),
+        ],
+    )
+
     def save(self, *args, **kwargs):
         if self.name and not self.slug:
             self.slug = slugify(self.name)

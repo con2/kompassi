@@ -53,7 +53,6 @@ class Setup:
                 start_time=datetime(2019, 9, 6, 10, 0, tzinfo=self.tz),
                 end_time=datetime(2019, 9, 8, 18, 0, tzinfo=self.tz),
                 venue=self.venue,
-                panel_css_class="panel-danger",
             ),
         )
 

@@ -103,21 +103,6 @@ class Event(models.Model):
         help_text="Muutaman kappaleen mittainen kuvaus tapahtumasta. Näkyy tapahtumasivulla.",
     )
 
-    panel_css_class = models.CharField(
-        blank=True,
-        max_length=255,
-        default="panel-default",
-        verbose_name="Etusivun paneelin väri",
-        choices=[
-            ("panel-default", "Harmaa"),
-            ("panel-primary", "Kompassi (turkoosi)"),
-            ("panel-success", "Desucon (vihreä)"),
-            ("panel-info", "Yukicon (vaaleansininen)"),
-            ("panel-warning", "Popcult (oranssi)"),
-            ("panel-danger", "Tracon (punainen)"),
-        ],
-    )
-
     created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
 
@@ -139,6 +124,10 @@ class Event(models.Model):
                     setattr(self, field, self.name + suffix)
 
         return super().save(*args, **kwargs)
+
+    @property
+    def panel_css_class(self):
+        return self.organization.panel_css_class
 
     @property
     def name_and_year(self):
