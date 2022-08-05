@@ -14,6 +14,7 @@
   .panel-footer.clearfix
     if granted_privilege
       form(action='{% url "access_profile_request_privilege_view" privilege.slug %}', method='POST')
+        {% csrf_token %}
         .btn-group.pull-right
           button.btn.btn-danger(type='submit')
             i.fa.fa-external-link.kompassi-icon-space-right
