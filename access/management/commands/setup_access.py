@@ -18,6 +18,7 @@ class Command(BaseCommand):
                     description="""TODO WRITE ME""".strip().format(default_from_email=settings.DEFAULT_FROM_EMAIL),
                     request_success_message="",
                     grant_code="access.privileges:invite_to_slack",
+                    url=f"https://{team_name}.slack.com",
                 ),
             )
 

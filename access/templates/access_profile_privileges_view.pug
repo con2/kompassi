@@ -5,13 +5,20 @@ block profile_content
   h3 Tämänhetkiset käyttöoikeudet
   if granted_privileges.exists
     for granted_privilege in granted_privileges
-      include access_profile_granted_privilege_box
+      if granted_privilege.privilege.slack_access
+        - with granted_privilege.privilege as privilege
+          include access_profile_slack_access_box
+      else
+        include access_profile_granted_privilege_box
   else
     p Sinulle ei ole myönnetty käyttö&shy;oikeuksia.
 
   h3 Pyydä käyttöoikeutta
   if potential_privileges.exists
     for privilege in potential_privileges
-      include access_profile_potential_privilege_box
+      if privilege.slack_access
+        include access_profile_slack_access_box
+      else
+        include access_profile_potential_privilege_box
   else
     p Et tällä hetkellä voi pyytää mitään käyttö&shy;oikeuksia.

@@ -1,0 +1,36 @@
+- load trans from i18n
+.panel.panel-default
+  .panel-heading
+    .kompassi-anchor-wrap
+      a.kompassi-anchor(id='privilege-{{ privilege.id }}')
+      strong= privilege.title
+  .panel-body
+    {{ privilege.description|safe }}
+
+    if granted_privilege
+      p.text-danger <strong>Huom!</strong> Kompassin tietojen mukaan olet jo aiemmin käyttänyt tämän Slack-yhteisön kutsulinkkiä. Jos olet varma, että tunnuksen luominen meni pieleen, voit yrittää uudelleen alla olevasta <em>Luo uusi tunnus…</em> -napista. Muussa tapauksessa älä luo uutta käyttäjätunnusta Slackiin. Jos sinulla on vaikeuksia kirjautua tämän Slack-yhteisön tunnuksellesi, varmista ensin että yrität kirjautua oikeaan Slack-yhteisöön, ja ota sen jälkeen yhteyttä ylläpitoon sähköpostitse osoitteella <em>{{ settings.DEFAULT_FROM_EMAIL }}</em> ja kerro ongelmastasi.
+    else
+      {{ privilege.disclaimers|safe }}
+  .panel-footer.clearfix
+    if granted_privilege
+      form(action='{% url "access_profile_request_privilege_view" privilege.slug %}', method='POST')
+        .btn-group.pull-right
+          button.btn.btn-danger(type='submit')
+            i.fa.fa-external-link.kompassi-icon-space-right
+            | Luo uusi tunnus…
+          a.btn.btn-success(href="{{ privilege.url }}", target="_blank", rel="noopener noreferrer")
+            i.fa.fa-external-link.kompassi-icon-space-right
+            {% trans "Open app" %}…
+
+    else
+      if request.user.person.is_email_verified
+        form(action='{% url "access_profile_request_privilege_view" privilege.slug %}', method='POST')
+          {% csrf_token %}
+          .btn-group.pull-right
+            button.btn.btn-success(type='submit')
+              i.fa.fa-external-link.kompassi-icon-space-right
+              | Luo tunnus…
+      else
+        .btn-group.pull-right
+          button.btn.disabled(disabled) Pyydä käyttöoikeutta
+        strong.text-danger &emsp;Käyttöoikeuden pyytäminen edellyttää <a href='{% url "core_email_verification_request_view" %}'>vahvistettua sähköposti&shy;osoitetta</a>.
