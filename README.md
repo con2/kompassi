@@ -95,7 +95,8 @@ All the words _hostname_, _database_, _username_ and _password_ are 8 characters
 
     The MIT License (MIT)
 
-    Copyright © 2009–2021 Santtu Pajukanta
+    Copyright © 2009–2022 Santtu Pajukanta
+    Copyright © 2020–2022 Tuomas Puikkonen
     Copyright © 2019 Mikko Hänninen
     Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö
