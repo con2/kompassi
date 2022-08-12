@@ -33,6 +33,36 @@ kompassi_admins: []
 # workers per pod
 kompassi_workers: 4
 
+kompassi_startup_probe:
+  httpGet:
+    path: /api/v1/status
+    port: 8000
+    httpHeaders:
+      - name: Host
+        value: !Lookup ingress_public_hostnames[0]
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  # 5 * 12 seconds = 1 minute
+  failureThreshold: 12
+kompassi_readiness_probe:
+  httpGet:
+    path: /api/v1/status
+    port: 8000
+    httpHeaders:
+      - name: Host
+        value: !Lookup ingress_public_hostnames[0]
+  initialDelaySeconds: 0
+  periodSeconds: 30
+kompassi_liveness_probe:
+  httpGet:
+    path: /api/v1/status
+    port: 8000
+    httpHeaders:
+      - name: Host
+        value: !Lookup ingress_public_hostnames[0]
+  initialDelaySeconds: 15
+  periodSeconds: 30
+
 # If you use ingress-nginx and cert-manager, TLS can be automatically configured by setting this to true.
 ingress_letsencrypt_enabled: false
 ingress_letsencrypt_cluster_issuer: letsencrypt-prod
