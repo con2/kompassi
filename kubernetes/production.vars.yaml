@@ -27,8 +27,8 @@ kompassi_cors_allowed_hosts:
   - infotv.ropecon.fi
   - v2.kompassi.eu
 
-kompassi_readiness_probe: !Void
-kompassi_liveness_probe: !Void
+# kompassi_readiness_probe: !Void
+# kompassi_liveness_probe: !Void
 kompassi_workers: 8
 
 smtp_server: sr1.pahaip.fi
