@@ -53,7 +53,7 @@ CACHES = {
     "default": env.cache(default="locmemcache://"),
 }
 
-ALLOWED_HOSTS = env("ALLOWED_HOSTS", default="").split()
+ALLOWED_HOSTS = env("ALLOWED_HOSTS", default="localhost").split()
 
 TIME_ZONE = "Europe/Helsinki"
 

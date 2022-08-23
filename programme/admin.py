@@ -16,6 +16,7 @@ from .models import (
     TimeBlock,
     View,
     ViewRoom,
+    SpecialReservation,
 )
 from .proxies.freeform_organizer.admin import FreeformOrganizerAdminProxy
 from .proxies.invitation.admin import InvitationAdminProxy
@@ -232,6 +233,13 @@ class AlternativeProgrammeFormAdmin(admin.ModelAdmin):
     list_filter = ("event",)
 
 
+class SpecialReservationAdmin(admin.ModelAdmin):
+    model = SpecialReservation
+    list_display = ("admin_get_event", "program", "description")
+    list_filter = ("program__kompassi_programme__category__event",)
+    raw_id_fields = ("program", "zone")
+
+
 admin.site.register(AlternativeProgrammeForm, AlternativeProgrammeFormAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(FreeformOrganizerAdminProxy, FreeformOrganizerAdmin)
@@ -245,3 +253,4 @@ admin.site.register(Tag, TagAdmin)
 admin.site.register(TimeBlock, TimeBlockAdmin)
 admin.site.register(View, ViewAdmin)
 admin.site.register(ViewRoom, ViewRoomAdmin)
+admin.site.register(SpecialReservation, SpecialReservationAdmin)

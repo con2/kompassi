@@ -1,12 +1,14 @@
 import logging
 from functools import wraps
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404, redirect
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now
+from django.views.generic.base import TemplateView
 
 from core.utils import horizontal_form_helper
 from paikkala.views import (
@@ -23,6 +25,7 @@ from paikkala.excs import (
     Unreservable,
     UserRequired,
 )
+from programme.models.special_reservation import SpecialReservation
 
 from ..forms import ReservationForm
 from ..helpers import programme_event_required
@@ -149,3 +152,19 @@ class ReservationView(PaikkalAdapterMixin, BaseReservationView):
 paikkala_inspection_view = login_required(programme_event_required(InspectionView.as_view()))
 paikkala_relinquish_view = login_required(programme_event_required(handle_errors(RelinquishView.as_view())))
 paikkala_reservation_view = login_required(programme_event_required(handle_errors(ReservationView.as_view())))
+
+
+def paikkala_special_reservation_view(request, code):
+    special_reservation = get_object_or_404(SpecialReservation, code=code)
+
+    if special_reservation.program.invalid_after and now() >= special_reservation.program.invalid_after:
+        messages.error(request, _("This ticket is no longer valid."))
+        return redirect("programme:profile_reservations_view")
+
+    vars = dict(
+        event=special_reservation.program.kompassi_programme.event,
+        ticket=special_reservation,  # HAX!
+        tickets=special_reservation.get_fake_tickets(),
+    )
+
+    return render(request, "programme_paikkala_inspection_view.pug", vars)

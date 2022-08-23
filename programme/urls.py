@@ -2,6 +2,8 @@ from django.conf import settings
 from django.conf.urls import include
 from django.views.generic import RedirectView
 
+from programme.views.paikkala_views import paikkala_special_reservation_view
+
 from .views import (
     paikkala_inspection_view,
     paikkala_relinquish_view,
@@ -113,6 +115,11 @@ urlpatterns = [
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/reservations/?$",
         paikkala_reservation_view,
         name="paikkala_reservation_view",
+    ),
+    re_path(
+        r"^reservations/(?P<code>[a-z0-9-]+)/?$",
+        paikkala_special_reservation_view,
+        name="paikkala_special_reservation_view",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme\.taggedtext$",

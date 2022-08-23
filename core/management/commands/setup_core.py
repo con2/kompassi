@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group
+from django.contrib.sites.models import Site
 
 from ...models import Person
 from ...utils import log_get_or_create
@@ -28,3 +29,8 @@ class Command(BaseCommand):
 
         group, created = Group.objects.get_or_create(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME)
         log_get_or_create(logger, group, created)
+
+        default_site_qs = Site.objects.filter(domain="example.com")
+        if default_site_qs.exists() or not Site.objects.exists():
+            default_site_qs.delete()
+            Site.objects.get_or_create(domain=settings.ALLOWED_HOSTS[0], defaults=dict(name=settings.ALLOWED_HOSTS[0]))
