@@ -3,6 +3,7 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.db.models import Case, IntegerField, Q, Sum, When
 from django.http import HttpResponse
@@ -350,9 +351,14 @@ def tickets_admin_tools_view(request, vars, event):
     return render(request, "tickets_admin_tools_view.pug", vars)
 
 
-@tickets_admin_required
+@tickets_event_required
 @require_http_methods(["GET", "HEAD", "POST"])
-def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
+def tickets_admin_accommodation_view(request, event, limit_group_id=None):
+    if not event.tickets_event_meta.is_user_allowed_pos_access(request.user):
+        raise PermissionDenied()
+
+    vars = dict(event=event)
+
     if limit_group_id is not None:
         limit_group_id = int(limit_group_id)
         limit_group = get_object_or_404(LimitGroup, id=limit_group_id, event=event)
@@ -416,9 +422,12 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
         raise NotImplementedError(format)
 
 
-@tickets_admin_required
+@tickets_event_required
 @require_POST
-def tickets_admin_accommodation_presence_view(request, vars, event, limit_group_id, accommodation_information_id):
+def tickets_admin_accommodation_presence_view(request, event, limit_group_id, accommodation_information_id):
+    if not event.tickets_event_meta.is_user_allowed_pos_access(request.user):
+        raise PermissionDenied()
+
     limit_group = get_object_or_404(LimitGroup, event=event, id=limit_group_id)
     accommodee = get_object_or_404(
         AccommodationInformation,
