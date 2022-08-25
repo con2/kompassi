@@ -135,6 +135,7 @@ class Setup:
             ("Vapaalippu, lauantai", "vapaalippu-la", "tickets", False),
             ("Vapaalippu, sunnuntai", "vapaalippu-su", "tickets", False),
             ("Cosplaykisaaja", "cosplay", "tickets", False),
+            ("AMV-kisaaja", "amv", "tickets", False),
             ("Taidekuja", "taidekuja", "tickets", False),
             ("Yhdistyspöydät", "yhdistyspoydat", "tickets", False),
         ]:
