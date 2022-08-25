@@ -1,4 +1,4 @@
-from tickets.views.admin_views import tickets_admin_export_view
+from tickets.views.admin_views import tickets_admin_accommodation_presence_view, tickets_admin_export_view
 from django.conf import settings
 from django.conf.urls import include
 from django.shortcuts import redirect
@@ -27,7 +27,9 @@ from django.urls import re_path
 
 urlpatterns = [
     re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/?$", tickets_welcome_view, name="tickets_welcome_view"),
-    re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/products/?$", tickets_tickets_view, name="tickets_tickets_view"),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/products/?$", tickets_tickets_view, name="tickets_tickets_view"
+    ),
     re_path(
         r"events/(?P<event_slug>[a-z0-9-]+)/tickets/accommodation/?$",
         tickets_accommodation_view,
@@ -37,7 +39,9 @@ urlpatterns = [
     re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/address/?$", tickets_address_view, name="tickets_address_view"),
     re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/confirm/?$", tickets_confirm_view, name="tickets_confirm_view"),
     re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/thanks/?$", tickets_thanks_view, name="tickets_thanks_view"),
-    re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin$", tickets_admin_stats_view, name="tickets_admin_stats_view"),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin$", tickets_admin_stats_view, name="tickets_admin_stats_view"
+    ),
     re_path(
         r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/by-date/raw$",
         tickets_admin_stats_by_date_view,
@@ -83,6 +87,11 @@ urlpatterns = [
         r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/accommodation/(?P<limit_group_id>\d+)/?$",
         tickets_admin_accommodation_view,
         name="tickets_admin_accommodation_filtered_view",
+    ),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/accommodation/(?P<limit_group_id>\d+)/(?P<accommodation_information_id>\d+)/?$",
+        tickets_admin_accommodation_presence_view,
+        name="tickets_admin_accommodation_presence_view",
     ),
     re_path(
         r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/accommodation/(?P<limit_group_id>\d+)/new/?$",

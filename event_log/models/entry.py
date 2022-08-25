@@ -43,6 +43,8 @@ class Entry(models.Model):
     feedback_message = models.ForeignKey("feedback.FeedbackMessage", **TARGET_FKEY_ATTRS)
     event_survey_result = models.ForeignKey("surveys.EventSurveyResult", **TARGET_FKEY_ATTRS)
     global_survey_result = models.ForeignKey("surveys.GlobalSurveyResult", **TARGET_FKEY_ATTRS)
+    accommodation_information = models.ForeignKey("tickets.AccommodationInformation", **TARGET_FKEY_ATTRS)
+    limit_group = models.ForeignKey("tickets.LimitGroup", **TARGET_FKEY_ATTRS)
     search_term = models.CharField(max_length=255, blank=True, default="")
 
     # we should probably have shoved them in a jsonfield in the first place

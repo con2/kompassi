@@ -8,8 +8,9 @@ from django.db.models import Case, IntegerField, Q, Sum, When
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
-from django.views.decorators.http import require_safe, require_http_methods
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_safe, require_http_methods, require_POST
 
 from csp.decorators import csp_exempt
 from lippukala.views import POSView
@@ -23,6 +24,7 @@ from event_log.utils import emit
 
 from ..forms import (
     AccommodationInformationForm,
+    AccommodationPresenceForm,
     AdminOrderForm,
     CreateBatchForm,
     CustomerForm,
@@ -349,7 +351,7 @@ def tickets_admin_tools_view(request, vars, event):
 
 
 @tickets_admin_required
-@require_safe
+@require_http_methods(["GET", "HEAD", "POST"])
 def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
     if limit_group_id is not None:
         limit_group_id = int(limit_group_id)
@@ -405,12 +407,54 @@ def tickets_admin_accommodation_view(request, vars, event, limit_group_id=None):
         vars.update(
             accommodees=accommodees,
             active_filter=active_filter,
+            limit_group=limit_group,
             filters=filters,
         )
 
         return render(request, "tickets_admin_accommodation_view.pug", vars)
     else:
         raise NotImplementedError(format)
+
+
+@tickets_admin_required
+@require_POST
+def tickets_admin_accommodation_presence_view(request, vars, event, limit_group_id, accommodation_information_id):
+    limit_group = get_object_or_404(LimitGroup, event=event, id=limit_group_id)
+    accommodee = get_object_or_404(
+        AccommodationInformation,
+        order_product__order__event=event,
+        limit_groups=limit_group,
+        id=accommodation_information_id,
+    )
+
+    accommodee_form = initialize_form(AccommodationPresenceForm, request, instance=accommodee)
+
+    if accommodee_form.is_valid():
+        accommodee = accommodee_form.save(commit=False)
+        accommodee.is_present = not accommodee.is_present
+
+        room_name = accommodee.room_name
+        if not accommodee.is_present:
+            accommodee.room_name = ""
+
+        accommodee.save()
+
+        verb = "arrived" if accommodee.is_present else "left"
+
+        emit(
+            f"tickets.accommodation.presence.{verb}",
+            request=request,
+            event=event,
+            accommodation_information=accommodee,
+            limit_group=limit_group,
+            other_fields=dict(room_name=room_name),
+        )
+
+        messages.success(request, _(f"Accommodee marked as {verb}."))
+    else:
+        messages.error(request, _("Please check the form."))
+
+    return redirect("tickets_admin_accommodation_filtered_view", event.slug, limit_group_id)
 
 
 @tickets_admin_required

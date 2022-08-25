@@ -49,6 +49,18 @@ class AccommodationInformationForm(forms.ModelForm):
         fields = ("first_name", "last_name", "phone_number", "email")
 
 
+class AccommodationPresenceForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.label_class = "sr-only"
+        self.helper.form_tag = False
+
+    class Meta:
+        model = AccommodationInformation
+        fields = ("room_name",)
+
+
 class OrderProductForm(forms.ModelForm):
     count = forms.IntegerField(label="Määrä", min_value=0, max_value=99)
 

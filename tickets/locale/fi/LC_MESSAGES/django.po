@@ -369,3 +369,9 @@ msgstr "Tähdellä (*) merkityt kentät ovat pakollisia."
 
 msgid "I accept the <a href='{}' target='_blank' rel='noreferer noopener'>terms and conditions</a> (required)."
 msgstr "Hyväksyn <a href='{}' target='_blank' rel='noreferer noopener'>palvelun ehdot</a> (pakollinen)."
+
+msgid "Accommodee marked as arrived."
+msgstr "Majoittuja merkitty saapuneeksi."
+
+msgid "Accommodee marked as left."
+msgstr "Majoittuja merkitty poistuneeksi."

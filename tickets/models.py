@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
-from time import mktime
 import logging
 
-from django.db import models
+from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -24,6 +23,7 @@ from core.utils import (
     slugify,
     url,
 )
+from core.utils.form_utils import make_form_readonly
 
 from .utils import format_date, format_price, append_reference_number_checksum
 from .receipt import render_receipt
@@ -1143,10 +1143,21 @@ class AccommodationInformation(models.Model, CsvExportMixin):
     last_name = models.CharField(max_length=100, blank=True, default="", verbose_name="Sukunimi")
 
     phone_number = models.CharField(
-        max_length=30, blank=True, default="", validators=[phone_number_validator], verbose_name="Puhelinnumero"
+        max_length=30,
+        blank=True,
+        default="",
+        validators=[phone_number_validator],
+        verbose_name="Puhelinnumero",
     )
 
     email = models.EmailField(blank=True, default="", verbose_name="Sähköpostiosoite")
+    is_present = models.BooleanField(default=False, verbose_name="Läsnäoleva")
+    room_name = models.CharField(
+        max_length=63,
+        blank=True,
+        default="",
+        verbose_name="Majoitustila",
+    )
 
     @classmethod
     def get_for_order(cls, order):
@@ -1180,6 +1191,19 @@ class AccommodationInformation(models.Model, CsvExportMixin):
     @property
     def formatted_order_number(self):
         return self.order_product.order.formatted_order_number if self.order_product else ""
+
+    @property
+    def row_css_class(self):
+        return "success" if self.is_present else ""
+
+    def get_presence_form(self):
+        from .forms import AccommodationPresenceForm
+
+        form = AccommodationPresenceForm(instance=self)
+        if self.is_present:
+            make_form_readonly(form)
+
+        return form
 
     @classmethod
     def get_csv_fields(cls, event):

@@ -1,7 +1,8 @@
-extends core_admin_base.pug
+extends base
+- load crispy from crispy_forms_tags
 block title
   | Majoituslista
-block admin_content
+block content
   .panel.panel-default
     .panel-heading: strong Majoituslista
     .panel-body
@@ -21,9 +22,10 @@ block admin_content
         th Majoittujan etunimi
         th Sähköpostiosoite
         th Puhelinnumero
+        th Majoitustila
       tbody
         for accommodee in accommodees
-          tr
+          tr(class="{{ accommodee.row_css_class }}")
             if accommodee.order_product
               td: a(href='{% url "tickets_admin_order_view" event.slug accommodee.order_product.order_id %}')= accommodee.order_product.order.formatted_order_number
             else
@@ -32,6 +34,17 @@ block admin_content
             td {{ accommodee.first_name }}
             td {{ accommodee.email }}
             td {{ accommodee.phone_number }}
+            td
+              form(method="POST", action='{% url "tickets_admin_accommodation_presence_view" event.slug limit_group.id accommodee.id %}').form-inline
+                - with accommodee.get_presence_form as form
+                  {% crispy form %}
+                  if accommodee.is_present
+                    button.btn.btn-danger(type='submit', title="Merkitse poistuneeksi")
+                      i.fa.fa-sign-out.kompassi-icon-space-right
+                  else
+                    button.btn.btn-success(type='submit', title="Merkitse läsnäolevaksi")
+                      i.fa.fa-sign-in.kompassi-icon-space-right
+
 
     .panel-footer.clearfix
       if active_filter
