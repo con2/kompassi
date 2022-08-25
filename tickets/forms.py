@@ -27,7 +27,7 @@ class AccommodationInformationForm(forms.ModelForm):
         self.helper.form_tag = False
 
         for field_name, field in self.fields.items():
-            if field_name != "email":
+            if field_name not in ("email", "room_name"):
                 field.required = True
 
     @classmethod
@@ -46,7 +46,7 @@ class AccommodationInformationForm(forms.ModelForm):
 
     class Meta:
         model = AccommodationInformation
-        fields = ("first_name", "last_name", "phone_number", "email")
+        fields = ("first_name", "last_name", "phone_number", "email", "room_name")
 
 
 class AccommodationPresenceForm(forms.ModelForm):

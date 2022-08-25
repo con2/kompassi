@@ -480,8 +480,21 @@ def tickets_admin_accommodation_create_view(request, event, limit_group_id):
 
     if request.method == "POST":
         if form.is_valid():
-            info = form.save()
+            info = form.save(commit=False)
+            info.is_present = True
+            info.save()
+
             info.limit_groups.set([limit_group])
+
+            emit(
+                f"tickets.accommodation.presence.arrived",
+                request=request,
+                event=event,
+                accommodation_information=info,
+                limit_group=limit_group,
+                other_fields=dict(room_name=info.room_name),
+            )
+
             messages.success(request, "Majoittuja lisättiin.")
         else:
             messages.error(request, _("Please check the form."))
