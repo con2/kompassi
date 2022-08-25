@@ -467,8 +467,7 @@ def tickets_admin_accommodation_create_view(request, vars, event, limit_group_id
 
     if request.method == "POST":
         info = form.save()
-        info.limit_groups = [limit_group]
-        info.save()
+        info.limit_groups.set([limit_group])
 
         messages.success(request, "Majoittuja lisättiin.")
         return redirect("tickets_admin_accommodation_filtered_view", event.slug, limit_group_id)
