@@ -431,7 +431,6 @@ def tickets_admin_accommodation_presence_view(request, event, limit_group_id, ac
     limit_group = get_object_or_404(LimitGroup, event=event, id=limit_group_id)
     accommodee = get_object_or_404(
         AccommodationInformation,
-        order_product__order__event=event,
         limit_groups=limit_group,
         id=accommodation_information_id,
     )
@@ -466,19 +465,27 @@ def tickets_admin_accommodation_presence_view(request, event, limit_group_id, ac
     return redirect("tickets_admin_accommodation_filtered_view", event.slug, limit_group_id)
 
 
-@tickets_admin_required
+@tickets_event_required
 @require_http_methods(["GET", "HEAD", "POST"])
-def tickets_admin_accommodation_create_view(request, vars, event, limit_group_id):
+def tickets_admin_accommodation_create_view(request, event, limit_group_id):
+    if not event.tickets_event_meta.is_user_allowed_pos_access(request.user):
+        raise PermissionDenied()
+
+    vars = dict(event=event)
+
     limit_group_id = int(limit_group_id)
     limit_group = get_object_or_404(LimitGroup, id=limit_group_id, event=event)
 
     form = initialize_form(AccommodationInformationForm, request)
 
     if request.method == "POST":
-        info = form.save()
-        info.limit_groups.set([limit_group])
+        if form.is_valid():
+            info = form.save()
+            info.limit_groups.set([limit_group])
+            messages.success(request, "Majoittuja lisättiin.")
+        else:
+            messages.error(request, _("Please check the form."))
 
-        messages.success(request, "Majoittuja lisättiin.")
         return redirect("tickets_admin_accommodation_filtered_view", event.slug, limit_group_id)
 
     vars.update(
