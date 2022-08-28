@@ -20,6 +20,7 @@ from reportlab.pdfgen import canvas
 
 from core.batches_view import batches_view
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS, export_csv
+from core.sort_and_filter import Filter
 from core.utils import url, initialize_form, slugify, login_redirect
 from event_log.utils import emit
 
@@ -382,9 +383,15 @@ def tickets_admin_accommodation_view(request, event, limit_group_id=None):
         accommodees = AccommodationInformation.objects.filter(query).order_by("last_name", "first_name")
         active_filter = limit_group
     else:
-        accommodees = []
+        accommodees = AccommodationInformation.objects.none()
         active_filter = None
         limit_group = None
+
+    present_filter = Filter(request, "state").add_choices(
+        "state",
+        AccommodationInformation.State.choices,
+    )
+    accommodees = present_filter.filter_queryset(accommodees)
 
     format = request.GET.get("format", "screen")
 
@@ -412,6 +419,8 @@ def tickets_admin_accommodation_view(request, event, limit_group_id=None):
 
         vars.update(
             accommodees=accommodees,
+            present_filter=present_filter,
+            # TODO legacy manual filter
             active_filter=active_filter,
             limit_group=limit_group,
             filters=filters,
@@ -436,29 +445,40 @@ def tickets_admin_accommodation_presence_view(request, event, limit_group_id, ac
     )
 
     accommodee_form = initialize_form(AccommodationPresenceForm, request, instance=accommodee)
+    State = AccommodationInformation.State
 
     if accommodee_form.is_valid():
+        action = request.POST.get("action", "save")
         accommodee = accommodee_form.save(commit=False)
-        accommodee.is_present = not accommodee.is_present
 
-        room_name = accommodee.room_name
-        if not accommodee.is_present:
-            accommodee.room_name = ""
+        if action == "left":
+            accommodee.state = State.LEFT
+            event_type = "tickets.accommodation.presence.left"
+            message = _("Accommodee marked as left.")
+
+        elif action == "arrived":
+            accommodee.state = State.ARRIVED
+            event_type = "tickets.accommodation.presence.arrived"
+            message = _(f"Accommodee marked as arrived.")
+
+        else:
+            event_type = None
+            message = _("Accommodation information saved.")
 
         accommodee.save()
 
-        verb = "arrived" if accommodee.is_present else "left"
+        if event_type:
+            emit(
+                event_type,
+                request=request,
+                event=event,
+                accommodation_information=accommodee,
+                limit_group=limit_group,
+                other_fields=dict(room_name=accommodee.room_name),
+            )
 
-        emit(
-            f"tickets.accommodation.presence.{verb}",
-            request=request,
-            event=event,
-            accommodation_information=accommodee,
-            limit_group=limit_group,
-            other_fields=dict(room_name=room_name),
-        )
+        messages.success(request, message)
 
-        messages.success(request, _(f"Accommodee marked as {verb}."))
     else:
         messages.error(request, _("Please check the form."))
 
@@ -481,7 +501,7 @@ def tickets_admin_accommodation_create_view(request, event, limit_group_id):
     if request.method == "POST":
         if form.is_valid():
             info = form.save(commit=False)
-            info.is_present = True
+            info.state = AccommodationInformation.State.ARRIVED
             info.save()
 
             info.limit_groups.set([limit_group])

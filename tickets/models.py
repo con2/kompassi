@@ -1151,7 +1151,18 @@ class AccommodationInformation(models.Model, CsvExportMixin):
     )
 
     email = models.EmailField(blank=True, default="", verbose_name="Sähköpostiosoite")
-    is_present = models.BooleanField(default=False, verbose_name="Läsnäoleva")
+
+    class State(models.TextChoices):
+        NOT_ARRIVED = "N", _("Not arrived")
+        ARRIVED = "A", _("Arrived")
+        LEFT = "L", _("Left")
+
+    state = models.CharField(
+        max_length=1,
+        default=State.NOT_ARRIVED,
+        verbose_name=_("State"),
+        choices=State.choices,
+    )
     room_name = models.CharField(
         max_length=63,
         blank=True,
@@ -1193,17 +1204,17 @@ class AccommodationInformation(models.Model, CsvExportMixin):
         return self.order_product.order.formatted_order_number if self.order_product else ""
 
     @property
+    def is_present(self):
+        return self.state == AccommodationInformation.State.ARRIVED
+
+    @property
     def row_css_class(self):
         return "success" if self.is_present else ""
 
     def get_presence_form(self):
         from .forms import AccommodationPresenceForm
 
-        form = AccommodationPresenceForm(instance=self)
-        if self.is_present:
-            make_form_readonly(form)
-
-        return form
+        return AccommodationPresenceForm(instance=self)
 
     @classmethod
     def get_csv_fields(cls, event):

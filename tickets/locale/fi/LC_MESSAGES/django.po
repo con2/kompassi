@@ -375,3 +375,12 @@ msgstr "Majoittuja merkitty saapuneeksi."
 
 msgid "Accommodee marked as left."
 msgstr "Majoittuja merkitty poistuneeksi."
+
+msgid "Not arrived"
+msgstr "Ei saapunut"
+
+msgid "Arrived"
+msgstr "Paikalla"
+
+msgid "Left"
+msgstr "Poistunut"
