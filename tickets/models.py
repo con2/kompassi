@@ -148,6 +148,18 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
         related_name="as_pos_access_group_for",
     )
 
+    accommodation_access_group = models.ForeignKey(
+        "auth.Group",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Accommodation access group"),
+        help_text=_(
+            "Members of this group are granted access to the accommodation onboarding view without being ticket admins."
+        ),
+        related_name="as_accommodation_access_group_for",
+    )
+
     terms_and_conditions_url = LocalizedCharField(
         blank=True,
         default=dict,
@@ -196,6 +208,12 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
             return True
 
         return self.pos_access_group and self.is_user_in_group(user, self.pos_access_group)
+
+    def is_user_allowed_accommodation_access(self, user):
+        if self.is_user_admin(user):
+            return True
+
+        return self.pos_access_group and self.is_user_in_group(user, self.accommodation_access_group)
 
     class Meta:
         verbose_name = _("ticket sales settings for event")

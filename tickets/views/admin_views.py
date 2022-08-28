@@ -355,7 +355,7 @@ def tickets_admin_tools_view(request, vars, event):
 @tickets_event_required
 @require_http_methods(["GET", "HEAD", "POST"])
 def tickets_admin_accommodation_view(request, event, limit_group_id=None):
-    if not event.tickets_event_meta.is_user_allowed_pos_access(request.user):
+    if not event.tickets_event_meta.is_user_allowed_accommodation_access(request.user):
         raise PermissionDenied()
 
     vars = dict(event=event)
@@ -434,7 +434,7 @@ def tickets_admin_accommodation_view(request, event, limit_group_id=None):
 @tickets_event_required
 @require_POST
 def tickets_admin_accommodation_presence_view(request, event, limit_group_id, accommodation_information_id):
-    if not event.tickets_event_meta.is_user_allowed_pos_access(request.user):
+    if not event.tickets_event_meta.is_user_allowed_accommodation_access(request.user):
         raise PermissionDenied()
 
     limit_group = get_object_or_404(LimitGroup, event=event, id=limit_group_id)
@@ -488,7 +488,7 @@ def tickets_admin_accommodation_presence_view(request, event, limit_group_id, ac
 @tickets_event_required
 @require_http_methods(["GET", "HEAD", "POST"])
 def tickets_admin_accommodation_create_view(request, event, limit_group_id):
-    if not event.tickets_event_meta.is_user_allowed_pos_access(request.user):
+    if not event.tickets_event_meta.is_user_allowed_accommodation_access(request.user):
         raise PermissionDenied()
 
     vars = dict(event=event)
