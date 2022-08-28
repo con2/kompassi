@@ -409,13 +409,20 @@ def tickets_admin_accommodation_view(request, event, limit_group_id=None):
             event, AccommodationInformation, accommodees, filename=filename, dialect=CSV_EXPORT_FORMATS[format]
         )
     elif format == "screen":
-        filters = [
-            (limit_group_id == lg.id, lg)
-            for lg in LimitGroup.objects.filter(
-                event=event,
-                product__requires_accommodation_information=True,
-            ).distinct()
-        ]
+        # ticket shoppe limit grouppes that have accommodation products
+        q = Q(
+            event=event,
+            product__requires_accommodation_information=True,
+        )
+
+        # shortcut: limit grouppes that already have accommodees
+        # required for labour accommodation
+        q |= Q(
+            event=event,
+            accommodation_information_set__isnull=False,
+        )
+
+        filters = [(limit_group_id == lg.id, lg) for lg in LimitGroup.objects.filter(q).distinct().order_by("id")]
 
         vars.update(
             accommodees=accommodees,
