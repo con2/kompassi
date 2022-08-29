@@ -6,7 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator, RegexVa
 from django.db import models
 from django.db.models import Q
 from django.db.transaction import atomic
-from django.utils.timezone import now
+from django.utils.timezone import now, get_default_timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -1532,13 +1532,15 @@ class Programme(models.Model, CsvExportMixin):
 
         paikkala_room = self.room.paikkalize()
         meta = self.event.programme_event_meta
+        tz = get_default_timezone()
 
         paikkala_program_kwargs = dict(
             event_name=self.event.name,
             name=truncatechars(self.title, PaikkalaProgram._meta.get_field("name").max_length),
             room=paikkala_room,
             require_user=True,
-            reservation_end=self.start_time,
+            reservation_start=self.start_time.replace(hour=9, minute=0, tzinfo=tz),
+            reservation_end=self.end_time,
             invalid_after=self.end_time,
             max_tickets=0,
             automatic_max_tickets=True,
