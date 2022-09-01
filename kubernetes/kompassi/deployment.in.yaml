@@ -41,6 +41,7 @@ spec:
             - --bind=0.0.0.0:8000
             - --access-logfile=-
             - --capture-output
+            - !Format "--timeout={kompassi_timeout_seconds}"
             - kompassi.wsgi
           startupProbe: !Var kompassi_startup_probe
           readinessProbe: !Var kompassi_readiness_probe

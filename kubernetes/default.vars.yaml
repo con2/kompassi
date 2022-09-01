@@ -32,6 +32,7 @@ kompassi_admins: []
 
 # workers per pod
 kompassi_workers: 4
+kompassi_timeout_seconds: 120
 
 kompassi_startup_probe:
   httpGet:
@@ -297,6 +298,8 @@ kompassi_volumes:
 ingress_annotations: !Merge
   - nginx.ingress.kubernetes.io/proxy-body-size: "100m"
     nginx.org/client-max-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: !Format "{kompassi_timeout_seconds}"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: !Format "{kompassi_timeout_seconds}"
   - !If
       test: !Var ingress_letsencrypt_enabled
       then:
