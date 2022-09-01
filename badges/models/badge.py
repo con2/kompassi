@@ -138,6 +138,10 @@ class Badge(models.Model, CsvExportMixin):
     )
 
     @property
+    def row_css_class(self):
+        return "success" if self.is_arrived else ""
+
+    @property
     def printed_at(self):
         if self.printed_separately_at:
             return self.printed_separately_at

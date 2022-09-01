@@ -26,7 +26,7 @@ block admin_content
         th
       tbody
         for badge in badges
-          tr
+          tr(class="{{ badge.row_css_class }}")
             if should_display_personnel_class
               td {{ badge.personnel_class.name }}
 
