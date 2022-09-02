@@ -51,7 +51,8 @@ class PaikkalAdapterMixin:
     def get_programme(self):
         event = self.kwargs["event"]
         programme_id = self.kwargs["programme_id"]  # NOTE: programme.Programme, not paikkala.Program
-        return Programme.objects.get(
+        return get_object_or_404(
+            Programme,
             id=int(programme_id),
             category__event=event,
             is_using_paikkala=True,
