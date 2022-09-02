@@ -1,14 +1,9 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
-from django.urls import reverse
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.timezone import now
+from django.shortcuts import render, redirect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.decorators.http import require_http_methods, require_safe
+from django.views.decorators.http import require_http_methods
+from django.utils.translation import gettext_lazy as _
 
 from ..models import (
     EmailVerificationError,
@@ -41,6 +36,13 @@ from ..helpers import person_required
 @require_http_methods(["GET", "HEAD", "POST"])
 def core_password_reset_view(request, code):
     if request.user.is_authenticated:
+        messages.error(
+            request,
+            _(
+                "You are logged in. In order to use a password reset link, please log out first "
+                "or use the Incognito/Private Browsing mode of your browser."
+            ),
+        )
         return redirect("core_password_view")
 
     form = initialize_form(PasswordResetForm, request)

@@ -365,3 +365,6 @@ msgstr "Discord-tunnus"
 
 msgid "Full discord handle with number, ie. handle#0000. Events may use this to give you roles based on your participation."
 msgstr "Discord-tunnus täydessä muodossa, esim. handle#0000. Tapahtumat voivat käyttää tätä esimerkiksi antamaan sinulle rooleja Discord-serverillään."
+
+msgid "You are logged in. In order to use a password reset link, please log out first or use the Incognito/Private Browsing mode of your browser."
+msgstr "Olet kirjautunut sisään. Käyttääksesi salasanan palautuslinkkiä ole hyvä ja kirjaudu ensin ulos tai käytä selaimesi Incognito/Private Browsing -tilaa."
