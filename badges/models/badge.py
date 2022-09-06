@@ -1,17 +1,31 @@
 import logging
+from datetime import datetime
+from dataclasses import dataclass
+from pkg_resources import resource_string
 
 from django.conf import settings
-from django.db import models, transaction
+from django.db import models, transaction, connection
 from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import get_default_timezone
 
 from core.csv_export import CsvExportMixin
+from core.models.event import Event
 from core.utils import time_bool_property
 
 from ..proxies.badge.privacy import BadgePrivacyAdapter
 
 
 logger = logging.getLogger("kompassi")
+
+
+@dataclass
+class ArrivalsRow:
+    hour: datetime | None
+    arrivals: int
+    cum_arrivals: int
+
+    QUERY = resource_string(__name__, "queries/arrivals_by_hour.sql").decode()
 
 
 class Badge(models.Model, CsvExportMixin):
@@ -361,3 +375,15 @@ class Badge(models.Model, CsvExportMixin):
             personnel_class_name=self.personnel_class_name,
             event_name=self.event_name,
         )
+
+    @staticmethod
+    def get_arrivals_by_hour(event: Event | str):
+        event_slug = event if isinstance(event, str) else event.slug
+
+        with connection.cursor() as cursor:
+            cursor.execute(ArrivalsRow.QUERY, [event_slug])
+            results = [ArrivalsRow(*row) for row in cursor.fetchall()]
+
+        # TODO backfill missing hours
+
+        return results

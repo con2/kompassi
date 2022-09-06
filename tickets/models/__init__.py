@@ -1,8 +1,10 @@
+import logging
+from dataclasses import dataclass
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
-import logging
+from pkg_resources import resource_string
 
-from django.db import models, transaction
+from django.db import models, connection
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -16,6 +18,7 @@ from dateutil.tz import tzlocal
 
 from core.csv_export import CsvExportMixin
 from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
+from core.models.event import Event
 from core.utils import (
     format_phone_number,
     NONUNIQUE_SLUG_FIELD_PARAMS,
@@ -25,8 +28,8 @@ from core.utils import (
 )
 from core.utils.form_utils import make_form_readonly
 
-from .utils import format_date, format_price, append_reference_number_checksum
-from .receipt import render_receipt
+from ..utils import format_date, format_price, append_reference_number_checksum
+from ..receipt import render_receipt
 
 
 logger = logging.getLogger("kompassi")
@@ -622,6 +625,15 @@ class Customer(models.Model):
         )
 
 
+@dataclass
+class ArrivalsRow:
+    hour: datetime | None
+    arrivals: int
+    cum_arrivals: int
+
+    QUERY = resource_string(__name__, "queries/arrivals_by_hour.sql").decode()
+
+
 class Order(models.Model):
     # REVERSE: order_product_set = ForeignKeyFrom(OrderProduct)
 
@@ -1088,6 +1100,18 @@ class Order(models.Model):
             order.cancel(send_email=send_email)
 
         return count
+
+    @staticmethod
+    def get_arrivals_by_hour(event: Event | str):
+        event_slug = event if isinstance(event, str) else event.slug
+
+        with connection.cursor() as cursor:
+            cursor.execute(ArrivalsRow.QUERY, [event_slug])
+            results = [ArrivalsRow(*row) for row in cursor.fetchall()]
+
+        # TODO backfill missing hours
+
+        return results
 
 
 class OrderProduct(models.Model, CsvExportMixin):

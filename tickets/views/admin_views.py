@@ -1,7 +1,6 @@
 import datetime
 from collections import defaultdict
 
-from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -19,7 +18,7 @@ from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC
 from reportlab.pdfgen import canvas
 
 from core.batches_view import batches_view
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS, export_csv
+from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
 from core.sort_and_filter import Filter
 from core.utils import url, initialize_form, slugify, login_redirect
 from event_log.utils import emit
@@ -641,27 +640,24 @@ def tickets_admin_menu_items(request, event):
     shirts_active = request.path.startswith(shirts_url)
     shirts_text = "Paidat"
 
-    items = [
+    reports_url = url("tickets_admin_reports_view", event.slug)
+    reports_active = request.path == reports_url
+    reports_text = "Lunastustilanne"
+
+    pos_url = url("tickets_admin_pos_view", event.slug)
+    pos_active = False
+    pos_text = "Lipuntarkastus"
+
+    return [
         (stats_active, stats_url, stats_text),
         (orders_active, orders_url, orders_text),
         (batches_active, batches_url, batches_text),
         (accommodation_active, accommodation_url, accommodation_text),
         (tools_active, tools_url, tools_text),
         (shirts_active, shirts_url, shirts_text),
+        (pos_active, pos_url, pos_text),
+        (reports_active, reports_url, reports_text),
     ]
-
-    if "lippukala" in settings.INSTALLED_APPS:
-        pos_url = url("tickets_admin_pos_view", event.slug)
-        pos_active = False
-        pos_text = "Lipuntarkastus"
-
-        items.extend(
-            [
-                (pos_active, pos_url, pos_text),
-            ]
-        )
-
-    return items
 
 
 @tickets_admin_required

@@ -285,3 +285,6 @@ msgstr "Odottaa"
 #: models/count_badges_mixin.py
 msgid "Waiting in batch"
 msgstr "Odottaa erässä"
+
+msgid "Reports"
+msgstr "Raportit"

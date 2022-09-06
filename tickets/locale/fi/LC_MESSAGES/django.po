@@ -384,3 +384,6 @@ msgstr "Paikalla"
 
 msgid "Left"
 msgstr "Poistunut"
+
+msgid "Reports"
+msgstr "Raportit"

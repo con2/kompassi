@@ -92,11 +92,16 @@ def badges_admin_menu_items(request, event):
     onboarding_active = request.path.startswith(onboarding_url)
     onboarding_text = _("Onboarding")
 
+    reports_url = url("badges_admin_reports_view", event.slug)
+    reports_active = request.path == reports_url
+    reports_text = _("Reports")
+
     return [
         (dashboard_active, dashboard_url, dashboard_text),
         (badges_active, badges_url, badges_text),
         (batches_active, batches_url, batches_text),
         (onboarding_active, onboarding_url, onboarding_text),
+        (reports_active, reports_url, reports_text),
     ]
 
 

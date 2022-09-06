@@ -1,18 +1,19 @@
-from tickets.views.admin_views import tickets_admin_accommodation_presence_view, tickets_admin_export_view
 from django.conf import settings
-from django.conf.urls import include
-from django.shortcuts import redirect
 
 from .views import (
     tickets_accommodation_view,
     tickets_address_view,
     tickets_admin_accommodation_create_view,
+    tickets_admin_accommodation_presence_view,
     tickets_admin_accommodation_view,
     tickets_admin_batch_view,
     tickets_admin_batches_view,
     tickets_admin_etickets_view,
+    tickets_admin_export_view,
     tickets_admin_order_view,
     tickets_admin_orders_view,
+    tickets_admin_pos_view,
+    tickets_admin_reports_view,
     tickets_admin_shirts_view,
     tickets_admin_stats_by_date_view,
     tickets_admin_stats_view,
@@ -113,17 +114,14 @@ urlpatterns = [
         tickets_admin_tools_view,
         name="tickets_admin_tools_view",
     ),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/reports/?$",
+        tickets_admin_reports_view,
+        name="tickets_admin_reports_view",
+    ),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/pos$",
+        tickets_admin_pos_view,
+        name="tickets_admin_pos_view",
+    ),
 ]
-
-if "lippukala" in settings.INSTALLED_APPS:
-    from .views.admin_views import tickets_admin_pos_view
-
-    urlpatterns.extend(
-        [
-            re_path(
-                r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/pos$",
-                tickets_admin_pos_view,
-                name="tickets_admin_pos_view",
-            ),
-        ]
-    )

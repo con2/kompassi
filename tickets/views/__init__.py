@@ -12,6 +12,7 @@ from .public_views import (
 
 from .admin_views import (
     tickets_admin_accommodation_create_view,
+    tickets_admin_accommodation_presence_view,
     tickets_admin_accommodation_view,
     tickets_admin_batch_view,
     tickets_admin_batches_view,
@@ -20,8 +21,11 @@ from .admin_views import (
     tickets_admin_menu_items,
     tickets_admin_order_view,
     tickets_admin_orders_view,
+    tickets_admin_pos_view,
     tickets_admin_shirts_view,
     tickets_admin_stats_by_date_view,
     tickets_admin_stats_view,
     tickets_admin_tools_view,
 )
+
+from .tickets_admin_reports_view import tickets_admin_reports_view
