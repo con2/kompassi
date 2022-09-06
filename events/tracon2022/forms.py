@@ -386,7 +386,6 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        self.fields["afterparty_participation"].label = "Osallistun iltabileisiin"
         self.fields[
             "afterparty_participation"
         ].help_text = "Ruksaa tämä ruutu, mikäli haluat osallistua kaatajaisiin. Mikäli mielesi muuttuu tai sinulle tulee este, peru ilmoittautumisesi poistamalla rasti tästä ruudusta."

@@ -27,7 +27,7 @@ class Setup:
         self.setup_intra()
         self.setup_access()
         self.setup_directory()
-        # self.setup_kaatoilmo()
+        self.setup_kaatoilmo()
         # self.setup_sms()
 
     def setup_core(self):
@@ -666,8 +666,8 @@ class Setup:
 
         coaches = []
         for coach_title, room_title, hour in [
-            # ('Kaatobussin paikkavaraus, menomatka', 'Kaatobussi meno', 15),
-            # ('Kaatobussin paikkavaraus, paluumatka', 'Kaatobussi paluu', 23),
+            ("Kaatobussin paikkavaraus, menomatka", "Kaatobussi meno", 14),
+            ("Kaatobussin paikkavaraus, paluumatka", "Kaatobussi paluu", 21),
         ]:
             coach, created = Programme.objects.get_or_create(
                 category=Category.objects.get(title="Muu ohjelma", event=self.event),
@@ -691,7 +691,7 @@ class Setup:
 
             coaches.append(coach)
 
-        # outward_coach, return_coach = coaches
+        outward_coach, return_coach = coaches
 
         kaatoilmo_override_does_not_apply_message = (
             "Valitettavasti et pysty ilmoittautumaan kaatoon käyttäen tätä lomaketta. Tämä "
@@ -702,41 +702,39 @@ class Setup:
             "osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen "
             '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
         )
-        # outward_coach_url = reverse('programme:paikkala_reservation_view', args=(self.event.slug, outward_coach.id))
-        # return_coach_url = reverse('programme:paikkala_reservation_view', args=(self.event.slug, return_coach.id))
+        outward_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, outward_coach.id))
+        return_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, return_coach.id))
         kaatoilmo, unused = Survey.objects.get_or_create(
             event=self.event,
             slug="kaatoilmo",
             defaults=dict(
-                title="Ilmoittautuminen iltabileisiin",
+                title="Ilmoittautuminen kaatajaisiin",
                 description=(
                     "Kiitokseksi työpanoksestasi tapahtumassa Tracon tarjoaa sinulle mahdollisuuden "
-                    "osallistua iltabileisiin lauantaina 5. syyskuuta 2022 Tampereella. Iltabileisiin osallistuminen edellyttää ilmoittautumista. "
-                    # '</p><p>'
-                    # '<strong>HUOM!</strong> Paikat kaatobusseihin varataan erikseen. Varaa paikkasi '
-                    # f'<a href="{outward_coach_url}" target="_blank">menobussiin täältä</a> ja '
-                    # f'<a href="{return_coach_url}" target="_blank">paluubussiin täältä</a>. '
-                    # f'Näet bussivarauksesi <a href="{reverse("profile_reservations_view")}" target="_blank">paikkalippusivulta</a>.'
+                    "osallistua kaatajaisiin lauantaina 17. syyskuuta 2022 Tampereella. Kaatajaisiin osallistuminen edellyttää ilmoittautumista ja 18 vuoden ikää. "
+                    "</p><p>"
+                    "<strong>HUOM!</strong> Paikat kaatobusseihin varataan erikseen. Varaa paikkasi "
+                    f'<a href="{outward_coach_url}" target="_blank" rel="noopener noreferrer">menobussiin täältä</a> ja '
+                    f'<a href="{return_coach_url}" target="_blank" rel="noopener noreferrer">paluubussiin täältä</a>. '
+                    f'Näet bussivarauksesi <a href="{reverse("programme:profile_reservations_view")}" target="_blank" rel="noopener noreferrer">paikkalippusivulta</a>.'
                 ),
                 override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
                 form_class_path="events.tracon2022.forms:AfterpartyParticipationSurvey",
                 active_from=self.event.end_time,
-                active_until=(self.event.end_time + timedelta(days=9)).replace(
-                    hour=23, minute=59, second=59, tzinfo=self.tz
-                ),
+                active_until=datetime(2022, 9, 10, 23, 59, 59, tzinfo=self.tz),
             ),
         )
 
         for poison_name in [
-            # 'Olut',
-            # 'Siideri, kuiva',
-            # 'Siideri, makea',
-            # 'Lonkero',
-            # 'Panimosima',
-            # 'Punaviini',
-            # 'Valkoviini',
-            # 'Cocktailit',
-            # 'Alkoholittomat juomat',
+            "Olut",
+            "Siideri, kuiva",
+            "Siideri, makea",
+            "Lonkero",
+            "Panimosima",
+            "Punaviini",
+            "Valkoviini",
+            "Cocktailit",
+            "Alkoholittomat juomat",
         ]:
             Poison.objects.get_or_create(name=poison_name)
 

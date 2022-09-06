@@ -130,7 +130,7 @@ class CustomerForm(forms.ModelForm):
                 "accept_terms_and_conditions",
             )
             self.fields["accept_terms_and_conditions"].label = _(
-                "I accept the <a href='{}' target='_blank' rel='noreferer noopener'>terms and conditions</a> (required)."
+                "I accept the <a href='{}' target='_blank' rel='noreferrer noopener'>terms and conditions</a> (required)."
             ).format(terms_and_conditions_url)
         else:
             del self.fields["accept_terms_and_conditions"]
