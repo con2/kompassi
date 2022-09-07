@@ -178,6 +178,15 @@ class SignupExtra(SignupExtraBase):
         ),
     )
 
+    afterparty_policy = models.BooleanField(
+        default=False,
+        verbose_name=(
+            "Olen tutustunut Traconin "
+            '<a href="https://tracon.fi/hairinta" target="_blank" rel="noopener noreferrer">häirinnän vastaiseen linjaukseen</a>, '
+            "ymmärrän sen olevan voimassa myös kaadossa ja sitoudun noudattamaan sitä."
+        ),
+    )
+
     pick_your_poison = models.ManyToManyField(
         Poison,
         blank=True,

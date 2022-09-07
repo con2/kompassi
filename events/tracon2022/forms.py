@@ -389,6 +389,8 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
+        self.fields["afterparty_policy"].required = True
+
     @classmethod
     def get_instance_for_event_and_person(cls, event, person):
         year = event.start_time.year
@@ -408,6 +410,7 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
             "special_diet",
             "special_diet_other",
             "afterparty_help",
+            "afterparty_policy",
         )
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
