@@ -15,8 +15,9 @@ from .models import SignupExtra, Poison
 
 
 @default_cbac_required
-def tracon2022_afterparty_participants_view(request, vars, event):
-    assert event.slug == "tracon2022"
+def tracon2022_afterparty_participants_view(request, event_slug):
+    assert event_slug == "tracon2022"
+    event = Event.objects.get(slug=event_slug)
 
     participants = SignupExtraAfterpartyProxy.objects.filter(afterparty_participation=True)
 

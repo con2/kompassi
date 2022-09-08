@@ -11,9 +11,9 @@ handler404 = "access.views.not_found_view"
 handler403 = "access.views.permission_denied_view"
 
 urlpatterns = [
-    path('', include("core.urls")),
-    path('admin', RedirectView.as_view(url="/admin/", permanent=False)),
-    path('admin/', admin.site.urls),
+    path("", include("core.urls")),
+    path("admin", RedirectView.as_view(url="/admin/", permanent=False)),
+    path("admin/", admin.site.urls),
     re_path(r"^i18n/setlang/?$", set_language, name="set_language"),
 ]
 
@@ -30,8 +30,7 @@ for app_name in [
     "sms",
     "desuprofile_integration",
     "membership",
-    "events.tracon2019",
-    "events.traconpaidat2019",
+    "events.tracon2022",
     "enrollment",
     "intra",
     "feedback",
