@@ -1,5 +1,4 @@
 from access.cbac import default_cbac_required
-from collections import Counter
 
 from django.db import models
 from django.utils.timezone import now
@@ -8,10 +7,9 @@ from django.shortcuts import render
 from core.csv_export import csv_response
 from core.models import Event
 from event_log.utils import emit
-from labour.helpers import labour_admin_required
 
 from .proxies import SignupExtraAfterpartyProxy
-from .models import SignupExtra, Poison
+from .models import Poison
 
 
 @default_cbac_required
