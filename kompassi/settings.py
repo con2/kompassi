@@ -276,6 +276,7 @@ INSTALLED_APPS = (
     "events.traconjvk2022",
     "events.frostbite2023",
     "events.desucon2023",
+    "events.matsucon2022",
 )
 
 LOGGING = {
