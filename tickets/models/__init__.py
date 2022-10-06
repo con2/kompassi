@@ -318,7 +318,7 @@ class Batch(models.Model):
 
     def send_delivery_confirmation_messages(self):
         if "background_tasks" in settings.INSTALLED_APPS:
-            from .tasks import batch_send_delivery_confirmation_messages
+            from ..tasks import batch_send_delivery_confirmation_messages
 
             batch_send_delivery_confirmation_messages.delay(self.pk)
         else:
@@ -993,7 +993,7 @@ class Order(models.Model):
 
     def send_confirmation_message(self, msgtype):
         if "background_tasks" in settings.INSTALLED_APPS:
-            from .tasks import order_send_confirmation_message
+            from ..tasks import order_send_confirmation_message
 
             order_send_confirmation_message.delay(self.pk, msgtype)
         else:
