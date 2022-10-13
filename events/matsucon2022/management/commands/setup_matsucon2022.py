@@ -29,7 +29,7 @@ class Setup:
         self.setup_labour()
         self.setup_programme()
         self.setup_badges()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_intra()
 
     def setup_core(self):
@@ -320,10 +320,10 @@ class Setup:
 
         for product_info in [
             dict(
-                name="Viikonlopun lippu",
-                description="Viikonloppulippu oikeuttaa sisäänpääsyyn Matsuconin kumpanakin päivänä (3.–4.8.). Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
+                name="Viikonloppulippu",
+                description="Viikonloppulippu oikeuttaa sisäänpääsyn molempiin Matsuconin päiviin (10.–11.12.2022). Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Viikonloppuliput", 460),
+                    limit_group("Viikonloppuliput", 450),
                 ],
                 price_cents=1500,
                 requires_shipping=False,
@@ -332,10 +332,10 @@ class Setup:
                 ordering=ordering(),
             ),
             dict(
-                name="Lauantain lippu",
-                description="Lauantailippu oikeuttaa sisäänpääsyyn Matsuconin ensimmäisenä päivänä (3.8.). Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
+                name="Lauantailippu",
+                description="Lauantailippu oikeuttaa sisäänpääsyyn Matsuconin ensimmäiseen päivään (la 10.12.2022). Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Lauantailiput", 125),
+                    limit_group("Lauantailiput", 200),
                 ],
                 price_cents=1000,
                 requires_shipping=False,
@@ -344,10 +344,10 @@ class Setup:
                 ordering=ordering(),
             ),
             dict(
-                name="Sunnuntain lippu",
-                description="Sunnuntailippu oikeuttaa sisäänpääsyyn Matsuconin toisena päivänä (4.8.). Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
+                name="Sunnuntailippu",
+                description="Sunnuntailippu oikeuttaa sisäänpääsyyn Matsuconin toiseen päivään (su 11.12.2022). Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Sunnuntailiput", 110),
+                    limit_group("Sunnuntailiput", 150),
                 ],
                 price_cents=1000,
                 requires_shipping=False,
@@ -355,33 +355,33 @@ class Setup:
                 available=True,
                 ordering=ordering(),
             ),
-            dict(
-                name="Lattiamajoitus",
-                description="Lattiamajoitus lauantain ja sunnuntain väliselle yölle tapahtumapaikalla.",
-                limit_groups=[
-                    limit_group("Lattiamajoituspaikat", 35),
-                ],
-                price_cents=700,
-                requires_shipping=False,
-                electronic_ticket=False,
-                requires_accommodation_information=True,
-                available=True,
-                ordering=ordering(),
-            ),
-            dict(
-                name="Lattiamajoitus + aamiainen",
-                description="Lattiamajoitus sekä aamiainen lauantain ja sunnuntain väliselle yölle tapahtumapaikalla.",
-                limit_groups=[
-                    limit_group("Lattiamajoituspaikat", 35),
-                    limit_group("Aamiainen", 35),
-                ],
-                price_cents=1000,
-                requires_shipping=False,
-                electronic_ticket=False,
-                requires_accommodation_information=True,
-                available=True,
-                ordering=ordering(),
-            ),
+            # dict(
+            #     name="Lattiamajoitus",
+            #     description="Lattiamajoitus lauantain ja sunnuntain väliselle yölle tapahtumapaikalla.",
+            #     limit_groups=[
+            #         limit_group("Lattiamajoituspaikat", 35),
+            #     ],
+            #     price_cents=700,
+            #     requires_shipping=False,
+            #     electronic_ticket=False,
+            #     requires_accommodation_information=True,
+            #     available=True,
+            #     ordering=ordering(),
+            # ),
+            # dict(
+            #     name="Lattiamajoitus + aamiainen",
+            #     description="Lattiamajoitus sekä aamiainen lauantain ja sunnuntain väliselle yölle tapahtumapaikalla.",
+            #     limit_groups=[
+            #         limit_group("Lattiamajoituspaikat", 35),
+            #         limit_group("Aamiainen", 35),
+            #     ],
+            #     price_cents=1000,
+            #     requires_shipping=False,
+            #     electronic_ticket=False,
+            #     requires_accommodation_information=True,
+            #     available=True,
+            #     ordering=ordering(),
+            # ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
@@ -390,7 +390,6 @@ class Setup:
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
-                product.save()
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team
