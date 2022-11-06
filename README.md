@@ -26,7 +26,7 @@ To fix this, and to update the translations when you change them (`django.po` fi
 
 Run tests:
 
-    alias dc-test="docker-compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from test"
+    alias dc-test="docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from test"
     dc-test
 
 #### Running `manage.py makemigrations`
