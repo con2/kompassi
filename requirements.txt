@@ -165,7 +165,7 @@ mccabe==0.6.1
     # via flake8
 mypy-extensions==0.4.3
     # via black
-oauthlib==3.2.0
+oauthlib==3.2.1
     # via
     #   django-oauth-toolkit
     #   requests-oauthlib
