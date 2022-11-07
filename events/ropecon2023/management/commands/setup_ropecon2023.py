@@ -662,10 +662,13 @@ class Setup:
         )
 
         for team_slug, team_name in [
-            ("tuottajat", "Tuottajat"),
-            ("infra", "Infra"),
-            ("palvelut", "Palvelut"),
+            ("talous", "Talous"),
+            ("peliohjelma", "Peliohjelma"),
             ("ohjelma", "Ohjelma"),
+            ("viestinta", "Viestintä"),
+            ("tilatjatekniikka", "Tilat ja tekniikka"),
+            ("vapaaehtoiset", "Vapaaehtoiset"),
+            ("kavijapalvelut", "Kävijäpalvelut"),
         ]:
             (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
             Team.objects.get_or_create(
