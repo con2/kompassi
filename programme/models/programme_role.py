@@ -33,6 +33,7 @@ class ProgrammeRole(models.Model, CsvExportMixin):
     class Meta:
         verbose_name = _("Programme host")
         verbose_name_plural = _("Programme hosts")
+        unique_together = [("person", "programme")]
 
     @classmethod
     def from_invitation(cls, invitation, person):
