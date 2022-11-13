@@ -1,14 +1,18 @@
+import argparse
 import logging
+import pkg_resources
 from typing import Iterable
 
 from django.core.management.base import BaseCommand
 
 from labour.models.roster import Shift
+from programme.models.programme_role import ProgrammeRole
 
 from ...models import Event
 
 
 logger = logging.getLogger("kompassi")
+DUPLICATE_PROGRAMME_ROLES_SQL = pkg_resources.resource_string(__name__, "sql/duplicate_programme_roles.sql").decode()
 
 
 class Command(BaseCommand):
@@ -16,17 +20,34 @@ class Command(BaseCommand):
     help = "Check data integrity"
 
     events: Iterable[Event]
+    fix: bool
 
     def add_arguments(self, parser):
-        parser.add_argument("--event", nargs="*", metavar="SLUG", help="Events to process (default all)")
+        parser.add_argument(
+            "--event",
+            dest="events",
+            nargs="*",
+            metavar="SLUG",
+            help="Events to process (default all)",
+            default=None,
+        )
+        parser.add_argument(
+            "--fix",
+            default=False,
+            action=argparse.BooleanOptionalAction,
+            help="Attempt to fix auto-fixable problems",
+        )
 
     def handle(self, *args, **options):
+        self.fix = options["fix"]
+
         if options["events"]:
             self.events = Event.objects.filter(slug__in=options["events"])
         else:
             self.events = Event.objects.all()
 
         self.labour_check_shifts()
+        self.programme_check_double_roles()
 
     def labour_check_shifts(self):
         for shift in Shift.objects.filter(signup__event__in=self.events):
@@ -37,3 +58,26 @@ class Command(BaseCommand):
                     f"{shift.signup.event.slug}: Job category of shift not present in "
                     f"accepted job categories of signup (shift = {shift.id}, jc = {jc.id}, signup = {signup.id})"
                 )
+
+                if self.fix:
+                    shift.signup.job_categories_accepted.add(jc)
+
+    def programme_check_double_roles(self):
+        prs = ProgrammeRole.objects.raw(DUPLICATE_PROGRAMME_ROLES_SQL)
+        prs = ProgrammeRole.objects.filter(
+            id__in={pr.id for pr in prs},
+            programme__category__event__in=self.events,
+        ).select_related(
+            "person",
+            "programme__category__event",
+        )
+
+        for pr in prs:
+            print(
+                f"{pr.programme.category.event.slug}: Duplicate programme roles "
+                f"(pr = {pr.id}, programme = {pr.programme_id}, person = {pr.person_id})"
+            )
+
+        if self.fix:
+            # prs contains only the duplicates due to row_number > 1
+            prs.delete()

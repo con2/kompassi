@@ -18,10 +18,13 @@ def accept_invitation_view(request, event, code):
     invitation = get_object_or_404(Invitation, programme__category__event=event, code=code)
     programme = invitation.programme
 
-    if invitation.state == "used" and programme.host_can_edit:
+    existing_role = ProgrammeRole.objects.filter(programme=programme, person=request.user.person).first()
+    is_already_used = bool(existing_role or invitation.state == "used")
+
+    if is_already_used and programme.host_can_edit:
         messages.warning(request, _("You have already accepted this invitation. You can edit the programme below."))
         return redirect("programme:profile_detail_view", programme.pk)
-    elif invitation.state == "used" and not programme.host_can_edit:
+    elif is_already_used and not programme.host_can_edit:
         messages.error(request, _("You have already accepted this invitation. You can no longer edit the programme."))
         return redirect("programme:profile_view")
     elif not (invitation.state == "valid" and programme.host_can_edit):
@@ -82,7 +85,7 @@ def accept_invitation_view(request, event, code):
 
             messages.success(
                 request,
-                _("Thank you for accepting the invitation. You can change the " "information later from your profile."),
+                _("Thank you for accepting the invitation. You can change the information later from your profile."),
             )
 
             return redirect("programme:profile_detail_view", programme.pk)
