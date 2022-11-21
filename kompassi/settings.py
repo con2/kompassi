@@ -212,7 +212,6 @@ INSTALLED_APPS = (
     "events.lakeuscon2016",
     "events.animecon2016",
     "events.hitpoint2017",
-    "events.tylycon2017",
     "events.shippocon2016",
     "events.yukicon2017",
     "events.frostbite2017",
