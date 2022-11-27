@@ -223,14 +223,22 @@ class Setup:
 
         personnel_class = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
 
-        role, unused = Role.objects.get_or_create(
-            personnel_class=personnel_class,
-            title="Ohjelmanjärjestäjä",
-            defaults=dict(
-                is_default=True,
-                require_contact_info=True,
-            ),
-        )
+        role_priority = 0
+        for role_title in [
+            "Ohjelmanjärjestäjä",
+            "Näkymätön ohjelmanjärjestäjä",
+        ]:
+            Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_title == "Ohjelmanjärjestäjä",
+                    is_public=role_title != "Näkymätön ohjelmanjärjestäjä",
+                    require_contact_info=True,
+                    priority=role_priority,
+                ),
+            )
+            role_priority += 10
 
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
