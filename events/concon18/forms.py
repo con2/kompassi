@@ -16,8 +16,8 @@ class EnrollmentForm(forms.ModelForm):
             "is_public",
             "concon_event_affiliation",
             "concon_parts",
-            "special_diet",
-            "special_diet_other",
+            # "special_diet",
+            # "special_diet_other",
         )
 
         widgets = dict(
