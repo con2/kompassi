@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Any, Optional
 
 from django.conf import settings
 from django.contrib.postgres.fields import HStoreField
@@ -68,8 +68,8 @@ class CBACEntry(models.Model):
     def get_entries(
         cls,
         user: AbstractUser,
-        claims: Claims = None,
-        t: datetime = None,
+        claims: Optional[Claims] = None,
+        t: Optional[datetime] = None,
         **extra_criteria,
     ):
         if not user.is_authenticated:
@@ -91,12 +91,12 @@ class CBACEntry(models.Model):
         return queryset
 
     @classmethod
-    def is_allowed(cls, user: AbstractUser, claims: Claims, t: datetime = None):
+    def is_allowed(cls, user: AbstractUser, claims: Claims, t: Optional[datetime] = None):
         entries = cls.get_entries(user, claims, t=t)
         return entries.filter(mode="+").exists() and not entries.filter(mode="-").exists()
 
     @classmethod
-    def ensure_admin_group_privileges(cls, t: datetime = None):
+    def ensure_admin_group_privileges(cls, t: Optional[datetime] = None):
         from core.models import Event
 
         if t is None:
@@ -106,7 +106,13 @@ class CBACEntry(models.Model):
             cls.ensure_admin_group_privileges_for_event(event, t=t)
 
     @classmethod
-    def ensure_admin_group_privileges_for_event(cls, event, *, t: datetime = None, request=None):
+    def ensure_admin_group_privileges_for_event(
+        cls,
+        event,
+        *,
+        t: Optional[datetime] = None,
+        request=None,
+    ):
         if t is None:
             t = now()
 
@@ -155,7 +161,7 @@ class CBACEntry(models.Model):
                     )
 
     @classmethod
-    def prune_expired(cls, *, t: datetime = None, request=None):
+    def prune_expired(cls, *, t: Optional[datetime] = None, request=None):
         if t is None:
             t = now()
 
