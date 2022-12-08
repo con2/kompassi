@@ -35,3 +35,4 @@ from .registration_views import (
 
 from .core_frontpage_view import core_frontpage_view
 from .core_organizations_view import core_organizations_view
+from .core_fobba_export_view import core_fobba_export_view

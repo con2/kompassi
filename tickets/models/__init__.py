@@ -770,6 +770,10 @@ class Order(models.Model):
     def formatted_order_number(self):
         return f"#{self.pk:06d}"
 
+    @property
+    def formatted_order_products(self):
+        return ", ".join(f"{op.count}x {op.product.name}" for op in self.order_product_set.all() if op.count > 0)
+
     def clean_up_order_products(self):
         self.order_product_set.filter(count__lte=0).delete()
 
