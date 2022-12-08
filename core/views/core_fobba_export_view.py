@@ -4,6 +4,8 @@ from django.utils.timezone import now
 from django.views.decorators.http import require_safe
 from django.http import HttpResponse
 
+from paikkala.models import Ticket
+
 from badges.models import Badge
 from core.models import Event
 from core.excel_export import XlsxWriter
@@ -40,13 +42,23 @@ def core_fobba_export_view(request, event_slug, format="xlsx"):
         ]
     )
 
-    for badge in Badge.objects.filter(personnel_class__event=event):
+    seen = set()
+
+    for badge in Badge.objects.filter(personnel_class__event=event, revoked_at__isnull=True):
+        id_fields = (
+            badge.surname,
+            badge.first_name,
+            badge.person.email if badge.person else "",
+            badge.person.normalized_phone_number if badge.person else "",
+        )
+
+        if id_fields in seen:
+            continue
+
+        seen.add(id_fields)
         writer.writerow(
             [
-                badge.surname,
-                badge.first_name,
-                badge.person.email if badge.person else "",
-                badge.person.normalized_phone_number if badge.person else "",
+                *id_fields,
                 badge.personnel_class_name,
                 badge.job_title,
             ]
@@ -61,14 +73,44 @@ def core_fobba_export_view(request, event_slug, format="xlsx"):
         customer = order.customer
         assert customer
 
+        id_fields = (
+            customer.last_name,
+            customer.first_name,
+            customer.email,
+            customer.normalized_phone_number,
+        )
+
+        if id_fields in seen:
+            continue
+
+        seen.add(id_fields)
         writer.writerow(
             [
-                customer.last_name,
-                customer.first_name,
-                customer.email,
-                customer.normalized_phone_number,
+                *id_fields,
                 "Lipun ostaja",
                 order.formatted_order_products,
+            ]
+        )
+
+    for ticket in Ticket.objects.filter(program__kompassi_programme__category__event=event):
+        person = ticket.user.person
+
+        id_fields = (
+            person.surname,
+            person.first_name,
+            person.email,
+            person.normalized_phone_number,
+        )
+
+        if id_fields in seen:
+            continue
+
+        seen.add(id_fields)
+        writer.writerow(
+            [
+                *id_fields,
+                "Paikkalipun varaaja",
+                "",
             ]
         )
 
