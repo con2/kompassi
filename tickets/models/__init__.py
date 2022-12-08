@@ -585,7 +585,6 @@ class Customer(models.Model):
         try:
             return format_phone_number(self.phone_number, region=region, format=format)
         except phonenumbers.NumberParseException:
-            logger.exception("Customer %s has invalid phone number: %s", self, self.phone_number)
             return self.phone_number
 
     @property

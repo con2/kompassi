@@ -296,7 +296,6 @@ class Person(models.Model):
         try:
             return format_phone_number(self.phone, region=region, format=format)
         except phonenumbers.NumberParseException:
-            logger.exception("Person %s has invalid phone number: %s", self, self.phone)
             return self.phone
 
     @property
