@@ -135,7 +135,7 @@ class Setup:
                 continue
 
             personnel_class.perks_markdown = previous_instance.perks_markdown
-            personnel_class.save()
+            personnel_class.save(update_fields=["perks_markdown"])
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
