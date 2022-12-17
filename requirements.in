@@ -27,6 +27,7 @@ ipdb
 ipython
 isort
 jsonschema
+markdown
 paramiko
 passlib
 phonenumberslite

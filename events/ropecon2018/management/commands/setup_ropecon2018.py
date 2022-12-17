@@ -71,7 +71,6 @@ class Setup:
             Job,
             JobCategory,
             LabourEventMeta,
-            Perk,
             PersonnelClass,
             Qualification,
             WorkPeriod,
@@ -107,30 +106,6 @@ class Setup:
             defaults=labour_event_meta_defaults,
         )
 
-        self.afterparty_perk, unused = Perk.objects.get_or_create(
-            event=self.event,
-            slug="kaato",
-            defaults=dict(
-                name="Kaato",
-            ),
-        )
-
-        self.one_food_perk, unused = Perk.objects.get_or_create(
-            event=self.event,
-            slug="food1",
-            defaults=dict(
-                name="Yksi ruokaraha",
-            ),
-        )
-
-        self.two_foods_perk, unused = Perk.objects.get_or_create(
-            event=self.event,
-            slug="food2",
-            defaults=dict(
-                name="Kaksi ruokarahaa",
-            ),
-        )
-
         for pc_name, pc_slug, pc_app_label, pc_afterparty, pc_one_food, pc_two_foods in [
             ("Conitea", "conitea", "labour", True, False, True),
             ("Vuorovastaava", "ylivankari", "labour", True, False, True),
@@ -159,13 +134,6 @@ class Setup:
                     priority=self.get_ordering_number(),
                 ),
             )
-
-            if pc_afterparty and created:
-                personnel_class.perks.set([self.afterparty_perk])
-            if pc_one_food and created:
-                personnel_class.perks.set([self.one_food_perk])
-            if pc_two_foods and created:
-                personnel_class.perks.set([self.two_foods_perk])
 
         tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
         ylityovoima = PersonnelClass.objects.get(event=self.event, slug="ylityovoima")

@@ -74,7 +74,6 @@ class Setup:
             Job,
             JobCategory,
             LabourEventMeta,
-            Perk,
             PersonnelClass,
             Qualification,
             WorkPeriod,

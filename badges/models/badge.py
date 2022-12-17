@@ -7,10 +7,10 @@ from django.conf import settings
 from django.db import models, transaction, connection
 from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
-from django.utils.timezone import get_default_timezone
 
 from core.csv_export import CsvExportMixin
 from core.models.event import Event
+from core.models.constants import NAME_DISPLAY_STYLE_FORMATS
 from core.utils import time_bool_property
 
 from ..proxies.badge.privacy import BadgePrivacyAdapter
@@ -168,6 +168,18 @@ class Badge(models.Model, CsvExportMixin):
     def formatted_printed_at(self):
         # XXX not really "formatted"
         return self.printed_at if self.printed_at is not None else ""
+
+    @property
+    def full_name(self):
+        """
+        Analogous to Person.full_name
+        """
+        if self.nick and self.is_nick_visible:
+            style = "firstname_nick_surname"
+        else:
+            style = "firstname_surname"
+
+        return NAME_DISPLAY_STYLE_FORMATS[style].format(self=self)
 
     @classmethod
     def get_or_create_dummy(cls):

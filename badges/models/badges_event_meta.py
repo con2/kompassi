@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from markdown import markdown
+
 from core.models import EventMetaBase
 
 from .count_badges_mixin import CountBadgesMixin
@@ -40,6 +42,15 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         related_name="as_onboarding_access_group_for",
     )
 
+    onboarding_instructions_markdown = models.TextField(
+        verbose_name=_("onboarding instructions"),
+        help_text=_(
+            "These instructions will be shown at the top of the onboarding view. Markdown formatting available."
+        ),
+        blank=True,
+        default="",
+    )
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
@@ -54,6 +65,10 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         from .badge import Badge
 
         return Badge.objects.filter(personnel_class__event=self.event)
+
+    @property
+    def onboarding_instructions_html(self):
+        return markdown(self.onboarding_instructions_markdown) if self.onboarding_instructions_markdown else ""
 
     def is_user_allowed_onboarding_access(self, user):
         if self.is_user_admin(user):

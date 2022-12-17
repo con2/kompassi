@@ -3,6 +3,8 @@ import logging
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from markdown import markdown
+
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 
@@ -14,9 +16,14 @@ class PersonnelClass(models.Model):
     app_label = models.CharField(max_length=63, blank=True, default="labour")
     name = models.CharField(max_length=63)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
-    perks = models.ManyToManyField("labour.Perk", blank=True)
     priority = models.IntegerField(default=0)
     icon_css_class = models.CharField(max_length=63, default="fa-user", blank=True)
+    perks_markdown = models.TextField(
+        verbose_name=_("perks"),
+        blank=True,
+        default="",
+        help_text=_("Focus on things that are given to the person at check-in. Markdown formatting available."),
+    )
 
     class Meta:
         verbose_name = _("personnel class")
@@ -47,6 +54,13 @@ class PersonnelClass(models.Model):
                 priority=priority,
             ),
         )
+
+    @property
+    def perks_html(self):
+        """
+        See also badges_admin_onboarding_view.(py|pug).
+        """
+        return markdown(self.perks_markdown) if self.perks_markdown else ""
 
     def __str__(self):
         return self.name

@@ -65,7 +65,6 @@ class Setup:
             InfoLink,
             JobCategory,
             LabourEventMeta,
-            Perk,
             PersonnelClass,
             Qualification,
             Survey,
@@ -101,14 +100,6 @@ class Setup:
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
-        )
-
-        self.afterparty_perk, unused = Perk.objects.get_or_create(
-            event=self.event,
-            slug="kaatajaiset",
-            defaults=dict(
-                name="Kaatajaiset",
-            ),
         )
 
         fmh = PersonnelClass.objects.filter(event=self.event, slug="ylivankari")
@@ -148,10 +139,6 @@ class Setup:
                     priority=self.get_ordering_number(),
                 ),
             )
-
-            if pc_afterparty and created:
-                personnel_class.perks.set([self.afterparty_perk])
-                personnel_class.save()
 
         # v33
         PersonnelClass.objects.filter(

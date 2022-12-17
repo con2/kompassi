@@ -9,7 +9,6 @@ from .roster import (
     WorkPeriod,
 )
 from .qualifications import Qualification, PersonQualification, QualificationExtraBase
-from .perk import Perk
 from .personnel_class import PersonnelClass
 from .job_category import JobCategory
 from .alternative_signup_forms import AlternativeFormMixin, AlternativeSignupForm
