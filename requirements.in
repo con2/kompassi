@@ -31,8 +31,7 @@ paramiko
 passlib
 phonenumberslite
 Pillow
-# TODO(django 3): remove <2.9 ("AssertionError: database connection isn't set to UTC")
-psycopg2<2.9
+psycopg2
 pypugjs
 pytest-django
 python-dateutil
