@@ -124,9 +124,22 @@ class Setup:
         tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
         vastaava = PersonnelClass.objects.get(event=self.event, slug="vastaava")
 
+        # Copy personnel class descriptions from previous event
+        for personnel_class in PersonnelClass.objects.filter(event=self.event, perks_markdown=""):
+            previous_instance = (
+                PersonnelClass.objects.filter(event__slug="frostbite2023", slug=personnel_class.slug)
+                .exclude(perks_markdown="")
+                .first()
+            )
+            if not previous_instance:
+                continue
+
+            personnel_class.perks_markdown = previous_instance.perks_markdown
+            personnel_class.save(update_fields=["perks_markdown"])
+
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug="desucon2022"),
+                source_event=Event.objects.get(slug="frostbite2023"),
                 target_event=self.event,
             )
 

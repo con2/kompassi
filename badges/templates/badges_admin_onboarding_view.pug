@@ -7,6 +7,12 @@ block content
   .panel.panel-default
     .panel-heading: strong {% trans "Onboarding" %}
     .panel-body
+      .text-muted
+        if event.badges_event_meta.onboarding_instructions_markdown
+          | {{ event.badges_event_meta.onboarding_instructions_html|safe }}
+        else
+          p Merkitse henkilö saapuneeksi klikkaamalla taulukon riviä. Haku toimii välittömästi ilman rivinvaihdon tmv. painallusta ja hakee ainoastaan nimikentästä.
+          p Viemällä hiiren osoittimen henkilöstöluokan nimen päälle näet, mitä kyseisen henkilöstöluokan henkilölle annetaan, mikäli tämä tieto on syötetty.
       .form-group
         label(for='onboarding_search') {% trans "Search" %}
         input#onboarding_search.form-control(type='search')
@@ -14,10 +20,11 @@ block content
       thead
         tr
           th
+          th {% trans "Personnel class" %}
           th
             span.kompassi-icon-space-right {% trans "Name" %}
-            small.kompassi-icon-space-left.text-muted(style='font-weight: normal') Badgessa näkyvät tiedot <strong>lihavoitu</strong>.
-          th {% trans "Personnel class" %}
+            if not event.badges_event_meta.real_name_must_be_visible
+              small.kompassi-icon-space-left.text-muted(style='font-weight: normal') Badgessa näkyvät tiedot <strong>lihavoitu</strong>.
           th {% trans "Job title" %}
           if shirt_type_field
             th {% trans "Shirt type" %}
@@ -29,22 +36,29 @@ block content
             td.status.fa-fw
               i.fa.fa-spinner.fa-pulse.status__loading
               i.fa.fa-check.status__success
+            td.personnel_class(
+              data-slug=badge.personnel_class.slug,
+              class="{% if badge.personnel_class.perks_markdown %}perky{% endif %}"
+            )
+              | {{ badge.personnel_class }}
             td.name
-              if badge.is_first_name_visible
-                strong {{ badge.first_name }}
+              if event.badges_event_meta.real_name_must_be_visible
+                | {{ badge.full_name }}
               else
-                span.text-muted {{ badge.first_name }}
-              if badge.is_nick_visible and badge.nick
-                | &#32;
-                strong ”{{ badge.nick }}”
-              if badge.is_surname_visible
-                | &#32;
-                strong {{ badge.surname }}
-              else
-                | &#32;
-                span.text-muted {{ badge.surname }}
+                if badge.is_first_name_visible
+                  strong {{ badge.first_name }}
+                else
+                  span.text-muted {{ badge.first_name }}
+                if badge.is_nick_visible and badge.nick
+                  | &#32;
+                  strong ”{{ badge.nick }}”
+                if badge.is_surname_visible
+                  | &#32;
+                  strong {{ badge.surname }}
+                else
+                  | &#32;
+                  span.text-muted {{ badge.surname }}
 
-            td.personnel_class= badge.personnel_class
             td.title= badge.job_title
             if shirt_type_field
               if badge.signup_extra
@@ -56,6 +70,10 @@ block content
                 td.shirt= badge.signup_extra.get_shirt_size_display
               else
                 td.shirt
+
+  for personnel_class in personnel_classes
+    if personnel_class.perks_markdown
+      template(id="pc-perks-{{ personnel_class.slug }}") {{ personnel_class.perks_html|safe }}
 
 block extra_head
   style.
@@ -76,6 +94,10 @@ block extra_head
     }
     .badge--loading .status__success {
       display: none;
+    }
+    .perky {
+      text-decoration: underline;
+      text-decoration-style: dashed;
     }
 
 block extra_scripts
@@ -115,3 +137,16 @@ block extra_scripts
           $this.removeClass('badge--loading')
         })
     }, 500, { trailing: false }))
+
+    $('.perky').popover({
+      container: 'body',
+      html: true,
+      placement: 'top',
+      trigger: 'hover',
+      title: function() {
+        return $(this).text();
+      },
+      content: function(){
+        return $('#pc-perks-' + $(this).data('slug')).html();
+      }
+    });

@@ -6,6 +6,7 @@ from csp.decorators import csp_update
 from core.utils.view_utils import login_redirect
 
 from labour.proxies.signup.onboarding import SignupOnboardingProxy
+from labour.models.personnel_class import PersonnelClass
 
 from ..helpers import badges_event_required
 from ..models import Badge
@@ -21,9 +22,10 @@ def badges_admin_onboarding_view(request, event):
         return login_redirect(request)
 
     if request.method in ("GET", "HEAD"):
+        personnel_classes = PersonnelClass.objects.filter(event=event)
         badges = (
             Badge.objects.filter(
-                personnel_class__event=event,
+                personnel_class__in=personnel_classes,
                 revoked_at__isnull=True,
             )
             .select_related("personnel_class")
@@ -56,6 +58,7 @@ def badges_admin_onboarding_view(request, event):
             badges=badges,
             shirt_type_field=shirt_type_field,
             shirt_size_field=shirt_size_field,
+            personnel_classes=personnel_classes,
         )
 
         return render(request, "badges_admin_onboarding_view.pug", vars)

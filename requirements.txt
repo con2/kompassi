@@ -158,6 +158,8 @@ kombu==5.2.4
     # via celery
 lippukala @ git+https://github.com/kcsry/lippukala.git
     # via -r requirements.in
+markdown==3.4.1
+    # via -r requirements.in
 matplotlib-inline==0.1.6
     # via ipython
 mccabe==0.7.0

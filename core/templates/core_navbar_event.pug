@@ -1,9 +1,2 @@
 if event
-  li.dropdown
-    a(href="#", class="dropdown-toggle", data-toggle="dropdown")
-      | {{ event.name }}&nbsp;
-      b.caret
-    ul.dropdown-menu
-      li: a(href='{% url "core_event_view" event.slug %}') Tapahtumasivulle
-      if event.homepage_url
-        li: a(href='{{ event.homepage_url }}') Takaisin tapahtuman kotisivulle
+  li: a(href='{% url "core_event_view" event.slug %}') {{ event.name }}
