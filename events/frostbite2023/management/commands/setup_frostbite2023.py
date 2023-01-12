@@ -106,6 +106,7 @@ class Setup:
             ("Vuorovastaava", "vuorovastaava", "labour"),
             ("Työvoima", "tyovoima", "labour"),
             ("Ohjelmanjärjestäjä", "ohjelma", "programme"),
+            ("Ohjelmanjärjestäjä (2. lk)", "ohjelma-2lk", "programme"),
             ("Guest of Honour", "goh", "programme"),
             ("Media", "media", "badges"),
             ("Myyjä", "myyja", "badges"),
@@ -239,6 +240,7 @@ class Setup:
         )
 
         personnel_class = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
+        personnel_2nd_class = PersonnelClass.objects.get(event=self.event, slug="ohjelma-2lk")
 
         role_priority = 0
         for role_title in [
@@ -249,10 +251,13 @@ class Setup:
             "Keskustelupiirin vetäjä",
             "Tuomari",
         ]:
+            role_personnel_class = personnel_class if "hjelmanjärjestäjä" in role_title else personnel_2nd_class
+
             role, unused = Role.objects.get_or_create(
-                personnel_class=personnel_class,
                 title=role_title,
+                personnel_class__event=self.event,
                 defaults=dict(
+                    personnel_class=role_personnel_class,
                     is_default=role_title == "Ohjelmanjärjestäjä",
                     is_public=role_title not in ["Näkymätön ohjelmanjärjestäjä", "Tuomari"],
                     require_contact_info=True,
@@ -260,6 +265,11 @@ class Setup:
                 ),
             )
             role_priority += 10
+
+            # remove for frostbite2024
+            if role.personnel_class != role_personnel_class:
+                role.personnel_class = role_personnel_class
+                role.save()
 
         Role.objects.filter(
             personnel_class__event=self.event,
