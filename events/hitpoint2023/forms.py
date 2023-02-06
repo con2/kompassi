@@ -174,7 +174,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "max_players",
             "description",
             "three_word_description",
-            "hitpoint2023_preferred_time_slots",
+            "hitpoint2020_preferred_time_slots",
             "notes_from_host",
             Fieldset(
                 _("Whom is the game for?"),
@@ -209,7 +209,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "max_players",
             "three_word_description",
             "description",
-            "hitpoint2023_preferred_time_slots",
+            "hitpoint2020_preferred_time_slots",
             "notes_from_host",
             "is_english_ok",
             "is_children_friendly",
@@ -218,7 +218,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
-            hitpoint2023_preferred_time_slots=forms.CheckboxSelectMultiple,
+            hitpoint2020_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
@@ -252,7 +252,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "three_word_description",
             "physical_play",
             "other_author",
-            "hitpoint2023_preferred_time_slots",
+            "hitpoint2020_preferred_time_slots",
             "notes_from_host",
             Fieldset(
                 _("Whom is the game for?"),
@@ -285,7 +285,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "three_word_description",
             "physical_play",
             "other_author",
-            "hitpoint2023_preferred_time_slots",
+            "hitpoint2020_preferred_time_slots",
             "notes_from_host",
             "is_english_ok",
             "is_age_restricted",
@@ -293,7 +293,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
-            hitpoint2023_preferred_time_slots=forms.CheckboxSelectMultiple,
+            hitpoint2020_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
