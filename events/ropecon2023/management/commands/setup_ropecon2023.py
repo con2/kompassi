@@ -702,6 +702,16 @@ class Setup:
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
+                mail_description="\n".join(
+                    line.strip()
+                    for line in """
+                        Kiitämme osallistumisestasi Haltiakummilippukeräykseen! <3
+                        Haltiakummiliput jaetaan hakijoiden kesken heinäkuussa.
+
+                        Thank you for participating in collection of Fairy Godparent tickets! <3
+                        The tickets will be distributed among participants in July.
+                    """.strip().splitlines()
+                ),
             ),
         ]:
             name = product_info.pop("name")
