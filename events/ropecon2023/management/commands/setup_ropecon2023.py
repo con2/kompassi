@@ -697,7 +697,7 @@ class Setup:
                 limit_groups=[
                     limit_group("Pääsyliput", 9999),
                 ],
-                price_cents=4500,
+                price_cents=4000,
                 requires_shipping=False,
                 electronic_ticket=False,
                 available=True,
