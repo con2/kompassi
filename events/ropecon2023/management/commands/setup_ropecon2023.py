@@ -613,7 +613,7 @@ class Setup:
                 limit_groups=[
                     limit_group("Pääsyliput", 9999),
                 ],
-                price_cents=10000,
+                price_cents=3400,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -625,7 +625,7 @@ class Setup:
                 limit_groups=[
                     limit_group("Pääsyliput", 9999),
                 ],
-                price_cents=10000,
+                price_cents=3400,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -637,7 +637,7 @@ class Setup:
                 limit_groups=[
                     limit_group("Pääsyliput", 9999),
                 ],
-                price_cents=10000,
+                price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -649,7 +649,7 @@ class Setup:
                 limit_groups=[
                     limit_group("Pääsyliput", 9999),
                 ],
-                price_cents=10000,
+                price_cents=1500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -661,7 +661,7 @@ class Setup:
                 limit_groups=[
                     limit_group("Pääsyliput", 9999),
                 ],
-                price_cents=10000,
+                price_cents=1500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -673,19 +673,7 @@ class Setup:
                 limit_groups=[
                     limit_group("Pääsyliput", 9999),
                 ],
-                price_cents=10000,
-                requires_shipping=False,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2023 kannatuslippu (vkl) / Supporting Ticket (wknd)",
-                description="Sisältää pääsyn Ropecon 2023 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2023 for the weekend.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=10000,
+                price_cents=1000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
