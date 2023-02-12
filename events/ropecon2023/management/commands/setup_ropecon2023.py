@@ -679,6 +679,28 @@ class Setup:
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
+            dict(
+                name="Ropecon 2023 Haltiakummilippu / Fairy Godparent Ticket",
+                description="Lahjoittaa viikonloppupääsyn Haltiakummilippua hakevalle Ropecon 2023 -tapahtumaan. HUOM: Tämä lahjoitustuote ei sisällä sisäänpääsyä itsellesi. / Buy this product to donate a ticket to someone who applies for a Godparent ticket. NOTE: This product does not include admission for yourself.",
+                limit_groups=[
+                    limit_group("Pääsyliput", 9999),
+                ],
+                price_cents=4000,
+                requires_shipping=False,
+                electronic_ticket=False,
+                available=True,
+                ordering=self.get_ordering_number(),
+                mail_description="\n".join(
+                    line.strip()
+                    for line in """
+                        Kiitämme osallistumisestasi Haltiakummilippukeräykseen! <3
+                        Haltiakummiliput jaetaan hakijoiden kesken heinäkuussa.
+
+                        Thank you for participating in collection of Fairy Godparent tickets! <3
+                        The tickets will be distributed among participants in July.
+                    """.strip().splitlines()
+                ),
+            ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
