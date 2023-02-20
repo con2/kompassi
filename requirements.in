@@ -9,7 +9,7 @@ Django
 django_csp
 django-bootstrap3
 django-cors-headers
-django-crispy-forms
+django-crispy-forms<2
 django-environ
 django-filter
 django-ipware

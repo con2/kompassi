@@ -6,13 +6,13 @@ Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. 
 
 ### The Easy Way
 
-Provided you have Docker (tested: 17.03 CE) and Docker Compose (tested: 0.11.2), you should get up and running by simply executing
+Provided you have Docker and Docker Compose Plugin (Docker Desktop for Win/Mac provides these both), you should get up and running by simply executing
 
-    docker-compose up
+    docker compose up
 
 Now open http://localhost:8000 in your browser. A superuser `mahti` with password `mahti` has been created for you.
 
-When the dependencies change, you need to add `--build` to `docker-compose up` to rebuild the Docker image.
+When the dependencies change, you need to add `--build` to `docker compose up` to rebuild the Docker image.
 
 On first start-up the `web` and `celery` containers may fail on start-up due to a race condition between them and the `postgres` container. To work around this, just stop all the containers by hitting `Ctrl+C` and run `docker-compose up` again.
 
@@ -24,16 +24,16 @@ To fix this, and to update the translations when you change them (`django.po` fi
 
     docker-compose exec --user root web python manage.py kompassi_i18n -acv2
 
-Run tests:
+#### Running tests
 
-    alias dc-test="docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from test"
+    alias dc-test="docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from test"
     dc-test
 
 #### Running `manage.py makemigrations`
 
-Kompassi uses the standard Django DB migration facility. However, due to the development environment running under `docker-compose`, you need to hop through extra hoops to run the `manage.py makemigrations` command: namely, run it inside a container, and run it as `root` to be able to write migration files:
+Kompassi uses the standard Django DB migration facility. However, due to the development environment running under `docker compose`, you need to hop through extra hoops to run the `manage.py makemigrations` command: namely, run it inside a container, and run it as `root` to be able to write migration files:
 
-    docker-compose exec --user=root web python manage.py makemigrations
+    docker compose exec --user=root web python manage.py makemigrations
 
 ### The Hard Way
 
