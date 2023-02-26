@@ -6,30 +6,36 @@ from core.utils import initialize_form
 from mailings.models import Message
 from mailings.forms import MessageForm
 
-from ..helpers import labour_admin_required
+from ..helpers import programme_admin_required
 
 
-@labour_admin_required
+@programme_admin_required
 @require_http_methods(["GET", "HEAD", "POST"])
 def admin_mail_editor_view(request, vars, event, message_id=None):
     if message_id:
-        message = get_object_or_404(Message, recipient__event=event, pk=int(message_id))
+        message = get_object_or_404(
+            Message,
+            recipient__event=event,
+            recipient__app_label="programme",
+            pk=int(message_id),
+        )
     else:
         message = None
 
-    form = initialize_form(MessageForm, request, event=event, instance=message)
+    form = initialize_form(MessageForm, request, event=event, instance=message, app_label="programme")
 
     if request.method == "POST":
         action = request.POST.get("action")
 
         if action == "delete":
+            assert message
             if message.is_sent:
                 messages.error(request, "Lähetettyä viestiä ei voi poistaa.")
             else:
                 message.delete()
                 messages.success(request, "Viesti poistettiin.")
 
-            return redirect("labour:admin_mail_view", event.slug)
+            return redirect("programme:admin_mail_view", event.slug)
 
         else:
             if form.is_valid():
@@ -61,7 +67,7 @@ def admin_mail_editor_view(request, vars, event, message_id=None):
                 elif action == "save-return":
                     message.save()
                     messages.success(request, "Muutokset viestiin tallennettiin.")
-                    return redirect("labour:admin_mail_view", event.slug)
+                    return redirect("programme:admin_mail_view", event.slug)
 
                 elif action == "save-edit":
                     message.save()
@@ -70,7 +76,7 @@ def admin_mail_editor_view(request, vars, event, message_id=None):
                 else:
                     messages.error(request, "Tuntematon toiminto.")
 
-                return redirect("labour:admin_mail_editor_view", event.slug, message.pk)
+                return redirect("programme:admin_mail_editor_view", event.slug, message.pk)
 
             else:
                 messages.error(request, "Ole hyvä ja tarkasta lomake.")
@@ -81,4 +87,4 @@ def admin_mail_editor_view(request, vars, event, message_id=None):
         sender="TODO",
     )
 
-    return render(request, "labour_admin_mail_editor_view.pug", vars)
+    return render(request, "programme_admin_mail_editor_view.pug", vars)

@@ -127,6 +127,10 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
     @classmethod
     def get_or_create_groups(cls, event, job_categories_or_suffixes):
+        from mailings.models import RecipientGroup
+        from .job_category import JobCategory
+        from .personnel_class import PersonnelClass
+
         suffixes = [
             jc_or_suffix if isinstance(jc_or_suffix, str) else jc_or_suffix.slug
             for jc_or_suffix in job_categories_or_suffixes
@@ -134,35 +138,30 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
         groups = super().get_or_create_groups(event, suffixes)
 
-        if "mailings" in settings.INSTALLED_APPS:
-            from mailings.models import RecipientGroup
-            from .job_category import JobCategory
-            from .personnel_class import PersonnelClass
+        for jc_or_suffix, group in zip(job_categories_or_suffixes, groups):
+            if isinstance(jc_or_suffix, JobCategory):
+                verbose_name = jc_or_suffix.name
+                job_category = jc_or_suffix
+                personnel_class = None
+            elif isinstance(jc_or_suffix, PersonnelClass):
+                verbose_name = jc_or_suffix.name
+                job_category = None
+                personnel_class = jc_or_suffix
+            else:
+                verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[jc_or_suffix]
+                job_category = None
+                personnel_class = None
 
-            for jc_or_suffix, group in zip(job_categories_or_suffixes, groups):
-                if isinstance(jc_or_suffix, JobCategory):
-                    verbose_name = jc_or_suffix.name
-                    job_category = jc_or_suffix
-                    personnel_class = None
-                elif isinstance(jc_or_suffix, PersonnelClass):
-                    verbose_name = jc_or_suffix.name
-                    job_category = None
-                    personnel_class = jc_or_suffix
-                else:
-                    verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[jc_or_suffix]
-                    job_category = None
-                    personnel_class = None
-
-                RecipientGroup.objects.get_or_create(
-                    event=event,
-                    app_label="labour",
-                    group=group,
-                    defaults=dict(
-                        job_category=job_category,
-                        personnel_class=personnel_class,
-                        verbose_name=verbose_name,
-                    ),
-                )
+            RecipientGroup.objects.get_or_create(
+                event=event,
+                app_label="labour",
+                group=group,
+                defaults=dict(
+                    job_category=job_category,
+                    personnel_class=personnel_class,
+                    verbose_name=verbose_name,
+                ),
+            )
 
         return groups
 

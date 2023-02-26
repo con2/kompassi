@@ -27,6 +27,8 @@ from .views import (
     admin_schedule_view,
     admin_special_view,
     admin_view,
+    admin_mail_editor_view,
+    admin_mail_view,
     feedback_view,
     internal_adobe_taggedtext_view,
     internal_schedule_view,
@@ -258,6 +260,17 @@ urlpatterns = [
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/emails\.txt$",
         admin_email_list_view,
         name="admin_email_list_view",
+    ),
+    re_path(r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/mail/?$", admin_mail_view, name="admin_mail_view"),
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/mail/new/?$",
+        admin_mail_editor_view,
+        name="admin_mail_new_view",
+    ),
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/mail/(?P<message_id>\d+)/?$",
+        admin_mail_editor_view,
+        name="admin_mail_editor_view",
     ),
     re_path(
         r"^profile/programmes/?$",

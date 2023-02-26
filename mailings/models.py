@@ -18,7 +18,10 @@ from labour.models import PersonnelClass
 
 
 logger = logging.getLogger("kompassi")
-APP_LABEL_CHOICES = [("labour", "Työvoima")]
+APP_LABEL_CHOICES = [
+    ("labour", "Työvoima"),
+    ("programme", "Ohjelma"),
+]
 
 DELAY_PER_MESSAGE_FRAGMENT_MILLIS = 350
 

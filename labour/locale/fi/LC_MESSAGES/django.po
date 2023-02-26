@@ -128,7 +128,7 @@ msgstr "Tehtäväalue"
 
 #: views/labour_admin_menu_items.py
 msgid "Mass messages"
-msgstr "Työvoimaviestit"
+msgstr "Viestien lähetys"
 
 #: models/survey.py
 msgid "Message when denied access"

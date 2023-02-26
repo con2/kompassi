@@ -35,6 +35,8 @@ from .admin_cold_offers_view import admin_cold_offers_view
 from .admin_create_view import admin_create_view
 from .admin_feedback_view import admin_feedback_view
 from .admin_invitations_view import admin_invitations_view
+from .admin_mail_editor_view import admin_mail_editor_view
+from .admin_mail_view import admin_mail_view
 from .admin_menu_items import programme_admin_menu_items
 from .admin_organizers_view import admin_organizers_view
 from .admin_publish_view import admin_publish_view

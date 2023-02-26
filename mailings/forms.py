@@ -8,6 +8,7 @@ from .models import RecipientGroup, Message
 class MessageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
+        app_label = kwargs.pop("app_label")
 
         super().__init__(*args, **kwargs)
 
@@ -17,7 +18,7 @@ class MessageForm(forms.ModelForm):
             ]
 
         self.fields["recipient"].queryset = RecipientGroup.objects.filter(
-            app_label="labour",
+            app_label=app_label,
             event=event,
         )
 

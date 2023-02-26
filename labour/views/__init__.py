@@ -18,6 +18,7 @@ from .admin_views import (
 
 from .admin_jobcategories_view import admin_jobcategories_view
 from .admin_jobcategory_view import admin_jobcategory_view
+from .admin_mail_editor_view import admin_mail_editor_view
 from .admin_menu_items import labour_admin_menu_items
 from .admin_shifts_view import admin_shifts_view
 from .admin_shirts_view import admin_shirts_view
@@ -26,7 +27,6 @@ from .admin_signups_view import admin_signups_view
 from .admin_special_diets_view import admin_special_diets_view
 from .admin_startstop_view import admin_startstop_view
 from .survey_view import survey_view
-from .mail_editor_view import admin_mail_editor_view
 
 from .api_views import (
     api_job_categories_view,

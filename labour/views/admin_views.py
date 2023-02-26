@@ -83,6 +83,6 @@ def admin_mail_view(request, vars, event):
 
     messages = Message.objects.filter(recipient__event=event, recipient__app_label="labour")
 
-    vars.update(labour_messages=messages)
+    vars.update(messages=messages)
 
     return render(request, "labour_admin_mail_view.pug", vars)
