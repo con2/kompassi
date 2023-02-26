@@ -66,6 +66,7 @@ class SignupExtraForm(forms.ModelForm):
 
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
+            languages=forms.CheckboxSelectMultiple,
         )
 
     def clean_certificate_delivery_address(self):
@@ -1083,7 +1084,7 @@ class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
     def get_job_categories_query(self, event, admin=False):
         assert not admin
 
-        return Q(event__slug="ropecon2023", public=False) & ~Q(slug="conitea")
+        return Q(event__slug="ropecon2023", name__in=["Boffaus", "Teehuone"])
 
     def get_excluded_field_defaults(self):
         return dict(
