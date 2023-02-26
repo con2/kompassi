@@ -1,14 +1,15 @@
 from django import forms
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset, HTML
 
 from core.forms import horizontal_form_helper
-from labour.forms import AlternativeFormMixin
+from labour.forms import AlternativeFormMixin, SignupForm
 from labour.models import Signup, JobCategory
 from programme.forms import AlternativeProgrammeFormMixin
 from programme.models import Category, Programme
-from core.utils.form_utils import RenderTemplate
+from core.utils.form_utils import RenderTemplate, indented_without_label
 
 from .models import SignupExtra
 
@@ -27,8 +28,7 @@ class SignupExtraForm(forms.ModelForm):
             ),
             Fieldset(
                 _("Language skills"),
-                "can_finnish",
-                "can_english",
+                "languages",
                 "other_languages",
             ),
             Fieldset(
@@ -45,7 +45,8 @@ class SignupExtraForm(forms.ModelForm):
             ),
         )
 
-        self.fields["roster_publish_consent"].required = True
+        if "roster_publish_consent" in self.fields:
+            self.fields["roster_publish_consent"].required = True
 
     class Meta:
         model = SignupExtra
@@ -53,8 +54,7 @@ class SignupExtraForm(forms.ModelForm):
             "shift_type",
             "want_certificate",
             "certificate_delivery_address",
-            "can_finnish",
-            "can_english",
+            "languages",
             "other_languages",
             "special_diet",
             "special_diet_other",
@@ -1077,3 +1077,39 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict()
+
+
+class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
+    def get_job_categories_query(self, event, admin=False):
+        assert not admin
+
+        return Q(event__slug="ropecon2023", public=False) & ~Q(slug="conitea")
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            notes="Syötetty käyttäen xxlomaketta",
+        )
+
+
+class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "special_diet",
+            "special_diet_other",
+            "free_text",
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            "special_diet",
+            "special_diet_other",
+            "free_text",
+        )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+        )

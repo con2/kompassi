@@ -77,7 +77,7 @@ class Setup:
             Qualification,
             WorkPeriod,
         )
-        from ...models import SignupExtra, SpecialDiet
+        from ...models import SignupExtra, SpecialDiet, Language
         from django.contrib.contenttypes.models import ContentType
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
@@ -159,6 +159,16 @@ class Setup:
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
+        for language in [
+            "suomi / Finnish",
+            "englanti / English",
+            "ruotsi / Swedish",
+            "saksa / German",
+            "japani / Japanese",
+            "eesti / Estonian",
+        ]:
+            Language.objects.get_or_create(name=language)
+
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
             slug="conitea",
@@ -168,6 +178,22 @@ class Setup:
                 signup_extra_form_class_path="events.ropecon2023.forms:OrganizerSignupExtraForm",
                 active_from=now(),
                 active_until=self.event.end_time,
+            ),
+        )
+
+        AlternativeSignupForm.objects.get_or_create(
+            event=self.event,
+            slug="xxlomake",
+            defaults=dict(
+                title="Erikoistehtävien ilmoittautumislomake",
+                signup_form_class_path="events.ropecon2023.forms:SpecialistSignupForm",
+                signup_extra_form_class_path="events.ropecon2023.forms:SpecialistSignupExtraForm",
+                active_from=self.event.created_at,
+                active_until=self.event.start_time,
+                signup_message=(
+                    "Täytä tämä lomake vain, "
+                    "jos joku Ropeconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella."
+                ),
             ),
         )
 
