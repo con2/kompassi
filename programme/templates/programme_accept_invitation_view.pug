@@ -26,7 +26,7 @@ block content
       if host_can_invite_more
         .panel-footer
           p.text-muted {% blocktrans count num_invites=num_extra_invites %}The programme manager has allowed you to invite one more host to this programme. You may do so now by entering their e-mail address in the field above, or later via your profile.{% plural %}The programme manager has allowed you to invite up to {{ num_invites }} hosts to this programme. You may do so now by entering their e-mail addresses in the fields above, or later via your profile.{% endblocktrans %}
-
+          p.text-danger {% trans "NOTE! Do not include yourself in these invites." %}
 
     .panel.panel-default
       .panel-heading: strong {% trans "Accept invitation" %}
