@@ -50,6 +50,7 @@ block profile_content
       if host_can_invite_more
         .panel-footer
           p.text-muted {% blocktrans count num_invites=programme_role.extra_invites_left %}The programme manager has allowed you to invite one more host to this programme. You may do so now or later by entering their e-mail address in the field above.{% plural %}The programme manager has allowed you to invite up to {{ num_invites }} more hosts to this programme. You may do so now or later by entering their e-mail addresses in the fields above.{% endblocktrans %}
+          p.text-danger {% trans "NOTE! Do not include yourself in these invites." %}
       else
         .panel-footer.clearfix
           .text-muted {% trans "Hosts can only be invited by the programme manager. If you have agreed with the programme manager to include people who are not listed here, please contact the programme manager. In order to receive speaker benefits, all hosts of the programme must be listed here." %}

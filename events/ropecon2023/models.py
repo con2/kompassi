@@ -26,6 +26,10 @@ class SpecialDiet(SimpleChoice):
     pass
 
 
+class Language(SimpleChoice):
+    pass
+
+
 class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(
         max_length=15,
@@ -52,8 +56,7 @@ class SignupExtra(SignupExtraBase):
         help_text="Todistukset toimitetaan ensisijaisesti sähköpostitse, mutta jos haluat todistuksesi paperilla kirjaa tähän postiosoite(katuosoite, postinumero ja toimipaikka), johon haluat todistuksen toimitettavan.",
     )
 
-    can_finnish = models.BooleanField(default=False, verbose_name=_("Finnish"))
-    can_english = models.BooleanField(default=False, verbose_name=_("English"))
+    languages = models.ManyToManyField(Language, blank=True, verbose_name="Kielet")
     other_languages = models.TextField(
         blank=True,
         verbose_name=_("Other languages"),
