@@ -16,7 +16,7 @@ def admin_mail_editor_view(request, vars, event, message_id=None):
         message = get_object_or_404(
             Message,
             recipient__event=event,
-            recipient_app_label="labour",
+            recipient__app_label="labour",
             pk=int(message_id),
         )
     else:
