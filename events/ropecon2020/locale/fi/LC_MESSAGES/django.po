@@ -317,7 +317,7 @@ msgid "Revolving door RPG"
 msgstr "Pyöröovipeli (revolving door)"
 
 msgid "If new players can join your game while it is already running and old players can leave freely before the game has ended, please tick this box. Mention this in the description of your game as well, and provide additional information in the Comments section below if needed. If you are not sure whether your game is a revolving door RPG or not, contact us and we will figure it out together!"
-msgstr "Ruksaa tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa käynnissä ja vanhat pelaajat voivat poistua (tai joutuvat poistumaan) pelistä ennen pelin loppua. Kerro tästä myös pelin kuvauksessa alla, ja anna tarvittaessa lisätietoja. Jos et ole varma onko sinulla pyöröovipeli, ole yhteydessä meihin niin katsotaan!"
+msgstr "Rastita tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa jo käynnissä ja vanhat pelaajat voivat poistua pelistä ennen pelin loppua. Anna tarvittaessa lisätietoja lomakkeen lopussa. Jos et ole varma pelisi luonteesta, ole yhteydessä meihin niin katsotaan!"
 
 msgid "If your game can be run in English, please tick this box."
 msgstr "Ruksaa tämä ruutu, jos peli pelataan englanniksi."

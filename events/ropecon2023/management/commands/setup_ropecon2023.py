@@ -29,7 +29,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_programme()
+        self.setup_programme()
         self.setup_tickets()
         self.setup_badges()
 
@@ -444,16 +444,16 @@ class Setup:
         )
 
         for time_slot_name in [
-            "Perjantaina iltapäivällä / Friday afternoon",
-            "Perjantaina illalla / Friday evening",
-            "Perjantain ja lauantain välisenä yönä / Friday night",
-            "Lauantaina aamupäivällä / Saturday morning",
-            "Lauantaina päivällä / Saturday noon",
-            "Lauantaina iltapäivällä / Saturday afternoon",
-            "Lauantaina illalla / Saturday evening",
-            "Lauantain ja sunnuntain välisenä yönä / Saturday night",
-            "Sunnuntaina aamupäivällä / Sunday morning",
-            "Sunnuntaina päivällä / Sunday noon",
+            "EI perjantaina iltapäivällä / NOT Friday afternoon",
+            "EI perjantaina illalla / NOT Friday evening",
+            "EI perjantain ja lauantain välisenä yönä / NOT Friday night",
+            "EI lauantaina aamupäivällä / NOT Saturday morning",
+            "EI lauantaina päivällä / NOT Saturday noon",
+            "EI lauantaina iltapäivällä / NOT Saturday afternoon",
+            "EI lauantaina illalla / NOT Saturday evening",
+            "EI lauantain ja sunnuntain välisenä yönä / NOT Saturday night",
+            "EI sunnuntaina aamupäivällä / NOT Sunday morning",
+            "EI sunnuntaina päivällä / NOT Sunday noon",
             "Kaikki käy / Any time is fine",
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
@@ -546,7 +546,7 @@ class Setup:
                 price_cents=4000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -558,7 +558,7 @@ class Setup:
                 price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -570,7 +570,7 @@ class Setup:
                 price_cents=9900,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -582,7 +582,7 @@ class Setup:
                 price_cents=4500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -594,7 +594,7 @@ class Setup:
                 price_cents=2500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -606,7 +606,7 @@ class Setup:
                 price_cents=11000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -618,7 +618,7 @@ class Setup:
                 price_cents=5500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -630,7 +630,7 @@ class Setup:
                 price_cents=6700,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -642,7 +642,7 @@ class Setup:
                 price_cents=3400,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -654,7 +654,7 @@ class Setup:
                 price_cents=3400,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -666,7 +666,7 @@ class Setup:
                 price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -678,7 +678,7 @@ class Setup:
                 price_cents=1500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -690,7 +690,7 @@ class Setup:
                 price_cents=1500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -702,7 +702,7 @@ class Setup:
                 price_cents=1000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -714,7 +714,7 @@ class Setup:
                 price_cents=4000,
                 requires_shipping=False,
                 electronic_ticket=False,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
                 mail_description="\n".join(
                     line.strip()

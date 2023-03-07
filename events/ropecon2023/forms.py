@@ -116,27 +116,9 @@ RPG_FORM_FIELD_TEXTS = dict(
             "If new players can join your game while it is already running and old players can leave freely before the game has ended, please tick this box. Mention this in the description of your game as well, and provide additional information in the Comments section below if needed. If you are not sure whether your game is a revolving door RPG or not, contact us and we will figure it out together!"
         ),
     ),
-    is_in_english=(
-        _("English OK"),
-        _(
-            "If you are able, prepared and willing to run your game in English if necessary, please tick this box. If your game is selected for the event, we will contact you regarding the choice of language."
-        ),
-    ),
-    is_age_restricted=(
-        _("For players over 18 only"),
-        _(
-            "If your game contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
-        ),
-    ),
-    is_beginner_friendly=(
-        _("Beginner-friendly"),
-        _(
-            "If your game is suitable for players with very limited or without any previous experience about role-playing games, please tick this box."
-        ),
-    ),
     ropecon_theme=(
-        _("Theme: Friendship"),
-        _("If your game is related to the theme of Ropecon 2023, please tick this box."),
+        _("Theme: Past and Future"),
+        _("If your programme is related to the theme of Ropecon 2023, please tick this box."),
     ),
     ropecon2018_style_serious=(_("Serious playstyle"), None),
     ropecon2018_style_light=(_("Lighthearted playstyle"), None),
@@ -157,44 +139,23 @@ RPG_FORM_FIELD_TEXTS = dict(
             "Condense the essence of your game into one short sentence that will let players know what your game have to offer. For example, “A traditional D&D dungeon crawl”, or “Lovecraftian horror in Equestria”. We reserve the right to edit the slogan if necessary."
         ),
     ),
-    ropecon2021_blocked_time_slots=(
+    ropecon2023_blocked_time_slots=(
         _("When are you NOT able to run your game?"),
         _(
             "Select the times when you are <b>NOT able</b> to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
         ),
     ),
-    ropecon2021_accessibility_video=(
-        _("The game involves watching a video without subtitles for the hearing impaired"),
-        None,
-    ),
-    ropecon2021_accessibility_colourblind=(_("Material used in the game can cause problems for the colourblind"), None),
     notes_from_host=(
         _("Comments"),
         _(
             "Is there anything else you would like to tell the RPG coordinators that doesn’t fit any of the fields above or would you like to clarify something?<br/>For example, if you are a beginner GM and would like some additional support, let us know and we will gladly help you out!"
         ),
     ),
-    ropecon2021_accessibility_inaccessibility=(
-        _("Other inaccessibility"),
-        _("In the open field, define if necessary what features of your game may possibly limit participation."),
-    ),
-    ropecon2022_aimed_at_children_under_10=(
-        _("Aimed at children under 10 years old"),
-        _("Tick this box if your game is designed for children under the age of 10."),
-    ),
-    ropecon2022_aimed_at_underage_participants=(
-        _("Aimed at underage participants"),
-        _("Tick this box if your game is designed for underage participants."),
-    ),
-    ropecon2022_aimed_at_adult_participants=(
-        _("Aimed at adult participants"),
-        _("Tick this box if your game is designed for adult participants."),
-    ),
-    ropecon2022_content_warnings=(
+    photography=(
         _(
-            "Tell us here if your game contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your game addresses themes or issues related to war."
+            "Programme photography"
         ),
-        _("Examples: spiders, violence, phobias or other possibly triggering themes"),
+        _("The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."),
     ),
 )
 
@@ -216,7 +177,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             "max_players",
             "is_revolving_door",
             Fieldset(
-                _("Playstyle and mechanics (Choose any which apply)"),
+                _("Playstyle and mechanics of your game (Choose any which apply)"),
                 "ropecon2018_style_serious",
                 "ropecon2018_style_light",
                 "ropecon2018_style_rules_heavy",
@@ -226,22 +187,26 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
                 "ropecon2018_style_combat_driven",
                 "description",
                 "three_word_description",
-                "ropecon2021_blocked_time_slots",
+                "ropecon2023_blocked_time_slots",
                 "notes_from_host",
             ),
             Fieldset(
-                _("Who is your game for?"),
-                "is_in_english",
-                "ropecon2022_aimed_at_children_under_10",
-                "ropecon2022_aimed_at_underage_participants",
-                "ropecon2022_aimed_at_adult_participants",
-                "is_age_restricted",
-                "is_beginner_friendly",
+                _("Who is your programme for?"),
+                "ropecon2023_language",
+                "ropecon2023_suitable_for_all_ages",
+                "ropecon2023_aimed_at_children_under_13",
+                "ropecon2023_aimed_at_children_between_13_17",
+                "ropecon2023_aimed_at_adult_attendees",
+                "ropecon2023_for_18_plus_only",
+                "ropecon2023_beginner_friendly",
                 "ropecon_theme",
+                "ropecon2023_celebratory_year",
+                "photography",
             ),
             Fieldset(
                 _("Accessibility and inclusivity"),
-                RenderTemplate("ropecon2022_rpg_form_accessibility.html"),
+                RenderTemplate("ropecon2023_rpg_form_accessibility.html"),
+                "ropecon2023_accessibility_cant_use_mic",
                 "ropecon2021_accessibility_loud_sounds",
                 "ropecon2021_accessibility_flashing_lights",
                 "ropecon2021_accessibility_strong_smells",
@@ -249,10 +214,14 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
                 "ropecon2021_accessibility_physical_contact",
                 "ropecon2021_accessibility_low_lightning",
                 "ropecon2021_accessibility_moving_around",
-                "ropecon2022_accessibility_remaining_one_place",
+                "ropecon2023_accessibility_programme_duration_over_2_hours",
+                "ropecon2023_accessibility_limited_opportunities_to_move_around",
                 "ropecon2021_accessibility_video",
                 "ropecon2021_accessibility_recording",
-                "ropecon2021_accessibility_text",
+                "ropecon2023_accessibility_long_texts",
+                "ropecon2023_accessibility_texts_not_available_as_recordings",
+                "ropecon2023_accessibility_participation_requires_dexterity",
+                "ropecon2023_accessibility_participation_requires_react_quickly",
                 "ropecon2021_accessibility_colourblind",
                 "ropecon2022_content_warnings",
                 "ropecon2021_accessibility_inaccessibility",
@@ -270,7 +239,12 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
         self.fields["max_players"].initial = 5
         self.fields["description"].required = True
         self.fields["three_word_description"].required = True
-        self.fields["ropecon2021_blocked_time_slots"].required = True
+        self.fields["ropecon2023_blocked_time_slots"].required = True
+        self.fields["photography"].choices = [
+            ("please", _("Please photograph my programme")),
+            ("okay", _("My programme can be photographed")),
+            ("nope", _("I request my programme to not be photographed")),
+        ]
 
     class Meta:
         model = Programme
@@ -290,15 +264,19 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             "ropecon2018_style_combat_driven",
             "description",
             "three_word_description",
-            "ropecon2021_blocked_time_slots",
+            "ropecon2023_blocked_time_slots",
             "notes_from_host",
-            "is_in_english",
-            "ropecon2022_aimed_at_children_under_10",
-            "ropecon2022_aimed_at_underage_participants",
-            "ropecon2022_aimed_at_adult_participants",
-            "is_age_restricted",
-            "is_beginner_friendly",
+            "ropecon2023_language",
+            "ropecon2023_suitable_for_all_ages",
+            "ropecon2023_aimed_at_children_under_13",
+            "ropecon2023_aimed_at_children_between_13_17",
+            "ropecon2023_aimed_at_adult_attendees",
+            "ropecon2023_for_18_plus_only",
+            "ropecon2023_beginner_friendly",
             "ropecon_theme",
+            "ropecon2023_celebratory_year",
+            "photography",
+            "ropecon2023_accessibility_cant_use_mic",
             "ropecon2021_accessibility_loud_sounds",
             "ropecon2021_accessibility_flashing_lights",
             "ropecon2021_accessibility_strong_smells",
@@ -306,17 +284,21 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             "ropecon2021_accessibility_physical_contact",
             "ropecon2021_accessibility_low_lightning",
             "ropecon2021_accessibility_moving_around",
-            "ropecon2022_accessibility_remaining_one_place",
+            "ropecon2023_accessibility_programme_duration_over_2_hours",
+            "ropecon2023_accessibility_limited_opportunities_to_move_around",
             "ropecon2021_accessibility_video",
             "ropecon2021_accessibility_recording",
-            "ropecon2021_accessibility_text",
+            "ropecon2023_accessibility_long_texts",
+            "ropecon2023_accessibility_texts_not_available_as_recordings",
+            "ropecon2023_accessibility_participation_requires_dexterity",
+            "ropecon2023_accessibility_participation_requires_react_quickly",
             "ropecon2021_accessibility_colourblind",
             "ropecon2022_content_warnings",
             "ropecon2021_accessibility_inaccessibility",
         ]
 
         widgets = dict(
-            ropecon2021_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
@@ -333,13 +315,13 @@ LARP_FORM_FIELD_TEXTS = dict(
     approximate_length=(
         _("Estimated duration (minutes)"),
         _(
-            "For one run of a 3-4 hour original larp (180-240 minutes) you will receive a one-day ticket to Ropecon. This includes time for propping, brief and debrief, as well as the actual game."
+            "This includes time for propping, brief and debrief, as well as the actual game."
         ),
     ),
     ropecon2018_sessions=(
         _("Number of runs"),
         _(
-            "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour original larp or two runs of a pre-written scenario you will receive one weekend ticket as a GM. Additional runs of your larp will yield an extra one-day ticket."
+            "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests."
         ),
     ),
     ropecon2018_characters=(
@@ -367,7 +349,7 @@ LARP_FORM_FIELD_TEXTS = dict(
             'If you make the sign-up list for your larp yourself, you can ask more specific questions about player preferences. A sign-up list made by the Larp Desk is simply a list of names. In this case, select "Larp Desk makes the list".'
         ),
     ),
-    ropecon2021_blocked_time_slots=(
+    ropecon2023_blocked_time_slots=(
         _("When are you NOT able to run your larp?"),
         _(
             "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be <b>able</b> to run your larp unselected!<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.<br/><br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below."
@@ -379,27 +361,9 @@ LARP_FORM_FIELD_TEXTS = dict(
             "Do you want to say something to the larp-conittee that does not fit any of the fields above or clarify some answer?<br/><br/>If the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br/><br/>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br/><br/>You can also specify your preferred schedule here."
         ),
     ),
-    is_in_english=(
-        _("English OK"),
-        _(
-            "If you are able, prepared and willing to run your larp in English if necessary, please tick this box. If your larp is selected for the event, the programming team will contact you regarding the choice of language."
-        ),
-    ),
-    is_age_restricted=(
-        _("For players over 18 only"),
-        _(
-            "If your larp contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
-        ),
-    ),
-    is_beginner_friendly=(
-        _("Beginner-friendly"),
-        _(
-            "If your larp is suitable for players with very limited or without any previous experience about larping, please tick this box."
-        ),
-    ),
     ropecon_theme=(
-        _("Theme: Friendship"),
-        _("If your larp is related to the theme of Ropecon 2023, please tick this box."),
+        _("Theme: Past and Future"),
+        _("If your programme is related to the theme of Ropecon 2023, please tick this box."),
     ),
     ropecon2018_space_requirements=(
         _("Space and technical needs"),
@@ -413,32 +377,11 @@ LARP_FORM_FIELD_TEXTS = dict(
             "Tell us what kind of equipment or props are required in your larp and which of them you can provide yourself. Please keep in mind that due to limited resources we are not able to fulfill the most outlandish of requests. Water and cups will be provided for all larps."
         ),
     ),
-    ropecon2021_accessibility_video=(
-        _("The larp involves watching a video without subtitles for the hearing impaired"),
-        None,
-    ),
-    ropecon2021_accessibility_colourblind=(_("Material used in the larp can cause problems for the colourblind"), None),
-    ropecon2022_aimed_at_children_under_10=(
-        _("Aimed at children under 10 years old"),
-        _("Tick this box if your larp is designed for children under the age of 10."),
-    ),
-    ropecon2022_aimed_at_underage_participants=(
-        _("Aimed at underage participants"),
-        _("Tick this box if your larp is designed for underage participants."),
-    ),
-    ropecon2022_aimed_at_adult_participants=(
-        _("Aimed at adult participants"),
-        _("Tick this box if your larp is designed for adult participants."),
-    ),
-    ropecon2022_content_warnings=(
+    photography=(
         _(
-            "Tell us here if your larp contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your larp addresses themes or issues related to war."
+            "Programme photography"
         ),
-        _("Examples: spiders, violence, phobias or other possibly triggering themes"),
-    ),
-    ropecon2021_accessibility_inaccessibility=(
-        _("Other inaccessibility"),
-        _("In the open field, define if necessary what features of your larp may possibly limit participation."),
+        _("The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."),
     ),
 )
 
@@ -465,22 +408,25 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "ropecon2018_signuplist",
                 "ropecon2018_space_requirements",
                 "ropecon2018_prop_requirements",
-                "ropecon2021_blocked_time_slots",
+                "ropecon2023_blocked_time_slots",
                 "notes_from_host",
             ),
             Fieldset(
-                _("Who is your larp for?"),
-                "is_in_english",
-                "ropecon2022_aimed_at_children_under_10",
-                "ropecon2022_aimed_at_underage_participants",
-                "ropecon2022_aimed_at_adult_participants",
-                "is_age_restricted",
-                "is_beginner_friendly",
+                _("Who is your programme for?"),
+                "ropecon2023_language",
+                "ropecon2023_suitable_for_all_ages",
+                "ropecon2023_aimed_at_children_under_13",
+                "ropecon2023_aimed_at_children_between_13_17",
+                "ropecon2023_aimed_at_adult_attendees",
+                "ropecon2023_for_18_plus_only",
+                "ropecon2023_beginner_friendly",
                 "ropecon_theme",
+                "ropecon2023_celebratory_year",
+                "photography",
             ),
             Fieldset(
                 _("Accessibility and inclusivity"),
-                RenderTemplate("ropecon2022_larp_form_accessibility.html"),
+                RenderTemplate("ropecon2023_larp_form_accessibility.html"),
                 "ropecon2021_accessibility_loud_sounds",
                 "ropecon2021_accessibility_flashing_lights",
                 "ropecon2021_accessibility_strong_smells",
@@ -488,10 +434,14 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "ropecon2021_accessibility_physical_contact",
                 "ropecon2021_accessibility_low_lightning",
                 "ropecon2021_accessibility_moving_around",
-                "ropecon2022_accessibility_remaining_one_place",
+                "ropecon2023_accessibility_programme_duration_over_2_hours",
+                "ropecon2023_accessibility_limited_opportunities_to_move_around",
                 "ropecon2021_accessibility_video",
                 "ropecon2021_accessibility_recording",
-                "ropecon2021_accessibility_text",
+                "ropecon2023_accessibility_long_texts",
+                "ropecon2023_accessibility_texts_not_available_as_recordings",
+                "ropecon2023_accessibility_participation_requires_dexterity",
+                "ropecon2023_accessibility_participation_requires_react_quickly",
                 "ropecon2021_accessibility_colourblind",
                 "ropecon2022_content_warnings",
                 "ropecon2021_accessibility_inaccessibility",
@@ -514,7 +464,12 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields["ropecon2018_signuplist"].choices = [
             (k, t) for (k, t) in self.fields["ropecon2018_signuplist"].choices if k != "none"
         ]
-        self.fields["ropecon2021_blocked_time_slots"].required = True
+        self.fields["ropecon2023_blocked_time_slots"].required = True
+        self.fields["photography"].choices = [
+            ("please", _("Please photograph my programme")),
+            ("okay", _("My programme can be photographed")),
+            ("nope", _("I request my programme to not be photographed")),
+        ]
 
     class Meta:
         model = Programme
@@ -529,15 +484,18 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2018_signuplist",
             "ropecon2018_space_requirements",
             "ropecon2018_prop_requirements",
-            "ropecon2021_blocked_time_slots",
+            "ropecon2023_blocked_time_slots",
             "notes_from_host",
-            "is_in_english",
-            "ropecon2022_aimed_at_children_under_10",
-            "ropecon2022_aimed_at_underage_participants",
-            "ropecon2022_aimed_at_adult_participants",
-            "is_age_restricted",
-            "is_beginner_friendly",
+            "ropecon2023_language",
+            "ropecon2023_suitable_for_all_ages",
+            "ropecon2023_aimed_at_children_under_13",
+            "ropecon2023_aimed_at_children_between_13_17",
+            "ropecon2023_aimed_at_adult_attendees",
+            "ropecon2023_for_18_plus_only",
+            "ropecon2023_beginner_friendly",
             "ropecon_theme",
+            "ropecon2023_celebratory_year",
+            "photography",
             "ropecon2021_accessibility_loud_sounds",
             "ropecon2021_accessibility_flashing_lights",
             "ropecon2021_accessibility_strong_smells",
@@ -545,10 +503,14 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2021_accessibility_physical_contact",
             "ropecon2021_accessibility_low_lightning",
             "ropecon2021_accessibility_moving_around",
-            "ropecon2022_accessibility_remaining_one_place",
+            "ropecon2023_accessibility_programme_duration_over_2_hours",
+            "ropecon2023_accessibility_limited_opportunities_to_move_around",
             "ropecon2021_accessibility_video",
             "ropecon2021_accessibility_recording",
-            "ropecon2021_accessibility_text",
+            "ropecon2023_accessibility_long_texts",
+            "ropecon2023_accessibility_texts_not_available_as_recordings",
+            "ropecon2023_accessibility_participation_requires_dexterity",
+            "ropecon2023_accessibility_participation_requires_react_quickly",
             "ropecon2021_accessibility_colourblind",
             "ropecon2022_content_warnings",
             "ropecon2021_accessibility_inaccessibility",
@@ -556,7 +518,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         widgets = dict(
             content_warnings=forms.Textarea,
-            ropecon2021_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):

@@ -1,4 +1,115 @@
-# Muu ohjelma 2023
+
+# Larpit 2023
+
+msgid "This includes time for propping, brief and debrief, as well as the actual game."
+msgstr "Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+
+msgid "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita."
+
+msgid ""
+msgstr ""
+
+
+# Roolipelit 2023
+
+msgid "Playstyle and mechanics of your game (Choose any which apply)"
+msgstr "Pelin tyyli (valitse soveltuvat)"
+
+msgid "Who is your programme for?"
+msgstr "Kenelle ohjelma on tarkoitettu?"
+
+msgid "Language-free"
+msgstr "Kielivapaa"
+
+msgid "Finnish or English"
+msgstr "Suomi tai englanti"
+
+msgid "Choose the language used in your programme"
+msgstr "Valitse kieli, jolla pidät ohjelmasi"
+
+msgid "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with having your programme language based on what language the attendees speak. Please write your title and programme description in both languages."
+msgstr "Suomi - valitse tämä, jos ohjelmassasi puhutaan ainoastaan suomea.<br/>Englanti - valitse tämä, jos ohjelmassasi puhutaan ainoastaan englantia.<br/>Kielivapaa - valitse tämä, jos ohjelmaan osallistuakseen ei tarvitse osata suomea tai englantia (esim. työpaja, jossa kuvalliset ohjeet, tai tanssi, jossa voi seurata muita).<br/>Suomi tai englanti - valitse tämä, jos voit pitää ohjelmasi kummalla tahansa kielellä sen mukaan, mitä kieltä osallistujat osaavat. Tuotathan myös otsikon ja ohjelmakuvauksen molemmilla kielillä."
+
+msgid "Suitable for all ages"
+msgstr "Sopii kaiken ikäisille"
+
+msgid "If your programme is suitable for all ages, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi sopii kaiken ikäisille."
+
+msgid "Aimed at children under 13"
+msgstr "Suunnattu alle 13-vuotiaille"
+
+msgid "If your programme is designed for attendees under the age of 13 years, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 13-vuotiaille"
+
+msgid "Aimed at children between 13-17"
+msgstr "Suunnattu 13-17-vuotiaille"
+
+msgid "If your programme is designed for attendees between 13-17 years of age, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu 13-17-vuotiaille"
+
+msgid "Aimed at adult attendees"
+msgstr "Suunnattu täysi-ikäisille"
+
+msgid "If your programme is designed for adult attendees, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
+
+msgid "If your programme contains themes that require attendees to be 18 years or older, please tick this box. There will be an ID check for all attendees."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+
+msgid "If your programme is suitable for attendees with very limited knowledge or without any previous experience about the game or subject matter in question, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmaan voi osallistua, vaikka aiempaa kokemusta pelistä tai aiheesta olisi hyvin vähän tai ei lainkaan."
+
+msgid "Theme: Past and Future"
+msgstr "Teema: Menneisyys ja tulevaisuus"
+
+msgid "Celebratory Year"
+msgstr "Juhlavuosi"
+
+msgid "Check this box, if your programme is related to Ropecon's 30th celebratory year."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy Ropeconin 30-vuotisjuhlavuoteen."
+
+msgid "Programme photography"
+msgstr "Ohjelman valokuvaus"
+
+msgid "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
+msgstr "Tapahtuman viralliset valokuvaajat pyrkivät ottamaan valokuvia ohjelmanumeroista joista niitä on pyydetty."
+
+msgid "My programme can be photographed"
+msgstr "Ohjelmanumeroani saa valokuvata"
+
+msgid "I request my programme to not be photographed"
+msgstr "Pyydän ettei ohjelmanumeroani valokuvata"
+
+msgid "I can't use a microphone"
+msgstr "En voi käyttää mikrofonia"
+
+msgid "The duration of the programme is over two hours without breaks."
+msgstr "Ohjelma kestää yli kaksi tuntia ilman taukoa"
+
+msgid "There are limited opportunities to move around during the programme."
+msgstr "Ohjelman aikana on rajatut mahdollisuudet liikkumiseen."
+
+msgid "Participation involves reading long texts independently"
+msgstr "Osallistuminen vaatii pitkien tekstien itsenäistä lukemista"
+
+msgid "The programme includes texts that are essential to participation, and the texts are not available as recordings or read out loud."
+msgstr "Ohjelma sisältää osallistumisen kannalta olennaista tekstiä, josta ei ole saatavilla nauhoitetta tai jota ei lueta ääneen."
+
+msgid "Participation requires some dexterity, e.g. that of hands and fingers."
+msgstr "Ohjelmaan osallistuminen vaatii sorminäppäryyttä"
+
+msgid "Participation requires the ability to react quickly."
+msgstr "Ohjelmaan osallistuminen vaatii nopeaa reaktiokykyä"
+
+msgid "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in some participants"
+msgstr "Listaa tähän ohjelmasi sisältämät aiheet, jotka voivat aiheuttaa joillekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta."
+
+msgid "In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."
+msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli ohjelmassasi on joitakin muita seikkoja, jotka voivat rajoittaa tai mahdollistaa osallistumista (esimerkiksi jos ohjelma on viitottu)."
+
+# Muu ohjelma 2022
 
 msgid "Title of your programme"
 msgstr "Otsikko"
@@ -150,7 +261,7 @@ msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita, jotka voi
 msgid "In the open field, define if necessary what features of your programme may possibly limit participation."
 msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli ohjelmassasi/pelissäsi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
 
-# Pelitiski 2023
+# Pelitiski 2022
 
 msgid "Game category"
 msgstr "Pelityyppi"
@@ -266,7 +377,7 @@ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alaikäisille."
 msgid "Tick this box if your game programme is designed for adult participants."
 msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
 
-# Larpit 2023
+# Larpit 2022
 
 msgid "Title of your larp"
 msgstr "Pelin nimi"
@@ -418,7 +529,7 @@ msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita, jotka voiv
 msgid "In the open field, define if necessary what features of your larp may possibly limit participation."
 msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli larpissasi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
 
-# Roolipelit 2023
+# Roolipelit 2022
 
 msgid "Title of your game"
 msgstr "Pelin nimi"
