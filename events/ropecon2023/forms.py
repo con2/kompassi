@@ -224,7 +224,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
                 "ropecon2023_accessibility_participation_requires_react_quickly",
                 "ropecon2021_accessibility_colourblind",
                 "ropecon2022_content_warnings",
-                "ropecon2021_accessibility_inaccessibility",
+                "ropecon2023_other_accessibility_information",
             ),
         )
 
@@ -294,7 +294,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             "ropecon2023_accessibility_participation_requires_react_quickly",
             "ropecon2021_accessibility_colourblind",
             "ropecon2022_content_warnings",
-            "ropecon2021_accessibility_inaccessibility",
+            "ropecon2023_other_accessibility_information",
         ]
 
         widgets = dict(
@@ -444,7 +444,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "ropecon2023_accessibility_participation_requires_react_quickly",
                 "ropecon2021_accessibility_colourblind",
                 "ropecon2022_content_warnings",
-                "ropecon2021_accessibility_inaccessibility",
+                "ropecon2023_other_accessibility_information",
             ),
         )
 
@@ -513,7 +513,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_accessibility_participation_requires_react_quickly",
             "ropecon2021_accessibility_colourblind",
             "ropecon2022_content_warnings",
-            "ropecon2021_accessibility_inaccessibility",
+            "ropecon2023_other_accessibility_information",
         )
 
         widgets = dict(
@@ -543,37 +543,29 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
     category=(
         _("Programme category"),
         _(
-            "Choose the category that best suits your programme. Ropecon reserves the right to change the programme category if necessary."
+            "Choose the category that best suits your programme. Ropecon reserves the right to change the programme category if necessary.<br/>Presentation: traditional lecture<br/>Panel discussion: multiple panelists in front of an audience, usually with a moderator present<br/>Discussion group: discussion that equally includes the audience<br/>Dance programme: dance rehearsals and for example a ball; dance programmes where attendees also dance<br/>Performance programme: all types of performances; choir, dance performance, fencing performance or other<br/>Meetup: informal gathering related to a certain topic or scene<br/>Other programme: programmes that do not fit the previous categories"
         ),
     ),
     approximate_length=(
         _("Estimated duration (minutes)"),
         _(
-            "Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other programme, please make an estimation."
+            "Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes (one hour and 45 minutes)."
         ),
     ),
-    is_english_ok=(
-        _("English OK"),
+    ropecon2023_language=(
+        _("Choose the language used in your programme"),
         _(
-            "If you are able, prepared and willing to organise your programme in English if necessary, please tick this box. If your programme is selected for the event, the programme team will be in contact with you in regards to your language choice."
+            "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with either of the two languages. The programme team will contact you regarding the final choice of language."
         ),
     ),
-    is_beginner_friendly=(
-        _("Beginner-friendly"),
-        _(
-            "If your programme is suitable for people with very limited or without any previous knowledge about the subject, please tick this box."
-        ),
-    ),
-    is_age_restricted=(
-        _("For 18+ only"),
-        _(
-            "If your programme contains themes that require participants to be 18 years or older, please tick this box. There will be an ID check for all participants."
-        ),
+    ropecon_theme=(
+        _("Theme: Past and Future"),
+        _("If your programme is related to the theme of Ropecon 2023, please tick this box."),
     ),
     max_players=(
         _("Number of participants"),
         _(
-            "If the number of participants in your workshop or other programme is limited, please provide the maximum number of participants."
+            "If the number of participants in your programme is limited, please provide the maximum number of participants."
         ),
     ),
     computer=(
@@ -583,7 +575,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
         ),
     ),
     tech_requirements=(_("Other technical needs"), None),
-    ropecon2021_blocked_time_slots=(
+    ropecon2023_blocked_time_slots=(
         _("When are you NOT able to host your programme?"),
         _(
             "Select the times when you <b>DO NOT</b> want to host your programme. Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
@@ -602,19 +594,11 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
         _("Recording & publishing consent"),
         _("Do you give Ropecon permission to record your programme and publish it on the Internet?"),
     ),
-    ropecon_theme=(
-        _("Theme: Friendship"),
-        _("If your programme is related to the theme of Ropecon 2023, please tick this box."),
-    ),
-    ropecon2022_content_warnings=(
+    photography=(
         _(
-            "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your programme addresses themes or issues related to war."
+            "Programme photography"
         ),
-        _("Examples: spiders, violence, phobias or other possibly triggering themes"),
-    ),
-    ropecon2021_accessibility_inaccessibility=(
-        _("Other inaccessibility"),
-        _("In the open field, define if necessary what features of your programme may possibly limit participation."),
+        _("The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."),
     ),
 )
 
@@ -633,24 +617,28 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "is_english_ok",
-            "is_beginner_friendly",
-            "ropecon2022_aimed_at_children_under_10",
-            "ropecon2022_aimed_at_underage_participants",
-            "ropecon2022_aimed_at_adult_participants",
-            "is_age_restricted",
+            "ropecon2023_language",
+            "ropecon2023_suitable_for_all_ages",
+            "ropecon2023_aimed_at_children_under_13",
+            "ropecon2023_aimed_at_children_between_13_17",
+            "ropecon2023_aimed_at_adult_attendees",
+            "ropecon2023_for_18_plus_only",
+            "ropecon2023_beginner_friendly",
             "ropecon_theme",
+            "ropecon2023_celebratory_year",
             "max_players",
             "computer",
             "tech_requirements",
-            "ropecon2021_blocked_time_slots",
+            "ropecon2023_blocked_time_slots",
             "notes_from_host",
             "is_available_for_panel",
             "field_of_expertise",
             "video_permission",
+            "photography",
             Fieldset(
                 _("Accessibility and inclusivity"),
-                RenderTemplate("ropecon2022_programme_form_accessibility.html"),
+                RenderTemplate("ropecon2023_programme_form_accessibility.html"),
+                "ropecon2023_accessibility_cant_use_mic",
                 "ropecon2021_accessibility_loud_sounds",
                 "ropecon2021_accessibility_flashing_lights",
                 "ropecon2021_accessibility_strong_smells",
@@ -658,13 +646,14 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "ropecon2021_accessibility_physical_contact",
                 "ropecon2021_accessibility_low_lightning",
                 "ropecon2021_accessibility_moving_around",
-                "ropecon2022_accessibility_remaining_one_place",
+                "ropecon2023_accessibility_programme_duration_over_2_hours",
                 "ropecon2021_accessibility_video",
                 "ropecon2021_accessibility_recording",
-                "ropecon2021_accessibility_text",
+                "ropecon2023_accessibility_long_texts",
+                "ropecon2023_accessibility_texts_not_available_as_recordings",
                 "ropecon2021_accessibility_colourblind",
                 "ropecon2022_content_warnings",
-                "ropecon2021_accessibility_inaccessibility",
+                "ropecon2023_other_accessibility_information",
             ),
         )
 
@@ -674,7 +663,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields["description"].required = True
         self.fields["approximate_length"].required = True
         self.fields["video_permission"].required = True
-        self.fields["approximate_length"].initial = 105
+        self.fields["approximate_length"].initial = 45
 
         self.fields["category"].queryset = Category.objects.filter(
             event=event,
@@ -682,12 +671,9 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "pres",
                 "panel",
                 "disc",
-                "craft",
-                "mini",
-                "music",
-                "workshop",
                 "dance",
                 "perforprog",
+                "meetup",
                 "other",
             ),
         )
@@ -697,12 +683,17 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ("mac", _("Own laptop (Mac)")),
             ("none", _("No laptop is needed in my programme")),
         ]
-        self.fields["ropecon2021_blocked_time_slots"].required = True
+        self.fields["ropecon2023_blocked_time_slots"].required = True
         self.fields["video_permission"].choices = [
             ("public", _("I give permission to record and publish my programme")),
             ("forbidden", _("I do not give permission to record or publish my programme")),
         ]
         self.fields["video_permission"].blank = True
+        self.fields["photography"].choices = [
+            ("please", _("Please photograph my programme")),
+            ("okay", _("My programme can be photographed")),
+            ("nope", _("I request my programme to not be photographed")),
+        ]
 
     class Meta:
         model = Programme
@@ -711,21 +702,25 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "is_english_ok",
-            "is_beginner_friendly",
-            "ropecon2022_aimed_at_children_under_10",
-            "ropecon2022_aimed_at_underage_participants",
-            "ropecon2022_aimed_at_adult_participants",
-            "is_age_restricted",
+            "ropecon2023_language",
+            "ropecon2023_suitable_for_all_ages",
+            "ropecon2023_aimed_at_children_under_13",
+            "ropecon2023_aimed_at_children_between_13_17",
+            "ropecon2023_aimed_at_adult_attendees",
+            "ropecon2023_for_18_plus_only",
+            "ropecon2023_beginner_friendly",
             "ropecon_theme",
+            "ropecon2023_celebratory_year",
             "max_players",
             "computer",
             "tech_requirements",
-            "ropecon2021_blocked_time_slots",
+            "ropecon2023_blocked_time_slots",
             "notes_from_host",
             "is_available_for_panel",
             "field_of_expertise",
             "video_permission",
+            "photography",
+            "ropecon2023_accessibility_cant_use_mic",
             "ropecon2021_accessibility_loud_sounds",
             "ropecon2021_accessibility_flashing_lights",
             "ropecon2021_accessibility_strong_smells",
@@ -733,17 +728,18 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2021_accessibility_physical_contact",
             "ropecon2021_accessibility_low_lightning",
             "ropecon2021_accessibility_moving_around",
-            "ropecon2022_accessibility_remaining_one_place",
+            "ropecon2023_accessibility_programme_duration_over_2_hours",
             "ropecon2021_accessibility_video",
             "ropecon2021_accessibility_recording",
-            "ropecon2021_accessibility_text",
+            "ropecon2023_accessibility_long_texts",
+            "ropecon2023_accessibility_texts_not_available_as_recordings",
             "ropecon2021_accessibility_colourblind",
             "ropecon2022_content_warnings",
-            "ropecon2021_accessibility_inaccessibility",
+            "ropecon2023_other_accessibility_information",
         )
 
         widgets = dict(
-            ropecon2021_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
 

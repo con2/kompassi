@@ -814,7 +814,7 @@ class Programme(models.Model, CsvExportMixin):
     )
     ropecon2023_beginner_friendly = models.BooleanField(
         verbose_name=_("Beginner-friendly"),
-        help_text=_("If your programme is suitable for attendees with very limited knowledge or without any previous experience about the game or subject matter in question, please tick this box."),
+        help_text=_("If your programme is suitable for attendees with very limited knowledge or without any previous experience about the programme or subject matter in question, please tick this box."),
         default=False,
     )
     ropecon2023_celebratory_year = models.BooleanField(
@@ -864,6 +864,14 @@ class Programme(models.Model, CsvExportMixin):
             "Participation requires the ability to react quickly."
         ),
     )
+    ropecon2023_other_accessibility_information = models.TextField(
+        verbose_name=_("Other accessibility information"),
+        help_text=_("In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."),
+        blank=True,
+        null=True,
+        default="",
+    )
+
     is_using_paikkala = models.BooleanField(
         default=False,
         verbose_name=_("Reservable seats"),
