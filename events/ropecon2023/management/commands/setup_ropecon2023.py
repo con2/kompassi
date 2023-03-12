@@ -56,7 +56,7 @@ class Setup:
                 name_genitive="Ropecon 2023 -tapahtuman",
                 name_illative="Ropecon 2023 -tapahtumaan",
                 name_inessive="Ropecon 2023 -tapahtumassa",
-                homepage_url="http://2023.ropecon.fi",
+                homepage_url="http://ropecon.fi",
                 organization=self.organization,
                 start_time=datetime(2023, 7, 28, 15, 0, tzinfo=self.tz),
                 end_time=datetime(2023, 7, 30, 18, 0, tzinfo=self.tz),
@@ -132,7 +132,7 @@ class Setup:
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug="ropecon2019"),
+                source_event=Event.objects.get(slug="ropecon2022"),
                 target_event=self.event,
             )
 
@@ -285,6 +285,7 @@ class Setup:
             ("ohjelma", "Peliohjelmanjärjestäjä", False),
             ("ohjelma", "Larp-pelinjohtaja", False),
             ("ohjelma", "Roolipelinjohtaja", False),
+            ("ohjelma", "Työpajan järjestäjä", False),
             ("ohjelma", "Ohjelmanjärjestäjä, päivälippu", False),
             ("ohjelma", "Peliohjelmanjärjestäjä, päivälippu", False),
             ("ohjelma", "Larp-pelinjohtaja, päivälippu", False),
@@ -293,6 +294,7 @@ class Setup:
             ("ohjelma", "Peliohjelmanjärjestäjä, työvoimaedut", False),
             ("ohjelma", "Larp-pelinjohtaja, työvoimaedut", False),
             ("ohjelma", "Roolipelinjohtaja, työvoimaedut", False),
+            ("ohjelma", "Työpajajärjestäjä", False),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
             role, created = Role.objects.get_or_create(
@@ -326,16 +328,23 @@ class Setup:
                 ("Puheohjelma: esitelmä / Presentation", "pres", "color1"),
                 ("Puheohjelma: paneeli / Panel discussion", "panel", "color1"),
                 ("Puheohjelma: keskustelu / Discussion group", "disc", "color1"),
-                ("Työpaja: käsityö / Workshop: crafts", "craft", "color2"),
-                ("Työpaja: figut / Workshop: miniature figurines", "mini", "color2"),
-                ("Työpaja: musiikki / Workshop: music", "music", "color2"),
-                ("Työpaja: muu / Other workshop", "workshop", "color2"),
+                ("Työpaja: käsityö / Workshop: crafts", "workcraft", "color2"),
+                ("Työpaja: figut / Workshop: miniature figurines", "workmini", "color2"),
+                ("Työpaja: musiikki / Workshop: music", "workmusic", "color2"),
+                ("Työpaja: muu / Workshop: other", "workother", "color2"),
                 ("Tanssiohjelma / Dance programme", "dance", "color2"),
                 ("Esitysohjelma / Performance programme", "perforprog", "color2"),
-                ("Pelitiski: Figupeli / Miniature wargame", "miniwar", "color3"),
-                ("Pelitiski: Korttipeli / Card game", "card", "color3"),
-                ("Pelitiski: Lautapeli / Board game", "board", "color3"),
-                ("Pelitiski: Muu / Other", "exp", "color3"),
+                ("Miitti / Meetup", "meetup", "color2"),
+                ("Kokemuspiste: demotus / Experience Point: Demo game", "expdemo", "color3"),
+                ("Kokemuspiste: avoin pelautus / Experience Point: Open game", "expopen", "color3"),
+                ("Kokemuspiste: muu / Experience Point: Other", "expother", "color3"),
+                ("Figupelit: demotus / Miniature wargames: Demo game", "minidemo", "color3"),
+                ("Figupelit: avoin pelautus / Miniature wargames: Open game", "miniopen", "color3"),
+                ("Turnaukset: figupelit / Tournament: Miniature wargames", "tourmini", "color3"),
+                ("Turnaukset: korttipelit / Tournament: Card games", "tourcard", "color3"),
+                ("Turnaukset: lautapelit / Tournament: Board games", "tourboard", "color3"),
+                ("Turnaukset: muu / Tournament: Other", "tourother", "color3"),
+                ("Muu peliohjelma / Other game programme", "othergame", "color3"),
                 ("Roolipeli / Pen & Paper RPG", "rpg", "color4"),
                 ("LARP", "larp", "color5"),
                 ("Muu ohjelma / None of the above", "other", "color6"),
@@ -393,7 +402,7 @@ class Setup:
                 title="Tarjoa pöytäroolipeliä / Call for GMs (tabletop role-playing games)",
                 description=resource_string(__name__, "texts/roolipelit.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:RpgForm",
-                num_extra_invites=0,
+                num_extra_invites=2,
                 order=20,
                 role=role,
             ),
@@ -407,7 +416,7 @@ class Setup:
                 title="Tarjoa larppia / Call for Larps 2023",
                 description=resource_string(__name__, "texts/larpit.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:LarpForm",
-                num_extra_invites=0,
+                num_extra_invites=2,
                 order=30,
                 role=role,
             ),
@@ -422,8 +431,22 @@ class Setup:
                 short_description="Figupelit, korttipelit, lautapelit, Kokemuspiste ym. / Miniature wargames, card games, board games, Experience Point etc.",
                 description=resource_string(__name__, "texts/pelitiski.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:GamingDeskForm",
-                num_extra_invites=0,
+                num_extra_invites=2,
                 order=60,
+                role=role,
+            ),
+        )
+
+        role = Role.objects.get(personnel_class__event=self.event, title="Työpajan järjestäjä")
+        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug="tyopaja",
+            defaults=dict(
+                title="Tarjoa työpajaohjelmaa / Call for Workshop Programme 2023",
+                description=resource_string(__name__, "texts/tyopaja.html").decode("UTF-8"),
+                programme_form_code="events.ropecon2023.forms:WorkshopForm",
+                num_extra_invites=2,
+                order=70,
                 role=role,
             ),
         )
@@ -434,10 +457,10 @@ class Setup:
             slug="default",
             defaults=dict(
                 title="Tarjoa muuta ohjelmaa / Offer any other program",
-                short_description="Puheohjelmat, työpajat, esitykset ym. / Lecture program, workshops, show program etc.",
+                short_description="Puheohjelmat, esitykset ym. / Lecture program, show program etc.",
                 description=resource_string(__name__, "texts/muuohjelma.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:ProgrammeForm",
-                num_extra_invites=0,
+                num_extra_invites=2,
                 order=300,
                 role=role,
             ),
