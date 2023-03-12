@@ -426,6 +426,8 @@ class Setup:
             View,
         )
 
+        from ...models import TimeSlot
+
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
@@ -474,6 +476,7 @@ class Setup:
                 ("Miitti", "miitti"),
                 ("Muu ohjelma", "muu"),
                 ("Roolipeliohjelma", "rope"),
+                ("Peliohjelma", "color7"),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
@@ -520,6 +523,7 @@ class Setup:
             ("Suositeltu", "hilight"),
             ("Musiikki", "label-info"),
             ("In English", "label-success"),
+            ("English OK", "label-success"),
             ("K-18", "label-danger"),
             ("Paikkaliput", "label-warning"),
         ]:
@@ -530,6 +534,17 @@ class Setup:
                     style=tag_class,
                 ),
             )
+
+        for time_slot_name in [
+            "Perjantaina illalla"
+            "Lauantaina päivällä",
+            "Lauantaina iltapäivällä",
+            "Lauantaina illalla",
+            "Lauantain ja sunnuntain välisenä yönä",
+            "Sunnuntaina aamupäivällä",
+            "Sunnuntaina päivällä",
+        ]:
+            TimeSlot.objects.get_or_create(name=time_slot_name)
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,

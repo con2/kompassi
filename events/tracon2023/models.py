@@ -47,6 +47,14 @@ class Poison(SimpleChoice):
     pass
 
 
+class TimeSlot(SimpleChoice):
+    pass
+
+
+class ContentWarning(SimpleChoice):
+    pass
+
+
 class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(
         max_length=15,

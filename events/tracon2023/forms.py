@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
-from events.hitpoint2017.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT
+from events.tracon2023.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory
 from programme.models import Category, Programme, AlternativeProgrammeFormMixin
@@ -270,7 +270,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "max_players",
             "description",
             "three_word_description",
-            "hitpoint2017_preferred_time_slots",
+            "tracon2023_preferred_time_slots",
             "notes_from_host",
             Fieldset(
                 _("Whom is the game for?"),
@@ -304,7 +304,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "max_players",
             "three_word_description",
             "description",
-            "hitpoint2017_preferred_time_slots",
+            "tracon2023_preferred_time_slots",
             "notes_from_host",
             "is_english_ok",
             "is_children_friendly",
@@ -314,7 +314,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
-            hitpoint2017_preferred_time_slots=forms.CheckboxSelectMultiple,
+            tracon2023_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
