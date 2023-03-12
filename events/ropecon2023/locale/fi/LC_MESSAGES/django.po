@@ -1,3 +1,78 @@
+# Peliohjelma 2023
+
+msgid "Title of your game programme"
+msgstr "Peliohjelman nimi"
+
+msgid "Come up with a catchy, concise title for your game programme. Ropecon reserves the right to edit the title if necessary.<br/>Write the title of the game programme in the language the game will be played in (Finnish or English). You can also write the title in both languages, if you prefer."
+msgstr "Keksi ytimekäs nimi peliohjelmallesi. Varaamme oikeuden muokata nimeä.<br/>Kirjoita peliohjelman nimi sillä kielellä, jolla peli peluutetaan (suomeksi ja/tai englanniksi). Voit halutessasi kirjoittaa nimen kummallakin kielellä."
+
+msgid "Describe your game programme to your potential players in an appealing way. Inform players what is expected of them and what themes your game contains. If your game programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your game programme is meant as humorous or entertaining in nature, let it show in the description as well.<br/>Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the game programme if necessary.<br/>Write the description of the game programme in the language the game will be played in (Finnish or English). You can also write the description in both languages, if you prefer."
+msgstr "Mainosta peliohjelmaasi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos peliohjelmassasi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa.<br/>Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja nimeä tarpeen mukaan esimerkiksi lyhentämällä niitä.<br/>Kirjoita kuvaus sillä kielellä, jolla peli peluutetaan (suomeksi ja/tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
+
+msgid "Category of the game programme"
+msgstr "Peliohjelmaluokka"
+
+msgid "Choose the category that best suits your game programme. Ropecon reserves the right to change the programme category if necessary.<br/>Experience Point - Demo games (i.e. showcasing, demonstrating or running a game) and open games (i.e. running a certain card game or board game for attendees by request) organized at the Experience Point.<br/>Miniature wargames - demonstrations and open games organized at the miniature wargame area.<br/>Tournaments - organizing a game tournament or a competition at the tournament area or the miniature wargame area.<br/>Other game programme - something other than mentioned above, e.g. jigsaw puzzles."
+msgstr "Valitse parhaiten peliohjelmaasi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa.<br/>Kokemuspiste - kokemuspistealueella järjestettäviä demotuksia (eli pelin esittelyä, demottamista ja/tai pelaamista) ja avoimia pelautuksia (eli tietyn pelin pelauttamista pyynnöstä) lauta- ja korttipeleistä.<br/>Figupelit - figualueella järjestettäviä demotuksia ja avoimia pelautuksia miniatyyripeleistä.<br/>Turnaukset - turnauksen tai kilpailun järjestäminen turnausalueella tai figualueella.<br/>Muu peliohjelma - jokin muu kuin ylläoleva, esim. palapelit."
+
+msgid "Please make an estimation for the duration of your game programme.<br/>For game programme held at the Experience Point, shorter games of 1-3 hours (60-180 min) are preferred."
+msgstr "Anna arvio peliohjelmasi kestosta.<br/>Kokemuspisteelle suositellaan lyhyempiä 1-3 tunnin (60-180 min) pelautuksia."
+
+msgid "How many players are needed for the game programe to be organized?<br/>Select the minimum number of players carefully: by setting the minimum number of players as low as possible, you maximize the chances for your game programme to be organized successfully."
+msgstr "Kuinka monta pelaajaa tarvitaan peliohjelman toteutumiseksi?<br/>Harkitse pelaajien vähimmäismäärä tarkkaan: maksimoit peliohjelmasi toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
+
+msgid "If the maximum number of players in your game programme is limited, please set the maximum number of players that can participate at the same time."
+msgstr "Mikäli peliohjelmasi pelaajamäärä on rajattu, kirjoita tähän kuinka monta pelaajaa maksimissaan mahtuu kerralla mukaan."
+
+msgid 'What game system is used in your game programme? For example, "Magic the Gathering" or "Carcassonne".<br/>If you designed the game system yourself, describe it in a few words. For example, "4X, space battle, conquest"'
+msgstr 'Mitä pelisysteemiä peliohjelmassasi käytetään? Esim. "Magic the Gathering tai Carcassonne".<br/>Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. "4X, avaruustaistelu, valloitus".'
+
+msgid "Language used in game materials"
+msgstr "Pelimateriaalin kieli"
+
+msgid "What language is used in the game materials offered for attendees?"
+msgstr "Millä kielellä pelimateriaalit on tarjottu?"
+
+msgid "Specify here whether the attendees participating in your game programme are expected to bring their own game tools or other equipment for the game and what that equipment is (e.g. card decks, figure armies)."
+msgstr "Kerro tässä, jos kävijöiden odotetaan tuovan omat pelivälineensä tai muita tarvikkeita voidakseen osallistua peliohjelmaan, ja mitä ne välineet ovat (esim. korttipakkoja, figuarmeijoita)."
+
+msgid "How will players sign up for your game programme?<br/>No sign-up - no sign-up is required to participate in the game programme.<br/>Sign-up via the Konsti app - the sign-up process for the game programme is done via the Konsti app during the event.<br/>Other sign-up process - if your game programme requires attendees to sign up beforehand and you prefer to handle it through some other means (e.g. at the Gaming Desk), please choose this option and describe the sign-up process in the Comments section below."
+msgstr "Miten peliohjelmaasi ilmoittaudutaan?<br/>Ei ilmoittautumista - Peliohjelma ei vaadi erityistä ilmoittautumista.<br/>Ilmoittautuminen Konstissa - Peliohjelmaan ilmoittaudutaan Konstin kautta tapahtuman aikana.<br/>Muu ilmoittautuminen - Peliohjelmaan ilmoittaudutaan tapahtuman aikana muulla tavalla, esim. pelitiskille. Kerro tällöin tarkemmin peliohjelmasi ilmoittautumistavasta vapaamuotoisissa terveisissä."
+
+msgid "Sign-up via the Konsti app"
+msgstr "Ilmoittautuminen Konstissa"
+
+msgid "Other sign-up process"
+msgstr "Muu ilmoittautuminen"
+
+msgid "Number of tables"
+msgstr "Pöytien määrä"
+
+msgid "How much table space is needed for your game programme: how many tables in total?<br/>Table size is 70 cm x 200 cm."
+msgstr "Kerro tässä paljonko ohjelmasi tarvitsee pöytätilaa: montako pöytää peliohjelmassasi tarvitaan?<br/>Yhden pöydän koko on 70 cm x 200 cm."
+
+msgid "Number of chairs"
+msgstr "Tuolien määrä"
+
+msgid "How many chairs are needed for your game programme."
+msgstr "Kerro tässä montako tuolia peliohjelmassasi tarvitaan."
+
+msgid "Does your game programme have any technical needs (e.g. electricity) or other specific needs regarding e.g. the programme space itself?<br/>Please keep in mind that we might not be able to fulfill all requests, so please justify how your requests would benefit your game programme."
+msgstr "Kerro tässä onko peliohjelmallasi erityisiä tila- tai tekniikkatarpeita (esim. sähkö).<br/>Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee peliohjelmaasi."
+
+msgid "Select the times when you are <b>NOT able</b> to organize your game programme.<br/><br/>Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
+msgstr "Ruksaa ne ajat, jolloin <b>ET pysty</b> pitämään peliohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä.<br/>Jos sinulla on tarkempia toivomuksia ajankohdan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
+
+msgid "Is there anything else you would like to tell the game programme coordinators?"
+msgstr "Haluatko sanoa peliohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+
+
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
 
 # Muu ohjelma 2023
 
@@ -13,11 +88,8 @@ msgstr "Suomi - valitse tämä, jos ohjelmassasi puhutaan ainoastaan suomea.<br/
 msgid "If the number of participants in your programme is limited, please provide the maximum number of participants."
 msgstr "Mikäli ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
 
-msgid ""
-msgstr ""
-
-msgid ""
-msgstr ""
+msgid "I'm interested in participating in a panel discussion related to my field(s) of expertise."
+msgstr "Voin osallistua erikoisalaani/-alojani sivuavaan paneelikeskusteluun"
 
 # Larpit 2023
 
@@ -26,10 +98,6 @@ msgstr "Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit se
 
 msgid "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests."
 msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita."
-
-msgid ""
-msgstr ""
-
 
 # Roolipelit 2023
 
@@ -350,7 +418,7 @@ msgid "How much table space and how many chairs do you need for your game progra
 msgstr "Kerro tässä paljonko tarvitset pöytätilaa, tuoleja ja tarvitsetko erityistä tekniikkaa (esim. sähköä). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee ohjelmaa. Pöytien koko on 70cm x 200cm."
 
 msgid "When are you NOT able to host your game programme?"
-msgstr "Milloin et pysty pelauttamaan peliäsi?"
+msgstr "Milloin ET pysty pitämään ohjelmaasi?"
 
 msgid "Select the times when you are <b>NOT able</b> to run your game programme.<br/><br/>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below (e.g. “I would like to run my game late in the evening”).<br/><br/>In this section, we wish that you would include information about restrictions set by e.g. work schedules or bus schedules (if you need to e.g. leave Messukeskus by 23 o’clock in order to get to your lodgings)."
 msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."

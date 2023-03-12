@@ -587,7 +587,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
     ),
     is_available_for_panel=(
         _("Panel discussions"),
-        _("I’m interested in participating in a panel discussion related to my field(s) of expertise."),
+        _("I'm interested in participating in a panel discussion related to my field(s) of expertise."),
     ),
     field_of_expertise=(_("My field(s) of expertise"), None),
     video_permission=(
@@ -744,103 +744,75 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
 
 GAMING_DESK_FORM_FIELD_TEXTS = dict(
-    category=(_("Game category"), _("Which category does your game programme belong to?")),
-    ropecon2019_gaming_desk_subtype=(
-        _("Game programme type"),
-        _(
-            "What type of game programme are you offering?<br><br>Tournament - organising your own game tournament or contest<br><br>Demonstration - showcasing, demonstrating and running demo games at the Experience Point<br><br>Open game - running games with or without specific scenarios by request<br><br>Other - Something other than mentioned above"
-        ),
-    ),
     title=(
-        _("Game programme title"),
-        _("Give your game programme a catchy and concise title. We reserve the right to edit the title if necessary."),
+        _("Title of your game programme"),
+        _("Come up with a catchy, concise title for your game programme. Ropecon reserves the right to edit the title if necessary.<br/>Write the title of the game programme in the language the game will be played in (Finnish or English). You can also write the title in both languages, if you prefer."),
     ),
-    approximate_length=(
-        _("Estimated duration (minutes)"),
-        _(
-            "For 3 to 5 hours (180-300 minutes) of game programme you will receive a one-day ticket to Ropecon.<br/><br/>For 6 to 8 hours (360-480 minutes) of game programme you will receive a weekend ticket to Ropecon."
-        ),
-    ),
-    max_players=(_("Number of players"), _("How many players can participate in the game programme?")),
     description=(
         _("Description"),
         _(
-            "Advertise your game for potential players. Inform players about what is expected of them, and what themes your game contains. If your game includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br/><br/>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary."
+            "Describe your game programme to your potential players in an appealing way. Inform players what is expected of them and what themes your game contains. If your game programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your game programme is meant as humorous or entertaining in nature, let it show in the description as well.<br/>Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the game programme if necessary.<br/>Write the description of the game programme in the language the game will be played in (Finnish or English). You can also write the description in both languages, if you prefer."
         ),
     ),
+    category=(_("Category of the game programme"), _("Choose the category that best suits your game programme. Ropecon reserves the right to change the programme category if necessary.<br/>Experience Point - Demo games (i.e. showcasing, demonstrating or running a game) and open games (i.e. running a certain card game or board game for attendees by request) organized at the Experience Point.<br/>Miniature wargames - demonstrations and open games organized at the miniature wargame area.<br/>Tournaments - organizing a game tournament or a competition at the tournament area or the miniature wargame area.<br/>Other game programme - something other than mentioned above, e.g. jigsaw puzzles.")),
+    approximate_length=(
+        _("Estimated duration (minutes)"),
+        _(
+            "Please make an estimation for the duration of your game programme.<br/>For game programme held at the Experience Point, shorter games of 1-3 hours (60-180 min) are preferred."
+        ),
+    ),
+    min_players=(_("Minimum number of players"), _("How many players are needed for the game programe to be organized?<br/>Select the minimum number of players carefully: by setting the minimum number of players as low as possible, you maximize the chances for your game programme to be organized successfully.")),
+    max_players=(_("Maximum number of players"), _("If the maximum number of players in your game programme is limited, please set the maximum number of players that can participate at the same time.")),
     rpg_system=(
         _("Game system"),
         _(
-            "What game system is used? For example, “Magic the Gathering”. If you designed the game system yourself, describe it in a few words. For example, “4X, space battle, conquest”"
+            'What game system is used in your game programme? For example, "Magic the Gathering" or "Carcassonne".<br/>If you designed the game system yourself, describe it in a few words. For example, "4X, space battle, conquest"'
         ),
     ),
-    ropecon2018_signuplist=(
-        _("Sign-up process"),
+    ropecon2020_materials_language=(
+        _("Language used in game materials"),
         _(
-            "How will players sign up for your game programme?<br/><br/>No sign-up - No sign-up is required to participate.<br/><br/>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br/><br/>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option."
+            "What language is used in the game materials offered for attendees?"
+        ),
+    ),
+    ropecon2021_gamedesk_materials=(
+        _("Does your programme require materials from the players?"),
+        _(
+            "Specify here whether the attendees participating in your game programme are expected to bring their own game tools or other equipment for the game and what that equipment is (e.g. card decks, figure armies)."
         ),
     ),
     tech_requirements=(
         _("Space and technical needs"),
         _(
-            "How much table space and how many chairs do you need for your game programme? Do you have any technical needs (for example, electricity)? Please keep in mind that we may not be able to fulfill all requests, so please justify how yours would benefit your game programme. Table size is 70 cm x 200 cm."
+            "Does your game programme have any technical needs (e.g. electricity) or other specific needs regarding e.g. the programme space itself?<br/>Please keep in mind that we might not be able to fulfill all requests, so please justify how your requests would benefit your game programme."
         ),
     ),
-    ropecon2021_blocked_time_slots=(
+    ropecon2023_blocked_time_slots=(
         _("When are you NOT able to host your game programme?"),
         _(
-            "Select the times when you are <b>NOT able</b> to run your game programme.<br/><br/>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below (e.g. “I would like to run my game late in the evening”).<br/><br/>In this section, we wish that you would include information about restrictions set by e.g. work schedules or bus schedules (if you need to e.g. leave Messukeskus by 23 o’clock in order to get to your lodgings)."
+            "Select the times when you are <b>NOT able</b> to organize your game programme.<br/><br/>Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
         ),
     ),
     notes_from_host=(
         _("Comments"),
         _(
-            "Is there anything else you would like to tell the organisers of Ropecon? You can also specify your preferred schedule here."
+            "Is there anything else you would like to tell the game programme coordinators?"
         ),
     ),
-    is_in_english=(
-        _("English OK"),
-        _(
-            "If you are able, prepared and willing to host your game programme in English if necessary, please tick this box. If your game is selected for the event, the programming team will contact you regarding the choice of language."
-        ),
+    is_available_for_panel=(
+        _("Panel discussions"),
+        _("I'm interested in participating in a panel discussion related to my field(s) of expertise."),
     ),
-    is_age_restricted=(
-        _("For players over 18 only"),
+    field_of_expertise=(_("My field(s) of expertise"), None),
+    photography=(
         _(
-            "If your game programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
+            "Programme photography"
         ),
-    ),
-    is_beginner_friendly=(
-        _("Beginner-friendly"),
-        _(
-            "If your game programme is suitable for players with very limited or without any previous knowledge about the game in question, please tick this box."
-        ),
+        _("The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."),
     ),
     ropecon_theme=(
-        _("Theme: Friendship"),
-        _("If your game programme is related to this year’s theme, please tick this box."),
-    ),
-    ropecon2022_aimed_at_children_under_10=(
-        _("Aimed at children under 10 years old"),
-        _("Tick this box if your game programme is designed for children under the age of 10."),
-    ),
-    ropecon2022_aimed_at_underage_participants=(
-        _("Aimed at underage participants"),
-        _("Tick this box if your game programme is designed for underage participants."),
-    ),
-    ropecon2022_aimed_at_adult_participants=(
-        _("Aimed at adult participants"),
-        _("Tick this box if your game programme is designed for adult participants."),
-    ),
-    ropecon2022_content_warnings=(
-        _(
-            "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your programme addresses themes or issues related to war."
-        ),
-        _("Examples: spiders, violence, phobias or other possibly triggering themes"),
-    ),
-    ropecon2021_accessibility_inaccessibility=(
-        _("Other inaccessibility"),
-        _("In the open field, define if necessary what features of your programme may possibly limit participation."),
+        _("Theme: Past and Future"),
+        _("If your programme is related to the theme of Ropecon 2023, please tick this box."),
     ),
 )
 
@@ -855,46 +827,53 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.helper.form_tag = False
 
         self.helper.layout = Layout(
-            "category",
-            "ropecon2019_gaming_desk_subtype",
             "title",
-            "approximate_length",
-            "max_players",
             "description",
+            "category",
+            "approximate_length",
+            "min_players",
+            "max_players",
             "rpg_system",
             "ropecon2020_materials_language",
             "ropecon2021_gamedesk_materials",
-            "ropecon2018_signuplist",
+            "ropecon2023_signuplist",
+            "ropecon2023_tables",
+            "ropecon2023_chairs",
             "tech_requirements",
-            "ropecon2021_blocked_time_slots",
+            "ropecon2023_blocked_time_slots",
             "notes_from_host",
+            "is_available_for_panel",
+            "field_of_expertise",
+            "photography",
             Fieldset(
-                _("Who is your game programme for?"),
-                "is_in_english",
-                "ropecon2022_aimed_at_children_under_10",
-                "ropecon2022_aimed_at_underage_participants",
-                "ropecon2022_aimed_at_adult_participants",
-                "is_age_restricted",
-                "is_beginner_friendly",
+                _("Who is your programme for?"),
+                "ropecon2023_language",
+                "ropecon2023_suitable_for_all_ages",
+                "ropecon2023_aimed_at_children_under_13",
+                "ropecon2023_aimed_at_children_between_13_17",
+                "ropecon2023_aimed_at_adult_attendees",
+                "ropecon2023_for_18_plus_only",
+                "ropecon2023_beginner_friendly",
                 "ropecon_theme",
+                "ropecon2023_celebratory_year",
             ),
             Fieldset(
                 _("Accessibility and inclusivity"),
-                RenderTemplate("ropecon2022_gamedesk_form_accessibility.html"),
+                RenderTemplate("ropecon2023_gamedesk_form_accessibility.html"),
+                "ropecon2023_accessibility_cant_use_mic",
                 "ropecon2021_accessibility_loud_sounds",
                 "ropecon2021_accessibility_flashing_lights",
-                "ropecon2021_accessibility_strong_smells",
-                "ropecon2021_accessibility_irritate_skin",
                 "ropecon2021_accessibility_physical_contact",
-                "ropecon2021_accessibility_low_lightning",
-                "ropecon2021_accessibility_moving_around",
-                "ropecon2022_accessibility_remaining_one_place",
-                "ropecon2021_accessibility_video",
+                "ropecon2023_accessibility_programme_duration_over_2_hours",
+                "ropecon2023_accessibility_limited_opportunities_to_move_around",
                 "ropecon2021_accessibility_recording",
-                "ropecon2021_accessibility_text",
+                "ropecon2023_accessibility_long_texts",
+                "ropecon2023_accessibility_texts_not_available_as_recordings",
+                "ropecon2023_accessibility_participation_requires_dexterity",
+                "ropecon2023_accessibility_participation_requires_react_quickly",
                 "ropecon2021_accessibility_colourblind",
                 "ropecon2022_content_warnings",
-                "ropecon2021_accessibility_inaccessibility",
+                "ropecon2023_other_accessibility_information",
             ),
         )
 
@@ -904,66 +883,82 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields["category"].queryset = Category.objects.filter(
             event=event,
             slug__in=(
-                "miniwar",
-                "card",
-                "board",
-                "exp",
+                "expdemo",
+                "expopen",
+                "expother",
+                "minidemo",
+                "miniopen",
+                "tourmini",
+                "tourcard",
+                "tourboard",
+                "tourother",
+                "othergame",
             ),
         )
-
-        self.fields["ropecon2019_gaming_desk_subtype"].required = True
-        self.fields["max_players"].initial = 3
-        self.fields["max_players"].required = True
+        self.fields["approximate_length"].required = True
+        self.fields["approximate_length"].initial = 180
+        self.fields["min_players"].required = True
+        self.fields["min_players"].initial = False
         self.fields["description"].required = True
-        self.fields["ropecon2018_signuplist"].choices = [
-            ("none", _("No sign-up")),
-            ("itse", _("Sign-up in advance")),
-            ("tiski", _("Sign-up at the Gaming Desk")),
+        self.fields["ropecon2023_tables"].required = True
+        self.fields["ropecon2023_chairs"].required = True
+        self.fields["ropecon2023_blocked_time_slots"].required = True
+        self.fields["photography"].choices = [
+            ("please", _("Please photograph my programme")),
+            ("okay", _("My programme can be photographed")),
+            ("nope", _("I request my programme to not be photographed")),
         ]
-        self.fields["ropecon2021_blocked_time_slots"].required = True
+        self.fields["photography"].required = True
 
     class Meta:
         model = Programme
         fields = (
-            "category",
-            "ropecon2019_gaming_desk_subtype",
             "title",
-            "approximate_length",
-            "max_players",
             "description",
+            "category",
+            "approximate_length",
+            "min_players",
+            "max_players",
             "rpg_system",
             "ropecon2020_materials_language",
             "ropecon2021_gamedesk_materials",
-            "ropecon2018_signuplist",
+            "ropecon2023_signuplist",
+            "ropecon2023_tables",
+            "ropecon2023_chairs",
             "tech_requirements",
-            "ropecon2021_blocked_time_slots",
+            "ropecon2023_blocked_time_slots",
             "notes_from_host",
-            "is_in_english",
-            "ropecon2022_aimed_at_children_under_10",
-            "ropecon2022_aimed_at_underage_participants",
-            "ropecon2022_aimed_at_adult_participants",
-            "is_age_restricted",
-            "is_beginner_friendly",
+            "is_available_for_panel",
+            "field_of_expertise",
+            "photography",
+            "ropecon2023_language",
+            "ropecon2023_suitable_for_all_ages",
+            "ropecon2023_aimed_at_children_under_13",
+            "ropecon2023_aimed_at_children_between_13_17",
+            "ropecon2023_aimed_at_adult_attendees",
+            "ropecon2023_for_18_plus_only",
+            "ropecon2023_beginner_friendly",
             "ropecon_theme",
+            "ropecon2023_celebratory_year",
+            "ropecon2023_accessibility_cant_use_mic",
             "ropecon2021_accessibility_loud_sounds",
             "ropecon2021_accessibility_flashing_lights",
-            "ropecon2021_accessibility_strong_smells",
-            "ropecon2021_accessibility_irritate_skin",
             "ropecon2021_accessibility_physical_contact",
-            "ropecon2021_accessibility_low_lightning",
-            "ropecon2021_accessibility_moving_around",
-            "ropecon2022_accessibility_remaining_one_place",
-            "ropecon2021_accessibility_video",
+            "ropecon2023_accessibility_programme_duration_over_2_hours",
+            "ropecon2023_accessibility_limited_opportunities_to_move_around",
             "ropecon2021_accessibility_recording",
-            "ropecon2021_accessibility_text",
+            "ropecon2023_accessibility_long_texts",
+            "ropecon2023_accessibility_texts_not_available_as_recordings",
+            "ropecon2023_accessibility_participation_requires_dexterity",
+            "ropecon2023_accessibility_participation_requires_react_quickly",
             "ropecon2021_accessibility_colourblind",
             "ropecon2022_content_warnings",
-            "ropecon2021_accessibility_inaccessibility",
+            "ropecon2023_other_accessibility_information",
         )
 
         widgets = dict(
             content_warnings=forms.Textarea,
-            ropecon2021_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
 

@@ -132,7 +132,7 @@ class Setup:
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug="ropecon2019"),
+                source_event=Event.objects.get(slug="ropecon2022"),
                 target_event=self.event,
             )
 
@@ -332,11 +332,17 @@ class Setup:
                 ("Työpaja: muu / Other workshop", "workshop", "color2"),
                 ("Tanssiohjelma / Dance programme", "dance", "color2"),
                 ("Esitysohjelma / Performance programme", "perforprog", "color2"),
-                ("Miitti / Meetup", "meetup", "color6"),
-                ("Pelitiski: Figupeli / Miniature wargame", "miniwar", "color3"),
-                ("Pelitiski: Korttipeli / Card game", "card", "color3"),
-                ("Pelitiski: Lautapeli / Board game", "board", "color3"),
-                ("Pelitiski: Muu / Other", "exp", "color3"),
+                ("Miitti / Meetup", "meetup", "color2"),
+                ("Kokemuspiste: demotus / Experience Point: Demo game", "expdemo", "color3"),
+                ("Kokemuspiste: avoin pelautus / Experience Point: Open game", "expopen", "color3"),
+                ("Kokemuspiste: muu / Experience Point: Other", "expother", "color3"),
+                ("Figupelit: demotus / Miniature wargames: Demo game", "minidemo", "color3"),
+                ("Figupelit: avoin pelautus / Miniature wargames: Open game", "miniopen", "color3"),
+                ("Turnaukset: figupelit / Tournament: Miniature wargames", "tourmini", "color3"),
+                ("Turnaukset: korttipelit / Tournament: Card games", "tourcard", "color3"),
+                ("Turnaukset: lautapelit / Tournament: Board games", "tourboard", "color3"),
+                ("Turnaukset: muu / Tournament: Other", "tourother", "color3"),
+                ("Muu peliohjelma / Other game programme", "othergame", "color3"),
                 ("Roolipeli / Pen & Paper RPG", "rpg", "color4"),
                 ("LARP", "larp", "color5"),
                 ("Muu ohjelma / None of the above", "other", "color6"),

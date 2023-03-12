@@ -216,7 +216,7 @@ msgid "How much table space and how many chairs do you need for your game progra
 msgstr "Kerro tässä paljonko tarvitset pöytätilaa, tuoleja ja tarvitsetko erityistä tekniikkaa (esim. sähköä). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee ohjelmaa. Pöytien koko on 70cm x 200cm."
 
 msgid "When are you NOT able to host your game programme?"
-msgstr "Milloin et pysty pelauttamaan peliäsi?"
+msgstr "Milloin ET pysty pitämään ohjelmaasi?"
 
 msgid "Select the times when you are <b>NOT able</b> to run your game programme.<br/><br/>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below (e.g. “I would like to run my game late in the evening”).<br/><br/>In this section, we wish that you would include information about restrictions set by e.g. work schedules or bus schedules (if you need to e.g. leave Messukeskus by 23 o’clock in order to get to your lodgings)."
 msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."

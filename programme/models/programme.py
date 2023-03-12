@@ -155,6 +155,12 @@ ROPECON2023_LANGUAGE_CHOICES = [
     ("finnish_or_english", _("Finnish or English")),
 ]
 
+ROPECON2023_SIGNUP_LIST_CHOICES = [
+    ("none", _("No sign-up")),
+    ("konsti", _("Sign-up via the Konsti app")),
+    ("othersign", _("Other sign-up process")),
+]
+
 CSV_EXPORT_EXCLUDED_FIELDS = [
     "paikkala_icon",
     "paikkala_program",
@@ -871,7 +877,30 @@ class Programme(models.Model, CsvExportMixin):
         null=True,
         default="",
     )
-
+    ropecon2023_tables = models.PositiveIntegerField(
+        verbose_name=_("Number of tables"),
+        help_text=_("How much table space is needed for your game programme: how many tables in total?<br/>Table size is 70 cm x 200 cm."),
+        validators=[MinValueValidator(1), MaxValueValidator(99)],
+        null=True,
+        blank=True,
+    )
+    ropecon2023_chairs = models.PositiveIntegerField(
+        verbose_name=_("Number of chairs"),
+        help_text=_("How many chairs are needed for your game programme."),
+        validators=[MinValueValidator(1), MaxValueValidator(99)],
+        null=True,
+        blank=True,
+    )
+    ropecon2023_signuplist = models.CharField(
+        max_length=15,
+        choices=ROPECON2023_SIGNUP_LIST_CHOICES,
+        default=ROPECON2023_SIGNUP_LIST_CHOICES[0][0],
+        verbose_name=_("Sign-up process"),
+        help_text=_(
+            "How will players sign up for your game programme?<br/>No sign-up - no sign-up is required to participate in the game programme.<br/>Sign-up via the Konsti app - the sign-up process for the game programme is done via the Konsti app during the event.<br/>Other sign-up process - if your game programme requires attendees to sign up beforehand and you prefer to handle it through some other means (e.g. at the Gaming Desk), please choose this option and describe the sign-up process in the Comments section below."
+        ),
+        null=True,
+    )
     is_using_paikkala = models.BooleanField(
         default=False,
         verbose_name=_("Reservable seats"),
