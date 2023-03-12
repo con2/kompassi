@@ -1,3 +1,35 @@
+# Työpajat 2023
+
+msgid "Duration of workshops is either 45 minutes, 105 minutes or 165 minutes."
+msgstr "Työpaja voi olla 45, 105 tai 165 minuuttia."
+
+msgid "If the number of participants in your workshop is limited, please provide the maximum number of participants."
+msgstr "Mikäli työpajan osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
+
+msgid "Material needs"
+msgstr "Materiaalin tarve"
+
+msgid "If you need assistance from Ropecon in acquiring or loaning the materials, inform about your needs here. It can be for example pens and paper, flip chart, miniature parts, miniature paint, iron wire etc."
+msgstr "Mikäli tarvitset Ropeconilta apua materiaalien hankkimiseen tai lainaamiseen, kerro tarpeesta tässä. Se voi olla esimerkiksi kyniä ja paperia, fläppitaulu, figujen osia, figumaaleja, rautalankaa, jne."
+
+msgid "Number of tables and chairs"
+msgstr "Pöytien ja tuolien määrä"
+
+msgid "Inform us how many tables and chairs are needed in your workshop."
+msgstr "Kerro montako pöytää ja tuolia työpajassasi tarvitaan."
+
+msgid "Other space and furniture needs"
+msgstr "Muut tila- ja kalustetarpeet"
+
+msgid "Inform us here, if you need a specific kind of space (and/or furniture) for your workshop. For example if tables and chairs need to be moved for empty space in your workshop, because it is not possible to do so in every room."
+msgstr "Kerro tässä, jos tarvitset tietynlaista tilaa (ja/tai kalusteita) työpajallesi. Esimerkiksi tarvitseeko työpajassasi siirtää pöytiä ja tuoleja tyhjän tilan saamiseksi, koska jokaisessa huoneessa näin ei voi tehdä."
+
+msgid "Will you need a laptop at your workshop? We strongly recommend using a laptop provided by Ropecon. Using your own laptop is possible only when notified in advance."
+msgstr "Tarvitsetko työpajassasi tietokonetta? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
+
+msgid "Inform us about other possible technical needs at your workshop."
+msgstr "Kerro muista mahdollisista työpajasi tekniikkatarpeista."
+
 # Peliohjelma 2023
 
 msgid "Title of your game programme"
@@ -65,14 +97,6 @@ msgstr "Ruksaa ne ajat, jolloin <b>ET pysty</b> pitämään peliohjelmaasi. Aika
 
 msgid "Is there anything else you would like to tell the game programme coordinators?"
 msgstr "Haluatko sanoa peliohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
-
-
-
-msgid ""
-msgstr ""
-
-msgid ""
-msgstr ""
 
 # Muu ohjelma 2023
 

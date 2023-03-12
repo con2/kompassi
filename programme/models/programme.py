@@ -588,7 +588,6 @@ class Programme(models.Model, CsvExportMixin):
             ("othr", _("Other")),
         ],
     )
-
     ropecon2020_suitable_for_children_under_7 = models.BooleanField(
         default=False,
         verbose_name=_("Suitable for children under 7"),
@@ -900,6 +899,31 @@ class Programme(models.Model, CsvExportMixin):
             "How will players sign up for your game programme?<br/>No sign-up - no sign-up is required to participate in the game programme.<br/>Sign-up via the Konsti app - the sign-up process for the game programme is done via the Konsti app during the event.<br/>Other sign-up process - if your game programme requires attendees to sign up beforehand and you prefer to handle it through some other means (e.g. at the Gaming Desk), please choose this option and describe the sign-up process in the Comments section below."
         ),
         null=True,
+    )
+    ropecon2023_material_needs = models.TextField(
+        blank=True,
+        default="",
+        verbose_name=_("Material needs"),
+        help_text=_(
+            "If you need assistance from Ropecon in acquiring or loaning the materials, inform about your needs here. It can be for example pens and paper, flip chart, miniature parts, miniature paint, iron wire etc."
+        ),
+    )
+    ropecon2023_tables_and_chairs = models.CharField(
+        max_length=1023,
+        blank=True,
+        default="",
+        verbose_name=_(
+            "Number of tables and chairs"
+        ),
+        help_text=_("Inform us how many tables and chairs are needed in your workshop."),
+    )
+    ropecon2023_furniture_needs = models.TextField(
+        blank=True,
+        default="",
+        verbose_name=_("Other space and furniture needs"),
+        help_text=_(
+            "Inform us here, if you need a specific kind of space (and/or furniture) for your workshop. For example if tables and chairs need to be moved for empty space in your workshop, because it is not possible to do so in every room."
+        ),
     )
     is_using_paikkala = models.BooleanField(
         default=False,
