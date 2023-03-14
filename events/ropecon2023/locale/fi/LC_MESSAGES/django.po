@@ -6,6 +6,12 @@ msgstr "Työpaja voi olla 45, 105 tai 165 minuuttia."
 msgid "If the number of participants in your workshop is limited, please provide the maximum number of participants."
 msgstr "Mikäli työpajan osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
 
+msgid "Workshop fee"
+msgstr "Työpajamaksu"
+
+msgid "If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application). If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide!"
+msgstr "Mikäli työpajaan on kävijälle vaatimuksena esimerkiksi materiaalimaksu, kirjoita mahdollisimman tarkka määrä tähän (jos tiedossa jo hakuhetkellä). Jos ei tiedossa (tai minkäänlaista maksua ei ole), kirjoita 0€. Muista päivittää tarkka määrä Kompassiin ennen ohjelmankartan julkaisua!"
+
 msgid "Material needs"
 msgstr "Materiaalin tarve"
 
