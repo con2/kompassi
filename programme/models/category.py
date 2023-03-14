@@ -13,12 +13,13 @@ class Category(models.Model):
     style = models.CharField(max_length=15)
     notes = models.TextField(blank=True)
     public = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
 
     class Meta:
-        ordering = ["title"]
+        ordering = ["event", "order", "title"]
         unique_together = [("event", "slug")]
         verbose_name = _("category")
         verbose_name_plural = _("categories")
