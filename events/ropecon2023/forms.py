@@ -245,6 +245,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             ("okay", _("My programme can be photographed")),
             ("nope", _("I request my programme to not be photographed")),
         ]
+        self.fields["photography"].initial = "okay"
 
     class Meta:
         model = Programme
@@ -470,6 +471,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ("okay", _("My programme can be photographed")),
             ("nope", _("I request my programme to not be photographed")),
         ]
+        self.fields["photography"].initial = "okay"
 
     class Meta:
         model = Programme
@@ -694,6 +696,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ("okay", _("My programme can be photographed")),
             ("nope", _("I request my programme to not be photographed")),
         ]
+        self.fields["photography"].initial = "okay"
 
     class Meta:
         model = Programme
@@ -909,6 +912,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ("nope", _("I request my programme to not be photographed")),
         ]
         self.fields["photography"].required = True
+        self.fields["photography"].initial = "okay"
 
     class Meta:
         model = Programme
@@ -1062,6 +1066,7 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon_theme",
             "ropecon2023_celebratory_year",
             "max_players",
+            "ropecon2023_workshop_fee",
             "ropecon2023_material_needs",
             "ropecon2023_tables_and_chairs",
             "ropecon2023_furniture_needs",
@@ -1112,18 +1117,21 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "workother",
             ),
         )
+        self.fields["ropecon2023_workshop_fee"].required = True
         self.fields["computer"].choices = [
             ("none", _("No laptop is needed in my programme")),
             ("con", _("Laptop provided by Ropecon")),
             ("pc", _("Own laptop (PC)")),
             ("mac", _("Own laptop (Mac)")),
         ]
+        self.fields["computer"].initial = "none"
         self.fields["ropecon2023_blocked_time_slots"].required = True
         self.fields["photography"].choices = [
             ("please", _("Please photograph my programme")),
             ("okay", _("My programme can be photographed")),
             ("nope", _("I request my programme to not be photographed")),
         ]
+        self.fields["photography"].initial = "okay"
 
     class Meta:
         model = Programme
@@ -1142,6 +1150,7 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon_theme",
             "ropecon2023_celebratory_year",
             "max_players",
+            "ropecon2023_workshop_fee",
             "ropecon2023_material_needs",
             "ropecon2023_tables_and_chairs",
             "ropecon2023_furniture_needs",

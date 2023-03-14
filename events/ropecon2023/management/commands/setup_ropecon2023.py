@@ -280,21 +280,27 @@ class Setup:
 
         priority = 0
         for pc_slug, role_title, role_is_default in [
-            ("ohjelma", "Ohjelmanjärjestäjä", True),
+            ("ohjelma", "Ohjelma, päivä, avustaja", False),
+            ("ohjelma", "Ohjelma, päivä, lyhyt ohjelma", True),
+            ("ohjelma", "Ohjelma, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Ohjelma, VKL, kombo", False),
+            ("ohjelma", "Työpaja, päivä, avustaja", False),
+            ("ohjelma", "Työpaja, päivä, lyhyt ohjelma", False),
+            ("ohjelma", "Työpaja, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Työpaja, VKL, kombo", False),
+            ("ohjelma", "Peliohjelma, päivä, avustaja", False),
+            ("ohjelma", "Peliohjelma, päivä, lyhyt ohjelma", False),
+            ("ohjelma", "Peliohjelma, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Peliohjelma, VKL, kombo", False),
+            ("ohjelma", "Roolipelit, päivä, avustaja", False),
+            ("ohjelma", "Roolipelit, päivä, lyhyt ohjelma", False),
+            ("ohjelma", "Roolipelit, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Roolipelit, VKL, kombo", False),
+            ("ohjelma", "Larpit, päivä, avustaja", False),
+            ("ohjelma", "Larpit, päivä, lyhyt ohjelma", False),
+            ("ohjelma", "Larpit, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Larpit, VKL, kombo", False),
             ("ohjelma", "Näkymätön ohjelmanjärjestäjä", False),
-            ("ohjelma", "Peliohjelmanjärjestäjä", False),
-            ("ohjelma", "Larp-pelinjohtaja", False),
-            ("ohjelma", "Roolipelinjohtaja", False),
-            ("ohjelma", "Työpajan järjestäjä", False),
-            ("ohjelma", "Ohjelmanjärjestäjä, päivälippu", False),
-            ("ohjelma", "Peliohjelmanjärjestäjä, päivälippu", False),
-            ("ohjelma", "Larp-pelinjohtaja, päivälippu", False),
-            ("ohjelma", "Roolipelinjohtaja, päivälippu", False),
-            ("ohjelma", "Ohjelmanjärjestäjä, työvoimaedut", False),
-            ("ohjelma", "Peliohjelmanjärjestäjä, työvoimaedut", False),
-            ("ohjelma", "Larp-pelinjohtaja, työvoimaedut", False),
-            ("ohjelma", "Roolipelinjohtaja, työvoimaedut", False),
-            ("ohjelma", "Työpajajärjestäjä", False),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
             role, created = Role.objects.get_or_create(
@@ -394,12 +400,12 @@ class Setup:
                     view.rooms = rooms
                     view.save()
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Roolipelinjohtaja")
+        role = Role.objects.get(personnel_class__event=self.event, title="Roolipelit, VKL, pitkä ohjelma")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="roolipeli",
             defaults=dict(
-                title="Tarjoa pöytäroolipeliä / Call for GMs (tabletop role-playing games)",
+                title="Tarjoa pöytäroolipeliä / Call for GMs (tabletop role-playing games) 2023",
                 description=resource_string(__name__, "texts/roolipelit.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:RpgForm",
                 num_extra_invites=2,
@@ -408,7 +414,7 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Larp-pelinjohtaja")
+        role = Role.objects.get(personnel_class__event=self.event, title="Larpit, VKL, pitkä ohjelma")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="larp",
@@ -422,22 +428,22 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Peliohjelmanjärjestäjä")
+        role = Role.objects.get(personnel_class__event=self.event, title="Peliohjelma, VKL, pitkä ohjelma")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="pelitiski",
             defaults=dict(
                 title="Tarjoa peliohjelmaa / Call for Game Programme 2023",
-                short_description="Figupelit, korttipelit, lautapelit, Kokemuspiste ym. / Miniature wargames, card games, board games, Experience Point etc.",
+                short_description="Figupelit, korttipelit, lautapelit, turnaukset, Kokemuspisteen pelit yms. / Miniature wargames, board games, card games, game tournaments, games at the Experience Point etc.",
                 description=resource_string(__name__, "texts/pelitiski.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:GamingDeskForm",
-                num_extra_invites=2,
+                num_extra_invites=3,
                 order=60,
                 role=role,
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Työpajan järjestäjä")
+        role = Role.objects.get(personnel_class__event=self.event, title="Työpaja, päivä, lyhyt ohjelma")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="tyopaja",
@@ -451,12 +457,12 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelmanjärjestäjä")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, lyhyt ohjelma")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
-                title="Tarjoa muuta ohjelmaa / Offer any other program",
+                title="Tarjoa ohjelmaa Ropeconille / Call for Programme 2023",
                 short_description="Puheohjelmat, esitykset ym. / Lecture program, show program etc.",
                 description=resource_string(__name__, "texts/muuohjelma.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:ProgrammeForm",

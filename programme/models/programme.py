@@ -900,6 +900,15 @@ class Programme(models.Model, CsvExportMixin):
         ),
         null=True,
     )
+    ropecon2023_workshop_fee = models.CharField(
+        max_length=1023,
+        blank=True,
+        default="0€",
+        verbose_name=_(
+            "Workshop fee"
+        ),
+        help_text=_("If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application). If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide!"),
+    )
     ropecon2023_material_needs = models.TextField(
         blank=True,
         default="",
