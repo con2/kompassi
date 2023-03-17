@@ -12,15 +12,13 @@ interface AddFieldDropdownProps {
 const AddFieldDropdown = ({ title, onSelect }: AddFieldDropdownProps) => {
   const t = T((r) => r.FormEditor);
   return (
-    <ButtonGroup className="mr-2">
-      <DropdownButton title={title} size="sm" variant="outline-primary">
-        {fieldTypes.map((fieldType) => (
-          <Dropdown.Item key={fieldType} onClick={() => onSelect(fieldType)}>
-            {t((r) => r.FieldTypes[fieldType])}
-          </Dropdown.Item>
-        ))}
-      </DropdownButton>
-    </ButtonGroup>
+    <DropdownButton title={title} size="sm" variant="outline-primary">
+      {fieldTypes.map((fieldType) => (
+        <Dropdown.Item key={fieldType} onClick={() => onSelect(fieldType)}>
+          {t((r) => r.FieldTypes[fieldType])}
+        </Dropdown.Item>
+      ))}
+    </DropdownButton>
   );
 };
 

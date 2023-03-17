@@ -1,8 +1,8 @@
 import * as yup from "yup";
-import { Field, FormSchema, nonValueFieldTypes } from "./models";
+import { Field, nonValueFieldTypes } from "./models";
 
 function fieldToYup(field: Field) {
-  let validator: yup.AnySchema = yup.string();
+  let validator: yup.Schema = yup.string();
 
   switch (field.type) {
     case "SingleCheckbox":

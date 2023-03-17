@@ -59,18 +59,20 @@ export const SchemaForm = ({ formik, schemaFormConfig }: SchemaFormProps) => {
           />
         </SchemaFormField>
       ))}
-      <Button
-        type="submit"
-        disabled={isSubmitting}
-        className={showSubmitButton ?? true ? "" : "sr-only"}
-      >
-        {(isSubmitting && (
-          <>
-            <Spinner animation="border" size="sm" /> Submitting...
-          </>
-        )) ||
-          "Submit"}
-      </Button>
+      {showSubmitButton ?? (
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className={showSubmitButton ?? true ? "" : "sr-only"}
+        >
+          {(isSubmitting && (
+            <>
+              <Spinner animation="border" size="sm" /> Submitting...
+            </>
+          )) ||
+            "Submit"}
+        </Button>
+      )}
     </Form>
   );
 };

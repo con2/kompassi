@@ -51,8 +51,8 @@ const SchemaFormField: React.FC<SchemaFormFieldProps> = ({
             )}
           </Form.Check>{" "}
           {helpText && (
-              <Form.Text className="text-muted mb-3">{helpText}</Form.Text>
-            )}
+            <Form.Text className="text-muted mb-3">{helpText}</Form.Text>
+          )}
         </Form.Group>
       );
     default:
