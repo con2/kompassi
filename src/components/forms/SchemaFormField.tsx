@@ -40,7 +40,7 @@ const SchemaFormField: React.FC<SchemaFormFieldProps> = ({
     case "SingleCheckbox":
       // https://react-bootstrap.github.io/components/forms/#forms-form-check
       return (
-        <Form.Group controlId={name}>
+        <Form.Group controlId={name} className="mb-2">
           <Form.Check type="checkbox">
             {children}
             <Form.Check.Label>{title}</Form.Check.Label>
@@ -50,16 +50,14 @@ const SchemaFormField: React.FC<SchemaFormFieldProps> = ({
               </Form.Control.Feedback>
             )}
           </Form.Check>{" "}
-          {helpText && (
-            <Form.Text className="text-muted mb-3">{helpText}</Form.Text>
-          )}
+          {helpText && <Form.Text className="text-muted">{helpText}</Form.Text>}
         </Form.Group>
       );
     default:
       switch (layout) {
         case "horizontal":
           return (
-            <Form.Group as={Row} controlId={name}>
+            <Form.Group as={Row} controlId={name} className="mb-3">
               <Form.Label column md={labelColumnWidth}>
                 {title}
               </Form.Label>
@@ -79,7 +77,7 @@ const SchemaFormField: React.FC<SchemaFormFieldProps> = ({
         case "vertical":
         default:
           return (
-            <Form.Group controlId={name}>
+            <Form.Group controlId={name} className="mb-2">
               <Form.Label>{title}</Form.Label>
               {children}
               {error && (
