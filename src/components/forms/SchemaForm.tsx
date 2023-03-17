@@ -40,7 +40,8 @@ export function useSchemaForm(
 type SchemaFormProps = ReturnType<typeof useSchemaForm>;
 
 export const SchemaForm = ({ formik, schemaFormConfig }: SchemaFormProps) => {
-  const { fields, showSubmitButton } = schemaFormConfig;
+  const { fields } = schemaFormConfig;
+  const showSubmitButton = schemaFormConfig.showSubmitButton ?? true;
   const layout = schemaFormConfig.layout ?? defaultLayout;
   const { handleSubmit, handleChange, isSubmitting, errors, values } = formik;
   const t = T((r) => r.Common);

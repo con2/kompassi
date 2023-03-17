@@ -156,6 +156,17 @@ const translations: Translations = {
       no: "Ei, peruuta",
     },
   },
+
+  SplashView: {
+    engagement: (
+      <>
+        Toteutamme parhaillaan{" "}
+        <strong>Kompassi-tapahtumanhallintajärjestelmän</strong>{" "}
+        avaintoiminnallisuutta uudelleen moderneilla web-teknologioilla
+        voidaksemme tarjota paremman käyttökokemuksen ja mukautettavuuden.
+      </>
+    ),
+  },
 };
 
 export default translations;

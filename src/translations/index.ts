@@ -3,6 +3,7 @@
  * Enforces all supported languages to have all the same translation keys as English.
  */
 
+import { ReactNode } from "react";
 import en from "./en";
 import fi from "./fi";
 
@@ -19,10 +20,10 @@ const translations: Translations =
 
 export type TranslationKeyFunction<LocalTranslations = Translations> = (
   r: LocalTranslations
-) => string;
+) => ReactNode;
 export type TranslationFunction<LocalTranslations = Translations> = (
   fn: TranslationKeyFunction<LocalTranslations>
-) => string;
+) => ReactNode;
 
 export type HigherOrderTranslationKeyFunction<LocalTranslations> = (
   r: Translations

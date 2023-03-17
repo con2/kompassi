@@ -154,6 +154,19 @@ const translations = {
       no: "No, cancel",
     },
   },
+
+  SplashView: {
+    engagement: (
+      <>
+        Stay tuned while we reimplement key functions of the{" "}
+        <strong style={{ whiteSpace: "nowrap" }}>
+          Kompassi Event Management System
+        </strong>{" "}
+        using modern web technologies for better user experience and greater
+        self-service customisability!
+      </>
+    ),
+  },
 };
 
 export default translations;

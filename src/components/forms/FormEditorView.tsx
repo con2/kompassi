@@ -3,7 +3,7 @@ import React from "react";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 
-import { dummyForm as form, FormSchema } from "./models";
+import { dummyForm as form } from "./models";
 import { propertiesFormFields } from "./propertiesForm";
 import { SchemaForm, useSchemaForm } from "./SchemaForm";
 import { T } from "../../translations";
@@ -19,6 +19,8 @@ const FormEditorView = () => {
   const [properties, setProperties] = React.useState(form);
   const { title, layout } = properties;
   const t = T((r) => r.FormEditor);
+
+  console.log({ properties });
 
   const previewSchemaForm = useSchemaForm(
     {
@@ -45,7 +47,11 @@ const FormEditorView = () => {
       <Tabs defaultActiveKey="design">
         <Tab eventKey="design" title={t((r) => r.Tabs.design)}>
           <TabContent>
-            <FormEditor value={fields} onChange={setFields} />
+            <FormEditor
+              value={fields}
+              layout={properties.layout}
+              onChange={setFields}
+            />
           </TabContent>
         </Tab>
         <Tab eventKey="preview" title={t((r) => r.Tabs.preview)}>
