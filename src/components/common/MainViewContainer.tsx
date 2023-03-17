@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
 import Alert from "react-bootstrap/Alert";
 import Container from "react-bootstrap/Container";
@@ -11,6 +11,7 @@ import "./MainViewContainer.scss";
 interface MainViewContainerProps {
   loading?: boolean;
   error?: any;
+  children: ReactNode;
 }
 
 const MainViewContainer: React.FC<MainViewContainerProps> = ({

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -11,6 +11,7 @@ interface SchemaFormFieldProps {
   layout: Layout;
   field: Field;
   error?: any;
+  children: ReactNode;
 }
 
 /**
@@ -48,10 +49,10 @@ const SchemaFormField: React.FC<SchemaFormFieldProps> = ({
                 {error}
               </Form.Control.Feedback>
             )}
-            {helpText && (
+          </Form.Check>{" "}
+          {helpText && (
               <Form.Text className="text-muted mb-3">{helpText}</Form.Text>
             )}
-          </Form.Check>{" "}
         </Form.Group>
       );
     default:
