@@ -178,7 +178,7 @@ class Setup:
         for night in [
             "Perjantain ja lauantain välinen yö",
             "Lauantain ja sunnuntain välinen yö",
-            "Sunnuntain ja maanantain välinen yö",
+            # "Sunnuntain ja maanantain välinen yö",
         ]:
             Night.objects.get_or_create(name=night)
 
