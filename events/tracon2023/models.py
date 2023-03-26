@@ -51,7 +51,7 @@ class TimeSlot(SimpleChoice):
     pass
 
 
-class ContentWarning(SimpleChoice):
+class AccessibilityWarning(SimpleChoice):
     pass
 
 

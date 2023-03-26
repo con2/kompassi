@@ -329,7 +329,7 @@ class Programme(models.Model, CsvExportMixin):
         max_length=max(len(key) for (key, label) in PHOTOGRAPHY_CHOICES),
         choices=PHOTOGRAPHY_CHOICES,
         blank=True,
-        verbose_name=_("Photography of your prorgmme"),
+        verbose_name=_("Photography of your prorgamme"),
         help_text=_(
             "Our official photographers will try to cover all programmes whose hosts request their programmes "
             "to be photographed."
@@ -531,17 +531,22 @@ class Programme(models.Model, CsvExportMixin):
         "tracon2023.TimeSlot",
         verbose_name=_("preferred time slots"),
         help_text=_(
-            "When would you like to run your RPG? The time slots are intentionally vague. If you have more "
+            "When would you like to hold your programme? The time slots are intentionally vague. If you have more "
             "specific needs regarding the time, please explain them in the last open field."
         ),
     )
-    tracon2023_content_warnings = models.ManyToManyField(
-        "tracon2023.ContentWarning",
-        verbose_name=_("content warnings"),
-        help_text=_(
-            "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in some participants"
-        ),
+    tracon2023_accessibility_warnings = models.ManyToManyField(
+        "tracon2023.AccessibilityWarning",
+        verbose_name=_("Accessibility warnings"),
         blank=True,
+    )
+    tracon2023_content_warnings = models.TextField(
+        default="",
+        blank=True,
+        verbose_name=_("Content warnings"),
+        help_text=_(
+            "We will print content warnings in the programme schedule in order to give our visitors the requisite information to make educated choices about programme. If your programme contains bright lights, loud noises, smoke or similar effects, please choose them above. Please include any other content warnings in the text field."
+        ),
     )
 
     # XXX BAD, there needs to be a better way if this becomes a recurring pattern
@@ -733,7 +738,9 @@ class Programme(models.Model, CsvExportMixin):
 
     ropecon2021_accessibility_inaccessibility = models.TextField(
         verbose_name=_("Other inaccessibility"),
-        help_text=_("In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."),
+        help_text=_(
+            "In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."
+        ),
         blank=True,
         null=True,
         default="",
@@ -800,29 +807,25 @@ class Programme(models.Model, CsvExportMixin):
         choices=ROPECON2023_LANGUAGE_CHOICES,
         default=ROPECON2023_LANGUAGE_CHOICES[0][0],
         verbose_name=_("Choose the language used in your programme"),
-        help_text=_("Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with having your programme language based on what language the attendees speak. Please write your title and programme description in both languages."),
+        help_text=_(
+            "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with having your programme language based on what language the attendees speak. Please write your title and programme description in both languages."
+        ),
         null=True,
     )
     ropecon2023_suitable_for_all_ages = models.BooleanField(
         default=False,
         verbose_name=_("Suitable for all ages"),
-        help_text=_(
-            "If your programme is suitable for all ages, please tick this box."
-        ),
+        help_text=_("If your programme is suitable for all ages, please tick this box."),
     )
     ropecon2023_aimed_at_children_under_13 = models.BooleanField(
         default=False,
         verbose_name=_("Aimed at children under 13"),
-        help_text=_(
-            "If your programme is designed for attendees under the age of 13 years, please tick this box."
-        ),
+        help_text=_("If your programme is designed for attendees under the age of 13 years, please tick this box."),
     )
     ropecon2023_aimed_at_children_between_13_17 = models.BooleanField(
         default=False,
         verbose_name=_("Aimed at children between 13-17"),
-        help_text=_(
-            "If your programme is designed for attendees between 13-17 years of age, please tick this box."
-        ),
+        help_text=_("If your programme is designed for attendees between 13-17 years of age, please tick this box."),
     )
     ropecon2023_aimed_at_adult_attendees = models.BooleanField(
         default=False,
@@ -832,11 +835,15 @@ class Programme(models.Model, CsvExportMixin):
     ropecon2023_for_18_plus_only = models.BooleanField(
         default=False,
         verbose_name=_("For 18+ only"),
-        help_text=_("If your programme contains themes that require attendees to be 18 years or older, please tick this box. There will be an ID check for all attendees."),
+        help_text=_(
+            "If your programme contains themes that require attendees to be 18 years or older, please tick this box. There will be an ID check for all attendees."
+        ),
     )
     ropecon2023_beginner_friendly = models.BooleanField(
         verbose_name=_("Beginner-friendly"),
-        help_text=_("If your programme is suitable for attendees with very limited knowledge or without any previous experience about the programme or subject matter in question, please tick this box."),
+        help_text=_(
+            "If your programme is suitable for attendees with very limited knowledge or without any previous experience about the programme or subject matter in question, please tick this box."
+        ),
         default=False,
     )
     ropecon2023_celebratory_year = models.BooleanField(
@@ -846,27 +853,19 @@ class Programme(models.Model, CsvExportMixin):
     )
     ropecon2023_accessibility_cant_use_mic = models.BooleanField(
         default=False,
-        verbose_name=_(
-            "I can't use a microphone"
-        ),
+        verbose_name=_("I can't use a microphone"),
     )
     ropecon2023_accessibility_programme_duration_over_2_hours = models.BooleanField(
         default=False,
-        verbose_name=_(
-            "The duration of the programme is over two hours without breaks."
-        ),
+        verbose_name=_("The duration of the programme is over two hours without breaks."),
     )
     ropecon2023_accessibility_limited_opportunities_to_move_around = models.BooleanField(
         default=False,
-        verbose_name=_(
-            "There are limited opportunities to move around during the programme."
-        ),
+        verbose_name=_("There are limited opportunities to move around during the programme."),
     )
     ropecon2023_accessibility_long_texts = models.BooleanField(
         default=False,
-        verbose_name=_(
-            "Participation involves reading long texts independently"
-        ),
+        verbose_name=_("Participation involves reading long texts independently"),
     )
     ropecon2023_accessibility_texts_not_available_as_recordings = models.BooleanField(
         default=False,
@@ -876,26 +875,26 @@ class Programme(models.Model, CsvExportMixin):
     )
     ropecon2023_accessibility_participation_requires_dexterity = models.BooleanField(
         default=False,
-        verbose_name=_(
-            "Participation requires some dexterity, e.g. that of hands and fingers."
-        ),
+        verbose_name=_("Participation requires some dexterity, e.g. that of hands and fingers."),
     )
     ropecon2023_accessibility_participation_requires_react_quickly = models.BooleanField(
         default=False,
-        verbose_name=_(
-            "Participation requires the ability to react quickly."
-        ),
+        verbose_name=_("Participation requires the ability to react quickly."),
     )
     ropecon2023_other_accessibility_information = models.TextField(
         verbose_name=_("Other accessibility information"),
-        help_text=_("In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."),
+        help_text=_(
+            "In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."
+        ),
         blank=True,
         null=True,
         default="",
     )
     ropecon2023_tables = models.PositiveIntegerField(
         verbose_name=_("Number of tables"),
-        help_text=_("How much table space is needed for your game programme: how many tables in total?<br/>Table size is 70 cm x 200 cm."),
+        help_text=_(
+            "How much table space is needed for your game programme: how many tables in total?<br/>Table size is 70 cm x 200 cm."
+        ),
         validators=[MinValueValidator(1), MaxValueValidator(99)],
         null=True,
         blank=True,
@@ -921,10 +920,10 @@ class Programme(models.Model, CsvExportMixin):
         max_length=1023,
         blank=True,
         default="0€",
-        verbose_name=_(
-            "Workshop fee"
+        verbose_name=_("Workshop fee"),
+        help_text=_(
+            "If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application). If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide!"
         ),
-        help_text=_("If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application). If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide!"),
     )
     ropecon2023_material_needs = models.TextField(
         blank=True,
@@ -938,9 +937,7 @@ class Programme(models.Model, CsvExportMixin):
         max_length=1023,
         blank=True,
         default="",
-        verbose_name=_(
-            "Number of tables and chairs"
-        ),
+        verbose_name=_("Number of tables and chairs"),
         help_text=_("Inform us how many tables and chairs are needed in your workshop."),
     )
     ropecon2023_furniture_needs = models.TextField(

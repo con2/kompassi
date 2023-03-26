@@ -426,7 +426,7 @@ class Setup:
             View,
         )
 
-        from ...models import TimeSlot
+        from ...models import TimeSlot, AccessibilityWarning
 
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
@@ -525,7 +525,10 @@ class Setup:
             ("In English", "label-success"),
             ("English OK", "label-success"),
             ("K-18", "label-danger"),
-            ("Paikkaliput", "label-warning"),
+            ("Paikkaliput", "label-default"),
+            ("Kirkkaita/välkkyviä valoja", "label-warning"),
+            ("Kovia ääniä", "label-warning"),
+            ("Savutehosteita", "label-warning"),
         ]:
             Tag.objects.get_or_create(
                 event=self.event,
@@ -536,7 +539,7 @@ class Setup:
             )
 
         for time_slot_name in [
-            "Perjantaina illalla"
+            "Perjantaina illalla",
             "Lauantaina päivällä",
             "Lauantaina iltapäivällä",
             "Lauantaina illalla",
@@ -545,6 +548,13 @@ class Setup:
             "Sunnuntaina päivällä",
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
+
+        for accessibility_warning in [
+            "Välkkyviä valoja",
+            "Kovia ääniä",
+            "Savuefektejä",
+        ]:
+            AccessibilityWarning.objects.get_or_create(name=accessibility_warning)
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
