@@ -206,7 +206,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "tracon2023_accessibility_warnings",
                 "tracon2023_content_warnings",
                 "category",
-                "tracon2023_preferred_time_slots",
+                "requested_time_slot",
             ),
             Fieldset(
                 _("Technical details"),
@@ -269,7 +269,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "tracon2023_accessibility_warnings",
             "tracon2023_content_warnings",
             "category",
-            "tracon2023_preferred_time_slots",
+            "requested_time_slot",
             "computer",
             "use_audio",
             "use_video",
