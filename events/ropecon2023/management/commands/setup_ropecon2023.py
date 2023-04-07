@@ -29,7 +29,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_programme()
+        self.setup_programme()
         self.setup_tickets()
         self.setup_badges()
 
@@ -56,7 +56,7 @@ class Setup:
                 name_genitive="Ropecon 2023 -tapahtuman",
                 name_illative="Ropecon 2023 -tapahtumaan",
                 name_inessive="Ropecon 2023 -tapahtumassa",
-                homepage_url="http://2023.ropecon.fi",
+                homepage_url="http://ropecon.fi",
                 organization=self.organization,
                 start_time=datetime(2023, 7, 28, 15, 0, tzinfo=self.tz),
                 end_time=datetime(2023, 7, 30, 18, 0, tzinfo=self.tz),
@@ -132,7 +132,7 @@ class Setup:
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug="ropecon2019"),
+                source_event=Event.objects.get(slug="ropecon2022"),
                 target_event=self.event,
             )
 
@@ -280,19 +280,27 @@ class Setup:
 
         priority = 0
         for pc_slug, role_title, role_is_default in [
-            ("ohjelma", "Ohjelmanjärjestäjä", True),
+            ("ohjelma", "Ohjelma, päivä, avustaja", False),
+            ("ohjelma", "Ohjelma, päivä, lyhyt ohjelma", True),
+            ("ohjelma", "Ohjelma, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Ohjelma, VKL, kombo", False),
+            ("ohjelma", "Työpaja, päivä, avustaja", False),
+            ("ohjelma", "Työpaja, päivä, lyhyt ohjelma", False),
+            ("ohjelma", "Työpaja, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Työpaja, VKL, kombo", False),
+            ("ohjelma", "Peliohjelma, päivä, avustaja", False),
+            ("ohjelma", "Peliohjelma, päivä, lyhyt ohjelma", False),
+            ("ohjelma", "Peliohjelma, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Peliohjelma, VKL, kombo", False),
+            ("ohjelma", "Roolipelit, päivä, avustaja", False),
+            ("ohjelma", "Roolipelit, päivä, lyhyt ohjelma", False),
+            ("ohjelma", "Roolipelit, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Roolipelit, VKL, kombo", False),
+            ("ohjelma", "Larpit, päivä, avustaja", False),
+            ("ohjelma", "Larpit, päivä, lyhyt ohjelma", False),
+            ("ohjelma", "Larpit, VKL, pitkä ohjelma", False),
+            ("ohjelma", "Larpit, VKL, kombo", False),
             ("ohjelma", "Näkymätön ohjelmanjärjestäjä", False),
-            ("ohjelma", "Peliohjelmanjärjestäjä", False),
-            ("ohjelma", "Larp-pelinjohtaja", False),
-            ("ohjelma", "Roolipelinjohtaja", False),
-            ("ohjelma", "Ohjelmanjärjestäjä, päivälippu", False),
-            ("ohjelma", "Peliohjelmanjärjestäjä, päivälippu", False),
-            ("ohjelma", "Larp-pelinjohtaja, päivälippu", False),
-            ("ohjelma", "Roolipelinjohtaja, päivälippu", False),
-            ("ohjelma", "Ohjelmanjärjestäjä, työvoimaedut", False),
-            ("ohjelma", "Peliohjelmanjärjestäjä, työvoimaedut", False),
-            ("ohjelma", "Larp-pelinjohtaja, työvoimaedut", False),
-            ("ohjelma", "Roolipelinjohtaja, työvoimaedut", False),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
             role, created = Role.objects.get_or_create(
@@ -326,16 +334,23 @@ class Setup:
                 ("Puheohjelma: esitelmä / Presentation", "pres", "color1"),
                 ("Puheohjelma: paneeli / Panel discussion", "panel", "color1"),
                 ("Puheohjelma: keskustelu / Discussion group", "disc", "color1"),
-                ("Työpaja: käsityö / Workshop: crafts", "craft", "color2"),
-                ("Työpaja: figut / Workshop: miniature figurines", "mini", "color2"),
-                ("Työpaja: musiikki / Workshop: music", "music", "color2"),
-                ("Työpaja: muu / Other workshop", "workshop", "color2"),
+                ("Työpaja: käsityö / Workshop: crafts", "workcraft", "color2"),
+                ("Työpaja: figut / Workshop: miniature figurines", "workmini", "color2"),
+                ("Työpaja: musiikki / Workshop: music", "workmusic", "color2"),
+                ("Työpaja: muu / Workshop: other", "workother", "color2"),
                 ("Tanssiohjelma / Dance programme", "dance", "color2"),
                 ("Esitysohjelma / Performance programme", "perforprog", "color2"),
-                ("Pelitiski: Figupeli / Miniature wargame", "miniwar", "color3"),
-                ("Pelitiski: Korttipeli / Card game", "card", "color3"),
-                ("Pelitiski: Lautapeli / Board game", "board", "color3"),
-                ("Pelitiski: Muu / Other", "exp", "color3"),
+                ("Miitti / Meetup", "meetup", "color2"),
+                ("Kokemuspiste: demotus / Experience Point: Demo game", "expdemo", "color3"),
+                ("Kokemuspiste: avoin pelautus / Experience Point: Open game", "expopen", "color3"),
+                ("Kokemuspiste: muu / Experience Point: Other", "expother", "color3"),
+                ("Figupelit: demotus / Miniature wargames: Demo game", "minidemo", "color3"),
+                ("Figupelit: avoin pelautus / Miniature wargames: Open game", "miniopen", "color3"),
+                ("Turnaukset: figupelit / Tournament: Miniature wargames", "tourmini", "color3"),
+                ("Turnaukset: korttipelit / Tournament: Card games", "tourcard", "color3"),
+                ("Turnaukset: lautapelit / Tournament: Board games", "tourboard", "color3"),
+                ("Turnaukset: muu / Tournament: Other", "tourother", "color3"),
+                ("Muu peliohjelma / Other game programme", "othergame", "color3"),
                 ("Roolipeli / Pen & Paper RPG", "rpg", "color4"),
                 ("LARP", "larp", "color5"),
                 ("Muu ohjelma / None of the above", "other", "color6"),
@@ -385,21 +400,21 @@ class Setup:
                     view.rooms = rooms
                     view.save()
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Roolipelinjohtaja")
+        role = Role.objects.get(personnel_class__event=self.event, title="Roolipelit, VKL, pitkä ohjelma")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="roolipeli",
             defaults=dict(
-                title="Tarjoa pöytäroolipeliä / Call for GMs (tabletop role-playing games)",
+                title="Tarjoa pöytäroolipeliä / Call for GMs (tabletop role-playing games) 2023",
                 description=resource_string(__name__, "texts/roolipelit.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:RpgForm",
-                num_extra_invites=0,
+                num_extra_invites=2,
                 order=20,
                 role=role,
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Larp-pelinjohtaja")
+        role = Role.objects.get(personnel_class__event=self.event, title="Larpit, VKL, pitkä ohjelma")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="larp",
@@ -407,53 +422,67 @@ class Setup:
                 title="Tarjoa larppia / Call for Larps 2023",
                 description=resource_string(__name__, "texts/larpit.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:LarpForm",
-                num_extra_invites=0,
+                num_extra_invites=2,
                 order=30,
                 role=role,
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Peliohjelmanjärjestäjä")
+        role = Role.objects.get(personnel_class__event=self.event, title="Peliohjelma, VKL, pitkä ohjelma")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="pelitiski",
             defaults=dict(
                 title="Tarjoa peliohjelmaa / Call for Game Programme 2023",
-                short_description="Figupelit, korttipelit, lautapelit, Kokemuspiste ym. / Miniature wargames, card games, board games, Experience Point etc.",
+                short_description="Figupelit, korttipelit, lautapelit, turnaukset, Kokemuspisteen pelit yms. / Miniature wargames, board games, card games, game tournaments, games at the Experience Point etc.",
                 description=resource_string(__name__, "texts/pelitiski.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:GamingDeskForm",
-                num_extra_invites=0,
+                num_extra_invites=3,
                 order=60,
                 role=role,
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelmanjärjestäjä")
+        role = Role.objects.get(personnel_class__event=self.event, title="Työpaja, päivä, lyhyt ohjelma")
+        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug="tyopaja",
+            defaults=dict(
+                title="Tarjoa työpajaohjelmaa / Call for Workshop Programme 2023",
+                description=resource_string(__name__, "texts/tyopaja.html").decode("UTF-8"),
+                programme_form_code="events.ropecon2023.forms:WorkshopForm",
+                num_extra_invites=2,
+                order=70,
+                role=role,
+            ),
+        )
+
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, lyhyt ohjelma")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
-                title="Tarjoa muuta ohjelmaa / Offer any other program",
-                short_description="Puheohjelmat, työpajat, esitykset ym. / Lecture program, workshops, show program etc.",
+                title="Tarjoa ohjelmaa Ropeconille / Call for Programme 2023",
+                short_description="Puheohjelmat, esitykset ym. / Lecture program, show program etc.",
                 description=resource_string(__name__, "texts/muuohjelma.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2023.forms:ProgrammeForm",
-                num_extra_invites=0,
+                num_extra_invites=2,
                 order=300,
                 role=role,
             ),
         )
 
         for time_slot_name in [
-            "Perjantaina iltapäivällä / Friday afternoon",
-            "Perjantaina illalla / Friday evening",
-            "Perjantain ja lauantain välisenä yönä / Friday night",
-            "Lauantaina aamupäivällä / Saturday morning",
-            "Lauantaina päivällä / Saturday noon",
-            "Lauantaina iltapäivällä / Saturday afternoon",
-            "Lauantaina illalla / Saturday evening",
-            "Lauantain ja sunnuntain välisenä yönä / Saturday night",
-            "Sunnuntaina aamupäivällä / Sunday morning",
-            "Sunnuntaina päivällä / Sunday noon",
+            "EI perjantaina iltapäivällä / NOT Friday afternoon",
+            "EI perjantaina illalla / NOT Friday evening",
+            "EI perjantain ja lauantain välisenä yönä / NOT Friday night",
+            "EI lauantaina aamupäivällä / NOT Saturday morning",
+            "EI lauantaina päivällä / NOT Saturday noon",
+            "EI lauantaina iltapäivällä / NOT Saturday afternoon",
+            "EI lauantaina illalla / NOT Saturday evening",
+            "EI lauantain ja sunnuntain välisenä yönä / NOT Saturday night",
+            "EI sunnuntaina aamupäivällä / NOT Sunday morning",
+            "EI sunnuntaina päivällä / NOT Sunday noon",
             "Kaikki käy / Any time is fine",
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
@@ -546,7 +575,7 @@ class Setup:
                 price_cents=4000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -558,7 +587,7 @@ class Setup:
                 price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -570,7 +599,7 @@ class Setup:
                 price_cents=9900,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -582,7 +611,7 @@ class Setup:
                 price_cents=4500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -594,7 +623,7 @@ class Setup:
                 price_cents=2500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -606,7 +635,7 @@ class Setup:
                 price_cents=11000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -618,7 +647,7 @@ class Setup:
                 price_cents=5500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -630,7 +659,7 @@ class Setup:
                 price_cents=6700,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -642,7 +671,7 @@ class Setup:
                 price_cents=3400,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -654,7 +683,7 @@ class Setup:
                 price_cents=3400,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -666,7 +695,7 @@ class Setup:
                 price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -678,7 +707,7 @@ class Setup:
                 price_cents=1500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -690,7 +719,7 @@ class Setup:
                 price_cents=1500,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -702,7 +731,7 @@ class Setup:
                 price_cents=1000,
                 requires_shipping=False,
                 electronic_ticket=True,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
             ),
             dict(
@@ -714,7 +743,7 @@ class Setup:
                 price_cents=4000,
                 requires_shipping=False,
                 electronic_ticket=False,
-                available=True,
+                available=False,
                 ordering=self.get_ordering_number(),
                 mail_description="\n".join(
                     line.strip()

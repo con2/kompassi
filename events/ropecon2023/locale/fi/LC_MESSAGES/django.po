@@ -1,4 +1,236 @@
+# Työpajat 2023
+
+msgid "Duration of workshops is either 45 minutes, 105 minutes or 165 minutes."
+msgstr "Työpaja voi olla 45, 105 tai 165 minuuttia."
+
+msgid "If the number of participants in your workshop is limited, please provide the maximum number of participants."
+msgstr "Mikäli työpajan osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
+
+msgid "Workshop fee"
+msgstr "Työpajamaksu"
+
+msgid "If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application). If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide!"
+msgstr "Mikäli työpajaan on kävijälle vaatimuksena esimerkiksi materiaalimaksu, kirjoita mahdollisimman tarkka määrä tähän (jos tiedossa jo hakuhetkellä). Jos ei tiedossa (tai minkäänlaista maksua ei ole), kirjoita 0€. Muista päivittää tarkka määrä Kompassiin ennen ohjelmankartan julkaisua!"
+
+msgid "Material needs"
+msgstr "Materiaalin tarve"
+
+msgid "If you need assistance from Ropecon in acquiring or loaning the materials, inform about your needs here. It can be for example pens and paper, flip chart, miniature parts, miniature paint, iron wire etc."
+msgstr "Mikäli tarvitset Ropeconilta apua materiaalien hankkimiseen tai lainaamiseen, kerro tarpeesta tässä. Se voi olla esimerkiksi kyniä ja paperia, fläppitaulu, figujen osia, figumaaleja, rautalankaa, jne."
+
+msgid "Number of tables and chairs"
+msgstr "Pöytien ja tuolien määrä"
+
+msgid "Inform us how many tables and chairs are needed in your workshop."
+msgstr "Kerro montako pöytää ja tuolia työpajassasi tarvitaan."
+
+msgid "Other space and furniture needs"
+msgstr "Muut tila- ja kalustetarpeet"
+
+msgid "Inform us here, if you need a specific kind of space (and/or furniture) for your workshop. For example if tables and chairs need to be moved for empty space in your workshop, because it is not possible to do so in every room."
+msgstr "Kerro tässä, jos tarvitset tietynlaista tilaa (ja/tai kalusteita) työpajallesi. Esimerkiksi tarvitseeko työpajassasi siirtää pöytiä ja tuoleja tyhjän tilan saamiseksi, koska jokaisessa huoneessa näin ei voi tehdä."
+
+msgid "Will you need a laptop at your workshop? We strongly recommend using a laptop provided by Ropecon. Using your own laptop is possible only when notified in advance."
+msgstr "Tarvitsetko työpajassasi tietokonetta? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
+
+msgid "Inform us about other possible technical needs at your workshop."
+msgstr "Kerro muista mahdollisista työpajasi tekniikkatarpeista."
+
+# Peliohjelma 2023
+
+msgid "Title of your game programme"
+msgstr "Peliohjelman nimi"
+
+msgid "Come up with a catchy, concise title for your game programme. Ropecon reserves the right to edit the title if necessary.<br/>Write the title of the game programme in the language the game will be played in (Finnish or English). You can also write the title in both languages, if you prefer."
+msgstr "Keksi ytimekäs nimi peliohjelmallesi. Varaamme oikeuden muokata nimeä.<br/>Kirjoita peliohjelman nimi sillä kielellä, jolla peli peluutetaan (suomeksi ja/tai englanniksi). Voit halutessasi kirjoittaa nimen kummallakin kielellä."
+
+msgid "Describe your game programme to your potential players in an appealing way. Inform players what is expected of them and what themes your game contains. If your game programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your game programme is meant as humorous or entertaining in nature, let it show in the description as well.<br/>Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the game programme if necessary.<br/>Write the description of the game programme in the language the game will be played in (Finnish or English). You can also write the description in both languages, if you prefer."
+msgstr "Mainosta peliohjelmaasi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos peliohjelmassasi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa.<br/>Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja nimeä tarpeen mukaan esimerkiksi lyhentämällä niitä.<br/>Kirjoita kuvaus sillä kielellä, jolla peli peluutetaan (suomeksi ja/tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
+
+msgid "Category of the game programme"
+msgstr "Peliohjelmaluokka"
+
+msgid "Choose the category that best suits your game programme. Ropecon reserves the right to change the programme category if necessary.<br/>Experience Point - Demo games (i.e. showcasing, demonstrating or running a game) and open games (i.e. running a certain card game or board game for attendees by request) organized at the Experience Point.<br/>Miniature wargames - demonstrations and open games organized at the miniature wargame area.<br/>Tournaments - organizing a game tournament or a competition at the tournament area or the miniature wargame area.<br/>Other game programme - something other than mentioned above, e.g. jigsaw puzzles."
+msgstr "Valitse parhaiten peliohjelmaasi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa.<br/>Kokemuspiste - kokemuspistealueella järjestettäviä demotuksia (eli pelin esittelyä, demottamista ja/tai pelaamista) ja avoimia pelautuksia (eli tietyn pelin pelauttamista pyynnöstä) lauta- ja korttipeleistä.<br/>Figupelit - figualueella järjestettäviä demotuksia ja avoimia pelautuksia miniatyyripeleistä.<br/>Turnaukset - turnauksen tai kilpailun järjestäminen turnausalueella tai figualueella.<br/>Muu peliohjelma - jokin muu kuin ylläoleva, esim. palapelit."
+
+msgid "Please make an estimation for the duration of your game programme.<br/>For game programme held at the Experience Point, shorter games of 1-3 hours (60-180 min) are preferred."
+msgstr "Anna arvio peliohjelmasi kestosta.<br/>Kokemuspisteelle suositellaan lyhyempiä 1-3 tunnin (60-180 min) pelautuksia."
+
+msgid "How many players are needed for the game programe to be organized?<br/>Select the minimum number of players carefully: by setting the minimum number of players as low as possible, you maximize the chances for your game programme to be organized successfully."
+msgstr "Kuinka monta pelaajaa tarvitaan peliohjelman toteutumiseksi?<br/>Harkitse pelaajien vähimmäismäärä tarkkaan: maksimoit peliohjelmasi toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
+
+msgid "If the maximum number of players in your game programme is limited, please set the maximum number of players that can participate at the same time."
+msgstr "Mikäli peliohjelmasi pelaajamäärä on rajattu, kirjoita tähän kuinka monta pelaajaa maksimissaan mahtuu kerralla mukaan."
+
+msgid 'What game system is used in your game programme? For example, "Magic the Gathering" or "Carcassonne".<br/>If you designed the game system yourself, describe it in a few words. For example, "4X, space battle, conquest"'
+msgstr 'Mitä pelisysteemiä peliohjelmassasi käytetään? Esim. "Magic the Gathering tai Carcassonne".<br/>Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. "4X, avaruustaistelu, valloitus".'
+
+msgid "Language used in game materials"
+msgstr "Pelimateriaalin kieli"
+
+msgid "What language is used in the game materials offered for attendees?"
+msgstr "Millä kielellä pelimateriaalit on tarjottu?"
+
+msgid "Specify here whether the attendees participating in your game programme are expected to bring their own game tools or other equipment for the game and what that equipment is (e.g. card decks, figure armies)."
+msgstr "Kerro tässä, jos kävijöiden odotetaan tuovan omat pelivälineensä tai muita tarvikkeita voidakseen osallistua peliohjelmaan, ja mitä ne välineet ovat (esim. korttipakkoja, figuarmeijoita)."
+
+msgid "How will players sign up for your game programme?<br/>No sign-up - no sign-up is required to participate in the game programme.<br/>Sign-up via the Konsti app - the sign-up process for the game programme is done via the Konsti app during the event.<br/>Other sign-up process - if your game programme requires attendees to sign up beforehand and you prefer to handle it through some other means (e.g. at the Gaming Desk), please choose this option and describe the sign-up process in the Comments section below."
+msgstr "Miten peliohjelmaasi ilmoittaudutaan?<br/>Ei ilmoittautumista - Peliohjelma ei vaadi erityistä ilmoittautumista.<br/>Ilmoittautuminen Konstissa - Peliohjelmaan ilmoittaudutaan Konstin kautta tapahtuman aikana.<br/>Muu ilmoittautuminen - Peliohjelmaan ilmoittaudutaan tapahtuman aikana muulla tavalla, esim. pelitiskille. Kerro tällöin tarkemmin peliohjelmasi ilmoittautumistavasta vapaamuotoisissa terveisissä."
+
+msgid "Sign-up via the Konsti app"
+msgstr "Ilmoittautuminen Konstissa"
+
+msgid "Other sign-up process"
+msgstr "Muu ilmoittautuminen"
+
+msgid "Number of tables"
+msgstr "Pöytien määrä"
+
+msgid "How much table space is needed for your game programme: how many tables in total?<br/>Table size is 70 cm x 200 cm."
+msgstr "Kerro tässä paljonko ohjelmasi tarvitsee pöytätilaa: montako pöytää peliohjelmassasi tarvitaan?<br/>Yhden pöydän koko on 70 cm x 200 cm."
+
+msgid "Number of chairs"
+msgstr "Tuolien määrä"
+
+msgid "How many chairs are needed for your game programme."
+msgstr "Kerro tässä montako tuolia peliohjelmassasi tarvitaan."
+
+msgid "Does your game programme have any technical needs (e.g. electricity) or other specific needs regarding e.g. the programme space itself?<br/>Please keep in mind that we might not be able to fulfill all requests, so please justify how your requests would benefit your game programme."
+msgstr "Kerro tässä onko peliohjelmallasi erityisiä tila- tai tekniikkatarpeita (esim. sähkö).<br/>Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee peliohjelmaasi."
+
+msgid "Select the times when you are <b>NOT able</b> to organize your game programme.<br/><br/>Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
+msgstr "Ruksaa ne ajat, jolloin <b>ET pysty</b> pitämään peliohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä.<br/>Jos sinulla on tarkempia toivomuksia ajankohdan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
+
+msgid "Is there anything else you would like to tell the game programme coordinators?"
+msgstr "Haluatko sanoa peliohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+
 # Muu ohjelma 2023
+
+msgid "Choose the category that best suits your programme. Ropecon reserves the right to change the programme category if necessary.<br/>Presentation: traditional lecture<br/>Panel discussion: multiple panelists in front of an audience, usually with a moderator present<br/>Discussion group: discussion that equally includes the audience<br/>Dance programme: dance rehearsals and for example a ball; dance programmes where attendees also dance<br/>Performance programme: all types of performances; choir, dance performance, fencing performance or other<br/>Meetup: informal gathering related to a certain topic or scene<br/>Other programme: programmes that do not fit the previous categories"
+msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa.<br/>Esitelmä: perinteinen luento<br/>Paneeli: usean panelistin keskustelu yleisön edessä, yleensä moderaattorin kera<br/>Keskustelu: yleisön tasavertaisesti mukaan ottava keskustelu<br/>Tanssiohjelma: tanssiharjoitukset ja esimerkiksi tanssiaiset; tanssiohjelmat, joissa osallistujatkin tanssivat<br/>Esitysohjelma: kaikenlaiset esitykset; kuoro, tanssiesitys, miekkailuesitys tai muu<br/>Miitti: vapaamuotoinen tapaaminen jonkin aiheen tai skenen ympärillä<br/>Muu ohjelma: ohjelmat, jotka eivät sovi edellä mainittuihin kategorioihin"
+
+msgid "Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes (one hour and 45 minutes)."
+msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia (tunti ja 45 minuuttia)."
+
+msgid "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with either of the two languages. The programme team will contact you regarding the final choice of language."
+msgstr "Suomi - valitse tämä, jos ohjelmassasi puhutaan ainoastaan suomea.<br/>Englanti - valitse tämä, jos ohjelmassasi puhutaan ainoastaan englantia.<br/>Kielivapaa - valitse tämä, jos ohjelmaan osallistuakseen ei tarvitse osata suomea tai englantia (esim. työpaja, jossa kuvalliset ohjeet, tai tanssi, jossa voi seurata muita).<br/>Suomi tai englanti - valitse tämä, jos olet valmis pitämään ohjelmasi kummalla tahansa kielellä. Ohjelmatiimi on sinuun yhteydessä lopullisen kielivalinnan suhteen."
+
+msgid "If the number of participants in your programme is limited, please provide the maximum number of participants."
+msgstr "Mikäli ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
+
+msgid "I'm interested in participating in a panel discussion related to my field(s) of expertise."
+msgstr "Voin osallistua erikoisalaani/-alojani sivuavaan paneelikeskusteluun"
+
+# Larpit 2023
+
+msgid "This includes time for propping, brief and debrief, as well as the actual game."
+msgstr "Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+
+msgid "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita."
+
+# Roolipelit 2023
+
+msgid "Playstyle and mechanics of your game (Choose any which apply)"
+msgstr "Pelin tyyli (valitse soveltuvat)"
+
+msgid "Who is your programme for?"
+msgstr "Kenelle ohjelma on tarkoitettu?"
+
+msgid "Language-free"
+msgstr "Kielivapaa"
+
+msgid "Finnish or English"
+msgstr "Suomi tai englanti"
+
+msgid "Choose the language used in your programme"
+msgstr "Valitse kieli, jolla pidät ohjelmasi"
+
+msgid "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with having your programme language based on what language the attendees speak. Please write your title and programme description in both languages."
+msgstr "Suomi - valitse tämä, jos ohjelmassasi puhutaan ainoastaan suomea.<br/>Englanti - valitse tämä, jos ohjelmassasi puhutaan ainoastaan englantia.<br/>Kielivapaa - valitse tämä, jos ohjelmaan osallistuakseen ei tarvitse osata suomea tai englantia (esim. työpaja, jossa kuvalliset ohjeet, tai tanssi, jossa voi seurata muita).<br/>Suomi tai englanti - valitse tämä, jos voit pitää ohjelmasi kummalla tahansa kielellä sen mukaan, mitä kieltä osallistujat osaavat. Tuotathan myös otsikon ja ohjelmakuvauksen molemmilla kielillä."
+
+msgid "Suitable for all ages"
+msgstr "Sopii kaiken ikäisille"
+
+msgid "If your programme is suitable for all ages, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi sopii kaiken ikäisille."
+
+msgid "Aimed at children under 13"
+msgstr "Suunnattu alle 13-vuotiaille"
+
+msgid "If your programme is designed for attendees under the age of 13 years, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 13-vuotiaille"
+
+msgid "Aimed at children between 13-17"
+msgstr "Suunnattu 13-17-vuotiaille"
+
+msgid "If your programme is designed for attendees between 13-17 years of age, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu 13-17-vuotiaille"
+
+msgid "Aimed at adult attendees"
+msgstr "Suunnattu täysi-ikäisille"
+
+msgid "If your programme is designed for adult attendees, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
+
+msgid "If your programme contains themes that require attendees to be 18 years or older, please tick this box. There will be an ID check for all attendees."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+
+msgid "If your programme is suitable for attendees with very limited knowledge or without any previous experience about the programme or subject matter in question, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmaan voi osallistua, vaikka aiempaa kokemusta ohjelmasta tai aiheesta olisi hyvin vähän tai ei lainkaan."
+
+msgid "Theme: Past and Future"
+msgstr "Teema: Menneisyys ja tulevaisuus"
+
+msgid "Celebratory Year"
+msgstr "Juhlavuosi"
+
+msgid "Check this box, if your programme is related to Ropecon's 30th celebratory year."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy Ropeconin 30-vuotisjuhlavuoteen."
+
+msgid "Programme photography"
+msgstr "Ohjelman valokuvaus"
+
+msgid "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
+msgstr "Tapahtuman viralliset valokuvaajat pyrkivät ottamaan valokuvia ohjelmanumeroista joista niitä on pyydetty."
+
+msgid "My programme can be photographed"
+msgstr "Ohjelmanumeroani saa valokuvata"
+
+msgid "I request my programme to not be photographed"
+msgstr "Pyydän ettei ohjelmanumeroani valokuvata"
+
+msgid "I can't use a microphone"
+msgstr "En voi käyttää mikrofonia"
+
+msgid "The duration of the programme is over two hours without breaks."
+msgstr "Ohjelma kestää yli kaksi tuntia ilman taukoa"
+
+msgid "There are limited opportunities to move around during the programme."
+msgstr "Ohjelman aikana on rajatut mahdollisuudet liikkumiseen."
+
+msgid "Participation involves reading long texts independently"
+msgstr "Osallistuminen vaatii pitkien tekstien itsenäistä lukemista"
+
+msgid "The programme includes texts that are essential to participation, and the texts are not available as recordings or read out loud."
+msgstr "Ohjelma sisältää osallistumisen kannalta olennaista tekstiä, josta ei ole saatavilla nauhoitetta tai jota ei lueta ääneen."
+
+msgid "Participation requires some dexterity, e.g. that of hands and fingers."
+msgstr "Ohjelmaan osallistuminen vaatii sorminäppäryyttä"
+
+msgid "Participation requires the ability to react quickly."
+msgstr "Ohjelmaan osallistuminen vaatii nopeaa reaktiokykyä"
+
+msgid "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in some participants"
+msgstr "Listaa tähän ohjelmasi sisältämät aiheet, jotka voivat aiheuttaa joillekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta."
+
+msgid "In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."
+msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli ohjelmassasi on joitakin muita seikkoja, jotka voivat rajoittaa tai mahdollistaa osallistumista (esimerkiksi jos ohjelma on viitottu)."
+
+msgid "Other accessibility information"
+msgstr "Muu saavutettavuus"
+
+# Muu ohjelma 2022
 
 msgid "Title of your programme"
 msgstr "Otsikko"
@@ -150,7 +382,7 @@ msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita, jotka voi
 msgid "In the open field, define if necessary what features of your programme may possibly limit participation."
 msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli ohjelmassasi/pelissäsi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
 
-# Pelitiski 2023
+# Pelitiski 2022
 
 msgid "Game category"
 msgstr "Pelityyppi"
@@ -216,7 +448,7 @@ msgid "How much table space and how many chairs do you need for your game progra
 msgstr "Kerro tässä paljonko tarvitset pöytätilaa, tuoleja ja tarvitsetko erityistä tekniikkaa (esim. sähköä). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee ohjelmaa. Pöytien koko on 70cm x 200cm."
 
 msgid "When are you NOT able to host your game programme?"
-msgstr "Milloin et pysty pelauttamaan peliäsi?"
+msgstr "Milloin ET pysty pitämään ohjelmaasi?"
 
 msgid "Select the times when you are <b>NOT able</b> to run your game programme.<br/><br/>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below (e.g. “I would like to run my game late in the evening”).<br/><br/>In this section, we wish that you would include information about restrictions set by e.g. work schedules or bus schedules (if you need to e.g. leave Messukeskus by 23 o’clock in order to get to your lodgings)."
 msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."
@@ -266,7 +498,7 @@ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alaikäisille."
 msgid "Tick this box if your game programme is designed for adult participants."
 msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
 
-# Larpit 2023
+# Larpit 2022
 
 msgid "Title of your larp"
 msgstr "Pelin nimi"
@@ -418,7 +650,7 @@ msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita, jotka voiv
 msgid "In the open field, define if necessary what features of your larp may possibly limit participation."
 msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli larpissasi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
 
-# Roolipelit 2023
+# Roolipelit 2022
 
 msgid "Title of your game"
 msgstr "Pelin nimi"

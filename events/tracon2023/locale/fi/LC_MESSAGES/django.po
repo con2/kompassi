@@ -1,0 +1,14 @@
+msgid "Programme content"
+msgstr "Ohjelmanumeron sisältö"
+
+msgid "Technical details"
+msgstr "Tekniset tiedot"
+
+msgid "Other details"
+msgstr "Muut tiedot"
+
+msgid "Accessibility warnings"
+msgstr "Saavutettavuusvaroitukset"
+
+msgid "Content warnings"
+msgstr "Sisältövaroitukset"

@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
-from events.hitpoint2017.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT
+from events.hitpoint2020.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory
 from programme.models import Category, Programme, AlternativeProgrammeFormMixin
@@ -197,6 +197,37 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
+        self.helper.layout = Layout(
+            Fieldset(
+                _("Programme content"),
+                "title",
+                "description",
+                "long_description",
+                "tracon2023_accessibility_warnings",
+                "tracon2023_content_warnings",
+                "category",
+                "requested_time_slot",
+            ),
+            Fieldset(
+                _("Technical details"),
+                "computer",
+                "use_audio",
+                "use_video",
+                "number_of_microphones",
+                "tech_requirements",
+            ),
+            Fieldset(
+                _("Other details"),
+                "stream_permission",
+                "encumbered_content",
+                "photography",
+                "rerun",
+                "rerun_extra",
+                "room_requirements",
+                "notes_from_host",
+            ),
+        )
+
         self.fields["title"].required = True
         if not admin:
             for field_name in [
@@ -235,8 +266,10 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "title",
             "description",
             "long_description",
-            "length_from_host",
+            "tracon2023_accessibility_warnings",
+            "tracon2023_content_warnings",
             "category",
+            "requested_time_slot",
             "computer",
             "use_audio",
             "use_video",
@@ -248,8 +281,12 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "rerun",
             "rerun_extra",
             "room_requirements",
-            "requested_time_slot",
             "notes_from_host",
+        )
+
+        widgets = dict(
+            tracon2023_accessibility_warnings=forms.CheckboxSelectMultiple,
+            tracon2023_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 
 
@@ -270,7 +307,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "max_players",
             "description",
             "three_word_description",
-            "hitpoint2017_preferred_time_slots",
+            "tracon2023_preferred_time_slots",
             "notes_from_host",
             Fieldset(
                 _("Whom is the game for?"),
@@ -304,7 +341,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "max_players",
             "three_word_description",
             "description",
-            "hitpoint2017_preferred_time_slots",
+            "tracon2023_preferred_time_slots",
             "notes_from_host",
             "is_english_ok",
             "is_children_friendly",
@@ -314,7 +351,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
-            hitpoint2017_preferred_time_slots=forms.CheckboxSelectMultiple,
+            tracon2023_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):

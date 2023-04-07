@@ -575,7 +575,7 @@ msgid "Phone number"
 msgstr "Puhelinnumero"
 
 #: models/programme.py
-msgid "Photography of your prorgmme"
+msgid "Photography of your prorgamme"
 msgstr "Ohjelman valokuvaus"
 
 #: templates/programme_admin_publish_view.pug
@@ -1597,3 +1597,6 @@ msgstr "Voin järjestää ohjelmani vain etäconissa"
 
 msgid "I can organize my programme both at a physical con and at a virtual con"
 msgstr "Voin järjestää ohjelmani sekä lähi- että etäconissa"
+
+msgid "NOTE! Do not include yourself in these invites."
+msgstr "HUOM! Älä sisällytä itseäsi näihin kutsuihin."

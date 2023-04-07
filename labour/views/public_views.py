@@ -251,7 +251,7 @@ def profile_signups_view(request):
     signups_current_events = person.signups.filter(event__start_time__lte=t, event__end_time__gt=t).order_by(
         "-event__start_time"
     )
-    signups_future_events = person.signups.filter(event__start_time__gt=t).order_by("-event__start_time")
+    signups_future_events = person.signups.filter(event__start_time__gt=t).order_by("event__start_time")
 
     archived_signups = person.archived_signups.all()
     signups_past_events = sorted(
