@@ -11,6 +11,11 @@ SCHEDULE_LAYOUT_CHOICES = [
     ("full_width", _("Full-width")),
 ]
 
+GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
+    admins="Ohjelmavastaavat",
+    hosts="Ohjelmanjärjestäjät",
+)
+
 
 class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     public_from = models.DateTimeField(
@@ -90,6 +95,44 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
                 public_from=now(),
             ),
         )
+
+    @classmethod
+    def get_or_create_groups(cls, event, subjects):
+        from mailings.models import RecipientGroup
+
+        suffixes = [jc_or_suffix if isinstance(jc_or_suffix, str) else jc_or_suffix.slug for jc_or_suffix in subjects]
+
+        groups = super().get_or_create_groups(event, suffixes)
+
+        for subject, group in zip(subjects, groups):
+            # if isinstance(jc_or_suffix, JobCategory):
+            #     verbose_name = jc_or_suffix.name
+            #     job_category = jc_or_suffix
+            #     personnel_class = None
+            # elif isinstance(jc_or_suffix, PersonnelClass):
+            #     verbose_name = jc_or_suffix.name
+            #     job_category = None
+            #     personnel_class = jc_or_suffix
+            # else:
+            if subject not in GROUP_VERBOSE_NAMES_BY_SUFFIX:
+                continue
+
+            verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[subject]
+            job_category = None
+            personnel_class = None
+
+            RecipientGroup.objects.get_or_create(
+                event=event,
+                app_label="programme",
+                group=group,
+                defaults=dict(
+                    job_category=job_category,
+                    personnel_class=personnel_class,
+                    verbose_name=verbose_name,
+                ),
+            )
+
+        return groups
 
     @property
     def is_public(self):
