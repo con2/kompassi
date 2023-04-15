@@ -74,36 +74,6 @@ def get_previous_and_next(queryset, current):
     return None, None
 
 
-def _get_next_or_previous(queryset, obj, field_name, is_next):
-    if isinstance(queryset, models.Model):
-        # we cheat – manager instead of qs, but it works here so idk
-        queryset = queryset.objects  # type: ignore
-
-    if not obj.pk:
-        raise ValueError("get_next/get_previous cannot be used on unsaved objects.")
-
-    op = "gt" if is_next else "lt"
-    desc_minus = "" if is_next else "-"
-
-    param = getattr(obj, field_name)
-    q = Q(**{f"{field_name}__{op}": param})
-    q = q | Q(**{field_name: param, f"pk__{op}": obj.pk})
-    qs = queryset.filter(q).order_by(f"{desc_minus}{field_name}", "{desc_minus}pk")
-
-    try:
-        return qs[0]
-    except IndexError:
-        raise obj.DoesNotExist(f"{obj.__class__._meta.object_name} matching query does not exist.")
-
-
-def get_next(queryset, obj, field):
-    return _get_next_or_previous(queryset, obj, field, True)
-
-
-def get_previous(queryset, obj, field):
-    return _get_next_or_previous(queryset, obj, field, False)
-
-
 def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION):
     """
     Validate the phone number using Google's phonenumbers library.

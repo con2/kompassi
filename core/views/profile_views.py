@@ -1,47 +1,27 @@
+import logging
+
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_http_methods, require_safe
+from django.views.decorators.http import require_http_methods
 from django.views.decorators.debug import sensitive_post_parameters
 
 from event_log.utils import emit
 
-from ..models import (
-    EmailVerificationError,
-    EmailVerificationToken,
-    Event,
-    Organization,
-    PasswordResetError,
-    PasswordResetToken,
-    Person,
-)
-from ..forms import (
-    LoginForm,
-    PasswordForm,
-    PasswordResetForm,
-    PasswordResetRequestForm,
-    PersonForm,
-    RegistrationForm,
-)
+from ..models import Person
+from ..forms import PasswordForm, PersonForm
 from ..utils import (
-    get_next,
-    groups_of_n,
     initialize_form,
-    url,
     change_user_password,
 )
-from ..page_wizard import (
-    page_wizard_clear,
-    page_wizard_vars,
-)
 from ..helpers import person_required
+
+
+logger = logging.getLogger("kompassi")
 
 
 @person_required

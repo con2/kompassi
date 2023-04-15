@@ -1,42 +1,15 @@
 from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
-from django.urls import reverse
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
-from django.views.decorators.http import require_http_methods, require_safe
 
 from csp.decorators import csp_update
 
 from payments.models import CHECKOUT_PAYMENT_WALL_ORIGIN
 
-from ..models import (
-    EmailVerificationError,
-    EmailVerificationToken,
-    Event,
-    Organization,
-    PasswordResetError,
-    PasswordResetToken,
-    Person,
-)
-from ..forms import (
-    LoginForm,
-    PasswordForm,
-    PasswordResetForm,
-    PasswordResetRequestForm,
-    PersonForm,
-    RegistrationForm,
-)
-from ..utils import (
-    get_next,
-    groups_of_n,
-    initialize_form,
-    url,
-)
-from ..helpers import person_required, public_organization_required
+from ..models import Event
+from ..utils import groups_of_n
+from ..helpers import public_organization_required
 
 
 @public_organization_required

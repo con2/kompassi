@@ -1,37 +1,10 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
-from django.urls import reverse
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.timezone import now
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods, require_safe
 
-from ..models import (
-    EmailVerificationError,
-    EmailVerificationToken,
-    Event,
-    Organization,
-    PasswordResetError,
-    PasswordResetToken,
-    Person,
-)
-from ..forms import (
-    LoginForm,
-    PasswordForm,
-    PasswordResetForm,
-    PasswordResetRequestForm,
-    PersonForm,
-    RegistrationForm,
-)
-from ..utils import (
-    get_next,
-    groups_of_n,
-    initialize_form,
-    url,
-)
+from ..models import EmailVerificationError, Person
+from ..utils import url
 from ..helpers import person_required
 
 

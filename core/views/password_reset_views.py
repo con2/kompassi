@@ -6,30 +6,15 @@ from django.views.decorators.http import require_http_methods
 from django.utils.translation import gettext_lazy as _
 
 from ..models import (
-    EmailVerificationError,
-    EmailVerificationToken,
-    Event,
-    Organization,
     PasswordResetError,
     PasswordResetToken,
     Person,
 )
 from ..forms import (
-    LoginForm,
-    PasswordForm,
     PasswordResetForm,
     PasswordResetRequestForm,
-    PersonForm,
-    RegistrationForm,
 )
-from ..utils import (
-    get_next,
-    groups_of_n,
-    initialize_form,
-    url,
-    change_user_password,
-)
-from ..helpers import person_required
+from ..utils import initialize_form
 
 
 @sensitive_post_parameters("new_password", "new_password_again")
