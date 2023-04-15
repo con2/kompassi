@@ -62,6 +62,9 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
 
     use_cbac = True
 
+    # if set, would get copies of all programme messages
+    monitor_email = None
+
     def __init__(self, *args, **kwargs):
         if "public" in kwargs:
             public = kwargs.pop("public")
@@ -86,9 +89,9 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         from django.utils.timezone import now
 
         event, unused = Event.get_or_create_dummy()
-        admin_group, hosts_group = cls.get_or_create_groups(event, ["admins", "hosts"])
+        (admin_group,) = cls.get_or_create_groups(event, ["admins"])
 
-        return cls.objects.get_or_create(
+        meta, created = cls.objects.get_or_create(
             event=event,
             defaults=dict(
                 admin_group=admin_group,
@@ -96,15 +99,19 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
             ),
         )
 
+        meta.create_groups()
+
+        return meta, created
+
     def create_groups(self):
         from .category import Category
 
         subjects: list[str | Category] = ["new", "hosts", "live", "rejected"]
 
-        for category in Category.objects.filter(event=self.event):
-            subjects.append(category)
+        # for category in Category.objects.filter(event=self.event):
+        #     subjects.append(category)
 
-        return subjects
+        return self.get_or_create_groups(self.event, subjects)
 
     @classmethod
     def get_or_create_groups(cls, event, subjects):

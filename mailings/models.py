@@ -137,8 +137,6 @@ class Message(models.Model):
         if recipients is None:
             recipients = [user.person for user in self.recipient.group.user_set.all()]
 
-        # TODO this delay stuff should not be here (only applies to SMS messages)
-        delay = 0
         for person in recipients:
             try:
                 person_message, created = PersonMessage.objects.get_or_create(
@@ -152,10 +150,8 @@ class Message(models.Model):
                 created = False
 
             if created or resend:
-                person_message.actually_send(delay)
+                person_message.actually_send()
                 bodylen = len(person_message.body.text)
-                delayfactor = ceil(bodylen / 153)
-                delay += DELAY_PER_MESSAGE_FRAGMENT_MILLIS * delayfactor
 
     def expire(self):
         assert self.expired_at is None, "re-expiring an expired message does not make sense"
@@ -276,15 +272,7 @@ class PersonMessage(models.Model):
     def render_message(self, template):
         return Template(template).render(Context(self.message_vars))
 
-    def actually_send(self, delay=0):
-        if self.message.channel == "email":
-            self._actually_send_email()
-        # elif self.message.channel == 'sms':
-        #     self._actually_send_sms(delay)
-        else:
-            raise NotImplementedError(self.message.channel)
-
-    def _actually_send_email(self):
+    def actually_send(self):
         from django.core.mail import EmailMessage
 
         msgbcc = []
@@ -303,19 +291,3 @@ class PersonMessage(models.Model):
             to=(self.person.name_and_email,),
             bcc=msgbcc,
         ).send(fail_silently=True)
-
-    # def _actually_send_sms(self, delay=0):
-    #     from sms.models import SMSMessageOut, SMSEventMeta
-    #     try:
-    #         event = SMSEventMeta.objects.get(event=self.message.event, sms_enabled=True)
-    #     except SMSEventMeta.DoesNotExist:
-    #         pass
-    #     else:
-    #         if 'background_tasks' in settings.INSTALLED_APPS:
-    #             from sms.tasks import message_send
-    #             sendtime = timezone.now() + timedelta(milliseconds=delay)
-    #             sending = SMSMessageOut(message=self.body.text, to=self.person.phone, event=event)
-    #             sending.save()
-    #             message_send.apply_async(args=[sending.pk], eta=sendtime)
-    #         else:
-    #             SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)

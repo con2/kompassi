@@ -13,12 +13,22 @@ class EmailAliasDomain(models.Model):
     has_internal_aliases = models.BooleanField(default=False)
 
     @classmethod
-    def get_or_create_dummy(cls, domain_name="example.com"):
+    def get_or_create_dummy(
+        cls,
+        domain_name="example.com",
+        has_internal_aliases: bool = True,
+    ):
         from core.models.organization import Organization
 
         organization, unused = Organization.get_or_create_dummy()
 
-        return cls.objects.get_or_create(domain_name=domain_name, defaults=dict(organization=organization))
+        return cls.objects.get_or_create(
+            domain_name=domain_name,
+            defaults=dict(
+                organization=organization,
+                has_internal_aliases=has_internal_aliases,
+            ),
+        )
 
     def __str__(self):
         return self.domain_name

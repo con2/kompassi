@@ -190,6 +190,7 @@ INSTALLED_APPS = (
     "listings",
     "forms",
     "metrics",
+    "background_tasks",
     "organizations.tracon_ry",
     "events.tracon9",
     "events.traconx",
@@ -420,19 +421,19 @@ if "lippukala" in INSTALLED_APPS:
 
 
 if env("BROKER_URL", default=""):
-    INSTALLED_APPS = INSTALLED_APPS + ("background_tasks",)
     CELERY_BROKER_URL = env("BROKER_URL")
-    CELERY_ACCEPT_CONTENT = ["json"]
+else:
+    CELERY_TASK_ALWAYS_EAGER = True
 
-    # EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+CELERY_ACCEPT_CONTENT = ["json"]
 
-    CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
-    CELERY_SERVER_EMAIL = DEFAULT_FROM_EMAIL
+CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
+CELERY_SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
-    CELERY_TASK_SERIALIZER = "json"
-    CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 
-    CELERY_REDIS_SOCKET_KEEPALIVE = True
+CELERY_REDIS_SOCKET_KEEPALIVE = True
 
 
 if "api" in INSTALLED_APPS:
