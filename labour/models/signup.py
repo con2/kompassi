@@ -526,9 +526,6 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         GroupEmailAliasGrant.ensure_aliases(self.person)
 
     def apply_state_send_messages(self, resend=False):
-        if "mailings" not in settings.INSTALLED_APPS:
-            return
-
         from mailings.models import Message
 
         Message.send_messages(self.event, "labour", self.person)

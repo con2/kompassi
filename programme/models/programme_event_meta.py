@@ -96,38 +96,47 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
             ),
         )
 
+    def create_groups(self):
+        from .category import Category
+
+        subjects: list[str | Category] = ["new", "hosts", "live", "rejected"]
+
+        for category in Category.objects.filter(event=self.event):
+            subjects.append(category)
+
+        return subjects
+
     @classmethod
     def get_or_create_groups(cls, event, subjects):
         from mailings.models import RecipientGroup
+        from .category import Category
 
-        suffixes = [jc_or_suffix if isinstance(jc_or_suffix, str) else jc_or_suffix.slug for jc_or_suffix in subjects]
+        suffixes = [subject if isinstance(subject, str) else subject.slug for subject in subjects]
 
         groups = super().get_or_create_groups(event, suffixes)
 
         for subject, group in zip(subjects, groups):
-            # if isinstance(jc_or_suffix, JobCategory):
-            #     verbose_name = jc_or_suffix.name
-            #     job_category = jc_or_suffix
-            #     personnel_class = None
+            if isinstance(subject, Category):
+                verbose_name = subject.title
+                category = subject
             # elif isinstance(jc_or_suffix, PersonnelClass):
             #     verbose_name = jc_or_suffix.name
             #     job_category = None
             #     personnel_class = jc_or_suffix
-            # else:
-            if subject not in GROUP_VERBOSE_NAMES_BY_SUFFIX:
-                continue
+            else:
+                if subject not in GROUP_VERBOSE_NAMES_BY_SUFFIX:
+                    continue
 
-            verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[subject]
-            job_category = None
-            personnel_class = None
+                verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[subject]
+                category = None
+                personnel_class = None
 
             RecipientGroup.objects.get_or_create(
                 event=event,
                 app_label="programme",
                 group=group,
                 defaults=dict(
-                    job_category=job_category,
-                    personnel_class=personnel_class,
+                    programme_category=category,
                     verbose_name=verbose_name,
                 ),
             )

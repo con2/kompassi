@@ -32,6 +32,7 @@ class RecipientGroup(models.Model):
     group = models.ForeignKey("auth.Group", on_delete=models.CASCADE, verbose_name="Käyttäjäryhmä")
     verbose_name = models.CharField(max_length=63, verbose_name="Nimi", blank=True, default="")
     job_category = models.ForeignKey(JobCategory, on_delete=models.CASCADE, null=True, blank=True)
+    programme_category = models.ForeignKey("programme.Category", on_delete=models.CASCADE, null=True, blank=True)
     personnel_class = models.ForeignKey(PersonnelClass, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
@@ -41,6 +42,8 @@ class RecipientGroup(models.Model):
             kind = f" (tehtäväalue, {num_ppl} hlö)"
         elif self.personnel_class:
             kind = f" (henkilöstöluokka, {num_ppl} hlö)"
+        elif self.programme_category:
+            kind = f" (ohjelmaluokka, {num_ppl} hlö)"
         else:
             kind = f" ({num_ppl} hlö)"
 
@@ -120,18 +123,13 @@ class Message(models.Model):
         return self.expired_at is not None
 
     def send(self, recipients=None, resend=False):
+        from .tasks import message_send
+
         if not self.sent_at:
             self.sent_at = timezone.now()
             self.save()
 
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from mailings.tasks import message_send
-
-            message_send.delay(
-                self.pk, [person.pk for person in recipients] if recipients is not None else None, resend
-            )
-        else:
-            self._send(recipients, resend)
+        message_send.delay(self.pk, [person.pk for person in recipients] if recipients is not None else None, resend)
 
     def _send(self, recipients, resend):
         from django.contrib.auth.models import User
