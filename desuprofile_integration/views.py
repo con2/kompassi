@@ -24,7 +24,7 @@ from core.utils import create_temporary_password, get_next
 from programme.helpers import programme_event_required
 from programme.models import Programme
 
-from .models import Connection, ConfirmationCode, Desuprofile, Desuprogramme, DesuprogrammeFeedback
+from .models import Connection, ConfirmationCode, Desuprofile, DesuprogrammeFeedback
 
 
 logger = logging.getLogger("kompassi")
