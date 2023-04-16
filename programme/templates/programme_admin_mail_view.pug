@@ -8,7 +8,7 @@ block admin_content
     table.table.table-striped
       thead
         tr
-          th.hidden-xs Kanava
+          //- th.hidden-xs Kanava
           th Otsikko
           th.hidden-xs Vastaanottaja
           th.hidden-xs Lähetetty
@@ -16,7 +16,7 @@ block admin_content
       tbody
         for message in messages
           tr
-            td.hidden-xs {{ message.get_channel_display }}
+            //- td.hidden-xs {{ message.get_channel_display }}
             td: a(href='{% url "programme:admin_mail_editor_view" event.slug message.pk %}') {{ message.subject_template }}
             td.hidden-xs {{ message.recipient }}
             td.hidden-xs {{ message.sent_at|date }}

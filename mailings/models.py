@@ -23,16 +23,17 @@ APP_LABEL_CHOICES = [
     ("programme", "Ohjelma"),
 ]
 
-DELAY_PER_MESSAGE_FRAGMENT_MILLIS = 350
-
 
 class RecipientGroup(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, verbose_name="Tapahtuma")
     app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name="Sovellus")
     group = models.ForeignKey("auth.Group", on_delete=models.CASCADE, verbose_name="Käyttäjäryhmä")
-    verbose_name = models.CharField(max_length=63, verbose_name="Nimi", blank=True, default="")
+    verbose_name = models.CharField(max_length=255, verbose_name="Nimi", blank=True, default="")
     job_category = models.ForeignKey(JobCategory, on_delete=models.CASCADE, null=True, blank=True)
     programme_category = models.ForeignKey("programme.Category", on_delete=models.CASCADE, null=True, blank=True)
+    programme_form = models.ForeignKey(
+        "programme.AlternativeProgrammeForm", on_delete=models.CASCADE, null=True, blank=True
+    )
     personnel_class = models.ForeignKey(PersonnelClass, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
@@ -44,6 +45,8 @@ class RecipientGroup(models.Model):
             kind = f" (henkilöstöluokka, {num_ppl} hlö)"
         elif self.programme_category:
             kind = f" (ohjelmaluokka, {num_ppl} hlö)"
+        elif self.programme_form:
+            kind = f" (ohjelmalomake, {num_ppl} hlö)"
         else:
             kind = f" ({num_ppl} hlö)"
 
@@ -56,7 +59,7 @@ class RecipientGroup(models.Model):
 
 CHANNEL_CHOICES = [
     ("email", "Sähköposti"),
-    ("sms", "Tekstiviesti"),
+    # ("sms", "Tekstiviesti"),
 ]
 
 
