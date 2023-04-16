@@ -146,6 +146,11 @@ class ProgrammeTestCase(TestCase):
 
 @pytest.mark.django_db
 def test_programme_mass_messages():
+    """
+    Tests two programme message use cases:
+    1. A programme message is sent before a programme host is added. They get the message when added.
+    2. Another programme message is sent after. They get that too.
+    """
     meta, _ = ProgrammeEventMeta.get_or_create_dummy()
     EmailAliasDomain.get_or_create_dummy()
     InternalEmailAlias.ensure_internal_email_aliases()

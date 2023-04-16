@@ -13,7 +13,9 @@ SCHEDULE_LAYOUT_CHOICES = [
 
 GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
     admins="Ohjelmavastaavat",
-    hosts="Ohjelmanjärjestäjät",
+    hosts="Kaikki ohjelmanjärjestäjät (odottavat ja hyväksytyt)",
+    live="Hyväksyttyjen ohjelmien järjestäjät",
+    new="Hyväksyntää odottavat ohjelmanjärjestäjät",
 )
 
 
@@ -104,12 +106,16 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         return meta, created
 
     def create_groups(self):
+        from .alternative_programme_form import AlternativeProgrammeForm
         from .category import Category
 
-        subjects: list[str | Category] = ["new", "hosts", "live", "rejected"]
+        subjects: list[str | Category | AlternativeProgrammeForm] = ["new", "hosts", "live", "rejected"]
 
-        # for category in Category.objects.filter(event=self.event):
-        #     subjects.append(category)
+        for category in Category.objects.filter(event=self.event):
+            subjects.append(category)
+
+        for form in AlternativeProgrammeForm.objects.filter(event=self.event):
+            subjects.append(form)
 
         return self.get_or_create_groups(self.event, subjects)
 
@@ -117,8 +123,9 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     def get_or_create_groups(cls, event, subjects):
         from mailings.models import RecipientGroup
         from .category import Category
+        from .alternative_programme_form import AlternativeProgrammeForm
 
-        suffixes = [subject if isinstance(subject, str) else subject.slug for subject in subjects]
+        suffixes = [subject if isinstance(subject, str) else subject.qualified_slug for subject in subjects]
 
         groups = super().get_or_create_groups(event, suffixes)
 
@@ -126,17 +133,18 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
             if isinstance(subject, Category):
                 verbose_name = subject.title
                 category = subject
-            # elif isinstance(jc_or_suffix, PersonnelClass):
-            #     verbose_name = jc_or_suffix.name
-            #     job_category = None
-            #     personnel_class = jc_or_suffix
+                programme_form = None
+            elif isinstance(subject, AlternativeProgrammeForm):
+                verbose_name = subject.title
+                category = None
+                programme_form = subject
             else:
                 if subject not in GROUP_VERBOSE_NAMES_BY_SUFFIX:
                     continue
 
                 verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[subject]
                 category = None
-                personnel_class = None
+                programme_form = None
 
             RecipientGroup.objects.get_or_create(
                 event=event,
@@ -144,6 +152,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
                 group=group,
                 defaults=dict(
                     programme_category=category,
+                    programme_form=programme_form,
                     verbose_name=verbose_name,
                 ),
             )

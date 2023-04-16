@@ -1580,8 +1580,9 @@ class Programme(models.Model, CsvExportMixin):
             signup_extra.apply_state()
 
     def apply_state_group_membership(self):
-        from django.contrib.auth.models import Group
         from core.utils import ensure_user_group_membership
+        from .alternative_programme_form import AlternativeProgrammeForm
+        from .category import Category
         from .programme_role import ProgrammeRole
 
         for person in self.organizers.all():
@@ -1590,6 +1591,7 @@ class Programme(models.Model, CsvExportMixin):
             groups_to_add = []
             groups_to_remove = []
 
+            # Status based groups
             for group, states in [
                 (self.event.programme_event_meta.get_group_if_exists("new"), PROGRAMME_STATES_NEW),
                 (self.event.programme_event_meta.get_group_if_exists("hosts"), PROGRAMME_STATES_ACTIVE),
@@ -1602,6 +1604,40 @@ class Programme(models.Model, CsvExportMixin):
                 if ProgrammeRole.objects.filter(
                     programme__category__event=self.event,
                     programme__state__in=states,
+                    person=person,
+                ).exists():
+                    # active programmist
+                    groups_to_add.append(group)
+                else:
+                    # inactive programmist
+                    groups_to_remove.append(group)
+
+            # Category groups
+            for category in Category.objects.filter(event=self.event):
+                group = self.event.programme_event_meta.get_group_if_exists(category.qualified_slug)
+                if not group:
+                    continue
+
+                if ProgrammeRole.objects.filter(
+                    programme__category=category,
+                    programme__state__in=PROGRAMME_STATES_LIVE,
+                    person=person,
+                ).exists():
+                    # active programmist
+                    groups_to_add.append(group)
+                else:
+                    # inactive programmist
+                    groups_to_remove.append(group)
+
+            # Form groups
+            for form in AlternativeProgrammeForm.objects.filter(event=self.event):
+                group = self.event.programme_event_meta.get_group_if_exists(form.qualified_slug)
+                if not group:
+                    continue
+
+                if ProgrammeRole.objects.filter(
+                    programme__form_used=form,
+                    programme__state__in=PROGRAMME_STATES_LIVE,
                     person=person,
                 ).exists():
                     # active programmist
