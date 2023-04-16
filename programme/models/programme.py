@@ -1561,12 +1561,9 @@ class Programme(models.Model, CsvExportMixin):
         self.apply_state_create_badges(deleted_programme_roles)
 
     def apply_state_async(self):
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import programme_apply_state_async
+        from ..tasks import programme_apply_state_async
 
-            programme_apply_state_async.delay(self.pk)
-        else:
-            self._apply_state_async()
+        programme_apply_state_async.delay(self.pk)
 
     def _apply_state_async(self):
         self.apply_state_group_membership()

@@ -582,6 +582,8 @@ class Setup:
             default_form.programme_form_code = "events.tracon2023.forms:ProgrammeForm"
             default_form.save()
 
+        self.event.programme_event_meta.create_groups()
+
     def setup_access(self):
         from access.models import (
             Privilege,
