@@ -27,7 +27,7 @@ class Setup:
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
         self.setup_badges()
         self.setup_intra()
@@ -252,52 +252,52 @@ class Setup:
                 name="Nekocon (2023) -pääsylippu",
                 description="Viikonloppuranneke Kuopiossa järjestettävään vuoden 2023 Nekoconiin. Huom. myynnissä vain viikonloppurannekkeita. E-lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Pääsyliput", 1300),
+                    limit_group("Pääsyliput", 1800),
                 ],
-                price_cents=1700,
+                price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
-            dict(
-                name="Lattiamajoituspaikka (koko vkl)",
-                description="Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoitus aukeaa perjantaina 18:00 ja sulkeutuu sunnuntaina 12:00.",
-                limit_groups=[
-                    limit_group("Lattiamajoitus pe-la", 210),
-                    limit_group("Lattiamajoitus la-su", 210),
-                ],
-                price_cents=1500,
-                requires_shipping=False,
-                electronic_ticket=False,
-                requires_accommodation_information=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Lattiamajoituspaikka (pe-la)",
-                description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.",
-                limit_groups=[
-                    limit_group("Lattiamajoitus pe-la", 210),
-                ],
-                price_cents=1000,
-                requires_shipping=False,
-                electronic_ticket=False,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Lattiamajoituspaikka (la-su)",
-                description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.",
-                limit_groups=[
-                    limit_group("Lattiamajoitus la-su", 210),
-                ],
-                price_cents=1000,
-                requires_shipping=False,
-                electronic_ticket=False,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
+            # dict(
+            #     name="Lattiamajoituspaikka (koko vkl)",
+            #     description="Lattiamajoituspaikka molemmiksi öiksi pe-la ja la-su. Majoitus aukeaa perjantaina 18:00 ja sulkeutuu sunnuntaina 12:00.",
+            #     limit_groups=[
+            #         limit_group("Lattiamajoitus pe-la", 210),
+            #         limit_group("Lattiamajoitus la-su", 210),
+            #     ],
+            #     price_cents=1500,
+            #     requires_shipping=False,
+            #     electronic_ticket=False,
+            #     requires_accommodation_information=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Lattiamajoituspaikka (pe-la)",
+            #     description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.",
+            #     limit_groups=[
+            #         limit_group("Lattiamajoitus pe-la", 210),
+            #     ],
+            #     price_cents=1000,
+            #     requires_shipping=False,
+            #     electronic_ticket=False,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Lattiamajoituspaikka (la-su)",
+            #     description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi. Majoituksesta lisää tietoa sivuillamme www.nekocon.fi.",
+            #     limit_groups=[
+            #         limit_group("Lattiamajoitus la-su", 210),
+            #     ],
+            #     price_cents=1000,
+            #     requires_shipping=False,
+            #     electronic_ticket=False,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
             # dict(
             #     name='Nekocon (2023) -konserttilippu',
             #     description='Lippu Nekoconin konserttiin. Mikäli tarvitset pyörätuolipaikkaa, otathan ennen ostoa yhteyttä <em>liput@nekocon.fi</em>, jotta voimme varmistaa paikkatilanteen.',
