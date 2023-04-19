@@ -68,5 +68,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_to_signupextra_v2, elidable=True),
+        # migrations.RunPython(migrate_to_signupextra_v2, elidable=True),
     ]
