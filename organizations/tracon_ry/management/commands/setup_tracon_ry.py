@@ -102,18 +102,22 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
 
         for type_code, type_metavar in [
             ("access.email_aliases:firstname_surname", "etunimi.sukunimi"),
-            ("events.tracon11.email_aliases:requested_alias_or_nick", "nick"),
+            ("organizations.tracon_ry.email_aliases:nick", "nick"),
         ]:
             alias_type, created = EmailAliasType.objects.get_or_create(
                 domain=domain,
-                account_name_code=type_code,
+                metavar=type_metavar,
                 defaults=dict(
-                    metavar=type_metavar,
+                    account_name_code=type_code,
                 ),
             )
 
         # v14
-        EmailAliasType.objects.filter(domain=domain, metavar="nick", priority=0,).update(
+        EmailAliasType.objects.filter(
+            domain=domain,
+            metavar="nick",
+            priority=0,
+        ).update(
             priority=-10,
         )
 
