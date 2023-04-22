@@ -1259,7 +1259,7 @@ class AccommodationInformation(models.Model, CsvExportMixin):
         return "success" if self.is_present else ""
 
     def get_presence_form(self):
-        from .forms import AccommodationPresenceForm
+        from ..forms import AccommodationPresenceForm
 
         return AccommodationPresenceForm(instance=self)
 
