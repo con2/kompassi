@@ -13,7 +13,7 @@ block admin_content
           th.hidden-xs Lähetetty
           th.hidden-xs Vanhennettu
       tbody
-        for message in messages
+        for message in not_messages
           tr
             td: a(href='{% url "programme:admin_mail_editor_view" event.slug message.pk %}') {{ message.subject_template }}
             td.hidden-xs {{ message.recipient }}
