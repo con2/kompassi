@@ -47,6 +47,11 @@ class AccommodationInformationForm(forms.ModelForm):
 
     class Meta:
         model = AccommodationInformation
+        fields = ("first_name", "last_name", "phone_number", "email")
+
+class AccommodationInformationAdminForm(AccommodationInformationForm):
+    class Meta:
+        model = AccommodationInformation
         fields = ("first_name", "last_name", "phone_number", "email", "room_name")
 
 

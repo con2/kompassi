@@ -24,7 +24,7 @@ from core.utils import url, initialize_form, slugify, login_redirect
 from event_log.utils import emit
 
 from ..forms import (
-    AccommodationInformationForm,
+    AccommodationInformationAdminForm,
     AccommodationPresenceForm,
     AdminOrderForm,
     CreateBatchForm,
@@ -502,7 +502,7 @@ def tickets_admin_accommodation_create_view(request, event, limit_group_id):
     limit_group_id = int(limit_group_id)
     limit_group = get_object_or_404(LimitGroup, id=limit_group_id, event=event)
 
-    form = initialize_form(AccommodationInformationForm, request)
+    form = initialize_form(AccommodationInformationAdminForm, request)
 
     if request.method == "POST":
         if form.is_valid():
