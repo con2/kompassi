@@ -273,6 +273,7 @@ INSTALLED_APPS = (
     "events.nekocon2023",
     "events.finncon2023",
     "events.tracon2023paidat",
+    "events.cosvision2023",
 )
 
 LOGGING = {
@@ -485,8 +486,12 @@ KOMPASSI_LISTING_URLCONFS = {
 
 
 # Used by access.SMTPServer. Must be created with ssh-keygen -t rsa -m pem (will not work without -m pem).
-KOMPASSI_SSH_PRIVATE_KEY_FILE = env("KOMPASSI_SSH_PRIVATE_KEY_FILE", default="/mnt/secrets/kompassi/sshPrivateKey")
-KOMPASSI_SSH_KNOWN_HOSTS_FILE = env("KOMPASSI_SSH_KNOWN_HOSTS_FILE", default="/mnt/secrets/kompassi/sshKnownHosts")
+KOMPASSI_SSH_PRIVATE_KEY_FILE = env(
+    "KOMPASSI_SSH_PRIVATE_KEY_FILE", default="/mnt/secrets/kompassi/sshPrivateKey"
+)
+KOMPASSI_SSH_KNOWN_HOSTS_FILE = env(
+    "KOMPASSI_SSH_KNOWN_HOSTS_FILE", default="/mnt/secrets/kompassi/sshKnownHosts"
+)
 
 # used by manage.py setup to noop if already run for this deploy
 KOMPASSI_SETUP_RUN_ID = env("KOMPASSI_SETUP_RUN_ID", default="")
