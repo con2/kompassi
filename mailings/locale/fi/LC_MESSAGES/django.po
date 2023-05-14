@@ -1,0 +1,5 @@
+msgid "Due to spam protection, the sender field will always display a technical address in the kompassi.eu domain. That address will redirect incoming mail to the default contact address. You can direct replies to another address by setting a reply-to address here. Format: foo@example.com or Foo Bar &lt;foo@example.com&gt;."
+msgstr "Roskapostin torjuntatoimien vuoksi lähettäjäkentässä näkyy aina tekninen osoite jonka verkkotunnus on kompassi.eu. Tähän osoitteeseen lähetetyt viestit uudelleenohjataan tapahtuman oletusyhteysosoitteeseen. Voit ohjata vastaukset muuhun osoitteeseen asettamalla vastausosoitteen tässä. Muoto: foo@example.com tai Foo Bar &lt;foo@example.com&gt;."
+
+msgid "Reply-to address"
+msgstr "Vastausosoite"

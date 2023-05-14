@@ -1,8 +1,9 @@
 from hashlib import sha1
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 
@@ -30,11 +31,25 @@ class RecipientGroup(models.Model):
     group = models.ForeignKey("auth.Group", on_delete=models.CASCADE, verbose_name="Käyttäjäryhmä")
     verbose_name = models.CharField(max_length=255, verbose_name="Nimi", blank=True, default="")
     job_category = models.ForeignKey(JobCategory, on_delete=models.CASCADE, null=True, blank=True)
-    programme_category = models.ForeignKey("programme.Category", on_delete=models.CASCADE, null=True, blank=True)
+    programme_category = models.ForeignKey(
+        "programme.Category", on_delete=models.CASCADE, null=True, blank=True
+    )
     programme_form = models.ForeignKey(
         "programme.AlternativeProgrammeForm", on_delete=models.CASCADE, null=True, blank=True
     )
     personnel_class = models.ForeignKey(PersonnelClass, on_delete=models.CASCADE, null=True, blank=True)
+    override_reply_to = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name=_("Reply-to address"),
+        help_text=_(
+            "Due to spam protection, the sender field will always display a technical address "
+            "in the kompassi.eu domain. That address will redirect incoming mail to the default "
+            "contact address. You can direct replies to another address by setting a reply-to address here. "
+            "Format: foo@example.com or Foo Bar &lt;foo@example.com&gt;."
+        ),
+    )
 
     def __str__(self):
         num_ppl = self.group.user_set.count() if self.group else "–"
@@ -125,6 +140,15 @@ class Message(models.Model):
     def is_expired(self):
         return self.expired_at is not None
 
+    @property
+    def reply_to(self):
+        # if self.override_reply_to:
+        #     return self.override_reply_to
+        if self.recipient and self.recipient.override_reply_to:
+            return self.recipient.override_reply_to
+        else:
+            return None
+
     def send(self, recipients=None, resend=False):
         from .tasks import message_send
 
@@ -132,7 +156,9 @@ class Message(models.Model):
             self.sent_at = timezone.now()
             self.save()
 
-        message_send.delay(self.pk, [person.pk for person in recipients] if recipients is not None else None, resend)
+        message_send.delay(
+            self.pk, [person.pk for person in recipients] if recipients is not None else None, resend
+        )
 
     def _send(self, recipients, resend):
         from django.contrib.auth.models import User
@@ -246,7 +272,9 @@ class PersonMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        self.subject, unused = PersonMessageSubject.get_or_create(self.render_message(self.message.subject_template))
+        self.subject, unused = PersonMessageSubject.get_or_create(
+            self.render_message(self.message.subject_template)
+        )
         self.body, unused = PersonMessageBody.get_or_create(self.render_message(self.message.body_template))
 
         return super().save(*args, **kwargs)
@@ -287,10 +315,13 @@ class PersonMessage(models.Model):
         if settings.DEBUG:
             print(self.body.text)
 
+        reply_to_tup = (reply_to_str,) if (reply_to_str := self.message.reply_to) else None
+
         EmailMessage(
             subject=self.subject.text,
             body=self.body.text,
             from_email=meta.cloaked_contact_email,
             to=(self.person.name_and_email,),
             bcc=msgbcc,
+            reply_to=reply_to_tup,
         ).send(fail_silently=True)
