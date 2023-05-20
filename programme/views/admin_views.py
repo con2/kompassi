@@ -77,11 +77,11 @@ def admin_view(request, vars, event, format="screen"):
         miniworkshop_filters = Filter(request, "ropecon_miniworkshop")
         miniworkshopinator = (
             lambda is_miniworkshop: lambda programme: programme.form_used
-            and programme.form_used.slug == "default"
-            and (programme.category.slug == "mini") == is_miniworkshop
+            and programme.form_used.slug == "tyopaja"
+            and (programme.category.slug == "workmini") == is_miniworkshop
         )
         miniworkshop_filters.add("1", "Figutyöpajat", miniworkshopinator(True))
-        miniworkshop_filters.add("0", "Muu ohjelma, ei figutyöpaja", miniworkshopinator(False))
+        miniworkshop_filters.add("0", "Työpajat, ei figut", miniworkshopinator(False))
         programmes = miniworkshop_filters.filter_queryset(programmes)
     else:
         miniworkshop_filters = None

@@ -12,11 +12,6 @@ class MessageForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        if not event.sms_event_meta and self.instance.channel != "sms":
-            self.fields["channel"].choices = [
-                (key, value) for (key, value) in self.fields["channel"].choices if key != "sms"
-            ]
-
         self.fields["recipient"].queryset = RecipientGroup.objects.filter(
             app_label=app_label,
             event=event,
@@ -27,4 +22,4 @@ class MessageForm(forms.ModelForm):
 
     class Meta:
         model = Message
-        fields = ("channel", "recipient", "subject_template", "body_template")
+        fields = ("recipient", "subject_template", "body_template")

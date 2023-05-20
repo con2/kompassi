@@ -4,7 +4,7 @@ from .models import RecipientGroup, Message
 
 
 class RecipientGroupAdmin(admin.ModelAdmin):
-    list_display = ("app_label", "event", "verbose_name")
+    list_display = ("app_label", "event", "verbose_name", "override_reply_to")
     list_filter = ("app_label", "event")
 
 

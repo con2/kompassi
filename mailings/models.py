@@ -1,8 +1,9 @@
 from hashlib import sha1
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 
@@ -23,16 +24,32 @@ APP_LABEL_CHOICES = [
     ("programme", "Ohjelma"),
 ]
 
-DELAY_PER_MESSAGE_FRAGMENT_MILLIS = 350
-
 
 class RecipientGroup(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, verbose_name="Tapahtuma")
     app_label = models.CharField(max_length=63, choices=APP_LABEL_CHOICES, verbose_name="Sovellus")
     group = models.ForeignKey("auth.Group", on_delete=models.CASCADE, verbose_name="Käyttäjäryhmä")
-    verbose_name = models.CharField(max_length=63, verbose_name="Nimi", blank=True, default="")
+    verbose_name = models.CharField(max_length=255, verbose_name="Nimi", blank=True, default="")
     job_category = models.ForeignKey(JobCategory, on_delete=models.CASCADE, null=True, blank=True)
+    programme_category = models.ForeignKey(
+        "programme.Category", on_delete=models.CASCADE, null=True, blank=True
+    )
+    programme_form = models.ForeignKey(
+        "programme.AlternativeProgrammeForm", on_delete=models.CASCADE, null=True, blank=True
+    )
     personnel_class = models.ForeignKey(PersonnelClass, on_delete=models.CASCADE, null=True, blank=True)
+    override_reply_to = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name=_("Reply-to address"),
+        help_text=_(
+            "Due to spam protection, the sender field will always display a technical address "
+            "in the kompassi.eu domain. That address will redirect incoming mail to the default "
+            "contact address. You can direct replies to another address by setting a reply-to address here. "
+            "Format: foo@example.com or Foo Bar &lt;foo@example.com&gt;."
+        ),
+    )
 
     def __str__(self):
         num_ppl = self.group.user_set.count() if self.group else "–"
@@ -41,6 +58,10 @@ class RecipientGroup(models.Model):
             kind = f" (tehtäväalue, {num_ppl} hlö)"
         elif self.personnel_class:
             kind = f" (henkilöstöluokka, {num_ppl} hlö)"
+        elif self.programme_category:
+            kind = f" (ohjelmaluokka, {num_ppl} hlö)"
+        elif self.programme_form:
+            kind = f" (ohjelmalomake, {num_ppl} hlö)"
         else:
             kind = f" ({num_ppl} hlö)"
 
@@ -53,7 +74,7 @@ class RecipientGroup(models.Model):
 
 CHANNEL_CHOICES = [
     ("email", "Sähköposti"),
-    ("sms", "Tekstiviesti"),
+    # ("sms", "Tekstiviesti"),
 ]
 
 
@@ -119,19 +140,25 @@ class Message(models.Model):
     def is_expired(self):
         return self.expired_at is not None
 
+    @property
+    def reply_to(self):
+        # if self.override_reply_to:
+        #     return self.override_reply_to
+        if self.recipient and self.recipient.override_reply_to:
+            return self.recipient.override_reply_to
+        else:
+            return None
+
     def send(self, recipients=None, resend=False):
+        from .tasks import message_send
+
         if not self.sent_at:
             self.sent_at = timezone.now()
             self.save()
 
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from mailings.tasks import message_send
-
-            message_send.delay(
-                self.pk, [person.pk for person in recipients] if recipients is not None else None, resend
-            )
-        else:
-            self._send(recipients, resend)
+        message_send.delay(
+            self.pk, [person.pk for person in recipients] if recipients is not None else None, resend
+        )
 
     def _send(self, recipients, resend):
         from django.contrib.auth.models import User
@@ -139,8 +166,6 @@ class Message(models.Model):
         if recipients is None:
             recipients = [user.person for user in self.recipient.group.user_set.all()]
 
-        # TODO this delay stuff should not be here (only applies to SMS messages)
-        delay = 0
         for person in recipients:
             try:
                 person_message, created = PersonMessage.objects.get_or_create(
@@ -154,10 +179,8 @@ class Message(models.Model):
                 created = False
 
             if created or resend:
-                person_message.actually_send(delay)
+                person_message.actually_send()
                 bodylen = len(person_message.body.text)
-                delayfactor = ceil(bodylen / 153)
-                delay += DELAY_PER_MESSAGE_FRAGMENT_MILLIS * delayfactor
 
     def expire(self):
         assert self.expired_at is None, "re-expiring an expired message does not make sense"
@@ -249,7 +272,9 @@ class PersonMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        self.subject, unused = PersonMessageSubject.get_or_create(self.render_message(self.message.subject_template))
+        self.subject, unused = PersonMessageSubject.get_or_create(
+            self.render_message(self.message.subject_template)
+        )
         self.body, unused = PersonMessageBody.get_or_create(self.render_message(self.message.body_template))
 
         return super().save(*args, **kwargs)
@@ -278,15 +303,7 @@ class PersonMessage(models.Model):
     def render_message(self, template):
         return Template(template).render(Context(self.message_vars))
 
-    def actually_send(self, delay=0):
-        if self.message.channel == "email":
-            self._actually_send_email()
-        # elif self.message.channel == 'sms':
-        #     self._actually_send_sms(delay)
-        else:
-            raise NotImplementedError(self.message.channel)
-
-    def _actually_send_email(self):
+    def actually_send(self):
         from django.core.mail import EmailMessage
 
         msgbcc = []
@@ -298,26 +315,13 @@ class PersonMessage(models.Model):
         if settings.DEBUG:
             print(self.body.text)
 
+        reply_to_tup = (reply_to_str,) if (reply_to_str := self.message.reply_to) else None
+
         EmailMessage(
             subject=self.subject.text,
             body=self.body.text,
             from_email=meta.cloaked_contact_email,
             to=(self.person.name_and_email,),
             bcc=msgbcc,
+            reply_to=reply_to_tup,
         ).send(fail_silently=True)
-
-    # def _actually_send_sms(self, delay=0):
-    #     from sms.models import SMSMessageOut, SMSEventMeta
-    #     try:
-    #         event = SMSEventMeta.objects.get(event=self.message.event, sms_enabled=True)
-    #     except SMSEventMeta.DoesNotExist:
-    #         pass
-    #     else:
-    #         if 'background_tasks' in settings.INSTALLED_APPS:
-    #             from sms.tasks import message_send
-    #             sendtime = timezone.now() + timedelta(milliseconds=delay)
-    #             sending = SMSMessageOut(message=self.body.text, to=self.person.phone, event=event)
-    #             sending.save()
-    #             message_send.apply_async(args=[sending.pk], eta=sendtime)
-    #         else:
-    #             SMSMessageOut.send(message=self.body.text, to=self.person.phone, event=event)

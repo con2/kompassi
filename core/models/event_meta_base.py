@@ -19,6 +19,13 @@ class EventMetaBase(models.Model, GroupManagementMixin):
 
         return Group.objects.get(name=group_name)
 
+    def get_group_if_exists(self, suffix):
+        from django.contrib.auth.models import Group
+
+        group_name = self.make_group_name(self.event, suffix)
+
+        return Group.objects.filter(name=group_name).first()
+
     def is_user_admin(self, user):
         """
         Bridge between legacy access control and CBAC. Users that can do anything in an event are considered

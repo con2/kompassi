@@ -1,3 +1,4 @@
+import pytest
 from django.test import TestCase
 from django.utils.timezone import now
 
@@ -5,11 +6,12 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 
-from access.models import SlackAccess, GroupPrivilege, Privilege
+from access.models import SlackAccess, GroupPrivilege, Privilege, InternalEmailAlias, EmailAliasDomain
 from labour.models import Signup
+from mailings.models import RecipientGroup, Message, PersonMessage
 
 from .utils import next_full_hour
-from .models import ProgrammeEventMeta, ProgrammeRole, Programme, Room
+from .models import ProgrammeEventMeta, ProgrammeRole, Programme
 
 
 class UtilsTestCase(TestCase):
@@ -140,3 +142,46 @@ class ProgrammeTestCase(TestCase):
 
         assert not Programme.get_future_programmes(person).exists()
         assert Programme.get_past_programmes(person).exists()
+
+
+@pytest.mark.django_db
+def test_programme_mass_messages():
+    """
+    Tests two programme message use cases:
+    1. A programme message is sent before a programme host is added. They get the message when added.
+    2. Another programme message is sent after. They get that too.
+    """
+    meta, _ = ProgrammeEventMeta.get_or_create_dummy()
+    EmailAliasDomain.get_or_create_dummy()
+    InternalEmailAlias.ensure_internal_email_aliases()
+
+    hosts_group = meta.get_group("hosts")
+    recipient = RecipientGroup.objects.get(group=hosts_group)
+    message = Message(
+        recipient=recipient,
+        subject_template="Message 1",
+        body_template="Body",
+    )
+    message.send()
+
+    assert not PersonMessage.objects.exists()
+
+    role, _ = ProgrammeRole.get_or_create_dummy()
+    person = role.person
+    programme = role.programme
+    programme.apply_state()
+
+    person_message = PersonMessage.objects.get()
+
+    assert person_message.person == person
+
+    message2 = Message(
+        recipient=recipient,
+        subject_template="Message 2",
+        body_template="Body",
+    )
+    message2.send()
+
+    person_message2 = PersonMessage.objects.get(message=message2)
+
+    assert person_message2.person == person

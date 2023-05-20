@@ -27,7 +27,7 @@ class Setup:
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
         self.setup_badges()
         self.setup_intra()
@@ -234,9 +234,14 @@ class Setup:
             defaults.update(
                 ticket_sales_starts=t - timedelta(days=60),
                 ticket_sales_ends=t + timedelta(days=60),
+                max_count_per_product=5,
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+
+        if meta.max_count_per_product == 99:
+            meta.max_count_per_product = 5
+            meta.save()
 
         def limit_group(description, limit):
             limit_group, unused = LimitGroup.objects.get_or_create(
@@ -252,9 +257,9 @@ class Setup:
                 name="Nekocon (2023) -pääsylippu",
                 description="Viikonloppuranneke Kuopiossa järjestettävään vuoden 2023 Nekoconiin. Huom. myynnissä vain viikonloppurannekkeita. E-lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Pääsyliput", 1300),
+                    limit_group("Pääsyliput", 1800),
                 ],
-                price_cents=1700,
+                price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,

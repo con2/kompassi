@@ -16,7 +16,7 @@ TITLE_MAPPING = {
     "Tuomari": "NO_SHIRT",
     "Tiedotus, valokuvaus ja Kompassi": "KUVAAJA",  # that's me!
     "Yövastaava": "DESURITY",
-    "DesuTv Lead": "DESUTV",
+    "DesuTV Vastaava": "DESUTV",
     "Turvallisuusvastaava": "DESURITY",
     "Turvallisuusvastaava II": "DESURITY",
 }

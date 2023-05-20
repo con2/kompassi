@@ -103,8 +103,9 @@ PHYSICAL_PLAY_CHOICES = [
     ("none", _("Not at all")),
 ]
 
-PROGRAMME_STATES_ACTIVE = ["idea", "asked", "offered", "accepted", "published"]
+PROGRAMME_STATES_NEW = ["idea", "asked", "offered"]
 PROGRAMME_STATES_LIVE = ["accepted", "published"]
+PROGRAMME_STATES_ACTIVE = PROGRAMME_STATES_NEW + PROGRAMME_STATES_LIVE
 PROGRAMME_STATES_INACTIVE = ["rejected", "cancelled"]
 
 LANGUAGE_CHOICES = [
@@ -1560,15 +1561,13 @@ class Programme(models.Model, CsvExportMixin):
         self.apply_state_create_badges(deleted_programme_roles)
 
     def apply_state_async(self):
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import programme_apply_state_async
+        from ..tasks import programme_apply_state_async
 
-            programme_apply_state_async.delay(self.pk)
-        else:
-            self._apply_state_async()
+        programme_apply_state_async.delay(self.pk)
 
     def _apply_state_async(self):
         self.apply_state_group_membership()
+        self.apply_state_send_messages()
 
     def apply_state_update_programme_roles(self):
         self.programme_roles.update(is_active=self.is_active)
@@ -1578,33 +1577,79 @@ class Programme(models.Model, CsvExportMixin):
             signup_extra.apply_state()
 
     def apply_state_group_membership(self):
-        from django.contrib.auth.models import Group
         from core.utils import ensure_user_group_membership
+        from .alternative_programme_form import AlternativeProgrammeForm
+        from .category import Category
         from .programme_role import ProgrammeRole
-
-        try:
-            group = self.event.programme_event_meta.get_group("hosts")
-        except Group.DoesNotExist:
-            logger.warning("Event %s missing the programme hosts group", self.event)
-            return
 
         for person in self.organizers.all():
             assert person.user
 
-            if ProgrammeRole.objects.filter(
-                programme__category__event=self.event,
-                programme__state__in=PROGRAMME_STATES_ACTIVE,
-                person=person,
-            ).exists():
-                # active programmist
-                groups_to_add = [group]
-                groups_to_remove = []
-            else:
-                # inactive programmist
-                groups_to_add = []
-                groups_to_remove = [group]
+            groups_to_add = []
+            groups_to_remove = []
+
+            # Status based groups
+            for group, states in [
+                (self.event.programme_event_meta.get_group_if_exists("new"), PROGRAMME_STATES_NEW),
+                (self.event.programme_event_meta.get_group_if_exists("hosts"), PROGRAMME_STATES_ACTIVE),
+                (self.event.programme_event_meta.get_group_if_exists("live"), PROGRAMME_STATES_LIVE),
+                (self.event.programme_event_meta.get_group_if_exists("inactive"), PROGRAMME_STATES_INACTIVE),
+            ]:
+                if not group:
+                    continue
+
+                if ProgrammeRole.objects.filter(
+                    programme__category__event=self.event,
+                    programme__state__in=states,
+                    person=person,
+                ).exists():
+                    # active programmist
+                    groups_to_add.append(group)
+                else:
+                    # inactive programmist
+                    groups_to_remove.append(group)
+
+            # Category groups
+            for category in Category.objects.filter(event=self.event):
+                group = self.event.programme_event_meta.get_group_if_exists(category.qualified_slug)
+                if not group:
+                    continue
+
+                if ProgrammeRole.objects.filter(
+                    programme__category=category,
+                    programme__state__in=PROGRAMME_STATES_LIVE,
+                    person=person,
+                ).exists():
+                    # active programmist
+                    groups_to_add.append(group)
+                else:
+                    # inactive programmist
+                    groups_to_remove.append(group)
+
+            # Form groups
+            for form in AlternativeProgrammeForm.objects.filter(event=self.event):
+                group = self.event.programme_event_meta.get_group_if_exists(form.qualified_slug)
+                if not group:
+                    continue
+
+                if ProgrammeRole.objects.filter(
+                    programme__form_used=form,
+                    programme__state__in=PROGRAMME_STATES_LIVE,
+                    person=person,
+                ).exists():
+                    # active programmist
+                    groups_to_add.append(group)
+                else:
+                    # inactive programmist
+                    groups_to_remove.append(group)
 
             ensure_user_group_membership(person.user, groups_to_add=groups_to_add, groups_to_remove=groups_to_remove)
+
+    def apply_state_send_messages(self, resend=False):
+        from mailings.models import Message
+
+        for person in self.organizers.all():
+            Message.send_messages(self.event, "programme", person)
 
     def apply_state_create_badges(self, deleted_programme_roles=[]):
         if "badges" not in settings.INSTALLED_APPS:

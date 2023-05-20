@@ -11,8 +11,6 @@ from ..channels import channels
 CHANNEL_CHOICES = [
     ("email", _("E-mail")),
     ("callback", _("Callback")),
-    # ('sms', _('SMS')),
-    # ('push', _('Push notifications')),
 ]
 
 

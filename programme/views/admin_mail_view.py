@@ -11,6 +11,6 @@ def admin_mail_view(request, vars, event):
 
     messages = Message.objects.filter(recipient__event=event, recipient__app_label="programme")
 
-    vars.update(messages=messages)
+    vars.update(not_messages=messages)
 
     return render(request, "programme_admin_mail_view.pug", vars)

@@ -15,10 +15,8 @@ asttokens==2.2.1
 async-timeout==4.0.2
     # via redis
 attrs==22.2.0
-    # via
-    #   jsonschema
-    #   pytest
-babel==2.11.0
+    # via jsonschema
+babel==2.12.1
     # via -r requirements.in
 backcall==0.2.0
     # via ipython
@@ -26,13 +24,13 @@ bcrypt==4.0.1
     # via paramiko
 billiard==3.6.4.0
     # via celery
-black==23.1.0
+black==23.3.0
     # via -r requirements.in
 bleach==6.0.0
     # via -r requirements.in
-boto3==1.26.74
+boto3==1.26.114
     # via -r requirements.in
-botocore==1.29.74
+botocore==1.29.114
     # via
     #   boto3
     #   s3transfer
@@ -46,7 +44,7 @@ cffi==1.15.1
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.0.1
+charset-normalizer==3.1.0
     # via
     #   pypugjs
     #   requests
@@ -63,7 +61,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-cryptography==39.0.1
+cryptography==40.0.2
     # via
     #   jwcrypto
     #   paramiko
@@ -75,7 +73,7 @@ deprecated==1.2.13
     # via jwcrypto
 deprecation==2.0.7
     # via django-localized-fields
-django==4.1.7
+django==4.2
     # via
     #   -r requirements.in
     #   django-bootstrap3
@@ -92,19 +90,19 @@ django==4.1.7
     #   drf-nested-routers
     #   lippukala
     #   paikkala
-django-bootstrap3==22.2
+django-bootstrap3==23.1
     # via -r requirements.in
-django-cors-headers==3.13.0
+django-cors-headers==3.14.0
     # via -r requirements.in
 django-crispy-forms==1.14.0
     # via -r requirements.in
 django-csp==3.7
     # via -r requirements.in
-django-environ==0.9.0
+django-environ==0.10.0
     # via -r requirements.in
-django-filter==22.1
+django-filter==23.1
     # via -r requirements.in
-django-ipware==4.0.2
+django-ipware==5.0.0
     # via -r requirements.in
 django-localflavor==3.1
     # via -r requirements.in
@@ -136,9 +134,9 @@ idna==3.4
     # via requests
 iniconfig==2.0.0
     # via pytest
-ipdb==0.13.11
+ipdb==0.13.13
     # via -r requirements.in
-ipython==8.10.0
+ipython==8.12.0
     # via
     #   -r requirements.in
     #   ipdb
@@ -156,9 +154,9 @@ jwcrypto==1.4.2
     # via django-oauth-toolkit
 kombu==5.2.4
     # via celery
-lippukala @ git+https://github.com/kcsry/lippukala.git
+lippukala @ https://github.com/kcsry/lippukala/archive/fd6f55f499b12062887f6c78ff2c6749df8ba5cc.zip
     # via -r requirements.in
-markdown==3.4.1
+markdown==3.4.3
     # via -r requirements.in
 matplotlib-inline==0.1.6
     # via ipython
@@ -170,41 +168,43 @@ oauthlib==3.2.2
     # via
     #   django-oauth-toolkit
     #   requests-oauthlib
-packaging==23.0
+packaging==23.1
     # via
     #   black
     #   deprecation
     #   pytest
-paikkala @ git+https://github.com/kcsry/paikkala.git
+paikkala @ https://github.com/kcsry/paikkala/archive/205a72f3f6a1b49c7886f1062b600f42a8ebb127.zip
     # via -r requirements.in
-paramiko==3.0.0
+paramiko==3.1.0
     # via -r requirements.in
 parso==0.8.3
     # via jedi
 passlib==1.7.4
     # via -r requirements.in
-pathspec==0.11.0
+pathspec==0.11.1
     # via black
 pexpect==4.8.0
     # via ipython
-phonenumberslite==8.13.6
+phonenumberslite==8.13.9
     # via -r requirements.in
 pickleshare==0.7.5
     # via ipython
-pillow==9.4.0
+pillow==9.5.0
     # via
     #   -r requirements.in
     #   reportlab
-platformdirs==3.0.0
+platformdirs==3.2.0
     # via black
 pluggy==1.0.0
     # via pytest
-prompt-toolkit==3.0.36
+prompt-toolkit==3.0.38
     # via
     #   click-repl
     #   ipython
-psycopg2==2.9.5
+psycopg[c]==3.1.8
     # via -r requirements.in
+psycopg-c==3.1.8
+    # via psycopg
 ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.2
@@ -215,7 +215,7 @@ pycparser==2.21
     # via cffi
 pyflakes==3.0.1
     # via flake8
-pygments==2.14.0
+pygments==2.15.0
     # via ipython
 pynacl==1.5.0
     # via paramiko
@@ -223,7 +223,7 @@ pypugjs==5.9.12
     # via -r requirements.in
 pyrsistent==0.19.3
     # via jsonschema
-pytest==7.2.1
+pytest==7.3.1
     # via pytest-django
 pytest-django==4.5.2
     # via -r requirements.in
@@ -237,16 +237,15 @@ python-memcached==1.59
     # via -r requirements.in
 python-stdnum==1.18
     # via django-localflavor
-pytz==2022.7.1
+pytz==2023.3
     # via
-    #   babel
     #   celery
     #   djangorestframework
 pyyaml==6.0
     # via -r requirements.in
-redis==4.5.1
+redis==4.5.4
     # via django-redis
-regex==2022.10.31
+regex==2023.3.23
     # via -r requirements.in
 reportlab==3.6.12
     # via
@@ -261,7 +260,7 @@ requests-oauthlib==1.3.1
     # via -r requirements.in
 s3transfer==0.6.0
     # via boto3
-sentry-sdk==1.15.0
+sentry-sdk==1.19.1
     # via -r requirements.in
 six==1.16.0
     # via
@@ -279,9 +278,11 @@ traitlets==5.9.0
     # via
     #   ipython
     #   matplotlib-inline
+typing-extensions==4.5.0
+    # via psycopg
 unicodecsv==0.14.1
     # via -r requirements.in
-urllib3==1.26.14
+urllib3==1.26.15
     # via
     #   botocore
     #   requests
@@ -297,9 +298,9 @@ wcwidth==0.2.6
     # via prompt-toolkit
 webencodings==0.5.1
     # via bleach
-wrapt==1.14.1
+wrapt==1.15.0
     # via deprecated
-xlsxwriter==3.0.8
+xlsxwriter==3.1.0
     # via -r requirements.in
 xlwt==1.3.0
     # via lippukala

@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 
-from jsonschema import validate, ValidationError as JSONSchemaValidationError
+from jsonschema import ValidationError as JSONSchemaValidationError
 from requests_oauthlib import OAuth2Session
 
 from api.utils import api_view, api_login_required
@@ -24,7 +24,7 @@ from core.utils import create_temporary_password, get_next
 from programme.helpers import programme_event_required
 from programme.models import Programme
 
-from .models import Connection, ConfirmationCode, Desuprofile, Desuprogramme, DesuprogrammeFeedback
+from .models import Connection, ConfirmationCode, Desuprofile, DesuprogrammeFeedback
 
 
 logger = logging.getLogger("kompassi")

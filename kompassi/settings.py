@@ -161,7 +161,6 @@ INSTALLED_APPS = (
     "pypugjs.ext.django",
     "crispy_forms",
     "oauth2_provider",
-    # 'nexmo',
     "rest_framework",
     "bootstrap3",
     "lippukala",
@@ -178,7 +177,6 @@ INSTALLED_APPS = (
     "api_v3",
     "badges",
     "access",
-    # 'sms',
     "membership",
     "intra",
     "desuprofile_integration",
@@ -190,24 +188,19 @@ INSTALLED_APPS = (
     "listings",
     "forms",
     "metrics",
+    "background_tasks",
     "organizations.tracon_ry",
-    "events.tracon9",
-    "events.traconx",
     "events.hitpoint2015",
     "events.kuplii2015",
     "events.mimicon2015",
-    "events.animecon2015",
     "events.yukicon2016",
     "events.finncon2016",
     "events.frostbite2016",
-    "events.tracon11",
     "events.kuplii2016",
-    "events.aicon2016",
     "events.kawacon2016",
     "events.mimicon2016",
     "events.desucon2016",
     "events.lakeuscon2016",
-    "events.animecon2016",
     "events.hitpoint2017",
     "events.shippocon2016",
     "events.yukicon2017",
@@ -224,7 +217,6 @@ INSTALLED_APPS = (
     "events.nippori2017",
     "events.kuplii2018",
     "events.tracon2018",
-    "events.aicon2018",
     "events.popcultday2018",
     "events.desucon2018",
     "events.matsucon2018",
@@ -280,6 +272,8 @@ INSTALLED_APPS = (
     "events.hitpoint2023",
     "events.nekocon2023",
     "events.finncon2023",
+    "events.tracon2023paidat",
+    "events.cosvision2023",
 )
 
 LOGGING = {
@@ -424,19 +418,19 @@ if "lippukala" in INSTALLED_APPS:
 
 
 if env("BROKER_URL", default=""):
-    INSTALLED_APPS = INSTALLED_APPS + ("background_tasks",)
     CELERY_BROKER_URL = env("BROKER_URL")
-    CELERY_ACCEPT_CONTENT = ["json"]
+else:
+    CELERY_TASK_ALWAYS_EAGER = True
 
-    # EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+CELERY_ACCEPT_CONTENT = ["json"]
 
-    CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
-    CELERY_SERVER_EMAIL = DEFAULT_FROM_EMAIL
+CELERY_SEND_TASK_ERROR_EMAILS = not DEBUG
+CELERY_SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
-    CELERY_TASK_SERIALIZER = "json"
-    CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 
-    CELERY_REDIS_SOCKET_KEEPALIVE = True
+CELERY_REDIS_SOCKET_KEEPALIVE = True
 
 
 if "api" in INSTALLED_APPS:
@@ -492,8 +486,12 @@ KOMPASSI_LISTING_URLCONFS = {
 
 
 # Used by access.SMTPServer. Must be created with ssh-keygen -t rsa -m pem (will not work without -m pem).
-KOMPASSI_SSH_PRIVATE_KEY_FILE = env("KOMPASSI_SSH_PRIVATE_KEY_FILE", default="/mnt/secrets/kompassi/sshPrivateKey")
-KOMPASSI_SSH_KNOWN_HOSTS_FILE = env("KOMPASSI_SSH_KNOWN_HOSTS_FILE", default="/mnt/secrets/kompassi/sshKnownHosts")
+KOMPASSI_SSH_PRIVATE_KEY_FILE = env(
+    "KOMPASSI_SSH_PRIVATE_KEY_FILE", default="/mnt/secrets/kompassi/sshPrivateKey"
+)
+KOMPASSI_SSH_KNOWN_HOSTS_FILE = env(
+    "KOMPASSI_SSH_KNOWN_HOSTS_FILE", default="/mnt/secrets/kompassi/sshKnownHosts"
+)
 
 # used by manage.py setup to noop if already run for this deploy
 KOMPASSI_SETUP_RUN_ID = env("KOMPASSI_SETUP_RUN_ID", default="")

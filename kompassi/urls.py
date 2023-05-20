@@ -27,7 +27,6 @@ for app_name in [
     "api_v3",
     "badges",
     "access",
-    "sms",
     "desuprofile_integration",
     "membership",
     "events.tracon2022",

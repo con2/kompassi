@@ -1,4 +1,5 @@
 from django import forms
+from django.core import validators
 from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.helper import FormHelper, Layout
@@ -46,6 +47,11 @@ class AccommodationInformationForm(forms.ModelForm):
 
     class Meta:
         model = AccommodationInformation
+        fields = ("first_name", "last_name", "phone_number", "email")
+
+class AccommodationInformationAdminForm(AccommodationInformationForm):
+    class Meta:
+        model = AccommodationInformation
         fields = ("first_name", "last_name", "phone_number", "email", "room_name")
 
 
@@ -62,14 +68,20 @@ class AccommodationPresenceForm(forms.ModelForm):
 
 
 class OrderProductForm(forms.ModelForm):
-    count = forms.IntegerField(label="Määrä", min_value=0, max_value=99)
+    count = forms.IntegerField(label="Määrä", min_value=0)
 
     def __init__(self, *args, **kwargs):
+        max_count_per_product = kwargs.pop("max_count_per_product", 99)
+
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.label_class = "sr-only"
         self.helper.field_class = "col-md-12"
         self.helper.form_tag = False
+
+        count_field = self.fields["count"]
+        count_field.validators.append(validators.MaxValueValidator(max_count_per_product))
+        count_field.widget.attrs["max"] = count_field.max_value = max_count_per_product
 
     @classmethod
     def get_for_order(cls, request, order, admin=False):
@@ -87,16 +99,17 @@ class OrderProductForm(forms.ModelForm):
     def get_for_order_and_product(cls, request, order, product, admin=False):
         order_product, unused = OrderProduct.objects.get_or_create(order=order, product=product)
 
+        readonly = admin and (
+            (order.batch is not None and product.requires_shipping) or (order.is_paid and product.electronic_ticket)
+        )
+
         return initialize_form(
             OrderProductForm,
             request,
             instance=order_product,
             prefix="o%d" % order_product.pk,
-            # XXX disallow changing amounts of electronic tickets for now
-            readonly=admin
-            and (
-                (order.batch is not None and product.requires_shipping) or (order.is_paid and product.electronic_ticket)
-            ),
+            readonly=readonly,
+            max_count_per_product=order.event.tickets_event_meta.max_count_per_product,
         )
 
     class Meta:

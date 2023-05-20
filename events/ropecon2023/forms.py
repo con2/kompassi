@@ -1275,19 +1275,48 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            "special_diet",
-            "special_diet_other",
-            "free_text",
+            "shift_type",
+            Fieldset(
+                _("Work certificate"),
+                "want_certificate",
+                "certificate_delivery_address",
+            ),
+            Fieldset(
+                _("Language skills"),
+                "languages",
+                "other_languages",
+            ),
+            Fieldset(
+                _("Additional information"),
+                "special_diet",
+                "special_diet_other",
+                "prior_experience",
+                "shift_wishes",
+                "free_text",
+            ),
+            Fieldset(
+                _("Consent for information processing"),
+                "roster_publish_consent",
+            ),
         )
 
     class Meta:
         model = SignupExtra
         fields = (
+            "shift_type",
+            "want_certificate",
+            "certificate_delivery_address",
+            "languages",
+            "other_languages",
             "special_diet",
             "special_diet_other",
+            "prior_experience",
+            "shift_wishes",
             "free_text",
+            "roster_publish_consent",
         )
 
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
+            languages=forms.CheckboxSelectMultiple,
         )

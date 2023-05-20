@@ -11,6 +11,13 @@ SCHEDULE_LAYOUT_CHOICES = [
     ("full_width", _("Full-width")),
 ]
 
+GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
+    admins="Ohjelmavastaavat",
+    hosts="Kaikki ohjelmanjärjestäjät (odottavat ja hyväksytyt)",
+    live="Hyväksyttyjen ohjelmien järjestäjät",
+    new="Hyväksyntää odottavat ohjelmanjärjestäjät",
+)
+
 
 class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     public_from = models.DateTimeField(
@@ -57,6 +64,9 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
 
     use_cbac = True
 
+    # if set, would get copies of all programme messages
+    monitor_email = None
+
     def __init__(self, *args, **kwargs):
         if "public" in kwargs:
             public = kwargs.pop("public")
@@ -81,15 +91,73 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         from django.utils.timezone import now
 
         event, unused = Event.get_or_create_dummy()
-        admin_group, hosts_group = cls.get_or_create_groups(event, ["admins", "hosts"])
+        (admin_group,) = cls.get_or_create_groups(event, ["admins"])
 
-        return cls.objects.get_or_create(
+        meta, created = cls.objects.get_or_create(
             event=event,
             defaults=dict(
                 admin_group=admin_group,
                 public_from=now(),
             ),
         )
+
+        meta.create_groups()
+
+        return meta, created
+
+    def create_groups(self):
+        from .alternative_programme_form import AlternativeProgrammeForm
+        from .category import Category
+
+        subjects: list[str | Category | AlternativeProgrammeForm] = ["new", "hosts", "live", "rejected"]
+
+        for category in Category.objects.filter(event=self.event):
+            subjects.append(category)
+
+        for form in AlternativeProgrammeForm.objects.filter(event=self.event):
+            subjects.append(form)
+
+        return self.get_or_create_groups(self.event, subjects)
+
+    @classmethod
+    def get_or_create_groups(cls, event, subjects):
+        from mailings.models import RecipientGroup
+        from .category import Category
+        from .alternative_programme_form import AlternativeProgrammeForm
+
+        suffixes = [subject if isinstance(subject, str) else subject.qualified_slug for subject in subjects]
+
+        groups = super().get_or_create_groups(event, suffixes)
+
+        for subject, group in zip(subjects, groups):
+            if isinstance(subject, Category):
+                verbose_name = subject.title
+                category = subject
+                programme_form = None
+            elif isinstance(subject, AlternativeProgrammeForm):
+                verbose_name = subject.title
+                category = None
+                programme_form = subject
+            else:
+                if subject not in GROUP_VERBOSE_NAMES_BY_SUFFIX:
+                    continue
+
+                verbose_name = GROUP_VERBOSE_NAMES_BY_SUFFIX[subject]
+                category = None
+                programme_form = None
+
+            RecipientGroup.objects.get_or_create(
+                event=event,
+                app_label="programme",
+                group=group,
+                defaults=dict(
+                    programme_category=category,
+                    programme_form=programme_form,
+                    verbose_name=verbose_name,
+                ),
+            )
+
+        return groups
 
     @property
     def is_public(self):

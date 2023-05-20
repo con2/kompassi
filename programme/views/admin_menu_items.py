@@ -44,6 +44,10 @@ def programme_admin_menu_items(request, event):
     publish_active = request.path == publish_url
     publish_text = _("Publish schedule")
 
+    mail_url = url("programme:admin_mail_view", event.slug)
+    mail_active = request.path.startswith(mail_url)
+    mail_text = _("Mass messages")
+
     feedback_url = url("programme:admin_feedback_view", event.slug)
     feedback_active = request.path == feedback_url
     feedback_text = _("Programme feedback")
@@ -65,6 +69,7 @@ def programme_admin_menu_items(request, event):
         AdminMenuItem(is_active=special_active, href=special_url, text=special_text),
         AdminMenuItem(is_active=cold_offers_active, href=cold_offers_url, text=cold_offers_text),
         AdminMenuItem(is_active=publish_active, href=publish_url, text=publish_text),
+        AdminMenuItem(is_active=mail_active, href=mail_url, text=mail_text),
         AdminMenuItem(
             is_active=feedback_active, href=feedback_url, text=feedback_text, notifications=feedback_notifications
         ),
@@ -104,6 +109,7 @@ def programme_admin_menu_items(request, event):
             schedule_active,
             special_active,
             reservations_active,
+            mail_active,
         )
     )
     index_text = "Ohjelmaluettelo"

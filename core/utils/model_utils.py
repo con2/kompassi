@@ -1,31 +1,14 @@
-from datetime import datetime, timedelta
-from functools import wraps
-from itertools import groupby
-from random import randint
-import json
-import sys
 import re
 
 import phonenumbers
 
-from django import forms
 from django.conf import settings
-from django.contrib.auth.models import Group, User
-from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.core.validators import RegexValidator
-from django.db import models, connection
+from django.db import models
+from django.db.models import Q
 from django.forms import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from django.template.loader import render_to_string
-
-from dateutil.tz import tzlocal
-
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Hidden
 
 
 validate_slug = RegexValidator(
@@ -71,15 +54,6 @@ def slugify(ustr):
     return ustr
 
 
-def get_postgresql_version_num():
-    if not "postgresql" in settings.DATABASES["default"]["ENGINE"]:
-        return 0
-
-    with connection.cursor() as cursor:
-        cursor.execute("SHOW server_version_num")
-        return int(cursor.fetchone()[0])
-
-
 def get_previous_and_next(queryset, current):
     if not current.pk:
         return None, None
@@ -100,35 +74,6 @@ def get_previous_and_next(queryset, current):
     return None, None
 
 
-def _get_next_or_previous(queryset, obj, field, is_next):
-    if isinstance(queryset, models.Model):
-        queryset = queryset.objects  # we cheat – manager instead of qs, but it works here so idk
-
-    if not obj.pk:
-        raise ValueError("get_next/get_previous cannot be used on unsaved objects.")
-
-    op = "gt" if is_next else "lt"
-    desc_minus = "" if is_next else "-"
-
-    param = getattr(obj, field_name)
-    q = Q(**{f"{field_name}__{op}": param})
-    q = q | Q(**{field_name: param, f"pk__{op}": obj.pk})
-    qs = queryset.filter(q).order_by(f"{desc_minus}{field_name}", "{desc_minus}pk")
-
-    try:
-        return qs[0]
-    except IndexError:
-        raise obj.DoesNotExist(f"{obj.__class__._meta.object_name} matching query does not exist.")
-
-
-def get_next(queryset, obj, field):
-    return _get_next_or_previous(queryset, obj, field, True)
-
-
-def get_previous(queryset, obj, field):
-    return _get_next_or_previous(queryset, obj, field, False)
-
-
 def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION):
     """
     Validate the phone number using Google's phonenumbers library.
@@ -145,7 +90,9 @@ def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_
 
 
 def format_phone_number(
-    value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION, format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
+    value: str,
+    region: str = settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION,
+    format: str = settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT,
 ):
     """
     Formats a phone number or throws phonenumbers.NumberParseException.

@@ -53,7 +53,6 @@ from .time_utils import (
 
 from .model_utils import (
     format_phone_number,
-    get_postgresql_version_num,
     get_previous_and_next,
     NONUNIQUE_SLUG_FIELD_PARAMS,
     phone_number_validator,

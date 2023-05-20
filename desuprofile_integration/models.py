@@ -81,35 +81,6 @@ class Desuprofile(DesuprofileBase, JSONSchemaObject):
     )
 
 
-DesuprogrammeBase = namedtuple("Desuprogramme", "identifier title description")
-
-
-class Desuprogramme(DesuprogrammeBase, JSONSchemaObject):
-    schema = dict(
-        type="object",
-        properties=dict(
-            identifier=dict(type="string", minLength=1, maxLength=255, pattern=r"[a-z0-9-]+"),
-            title=dict(type="string", minLength=1, maxLength=1023),
-            description=dict(type="string"),
-        ),
-        required=["identifier", "title", "description"],
-    )
-
-    def get_or_create(self, category):
-        from programme.models import Programme
-
-        return Programme.objects.get_or_create(
-            category=category,
-            slug=self.identifier,
-            defaults=dict(
-                title=self.title,
-                description=self.description,
-                state="accepted",
-                notes="Tuotu automaattisesti Desusaitilta",
-            ),
-        )
-
-
 DesuprogrammeFeedbackBase = namedtuple("DesuprogrammeFeedback", "feedback desucon_username anonymous ip_address")
 
 

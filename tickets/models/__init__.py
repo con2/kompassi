@@ -171,6 +171,8 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
         help_text=_("If set, customers will be required to indicate acceptance to finish order."),
     )
 
+    max_count_per_product = models.SmallIntegerField(blank=True, default=99)
+
     def __str__(self):
         return self.event.name
 
@@ -1257,7 +1259,7 @@ class AccommodationInformation(models.Model, CsvExportMixin):
         return "success" if self.is_present else ""
 
     def get_presence_form(self):
-        from .forms import AccommodationPresenceForm
+        from ..forms import AccommodationPresenceForm
 
         return AccommodationPresenceForm(instance=self)
 
