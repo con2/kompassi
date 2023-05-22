@@ -1,10 +1,12 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory, WorkPeriod
+from programme.models import Category, Programme, AlternativeProgrammeFormMixin
 
 from .models import SignupExtra, EventDay
 
@@ -20,12 +22,12 @@ class SignupExtraForm(forms.ModelForm):
             # 'night_work',
             # indented_without_label('construction'),
             # indented_without_label('overseer'),
-            "work_days",
-            indented_without_label("want_certificate"),
+            # "work_days",
+            # indented_without_label("want_certificate"),
             # 'certificate_delivery_address',
             Fieldset(
                 "Lisätiedot",
-                "shirt_size",
+                # "shirt_size",
                 "special_diet",
                 "special_diet_other",
                 # indented_without_label('need_lodging'),
@@ -35,7 +37,7 @@ class SignupExtraForm(forms.ModelForm):
             ),
         )
 
-        self.fields["work_days"].help_text = "Minä päivinä olet halukas työskentelemään?"
+        # self.fields["work_days"].help_text = "Minä päivinä olet halukas työskentelemään?"
 
     class Meta:
         model = SignupExtra
@@ -45,10 +47,10 @@ class SignupExtraForm(forms.ModelForm):
             # 'night_work',
             # 'construction',
             # 'overseer',
-            "work_days",
-            "want_certificate",
+            # "work_days",
+            # "want_certificate",
             # 'certificate_delivery_address',
-            "shirt_size",
+            # "shirt_size",
             "special_diet",
             "special_diet_other",
             # 'need_lodging',
@@ -105,7 +107,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def get_excluded_m2m_field_defaults(self):
         return dict(
             job_categories=JobCategory.objects.filter(event__slug="yukicon2019", name="Conitea"),
-            work_days=EventDay.objects.all(),
+            # work_days=EventDay.objects.all(),
         )
 
 
@@ -128,7 +130,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
-            work_days=forms.CheckboxSelectMultiple,
+            # work_days=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
@@ -180,5 +182,105 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict(
-            work_days=EventDay.objects.all(),
+            # work_days=EventDay.objects.all(),
+        )
+
+class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop("event")
+        admin = kwargs.pop("admin") if "admin" in kwargs else False
+
+        super().__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.helper.layout = Layout(
+            Fieldset(
+                _("Programme content"),
+                "title",
+                "description",
+                "long_description",
+                "category",
+                "requested_time_slot",
+            ),
+            Fieldset(
+                _("Technical details"),
+                "computer",
+                "use_audio",
+                "use_video",
+                "number_of_microphones",
+                "tech_requirements",
+            ),
+            Fieldset(
+                _("Other details"),
+                "stream_permission",
+                "encumbered_content",
+                "photography",
+                "rerun",
+                "rerun_extra",
+                "room_requirements",
+                "notes_from_host",
+            ),
+        )
+
+        self.fields["title"].required = True
+        if not admin:
+            for field_name in [
+                "description",
+                "encumbered_content",
+                "photography",
+                "rerun",
+                "stream_permission",
+            ]:
+                self.fields[field_name].required = True
+
+        self.fields["category"].queryset = Category.objects.filter(event=event, public=True)
+
+        self.fields["description"].help_text = (
+            "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen "
+            "tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä "
+            "markkinoida ohjelmaasi. Pidä kuvaus kuitenkin ytimekkäänä, jotta se mahtuisi ohjelmalehteen. "
+            "Ohjelmakuvauksen maksimipituus ohjelmalehteä varten on 400 merkkiä. Varaamme oikeuden muokata kuvausta."
+        )
+        self.fields["description"].max_length = 400
+
+        self.fields[
+            "room_requirements"
+        ].help_text = "Miten suurta yleisöä odotat ohjelmallesi? Minkä tyyppistä tilaa toivot ohjelmallesi? Minkälaisia kalusteita tarvitset ohjelmaasi varten? (Luentosaleissa löytyy paikat puhujille ja penkit yleisölle, näitä ei tarvitse tässä listata.)"
+
+        self.fields["stream_permission"].choices = [
+            (k, t) for (k, t) in self.fields["stream_permission"].choices if k != "please"
+        ]
+
+    def get_excluded_field_defaults(self):
+        return dict()
+
+    class Meta:
+        model = Programme
+        fields = (
+            "title",
+            "description",
+            "long_description",
+            "tracon2023_accessibility_warnings",
+            "tracon2023_content_warnings",
+            "category",
+            "requested_time_slot",
+            "computer",
+            "use_audio",
+            "use_video",
+            "number_of_microphones",
+            "tech_requirements",
+            "stream_permission",
+            "encumbered_content",
+            "photography",
+            "rerun",
+            "rerun_extra",
+            "room_requirements",
+            "notes_from_host",
+        )
+
+        widgets = dict(
+            tracon2023_accessibility_warnings=forms.CheckboxSelectMultiple,
+            tracon2023_preferred_time_slots=forms.CheckboxSelectMultiple,
         )

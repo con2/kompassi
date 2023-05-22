@@ -2,13 +2,6 @@ from django.db import models
 
 from labour.models import SignupExtraBase
 
-
-# NIGHT_WORK_CHOICES = [
-#     (u'miel', u'Työskentelen mielelläni yövuorossa'),
-#     (u'tarv', u'Voin tarvittaessa työskennellä yövuorossa'),
-#     (u'ei', u'En vaan voi työskennellä yövuorossa'),
-# ]
-
 SHIRT_SIZES = [
     ("NO_SHIRT", "Ei paitaa"),
     ("XS", "XS Unisex"),
@@ -35,9 +28,9 @@ SHIFT_TYPE_CHOICES = [
 ]
 
 TOTAL_WORK_CHOICES = [
-    ("10h", "Minimi - 10 tuntia"),
-    ("12h", "10-12 tuntia"),
-    ("yli12h", "Työn Sankari! Yli 12 tuntia!"),
+    ("8h", "Minimi - 8 tuntia"),
+    ("10h", "8-10 tuntia"),
+    ("yli10h", "Työn Sankari! Yli 10 tuntia!"),
 ]
 
 
@@ -74,35 +67,11 @@ class SignupExtra(SignupExtraBase):
         choices=TOTAL_WORK_CHOICES,
     )
 
-    # night_work = models.CharField(max_length=5,
-    #     verbose_name=u'Voitko työskennellä yöllä?',
-    #     help_text=u'Yötöitä voi olla ainoastaan lauantain ja sunnuntain välisenä yönä.',
-    #     choices=NIGHT_WORK_CHOICES,
-    # )
-
-    # construction = models.BooleanField(
-    #     default=False,
-    #     verbose_name=u'Voin työskennellä jo perjantaina',
-    #     # help_text=u'Huomaathan, että perjantain ja lauantain väliselle yölle ei ole tarjolla majoitusta.',
-    # )
-
     work_days = models.ManyToManyField(
         EventDay,
         verbose_name="Tapahtumapäivät",
         help_text="Minä päivinä olet halukas työskentelemään?",
     )
-
-    want_certificate = models.BooleanField(
-        default=False,
-        verbose_name="Haluan todistuksen työskentelystäni Yukiconissa",
-    )
-
-    # certificate_delivery_address = models.TextField(
-    #     blank=True,
-    #     verbose_name=u'Työtodistuksen toimitusosoite',
-    #     help_text=u'Jos haluat työtodistuksen, täytä tähän kenttään postiosoite (katuosoite, '
-    #         u'postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan.',
-    # )
 
     shirt_size = models.CharField(
         max_length=8,
@@ -121,11 +90,6 @@ class SignupExtra(SignupExtraBase):
         "ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot "
         "huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.",
     )
-
-    # need_lodging = models.BooleanField(
-    #     default=False,
-    #     verbose_name=u'Tarvitsen lattiamajoitusta lauantain ja sunnuntain väliseksi yöksi',
-    # )
 
     prior_experience = models.TextField(
         blank=True,
