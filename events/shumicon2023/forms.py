@@ -18,62 +18,46 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             "shift_type",
-            "total_work",
-            # 'night_work',
-            # indented_without_label('construction'),
-            # indented_without_label('overseer'),
-            # "work_days",
-            # indented_without_label("want_certificate"),
-            # 'certificate_delivery_address',
+            "build_participation",
+            Fieldset(
+                _("Language skills"),
+                "native_language",
+                "native_language_other",
+                "known_language",
+                "known_language_other",
+            ),
             Fieldset(
                 "Lisätiedot",
-                # "shirt_size",
                 "special_diet",
                 "special_diet_other",
-                # indented_without_label('need_lodging'),
-                "prior_experience",
                 "shift_wishes",
-                "free_text",
+                "why_work",
+                "why_you",
             ),
         )
-
-        # self.fields["work_days"].help_text = "Minä päivinä olet halukas työskentelemään?"
 
     class Meta:
         model = SignupExtra
         fields = (
             "shift_type",
-            "total_work",
-            # 'night_work',
-            # 'construction',
-            # 'overseer',
-            # "work_days",
-            # "want_certificate",
-            # 'certificate_delivery_address',
-            # "shirt_size",
+            "build_participation",
+            "native_language",
+            "native_language_other",
+            "known_language",
+            "known_language_other",
             "special_diet",
             "special_diet_other",
-            # 'need_lodging',
-            "prior_experience",
             "shift_wishes",
-            "free_text",
+            "why_work",
+            "why_you",
         )
 
         widgets = dict(
+            native_language=forms.CheckboxSelectMultiple,
+            known_language=forms.CheckboxSelectMultiple,
             special_diet=forms.CheckboxSelectMultiple,
             work_days=forms.CheckboxSelectMultiple,
         )
-
-    # def clean_certificate_delivery_address(self):
-    #     want_certificate = self.cleaned_data['want_certificate']
-    #     certificate_delivery_address = self.cleaned_data['certificate_delivery_address']
-
-    #     if want_certificate and not certificate_delivery_address:
-    #         raise forms.ValidationError(u'Koska olet valinnut haluavasi työtodistuksen, on '
-    #             u'työtodistuksen toimitusosoite täytettävä.')
-
-    #     return certificate_delivery_address
-
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
@@ -106,7 +90,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_m2m_field_defaults(self):
         return dict(
-            job_categories=JobCategory.objects.filter(event__slug="yukicon2019", name="Conitea"),
+            job_categories=JobCategory.objects.filter(event__slug="shumicon2023", name="Vastaava"),
             # work_days=EventDay.objects.all(),
         )
 

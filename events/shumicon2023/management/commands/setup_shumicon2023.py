@@ -71,7 +71,7 @@ class Setup:
             Qualification,
             Survey,
         )
-        from ...models import SignupExtra, SpecialDiet
+        from ...models import SignupExtra, SpecialDiet, KnownLanguage, NativeLanguage
         from django.contrib.contenttypes.models import ContentType
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
@@ -120,35 +120,17 @@ class Setup:
 
         if not JobCategory.objects.filter(event=self.event).exists():
             for jc_data in [
-                ("Vastaava", "Tapahtuman järjestelytoimikunnan jäsen", [vastaava]),
+                ("vastaava", "Vastaava", "Tapahtuman järjestelytoimikunnan jäsen", [vastaava]),
+                #(
+                #    "jv",
+                #    "Järjestyksenvalvoja",
+                #    "Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
+                #    [tyovoima],
+                #),
                 (
-                    "jv",
-                    "Järjestyksenvalvoja",
-                    "Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
-                    [tyovoima],
-                ),
-                (
-                    "kasaus",
-                    "Kasaus ja purku",
-                    "Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työt lähinnä ennen ja jälkeen tapahtuman.",
-                    [tyovoima],
-                ),
-                (
-                    "logistiikka",
-                    "Logistiikka",
-                    "Tavaroiden roudaamista ja pakettiauton ajamista.",
-                    [tyovoima],
-                ),
-                (
-                    "lipunmyynti",
-                    "Lipunmyynti",
-                    "Pääsylippujen myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä.",
-                    [tyovoima],
-                ),
-                (
-                    "ohjelmajuoksija",
-                    "Ohjelmajuoksija",
-                    "Avustaa ohjelmanjärjestäjiä salitekniikan ja ohjelmanumeron käynnistämisessä.",
+                    "greenroom",
+                    "Greenroom",
+                    "Pidät huolta että meidän vapaaehtoisille riittää kahvia ja muuta naposteltavaa takahuoneessa. HUOM! Vaatii hygieniapassin",
                     [tyovoima],
                 ),
                 (
@@ -158,9 +140,27 @@ class Setup:
                     [tyovoima],
                 ),
                 (
-                    "tekniikka",
-                    "Tekniikka",
-                    "Tieto- ja/tai AV-tekniikan rakentamista, ylläpitoa ja purkamista.",
+                    "karaoke",
+                    "Karaoke",
+                    "Kun mieli tahtoo laulaa, on mentävä karaokeen. Tässä tehtävässä et niinkään pääse itse laulamaan vaan hoidat karaokepistettä muiden iloksi",
+                    [tyovoima],
+                ),
+                (
+                    "rannekkeenvaihto",
+                    "Rannekkeenvaihto",
+                    "Etukäteen ostettujen lippujen tarkistaminen ja vaihtaminen rannekkeisiin",
+                    [tyovoima],
+                ),
+                (
+                    "ohjelmajuoksija",
+                    "Ohjelmajuoksija",
+                    "Avustaa ohjelmanjärjestäjiä salitekniikan ja ohjelmanumeron käynnistämisessä.",
+                    [tyovoima],
+                ),
+                (
+                    "narikka",
+                    "Narikka",
+                    "Syksyllä on jo pimeää ja kylmää, joten ihmisillä on takit päällä. Tapahtuman ajaksi ne kannattaa jättää narikkaan säilöön.",
                     [tyovoima],
                 ),
             ]:
@@ -184,8 +184,39 @@ class Setup:
 
         labour_event_meta.create_groups()
 
-        for name in ["vastaava"]:
-            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+        for slug in ["vastaava"]:
+            JobCategory.objects.filter(event=self.event, slug=slug).update(public=False)
+
+        for jc_name, qualification_name in [
+            ("Järjestyksenvalvoja", "JV-kortti"),
+            ("Greenroom", "Hygieniapassi"),
+        ]:
+            try:
+                jc = JobCategory.objects.get(event=self.event, name=jc_name)
+                qual = Qualification.objects.get(name=qualification_name)
+                jc.required_qualifications.set([qual])
+            except JobCategory.DoesNotExist:
+                pass
+
+        for language in [
+            "Suomi",
+            "Ruotsi",
+            "Englanti",
+            "Venäjä",
+            "Somali",
+            "Muu, mikä?"
+        ]:
+            NativeLanguage.objects.get_or_create(name=language)
+
+        for language in [
+            "Suomi",
+            "Ruotsi",
+            "Englanti",
+            "Venäjä",
+            "Somali",
+            "Viittomakieli",
+        ]:
+            KnownLanguage.objects.get_or_create(name=language)
 
         for diet_name in [
             "Gluteeniton",
@@ -278,12 +309,10 @@ class Setup:
         have_categories = Category.objects.filter(event=self.event).exists()
         if not have_categories:
             for title, style in [
-                ("Animeohjelma", "anime"),
-                ("Cosplayohjelma", "cosplay"),
+                ("Puheohjelma", "color2"),
                 ("Miitti", "miitti"),
+                ("Työpaja", "color3"),
                 ("Muu ohjelma", "muu"),
-                ("Roolipeliohjelma", "rope"),
-                ("Peliohjelma", "color7"),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,

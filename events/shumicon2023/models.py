@@ -20,7 +20,6 @@ SHIRT_SIZES = [
     # (u'LF_XL', u'XL Ladyfit'),
 ]
 
-
 SHIFT_TYPE_CHOICES = [
     ("yksipitka", "Yksi pitkä vuoro"),
     ("montalyhytta", "Monta lyhyempää vuoroa"),
@@ -33,6 +32,11 @@ TOTAL_WORK_CHOICES = [
     ("yli10h", "Työn Sankari! Yli 10 tuntia!"),
 ]
 
+BUILD_PARTICIPATION_CHOICES = [
+    ("kasaus", "Pystyn osallistumaan vain kasaukseen"),
+    ("purku", "Pystyn osallistumaan vain purkuun"),
+    ("molemmat", "Pystyn osallistumaan molempiin"),
+]
 
 class SimpleChoice(models.Model):
     name = models.CharField(max_length=63)
@@ -47,8 +51,13 @@ class SimpleChoice(models.Model):
 class SpecialDiet(SimpleChoice):
     pass
 
-
 class EventDay(SimpleChoice):
+    pass
+
+class NativeLanguage(SimpleChoice):
+    pass
+
+class KnownLanguage(SimpleChoice):
     pass
 
 
@@ -67,6 +76,13 @@ class SignupExtra(SignupExtraBase):
         choices=TOTAL_WORK_CHOICES,
     )
 
+    build_participation = models.CharField(
+        max_length=15,
+        verbose_name="Kasaus ja purku",
+        help_text="Valitse pystytkö osallistumaan kasaukseen ja/tai purkuun",
+        choices=BUILD_PARTICIPATION_CHOICES,
+    )
+
     work_days = models.ManyToManyField(
         EventDay,
         verbose_name="Tapahtumapäivät",
@@ -81,6 +97,25 @@ class SignupExtra(SignupExtraBase):
         default="NO_SHIRT",
     )
 
+    native_language = models.ManyToManyField(
+        NativeLanguage,
+        verbose_name="Äidinkielesi",
+    )
+    native_language_other = models.TextField(
+        blank=True,
+        verbose_name="Muu äidinkieli",
+    )
+
+    known_language = models.ManyToManyField(
+        KnownLanguage,
+        blank=True,
+        verbose_name="Muut osaamasi kielet",
+    )
+    known_language_other = models.TextField(
+        blank=True,
+        verbose_name="Muu osaamasi kieli",
+    )
+
     special_diet = models.ManyToManyField(SpecialDiet, blank=True, verbose_name="Erikoisruokavalio")
 
     special_diet_other = models.TextField(
@@ -91,14 +126,6 @@ class SignupExtra(SignupExtraBase):
         "huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.",
     )
 
-    prior_experience = models.TextField(
-        blank=True,
-        verbose_name="Työkokemus",
-        help_text="Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista "
-        "tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä "
-        "hakemassasi tehtävässä.",
-    )
-
     shift_wishes = models.TextField(
         blank=True,
         verbose_name="Alustavat työvuorotoiveet",
@@ -106,11 +133,31 @@ class SignupExtra(SignupExtraBase):
         "osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.",
     )
 
-    free_text = models.TextField(
+    # prior_experience = models.TextField(
+    #     blank=True,
+    #     verbose_name="Työkokemus",
+    #     help_text="Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista "
+    #     "tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä "
+    #     "hakemassasi tehtävässä.",
+    # )
+
+    # free_text = models.TextField(
+    #     blank=True,
+    #     verbose_name="Vapaa alue",
+    #     help_text="Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole "
+    #     "omaa kenttää yllä, käytä tätä kenttää.",
+    # )
+
+    why_work = models.TextField(
         blank=True,
-        verbose_name="Vapaa alue",
-        help_text="Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole "
-        "omaa kenttää yllä, käytä tätä kenttää.",
+        verbose_name="Miksi haluaisit työskennellä Shumiconissa?",
+        help_text="Kerro mikä Shumiconissa viehättää ja miksi haluaisit tulla juuri tähän tapahtumaan",
+    )
+
+    why_you= models.TextField(
+        blank=True,
+        verbose_name="Miksi olisit hyvä valinta hakemaasi työtehtävään?",
+        help_text="Kerro miksi hait juuri kyseisiin tehtäviin ja miksi juuri sinut tulisi valita",
     )
 
     @classmethod
