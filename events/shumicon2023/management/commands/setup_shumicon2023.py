@@ -31,7 +31,7 @@ class Setup:
         from core.models import Organization, Venue, Event
 
         self.organization, unused = Organization.objects.get_or_create(
-            slug="paakaupunkiseudus-cosplay-ry",
+            slug="paakaupunkiseudun-cosplay-ry",
             defaults=dict(
                 name="Pääkaupunkiseudun Cosplay ry",
                 homepage_url="https://pkscosplay.wordpress.com/",
