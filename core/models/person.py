@@ -28,7 +28,6 @@ from .constants import (
 
 
 logger = logging.getLogger("kompassi")
-discord_handle_validator = RegexValidator(regex=r"^.{3,32}#[0-9]{4,6}$")
 
 
 def birth_date_validator(value):
@@ -61,13 +60,10 @@ class Person(models.Model):
     discord_handle = models.CharField(
         blank=True,
         max_length=63,  # actually 32 + 1 + 5 but to be safe
-        verbose_name=_("Discord handle"),
+        verbose_name=_("Discord username"),
         help_text=_(
-            "Full discord handle with number, ie. handle#0000. Events may use this to give you roles based on your participation."
+            "Your Discord username (NOTE: not display name). Events may use this to give you roles based on your participation."
         ),
-        validators=[
-            discord_handle_validator,
-        ],
     )
     birth_date = models.DateField(
         null=True,
@@ -286,7 +282,9 @@ class Person(models.Model):
         return self.email_verified_at is not None
 
     def get_normalized_phone_number(
-        self, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION, format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
+        self,
+        region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION,
+        format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT,
     ):
         """
         Returns the phone number of this Person in a normalized format. If the phone number is invalid,

@@ -360,11 +360,11 @@ msgstr "Lisätietoja löydät"
 msgid "event home page"
 msgstr "tapahtuman kotisivulta"
 
-msgid "Discord handle"
-msgstr "Discord-tunnus"
+msgid "Discord username"
+msgstr "Discord-käyttäjänimi"
 
-msgid "Full discord handle with number, ie. handle#0000. Events may use this to give you roles based on your participation."
-msgstr "Discord-tunnus täydessä muodossa, esim. handle#0000. Tapahtumat voivat käyttää tätä esimerkiksi antamaan sinulle rooleja Discord-serverillään."
+msgid "Your Discord username (NOTE: not display name). Events may use this to give you roles based on your participation."
+msgstr "Discord-käyttäjänimesi (HUOM: ei näyttönimi). Tapahtumat voivat käyttää tätä esimerkiksi antamaan sinulle rooleja Discord-serverillään."
 
 msgid "You are logged in. In order to use a password reset link, please log out first or use the Incognito/Private Browsing mode of your browser."
 msgstr "Olet kirjautunut sisään. Käyttääksesi salasanan palautuslinkkiä ole hyvä ja kirjaudu ensin ulos tai käytä selaimesi Incognito/Private Browsing -tilaa."
