@@ -489,17 +489,9 @@ class Setup:
 
         if not Tag.objects.filter(event=self.event).exists():
             for tag_title in [
-                "In English",
-                "Suunnattu alle 10 vuotiaille",
-                "Suunnattu alaikäisille",
-                "Suunnattu täysi-ikäisille",
-                "Vain täysi-ikäisille",
-                "Aloittelijaystävällinen",
-                "Teema: Ystävyys",
                 "Demo",
                 "Kilpailu/Turnaus",
                 "Kunniavieras",
-                "Historia",
                 "Aihe: Figupelit",
                 "Aihe: Korttipelit",
                 "Aihe: Larpit",
