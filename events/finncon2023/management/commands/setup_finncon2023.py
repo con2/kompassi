@@ -105,24 +105,29 @@ class Setup:
             )
 
         for category_name, category_style in [
-            ("Luento", "color1"),
-            ("Paneeli", "color2"),
-            ("Muu", "color3"),
+            ("Suomi", "color2"),
+            ("English", "color1"),
+            ("Svenska", "color3"),
+            ("Academic Program", "color5"),
+            ("Peruttu", "color4"),
         ]:
             Category.objects.get_or_create(
                 event=self.event,
                 title=category_name,
                 defaults=dict(
                     style=category_style,
+                    public=category_name != ("Muu", "Luento", "Paneeli"),
                 ),
             )
 
-        for tag_name, tag_style in []:
+        for tag_title, tag_class in [
+            ("Kunniavieras/Guest of Honor", "hilight"),
+        ]:
             Tag.objects.get_or_create(
                 event=self.event,
-                title=tag_name,
+                title=tag_title,
                 defaults=dict(
-                    style=tag_style,
+                    style=tag_class,
                 ),
             )
 
