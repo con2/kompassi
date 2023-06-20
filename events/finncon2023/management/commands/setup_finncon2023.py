@@ -116,7 +116,6 @@ class Setup:
                 title=category_name,
                 defaults=dict(
                     style=category_style,
-                    public=category_name != ("Muu", "Luento", "Paneeli"),
                 ),
             )
 
