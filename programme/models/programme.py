@@ -1426,7 +1426,7 @@ class Programme(models.Model, CsvExportMixin):
                 min_players=self.min_players,
                 max_players=self.max_players,
                 ropecon2018_characters=self.ropecon2018_characters if self.category.slug == "larp" else None,
-                ropecon2023_signuplist=self.ropecon2023_signuplist if self.category.slug == "pelitiski" else None,
+                ropecon2023_signuplist=self.ropecon2023_signuplist,
                 ropecon2023_workshop_fee=self.ropecon2023_workshop_fee,
                 identifier=f"p{self.id}",
                 tags=list(self.tags.values_list("slug", flat=True)),
