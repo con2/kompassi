@@ -378,7 +378,7 @@ class Setup:
             ),
             dict(
                 name="Lattiamajoitus 1 yö pe–la – Amurin koulutalo (ei sis. makuualustaa)",
-                description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.",
+                description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
                 limit_groups=[
                     limit_group("Majoitus Amuri pe-la", 235),
                 ],
@@ -391,7 +391,7 @@ class Setup:
             ),
             dict(
                 name="Lattiamajoitus 1 yö la–su – Amurin koulutalo (ei sis. makuualustaa)",
-                description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.",
+                description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
                 limit_groups=[
                     limit_group("Majoitus Amuri la-su", 235),
                 ],
