@@ -22,7 +22,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
@@ -195,7 +195,11 @@ class Setup:
 
         for url, link_title, link_group in [
             # ("TRACON2023", "Coniteawiki", "conitea"),
-            ("https://wiki.tracon.fi/collection/traconin-tyovoimawiki-Oinc2anefS", "Työvoimawiki", "accepted"),
+            (
+                "https://wiki.tracon.fi/collection/traconin-tyovoimawiki-Oinc2anefS",
+                "Työvoimawiki",
+                "accepted",
+            ),
             # ("INFO", "Infowiki", "info"),
         ]:
             InfoLink.objects.get_or_create(
@@ -265,7 +269,9 @@ class Setup:
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
+        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(
+            self.event, ["admins", "pos"]
+        )
 
         defaults = dict(
             admin_group=tickets_admin_group,
@@ -312,11 +318,11 @@ class Setup:
                 name="Viikonloppulippu",
                 description="Voimassa koko tapahtuman ajan perjantaista sunnuntaihin. Toimitetaan sähköpostitse PDF-tiedostona.",
                 limit_groups=[
-                    limit_group("Perjantain liput", 5150),
-                    limit_group("Lauantain liput", 5150),
-                    limit_group("Sunnuntain liput", 5150),
+                    limit_group("Perjantain liput", 5200),
+                    limit_group("Lauantain liput", 5200),
+                    limit_group("Sunnuntain liput", 5200),
                 ],
-                price_cents=3200,
+                price_cents=4500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -326,9 +332,9 @@ class Setup:
                 name="Perjantailippu",
                 description="Voimassa perjantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
                 limit_groups=[
-                    limit_group("Perjantain liput", 5150),
+                    limit_group("Perjantain liput", 5200),
                 ],
-                price_cents=1500,
+                price_cents=2000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -338,9 +344,9 @@ class Setup:
                 name="Lauantailippu",
                 description="Voimassa lauantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
                 limit_groups=[
-                    limit_group("Lauantain liput", 5150),
+                    limit_group("Lauantain liput", 5200),
                 ],
-                price_cents=2500,
+                price_cents=3500,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -350,9 +356,9 @@ class Setup:
                 name="Sunnuntailippu",
                 description="Voimassa sunnuntaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
                 limit_groups=[
-                    limit_group("Sunnuntain liput", 5150),
+                    limit_group("Sunnuntain liput", 5200),
                 ],
-                price_cents=2000,
+                price_cents=3000,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -362,7 +368,7 @@ class Setup:
                 name="K18 Iltabilelippu",
                 description="Voimassa Traconin iltabileiden ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
                 limit_groups=[
-                    limit_group("Iltabileliput", 1400),
+                    limit_group("Iltabileliput", 1300),
                 ],
                 price_cents=1500,
                 requires_shipping=False,
@@ -374,7 +380,7 @@ class Setup:
                 name="Lattiamajoitus 1 yö pe–la – Amurin koulutalo (ei sis. makuualustaa)",
                 description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.",
                 limit_groups=[
-                    limit_group("Majoitus Amuri pe-la", 350),
+                    limit_group("Majoitus Amuri pe-la", 235),
                 ],
                 price_cents=1000,
                 requires_shipping=False,
@@ -387,7 +393,7 @@ class Setup:
                 name="Lattiamajoitus 1 yö la–su – Amurin koulutalo (ei sis. makuualustaa)",
                 description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja.",
                 limit_groups=[
-                    limit_group("Majoitus Amuri la-su", 350),
+                    limit_group("Majoitus Amuri la-su", 235),
                 ],
                 price_cents=1000,
                 requires_shipping=False,
@@ -400,7 +406,9 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, unused = Product.objects.get_or_create(
+                event=self.event, name=name, defaults=product_info
+            )
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -428,7 +436,9 @@ class Setup:
 
         from ...models import TimeSlot, AccessibilityWarning
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
+            self.event, ["admins", "hosts"]
+        )
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -598,7 +608,9 @@ class Setup:
             self.event.labour_event_meta.get_group("accepted"),
             self.event.programme_event_meta.get_group("hosts"),
         ]:
-            GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+            GroupPrivilege.objects.get_or_create(
+                group=group, privilege=privilege, defaults=dict(event=self.event)
+            )
 
         cc_group = self.event.labour_event_meta.get_group("conitea")
 
@@ -688,7 +700,9 @@ class Setup:
                 title=coach_title,
                 defaults=dict(
                     room=Room.objects.get_or_create(event=self.event, name=room_title)[0],
-                    start_time=(saturday + timedelta(days=14)).replace(hour=hour, minute=0, second=0, tzinfo=self.tz),
+                    start_time=(saturday + timedelta(days=14)).replace(
+                        hour=hour, minute=0, second=0, tzinfo=self.tz
+                    ),
                     length=4 * 60,  # minutes
                     is_using_paikkala=True,
                     is_paikkala_public=False,
@@ -716,8 +730,12 @@ class Setup:
             "osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen "
             '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
         )
-        outward_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, outward_coach.id))
-        return_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, return_coach.id))
+        outward_coach_url = reverse(
+            "programme:paikkala_reservation_view", args=(self.event.slug, outward_coach.id)
+        )
+        return_coach_url = reverse(
+            "programme:paikkala_reservation_view", args=(self.event.slug, return_coach.id)
+        )
         kaatoilmo, unused = Survey.objects.get_or_create(
             event=self.event,
             slug="kaatoilmo",
