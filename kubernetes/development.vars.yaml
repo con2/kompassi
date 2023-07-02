@@ -1,25 +1,2 @@
 kompassi_secret_key: "not a very secret key"
 postgres_password: knownpassword
-
-macro_pod_affinity:
-  podAntiAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 20
-      podAffinityTerm:
-        labelSelector:
-          matchExpressions:
-          - key: component
-            operator: In
-            values:
-            - !Var param_component_name
-        topologyKey: "kubernetes.io/hostname"
-    # avoid nodes with label qb.con2.fi/spof-ingress: "true"
-    - weight: 50
-      podAffinityTerm:
-        labelSelector:
-          matchExpressions:
-          - key: qb.con2.fi/spof-ingress
-            operator: In
-            values:
-            - "true"
-        topologyKey: "kubernetes.io/hostname"
