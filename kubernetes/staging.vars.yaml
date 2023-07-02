@@ -38,7 +38,7 @@ minio_endpoint_url: https://minio.con2.fi
 macro_pod_affinity:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 20
+    - weight: 50
       podAffinityTerm:
         labelSelector:
           matchExpressions:
@@ -48,7 +48,7 @@ macro_pod_affinity:
             - !Var param_component_name
         topologyKey: "kubernetes.io/hostname"
     # avoid nodes with label qb.con2.fi/spof-ingress: "true"
-    - weight: 50
+    - weight: 20
       podAffinityTerm:
         labelSelector:
           matchExpressions:
