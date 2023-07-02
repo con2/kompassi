@@ -19,7 +19,7 @@ macro_pod_affinity:
         labelSelector:
           matchExpressions:
           - key: qb.con2.fi/spof-ingress
-            operator: NotIn
+            operator: In
             values:
             - "true"
         topologyKey: "kubernetes.io/hostname"
