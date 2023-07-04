@@ -121,12 +121,12 @@ class Setup:
         if not JobCategory.objects.filter(event=self.event).exists():
             for jc_data in [
                 ("vastaava", "Vastaava", "Tapahtuman järjestelytoimikunnan jäsen", [vastaava]),
-                #(
-                #    "jv",
-                #    "Järjestyksenvalvoja",
-                #    "Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
-                #    [tyovoima],
-                #),
+                (
+                    "jv",
+                    "Järjestyksenvalvoja",
+                    "Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
+                    [tyovoima],
+                ),
                 (
                     "greenroom",
                     "Greenroom",
@@ -136,7 +136,7 @@ class Setup:
                 (
                     "info",
                     "Info",
-                    "Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.",
+                    "Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä. HUOM! Hakijan täytyy olla 18-vuotias ja osata suomen lisäksi vähintään englantia.",
                     [tyovoima],
                 ),
                 (
@@ -161,6 +161,24 @@ class Setup:
                     "narikka",
                     "Narikka",
                     "Syksyllä on jo pimeää ja kylmää, joten ihmisillä on takit päällä. Tapahtuman ajaksi ne kannattaa jättää narikkaan säilöön.",
+                    [tyovoima],
+                ),
+                (
+                    "siivous",
+                    "Siivous",
+                    "Siivous huolehtii tapahtuma-alueen viihtyisyydestä ja huollosta: tyhjennät roska-astioita ja keräät irtoroskia tapahtuma-alueelta, sekä tarvittaessa täytät vesipisteitä.",
+                    [tyovoima],
+                ),
+                (
+                    "taidekuja",
+                    "Taidekuja",
+                    "Taidekujan vänkärit tekevät säännöllisesti tarkastuskäyntejä taidekujalle esim. jonotusruuhkien välttämiseksi. Lisäksi he pitävät huolta taidekujalaisista ja tarvittaessa tauottavat näitä.",
+                    [tyovoima],
+                ),
+                 (
+                    "yleinen",
+                    "Yleisvänkäri",
+                    "Olet conissa niinsanottu joka puun höylä, eli tarvittaessa olet kutsuttavissa auttamaan muita tiimejä erilaisissa tehtävissä, kuten mm. vesipisteiden täytössä tai ruuhka-ajan narikassa.",
                     [tyovoima],
                 ),
             ]:
