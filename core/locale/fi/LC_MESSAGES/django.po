@@ -132,7 +132,7 @@ msgstr "Viralliset etunimet"
 
 #: forms.py
 msgid "Old password"
-msgstr "Vanha salasanat"
+msgstr "Vanha salasana"
 
 #: templates/core_organization_boxen.pug
 msgid "Organizations"

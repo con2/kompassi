@@ -14,10 +14,7 @@ from event_log.utils import emit
 
 from ..models import Person
 from ..forms import PasswordForm, PersonForm
-from ..utils import (
-    initialize_form,
-    change_user_password,
-)
+from ..utils import initialize_form
 from ..helpers import person_required
 
 
@@ -65,24 +62,26 @@ def core_profile_view(request):
 @require_http_methods(["GET", "HEAD", "POST"])
 def core_password_view(request):
     form = initialize_form(PasswordForm, request, the_request=request)
+    user = request.user
 
     if request.method == "POST":
         if form.is_valid():
             old_password = form.cleaned_data["old_password"]
             new_password = form.cleaned_data["new_password"]
 
-            try:
-                change_user_password(request.user, old_password=old_password, new_password=new_password)
-            except RuntimeError:
-                logger.exception("Failed to change password")
-                messages.error(request, "Salasanan vaihto epäonnistui. Ole hyvä ja yritä myöhemmin uudelleen.")
+            if not user.check_password(old_password):
+                messages.error(request, "Nykyinen salasana ei täsmää.")
                 return redirect("core_password_view")
-            else:
-                messages.success(
-                    request, "Salasanasi on vaihdettu. Voit nyt kirjautua uudestaan sisään uudella salasanallasi."
-                )
-                emit("core.password.changed", request=request)
-                return redirect("core_frontpage_view")
+
+            user.set_password(new_password)
+            user.save()
+
+            messages.success(
+                request,
+                "Salasanasi on vaihdettu. Voit nyt kirjautua uudestaan sisään uudella salasanallasi.",
+            )
+            emit("core.password.changed", request=request)
+            return redirect("core_frontpage_view")
         else:
             messages.error(request, "Ole hyvä ja korjaa virheelliset kentät.")
 

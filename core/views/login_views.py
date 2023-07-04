@@ -66,18 +66,6 @@ def do_login(request, user, password=None, next="core_frontpage_view"):
             return redirect("core_frontpage_view")
 
     login(request, user)
-
-    # Most users do not have up to date passwords in Crowd. Fix that.
-    # FIXME Commented out to explore possible race condition in Crowd between Kompassi & Atlasso
-
-    # if password and 'crowd_integration' in settings.INSTALLED_APPS:
-    #     if 'background_tasks' in settings.INSTALLED_APPS:
-    #         from crowd_integration.tasks import change_user_password
-    #         change_user_password.delay(user.pk, password)
-    #     else:
-    #         from crowd_integration.utils import change_user_password
-    #         change_user_password(user, password)
-
     remind_email_verification_if_needed(request, next)
 
     return redirect(next)

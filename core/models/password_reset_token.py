@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.template.loader import render_to_string
 
-from ..utils import change_user_password, url
+from ..utils import url
 from .one_time_code import OneTimeCode
 
 
@@ -31,5 +31,5 @@ class PasswordResetToken(OneTimeCode):
         code.mark_used()
 
         user = code.person.user
-
-        change_user_password(user, new_password=new_password)
+        user.set_password(new_password)
+        user.save()
