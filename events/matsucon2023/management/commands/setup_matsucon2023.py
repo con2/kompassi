@@ -29,7 +29,7 @@ class Setup:
         self.setup_labour()
         self.setup_programme()
         self.setup_badges()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_intra()
 
     def setup_core(self):
@@ -334,11 +334,11 @@ class Setup:
         for product_info in [
             dict(
                 name="Viikonloppulippu",
-                description="Viikonloppulippu oikeuttaa sisäänpääsyn molempiin Matsuconin päiviin (10.–11.12.2023). Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
+                description="Viikonloppulippu oikeuttaa sisäänpääsyn molempiin Matsuconin päiviin. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Viikonloppuliput", 450),
+                    limit_group("Viikonloppuliput", 550),
                 ],
-                price_cents=1500,
+                price_cents=1800,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -346,11 +346,11 @@ class Setup:
             ),
             dict(
                 name="Lauantailippu",
-                description="Lauantailippu oikeuttaa sisäänpääsyyn Matsuconin ensimmäiseen päivään (la 10.12.2023). Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
+                description="Lauantailippu oikeuttaa sisäänpääsyyn Matsuconin ensimmäiseen päivään. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Lauantailiput", 200),
+                    limit_group("Lauantailiput", 300),
                 ],
-                price_cents=1000,
+                price_cents=1200,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -358,11 +358,11 @@ class Setup:
             ),
             dict(
                 name="Sunnuntailippu",
-                description="Sunnuntailippu oikeuttaa sisäänpääsyyn Matsuconin toiseen päivään (su 11.12.2023). Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
+                description="Sunnuntailippu oikeuttaa sisäänpääsyyn Matsuconin toiseen päivään. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
                     limit_group("Sunnuntailiput", 150),
                 ],
-                price_cents=1000,
+                price_cents=1200,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
