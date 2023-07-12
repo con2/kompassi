@@ -54,7 +54,7 @@ class Setup:
                 homepage_url="https://shumicon.fi",
                 organization=self.organization,
                 start_time=datetime(2023, 10, 21, 10, 0, tzinfo=self.tz),
-                end_time=datetime(2023, 10, 22, 19, 0, tzinfo=self.tz),
+                end_time=datetime(2023, 10, 22, 18, 0, tzinfo=self.tz),
                 venue=self.venue,
             ),
         )
@@ -81,7 +81,7 @@ class Setup:
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
             work_begins=self.event.start_time.replace(hour=8, minute=0, tzinfo=self.tz),
-            work_ends=self.event.end_time.replace(hour=22, minute=0, tzinfo=self.tz),
+            work_ends=self.event.end_time.replace(hour=20, minute=0, tzinfo=self.tz),
             admin_group=labour_admin_group,
             contact_email="Shumicon <tyovoima@shumicon.fi>",
         )
@@ -118,69 +118,111 @@ class Setup:
         tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
         vastaava = PersonnelClass.objects.get(event=self.event, slug="vastaava")
 
-        if not JobCategory.objects.filter(event=self.event).exists():
-            for jc_data in [
-                ("vastaava", "Vastaava", "Tapahtuman järjestelytoimikunnan jäsen", [vastaava]),
-                #(
-                #    "jv",
-                #    "Järjestyksenvalvoja",
-                #    "Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
-                #    [tyovoima],
-                #),
+        # if not JobCategory.objects.filter(event=self.event).exists():
+        for jc_data in [
+            ("vastaava", "Vastaava", "Tapahtuman järjestelytoimikunnan jäsen", [vastaava]),
+            (
+                "cosplay",
+                "Cosplayvänkäri",
+                "Cosplayvänkäri työskentelee tapahtumassa backstagella cosplaykisojen parissa. Työtehtäviin kuuluu mm. cosplaykisaajien avustaminen sekä ohjeistus, tuomarointien aikataulujen seuraaminen ja backstagen yleisestä viihtyvyydestä huolehtiminen. HUOM! Työvuoro sijoittuu täysin lauantaipäivälle.",
+                [tyovoima],
+            ),    
+            (
+                "erikoinen",
+                "Erikoistehtävä",
+                "Haethan erikoistehtävää vain, jos sinulle on erikseen näin ohjeistettu. Selvennäthän vapaatekstikenttään lopussa, mikä on hakemasi tehtävä.",
+                [tyovoima],
+            ),  
+            (
+                "greenroom",
+                "Greenroom",
+                "Greenroomissa pidät huolta työvoimalle tarkoitetuista tarjoiluista, täydennät niitä tarpeen mukaan ja huolehdit, ettei mitään puutu. Pidät myös huolen, että greenissä on mahdollisimman siistiä. HUOM! Työtehtävä vaatii hygieniapassin.",
+                [tyovoima],
+            ),
+            (
+                "hairintayhdyshenkilo",
+                "Häirintäyhdyshenkilö",
+                "Häirintäyhdyshenkilöt ovat kävijöiden tavoitettavissa koko tapahtuman ajan ja auttavat ratkaisemaan mahdollisia häirintätilanteita. Et tarvitse tehtävään häirintäyhdyshenkilökoulutusta, mutta se katsotaan eduksi. Voit työskennellä häirintäyhdyshenkilönä muiden tehtävien ohella. Häirintäyhdyshenkilön toiminta tapahtumassa on ehdottoman luottamuksellista.",
+                [tyovoima],
+            ),
+            (
+                "info",
+                "Info",
+                "Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä. HUOM! Hakijan täytyy olla 18-vuotias ja osata suomen lisäksi vähintään englantia.",
+                [tyovoima],
+            ),
+            (
+                "jv",
+                "Järjestyksenvalvonta",
+                "Järjestyksenvalvojat pitävät huolen kävijöiden turvallisuudesta tapahtuman aikana. Tehtävä edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
+                [tyovoima],
+            ),
+            (
+                "karaoke",
+                "Karaoke",
+                "Kun mieli tahtoo laulaa, on mentävä karaokeen. Tässä tehtävässä et niinkään pääse itse laulamaan vaan hoidat karaokepistettä muiden iloksi",
+                [tyovoima],
+            ),
+            (
+                "rannekkeenvaihto",
+                "Lipunmyynti- ja vaihto",
+                "Etukäteen ostettujen lippujen tarkistaminen ja vaihtaminen rannekkeisiin. Rahaa käsiteltäessä vaaditaan 18 vuoden ikää.",
+                [tyovoima],
+            ),
                 (
-                    "greenroom",
-                    "Greenroom",
-                    "Pidät huolta että meidän vapaaehtoisille riittää kahvia ja muuta naposteltavaa takahuoneessa. HUOM! Vaatii hygieniapassin",
-                    [tyovoima],
-                ),
+                "narikka",
+                "Narikka",
+                "Syksyllä on jo pimeää ja kylmää, joten ihmisillä on takit päällä. Tapahtuman ajaksi ne kannattaa jättää narikkaan säilöön.",
+                [tyovoima],
+            ),
+            (
+                "ohjelmajuoksija",
+                "Ohjelmajuoksija",
+                "Ohjelmavänkärit tekevät tarkistuskierroksia ohjelmapisteissä ympäri tapahtumapaikkaa ja avustavat ohjelmanjärjestäjiä esim. salitekniikan käynnistämisessä. Aikaisemmasta tekniikkatietämyksestä on hyötyä tehtävässä.",
+                [tyovoima],
+            ),
+            (
+                "siivous",
+                "Siivous",
+                "Siivous huolehtii tapahtuma-alueen viihtyisyydestä ja huollosta: tyhjennät roska-astioita ja keräät irtoroskia tapahtuma-alueelta, sekä tarvittaessa täytät vesipisteitä.",
+                [tyovoima],
+            ),
+            (
+                "taidekuja",
+                "Taidekuja",
+                "Taidekujan vänkärit tekevät säännöllisesti tarkastuskäyntejä taidekujalle esim. jonotusruuhkien välttämiseksi. Lisäksi he pitävät huolta taidekujalaisista ja tarvittaessa tauottavat näitä.",
+                [tyovoima],
+            ),
                 (
-                    "info",
-                    "Info",
-                    "Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.",
-                    [tyovoima],
-                ),
+                "valokuvaus",
+                "Valokuvaus",
+                "Valokuvaajat ottavat kuvia tapahtumapaikalla kävijöistä, ohjelmista sekä muista mielenkiintoisista jutuista! Huom. kuvaaja sitoutuu editoimaan kuvia myös tapahtuman aikana.",
+                [tyovoima],
+            ),
                 (
-                    "karaoke",
-                    "Karaoke",
-                    "Kun mieli tahtoo laulaa, on mentävä karaokeen. Tässä tehtävässä et niinkään pääse itse laulamaan vaan hoidat karaokepistettä muiden iloksi",
-                    [tyovoima],
-                ),
-                (
-                    "rannekkeenvaihto",
-                    "Rannekkeenvaihto",
-                    "Etukäteen ostettujen lippujen tarkistaminen ja vaihtaminen rannekkeisiin",
-                    [tyovoima],
-                ),
-                (
-                    "ohjelmajuoksija",
-                    "Ohjelmajuoksija",
-                    "Avustaa ohjelmanjärjestäjiä salitekniikan ja ohjelmanumeron käynnistämisessä.",
-                    [tyovoima],
-                ),
-                (
-                    "narikka",
-                    "Narikka",
-                    "Syksyllä on jo pimeää ja kylmää, joten ihmisillä on takit päällä. Tapahtuman ajaksi ne kannattaa jättää narikkaan säilöön.",
-                    [tyovoima],
-                ),
-            ]:
-                if len(jc_data) == 3:
-                    name, description, pcs = jc_data
-                    slug = slugify(name)
-                elif len(jc_data) == 4:
-                    slug, name, description, pcs = jc_data
+                "yleinen",
+                "Yleisvänkäri",
+                "Olet conissa niinsanottu joka puun höylä, eli tarvittaessa olet kutsuttavissa auttamaan muita tiimejä erilaisissa tehtävissä, kuten mm. vesipisteiden täytössä tai ruuhka-ajan narikassa.",
+                [tyovoima],
+            ),
+        ]:
+            if len(jc_data) == 3:
+                name, description, pcs = jc_data
+                slug = slugify(name)
+            elif len(jc_data) == 4:
+                slug, name, description, pcs = jc_data
 
-                job_category, created = JobCategory.objects.get_or_create(
-                    event=self.event,
-                    slug=slug,
-                    defaults=dict(
-                        name=name,
-                        description=description,
-                    ),
-                )
+            job_category, created = JobCategory.objects.get_or_create(
+                event=self.event,
+                slug=slug,
+                defaults=dict(
+                    name=name,
+                    description=description,
+                ),
+            )
 
-                if created:
-                    job_category.personnel_classes.set(pcs)
+            if created:
+                job_category.personnel_classes.set(pcs)
 
         labour_event_meta.create_groups()
 

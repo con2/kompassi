@@ -33,6 +33,7 @@ TOTAL_WORK_CHOICES = [
 ]
 
 BUILD_PARTICIPATION_CHOICES = [
+    ("ei", "En pysty osallistumaan kumpaankaan"),
     ("kasaus", "Pystyn osallistumaan vain kasaukseen"),
     ("purku", "Pystyn osallistumaan vain purkuun"),
     ("molemmat", "Pystyn osallistumaan molempiin"),
@@ -67,6 +68,11 @@ class SignupExtra(SignupExtraBase):
         verbose_name="Toivottu työvuoron pituus",
         help_text="Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?",
         choices=SHIFT_TYPE_CHOICES,
+    )
+
+    shift_leader = models.BooleanField(
+        default=False,
+        verbose_name="Oletko kiinnostunut vuorovastaavan tehtävistä? Vuorovastaava koordinoi vuoron aikana tehtäviä ja tauotuksia.",
     )
 
     total_work = models.CharField(
