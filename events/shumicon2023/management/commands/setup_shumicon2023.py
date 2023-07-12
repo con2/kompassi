@@ -122,21 +122,39 @@ class Setup:
             for jc_data in [
                 ("vastaava", "Vastaava", "Tapahtuman järjestelytoimikunnan jäsen", [vastaava]),
                 (
-                    "jv",
-                    "Järjestyksenvalvoja",
-                    "Kävijöiden turvallisuuden valvominen conipaikalla. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
+                    "cosplay",
+                    "Cosplayvänkäri",
+                    "Cosplayvänkäri työskentelee tapahtumassa backstagella cosplaykisojen parissa. Työtehtäviin kuuluu mm. cosplaykisaajien avustaminen sekä ohjeistus, tuomarointien aikataulujen seuraaminen ja backstagen yleisestä viihtyvyydestä huolehtiminen. HUOM! Työvuoro sijoittuu täysin lauantaipäivälle.",
                     [tyovoima],
-                ),
+                ),    
+                (
+                    "erikoinen",
+                    "Erikoistehtävä",
+                    "Haethan erikoistehtävää vain, jos sinulle on erikseen näin ohjeistettu. Selvennäthän vapaatekstikenttään lopussa, mikä on hakemasi tehtävä.",
+                    [tyovoima],
+                ),  
                 (
                     "greenroom",
                     "Greenroom",
-                    "Pidät huolta että meidän vapaaehtoisille riittää kahvia ja muuta naposteltavaa takahuoneessa. HUOM! Vaatii hygieniapassin",
+                    "Greenroomissa pidät huolta työvoimalle tarkoitetuista tarjoiluista, täydennät niitä tarpeen mukaan ja huolehdit, ettei mitään puutu. Pidät myös huolen, että greenissä on mahdollisimman siistiä. HUOM! Työtehtävä vaatii hygieniapassin.",
+                    [tyovoima],
+                ),
+                (
+                    "hary",
+                    "Häirintäyhdyshenkilö",
+                    "Häirintäyhdyshenkilöt ovat kävijöiden tavoitettavissa koko tapahtuman ajan ja auttavat ratkaisemaan mahdollisia häirintätilanteita. Et tarvitse tehtävään häirintäyhdyshenkilökoulutusta, mutta se katsotaan eduksi. Voit työskennellä häirintäyhdyshenkilönä muiden tehtävien ohella. Häirintäyhdyshenkilön toiminta tapahtumassa on ehdottoman luottamuksellista.",
                     [tyovoima],
                 ),
                 (
                     "info",
                     "Info",
                     "Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä. HUOM! Hakijan täytyy olla 18-vuotias ja osata suomen lisäksi vähintään englantia.",
+                    [tyovoima],
+                ),
+                (
+                    "jv",
+                    "Järjestyksenvalvonta",
+                    "Järjestyksenvalvojat pitävät huolen kävijöiden turvallisuudesta tapahtuman aikana. Tehtävä edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
                     [tyovoima],
                 ),
                 (
@@ -147,20 +165,20 @@ class Setup:
                 ),
                 (
                     "rannekkeenvaihto",
-                    "Rannekkeenvaihto",
-                    "Etukäteen ostettujen lippujen tarkistaminen ja vaihtaminen rannekkeisiin",
+                    "Lipunmyynti- ja vaihto",
+                    "Etukäteen ostettujen lippujen tarkistaminen ja vaihtaminen rannekkeisiin. Rahaa käsiteltäessä vaaditaan 18 vuoden ikää.",
+                    [tyovoima],
+                ),
+                 (
+                    "narikka",
+                    "Narikka",
+                    "Syksyllä on jo pimeää ja kylmää, joten ihmisillä on takit päällä. Tapahtuman ajaksi ne kannattaa jättää narikkaan säilöön.",
                     [tyovoima],
                 ),
                 (
                     "ohjelmajuoksija",
                     "Ohjelmajuoksija",
-                    "Avustaa ohjelmanjärjestäjiä salitekniikan ja ohjelmanumeron käynnistämisessä.",
-                    [tyovoima],
-                ),
-                (
-                    "narikka",
-                    "Narikka",
-                    "Syksyllä on jo pimeää ja kylmää, joten ihmisillä on takit päällä. Tapahtuman ajaksi ne kannattaa jättää narikkaan säilöön.",
+                    "Ohjelmavänkärit tekevät tarkistuskierroksia ohjelmapisteissä ympäri tapahtumapaikkaa ja avustavat ohjelmanjärjestäjiä esim. salitekniikan käynnistämisessä. Aikaisemmasta tekniikkatietämyksestä on hyötyä tehtävässä.",
                     [tyovoima],
                 ),
                 (
@@ -173,6 +191,12 @@ class Setup:
                     "taidekuja",
                     "Taidekuja",
                     "Taidekujan vänkärit tekevät säännöllisesti tarkastuskäyntejä taidekujalle esim. jonotusruuhkien välttämiseksi. Lisäksi he pitävät huolta taidekujalaisista ja tarvittaessa tauottavat näitä.",
+                    [tyovoima],
+                ),
+                  (
+                    "valokuvaus",
+                    "Valokuvaus",
+                    "Valokuvaajat ottavat kuvia tapahtumapaikalla kävijöistä, ohjelmista sekä muista mielenkiintoisista jutuista! Huom. kuvaaja sitoutuu editoimaan kuvia myös tapahtuman aikana.",
                     [tyovoima],
                 ),
                  (
