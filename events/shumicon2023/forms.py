@@ -17,6 +17,7 @@ class SignupExtraForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
+            "shift_leader",
             "shift_type",
             "build_participation",
             Fieldset(
@@ -40,6 +41,7 @@ class SignupExtraForm(forms.ModelForm):
         model = SignupExtra
         fields = (
             "shift_type",
+            "shift_leader",
             "build_participation",
             "native_language",
             "native_language_other",
@@ -54,6 +56,7 @@ class SignupExtraForm(forms.ModelForm):
 
         widgets = dict(
             native_language=forms.CheckboxSelectMultiple,
+            native_language_other=forms.TextInput,
             known_language=forms.CheckboxSelectMultiple,
             special_diet=forms.CheckboxSelectMultiple,
             work_days=forms.CheckboxSelectMultiple,
@@ -133,21 +136,37 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.layout = Layout(
             Fieldset(
                 "Lisätiedot",
-                "shirt_size",
+                "build_participation",
+                #"shirt_size",
                 "special_diet",
                 "special_diet_other",
+            Fieldset(
+                _("Language skills"),
+                "native_language",
+                "native_language_other",
+                "known_language",
+                "known_language_other",
+            ),
             ),
         )
 
     class Meta:
         model = SignupExtra
         fields = (
-            "shirt_size",
+            #"shirt_size",
+            "build_participation",
+            "native_language",
+            "native_language_other",
+            "known_language",
+            "known_language_other",
             "special_diet",
             "special_diet_other",
         )
 
         widgets = dict(
+            native_language=forms.CheckboxSelectMultiple,
+            native_language_other=forms.TextInput,
+            known_language=forms.CheckboxSelectMultiple,
             special_diet=forms.CheckboxSelectMultiple,
         )
 
