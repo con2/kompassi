@@ -5,6 +5,8 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import gettext_lazy as _
 
+from event_log.utils import emit
+
 from ..models import (
     PasswordResetError,
     PasswordResetToken,
@@ -35,7 +37,7 @@ def core_password_reset_view(request, code):
     if request.method == "POST":
         if form.is_valid():
             try:
-                PasswordResetToken.reset_password(code, form.cleaned_data["new_password"])
+                user = PasswordResetToken.reset_password(code, form.cleaned_data["new_password"])
             except PasswordResetError as e:
                 messages.error(
                     request,
@@ -43,9 +45,13 @@ def core_password_reset_view(request, code):
                     "ottaa yhteyttä osoitteeseen {settings.DEFAULT_FROM_EMAIL}.".format(settings=settings),
                 )
                 return redirect("core_frontpage_view")
+            else:
+                emit("core.password.changed", request=request, created_by=user)
 
-            messages.success(request, "Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi.")
-            return redirect("core_login_view")
+                messages.success(
+                    request, "Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi."
+                )
+                return redirect("core_login_view")
         else:
             messages.error(request, "Ole hyvä ja korjaa lomakkeen virheet.")
 
@@ -78,7 +84,9 @@ def core_password_reset_request_view(request):
             else:
                 person.setup_password_reset(request)
 
-            messages.success(request, "Ohjeet salasanan vaihtamiseksi on lähetetty antamaasi sähköpostiosoitteeseen.")
+            messages.success(
+                request, "Ohjeet salasanan vaihtamiseksi on lähetetty antamaasi sähköpostiosoitteeseen."
+            )
         else:
             messages.error(request, "Ole hyvä ja korjaa lomakkeen virheet.")
 
