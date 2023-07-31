@@ -4,6 +4,25 @@ block title
 
 block admin_content
   .panel.panel-default
+    .panel-heading: strong Lippujen lunastustilanne
+    table.table.table-striped
+      thead
+        tr
+          th Tuote
+          th Lunastettu
+          th Lunastamatta
+          th Yhteensä
+      tbody
+        for product_handout in product_handouts
+          tr
+            th {{ product_handout.title }}
+            td {{ product_handout.handed_out_count }}
+            td {{ product_handout.not_handed_out_count }}
+            td {{ product_handout.total_count }}
+
+
+
+  .panel.panel-default
     .panel-heading: strong Lippujen lunastus tunneittain
     table.table.table-striped
       thead
