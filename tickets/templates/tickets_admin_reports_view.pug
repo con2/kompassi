@@ -15,7 +15,7 @@ block admin_content
       tbody
         for product_handout in product_handouts
           tr
-            th {{ product_handout.title }}
+            td {{ product_handout.title }}
             td {{ product_handout.handed_out_count }}
             td {{ product_handout.not_handed_out_count }}
             td {{ product_handout.total_count }}
