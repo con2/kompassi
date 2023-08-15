@@ -23,6 +23,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_programme()
+        self.setup_tickets()
         self.setup_badges()
         self.setup_intra()
 
@@ -266,6 +267,76 @@ class Setup:
                 order=30,
             ),
         )
+
+    def setup_tickets(self):
+        from tickets.models import TicketsEventMeta, LimitGroup, Product
+
+        (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
+
+        defaults = dict(
+            admin_group=tickets_admin_group,
+            due_days=14,
+            shipping_and_handling_cents=0,
+            reference_number_template="2023{:05d}",
+            contact_email="Cosvision <info@cosvision.fi>",
+            ticket_free_text="Tämä on sähköinen lippusi Cosvision 2023 -tapahtumaan. Voit tulostaa tämän lipun tai\n"
+            "näyttää sen älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole\n"
+            "mahdollista, ota ylös kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva\n"
+            "Kissakoodi ja ilmoita se lipunvaihtopisteessä.\n\n"
+            "Tervetuloa Cosvisioniin!",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Cosvision 2023 -tapahtumaan!</h2>"
+            "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+            "<p>Lue lisää tapahtumasta <a href='http://popcult.fi/nights-2023'>Cosvision 2023 -tapahtuman kotisivuilta</a>.</p>",
+        )
+
+        if self.test:
+            t = now()
+            defaults.update(
+                ticket_sales_starts=t - timedelta(days=60),
+                ticket_sales_ends=t + timedelta(days=60),
+            )
+
+        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+
+        def limit_group(description, limit):
+            limit_group, unused = LimitGroup.objects.get_or_create(
+                event=self.event,
+                description=description,
+                defaults=dict(limit=limit),
+            )
+
+            return limit_group
+
+        def ordering():
+            ordering.counter += 10
+            return ordering.counter
+
+        ordering.counter = 0
+
+        for product_info in [
+            dict(
+                name="Päivälippu",
+                description="Sisältää pääsylipun tapahtuma-alueelle ja oikeuden osallistua tapahtumassa järjestettävään ohjelmaan. Lippu toimitetaan pdf-tiedostona, joka vaihdetaan tapahtumassa rannekkeeseen.",
+                limit_groups=[
+                    limit_group("Pääsyliput", 700),
+                ],
+                price_cents=2150,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
+        ]:
+            name = product_info.pop("name")
+            limit_groups = product_info.pop("limit_groups")
+
+            product, unused = Product.objects.get_or_create(
+                event=self.event, name=name, defaults=product_info
+            )
+
+            if not product.limit_groups.exists():
+                product.limit_groups.set(limit_groups)
+                product.save()
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
