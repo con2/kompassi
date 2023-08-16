@@ -315,7 +315,7 @@ class Setup:
 
         for product_info in [
             dict(
-                name="Päivälippu",
+                name="Päivälippu – Cosvision (2023)",
                 description="Sisältää pääsylipun tapahtuma-alueelle ja oikeuden osallistua tapahtumassa järjestettävään ohjelmaan. Lippu toimitetaan pdf-tiedostona, joka vaihdetaan tapahtumassa rannekkeeseen.",
                 limit_groups=[
                     limit_group("Pääsyliput", 700),
