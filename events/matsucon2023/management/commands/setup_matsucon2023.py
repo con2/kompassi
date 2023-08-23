@@ -368,6 +368,18 @@ class Setup:
                 available=True,
                 ordering=ordering(),
             ),
+            dict(
+                name="Iltabilelippu",
+                description="Iltabilelippu oikeuttaa sisäänpääsyyn Matsuconin iltabileisiin tapahtuman lauantai-iltana.",
+                limit_groups=[
+                    limit_group("Iltabileliput", 120),
+                ],
+                price_cents=1000,
+                requires_shipping=False,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
             # dict(
             #     name="Lattiamajoitus",
             #     description="Lattiamajoitus lauantain ja sunnuntain väliselle yölle tapahtumapaikalla.",
