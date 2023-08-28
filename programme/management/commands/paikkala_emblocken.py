@@ -1,13 +1,15 @@
-from datetime import datetime, timezone, timedelta
+import logging
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from programme.models import Programme
-from paikkala.models import Program as PaikkalaProgram, Zone as PaikkalaZone
-from paikkala.excs import NoCapacity
+from paikkala.models import Program as PaikkalaProgram, Zone as PaikkalaZone, PerProgramBlock
 from core.models import Event
-from programme.models.room import Room
+from core.utils import log_get_or_create
+
+
+logger = logging.getLogger("kompassi")
 
 
 class NotReally(RuntimeError):
@@ -15,6 +17,10 @@ class NotReally(RuntimeError):
 
 
 class Command(BaseCommand):
+    """
+    Example: python manage.py paikkala_emblocken --event-slug tracon2023 --programme-title "AMV-luonnonvoimat" --zone-name "Etuparveke oikea (3. krs)" "Etuparveke vasen (3. krs)" "Takaparveke oikea (3. krs)" "Takaparveke vasen (3. krs)" --really
+    """
+
     help = "Block (reserve) all seats in a zone for a programme"
 
     def add_arguments(self, parser):
@@ -52,32 +58,15 @@ class Command(BaseCommand):
                 kompassi_programme=kompassi_programme
             )
 
-            # sudo make the program reservable
-            require_contact, require_user, reservation_start, reservation_end = (
-                paikkala_program.require_contact,
-                paikkala_program.require_user,
-                paikkala_program.reservation_start,
-                paikkala_program.reservation_end,
-            )
-            paikkala_program.require_contact = False
-            paikkala_program.require_user = False
-            paikkala_program.reservation_start = datetime.now(timezone.utc)
-            paikkala_program.reservation_end = datetime.now(timezone.utc) + timedelta(days=1)
-            paikkala_program.save()
-
-            print(options["zone_name"])
             for zone_name in options["zone_name"]:
                 zone = PaikkalaZone.objects.get(room=paikkala_program.room, name=zone_name)
-                keep_reserving = True
-                while keep_reserving:
-                    try:
-                        for ticket in paikkala_program.reserve(zone=zone, count=1):
-                            print(ticket)
-                    except NoCapacity:
-                        keep_reserving = False
-
-            paikkala_program.require_contact, paikkala_program.require_user = require_contact, require_user
-            paikkala_program.save()
+                for row in zone.rows.all():
+                    block, created = PerProgramBlock.objects.get_or_create(
+                        program=paikkala_program,
+                        row=row,
+                        excluded_numbers=f"{row.start_number}-{row.end_number}",
+                    )
+                    log_get_or_create(logger, block, created)
 
             if not options["really"]:
                 raise NotReally("It was only a bad dream :)")
