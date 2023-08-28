@@ -2,6 +2,9 @@ ingress_public_hostnames:
   - kompassi.eu
   - conit.fi
 
+backup_ingress_public_hostnames:
+  - vara.kompassi.eu
+
 postgres_managed: false
 postgres_hostname: siilo.tracon.fi
 postgres_database: kompassi
@@ -22,7 +25,7 @@ kompassi_admins:
   - Santtu Pajukanta <santtu@pajukanta.fi>
 kompassi_allowed_hosts: !Concat
   - !Var ingress_public_hostnames
-  - [vara.kompassi.eu]
+  - !Var backup_ingress_public_hostnames
 kompassi_cors_allowed_hosts:
   - infotv.ropecon.fi
   - v2.kompassi.eu

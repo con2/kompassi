@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kompassi-backup
+  annotations: !Merge
+    - !Var base_ingress_annotations
+    - nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - secretName: ingress-backup
+      hosts: !Var backup_ingress_public_hostnames
+  rules: !Loop
+    over: !Var backup_ingress_public_hostnames
+    as: hostname
+    template:
+      host: !Var hostname
+      http:
+        paths:
+          - pathType: Prefix
+            path: /static
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /media
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: kompassi
+                port:
+                  number: 8000

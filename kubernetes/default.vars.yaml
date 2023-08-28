@@ -294,12 +294,15 @@ kompassi_volumes:
         name: kompassi-media
         emptyDir: {}
 
+base_ingress_annotations:
+  nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+  nginx.org/client-max-body-size: "100m"
+  nginx.ingress.kubernetes.io/proxy-send-timeout: !Format "{kompassi_timeout_seconds}"
+  nginx.ingress.kubernetes.io/proxy-read-timeout: !Format "{kompassi_timeout_seconds}"
+
 # Default annotations work for nginx ingress with or without LetsEncrypt TLS. Override if you need something else.
 ingress_annotations: !Merge
-  - nginx.ingress.kubernetes.io/proxy-body-size: "100m"
-    nginx.org/client-max-body-size: "100m"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: !Format "{kompassi_timeout_seconds}"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: !Format "{kompassi_timeout_seconds}"
+  - !Var base_ingress_annotations
   - !If
       test: !Var ingress_letsencrypt_enabled
       then:
@@ -311,3 +314,5 @@ ingress_tls: !If
   then:
     - secretName: ingress-letsencrypt
       hosts: !Var ingress_public_hostnames
+
+backup_ingress_public_hostnames: []

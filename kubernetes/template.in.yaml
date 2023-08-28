@@ -81,4 +81,8 @@
 # INGRESS #
 ###########
 ---
-!Include ingress.in.yaml
+!Include ingress/ingress.in.yaml
+---
+!If
+  test: !Var backup_ingress_public_hostnames
+  then: !Include ingress/ingress-backup.in.yaml

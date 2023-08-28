@@ -21,3 +21,5 @@ virtualenv/
 media/
 *.compiled.yaml
 *.local.yaml
+*.key
+*.crt
