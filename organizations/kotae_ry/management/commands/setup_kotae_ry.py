@@ -15,7 +15,7 @@ class Setup:
 
     def setup(self):
         self.setup_core()
-#        self.setup_membership()
+        #        self.setup_membership()
         self.setup_access()
         self.setup_directory()
 
@@ -27,9 +27,8 @@ class Setup:
                 homepage_url="https://kotae.fi",
                 logo_url="https://lh5.googleusercontent.com/BKHmMW9uE1o0EAvOPfL7eOsK11lZZoYWa6vnH6AKsLzzcCbNvjU0jXxWiNNSeHq-PXSj0por_XE0PE8_7qSFJjw=w16383",
                 description="""
-Yhdistyksemme tarkoituksena on lisätä, kehittää ja ylläpitää mahdollisuuksia japanilaisen populaarikulttuurin harrastamiseen, erityisesti tapahtumajärjestämisen keinoin. Kotae Ry on voittoa tavoittelematon yhdistys. 
+Yhdistyksemme tarkoituksena on lisätä, kehittää ja ylläpitää mahdollisuuksia japanilaisen populaarikulttuurin harrastamiseen, erityisesti tapahtumajärjestämisen keinoin. Kotae Ry on voittoa tavoittelematon yhdistys.
                 """.strip(),
-                panel_css_class="panel-danger",
             ),
         )
 
@@ -100,6 +99,7 @@ Yhdistyksemme tarkoituksena on lisätä, kehittää ja ylläpitää mahdollisuuk
         from directory.models import DirectoryOrganizationMeta
 
         DirectoryOrganizationMeta.objects.get_or_create(organization=self.organization)
+
 
 class Command(BaseCommand):
     args = ""
