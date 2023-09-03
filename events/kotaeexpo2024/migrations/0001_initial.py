@@ -10,7 +10,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("core", "0038_alter_person_discord_handle"),
         ("enrollment", "0009_alter_enrollment_is_public_and_more"),
     ]
 
