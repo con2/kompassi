@@ -22,6 +22,8 @@ virtualenv/
 media/
 *.compiled.yaml
 *.local.yaml
+*.key
+*.crt
 
 # stuff not in .gitgnore
 .git

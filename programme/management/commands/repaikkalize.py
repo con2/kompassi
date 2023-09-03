@@ -30,51 +30,48 @@ class Command(BaseCommand):
 
     def handle(*args, **opts):
         for event_slug in opts["event_slugs"]:
-            try:
-                with transaction.atomic():
-                    event = Event.objects.get(slug=event_slug)
+            with transaction.atomic():
+                event = Event.objects.get(slug=event_slug)
 
-                    ps = Programme.objects.filter(category__event=event, is_using_paikkala=True)
-                    num_ps = ps.distinct().count()
-                    p_ids = list(ps.distinct().values_list("id", flat=True))
+                ps = Programme.objects.filter(category__event=event, is_using_paikkala=True)
+                num_ps = ps.distinct().count()
+                p_ids = list(ps.distinct().values_list("id", flat=True))
 
-                    rooms = Room.objects.filter(programmes__in=ps).distinct()
-                    num_rooms = rooms.distinct().count()
+                rooms = Room.objects.filter(programmes__in=ps).distinct()
+                num_rooms = rooms.distinct().count()
 
-                    pps = PaikkalaProgram.objects.filter(kompassi_programme__in=ps)
-                    prooms = PaikkalaRoom.objects.filter(program__in=pps)
-                    pzones = PaikkalaZone.objects.filter(room__in=prooms)
+                pps = PaikkalaProgram.objects.filter(kompassi_programme__in=ps)
+                prooms = PaikkalaRoom.objects.filter(program__in=pps)
+                pzones = PaikkalaZone.objects.filter(room__in=prooms)
 
-                    print(rooms.distinct())
-                    print(pps.distinct())
-                    print(prooms.distinct())
-                    print(pzones.distinct())
+                print(rooms.distinct())
+                print(pps.distinct())
+                print(prooms.distinct())
+                print(pzones.distinct())
 
-                    ps.update(paikkala_program=None)
-                    rooms.update(paikkala_room=None)
+                ps.update(paikkala_program=None)
+                rooms.update(paikkala_room=None)
 
-                    pps.delete()
-                    pzones.delete()
-                    prooms.delete()
+                pps.delete()
+                pzones.delete()
+                prooms.delete()
 
-                    ps = Programme.objects.filter(id__in=p_ids)
-                    ps.update(is_using_paikkala=True)
-                    for programme in ps.all():
-                        programme.paikkalize()
+                ps = Programme.objects.filter(id__in=p_ids)
+                ps.update(is_using_paikkala=True)
+                for programme in ps.all():
+                    programme.paikkalize()
 
-                    pps = PaikkalaProgram.objects.filter(kompassi_programme__in=ps.all())
-                    prooms = PaikkalaRoom.objects.filter(program__in=pps).distinct()
-                    pzones = PaikkalaZone.objects.filter(room__in=prooms).distinct()
+                pps = PaikkalaProgram.objects.filter(kompassi_programme__in=ps.all())
+                prooms = PaikkalaRoom.objects.filter(program__in=pps).distinct()
+                pzones = PaikkalaZone.objects.filter(room__in=prooms).distinct()
 
-                    print(pps)
-                    print(prooms)
-                    print(pzones)
+                print(pps)
+                print(prooms)
+                print(pzones)
 
-                    # I am paranoid about runaway cascades
-                    assert ps.distinct().count() == num_ps
-                    assert rooms.distinct().count() == num_rooms
+                # I am paranoid about runaway cascades
+                assert ps.distinct().count() == num_ps
+                assert rooms.distinct().count() == num_rooms
 
-                    if not opts["really"]:
-                        raise NotReally()
-            except NotReally:
-                pass
+                if not opts["really"]:
+                    raise NotReally("It was all a bad dream :)")

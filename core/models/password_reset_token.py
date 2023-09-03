@@ -33,3 +33,5 @@ class PasswordResetToken(OneTimeCode):
         user = code.person.user
         user.set_password(new_password)
         user.save()
+
+        return user

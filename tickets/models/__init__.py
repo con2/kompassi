@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
 from pkg_resources import resource_string
@@ -279,7 +279,10 @@ class Batch(models.Model):
                 continue
 
             # Some orders have zero for the product we want.
-            if product is not None and not order.order_product_set.filter(product=product, count__gte=1).exists():
+            if (
+                product is not None
+                and not order.order_product_set.filter(product=product, count__gte=1).exists()
+            ):
                 continue
 
             order.batch = batch
@@ -355,7 +358,9 @@ class LimitGroup(models.Model):
     @property
     def amount_sold(self):
         amount_sold = OrderProduct.objects.filter(
-            product__limit_groups=self, order__confirm_time__isnull=False, order__cancellation_time__isnull=True
+            product__limit_groups=self,
+            order__confirm_time__isnull=False,
+            order__cancellation_time__isnull=True,
         ).aggregate(models.Sum("count"))["count__sum"]
 
         return amount_sold if amount_sold is not None else 0
@@ -541,6 +546,45 @@ class Product(models.Model):
         return [weekend, saturday, sunday]
 
 
+@dataclass
+class ProductHandout:
+    """
+    Used in the tickets admin reports view. Reports the counts of products handed out
+    by product.
+    """
+
+    title: str
+    handed_out_count: int = field(default=0)
+    not_handed_out_count: int = field(default=0)
+
+    @property
+    def total_count(self):
+        return self.handed_out_count + self.not_handed_out_count
+
+    @classmethod
+    def get_product_handouts(cls, event):
+        from lippukala.models import Code
+        from lippukala.consts import UNUSED, USED
+
+        handouts = dict()
+
+        products = Product.objects.filter(event=event, electronic_ticket=True).order_by("ordering", "id")
+        for product in products:
+            codes = Code.objects.filter(
+                order__event=event.slug,
+                product_text=product.electronic_ticket_title,
+            )
+
+            handout = handouts.setdefault(
+                product.electronic_ticket_title,
+                cls(product.electronic_ticket_title),
+            )
+            handout.handed_out_count += codes.filter(status=USED).count()
+            handout.not_handed_out_count += codes.filter(status=UNUSED).count()
+
+        return list(handouts.values())
+
+
 # TODO mayhaps combine with Person someday soon?
 class Customer(models.Model):
     # REVERSE: order = OneToOne(Order)
@@ -573,11 +617,17 @@ class Customer(models.Model):
     )
 
     phone_number = models.CharField(
-        max_length=30, null=True, blank=True, validators=[phone_number_validator], verbose_name=_("phone number")
+        max_length=30,
+        null=True,
+        blank=True,
+        validators=[phone_number_validator],
+        verbose_name=_("phone number"),
     )
 
     def get_normalized_phone_number(
-        self, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION, format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT
+        self,
+        region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_REGION,
+        format=settings.KOMPASSI_PHONENUMBERS_DEFAULT_FORMAT,
     ):
         """
         Returns the phone number of this Customer in a normalized format. If the phone number is invalid,
@@ -606,7 +656,9 @@ class Customer(models.Model):
 
     @property
     def sanitized_name(self):
-        return "".join(i for i in self.name if i.isalpha() or i in ("ä", "Ä", "ö", "Ö", "å", "Å", "-", "'", " "))
+        return "".join(
+            i for i in self.name if i.isalpha() or i in ("ä", "Ä", "ö", "Ö", "å", "Å", "-", "'", " ")
+        )
 
     @property
     def name_and_email(self):
@@ -730,7 +782,9 @@ class Order(models.Model):
 
     @property
     def requires_accommodation_information(self):
-        return self.order_product_set.filter(count__gt=0, product__requires_accommodation_information=True).exists()
+        return self.order_product_set.filter(
+            count__gt=0, product__requires_accommodation_information=True
+        ).exists()
 
     @property
     def formatted_price(self):
@@ -765,7 +819,9 @@ class Order(models.Model):
 
     @property
     def formatted_reference_number(self):
-        return "".join((i if (n + 1) % 5 else i + " ") for (n, i) in enumerate(self.reference_number[::-1]))[::-1]
+        return "".join((i if (n + 1) % 5 else i + " ") for (n, i) in enumerate(self.reference_number[::-1]))[
+            ::-1
+        ]
 
     @property
     def formatted_order_number(self):
@@ -773,7 +829,9 @@ class Order(models.Model):
 
     @property
     def formatted_order_products(self):
-        return ", ".join(f"{op.count}x {op.product.name}" for op in self.order_product_set.all() if op.count > 0)
+        return ", ".join(
+            f"{op.count}x {op.product.name}" for op in self.order_product_set.all() if op.count > 0
+        )
 
     def clean_up_order_products(self):
         self.order_product_set.filter(count__lte=0).delete()
@@ -1025,12 +1083,16 @@ class Order(models.Model):
                 msgsubject = "{self.event.name}: E-lippu ({self.formatted_order_number})".format(self=self)
                 msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
             else:
-                msgsubject = "{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(self=self)
+                msgsubject = "{self.event.name}: Tilausvahvistus ({self.formatted_order_number})".format(
+                    self=self
+                )
                 msgbody = render_to_string("tickets_confirm_payment.eml", self.email_vars)
 
         elif msgtype == "delivery_confirmation":
             assert self.requires_shipping
-            msgsubject = "{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(self=self)
+            msgsubject = "{self.event.name}: Toimitusvahvistus ({self.formatted_order_number})".format(
+                self=self
+            )
             msgbody = render_to_string("tickets_confirm_delivery.eml", self.email_vars)
 
         elif msgtype == "cancellation_notice":
@@ -1038,7 +1100,9 @@ class Order(models.Model):
             msgbody = render_to_string("tickets_cancellation_notice.eml", self.email_vars)
 
         elif msgtype == "uncancellation_notice":
-            msgsubject = "{self.event.name}: Tilaus palautettu ({self.formatted_order_number})".format(self=self)
+            msgsubject = "{self.event.name}: Tilaus palautettu ({self.formatted_order_number})".format(
+                self=self
+            )
             msgbody = render_to_string("tickets_uncancellation_notice.eml", self.email_vars)
 
         else:
@@ -1179,11 +1243,17 @@ class OrderProduct(models.Model, CsvExportMixin):
 
 class AccommodationInformation(models.Model, CsvExportMixin):
     order_product = models.ForeignKey(
-        OrderProduct, on_delete=models.CASCADE, blank=True, null=True, related_name="accommodation_information_set"
+        OrderProduct,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="accommodation_information_set",
     )
 
     # XXX ugly hack: We hijack limit groups to represent (night, accommodation centre).
-    limit_groups = models.ManyToManyField(LimitGroup, blank=True, related_name="accommodation_information_set")
+    limit_groups = models.ManyToManyField(
+        LimitGroup, blank=True, related_name="accommodation_information_set"
+    )
 
     # allow blank because these are pre-created
     first_name = models.CharField(max_length=100, blank=True, default="", verbose_name="Etunimi")

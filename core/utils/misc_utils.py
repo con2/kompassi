@@ -1,6 +1,7 @@
 from itertools import groupby
 from random import randint
 import re
+import logging
 
 from django.conf import settings
 from django.contrib.auth.models import Group, User
@@ -8,6 +9,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.forms import ValidationError
 
 from ipware import get_client_ip
+
+
+logger = logging.getLogger("kompassi")
 
 
 def give_all_app_perms_to_group(app_label, group):
@@ -59,7 +63,12 @@ def ensure_user_is_member_of_group(user, group, should_belong_to_group=True):
     if "crowd_integration" in settings.INSTALLED_APPS:
         from crowd_integration.utils import ensure_user_group_membership as cr_ensure_user_group_membership
 
-        cr_ensure_user_group_membership(user, group.name, should_belong_to_group)
+        try:
+            cr_ensure_user_group_membership(user, group.name, should_belong_to_group)
+        except Exception:
+            logger.exception(
+                "crowd failed to update group membership: %s %s %s", user, group, should_belong_to_group
+            )
 
 
 def ensure_groups_exist(group_names):
@@ -69,7 +78,10 @@ def ensure_groups_exist(group_names):
         from crowd_integration.utils import ensure_group_exists
 
         for group_name in group_names:
-            ensure_group_exists(group_name)
+            try:
+                ensure_group_exists(group_name)
+            except Exception:
+                logger.exception("crowd failed to ensure group exists: %s", group_name)
 
     return groups
 

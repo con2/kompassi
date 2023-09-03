@@ -276,6 +276,7 @@ INSTALLED_APPS = (
     "events.cosvision2023",
     "events.shumicon2023",
     "events.matsucon2023",
+    "events.popcultnights2023",
     "organizations.kotae_ry",
     "events.kotaeexpo2024",
 )
