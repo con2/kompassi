@@ -25,7 +25,6 @@ class Setup:
             defaults=dict(
                 name="Kotae ry",
                 homepage_url="https://kotae.fi",
-                logo_url="https://lh5.googleusercontent.com/BKHmMW9uE1o0EAvOPfL7eOsK11lZZoYWa6vnH6AKsLzzcCbNvjU0jXxWiNNSeHq-PXSj0por_XE0PE8_7qSFJjw=w16383",
                 description="""
 Yhdistyksemme tarkoituksena on lisätä, kehittää ja ylläpitää mahdollisuuksia japanilaisen populaarikulttuurin harrastamiseen, erityisesti tapahtumajärjestämisen keinoin. Kotae Ry on voittoa tavoittelematon yhdistys.
                 """.strip(),
