@@ -190,6 +190,7 @@ INSTALLED_APPS = (
     "metrics",
     "background_tasks",
     "organizations.tracon_ry",
+    "organizations.kotae_ry",
     "events.hitpoint2015",
     "events.kuplii2015",
     "events.mimicon2015",
@@ -272,13 +273,13 @@ INSTALLED_APPS = (
     "events.hitpoint2023",
     "events.nekocon2023",
     "events.finncon2023",
-    "events.tracon2023paidat",
     "events.cosvision2023",
     "events.shumicon2023",
     "events.matsucon2023",
     "events.popcultnights2023",
-    "organizations.kotae_ry",
     "events.kotaeexpo2024",
+    "events.frostbite2024",
+    "events.desucon2024",
 )
 
 LOGGING = {
