@@ -11,7 +11,7 @@ import "./MainViewContainer.scss";
 interface MainViewContainerProps {
   loading?: boolean;
   error?: any;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const MainViewContainer: React.FC<MainViewContainerProps> = ({

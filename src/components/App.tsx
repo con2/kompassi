@@ -4,20 +4,26 @@ import FormEditorView from "./forms/FormEditorView";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import SplashView from "./SplashView";
 import MainViewContainer from "./common/MainViewContainer";
-import EventsView from "./EventsView";
+import EventsView from "./events/EventsView";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <SplashView />,
-  },
-  {
-    path: "/forms",
-    element: <FormEditorView />,
-  },
-  {
-    path: "/events",
-    element: <EventsView />,
+    children: [
+      {
+        path: "forms",
+        element: <FormEditorView />,
+      },
+      {
+        path: "events",
+        element: <EventsView />,
+      },
+      {
+        path: "",
+        element: <SplashView />,
+      },
+    ],
+    errorElement: <MainViewContainer error={true} />,
   },
 ]);
 

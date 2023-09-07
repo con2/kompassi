@@ -166,6 +166,25 @@ const translations = {
         self-service customisability!
       </>
     ),
+    backToKompassi: "Back to Kompassi",
+  },
+
+  EventsView: {
+    title: "Events",
+  },
+
+  Brand: {
+    appName: (
+      <>
+        Kompassi<sup>v2 BETA</sup>
+      </>
+    ),
+  },
+
+  // Do not translate
+  LanguageSelection: {
+    en: "In English",
+    fi: "Suomeksi",
   },
 };
 

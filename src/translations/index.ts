@@ -8,11 +8,41 @@ import en from "./en";
 import fi from "./fi";
 
 export type Translations = typeof en;
+export type SupportedLanguage = "en" | "fi";
+export const supportedLanguages: readonly SupportedLanguage[] = [
+  "en",
+  "fi",
+] as const;
+const defaultLanguage: SupportedLanguage = "en";
+
+function getLanguageFromLocalStorage() {
+  return localStorage.getItem("language");
+}
+
+export function setLanguage(language: string) {
+  localStorage.setItem("language", language);
+  location.reload();
+}
+
+function isSupportedLanguage(language: string): language is SupportedLanguage {
+  return (supportedLanguages as string[]).includes(language);
+}
+
+function detectLanguage(): SupportedLanguage {
+  const language =
+    getLanguageFromLocalStorage() ||
+    (navigator.languages || [navigator.language])[0] ||
+    defaultLanguage;
+
+  if (!isSupportedLanguage(language)) {
+    return defaultLanguage;
+  }
+
+  return language;
+}
 
 const languages = { en, fi };
-const defaultLanguage = "en";
-const detectedLanguage =
-  (navigator.languages || [navigator.language])[0] || defaultLanguage;
+export const detectedLanguage = detectLanguage();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const translations: Translations =

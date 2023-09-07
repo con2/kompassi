@@ -1,26 +1,20 @@
 import useSWR from "swr";
 import { useTable, Column } from "react-table";
 
-import MainViewContainer from "./common/MainViewContainer";
+import MainViewContainer from "../common/MainViewContainer";
 import { Table } from "react-bootstrap";
+import { T } from "../../translations";
+import Event from "./Event";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-interface Event {
-  url: string;
-  slug: string;
-  name: string;
-  startTime: string;
-  endTime: string;
-  headline: string;
-  homepageUrl: string;
-}
 
 const columns: Column<Event>[] = [
   {
     Header: "Name",
     accessor: "name",
-    Cell: ({ row, value }) => <a href={row.original.url}>{value}</a>,
+    Cell: ({ row, value }) => (
+      <a href={`/events/${row.original.slug}`}>{value}</a>
+    ),
   },
   {
     Header: "Headline",
@@ -36,8 +30,11 @@ export default function EventsView() {
     data: data ?? [],
   });
 
+  const t = T((r) => r.EventsView);
+
   return (
     <MainViewContainer loading={isLoading} error={error}>
+      <h1>{t((r) => r.title)}</h1>
       <Table striped {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup) => (

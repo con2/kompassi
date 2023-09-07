@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "start": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -15,14 +16,13 @@
     "@types/react-table": "^7.7.14",
     "@typescript-eslint/eslint-plugin": "^4.21.0",
     "@vitejs/plugin-react": "^3.1.0",
-    "bootstrap": "^5.2.3",
+    "bootstrap": "^5.3.1",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "formik": "^2.2.9",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.7.2",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.9.0",
     "react-table": "^7.8.0",

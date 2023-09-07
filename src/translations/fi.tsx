@@ -166,6 +166,25 @@ const translations: Translations = {
         voidaksemme tarjota paremman käyttökokemuksen ja mukautettavuuden.
       </>
     ),
+    backToKompassi: "Takaisin Kompassiin",
+  },
+
+  EventsView: {
+    title: "Tapahtumat",
+  },
+
+  Brand: {
+    appName: (
+      <>
+        Kompassi<sup>v2 BETA</sup>
+      </>
+    ),
+  },
+
+  // Do not translate
+  LanguageSelection: {
+    en: "In English",
+    fi: "Suomeksi",
   },
 };
 
