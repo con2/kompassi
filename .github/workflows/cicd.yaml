@@ -1,0 +1,59 @@
+name: cicd
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    env:
+      SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - uses: pairity/setup-cd-tools@30acb848f9ff747aff4810dac40c5cc0971f485d
+        with:
+          skaffold: '1.20.0'
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+      - uses: docker/setup-buildx-action@v1
+      - id: build
+        run: |
+          python3 -m pip install emskaffolden==0.2.1
+          emskaffolden -T node-app -E staging -- build --file-output build.json
+      - name: Store build.json artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-json
+          path: build.json
+    outputs:
+      build_json: ${{ steps.build.outputs.build_json }}
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get build.json from build step
+        uses: actions/download-artifact@v3
+        with:
+          name: build-json
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - uses: pairity/setup-cd-tools@30acb848f9ff747aff4810dac40c5cc0971f485d
+        with:
+          kubectl: '1.20.4'
+          skaffold: '1.20.0'
+      - uses: docker/setup-buildx-action@v1
+      - run: |
+          python3 -m pip install emskaffolden==0.2.1
+          emskaffolden -T node-app -E staging -- deploy -n kompassi2-staging -a build.json

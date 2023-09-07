@@ -1,0 +1,11 @@
+nodeapp_name: kompassi2
+nodeapp_setup_should_run: false
+nodeapp_secret_managed: false
+
+# does not use a postgres database
+postgres_managed: false
+postgres_secret_managed: false
+
+node_environment:
+  - name: PORT
+    value: "3000"
