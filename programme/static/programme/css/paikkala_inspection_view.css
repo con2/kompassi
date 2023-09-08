@@ -33,35 +33,35 @@ body {
 /* tampere-talo, iso sali */
 
 .paikkala-zone-takapermanto-oikea-2-krs, .paikkala-zone-etupermanto-oikea-2-krs, .paikkala-zone-aitio-a-oikea-2-krs {
-    background-color: #FFF226; /* keltainen */
+    background-color: #edff69; /* keltainen */
 }
 
 .paikkala-zone-takaparveke-vasen-3-krs, .paikkala-zone-etuparveke-vasen-3-krs, .paikkala-zone-1700-vanha-kirkko-kaato, .paikkala-zone-0000-kaato-vanha-kirkko {
-    background-color: #00C3FF; /* sininen */
+    background-color: #9ef3ff; /* sininen */
 }
 
 .paikkala-zone-takaparveke-oikea-3-krs, .paikkala-zone-etuparveke-oikea-3-krs, .paikkala-zone-1540-pakkahuoneenaukio-1600-vanha-kirkko-kaato, .paikkala-zone-2300-kaato-vanha-kirkko {
-    background-color: #FF5052; /* punainen */
+    background-color: #ff8f96; /* punainen */
 }
 
 .paikkala-zone-takapermanto-vasen-2-krs, .paikkala-zone-etupermanto-vasen-2-krs, .paikkala-zone-1800-vanha-kirkko-kaato, .paikkala-zone-0100-kaato-vanha-kirkko {
-    background-color: #69E140; /* vihrea */
+    background-color: #a2eba9; /* vihrea */
 }
 
 .paikkala-zone-etupermanto-vasen-1-krs {
-    background-color: #FFA6FF; /* vaaleanpunainen "fuchsia" */
+    background-color: #eb8fc0; /* vaaleanpunainen "fuchsia" */
 }
 
 .paikkala-zone-etupermanto-oikea-1-krs, .paikkala-zone-aitio-a-oikea-1-krs {
-    background-color: #FFD8A6; /* beige */
+    background-color: #c2a192; /* beige */
 }
 
 /* tampere-talo, pieni sali */
 
 .paikkala-zone-permanto-vasen-2-krs, .paikkala-zone-aitio-2-vasen-2-krs, .paikkala-zone-aitio-3-vasen-2-krs, .paikkala-zone-aitio-4-vasen-2-krs {
-    background-color: #e38eff; /* violetti */
+    background-color: #b5a6ff; /* violetti */
 }
 
 .paikkala-zone-permanto-oikea-2-krs {
-    background-color: #ffab73; /* oranssi */
+    background-color: #ff8559; /* oranssi */
 }
