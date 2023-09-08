@@ -48,6 +48,14 @@ body {
     background-color: #69E140; /* vihrea */
 }
 
+.paikkala-zone-etupermanto-vasen-1-krs {
+    background-color: #FFA6FF; /* vaaleanpunainen "fuchsia" */
+}
+
+.paikkala-zone-etupermanto-oikea-1-krs, .paikkala-zone-aitio-a-oikea-1-krs {
+    background-color: #FFD8A6; /* beige */
+}
+
 /* tampere-talo, pieni sali */
 
 .paikkala-zone-permanto-vasen-2-krs, .paikkala-zone-aitio-2-vasen-2-krs, .paikkala-zone-aitio-3-vasen-2-krs, .paikkala-zone-aitio-4-vasen-2-krs {
