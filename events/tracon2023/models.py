@@ -67,7 +67,8 @@ class SignupExtra(SignupExtraBase):
         max_length=15,
         verbose_name="Toivottu kokonaistyömäärä",
         help_text=(
-            "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti " "kymmenen tuntia."
+            "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti "
+            "kymmenen tuntia."
         ),
         choices=TOTAL_WORK_CHOICES,
     )
@@ -212,8 +213,10 @@ class SignupExtra(SignupExtraBase):
         verbose_name="Työskentely kaatajaisissa",
         blank=True,
         help_text=(
-            "Oletko valmis auttamaan kaadon järjestelyissä, esim. logistiikassa, roudauksessa tai juomien kaatamisessa? "
-            "Jos olet, kirjoita tähän, millaisia hommia olisit valmis tekemään ja kuinka paljon (karkea tuntimäärä illan aikana)."
+            "Kaatajaiset järjestyvät oman työryhmän voimin, mutta joskus lisäkädet ovat tarpeen. "
+            "Oletko valmis auttamaan kaadon järjestelyissä, esim. logistiikassa tai juomien kaatamisessa? "
+            "Jos olet, kirjoita tähän, mitää hommia, mihin aikaan ja kuinka paljon (karkea tuntimäärä illan aikana). "
+            "Vastanneisiin otetaan yhteyttä Slackitse jos apuanne tarvitaan."
         ),
     )
 

@@ -742,7 +742,7 @@ class Setup:
                 title="Ilmoittautuminen kaatajaisiin",
                 description=(
                     "Kiitokseksi työpanoksestasi tapahtumassa Tracon tarjoaa sinulle mahdollisuuden "
-                    "osallistua kaatajaisiin lauantaina 17. syyskuuta 2023 Tampereella. Kaatajaisiin osallistuminen edellyttää ilmoittautumista ja 18 vuoden ikää. "
+                    "osallistua kaatajaisiin lauantaina 23. syyskuuta 2023 Tampereella. Kaatajaisiin osallistuminen edellyttää ilmoittautumista ja 18 vuoden ikää. "
                     "</p><p>"
                     "<strong>HUOM!</strong> Paikat kaatobusseihin varataan erikseen. Varaa paikkasi "
                     f'<a href="{outward_coach_url}" target="_blank" rel="noopener noreferrer">menobussiin täältä</a> ja '
