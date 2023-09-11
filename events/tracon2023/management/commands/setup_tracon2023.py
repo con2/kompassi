@@ -27,8 +27,7 @@ class Setup:
         self.setup_intra()
         self.setup_access()
         self.setup_directory()
-        # self.setup_kaatoilmo()
-        # self.setup_sms()
+        self.setup_kaatoilmo()
 
     def setup_core(self):
         from core.models import Organization, Venue, Event
@@ -753,7 +752,7 @@ class Setup:
                 override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
                 form_class_path="events.tracon2023.forms:AfterpartyParticipationSurvey",
                 active_from=self.event.end_time,
-                active_until=datetime(2023, 9, 10, 23, 59, 59, tzinfo=self.tz),
+                active_until=datetime(2023, 9, 17, 23, 59, 59, tzinfo=self.tz),
             ),
         )
 
