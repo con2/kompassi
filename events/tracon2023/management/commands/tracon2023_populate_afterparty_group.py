@@ -1,4 +1,5 @@
 import logging
+from datetime import date, timedelta
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -18,7 +19,7 @@ class NotReally(RuntimeError):
 
 
 class Command(BaseCommand):
-    help = "Creates accommodees from signups"
+    help = "Populate afterparty privileged & participating groups"
 
     def add_arguments(self, parser):
         parser.add_argument("--really", default=False, action="store_true")
@@ -27,13 +28,28 @@ class Command(BaseCommand):
         event = Event.objects.get(slug="tracon2023")
 
         with transaction.atomic():
-            (group,) = LabourEventMeta.get_or_create_groups(event, ["afterparty"])
+            privileged, participating = LabourEventMeta.get_or_create_groups(
+                event,
+                ["afterparteh", "afterparty"],
+            )
 
-            for sex in SignupExtra.objects.filter(event=event, afterparty_participation=True):
-                group.user_set.add(sex.person.user)  # type: ignore
+            cutoff = date(2023 - 18, 9, 23)
+
+            for sex in SignupExtra.objects.filter(
+                event=event, is_active=True, person__birth_date__lte=cutoff
+            ):
+                privileged.user_set.add(sex.person.user)
                 print(".", end="", flush=True)
 
             print()
+            print(f"privileged: {privileged.user_set.count()} users")
+
+            for sex in SignupExtra.objects.filter(event=event, afterparty_participation=True):
+                participating.user_set.add(sex.person.user)  # type: ignore
+                print(".", end="", flush=True)
+
+            print()
+            print(f"participating: {participating.user_set.count()} users")
 
             if not options["really"]:
                 raise NotReally("It was all a bad dream…")

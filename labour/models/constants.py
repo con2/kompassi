@@ -116,6 +116,7 @@ GROUP_VERBOSE_NAMES_BY_SUFFIX = dict(
     reprimanded="Työnsä moitittavasti suorittaneet",
     spam="Potentiaaliset hakijat",
     afterparty="Kaatajaisten osallistujat",
+    afterparteh="Kaatajaisiin oikeutetut",
 )
 
 SIGNUP_STATE_GROUPS = [
