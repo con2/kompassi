@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 
 from django.db import transaction
+from django.forms import ValidationError
 from django.http import HttpResponse
 from django.views.generic import View
 from django.shortcuts import redirect, get_object_or_404
@@ -78,7 +79,10 @@ class CallbackView(View):
     """
 
     def get(self, request):
-        if "desuprofile_oauth_state" not in request.session or "desuprofile_oauth_next" not in request.session:
+        if (
+            "desuprofile_oauth_state" not in request.session
+            or "desuprofile_oauth_next" not in request.session
+        ):
             return HttpResponse("OAuth2 callback accessed outside OAuth2 authorization flow", status=400)
 
         session = get_session(request, state=request.session["desuprofile_oauth_state"])
@@ -212,7 +216,9 @@ class CallbackView(View):
             connection.save()
 
         person.apply_state_new_user(request, password)
-        messages.success(request, "Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!")
+        messages.success(
+            request, "Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!"
+        )
 
         return respond_with_connection(request, next_url, connection)
 
@@ -295,6 +301,11 @@ def desuprogramme_feedback_view(request, event, programme_slug):
     programme = get_object_or_404(Programme, category__event=event, slug=programme_slug)
 
     feedback = DesuprogrammeFeedback.from_json(request.body)
-    feedback.save(programme)
 
-    return HttpResponse("", status=201)
+    try:
+        feedback.save(programme)
+    except ValidationError:
+        logger.exception("DesuprogrammeFeedback failed validation")
+        return HttpResponse("", status=400)
+    else:
+        return HttpResponse("", status=201)
