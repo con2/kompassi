@@ -14,6 +14,7 @@ class Program(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     start_time = models.DateTimeField(blank=True, null=True)
     length = models.DurationField(blank=True, null=True)
+    other_fields = models.JSONField(blank=True, default=dict)
 
     # denormalized fields
     cached_dimensions = models.JSONField()
@@ -32,6 +33,7 @@ class Program(models.Model):
         """
         Used to populate cached_dimensions
         """
+        # TODO should all event dimensions always be present, or only those with values?
         # TODO when dimensions are changed for an event, refresh all cached_dimensions
         dimensions = {dimension.slug: [] for dimension in self.event.dimensions.all()}
         for pdv in self.dimension_values.all():
