@@ -29,7 +29,7 @@ for app_name in [
     "access",
     "desuprofile_integration",
     "membership",
-    "events.tracon2022",
+    "events.tracon2023",
     "enrollment",
     "intra",
     "feedback",

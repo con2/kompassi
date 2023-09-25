@@ -1,12 +1,13 @@
 import logging
 from hashlib import sha1
 
+from django.conf import settings
 from django.core.cache import caches
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 import requests
-from requests.exceptions import Timeout, HTTPError
+from requests.exceptions import Timeout, HTTPError, ConnectionError
 
 from zxcvbn import zxcvbn
 
@@ -14,11 +15,14 @@ from zxcvbn import zxcvbn
 logger = logging.getLogger("kompassi")
 
 
-MINIMUM_SCORE = 3
+ZXCVBN_MINIMUM_SCORE = 3
 HIBP_PREFIX_LENGTH = 5
 HIBP_BASE_URL = "https://api.pwnedpasswords.com/range"
 HIBP_CACHE_EXPIRY_SECONDS = 7 * 24 * 60 * 60
-HIBP_TIMEOUT_SECONDS = 5
+HIBP_TIMEOUT_SECONDS = 3
+
+# TODO: api.pwnedpasswords.com down?
+HIBP_ENABLED = True
 
 
 def validate_password(password, user_inputs=[]):
@@ -30,10 +34,10 @@ def validate_password(password, user_inputs=[]):
     """
     result = zxcvbn(password, user_inputs=user_inputs)
 
-    if result["score"] < MINIMUM_SCORE:
+    if ZXCVBN_MINIMUM_SCORE is not None and result["score"] < ZXCVBN_MINIMUM_SCORE:
         raise ValidationError(_("Password too weak. Please use a stronger password."))
 
-    if is_password_compromised(password):
+    if HIBP_ENABLED and is_password_compromised(password):
         raise ValidationError(
             _(
                 "We check passwords securely against a database of known leaked passwords. "
@@ -73,6 +77,12 @@ def is_password_compromised(password):
             hash_prefix,
         )
         return None
+    except ConnectionError:
+        logger.exception(
+            "is_password_compromised: HIBPv2 API connection error while trying to query for page %s",
+            hash_prefix,
+        )
+        return None
 
     try:
         hibp_page = parse_hibp_page(page_str)
@@ -108,7 +118,7 @@ def get_hibp_page(hash_prefix):
     if cached:
         return cached
 
-    result = requests.get(f"{HIBP_BASE_URL}/{hash_prefix}")
+    result = requests.get(f"{HIBP_BASE_URL}/{hash_prefix}", timeout=HIBP_TIMEOUT_SECONDS)
     result.raise_for_status()
 
     page_str = result.text
