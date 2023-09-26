@@ -6,21 +6,24 @@ from django.utils import translation
 import graphene
 from graphene_django import DjangoObjectType
 
+from core.models import Event
+
 from .models import Dimension, DimensionValue, ProgramDimensionValue, Program, ScheduleItem
 
 
 DEFAULT_LANGUAGE = "fi"
 
 
-def resolve_localized_field(parent, info, **kwargs):
+def resolve_localized_field(parent, info, lang: Optional[str] = DEFAULT_LANGUAGE):
     """
     Given a LocalizedCharField or similar, this will resolve into its value in the currently active language.
     """
-    return getattr(parent, info.field_name).translate()
+    with translation.override(lang):
+        return getattr(parent, info.field_name).translate()
 
 
 class DimensionType(DjangoObjectType):
-    title = graphene.String()
+    title = graphene.String(lang=graphene.String())
     resolve_title = resolve_localized_field
 
     class Meta:
@@ -29,7 +32,7 @@ class DimensionType(DjangoObjectType):
 
 
 class DimensionValueType(DjangoObjectType):
-    title = graphene.String()
+    title = graphene.String(lang=graphene.String())
     resolve_title = resolve_localized_field
 
     class Meta:
@@ -69,71 +72,80 @@ class ProgramType(DjangoObjectType):
 @dataclass
 class Language:
     code: str
-    name: str
+    name_fi: str
+    name_en: str
+
+
+LANGUAGES = [Language("fi", "suomi", "Finnish"), Language("en", "englanti", "English")]
 
 
 class LanguageType(graphene.ObjectType):
     code = graphene.String()
-    name = graphene.String()
+    name = graphene.String(lang=graphene.String())
+
+    @staticmethod
+    def resolve_name(language: Language, info, lang: Optional[str] = DEFAULT_LANGUAGE):
+        if lang == "fi":
+            return language.name_fi
+        else:
+            return language.name_en
 
 
 class DimensionFilterInput(graphene.InputObjectType):
     dimension = graphene.String()
-    value = graphene.String()
+    values = graphene.List(graphene.String)
 
 
-class Query(graphene.ObjectType):
-    languages_by_event = graphene.List(
-        LanguageType,
-        event=graphene.String(required=True),
-        lang=graphene.String(),
-    )
-    dimensions_by_event = graphene.List(
-        DimensionType,
-        event=graphene.String(required=True),
-        lang=graphene.String(),
-    )
-    programs_by_event = graphene.List(
+class EventType(DjangoObjectType):
+    class Meta:
+        model = Event
+        fields = ("slug", "name")
+
+    programs = graphene.List(
         ProgramType,
-        event=graphene.String(required=True),
         filters=graphene.List(DimensionFilterInput),
-        lang=graphene.String(),
     )
 
-    def resolve_languages_by_event(self, info, event, lang=None):
-        # TODO hard-coded for now
-        if lang == "fi":
-            return [Language("fi", "suomi"), Language("en", "englanti")]
-        else:
-            return [Language("fi", "Finnish"), Language("en", "English")]
-
-    def resolve_dimensions_by_event(
-        self,
+    @staticmethod
+    def resolve_programs(
+        event: Event,
         info,
-        event: str,
-        lang: str = DEFAULT_LANGUAGE,
-    ):
-        translation.activate(lang)
-        return Dimension.objects.filter(event__slug=event)
-
-    def resolve_programs_by_event(
-        self,
-        info,
-        event: str,
         filters: Optional[list[DimensionFilterInput]] = None,
-        lang: str = DEFAULT_LANGUAGE,
     ):
-        translation.activate(lang)
-        queryset = Program.objects.filter(event__slug=event)
+        queryset = Program.objects.filter(event=event)
 
         if filters:
             for filter in filters:
                 queryset = queryset.filter(
                     program_dimension_values__dimension__slug=filter.dimension,
-                    program_dimension_values__dimension_value__slug=filter.value,
+                    program_dimension_values__dimension_value__slug__in=filter.values,
                 )
 
         return queryset
+
+    dimensions = graphene.List(
+        DimensionType,
+    )
+
+    @staticmethod
+    def resolve_dimensions(
+        event: Event,
+        info,
+    ):
+        return Dimension.objects.filter(event=event)
+
+    languages = graphene.List(
+        LanguageType,
+        event=graphene.String(required=True),
+    )
+
+
+class Query(graphene.ObjectType):
+    event = graphene.Field(EventType, slug=graphene.String(required=True))
+
+    @staticmethod
+    def resolve_event(root, info, slug: str):
+        return Event.objects.filter(slug=slug).first()
 
 
 schema = graphene.Schema(query=Query)
