@@ -8,11 +8,11 @@ from ..models import Program, Dimension, DimensionValue, ProgramDimensionValue
 
 
 @receiver(pre_save, sender=ProgramDimensionValue)
-def program_dimension_value_pre_save(sender, instance, **kwargs):
+def program_dimension_value_pre_save(sender, instance: ProgramDimensionValue, **kwargs):
     if instance.dimension is None:
-        instance.dimension = instance.dimension_value.dimension
+        instance.dimension = instance.value.dimension
     else:
-        if instance.dimension != instance.dimension_value.dimension:
+        if instance.dimension != instance.value.dimension:
             raise ValidationError({"dimension": "Dimension value does not belong to the dimension"})
 
 

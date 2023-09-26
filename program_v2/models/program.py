@@ -29,7 +29,7 @@ class Program(models.Model):
     cached_dimensions = models.JSONField(default=dict)
 
     # related fields
-    program_dimension_values: models.QuerySet["ProgramDimensionValue"]
+    dimensions: models.QuerySet["ProgramDimensionValue"]
 
     class Meta:
         unique_together = ("event", "slug")
@@ -45,8 +45,8 @@ class Program(models.Model):
         # TODO should all event dimensions always be present, or only those with values?
         # TODO when dimensions are changed for an event, refresh all cached_dimensions
         dimensions = {dimension.slug: [] for dimension in self.event.dimensions.all()}
-        for pdv in self.program_dimension_values.all():
-            dimensions[pdv.dimension.slug].append(pdv.dimension_value.slug)
+        for pdv in self.dimensions.all():
+            dimensions[pdv.dimension.slug].append(pdv.value.slug)
         return dimensions
 
     @classmethod
@@ -55,8 +55,8 @@ class Program(models.Model):
             queryset.select_for_update(of=("self",))
             .only("id", "cached_dimensions")
             .prefetch_related(
-                "program_dimension_values__dimension__slug",
-                "program_dimension_values__dimension_value__slug",
+                "dimensions__dimension__slug",
+                "dimensions__value__slug",
             )
         ):
             program.cached_dimensions = program._dimensions
@@ -109,6 +109,6 @@ class Program(models.Model):
                     pdv, created = ProgramDimensionValue.objects.get_or_create(
                         program=program,
                         dimension=dimension,
-                        dimension_value=DimensionValue.objects.get(dimension=dimension, slug=v1_value.slug),
+                        value=DimensionValue.objects.get(dimension=dimension, slug=v1_value.slug),
                     )
                     log_get_or_create(logger, pdv, created)

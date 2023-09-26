@@ -81,7 +81,7 @@ class Dimension(LocalizedModel):
 
 
 class DimensionValue(LocalizedModel):
-    dimension = models.ForeignKey(Dimension, on_delete=models.CASCADE, related_name="dimension_values")
+    dimension = models.ForeignKey(Dimension, on_delete=models.CASCADE, related_name="values")
     slug = models.CharField(max_length=255, validators=[validate_slug])
     title = LocalizedCharField(max_length=1023)
     override_color = models.CharField(max_length=63, blank=True, default="")
@@ -110,25 +110,25 @@ class ProgramDimensionValue(models.Model):
     program = models.ForeignKey(
         "program_v2.Program",
         on_delete=models.CASCADE,
-        related_name="program_dimension_values",
+        related_name="dimensions",
     )
     dimension = models.ForeignKey(
         Dimension,
         on_delete=models.CASCADE,
-        related_name="program_dimension_values",
+        related_name="+",
     )
-    dimension_value = models.ForeignKey(
+    value = models.ForeignKey(
         DimensionValue,
         on_delete=models.CASCADE,
-        related_name="program_dimension_values",
+        related_name="+",
     )
 
     def __str__(self):
-        return f"{self.dimension}={self.dimension_value}"
+        return f"{self.dimension}={self.value}"
 
     @property
     def event(self) -> "Event":
         return self.dimension.event
 
     class Meta:
-        unique_together = ("program", "dimension_value")
+        unique_together = ("program", "value")

@@ -28,7 +28,7 @@ class DimensionType(DjangoObjectType):
 
     class Meta:
         model = Dimension
-        fields = ("slug", "dimension_values")
+        fields = ("slug", "values")
 
 
 class DimensionValueType(DjangoObjectType):
@@ -37,13 +37,13 @@ class DimensionValueType(DjangoObjectType):
 
     class Meta:
         model = DimensionValue
-        fields = ("slug", "dimension")
+        fields = ("slug",)
 
 
 class ProgramDimensionValueType(DjangoObjectType):
     class Meta:
         model = ProgramDimensionValue
-        fields = ("dimension", "dimension_value")
+        fields = ("dimension", "value")
 
 
 class ScheduleItemType(DjangoObjectType):
@@ -66,7 +66,7 @@ class ScheduleItemType(DjangoObjectType):
 class ProgramType(DjangoObjectType):
     class Meta:
         model = Program
-        fields = ("title", "slug", "program_dimension_values", "cached_dimensions", "schedule_items")
+        fields = ("title", "slug", "dimensions", "cached_dimensions", "schedule_items")
 
 
 @dataclass
@@ -117,8 +117,8 @@ class EventType(DjangoObjectType):
         if filters:
             for filter in filters:
                 queryset = queryset.filter(
-                    program_dimension_values__dimension__slug=filter.dimension,
-                    program_dimension_values__dimension_value__slug__in=filter.values,
+                    dimensions__dimension__slug=filter.dimension,
+                    dimensions__value__slug__in=filter.values,
                 )
 
         return queryset
