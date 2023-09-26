@@ -20,6 +20,7 @@ urlpatterns = [
 for app_name in [
     "labour",
     "programme",
+    "program_v2",
     "tickets",
     "payments",
     "api",

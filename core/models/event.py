@@ -1,4 +1,5 @@
 import logging
+import typing
 from datetime import timedelta
 
 from django.conf import settings
@@ -14,6 +15,9 @@ from ..utils import (
     slugify,
     event_meta_property,
 )
+
+if typing.TYPE_CHECKING:
+    from program_v2.models import Program, Dimension
 
 
 logger = logging.getLogger("kompassi")
@@ -105,6 +109,10 @@ class Event(models.Model):
 
     created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
+
+    # related fields
+    programs: models.QuerySet["Program"]
+    dimensions: models.QuerySet["Dimension"]
 
     class Meta:
         verbose_name = "Tapahtuma"

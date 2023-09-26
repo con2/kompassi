@@ -7,4 +7,8 @@ class ProgramV2EventMeta(EventMetaBase):
         "program_v2.Dimension",
         on_delete=models.PROTECT,
         related_name="primary_dimension_for_event_meta",
+        null=True,
+        blank=True,
     )
+
+    use_cbac = True

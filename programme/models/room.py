@@ -15,7 +15,10 @@ logger = logging.getLogger("kompassi")
 
 
 class Room(models.Model):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, null=True, blank=True, related_name="rooms")
+    id: int
+    event = models.ForeignKey(
+        "core.Event", on_delete=models.CASCADE, null=True, blank=True, related_name="rooms"
+    )
     name = models.CharField(max_length=ROOM_NAME_MAX_LENGTH)
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)

@@ -148,6 +148,7 @@ TEMPLATES = [
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 INSTALLED_APPS = (
+    # django core apps
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -156,6 +157,7 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "django.contrib.admin",
     "django.contrib.postgres",
+    # 3rd party apps
     "psqlextra",
     "localized_fields",
     "pypugjs.ext.django",
@@ -163,10 +165,14 @@ INSTALLED_APPS = (
     "oauth2_provider",
     "rest_framework",
     "bootstrap3",
+    "graphene_django",
+    # 1st party embedded apps
     "lippukala",
     "paikkala",
+    # kompassi core apps
     "core",
     "programme",
+    "program_v2",
     "labour",
     "labour_common_qualifications",
     "tickets",
@@ -189,8 +195,10 @@ INSTALLED_APPS = (
     "forms",
     "metrics",
     "background_tasks",
+    # organizations
     "organizations.tracon_ry",
     "organizations.kotae_ry",
+    # events
     "events.hitpoint2015",
     "events.kuplii2015",
     "events.mimicon2015",

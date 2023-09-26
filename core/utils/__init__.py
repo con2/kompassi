@@ -70,5 +70,5 @@ from .locale_utils import (
     get_current_locale,
 )
 
-from .log_utils import log_get_or_create
+from .log_utils import log_get_or_create, log_delete
 from .password_utils import validate_password

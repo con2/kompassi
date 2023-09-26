@@ -22,6 +22,7 @@ django-storages
 djangorestframework
 drf-nested-routers
 flake8
+graphene-django
 gunicorn
 ipdb
 ipython
