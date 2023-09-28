@@ -24,7 +24,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
         self.setup_access()
         self.setup_badges()
@@ -262,7 +262,9 @@ class Setup:
         )
         from ...models import TimeSlot
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
+            self.event, ["admins", "hosts"]
+        )
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -325,13 +327,17 @@ class Setup:
                 self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),
             ),
         ]:
-            TimeBlock.objects.get_or_create(event=self.event, start_time=start_time, defaults=dict(end_time=end_time))
+            TimeBlock.objects.get_or_create(
+                event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
+            )
 
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event, start_time=hour_start_time.replace(minute=30)
+                )
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
@@ -402,7 +408,7 @@ class Setup:
             "lipunvaihtopisteessä.\n\n"
             "Tervetuloa Tracon Hitpointiin!",
             front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Tracon Hitpoint -tapahtumaan!</h2>"
-            "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+            "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla tai luottokortilla heti tilauksen yhteydessä.</p>"
             "<p>Lue lisää tapahtumasta <a href='http://2023.hitpoint.tracon.fi' target='_blank' rel='noreferrer noopener'>Tracon Hitpoint -tapahtuman kotisivuilta</a>.</p>"
             "<p><strong>Note</strong>: Purchasing Tracont Hitpoint tickets through this web shop requires a Finnish web bank service. "
             "If you do not have one, please contact us to purchase tickets: <em>hitpoint@tracon.fi</em>.</p>",
@@ -429,11 +435,11 @@ class Setup:
         for product_info in [
             dict(
                 name="Tracon Hitpoint -pääsylippu",
-                description="Viikonloppulippu Tracon Hitpoint 2023 -tapahtumaan. Voimassa koko viikonlopun ajan la klo 10–00 ja su klo 10–18. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.",
+                description="Viikonloppulippu Tracon Hitpoint 2023 -tapahtumaan. Voimassa koko viikonlopun tapahtuman aukioloaikoina la klo 10–23:30 ja su klo 10–17. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.",
                 limit_groups=[
-                    limit_group("Pääsyliput", 800),
+                    limit_group("Pääsyliput", 500),
                 ],
-                price_cents=1000,
+                price_cents=1200,
                 requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
@@ -443,7 +449,9 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, unused = Product.objects.get_or_create(
+                event=self.event, name=name, defaults=product_info
+            )
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -455,7 +463,9 @@ class Setup:
         # Grant accepted workers access to Tracon Slack
         group = self.event.labour_event_meta.get_group("accepted")
         privilege = Privilege.objects.get(slug="tracon-slack")
-        GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+        GroupPrivilege.objects.get_or_create(
+            group=group, privilege=privilege, defaults=dict(event=self.event)
+        )
 
         cc_group = self.event.labour_event_meta.get_group("conitea")
 
