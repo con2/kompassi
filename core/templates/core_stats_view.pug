@@ -1,0 +1,40 @@
+extends base
+block title
+  | Statistics about Kompassi
+block content
+  h1 Statistics about Kompassi
+  table.table.table-bordered.table-striped
+    tbody
+      tr
+        th Events
+        td= events_count
+      tr
+        th Program offers
+        td= program_count
+      tr
+        th Accepted program offers
+        td= accepted_program_count
+      tr
+        th Volunteer signups
+        td= signup_count
+      tr
+        th Accepted volunteer signups
+        td= accepted_signup_count
+      tr
+        th Confirmed ticket orders
+        td= confirmed_order_count
+      tr
+        th Paid ticket orders
+        td= paid_order_count
+      tr
+        th E-tickets issued
+        td= etickets_issued
+      tr
+        th E-tickets used
+        td= etickets_used
+      tr
+        th Seat reservations issued
+        td= seat_reservations_issued
+      tr
+        th Ticket sales revenue
+        td= formatted_revenue
