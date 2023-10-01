@@ -10,6 +10,3 @@ from ..models import Program
 def program_pre_save(sender, instance, **kwargs):
     if instance.event is not None and instance.slug is None:
         instance.slug = slugify(instance.title)
-
-    if instance.pk:
-        instance.cached_dimensions = instance._dimensions
