@@ -234,16 +234,23 @@ class Setup:
             ),
         )
 
-        for wiki_space, link_title, link_group in [
-            ("HITPOINT2023", "Coniteawiki", "conitea"),
-            ("HTPTWORK", "Työvoimawiki", "accepted"),
-            ("HTPTINFO", "Infowiki", "info"),
+        for url, link_title, link_group in [
+            (
+                "https://wiki.tracon.fi/collection/hitpoint-2023-WgmibvZ0M1",
+                "Coniteawiki",
+                "conitea",
+            ),
+            (
+                "https://wiki.tracon.fi/collection/hitpointin-tyovoimawiki-WjWtE61vAT",
+                "Työvoimawiki",
+                "accepted",
+            ),
         ]:
             InfoLink.objects.get_or_create(
                 event=self.event,
                 title=link_title,
                 defaults=dict(
-                    url=f"https://confluence.tracon.fi/display/{wiki_space}",
+                    url=url,
                     group=labour_event_meta.get_group(link_group),
                 ),
             )
