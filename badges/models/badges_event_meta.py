@@ -9,17 +9,6 @@ from .count_badges_mixin import CountBadgesMixin
 
 
 class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
-    badge_layout = models.CharField(
-        max_length=4,
-        default="trad",
-        choices=(("trad", _("Traditional")), ("nick", _("Emphasize nick name"))),
-        verbose_name="Badgen asettelu",
-        help_text=_(
-            "This controls how fields are grouped in the badge. Traditional: job title, firstname surname, "
-            "nick. Emphasize nick name: first name or nick, surname or full name, job title."
-        ),
-    )
-
     real_name_must_be_visible = models.BooleanField(
         default=False,
         verbose_name=_("Require real name to be visible"),
@@ -38,7 +27,9 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         null=True,
         blank=True,
         verbose_name=_("Onboarding access group"),
-        help_text=_("Members of this group are granted access to the onboarding view without being badges admins."),
+        help_text=_(
+            "Members of this group are granted access to the onboarding view without being badges admins."
+        ),
         related_name="as_onboarding_access_group_for",
     )
 
@@ -68,7 +59,9 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
 
     @property
     def onboarding_instructions_html(self):
-        return markdown(self.onboarding_instructions_markdown) if self.onboarding_instructions_markdown else ""
+        return (
+            markdown(self.onboarding_instructions_markdown) if self.onboarding_instructions_markdown else ""
+        )
 
     def is_user_allowed_onboarding_access(self, user):
         if self.is_user_admin(user):

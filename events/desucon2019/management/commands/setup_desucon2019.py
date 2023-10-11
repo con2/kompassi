@@ -229,7 +229,6 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout="nick",
                 real_name_must_be_visible=True,
             ),
         )
@@ -404,7 +403,9 @@ class Setup:
             self.event.labour_event_meta.get_group("accepted"),
             self.event.programme_event_meta.get_group("hosts"),
         ]:
-            GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+            GroupPrivilege.objects.get_or_create(
+                group=group, privilege=privilege, defaults=dict(event=self.event)
+            )
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team
@@ -428,7 +429,9 @@ class Setup:
             team, created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
-                defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
+                defaults=dict(
+                    name=team_name, order=self.get_ordering_number(), group=team_group, email=email
+                ),
             )
 
     def setup_directory(self):

@@ -21,7 +21,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
-#        self.setup_programme()
+        #        self.setup_programme()
         self.setup_intra()
         self.setup_access()
         self.setup_directory()
@@ -204,7 +204,6 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout="nick",
                 real_name_must_be_visible=False,
             ),
         )

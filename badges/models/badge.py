@@ -237,35 +237,15 @@ class Badge(models.Model, CsvExportMixin):
 
     @classmethod
     def get_csv_fields(cls, event):
-        meta = event.badges_event_meta
-        if meta.badge_layout == "trad":
-            # Chief Technology Officer
-            # Santtu Pajukanta
-            # Japsu
-            return [
-                (cls, "personnel_class_name"),
-                (BadgePrivacyAdapter, "surname"),
-                (BadgePrivacyAdapter, "first_name"),
-                (BadgePrivacyAdapter, "nick"),
-                (cls, "job_title"),
-            ]
-        elif meta.badge_layout == "nick":
-            # JAPSU
-            # Santtu Pajukanta
-            # Chief Technology Officer
-            # -OR-
-            # SANTTU
-            # Pajukanta
-            # Chief Technology Officer
-            return [
-                (cls, "personnel_class_name"),
-                (BadgePrivacyAdapter, "nick_or_first_name"),
-                (BadgePrivacyAdapter, "surname_or_full_name"),
-                (cls, "job_title"),
-                (BadgePrivacyAdapter, "surname_for_sorting"),
-            ]
-        else:
-            raise NotImplementedError(meta.badge_layout)
+        return [
+            (cls, "personnel_class_name"),
+            (BadgePrivacyAdapter, "surname"),
+            (BadgePrivacyAdapter, "first_name"),
+            (BadgePrivacyAdapter, "nick"),
+            (BadgePrivacyAdapter, "nick_or_first_name"),
+            (BadgePrivacyAdapter, "surname_or_full_name"),
+            (cls, "job_title"),
+        ]
 
     def get_csv_related(self):
         return {

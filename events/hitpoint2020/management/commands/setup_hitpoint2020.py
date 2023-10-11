@@ -262,7 +262,9 @@ class Setup:
         )
         from ...models import TimeSlot
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
+            self.event, ["admins", "hosts"]
+        )
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -325,13 +327,17 @@ class Setup:
                 self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),
             ),
         ]:
-            TimeBlock.objects.get_or_create(event=self.event, start_time=start_time, defaults=dict(end_time=end_time))
+            TimeBlock.objects.get_or_create(
+                event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
+            )
 
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event, start_time=hour_start_time.replace(minute=30)
+                )
 
         AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
@@ -443,7 +449,9 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, unused = Product.objects.get_or_create(
+                event=self.event, name=name, defaults=product_info
+            )
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -455,7 +463,9 @@ class Setup:
         # Grant accepted workers access to Tracon Slack
         group = self.event.labour_event_meta.get_group("accepted")
         privilege = Privilege.objects.get(slug="tracon-slack")
-        GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+        GroupPrivilege.objects.get_or_create(
+            group=group, privilege=privilege, defaults=dict(event=self.event)
+        )
 
         cc_group = self.event.labour_event_meta.get_group("conitea")
 
@@ -480,7 +490,6 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout="nick",
             ),
         )
 

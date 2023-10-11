@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.db import models, transaction
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -7,6 +9,9 @@ from six import text_type
 from core.utils import time_bool_property
 
 from .constants import BADGE_ELIGIBLE_FOR_BATCHING
+
+if TYPE_CHECKING:
+    from .badge import Badge
 
 
 def contains_moon_runes(unicode_str):
@@ -19,15 +24,26 @@ def contains_moon_runes(unicode_str):
 
 
 class Batch(models.Model):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="badge_batch_set")
+    event = models.ForeignKey(
+        "core.Event",
+        on_delete=models.CASCADE,
+        related_name="badge_batch_set",
+    )
 
-    personnel_class = models.ForeignKey("labour.PersonnelClass", on_delete=models.CASCADE, null=True, blank=True)
+    personnel_class = models.ForeignKey(
+        "labour.PersonnelClass",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated at"))
     printed_at = models.DateTimeField(null=True, blank=True)
 
     is_printed = time_bool_property("printed_at")
+
+    badges: models.QuerySet["Badge"]
 
     @classmethod
     def create(cls, event, personnel_class=None, max_items=100, moon_rune_policy="dontcare"):

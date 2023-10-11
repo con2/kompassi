@@ -192,7 +192,6 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout="nick",
             ),
         )
 

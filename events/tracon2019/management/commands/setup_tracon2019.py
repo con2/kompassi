@@ -241,7 +241,6 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout="nick",
                 real_name_must_be_visible=True,
             ),
         )
@@ -249,7 +248,9 @@ class Setup:
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
+        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(
+            self.event, ["admins", "pos"]
+        )
 
         defaults = dict(
             admin_group=tickets_admin_group,
@@ -400,7 +401,9 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, unused = Product.objects.get_or_create(
+                event=self.event, name=name, defaults=product_info
+            )
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -426,7 +429,9 @@ class Setup:
             View,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
+            self.event, ["admins", "hosts"]
+        )
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -499,13 +504,17 @@ class Setup:
                 self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),
             ),
         ]:
-            TimeBlock.objects.get_or_create(event=self.event, start_time=start_time, defaults=dict(end_time=end_time))
+            TimeBlock.objects.get_or_create(
+                event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
+            )
 
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
+                SpecialStartTime.objects.get_or_create(
+                    event=self.event, start_time=hour_start_time.replace(minute=30)
+                )
 
         for tag_title, tag_class in [
             ("Suositeltu", "hilight"),
@@ -557,7 +566,9 @@ class Setup:
             self.event.labour_event_meta.get_group("accepted"),
             self.event.programme_event_meta.get_group("hosts"),
         ]:
-            GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
+            GroupPrivilege.objects.get_or_create(
+                group=group, privilege=privilege, defaults=dict(event=self.event)
+            )
 
         cc_group = self.event.labour_event_meta.get_group("conitea")
 
@@ -605,7 +616,9 @@ class Setup:
             team, created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
-                defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
+                defaults=dict(
+                    name=team_name, order=self.get_ordering_number(), group=team_group, email=email
+                ),
             )
 
     def setup_directory(self):
@@ -637,7 +650,9 @@ class Setup:
                 title=coach_title,
                 defaults=dict(
                     room=Room.objects.get_or_create(event=self.event, name=room_title)[0],
-                    start_time=(saturday + timedelta(days=14)).replace(hour=hour, minute=0, second=0, tzinfo=self.tz),
+                    start_time=(saturday + timedelta(days=14)).replace(
+                        hour=hour, minute=0, second=0, tzinfo=self.tz
+                    ),
                     length=4 * 60,  # minutes
                     is_using_paikkala=True,
                     is_paikkala_public=False,
@@ -670,8 +685,12 @@ class Setup:
             "osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen "
             '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
         )
-        outward_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, outward_coach.id))
-        return_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, return_coach.id))
+        outward_coach_url = reverse(
+            "programme:paikkala_reservation_view", args=(self.event.slug, outward_coach.id)
+        )
+        return_coach_url = reverse(
+            "programme:paikkala_reservation_view", args=(self.event.slug, return_coach.id)
+        )
         kaatoilmo, unused = Survey.objects.get_or_create(
             event=self.event,
             slug="kaatoilmo",

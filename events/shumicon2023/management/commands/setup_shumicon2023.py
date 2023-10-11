@@ -5,6 +5,7 @@ from django.conf import settings
 from dateutil.tz import tzlocal
 from django.utils.timezone import now
 
+
 class Setup:
     def __init__(self):
         self._ordering = 0
@@ -169,7 +170,7 @@ class Setup:
                 "Etukäteen ostettujen lippujen tarkistaminen ja vaihtaminen rannekkeisiin. Rahaa käsiteltäessä vaaditaan 18 vuoden ikää.",
                 [tyovoima],
             ),
-                (
+            (
                 "narikka",
                 "Narikka",
                 "Syksyllä on jo pimeää ja kylmää, joten ihmisillä on takit päällä. Tapahtuman ajaksi ne kannattaa jättää narikkaan säilöön.",
@@ -193,13 +194,13 @@ class Setup:
                 "Taidekujan vänkärit tekevät säännöllisesti tarkastuskäyntejä taidekujalle esim. jonotusruuhkien välttämiseksi. Lisäksi he pitävät huolta taidekujalaisista ja tarvittaessa tauottavat näitä.",
                 [tyovoima],
             ),
-                (
+            (
                 "valokuvaus",
                 "Valokuvaus",
                 "Valokuvaajat ottavat kuvia tapahtumapaikalla kävijöistä, ohjelmista sekä muista mielenkiintoisista jutuista! Huom. kuvaaja sitoutuu editoimaan kuvia myös tapahtuman aikana.",
                 [tyovoima],
             ),
-                (
+            (
                 "yleinen",
                 "Yleisvänkäri",
                 "Olet conissa niinsanottu joka puun höylä, eli tarvittaessa olet kutsuttavissa auttamaan muita tiimejä erilaisissa tehtävissä, kuten mm. vesipisteiden täytössä tai ruuhka-ajan narikassa.",
@@ -240,14 +241,7 @@ class Setup:
             except JobCategory.DoesNotExist:
                 pass
 
-        for language in [
-            "Suomi",
-            "Ruotsi",
-            "Englanti",
-            "Venäjä",
-            "Somali",
-            "Muu, mikä?"
-        ]:
+        for language in ["Suomi", "Ruotsi", "Englanti", "Venäjä", "Somali", "Muu, mikä?"]:
             NativeLanguage.objects.get_or_create(name=language)
 
         for language in [
@@ -284,7 +278,9 @@ class Setup:
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
+        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(
+            self.event, ["admins", "pos"]
+        )
 
         defaults = dict(
             admin_group=tickets_admin_group,
@@ -355,7 +351,9 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, unused = Product.objects.get_or_create(
+                event=self.event, name=name, defaults=product_info
+            )
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -369,7 +367,6 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout="nick",
                 real_name_must_be_visible=True,
             ),
         )
@@ -390,7 +387,9 @@ class Setup:
             View,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
+            self.event, ["admins", "hosts"]
+        )
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -555,6 +554,7 @@ class Setup:
 
     def handle(self, *args, **opts):
         self.setup_core()
+
 
 class Command(BaseCommand):
     args = ""

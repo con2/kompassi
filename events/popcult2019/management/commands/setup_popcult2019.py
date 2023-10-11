@@ -163,7 +163,6 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
-                badge_layout="nick",
             ),
         )
 
@@ -244,7 +243,9 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, unused = Product.objects.get_or_create(
+                event=self.event, name=name, defaults=product_info
+            )
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)

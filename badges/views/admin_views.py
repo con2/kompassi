@@ -1,18 +1,14 @@
-from django.contrib import messages
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils import timezone
+from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_http_methods, require_safe
+from django.views.decorators.http import require_safe
 
 from core.batches_view import batches_view
-from core.utils import url, initialize_form, groupby_strict
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS
+from core.utils import url
 from labour.models import PersonnelClass
 
-from ..forms import CreateBatchForm, BadgeForm, HiddenBadgeCrouchingForm
-from ..models import Badge, Batch, CountBadgesMixin
+from ..forms import CreateBatchForm
 from ..helpers import badges_admin_required
+from ..models import Batch, CountBadgesMixin
 
 
 # TODO use a generic proxy or have PersonnelClass inherit CountBadgesMixin directly
@@ -40,7 +36,8 @@ def badges_admin_dashboard_view(request, vars, event):
 
     vars.update(
         personnel_classes=[
-            PersonnelClassProxy(personnel_class) for personnel_class in PersonnelClass.objects.filter(event=event)
+            PersonnelClassProxy(personnel_class)
+            for personnel_class in PersonnelClass.objects.filter(event=event)
         ],
         num_badges_total=meta.count_badges(),
         num_badges_printed=meta.count_printed_badges(),
@@ -59,20 +56,6 @@ badges_admin_batches_view = badges_admin_required(
         template="badges_admin_batches_view.pug",
     )
 )
-
-
-@badges_admin_required
-@require_safe
-def badges_admin_export_view(request, vars, event, batch_id, format="csv"):
-    if format not in CSV_EXPORT_FORMATS:
-        raise NotImplemented(format)
-
-    batch = get_object_or_404(Batch, pk=int(batch_id), event=event)
-    badges = batch.badges.all()
-
-    filename = f"{event.slug}-badges-batch{batch.pk}.{format}"
-
-    return csv_response(event, Badge, badges, filename=filename, dialect=CSV_EXPORT_FORMATS[format])
 
 
 def badges_admin_menu_items(request, event):

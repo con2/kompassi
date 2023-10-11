@@ -22,13 +22,6 @@ class BadgePrivacyAdapter:
         return self.badge.__str__()
 
     @property
-    def surname_for_sorting(self):
-        """
-        Always returns the surname regardless of privacy settings. For sorting purposes only.
-        """
-        return self.badge.surname.strip()
-
-    @property
     def first_name(self):
         return self.badge.first_name.strip() if self.badge.is_first_name_visible else ""
 
