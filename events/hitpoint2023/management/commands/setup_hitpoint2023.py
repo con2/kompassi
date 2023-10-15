@@ -397,6 +397,8 @@ class Setup:
             ]
         ).delete()
 
+        self.event.programme_event_meta.create_groups()
+
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
