@@ -1,27 +1,30 @@
 import React, { ReactNode } from "react";
 
-import { t } from "../translations";
+import type { Translations } from "@/translations/en";
 
 import "./MainViewContainer.scss";
+
 
 interface MainViewContainerProps {
   loading?: boolean;
   error?: any;
   children?: ReactNode;
+  translations: Translations;
 }
 
 const MainViewContainer: React.FC<MainViewContainerProps> = ({
   loading,
   error,
   children,
+  translations,
 }) => {
   if (error) {
     return (
       <div className="container MainViewContainer">
         <div className="alert alert-danger">
           {error
-            ? error.message || t((r) => r.MainView.defaultErrorMessage)
-            : t((r) => r.MainView.defaultErrorMessage)}
+            ? error.message || translations.MainView.defaultErrorMessage
+            : translations.MainView.defaultErrorMessage}
         </div>
       </div>
     );

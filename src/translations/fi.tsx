@@ -1,4 +1,4 @@
-import { Translations } from ".";
+import type { Translations } from "./en";
 
 const translations: Translations = {
   AccommodationOnboardingView: {
@@ -210,8 +210,15 @@ const translations: Translations = {
 
   // Do not translate
   LanguageSelection: {
-    en: "In English",
-    fi: "Suomeksi",
+    // NOTE: quality of life hack only until we have a third language
+    currentLanguage: {
+      nameInCurrentLanguage: "suomeksi",
+      code: "fi",
+    },
+    otherLanguage: {
+      nameInOtherLanguage: "In English",
+      code: "en",
+    },
   },
 };
 

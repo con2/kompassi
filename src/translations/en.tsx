@@ -199,7 +199,6 @@ const translations = {
     },
   },
 
-  // Do not translate
   Brand: {
     appName: (
       <>
@@ -207,10 +206,20 @@ const translations = {
       </>
     ),
   },
+
+  // Do not translate
   LanguageSelection: {
-    en: "In English",
-    fi: "Suomeksi",
+    // NOTE: quality of life hack only until we have a third language
+    currentLanguage: {
+      nameInCurrentLanguage: "In English",
+      code: "en",
+    },
+    otherLanguage: {
+      nameInOtherLanguage: "suomeksi",
+      code: "fi",
+    },
   },
 };
 
+export type Translations = typeof translations;
 export default translations;

@@ -1,5 +1,5 @@
-import MainViewContainer from "@/app/MainViewContainer";
-import { T } from "@/translations";
+import MainViewContainer from "@/components/MainViewContainer";
+import { getTranslations } from "@/translations";
 
 interface Product {
   slug: string;
@@ -8,7 +8,7 @@ interface Product {
   priceCents: number;
 }
 
-async function getProducts(): Promise<Product[]> {
+async function getProducts(eventSlug: string): Promise<Product[]> {
   return [
     {
       slug: "weekend",
@@ -41,20 +41,30 @@ async function getProducts(): Promise<Product[]> {
   ];
 }
 
-export default async function TicketsView() {
-  const t = T((r) => r.TicketsView);
-  const tCommon = T((r) => r.Common);
-  const products = await getProducts();
+interface TicketsViewProps {
+  params: {
+    locale: string;
+    eventSlug: string;
+  };
+}
+
+export default async function TicketsView({
+  params: { locale, eventSlug },
+}: TicketsViewProps) {
+  const translations = getTranslations(locale);
+  const t = translations.TicketsView;
+  const tCommon = translations.Common;
+  const products = await getProducts(eventSlug);
   return (
-    <MainViewContainer>
-      <h1 className="mb-4">{t((r) => r.title)}</h1>
+    <MainViewContainer translations={translations}>
+      <h1 className="mb-4">{t.title}</h1>
 
       <table className="table table-striped mb-4">
         <thead>
           <tr className="row">
-            <th className="col-8">{t((r) => r.productsTable.product)}</th>
-            <th className="col">{t((r) => r.productsTable.price)}</th>
-            <th className="col">{t((r) => r.productsTable.quantity)}</th>
+            <th className="col-8">{t.productsTable.product}</th>
+            <th className="col">{t.productsTable.price}</th>
+            <th className="col">{t.productsTable.quantity}</th>
           </tr>
         </thead>
         <tbody>
@@ -76,9 +86,11 @@ export default async function TicketsView() {
       </table>
 
       <div className="mb-4">
-        <h2>{t(r => r.contactForm.title)}</h2>
+        <h2>{t.contactForm.title}</h2>
         <div className="mb-3">
-          <label htmlFor="firstName" className="form-label">{tCommon((r) => r.formFields.firstName.title)}</label>
+          <label htmlFor="firstName" className="form-label">
+            {tCommon.formFields.firstName.title}
+          </label>
           <input
             type="firstName"
             className="form-control"
@@ -87,7 +99,9 @@ export default async function TicketsView() {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="lastName" className="form-label">{tCommon((r) => r.formFields.lastName.title)}</label>
+          <label htmlFor="lastName" className="form-label">
+            {tCommon.formFields.lastName.title}
+          </label>
           <input
             type="lastName"
             className="form-control"
@@ -96,7 +110,9 @@ export default async function TicketsView() {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="email" className="form-label">{tCommon((r) => r.formFields.email.title)}</label>
+          <label htmlFor="email" className="form-label">
+            {tCommon.formFields.email.title}
+          </label>
           <input
             type="email"
             className="form-control"
@@ -109,12 +125,7 @@ export default async function TicketsView() {
           <label htmlFor="phone" className="form-label">
             Password
           </label>
-          <input
-            type="text"
-            className="form-control"
-            id="phone"
-            name="phone"
-          />
+          <input type="text" className="form-control" id="phone" name="phone" />
         </div>
         <div className="mb-3 form-check">
           <input
