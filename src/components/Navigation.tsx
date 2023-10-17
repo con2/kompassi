@@ -1,3 +1,4 @@
+// TODO: remove usePathname, make server component
 "use client";
 
 import Link from "next/link";
