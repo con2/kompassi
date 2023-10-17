@@ -48,9 +48,11 @@ export function middleware(request: NextRequest) {
   }
 
   // inject detected language into URL seen by next.js
-  return NextResponse.rewrite(
-    new URL(`/${detectedLanguage}${request.nextUrl.pathname}`, request.url)
-  );
+  // FIXME it turns out this is an actual physical proxy, so we need to force the protocol
+  // but this approach may not be tenable in the long run
+  const nextUrl = new URL(`/${detectedLanguage}${request.nextUrl.pathname}`, request.url);
+  nextUrl.protocol = "http";
+  return NextResponse.rewrite(nextUrl);
 }
 
 export const config = {
