@@ -185,26 +185,6 @@ kompassi_environment:
     value: !Var kompassi_installation_name
   - name: KOMPASSI_INSTALLATION_SLUG
     value: !Var kompassi_installation_slug
-  - name: NEXMO_USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: kompassi
-        key: nexmoUsername
-  - name: NEXMO_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: kompassi
-        key: nexmoPassword
-  - name: NEXMO_FROM
-    valueFrom:
-      secretKeyRef:
-        name: kompassi
-        key: nexmoFrom
-  - name: NEXMO_INBOUND_KEY
-    valueFrom:
-      secretKeyRef:
-        name: kompassi
-        key: nexmoInboundKey
   - name: KOMPASSI_CROWD_APPLICATION_NAME
     valueFrom:
       secretKeyRef:

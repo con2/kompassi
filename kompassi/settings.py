@@ -467,13 +467,6 @@ if "api_v2" in INSTALLED_APPS:
     )
 
 
-if "nexmo" in INSTALLED_APPS:
-    NEXMO_USERNAME = env("NEXMO_USERNAME", default="username")
-    NEXMO_PASSWORD = env("NEXMO_PASSWORD", default="password")
-    NEXMO_FROM = env("NEXMO_FROM", default="358505551234")
-    NEXMO_INBOUND_KEY = env("NEXMO_INBOUND_KEY", default="deadbeef")
-
-
 if env("KOMPASSI_CROWD_APPLICATION_NAME", default=""):
     INSTALLED_APPS = INSTALLED_APPS + ("crowd_integration",)
     KOMPASSI_CROWD_APPLICATION_NAME = env("KOMPASSI_CROWD_APPLICATION_NAME")
