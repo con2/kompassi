@@ -41,9 +41,7 @@ botocore==1.31.66
 celery==5.3.4
     # via -r requirements.in
 certifi==2023.7.22
-    # via
-    #   requests
-    #   sentry-sdk
+    # via requests
 cffi==1.16.0
     # via
     #   cryptography
@@ -286,8 +284,6 @@ rpds-py==0.10.6
     #   referencing
 s3transfer==0.7.0
     # via boto3
-sentry-sdk==1.32.0
-    # via -r requirements.in
 six==1.16.0
     # via
     #   asttokens
@@ -318,7 +314,6 @@ urllib3==2.0.7
     # via
     #   botocore
     #   requests
-    #   sentry-sdk
 vine==5.0.0
     # via
     #   amqp

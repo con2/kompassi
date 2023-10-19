@@ -27,7 +27,7 @@ MKPATH = mkpath
 DEBUG = env.bool("DEBUG", default=False)
 
 CORS_ORIGIN_ALLOW_ALL = DEBUG
-CORS_URLS_REGEX = r"^/(api|oauth2)/.*$"
+CORS_URLS_REGEX = r"^/(api|oauth2|oidc)/.*$"
 CORS_ORIGIN_WHITELIST = env("CORS_ORIGIN_WHITELIST", default="").split()
 
 ADMINS = [parseaddr(addr) for addr in env("ADMINS", default="").split(",") if addr]
@@ -495,15 +495,3 @@ KOMPASSI_SSH_KNOWN_HOSTS_FILE = env(
 # used by manage.py setup to noop if already run for this deploy
 KOMPASSI_SETUP_RUN_ID = env("KOMPASSI_SETUP_RUN_ID", default="")
 KOMPASSI_SETUP_EXPIRE_SECONDS = 300
-
-
-if env("SENTRY_DSN", default=""):
-    import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration
-
-    sentry_sdk.init(
-        dsn=env("SENTRY_DSN", default=""),
-        integrations=[DjangoIntegration()],
-        traces_sample_rate=1.0,
-        send_default_pii=True,
-    )

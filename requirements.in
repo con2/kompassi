@@ -42,7 +42,6 @@ regex
 reportlab
 requests
 requests-oauthlib
-sentry-sdk
 unicodecsv
 vobject
 XlsxWriter

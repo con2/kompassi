@@ -205,11 +205,6 @@ kompassi_environment:
       secretKeyRef:
         name: kompassi
         key: desuprofileOauth2ClientSecret
-  - name: SENTRY_DSN
-    valueFrom:
-      secretKeyRef:
-        name: kompassi
-        key: sentryDsn
   - name: CORS_ORIGIN_WHITELIST
     value: !Join
       items: !Var kompassi_cors_allowed_hosts
