@@ -9,3 +9,10 @@ postgres_secret_managed: false
 node_environment:
   - name: PORT
     value: "3000"
+
+node_volumes: []
+node_volume_mounts: []
+
+node_container_security_context:
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
