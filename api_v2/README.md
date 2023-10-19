@@ -11,13 +11,23 @@ Currently the version numbering is mostly based on the authentication method:
 
 Public resources are under `v1`. The `v2` API is mostly final. The `v1` API is growing organically and will be deprecated at some point. When a proper CRUD REST API for most resources is designed, it will become `v3`.
 
-## OAuth2 SSO and user info endpoint
+## Legacy OAuth2
 
 An OAuth2 provider is implemented using the `oauthlib` and `django-oauth-toolkit` libraries. Its views are mounted in the `urls.py` of this app.
 
 A user info endpoint is provided at `/api/v2/people/me` for purposes of OAuth2 based single sign-on. First perform the OAuth2 authentication dance to get a token, and then use that token to get current user information from that endpoint.
 
-At the time of implementation the OpenID Connect specification was not yet ready. Our non-standard implementation is to be replaced with an OpenID Connect compliant implementation at some point.
+At the time of implementation the OpenID Connect specification was not yet ready, but some apps rely on this behaviour, so another OIDC provider is implemented at `/oidc/`.
+
+## OpenID Connect
+
+Using the same `oauthlib` and `django-oauth-toolkit`, there is a standard OpenID Connect provider mounted at `/oidc/`. Query for its configuration information at `/oidc/.well-known/openid-configuration/`. Note that this deviates from Kompassi conventions in that the trailing slash is required, not optional as in most Kompassi endpoints.
+
+To enable local development with clients that require the `RS256` algorithm to validate the JWT tokens issued by Kompassi, you need to create an RSA private key and pass it to Kompassi via environment variables:
+
+    openssl genrsa -out local.key 4096
+    export OIDC_RSA_PRIVATE_KEY="$(<local.key)"
+    docker compose up
 
 ## This app was a mistake and should be integrated into `core`
 
