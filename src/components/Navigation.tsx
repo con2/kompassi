@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Translations } from "@/translations/en";
+import { supportedLanguages } from "@/translations";
 
 interface NavigationProps {
   translations: Translations;
@@ -11,7 +12,17 @@ interface NavigationProps {
 
 export default function Navigation({ translations }: NavigationProps) {
   const { otherLanguage } = translations.LanguageSelection;
-  const pathname = usePathname();
+  let pathname = usePathname();
+
+  // Remove the language prefix from the pathname
+  // If we were using <Link>, Next.js would handle this for us
+  // But that also sometimes preloads the link, causing a language change
+  for (const supportedLanguage of supportedLanguages) {
+    if (pathname.startsWith(`/${supportedLanguage}/`)) {
+      pathname = pathname.slice(supportedLanguage.length + 1);
+      break;
+    }
+  }
 
   // implemented in ../middleware.ts
   const languageToggleUri = `/${otherLanguage.code}${pathname}`;
