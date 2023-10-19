@@ -66,7 +66,8 @@ class SignupExtraForm(forms.ModelForm):
 
         if want_certificate and not certificate_delivery_address:
             raise forms.ValidationError(
-                "Koska olet valinnut haluavasi työtodistuksen, on " "työtodistuksen toimitusosoite täytettävä."
+                "Koska olet valinnut haluavasi työtodistuksen, on "
+                "työtodistuksen toimitusosoite täytettävä."
             )
 
         return certificate_delivery_address
