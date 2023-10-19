@@ -19,7 +19,6 @@ django-oauth-toolkit
 django-postgres-extra
 django-redis
 django-storages
-djangorestframework
 drf-nested-routers
 flake8
 graphene-django

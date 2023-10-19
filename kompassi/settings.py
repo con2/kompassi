@@ -165,7 +165,6 @@ INSTALLED_APPS = (
     "pypugjs.ext.django",
     "crispy_forms",
     "oauth2_provider",
-    "rest_framework",
     "bootstrap3",
     "graphene_django",
     # 1st party embedded apps
@@ -182,7 +181,6 @@ INSTALLED_APPS = (
     "mailings",
     "api",
     "api_v2",
-    "api_v3",
     "badges",
     "access",
     "membership",
@@ -336,23 +334,6 @@ LOGGING = {
             "propagate": True,
         },
     },
-}
-
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"],
-    "DEFAULT_RENDERER_CLASSES": (
-        "api_v3.renderers.CamelCaseJSONRenderer",
-        "rest_framework.renderers.BrowsableAPIRenderer",
-    ),
-    "DEFAULT_PARSER_CLASSES": (
-        "api_v3.parsers.CamelCaseJSONRenderer",
-        "rest_framework.parsers.FormParser",
-        "rest_framework.parsers.MultiPartParser",
-    ),
 }
 
 LOGIN_URL = "/login"

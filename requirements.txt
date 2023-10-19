@@ -124,9 +124,7 @@ django-redis==5.4.0
 django-storages==1.14.2
     # via -r requirements.in
 djangorestframework==3.14.0
-    # via
-    #   -r requirements.in
-    #   drf-nested-routers
+    # via drf-nested-routers
 drf-nested-routers==0.93.4
     # via -r requirements.in
 executing==2.0.0

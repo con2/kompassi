@@ -18,7 +18,9 @@ def noop_context():
     yield
 
 
-def setup_should_run(run_id=settings.KOMPASSI_SETUP_RUN_ID, expire_seconds=settings.KOMPASSI_SETUP_EXPIRE_SECONDS):
+def setup_should_run(
+    run_id=settings.KOMPASSI_SETUP_RUN_ID, expire_seconds=settings.KOMPASSI_SETUP_EXPIRE_SECONDS
+):
     """
     When deployed under Kubernetes and using multiple replicas, we want only the first replica
     to perform the setup. This is achieved using an environment variable KOMPASSI_SETUP_RUN_ID
@@ -47,20 +49,30 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if not setup_should_run():
-            logger.info(f"manage.py setup: has already run for {settings.KOMPASSI_SETUP_RUN_ID}, doing nothing")
+            logger.info(
+                f"manage.py setup: has already run for {settings.KOMPASSI_SETUP_RUN_ID}, doing nothing"
+            )
             return
 
         commands = get_commands()
 
         organizations = [
-            app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("organizations.")
+            app_name.split(".")[-1]
+            for app_name in settings.INSTALLED_APPS
+            if app_name.startswith("organizations.")
         ]
         organization_commands = [
-            command for command in (f"setup_{organization}" for organization in organizations) if command in commands
+            command
+            for command in (f"setup_{organization}" for organization in organizations)
+            if command in commands
         ]
 
-        events = [app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("events.")]
-        event_commands = [command for command in (f"setup_{event}" for event in events) if command in commands]
+        events = [
+            app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("events.")
+        ]
+        event_commands = [
+            command for command in (f"setup_{event}" for event in events) if command in commands
+        ]
 
         management_commands = [
             # (('kompassi_i18n', '-acv2'), dict()),
@@ -69,7 +81,6 @@ class Command(BaseCommand):
             (("setup_core",), dict()),
             (("setup_labour_common_qualifications",), dict()),
             (("setup_api_v2",), dict()),
-            (("setup_api_v3",), dict()),
             (("setup_access",), dict()),
         ]
 
@@ -87,5 +98,5 @@ class Command(BaseCommand):
 
         for pargs, opts in management_commands:
             print("** Running:", pargs[0])
-            with (atomic() if pargs[0].startswith("setup") else noop_context()):
+            with atomic() if pargs[0].startswith("setup") else noop_context():
                 call_command(*pargs, **opts)

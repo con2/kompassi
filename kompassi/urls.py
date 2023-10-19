@@ -25,7 +25,6 @@ for app_name in [
     "payments",
     "api",
     "api_v2",
-    "api_v3",
     "badges",
     "access",
     "desuprofile_integration",
