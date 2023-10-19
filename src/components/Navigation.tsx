@@ -18,7 +18,7 @@ export default function Navigation({ translations }: NavigationProps) {
   // If we were using <Link>, Next.js would handle this for us
   // But that also sometimes preloads the link, causing a language change
   for (const supportedLanguage of supportedLanguages) {
-    if (pathname.startsWith(`/${supportedLanguage}/`)) {
+    if (pathname === `/${supportedLanguage}` || pathname.startsWith(`/${supportedLanguage}/`)) {
       pathname = pathname.slice(supportedLanguage.length + 1);
       break;
     }
