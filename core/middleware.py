@@ -7,6 +7,7 @@ NEVER_BLOW_PAGE_WIZARD_PREFIXES = [
     # that should not blow the page wizard when used within a signup page wizard flow
     "/desuprofile/confirm/",
     "/oauth2/",
+    "/oidc/",
 ]
 
 
@@ -41,8 +42,6 @@ class PageWizardMiddleware:
         else:
             page_wizard_clear(request)
 
-        None
-
 
 class EventOrganizationMiddleware:
     """
@@ -66,5 +65,3 @@ class EventOrganizationMiddleware:
                     request.organization = event.organization
             elif organization_slug := resolver_match.kwargs.get("organization_slug"):
                 request.organization = Organization.objects.filter(slug=organization_slug).first()
-
-        return None
