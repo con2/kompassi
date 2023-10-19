@@ -5,9 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Translations } from "@/translations/en";
 
-
 interface NavigationProps {
-  translations: Translations
+  translations: Translations;
 }
 
 export default function Navigation({ translations }: NavigationProps) {
@@ -20,10 +19,18 @@ export default function Navigation({ translations }: NavigationProps) {
   return (
     <div className="navbar navbar-dark bg-primary navbar-expand-lg">
       <div className="container-fluid">
-        <Link href="/" className="navbar-brand">{translations.Brand.appName}</Link>
-          <div className="navbar-nav ms-auto">
-            <Link href={languageToggleUri} className="nav-link" lang={otherLanguage.code}>{otherLanguage.nameInOtherLanguage}</Link>
-          </div>
+        <Link href="/" className="navbar-brand">
+          {translations.Brand.appName}
+        </Link>
+        <div className="navbar-nav ms-auto">
+          <a
+            href={languageToggleUri}
+            className="nav-link"
+            lang={otherLanguage.code}
+          >
+            {otherLanguage.nameInOtherLanguage}
+          </a>
+        </div>
       </div>
     </div>
   );
