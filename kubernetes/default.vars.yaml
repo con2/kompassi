@@ -236,6 +236,12 @@ kompassi_environment:
   - name: MINIO_ENDPOINT_URL
     value: !Var minio_endpoint_url
 
+  - name: OIDC_RSA_PRIVATE_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: oidcRsaPrivateKey
+
 # Common volumes for kompassi, celery and nginx pods.
 kompassi_volume_mounts:
   - mountPath: /usr/src/app/media

@@ -471,8 +471,8 @@ if "api_v2" in INSTALLED_APPS:
             write="Muokata käyttäjä- ja henkilötietojasi",
         ),
         PKCE_REQUIRED=False,
+        OIDC_RSA_PRIVATE_KEY=env("OIDC_RSA_PRIVATE_KEY", default=""),
     )
-
 
 if env("KOMPASSI_CROWD_APPLICATION_NAME", default=""):
     INSTALLED_APPS = INSTALLED_APPS + ("crowd_integration",)
