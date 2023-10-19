@@ -1,4 +1,3 @@
-import MainViewContainer from "@/components/MainViewContainer";
 import { getTranslations } from "@/translations";
 
 interface Product {
@@ -56,7 +55,7 @@ export default async function TicketsView({
   const tCommon = translations.Common;
   const products = await getProducts(eventSlug);
   return (
-    <MainViewContainer translations={translations}>
+    <div className="container mt-4">
       <h1 className="mb-4">{t.title}</h1>
 
       <table className="table table-striped mb-4">
@@ -123,7 +122,7 @@ export default async function TicketsView({
         </div>
         <div className="mb-3">
           <label htmlFor="phone" className="form-label">
-            Password
+          {tCommon.formFields.phone.title}
           </label>
           <input type="text" className="form-control" id="phone" name="phone" />
         </div>
@@ -131,17 +130,19 @@ export default async function TicketsView({
           <input
             type="checkbox"
             className="form-check-input"
-            id="exampleCheck1"
+            id="acceptTermsAndConditions"
+            name="acceptTermsAndConditions"
+            required={true}
           />
-          <label className="form-check-label" htmlFor="exampleCheck1">
-            Check me out
+          <label className="form-check-label" htmlFor="acceptTermsAndConditions">
+            {t.acceptTermsAndConditions("https://example.com/terms-and-conditions")}
           </label>
         </div>
       </div>
 
-      <div className="d-grid gap-2">
-        <button className="btn btn-primary btn-lg">Purchase</button>
+      <div className="d-grid gap-2 mb-4">
+        <button className="btn btn-primary btn-lg">{t.purchaseButtonText}</button>
       </div>
-    </MainViewContainer>
+    </div>
   );
 }

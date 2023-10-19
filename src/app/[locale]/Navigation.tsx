@@ -3,14 +3,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { Translations } from "@/translations/en";
-import { supportedLanguages } from "@/translations";
+import { SupportedLanguage, getTranslations, supportedLanguages } from "@/translations";
 
 interface NavigationProps {
-  translations: Translations;
+  locale: SupportedLanguage;
 }
 
-export default function Navigation({ translations }: NavigationProps) {
+export default function Navigation({ locale }: NavigationProps) {
+  const translations = getTranslations(locale);
   const { otherLanguage } = translations.LanguageSelection;
   let pathname = usePathname();
 

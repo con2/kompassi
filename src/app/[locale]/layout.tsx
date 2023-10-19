@@ -1,5 +1,5 @@
 import { getTranslations, toSupportedLanguage } from "@/translations";
-import Navigation from "@/components/Navigation";
+import Navigation from "@/app/[locale]/Navigation";
 import "./globals.scss";
 import type { Metadata } from "next";
 
@@ -19,12 +19,13 @@ export default function RootLayout({
   children,
   params: { locale },
 }: RootLayoutProps) {
+  const supportedLanguage = toSupportedLanguage(locale);
   const translations = getTranslations(locale);
 
   return (
-    <html lang={toSupportedLanguage(locale)}>
+    <html lang={supportedLanguage}>
       <body>
-        <Navigation translations={translations} />
+        <Navigation locale={supportedLanguage} />
         {children}
       </body>
     </html>

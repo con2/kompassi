@@ -197,6 +197,10 @@ const translations = {
     contactForm: {
       title: "Contact information",
     },
+    purchaseButtonText: "Purchase",
+    acceptTermsAndConditions(url: string) {
+      return (<>I accept the <a href={url} target="_blank" rel="noopener noreferrer">terms and conditions</a> (required).</>);
+    },
   },
 
   Brand: {

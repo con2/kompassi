@@ -198,6 +198,10 @@ const translations: Translations = {
     contactForm: {
       title: "Yhteystiedot",
     },
+    purchaseButtonText: "Osta",
+    acceptTermsAndConditions(url: string) {
+      return (<>Hyväksyn <a href={url} target="_blank" rel="noopener noreferrer">lipunmyynnin ehdot</a> (pakollinen).</>);
+    },
   },
 
   Brand: {
