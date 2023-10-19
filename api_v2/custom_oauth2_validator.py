@@ -9,14 +9,11 @@ logger = logging.getLogger("kompassi")
 class CustomOAuth2Validator(OAuth2Validator):
     oidc_claim_scope = None
 
-    def get_userinfo_claims(self, request):
-        """
-        Used by /oidc/userinfo/
-        """
-        claims = super().get_userinfo_claims(request)
-        claims.update(
+    def get_additional_claims(self, request):
+        return dict(
             email=request.user.person.email,
-            display_name=request.user.person.display_name,
+            family_name=request.user.person.surname,
+            given_name=request.user.person.first_name,
             groups=[group.name for group in request.user.groups.all()],
+            name=request.user.person.display_name,
         )
-        return claims
