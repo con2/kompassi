@@ -419,6 +419,10 @@ class Person(models.Model):
         return calculate_age(self.birth_date, the_date)
 
     def as_dict(self):
+        """
+        Used by legacy /api/v2/people/me endpoint.
+        /oidc/userinfo endpoint contents defined at api_v2.custom_oauth2_validator.
+        """
         return dict(
             pick_attrs(
                 self,

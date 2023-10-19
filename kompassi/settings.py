@@ -459,7 +459,14 @@ if "api_v2" in INSTALLED_APPS:
     AUTHENTICATION_BACKENDS = ("oauth2_provider.backends.OAuth2Backend",) + AUTHENTICATION_BACKENDS
 
     OAUTH2_PROVIDER = dict(
+        OIDC_ENABLED=True,
+        OIDC_RP_INITIATED_LOGOUT_ENABLED=True,
+        OIDC_RP_INITIATED_LOGOUT_ALWAYS_PROMPT=False,
+        OAUTH2_VALIDATOR_CLASS="api_v2.custom_oauth2_validator.CustomOAuth2Validator",
         SCOPES=dict(
+            # oidc scope
+            openid="Kirjautua sisään muihin sovelluksiin",
+            # legacy oauth2 scopes
             read="Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi",
             write="Muokata käyttäjä- ja henkilötietojasi",
         ),
