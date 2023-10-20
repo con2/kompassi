@@ -1,15 +1,13 @@
 extend core_profile_base
+- load trans from i18n
 block title
-  | Sähköposti&shy;osoitteen vahvistaminen
+  | {% trans "E-mail address verification" %}
 block profile_content
   fieldset
-    legend Sähköposti&shy;osoitteen vahvistaminen
+    legend {% trans "E-mail address verification" %}
 
-    p Pyydämme kaikkia käyttäjiä vahvistamaan sähköposti&shy;osoitteensa napsauttamalla sähköpostiinsa lähetettyä vahvistuslinkkiä. Jotkin {{ settings.KOMPASSI_INSTALLATION_NAME_GENITIVE }} toiminnot edellyttävät vahvistettua sähköposti&shy;osoitetta.
-
-    if code
-      p Sähköposti&shy;osoitteeseesi <em>{{ user.person.email }}</em> on {{ code.created_at|date }} lähetetty vahvistuslinkki, jota napsauttamalla voit vahvistaa sähköposti&shy;osoitteesi. Jos viesti ei ole tullut perille tai vahvistaminen ei sen linkillä jostain syystä onnistu, voit pyytää uuden vahvistuslinkin allaolevalla napilla.
+    p {% trans "We ask all users to verify their e-mail addresses using a link sent to the address provided. If you have not received the verification e-mail, you can request a new one using the button below." %}
 
     form(action='{% url "core_email_verification_request_view" %}', method='post')
       {% csrf_token %}
-      button.btn.btn-success(type='submit') Lähetä vahvistuslinkki
+      button.btn.btn-success(type='submit') {% trans "Send verification link" %}

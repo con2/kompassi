@@ -368,3 +368,12 @@ msgstr "Discord-käyttäjänimesi (HUOM: ei näyttönimi). Tapahtumat voivat kä
 
 msgid "You are logged in. In order to use a password reset link, please log out first or use the Incognito/Private Browsing mode of your browser."
 msgstr "Olet kirjautunut sisään. Käyttääksesi salasanan palautuslinkkiä ole hyvä ja kirjaudu ensin ulos tai käytä selaimesi Incognito/Private Browsing -tilaa."
+
+msgid "We ask all users to verify their e-mail addresses using a link sent to the address provided. If you have not received the verification e-mail, you can request a new one using the button below."
+msgstr "Pyydämme kaikkia käyttäjiä vahvistamaan sähköpostiosoitteensa annettuun osoitteeseen lähetetyllä linkillä. Jos et ole saanut vahvistusviestiä, voit pyytää uuden alla olevasta painikkeesta."
+
+msgid "E-mail address verification"
+msgstr "Sähköpostiosoitteen vahvistaminen"
+
+msgid "Send verification link"
+msgstr "Lähetä vahvistuslinkki"

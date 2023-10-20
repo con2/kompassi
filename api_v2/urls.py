@@ -2,9 +2,9 @@ from django.conf.urls import include
 from django.conf import settings
 
 from csp.decorators import csp_exempt
-from oauth2_provider.views.base import AuthorizationView, TokenView, RevokeTokenView
+from oauth2_provider.views.base import TokenView, RevokeTokenView
 
-from .views import MyselfResource, EventResource
+from .views import MyselfResource, EventResource, CustomAuthorizationView
 from django.urls import re_path, path
 
 
@@ -12,9 +12,16 @@ assert "oauth2_provider" in settings.INSTALLED_APPS, "api_v2 requires oauth2_pro
 
 
 urlpatterns = [
+    # overridden to implement email verification check
+    re_path(
+        r"^oidc/authorize/$",
+        csp_exempt(CustomAuthorizationView.as_view()),
+        name="authorize-kompassi-override",
+    ),
+    re_path(r"^oauth2/authorize/?$", csp_exempt(CustomAuthorizationView.as_view()), name="authorize"),
+    # standards-compliant oidc provider
     path("oidc/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     # legacy oauth2 endpoints
-    re_path(r"^oauth2/authorize/?$", csp_exempt(AuthorizationView.as_view()), name="authorize"),
     re_path(r"^oauth2/token/?$", csp_exempt(TokenView.as_view()), name="token"),
     re_path(r"^oauth2/revoke/?$", csp_exempt(RevokeTokenView.as_view()), name="revoke"),
     re_path(r"^api/v2/people/me?$", csp_exempt(MyselfResource.as_view()), name="api_v2_self_resource"),
