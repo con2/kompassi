@@ -1,6 +1,4 @@
 .messages
-  include core_language_warning
-
   for message in messages
     if message.tags
       .alert(class="alert-{{ message.tags }}") {{ message|safe }}

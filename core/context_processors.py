@@ -21,7 +21,6 @@ def core_context(request):
         core_profile_menu_items=core_profile_menu_items(request),
         other_language_code=other_language_code,
         other_language_name=other_language_name,
-        show_language_warning=(other_language_code == "fi"),
         # google analytics deactivated on admin pages for privacy
         is_admin_page="/admin" in request.path,
     )
