@@ -57,13 +57,4 @@ html
 
     script(src='{% static "jquery-1.10.2.min.js" %}')
     script(src='{% static "bootstrap.min.js" %}')
-    if settings.GOOGLE_ANALYTICS_TOKEN and not is_admin_page
-      script.
-        (function(e,t,n,i,s,a,c){e[n]=e[n]||function(){(e[n].q=e[n].q||[]).push(arguments)}
-        ;a=t.createElement(i);c=t.getElementsByTagName(i)[0];a.async=true;a.src=s
-        ;c.parentNode.insertBefore(a,c)
-        })(window,document,"galite","script","{% static 'core/js/ga-lite.min.js' %}");
-
-        galite('create', '{{ settings.GOOGLE_ANALYTICS_TOKEN }}', 'auto');
-        galite('send', 'pageview');
     block extra_scripts
