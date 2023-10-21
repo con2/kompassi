@@ -198,6 +198,7 @@ INSTALLED_APPS = (
     # organizations
     "organizations.tracon_ry",
     "organizations.kotae_ry",
+    "organizations.ropecon_ry",
     # events
     "events.hitpoint2015",
     "events.kuplii2015",
@@ -290,6 +291,7 @@ INSTALLED_APPS = (
     "events.desucon2024",
     "events.tracon2024",
     "events.kuplii2024",
+    "events.solmukohta2024",
 )
 
 LOGGING = {
@@ -398,7 +400,6 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="spam@example.com")
-GOOGLE_ANALYTICS_TOKEN = env("GOOGLE_ANALYTICS_TOKEN", default="")
 
 
 if "lippukala" in INSTALLED_APPS:
