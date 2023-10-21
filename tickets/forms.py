@@ -49,6 +49,7 @@ class AccommodationInformationForm(forms.ModelForm):
         model = AccommodationInformation
         fields = ("first_name", "last_name", "phone_number", "email")
 
+
 class AccommodationInformationAdminForm(AccommodationInformationForm):
     class Meta:
         model = AccommodationInformation
@@ -84,32 +85,34 @@ class OrderProductForm(forms.ModelForm):
         count_field.widget.attrs["max"] = count_field.max_value = max_count_per_product
 
     @classmethod
-    def get_for_order(cls, request, order, admin=False):
-        product_criteria = dict(event=order.event)
-
-        if not admin:
-            product_criteria.update(available=True)
-
+    def get_for_order(cls, request, order, admin=False, code=""):
         return [
             cls.get_for_order_and_product(request, order, product, admin=admin)
-            for product in Product.objects.filter(**product_criteria).order_by("ordering")
+            for product in Product.get_products_for_event(order.event, code=code)
         ]
 
     @classmethod
     def get_for_order_and_product(cls, request, order, product, admin=False):
-        order_product, unused = OrderProduct.objects.get_or_create(order=order, product=product)
+        if order.pk:
+            order_product, unused = OrderProduct.objects.get_or_create(order=order, product=product)
+        else:
+            order_product = OrderProduct(order=order, product=product)
 
         readonly = admin and (
-            (order.batch is not None and product.requires_shipping) or (order.is_paid and product.electronic_ticket)
+            (order.batch is not None and product.requires_shipping)
+            or (order.is_paid and product.electronic_ticket)
         )
 
         return initialize_form(
             OrderProductForm,
             request,
             instance=order_product,
-            prefix="o%d" % order_product.pk,
+            prefix="p%d" % product.pk,
             readonly=readonly,
-            max_count_per_product=order.event.tickets_event_meta.max_count_per_product,
+            max_count_per_product=min(
+                product.amount_available,
+                order.event.tickets_event_meta.max_count_per_product,
+            ),
         )
 
     class Meta:
@@ -134,7 +137,8 @@ class CustomerForm(forms.ModelForm):
             "last_name",
             "phone_number",
             "email",
-            indented_without_label("allow_marketing_email"),
+            # this field has really never been used
+            # indented_without_label("allow_marketing_email"),
         ]
 
         terms_and_conditions_url = meta.terms_and_conditions_url.translate()

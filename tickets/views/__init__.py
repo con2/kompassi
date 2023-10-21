@@ -1,4 +1,4 @@
-from .public_views import (
+from .tickets_v1_views import (
     ALL_PHASES,
     tickets_accommodation_view,
     tickets_address_view,
@@ -9,6 +9,8 @@ from .public_views import (
     tickets_event_box_context,
     tickets_shirts_view,
 )
+
+from .tickets_v1_5_views import tickets_router_view
 
 from .admin_views import (
     tickets_admin_accommodation_create_view,

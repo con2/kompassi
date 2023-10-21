@@ -1,0 +1,31 @@
+extends base
+- load i18n
+- load crispy_forms_tags
+// NOTE: this is the "v1.5" version of the ticket shop
+// the v1 version still exists and is in tickets_*_phase.pug
+block title
+  | {% trans "Ticket sales" %}
+block content
+  if order.is_paid
+    h2 {% trans "Thank you for your order!" %}
+    p {% trans "Your order is now complete. A confirmation message with electronic tickets has been sent to the e-mail address you provided." %}
+  else
+    h2 {% trans "Your order is not yet complete!" %}
+    p {% trans "Tickets have been reserved for you but payment has not yet been made. If you believe this is in error, please contact ticket sales with your order number. Otherwise, please proceed to payment to complete your order." %}
+
+  p: <strong>{% trans "Order number:" %}</strong>: {{ order.formatted_order_number }}
+
+  include tickets_order_fragment
+
+  form.form-horizontal(method="POST", style="margin-bottom: 4em")
+    {% csrf_token %}
+    if order.is_paid
+      button.btn.btn-primary.btn-block(type="submit", name="action", value="new-order")
+        | {% trans "Make another order" %}
+    else
+      button.btn.btn-success.btn-block(type="submit", name="action", value="pay-order")
+        i.fa.fa-money.kompassi-icon-space-right
+        | {% trans "Proceed to payment" %}
+      button.btn.btn-danger(type="submit", name="action", value="cancel-order")
+        i.fa.fa-trash.kompassi-icon-space-right
+        | {% trans "Cancel order" %}

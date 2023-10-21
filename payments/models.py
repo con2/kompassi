@@ -173,7 +173,10 @@ class CheckoutPayment(models.Model):
             }
         ]
 
-        if term.entrance_fee_cents and membership_fee_payment.payment_type == "membership_fee_with_entrance_fee":
+        if (
+            term.entrance_fee_cents
+            and membership_fee_payment.payment_type == "membership_fee_with_entrance_fee"
+        ):
             items.append(
                 {
                     "unitPrice": term.entrance_fee_cents,
@@ -221,13 +224,17 @@ class CheckoutPayment(models.Model):
         if not hasattr(self, "_membership_fee_payment"):
             from membership.models import MembershipFeePayment
 
-            self._membership_fee_payment = MembershipFeePayment.objects.filter(reference_number=self.reference).first()
+            self._membership_fee_payment = MembershipFeePayment.objects.filter(
+                reference_number=self.reference
+            ).first()
 
         return self._membership_fee_payment
 
     def perform_create_payment_request(self, request):
         if not settings.DEBUG and self.meta.checkout_merchant == META_DEFAULTS["checkout_merchant"]:
-            raise ValueError(f"Event {self.event} has testing merchant in production, please change this in admin")
+            raise ValueError(
+                f"Event {self.event} has testing merchant in production, please change this in admin"
+            )
 
         body = {
             "stamp": str(self.stamp),
@@ -325,14 +332,20 @@ class CheckoutPayment(models.Model):
 
     def get_redirect(self):
         if self.tickets_order:
-            # Old webshop order
-            if self.status in ["ok", "pending", "delayed"]:
-                return redirect("tickets_thanks_view", self.tickets_order.event.slug)
-            else:
-                return redirect("tickets_confirm_view", self.tickets_order.event.slug)
+            match self.tickets_order.event.tickets_event_meta.tickets_view_version:
+                case "v1":
+                    if self.status in ["ok", "pending", "delayed"]:
+                        return redirect("tickets_thanks_view", self.tickets_order.event.slug)
+                    else:
+                        return redirect("tickets_confirm_view", self.tickets_order.event.slug)
+                case "v1.5":
+                    # XXX named tickets_welcome_view for historical reasons
+                    # but it actually shows the order confirmation view
+                    return redirect("tickets_welcome_view", self.tickets_order.event.slug)
+                case unsupported_version:
+                    raise NotImplementedError(unsupported_version)
+
         elif self.membership_fee_payment:
             return redirect("core_organization_view", self.membership_fee_payment.term.organization.slug)
         else:
-            # Not old webshop order (NOTE: should add handler, generic payments are bad m'kay)
-            logger.warn("Received payment without webshop order or other handler: %s", payment.stamp)
-            return redirect("core_frontpage_view")
+            raise NotImplementedError(f"Received payment without handler: {self.stamp}")

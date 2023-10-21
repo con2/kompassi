@@ -16,8 +16,6 @@ tbody
         div
           if iform.instance.product.in_stock
             - crispy iform
-          elif admin_title
-            - crispy iform
           else
-            // XXX fugly
-            | Loppuunmyyty
+            input(type="hidden", name="p{{ iform.instance.product.id }}-count", value="0")
+            | {% trans "Sold out" %}

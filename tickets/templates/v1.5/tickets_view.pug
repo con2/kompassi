@@ -1,0 +1,24 @@
+extends base
+- load i18n
+- load crispy_forms_tags
+// NOTE: this is the "v1.5" version of the ticket shop
+// the v1 version still exists and is in tickets_*_phase.pug
+block title
+  | {% trans "Ticket sales" %}
+block content
+  {{ event.tickets_event_meta.front_page_text|safe }}
+  form.form-horizontal(method="POST")
+    h2 {% trans "Product selection" %}
+    if request.GET.code
+      div.alert.alert-warning
+        p: strong {% trans "Product code in use" %}
+        p {% trans "You are using a hidden product code. Only products matching this code are shown." %}
+    table.table.table-striped.table-bordered
+      include tickets_order_product_table
+    h2 {% trans "Contact information" %}
+    p {% trans "Fields marked with an asterisk (*) are required." %}
+    - crispy customer_form
+    div(style="margin-bottom: 4em")
+      button.btn.btn-success.btn-block(type="submit")
+        i.fa.fa-money.kompassi-icon-space-right
+        | {% trans "Proceed to payment" %}

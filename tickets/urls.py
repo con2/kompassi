@@ -22,26 +22,50 @@ from .views import (
     tickets_shirts_view,
     tickets_thanks_view,
     tickets_tickets_view,
-    tickets_welcome_view,
+    tickets_router_view,
 )
 from django.urls import re_path
 
 urlpatterns = [
-    re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/?$", tickets_welcome_view, name="tickets_welcome_view"),
     re_path(
-        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/products/?$", tickets_tickets_view, name="tickets_tickets_view"
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/?$",
+        tickets_router_view,
+        name="tickets_welcome_view",
+    ),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/products/?$",
+        tickets_tickets_view,
+        name="tickets_tickets_view",
     ),
     re_path(
         r"events/(?P<event_slug>[a-z0-9-]+)/tickets/accommodation/?$",
         tickets_accommodation_view,
         name="tickets_accommodation_view",
     ),
-    re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/shirts/?$", tickets_shirts_view, name="tickets_shirts_view"),
-    re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/address/?$", tickets_address_view, name="tickets_address_view"),
-    re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/confirm/?$", tickets_confirm_view, name="tickets_confirm_view"),
-    re_path(r"events/(?P<event_slug>[a-z0-9-]+)/tickets/thanks/?$", tickets_thanks_view, name="tickets_thanks_view"),
     re_path(
-        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin$", tickets_admin_stats_view, name="tickets_admin_stats_view"
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/shirts/?$",
+        tickets_shirts_view,
+        name="tickets_shirts_view",
+    ),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/address/?$",
+        tickets_address_view,
+        name="tickets_address_view",
+    ),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/confirm/?$",
+        tickets_confirm_view,
+        name="tickets_confirm_view",
+    ),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/thanks/?$",
+        tickets_thanks_view,
+        name="tickets_thanks_view",
+    ),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin$",
+        tickets_admin_stats_view,
+        name="tickets_admin_stats_view",
     ),
     re_path(
         r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/by-date/raw$",

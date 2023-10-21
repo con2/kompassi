@@ -23,7 +23,9 @@ from ..utils import *
 def multiform_validate(forms):
     return (
         ["syntax"]
-        if not all(i.is_valid() and (i.instance.target.available or i.cleaned_data["count"] == 0) for i in forms)
+        if not all(
+            i.is_valid() and (i.instance.target.available or i.cleaned_data["count"] == 0) for i in forms
+        )
         else []
     )
 
@@ -136,7 +138,9 @@ class Phase:
 
         for phase in ALL_PHASES:
             phases.append(
-                dict(url=url(phase.name, event.slug), friendly_name=phase.friendly_name, current=phase is self)
+                dict(
+                    url=url(phase.name, event.slug), friendly_name=phase.friendly_name, current=phase is self
+                )
             )
 
         phase = dict(
@@ -332,7 +336,9 @@ class ShirtsPhase(Phase):
         for shirt_type, shirt_sizes in sizes_by_type:
             for size in shirt_sizes:
                 shirt_order, created = ShirtOrder.objects.get_or_create(order=order, size=size)
-                form = initialize_form(ShirtOrderForm, request, instance=shirt_order, prefix="s%d" % shirt_order.pk)
+                form = initialize_form(
+                    ShirtOrderForm, request, instance=shirt_order, prefix="s%d" % shirt_order.pk
+                )
                 forms.append(form)
 
         return forms
@@ -420,7 +426,10 @@ class ConfirmPhase(Phase):
         order_products = order.order_product_set.filter(count__gt=0)
 
         if any(i.product.amount_available < i.count for i in order_products):
-            messages.error(request, "Valitsemasi tuote on valitettavasti juuri myyty loppuun.")
+            messages.error(
+                request,
+                _("We're sorry to inform you that a product you have selected has just been sold out."),
+            )
             errors.append("soldout_confirm")
             return errors
 

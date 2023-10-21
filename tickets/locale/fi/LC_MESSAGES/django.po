@@ -23,8 +23,8 @@ msgid "Cancel order"
 msgstr "Peruuta tilaus"
 
 #: models.py
-msgid "Check the e-mail address carefully. The order confirmation and any electronic tickets will be sent to this e-mail address. NOTE: We have had significant trouble with e-mail delivery to webmail services of Microsoft (Hotmail, Live.com, Outlook.com etc). If possible, we recommend using an e-mail address other than one provided by Microsoft, such as GMail."
-msgstr "Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus ja mahdolliset e-liput lähetetään tähän osoiteeseen. HUOM! Meillä on sinnikkäistä yrityksistämme huolimatta jatkuvia vaikeuksia sähköpostin läpimenossa Microsoftin sähköpostipalveluihin (Hotmail, Live.com, Outlook.com ym.). Mikäli mahdollista, suosittelemme käyttämään muuta kuin Microsoftin tarjoamaa sähköpostiosoitetta, kuten GMailia."
+msgid "Check the e-mail address carefully. The order confirmation and any electronic tickets will be sent to this e-mail address."
+msgstr "Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus ja mahdolliset e-liput lähetetään tähän osoiteeseen."
 
 #: models.py
 msgid "City"
@@ -142,8 +142,8 @@ msgid "Please check your delivery information, especially the e-mail address, an
 msgstr "Ole hyvä ja tarkista toimitusosoite, erityisesti sähköpostiosoite, ja tilattavien tuotteiden määrät. Valitsemalla <em>Siirry maksamaan</em> siirryt maksupalveluun, jossa pääset valitsemaan maksutavan."
 
 #: templates/tickets_tickets_phase.pug
-msgid "Please fill in the amount for each product. You can combine multiple products in a single order. You will have a chance to check these before the final confirmation and payment."
-msgstr "Ole hyvä ja syötä tilattavien tuotteiden määrät. Voit yhdistää samaan tilaukseen useita eri tuotteita. Ennen tilauksen vahvistamista ja maksua sinulla on vielä tilaisuus tarkistaa tilauksesi sisältö."
+msgid "Please fill in the amount for each product. You can combine multiple products in a single order."
+msgstr "Ole hyvä ja syötä tilattavien tuotteiden määrät. Voit yhdistää samaan tilaukseen useita eri tuotteita."
 
 #: views/public_views.py
 msgid "Please select at least one product."
@@ -387,3 +387,12 @@ msgstr "Poistunut"
 
 msgid "Reports"
 msgstr "Raportit"
+
+msgid "We're sorry to inform you that a product you have selected has just been sold out."
+msgstr "Valitettavasti valitsemasi tuote on juuri myyty loppuun."
+
+msgid "We're sorry to inform you that a product you have selected is not available in the quantity you have requested."
+msgstr "Valitettavasti valitsemaasi tuotetta ei ole saatavilla pyytämääsi lukumäärää."
+
+msgid "Sold out"
+msgstr "Loppuunmyyty"

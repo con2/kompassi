@@ -1,4 +1,5 @@
 import logging
+from functools import cached_property
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, date
 from datetime import time as dtime
@@ -35,6 +36,11 @@ from ..receipt import render_receipt
 logger = logging.getLogger("kompassi")
 LOW_AVAILABILITY_THRESHOLD = 10
 UNPAID_CANCEL_HOURS = 24
+TICKETS_VIEW_VERSION_CHOICES = [
+    ("v1", "Version 1 (Django frontend, multiple phases)"),
+    ("v1.5", "Version 1.5 (Django frontend, single phase)"),
+    ("v2", "Version 2 (Next.js frontend)"),
+]
 
 
 class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
@@ -172,6 +178,13 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
     )
 
     max_count_per_product = models.SmallIntegerField(blank=True, default=99)
+
+    tickets_view_version = models.CharField(
+        max_length=max(len(key) for (key, _) in TICKETS_VIEW_VERSION_CHOICES),
+        choices=TICKETS_VIEW_VERSION_CHOICES,
+        default=TICKETS_VIEW_VERSION_CHOICES[0][0],
+        verbose_name=_("Tickets view version"),
+    )
 
     def __str__(self):
         return self.event.name
@@ -355,7 +368,7 @@ class LimitGroup(models.Model):
         verbose_name = _("limit group")
         verbose_name_plural = _("limit groups")
 
-    @property
+    @cached_property
     def amount_sold(self):
         amount_sold = OrderProduct.objects.filter(
             product__limit_groups=self,
@@ -459,9 +472,12 @@ class Product(models.Model):
     available = models.BooleanField(default=True)
     notify_email = models.CharField(max_length=100, null=True, blank=True)
     ordering = models.IntegerField(default=0)
-
-    class Meta:
-        ordering = ("ordering", "id")
+    code = models.CharField(
+        max_length=63,
+        blank=True,
+        default="",
+        help_text="If set, the product will only be available with this code supplied as a query string parameter.",
+    )
 
     @property
     def electronic_ticket_title(self):
@@ -493,7 +509,7 @@ class Product(models.Model):
     def availability_low(self):
         return self.amount_available < LOW_AVAILABILITY_THRESHOLD
 
-    @property
+    @cached_property
     def amount_available(self):
         return min(group.amount_available for group in self.limit_groups.all())
 
@@ -510,6 +526,7 @@ class Product(models.Model):
         return f"{self.name} ({self.formatted_price})"
 
     class Meta:
+        ordering = ("ordering", "id")
         verbose_name = _("product")
         verbose_name_plural = _("products")
 
@@ -544,6 +561,14 @@ class Product(models.Model):
         sunday, unused = cls.get_or_create_dummy("Sunday test product", [limit_sunday])
 
         return [weekend, saturday, sunday]
+
+    @classmethod
+    def get_products_for_event(cls, event: "Event", code: str = ""):
+        """
+        Returns a list of products that are available for the given event and code.
+        """
+        products = cls.objects.filter(event=event, available=True, code=code).order_by("ordering", "id")
+        return products
 
 
 @dataclass
@@ -604,9 +629,7 @@ class Customer(models.Model):
         verbose_name=_("E-mail address"),
         help_text=_(
             "Check the e-mail address carefully. The order confirmation and any electronic tickets "
-            "will be sent to this e-mail address. NOTE: We have had significant trouble with e-mail "
-            "delivery to webmail services of Microsoft (Hotmail, Live.com, Outlook.com etc). If possible, "
-            "we recommend using an e-mail address other than one provided by Microsoft, such as GMail."
+            "will be sent to this e-mail address."
         ),
     )
 
@@ -688,7 +711,7 @@ class ArrivalsRow:
 
 
 class Order(models.Model):
-    # REVERSE: order_product_set = ForeignKeyFrom(OrderProduct)
+    order_product_set: models.QuerySet["OrderProduct"]
 
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
 
@@ -1127,8 +1150,8 @@ class Order(models.Model):
     def render(self, c):
         render_receipt(self, c)
 
-    def __str__(self):
-        return f"#{self.pk} {self.formatted_price} ({self.readable_state})"
+    # def __str__(self):
+    #     return f"#{self.pk} {self.formatted_price} ({self.readable_state})"
 
     class Meta:
         verbose_name = "tilaus"
