@@ -378,6 +378,10 @@ class LimitGroup(models.Model):
 
         return amount_sold if amount_sold is not None else 0
 
+    def refresh_from_db(self, *args, **kwargs):
+        super().refresh_from_db(*args, **kwargs)
+        del self.amount_sold
+
     @property
     def amount_available(self):
         return self.limit - self.amount_sold
@@ -512,6 +516,10 @@ class Product(models.Model):
     @cached_property
     def amount_available(self):
         return min(group.amount_available for group in self.limit_groups.all())
+
+    def refresh_from_db(self, *args, **kwargs):
+        super().refresh_from_db(*args, **kwargs)
+        del self.amount_available
 
     @property
     def amount_sold(self):

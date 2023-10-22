@@ -27,6 +27,10 @@ class LimitGroupsTestCase(TestCase):
         # saturday + weekend now 5000 which is the limit
         # sunday + weekend now 4500 which is below the limit
 
+        weekend.refresh_from_db()
+        saturday.refresh_from_db()
+        sunday.refresh_from_db()
+
         assert not weekend.in_stock
         assert not saturday.in_stock
         assert sunday.in_stock
