@@ -380,7 +380,9 @@ class LimitGroup(models.Model):
 
     def refresh_from_db(self, *args, **kwargs):
         super().refresh_from_db(*args, **kwargs)
-        del self.amount_sold
+
+        # invalidate cached properties
+        self.__dict__.pop("amount_sold", None)
 
     @property
     def amount_available(self):
@@ -519,7 +521,9 @@ class Product(models.Model):
 
     def refresh_from_db(self, *args, **kwargs):
         super().refresh_from_db(*args, **kwargs)
-        del self.amount_available
+
+        # invalidate cached properties
+        self.__dict__.pop("amount_available", None)
 
     @property
     def amount_sold(self):
