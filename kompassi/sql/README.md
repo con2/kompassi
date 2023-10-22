@@ -19,6 +19,8 @@ To refresh the schema snapshot, run `migrate` (NOTE: not `setup`) on an empty da
 
 ## Hardened security configuration
 
+**NOTE: Since moving to QB & Siilo, this hardened security configuration is currently not in use and the `kompassi` user is used for both DDL & normal operation.**
+
 Our strategy to database security in production deployments is as follows:
 
 * Run database migrations with the `kompassi_ddl` user that owns the `kompassi` database and has wide privileges therein
