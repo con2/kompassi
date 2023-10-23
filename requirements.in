@@ -42,6 +42,7 @@ regex
 reportlab
 requests
 requests-oauthlib
+tabulate
 unicodecsv
 vobject
 XlsxWriter
