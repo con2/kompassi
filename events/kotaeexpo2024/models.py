@@ -12,11 +12,20 @@ SHIFT_TYPE_CHOICES = [
     ("kaikkikay", "Kumpi tahansa käy"),
 ]
 
-# TODO
 TOTAL_WORK_CHOICES = [
-    ("10h", "Minimi - 10 tuntia"),
-    ("yli10h", "Työn Sankari! Yli 10 tuntia!"),
+    ("4h", "4 tuntia - Minivuoro"),
+    ("8h", "8 tuntia - Täysvuoro"),
+    ("yli10h", "Yli 10 tuntia - Supervuoro!"),
 ]
+
+
+class Accommodation(SimpleChoice):
+    pass
+
+
+class KnownLanguage(SimpleChoice):
+    pass
+
 
 class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(
@@ -30,9 +39,14 @@ class SignupExtra(SignupExtraBase):
         max_length=15,
         verbose_name="Toivottu kokonaistyömäärä",
         help_text=(
-            "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti " "kymmenen tuntia."
+            "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Huomaathan, ettei 4 tunnin työpanos oikeuta täysiin työvoimaetuihin. Tarkasta työvoimaedut Kotaen verkkosivuilta."
         ),
         choices=TOTAL_WORK_CHOICES,
+    )
+
+    night_shift = models.BooleanField(
+        default=False,
+        verbose_name="Olen valmis tekemään yötöitä klo 23-07",
     )
 
     overseer = models.BooleanField(
@@ -46,6 +60,18 @@ class SignupExtra(SignupExtraBase):
     want_certificate = models.BooleanField(
         default=False,
         verbose_name="Haluan todistuksen työskentelystäni",
+    )
+
+    known_language = models.ManyToManyField(
+        KnownLanguage,
+        blank=True,
+        verbose_name="Osaamasi kielet",
+        related_name="kotaeexpo2024_signup_extras",
+    )
+
+    known_language_other = models.TextField(
+        blank=True,
+        verbose_name="Muu kieli",
     )
 
     special_diet = models.ManyToManyField(
@@ -63,6 +89,13 @@ class SignupExtra(SignupExtraBase):
             "ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot "
             "huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään."
         ),
+    )
+
+    accommodation = models.ManyToManyField(
+        Accommodation,
+        blank=True,
+        verbose_name="Tarvitsen lattiamajoitusta",
+        related_name="kotaeexpo2024_signup_extras",
     )
 
     prior_experience = models.TextField(

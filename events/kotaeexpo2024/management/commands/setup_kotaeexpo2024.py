@@ -64,7 +64,7 @@ class Setup:
             Qualification,
             Survey,
         )
-        from ...models import SignupExtra
+        from ...models import SignupExtra, KnownLanguage, Accommodation
         from django.contrib.contenttypes.models import ContentType
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
@@ -95,27 +95,7 @@ class Setup:
 
         for pc_name, pc_slug, pc_app_label, pc_afterparty in [
             ("Vastaava", "vastaava", "labour", True),
-            #            ("Vuorovastaava", "vuorovastaava", "labour", True),
             ("Vapaaehtoinen", "vapaaehtoinen", "labour", True),
-            #            ("Ohjelma", "ohjelma", "programme", True),
-            #            ("Ohjelma 2. luokka", "ohjelma-2lk", "programme", False),
-            #            ("Ohjelma 3. luokka", "ohjelma-3lk", "programme", False),
-            #            (
-            #                "Guest of Honour",
-            #                "goh",
-            #                "programme",
-            #                False,
-            #            ),  # tervetullut muttei kutsuta automaattiviestillä
-            #            ("Media", "media", "badges", False),
-            # ("Myyjä", "myyja", "badges", False),
-            # ("Vieras", "vieras", "badges", False),
-            # ("Vapaalippu, viikonloppu", "vapaalippu-vkl", "tickets", False),
-            # ("Vapaalippu, lauantai", "vapaalippu-la", "tickets", False),
-            # ("Vapaalippu, sunnuntai", "vapaalippu-su", "tickets", False),
-            # ("Cosplaykisaaja", "cosplay", "tickets", False),
-            # ("AMV-kisaaja", "amv", "tickets", False),
-            # ("Taidekuja", "taidekuja", "tickets", False),
-            # ("Yhdistyspöydät", "yhdistyspoydat", "tickets", False),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -165,6 +145,21 @@ class Setup:
         #     qual = Qualification.objects.get(name=qualification_name)
 
         #     jc.required_qualifications.set([qual])
+
+        for language in [
+            "Suomi",
+            "Ruotsi",
+            "Englanti",
+            "Japani",
+            "Korea",
+        ]:
+            KnownLanguage.objects.get_or_create(name=language)
+
+        for accommodation_name in [
+            "Pe-la väliselle yölle",
+            "La-su väliselle yölle",
+        ]:
+            Accommodation.objects.get_or_create(name=accommodation_name)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,

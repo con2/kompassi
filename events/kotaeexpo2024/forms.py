@@ -22,15 +22,22 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.layout = Layout(
             "shift_type",
             "total_work",
+            indented_without_label("night_shift"),
             indented_without_label("overseer"),
             Fieldset(
                 "Työtodistus",
                 indented_without_label("want_certificate"),
             ),
             Fieldset(
+                "Millä kielellä olet valmis palvelemaan asiakkaita?",
+                "known_language",
+                "known_language_other",
+            ),
+            Fieldset(
                 "Lisätiedot",
                 "special_diet",
                 "special_diet_other",
+                "accommodation",
                 "prior_experience",
                 "shift_wishes",
                 "free_text",
@@ -42,18 +49,25 @@ class SignupExtraForm(forms.ModelForm):
         fields = (
             "shift_type",
             "total_work",
+            "night_shift",
             "overseer",
             "want_certificate",
+            "known_language",
+            "known_language_other",
             "special_diet",
             "special_diet_other",
+            "accommodation",
             "prior_experience",
             "shift_wishes",
             "free_text",
         )
 
         widgets = dict(
+            known_language=forms.CheckboxSelectMultiple,
             special_diet=forms.CheckboxSelectMultiple,
+            accommodation=forms.CheckboxSelectMultiple,
         )
+
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
@@ -123,11 +137,13 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict(
             shift_type="kaikkikay",
             total_work="yli10h",
+            night_shift=False,
             overseer=False,
             want_certificate=False,
             prior_experience="",
             free_text="Syötetty käyttäen coniitin ilmoittautumislomaketta",
         )
+
 
 class ShiftWishesSurvey(forms.ModelForm):
     def __init__(self, *args, **kwargs):
