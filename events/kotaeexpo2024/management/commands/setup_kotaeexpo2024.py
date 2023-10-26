@@ -173,6 +173,22 @@ class Setup:
             ),
         )
 
+        AlternativeSignupForm.objects.get_or_create(
+            event=self.event,
+            slug="erikoistehtava",
+            defaults=dict(
+                title="Erikoistehtävien ilmoittautumislomake",
+                signup_form_class_path="events.kotaeexpo2024.forms:SpecialistSignupForm",
+                signup_extra_form_class_path="events.kotaeexpo2024.forms:SpecialistSignupExtraForm",
+                active_from=self.event.created_at,
+                active_until=self.event.start_time,
+                signup_message=(
+                    "Täytä tämä lomake vain, "
+                    "jos joku Kotae Expon vastaavista on ohjeistanut sinua ilmoittautumaan tällä lomakkeella. "
+                ),
+            ),
+        )
+
         Survey.objects.get_or_create(
             event=self.event,
             slug="tyovuorotoiveet",

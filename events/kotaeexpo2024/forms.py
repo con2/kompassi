@@ -1,13 +1,14 @@
 from datetime import datetime, timedelta
 
 from django import forms
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
 from events.hitpoint2020.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT
-from labour.forms import AlternativeFormMixin
+from labour.forms import AlternativeFormMixin, SignupForm
 from labour.models import Signup, JobCategory
 from programme.models import Category, Programme, AlternativeProgrammeFormMixin
 
@@ -142,6 +143,73 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             want_certificate=False,
             prior_experience="",
             free_text="Syötetty käyttäen coniitin ilmoittautumislomaketta",
+        )
+
+
+class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
+    def get_job_categories_query(self, event, admin=False):
+        assert not admin
+
+        return Q(event__slug="kotaeexpo2024", public=False) & ~Q(slug="vastaava")
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            notes="Syötetty käyttäen erikoistehtävien ilmoittautumislomaketta",
+        )
+
+
+class SpecialistSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "shift_type",
+            "total_work",
+            indented_without_label("night_shift"),
+            indented_without_label("overseer"),
+            Fieldset(
+                "Työtodistus",
+                indented_without_label("want_certificate"),
+            ),
+            Fieldset(
+                "Millä kielellä olet valmis palvelemaan asiakkaita?",
+                "known_language",
+                "known_language_other",
+            ),
+            Fieldset(
+                "Lisätiedot",
+                "special_diet",
+                "special_diet_other",
+                "accommodation",
+                "prior_experience",
+                "shift_wishes",
+                "free_text",
+            ),
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            "shift_type",
+            "total_work",
+            "night_shift",
+            "overseer",
+            "want_certificate",
+            "known_language",
+            "known_language_other",
+            "special_diet",
+            "special_diet_other",
+            "accommodation",
+            "prior_experience",
+            "shift_wishes",
+            "free_text",
+        )
+
+        widgets = dict(
+            known_language=forms.CheckboxSelectMultiple,
+            special_diet=forms.CheckboxSelectMultiple,
+            accommodation=forms.CheckboxSelectMultiple,
         )
 
 
