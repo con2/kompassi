@@ -7,7 +7,6 @@ import labour.models.signup_extras
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -18,7 +17,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="SignupExtra",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
                 ("is_active", models.BooleanField(default=True)),
                 (
                     "shift_type",
@@ -36,7 +38,9 @@ class Migration(migrations.Migration):
                 (
                     "desu_amount",
                     models.PositiveIntegerField(
-                        help_text="Kuinka monessa Desuconissa olet ty\xf6skennellyt?", verbose_name="Desum\xe4\xe4r\xe4"
+                        help_text="Kuinka monessa Desuconissa olet ty\xf6skennellyt?",
+                        verbose_name="Desum\xe4\xe4r\xe4",
+                        default=0,
                     ),
                 ),
                 (
@@ -105,7 +109,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "night_work",
-                    models.BooleanField(default=False, verbose_name="Olen valmis tekem\xe4\xe4n y\xf6t\xf6it\xe4"),
+                    models.BooleanField(
+                        default=False, verbose_name="Olen valmis tekem\xe4\xe4n y\xf6t\xf6it\xe4"
+                    ),
                 ),
                 (
                     "event",
@@ -132,7 +138,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="SpecialDiet",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
                 ("name", models.CharField(max_length=63)),
             ],
         ),

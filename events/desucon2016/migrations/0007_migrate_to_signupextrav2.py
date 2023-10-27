@@ -57,11 +57,15 @@ def migrate_to_signupextra_v2(apps, schema_editor):
         meta.save()
 
 
+def noop(apps, schema_editor):
+    pass
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ("desucon2016", "0006_signupextrav2"),
     ]
 
     operations = [
-        migrations.RunPython(migrate_to_signupextra_v2, elidable=True),
+        migrations.RunPython(migrate_to_signupextra_v2, noop, elidable=True),
     ]

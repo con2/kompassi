@@ -7,7 +7,6 @@ import labour.models.signup_extras
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -18,7 +17,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="EventDay",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
                 ("name", models.CharField(max_length=63)),
             ],
             options={
@@ -28,7 +30,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="SignupExtra",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
                 ("is_active", models.BooleanField(default=True)),
                 (
                     "shift_type",
@@ -80,6 +85,7 @@ class Migration(migrations.Migration):
                         help_text='Ajoissa ilmoittautuneet v\xe4nk\xe4rit saavat maksuttoman ty\xf6voimapaidan. Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" target="_blank">ladyfit-paita</a>',
                         max_length=8,
                         verbose_name="Paidan koko",
+                        default="NO_SHIRT",
                     ),
                 ),
                 (
@@ -139,7 +145,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="SpecialDiet",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
                 ("name", models.CharField(max_length=63)),
             ],
             options={
@@ -149,7 +158,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="signupextra",
             name="special_diet",
-            field=models.ManyToManyField(blank=True, to="yukicon2017.SpecialDiet", verbose_name="Erikoisruokavalio"),
+            field=models.ManyToManyField(
+                blank=True, to="yukicon2017.SpecialDiet", verbose_name="Erikoisruokavalio"
+            ),
         ),
         migrations.AddField(
             model_name="signupextra",

@@ -58,7 +58,7 @@ class ArchivedSignup(SignupMixin, models.Model):
         return self.job_title
 
     @classmethod
-    def archive_signup(self, signup):
+    def archive_signup(cls, signup):
         """
         If the signup is in a positive final state, archives it. Otherwise deletes it.
         An event log entry is emitted in both cases.
@@ -66,25 +66,21 @@ class ArchivedSignup(SignupMixin, models.Model):
         Archiving a signup means making an ArchivedSignup of it and deleting the original
         Signup and its SignupExtra.
         """
-        with transaction.atomic():
-            person = signup.person
-            event = signup.event
+        person = signup.person
+        event = signup.event
 
-            if signup.state in ARCHIVE_STATES:
-                event_type = "labour.signup.archived"
+        if signup.state in ARCHIVE_STATES:
+            event_type = "labour.signup.archived"
 
-                archived_signup, created = ArchivedSignup.objects.get_or_create(
-                    person=signup.person,
-                    event=signup.event,
-                    job_title=signup.some_job_title,
-                )
+            archived_signup, created = ArchivedSignup.objects.get_or_create(
+                person=signup.person,
+                event=signup.event,
+                job_title=signup.some_job_title,
+            )
 
-                archived_signup.job_categories_accepted.set(signup.job_categories_accepted.all())
-                archived_signup.personnel_classes.set(signup.personnel_classes.all())
-            else:
-                event_type = "labour.signup.deleted"
+            archived_signup.job_categories_accepted.set(signup.job_categories_accepted.all())
+            archived_signup.personnel_classes.set(signup.personnel_classes.all())
+        else:
+            event_type = "labour.signup.deleted"
 
-            signup.signup_extra.delete()
-            signup.delete()
-
-            emit(event_type, person=person, event=event)
+        emit(event_type, person=person, event=event)

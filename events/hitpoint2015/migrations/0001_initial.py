@@ -2,7 +2,6 @@ from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour", "0003_populate_pclasses"),
     ]
@@ -11,7 +10,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Night",
             fields=[
-                ("id", models.AutoField(verbose_name="ID", serialize=False, auto_created=True, primary_key=True)),
+                (
+                    "id",
+                    models.AutoField(verbose_name="ID", serialize=False, auto_created=True, primary_key=True),
+                ),
                 ("name", models.CharField(max_length=63)),
             ],
             options={
@@ -54,7 +56,10 @@ class Migration(migrations.Migration):
                         choices=[
                             ("8h", "Minimi - 8 tuntia (1 l\xc3\xa4mmin ateria)"),
                             ("12h", "12 tuntia (2 l\xc3\xa4mmint\xc3\xa4 ateriaa)"),
-                            ("yli12h", "Ty\xc3\xb6n Sankari! Yli 12 tuntia! (2 l\xc3\xa4mmint\xc3\xa4 ateriaa)"),
+                            (
+                                "yli12h",
+                                "Ty\xc3\xb6n Sankari! Yli 12 tuntia! (2 l\xc3\xa4mmint\xc3\xa4 ateriaa)",
+                            ),
                         ],
                     ),
                 ),
@@ -110,6 +115,7 @@ class Migration(migrations.Migration):
                             ("LF_L", "L Ladyfit"),
                             ("LF_XL", "XL Ladyfit"),
                         ],
+                        default="NO_SHIRT",
                     ),
                 ),
                 (
@@ -154,7 +160,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="SpecialDiet",
             fields=[
-                ("id", models.AutoField(verbose_name="ID", serialize=False, auto_created=True, primary_key=True)),
+                (
+                    "id",
+                    models.AutoField(verbose_name="ID", serialize=False, auto_created=True, primary_key=True),
+                ),
                 ("name", models.CharField(max_length=63)),
             ],
             options={
@@ -165,7 +174,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="signupextra",
             name="special_diet",
-            field=models.ManyToManyField(to="hitpoint2015.SpecialDiet", verbose_name="Erikoisruokavalio", blank=True),
+            field=models.ManyToManyField(
+                to="hitpoint2015.SpecialDiet", verbose_name="Erikoisruokavalio", blank=True
+            ),
             preserve_default=True,
         ),
     ]

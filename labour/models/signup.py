@@ -333,7 +333,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     @cached_property
     def signup_extra(self):
         SignupExtra = self.signup_extra_model
-        return SignupExtra.for_signup(self)
+        return SignupExtra.for_signup(self) if SignupExtra else None
 
     def get_first_categories(self):
         return self.job_categories.all()[:NUM_FIRST_CATEGORIES]

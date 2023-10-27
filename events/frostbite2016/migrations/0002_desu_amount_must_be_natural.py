@@ -10,19 +10,23 @@ def fix_negative_desu_amounts(apps, schema_editor):
     SignupExtra.objects.filter(desu_amount__lt=0).update(desu_amount=MARKER_VALUE)
 
 
-class Migration(migrations.Migration):
+def noop(apps, schema_editor):
+    pass
 
+
+class Migration(migrations.Migration):
     dependencies = [
         ("frostbite2016", "0001_initial"),
     ]
 
     operations = [
-        migrations.RunPython(fix_negative_desu_amounts, elidable=True),
+        migrations.RunPython(fix_negative_desu_amounts, noop, elidable=True),
         migrations.AlterField(
             model_name="signupextra",
             name="desu_amount",
             field=models.PositiveIntegerField(
-                help_text="Kuinka monessa Desuconissa olet ollut v\xe4nk\xe4rin\xe4?", verbose_name="Desum\xe4\xe4r\xe4"
+                help_text="Kuinka monessa Desuconissa olet ollut v\xe4nk\xe4rin\xe4?",
+                verbose_name="Desum\xe4\xe4r\xe4",
             ),
             preserve_default=True,
         ),
