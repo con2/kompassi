@@ -37,7 +37,7 @@ kompassi_workers: 12
 smtp_server: sr1.pahaip.fi
 smtp_default_from_email: suunnistajat@kompassi.eu
 
-setup_should_run: false
+setup_should_run: true
 
 ingress_letsencrypt_enabled: true
 ingress_letsencrypt_cluster_issuer: letsencrypt-prod
