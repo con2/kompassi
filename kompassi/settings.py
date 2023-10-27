@@ -200,31 +200,8 @@ INSTALLED_APPS = (
     "organizations.kotae_ry",
     "organizations.ropecon_ry",
     # events
-    "events.hitpoint2015",
-    "events.kuplii2015",
-    "events.mimicon2015",
-    "events.yukicon2016",
-    "events.finncon2016",
-    "events.frostbite2016",
-    "events.kuplii2016",
-    "events.kawacon2016",
-    "events.mimicon2016",
-    "events.desucon2016",
-    "events.lakeuscon2016",
     "events.hitpoint2017",
-    "events.shippocon2016",
-    "events.yukicon2017",
-    "events.frostbite2017",
-    "events.kuplii2017",
-    "events.tracon2017",
-    "events.popcult2017",
-    "events.desucon2017",
-    "events.ropecon2017",
-    "events.kawacon2017",
-    "events.worldcon75",
     "events.frostbite2018",
-    "events.yukicon2018",
-    "events.nippori2017",
     "events.kuplii2018",
     "events.tracon2018",
     "events.popcultday2018",
@@ -233,7 +210,6 @@ INSTALLED_APPS = (
     "events.ropecon2018",
     "events.finncon2018",
     "events.mimicon2018",
-    "events.yukicon2019",
     "events.frostbite2019",
     "events.desucon2019",
     "events.tracon2019",
@@ -256,7 +232,6 @@ INSTALLED_APPS = (
     "events.tracrossf2019",
     "events.hypecon2020",
     "events.popcult2020",
-    "events.concon17",
     "events.matsucon2020",
     "events.hitpoint2020",
     "events.ropecon2020vd",
@@ -275,7 +250,6 @@ INSTALLED_APPS = (
     "events.frostbite2023",
     "events.desucon2023",
     "events.matsucon2022",
-    "events.concon18",
     "events.tracon2023",
     "events.ropecon2023",
     "events.kuplii2023",
@@ -413,7 +387,7 @@ if "lippukala" in INSTALLED_APPS:
 
     # NOTE these will be overridden by the respective fields in TicketsEventMeta
     # however, they need to be defined in settings or lippukala will barf.
-    LIPPUKALA_PRINT_LOGO_PATH = mkpath("events", "mimicon2016", "static", "images", "mimicon2016_logo.png")
+    LIPPUKALA_PRINT_LOGO_PATH = mkpath("core", "static", "jean_victor_balin_icon_star_24px.png")
     LIPPUKALA_PRINT_LOGO_SIZE_CM = (3.0, 3.0)
 
 

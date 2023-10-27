@@ -9,13 +9,13 @@ There may or may not be migrations newer than this; `python manage.py docker_sta
 To refresh the schema snapshot, run `migrate` (NOTE: not `setup`) on an empty database and then dump it like this:
 
     # WARNING! This nukes your current development database
-    docker-compose down -v
-    docker-compose run --rm web python manage.py migrate
-    docker-compose exec postgres pg_dump -Ox -U kompassi > kompassi/sql/00-schema.sql
+    docker compose down -v
+    docker compose run --rm web python manage.py migrate
+    docker compose exec postgres pg_dump -Ox -U kompassi > kompassi/sql/00-schema.sql
 
     # Then test it before committing
-    docker-compose down -v
-    docker-compose up
+    docker compose down -v
+    docker compose up
 
 ## Hardened security configuration
 
