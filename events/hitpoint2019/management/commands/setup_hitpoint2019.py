@@ -393,7 +393,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
-            shipping_and_handling_cents=120,
             reference_number_template="2019{:06d}",
             contact_email="Tracon Hitpoint -lipunmyynti <hitpoint@tracon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Tracon Hitpoint -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
@@ -442,7 +441,6 @@ class Setup:
                     limit_group("Pääsyliput", 800),
                 ],
                 price_cents=1000,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=self.get_ordering_number(),

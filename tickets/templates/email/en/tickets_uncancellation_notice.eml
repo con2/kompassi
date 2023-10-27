@@ -1,0 +1,16 @@
+Dear {{ order.customer.first_name }},
+
+An order that you made at the {{ order.event.name }} web shop had been previously cancelled.
+That order has now been reinstated. The order number is {{ order.formatted_order_number }}.
+
+Contents of the order:
+
+{% for op in order.nonzero_order_products %}{{ op.count }}pcs  {{ op.product.name }}
+{% endfor %}
+
+If you have any questions about your order, please contact us at:
+{{ order.event.tickets_event_meta.plain_contact_email }}
+
+Yours sincerely
+--
+{{ order.event.tickets_event_meta.contact_email|safe }}

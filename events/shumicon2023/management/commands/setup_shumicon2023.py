@@ -286,7 +286,6 @@ class Setup:
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
             due_days=14,
-            shipping_and_handling_cents=0,
             reference_number_template="2023{:06d}",
             contact_email="Shumicon 2023 -lipunmyynti <lipunmyynti@shumicon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Shumicon 2023 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
@@ -342,7 +341,6 @@ class Setup:
                     limit_group("Pääsyliput", 600),
                 ],
                 price_cents=1000,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=self.get_ordering_number(),

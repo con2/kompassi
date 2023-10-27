@@ -17,7 +17,6 @@ from lippukala.views import POSView
 from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC
 from reportlab.pdfgen import canvas
 
-from core.batches_view import batches_view
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
 from core.sort_and_filter import Filter
 from core.utils import url, initialize_form, slugify, login_redirect
@@ -27,7 +26,6 @@ from ..forms import (
     AccommodationInformationAdminForm,
     AccommodationPresenceForm,
     AdminOrderForm,
-    CreateBatchForm,
     CustomerForm,
     OrderProductForm,
     SearchForm,
@@ -36,49 +34,20 @@ from ..helpers import tickets_admin_required, tickets_event_required, perform_se
 from ..utils import format_price
 from ..models import (
     AccommodationInformation,
-    Batch,
     LimitGroup,
     Order,
     OrderProduct,
-    ShirtOrder,
-    ShirtSize,
-    UNPAID_CANCEL_HOURS,
 )
+from ..models.consts import UNPAID_CANCEL_HOURS
 
 
 __all__ = [
-    "tickets_admin_batch_view",
-    "tickets_admin_batches_view",
     "tickets_admin_menu_items",
     "tickets_admin_order_view",
     "tickets_admin_orders_view",
     "tickets_admin_stats_by_date_view",
     "tickets_admin_stats_view",
 ]
-
-
-tickets_admin_batches_view = tickets_admin_required(
-    batches_view(
-        Batch=Batch,
-        CreateBatchForm=CreateBatchForm,
-        template="tickets_admin_batches_view.pug",
-        created_at_field="create_time",
-    )
-)
-
-
-@tickets_admin_required
-@require_safe
-def tickets_admin_batch_view(request, vars, event, batch_id):
-    batch = get_object_or_404(Batch, id=int(batch_id), event=event)
-
-    response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = "filename=batch%03d.pdf" % batch.id
-    c = canvas.Canvas(response)
-    batch.render(c)
-    c.save()
-
-    return response
 
 
 @tickets_admin_required
@@ -88,18 +57,6 @@ def tickets_admin_stats_view(request, vars, event):
     confirmed_orders = event.order_set.filter(confirm_time__isnull=False)
     cancelled_orders = confirmed_orders.filter(cancellation_time__isnull=False)
     paid_orders = confirmed_orders.filter(cancellation_time__isnull=True, payment_date__isnull=False)
-    delivered_orders = paid_orders.filter(batch__delivery_time__isnull=False)
-
-    req_delivery = confirmed_orders.filter(
-        cancellation_time__isnull=True, order_product_set__product__requires_shipping=True
-    ).distinct()
-    num_req_delivery = req_delivery.count()
-    num_req_delivery_paid = paid_orders.filter(order_product_set__product__requires_shipping=True).distinct().count()
-    shipping_and_handling_paid_cents = num_req_delivery_paid * meta.shipping_and_handling_cents
-    shipping_and_handling_paid = format_price(shipping_and_handling_paid_cents)
-
-    shipping_and_handling_total_cents = num_req_delivery * meta.shipping_and_handling_cents
-    shipping_and_handling_total = format_price(shipping_and_handling_total_cents)
 
     data = []
     total_cents = 0
@@ -132,9 +89,6 @@ def tickets_admin_stats_view(request, vars, event):
         )
         data.append(item)
 
-    total_cents += shipping_and_handling_total_cents
-    total_paid_cents += shipping_and_handling_paid_cents
-
     total_price = format_price(total_cents)
     total_paid_price = format_price(total_paid_cents)
 
@@ -143,11 +97,6 @@ def tickets_admin_stats_view(request, vars, event):
         num_confirmed_orders=confirmed_orders.count(),
         num_cancelled_orders=cancelled_orders.count(),
         num_paid_orders=paid_orders.count(),
-        num_delivered_orders=delivered_orders.count(),
-        num_req_delivery=num_req_delivery,
-        num_req_delivery_paid=num_req_delivery_paid,
-        shipping_and_handling_total=shipping_and_handling_total,
-        shipping_and_handling_paid=shipping_and_handling_paid,
         total_price=total_price,
         total_paid_price=total_paid_price,
     )
@@ -158,7 +107,9 @@ def tickets_admin_stats_view(request, vars, event):
 @tickets_admin_required
 def tickets_admin_stats_by_date_view(request, vars, event, raw=False):
     confirmed_orders = event.order_set.filter(
-        confirm_time__isnull=False, cancellation_time__isnull=True, order_product_set__product__name__contains="lippu"
+        confirm_time__isnull=False,
+        cancellation_time__isnull=True,
+        order_product_set__product__name__contains="lippu",
     ).distinct()
     tickets_by_date = defaultdict(int)
 
@@ -251,7 +202,8 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
     if request.method == "POST":
         if customer_form.is_valid() and all(
-            form.fields["count"].widget.attrs.get("readonly", False) or form.is_valid() for form in order_product_forms
+            form.fields["count"].widget.attrs.get("readonly", False) or form.is_valid()
+            for form in order_product_forms
         ):
 
             def save():
@@ -345,7 +297,9 @@ def tickets_admin_tools_view(request, vars, event):
 
     vars.update(
         unpaid_cancel_hours=unpaid_cancel_hours,
-        num_unpaid_orders_to_cancel=Order.get_unpaid_orders_to_cancel(event, hours=unpaid_cancel_hours).count(),
+        num_unpaid_orders_to_cancel=Order.get_unpaid_orders_to_cancel(
+            event, hours=unpaid_cancel_hours
+        ).count(),
     )
 
     return render(request, "tickets_admin_tools_view.pug", vars)
@@ -405,7 +359,11 @@ def tickets_admin_accommodation_view(request, event, limit_group_id=None):
         emit("core.person.exported", request=request, event=event)
 
         return csv_response(
-            event, AccommodationInformation, accommodees, filename=filename, dialect=CSV_EXPORT_FORMATS[format]
+            event,
+            AccommodationInformation,
+            accommodees,
+            filename=filename,
+            dialect=CSV_EXPORT_FORMATS[format],
         )
     elif format == "screen":
         # ticket shoppe limit grouppes that have accommodation products
@@ -421,7 +379,9 @@ def tickets_admin_accommodation_view(request, event, limit_group_id=None):
             accommodation_information_set__isnull=False,
         )
 
-        filters = [(limit_group_id == lg.id, lg) for lg in LimitGroup.objects.filter(q).distinct().order_by("id")]
+        filters = [
+            (limit_group_id == lg.id, lg) for lg in LimitGroup.objects.filter(q).distinct().order_by("id")
+        ]
 
         vars.update(
             accommodees=accommodees,
@@ -535,63 +495,12 @@ def tickets_admin_accommodation_create_view(request, event, limit_group_id):
     return render(request, "tickets_admin_accommodation_create_view.pug", vars)
 
 
-@tickets_admin_required
-@require_safe
-def tickets_admin_shirts_view(request, vars, event, format="screen"):
-    shirt_sizes = (
-        ShirtSize.objects.filter(type__event=event)
-        .annotate(
-            count=Sum(
-                Case(
-                    When(
-                        shirt_orders__order__confirm_time__isnull=False,
-                        shirt_orders__order__payment_date__isnull=False,
-                        shirt_orders__order__cancellation_time__isnull=True,
-                        then="shirt_orders__count",
-                    ),
-                    default=0,
-                    output_field=IntegerField(),
-                ),
-            )
-        )
-        .filter(count__gt=0)
-        .order_by("type__id", "id")
-    )
-
-    shirt_orders = ShirtOrder.objects.filter(
-        order__event=event,
-        order__confirm_time__isnull=False,
-        order__payment_date__isnull=False,
-        order__cancellation_time__isnull=True,
-    ).order_by("order__customer__last_name", "order__customer__first_name", "size__type__id", "size__id")
-
-    if format == "screen":
-        vars.update(
-            export_formats=EXPORT_FORMATS,
-            shirt_sizes=shirt_sizes,
-            shirt_sizes_total=shirt_sizes.aggregate(Sum("count"))["count__sum"] or 0,
-            shirt_orders=shirt_orders,
-            shirt_orders_total=shirt_orders.aggregate(Sum("count"))["count__sum"] or 0,
-        )
-
-        return render(request, "tickets_admin_shirts_view.pug", vars)
-    elif format in CSV_EXPORT_FORMATS:
-        filename = f"{event.slug}_shirts_{now().strftime('%Y%m%d%H%M%S')}.{format}"
-
-        return csv_response(
-            event,
-            ShirtOrder,
-            shirt_orders,
-            dialect=CSV_EXPORT_FORMATS[format],
-            filename=filename,
-            m2m_mode="comma_separated",
-        )
-
-
 class KompassiPOSView(POSView):
     def get_valid_codes(self, request):
         # Kompassi uses the MIR state for cancelled orders.
-        return super().get_valid_codes(request).exclude(status__in=(MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC))
+        return (
+            super().get_valid_codes(request).exclude(status__in=(MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC))
+        )
 
 
 lippukala_pos_view = KompassiPOSView.as_view()
@@ -624,10 +533,6 @@ def tickets_admin_menu_items(request, event):
     orders_active = request.path.startswith(orders_url)
     orders_text = "Tilaukset"
 
-    batches_url = url("tickets_admin_batches_view", event.slug)
-    batches_active = request.path.startswith(batches_url)
-    batches_text = "Toimituserät"
-
     accommodation_url = url("tickets_admin_accommodation_view", event.slug)
     accommodation_active = request.path.startswith(accommodation_url)
     accommodation_text = "Majoituslistat"
@@ -635,10 +540,6 @@ def tickets_admin_menu_items(request, event):
     tools_url = url("tickets_admin_tools_view", event.slug)
     tools_active = request.path.startswith(tools_url)
     tools_text = "Työkalut"
-
-    shirts_url = url("tickets_admin_shirts_view", event.slug)
-    shirts_active = request.path.startswith(shirts_url)
-    shirts_text = "Paidat"
 
     reports_url = url("tickets_admin_reports_view", event.slug)
     reports_active = request.path == reports_url
@@ -651,10 +552,8 @@ def tickets_admin_menu_items(request, event):
     return [
         (stats_active, stats_url, stats_text),
         (orders_active, orders_url, orders_text),
-        (batches_active, batches_url, batches_text),
         (accommodation_active, accommodation_url, accommodation_text),
         (tools_active, tools_url, tools_text),
-        (shirts_active, shirts_url, shirts_text),
         (pos_active, pos_url, pos_text),
         (reports_active, reports_url, reports_text),
     ]

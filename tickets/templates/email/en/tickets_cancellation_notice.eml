@@ -1,0 +1,14 @@
+Dear {{ order.customer.first_name }},
+
+Your order {{ order.formatted_order_number }} made in the web shop of {{ order.event.name }} has been cancelled.
+
+Contents of the order:
+
+{% for op in order.nonzero_order_products %}{{ op.count }}pcs  {{ op.product.name }}
+{% endfor %}
+
+If you suspect this is in error, please contact us at {{ order.event.tickets_event_meta.plain_contact_email }}.
+
+Yours sincerely
+--
+{{ order.event.tickets_event_meta.contact_email|safe }}

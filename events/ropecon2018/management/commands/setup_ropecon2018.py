@@ -645,7 +645,6 @@ Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista 
         defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
-            shipping_and_handling_cents=0,
             reference_number_template="2018{:05d}",
             contact_email="Ropecon 2018 -lipunmyynti <lipunmyynti@ropecon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Ropecon 2018 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
@@ -698,7 +697,6 @@ Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista 
                     limit_group("Pääsyliput", 9999),
                 ],
                 price_cents=3800,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -710,7 +708,6 @@ Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista 
                     limit_group("Pääsyliput", 9999),
                 ],
                 price_cents=2000,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -722,7 +719,6 @@ Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista 
                     limit_group("Pääsyliput", 9999),
                 ],
                 price_cents=7000,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=self.get_ordering_number(),

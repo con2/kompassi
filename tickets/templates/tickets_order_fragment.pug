@@ -1,18 +1,11 @@
 - load i18n
 .row
   .col-md-6
-    if order.requires_shipping
-      h3 {% trans "Delivery address" %}
-    else
-      h3 {% trans "Contact information" %}
+    h3 {% trans "Contact information" %}
     .well
       p
         | {{ order.customer.name }}
         br
-        | {{ order.customer.address }}
-        br
-        | {{ order.customer.zip_code }} {{ order.customer.city }}
-      p
         | {{ order.customer.email }}
         br
         | {{ order.customer.normalized_phone_number|default:"" }}
@@ -32,10 +25,6 @@
             td {{ op.product.name }}
             td {{ op.product.formatted_price }}
             td {{ op.formatted_price }}
-
-        tr
-          td(colspan='3') {% trans "Shipping and handling" %}
-          td {{ order.formatted_shipping_and_handling }}
 
         tr
           th(colspan='3') {% trans "Total" %}

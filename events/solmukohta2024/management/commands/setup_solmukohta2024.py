@@ -67,7 +67,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
-            shipping_and_handling_cents=0,
             reference_number_template="2023{:05d}",
             contact_email="Solmukohta 2024 <tickets@solmukohta.eu>",
             ticket_free_text="This is your electronic ticket for Solmukohta 2024.\n"
@@ -75,9 +74,9 @@ class Setup:
             "Welcome to Solmukohta 2024!",
             front_page_text="""
 <h1>Welcome to Solmukohta 2024 ticket shop!</h1>
-<p>Sign up to Solmukohta 2024 happens by purchasing a ticket to the event. When you purchase your ticket in the Kompassi web store, you will be prompted to fill in a sign up form. For the suite and business tickets, you will need to enter the information for both attendees, as these ticket types include two spots in the event. Any placeholder tickets with incomplete information will be cancelled. If you purchase a ticket for someone else, make sure to forward the ticket to the ticket holder as they will need it to gain access to the event.</p>
+<p>Sign up to Solmukohta 2024 happens by purchasing a ticket to the event. When you purchase your ticket in the Kompassi web store, you will be prompted to fill in a sign up form. For the suite and business tickets, you will need to enter the information for both attendees, as these ticket types include two spots in the event. Any placeholder tickets with incomplete information will be cancelled. If you purchase a ticket for someone else, make sure to forward the ticket to the ticket holder as they will need the order number to fill in the sign up form.</p>
 <p>After completing the purchase a receipt and the ticket will be emailed to the address provided. Double check that you type in the correct email address!</p>
-<p>For faster check in at the Solmukohta 2024 event, we ask all participants to present their ticket either in digital or printed format. Please, do not lose your ticket.</p>
+<p>For faster check in at the Solmukohta 2024 event, we ask all participants to have their identification ready at check in.</p>
 """,
             tickets_view_version="v1.5",
         )
@@ -114,7 +113,6 @@ class Setup:
                     limit_group("Suite tickets", 1),
                 ],
                 price_cents=1600_00,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -126,7 +124,6 @@ class Setup:
                     limit_group("Business tickets", 5),
                 ],
                 price_cents=1400_00,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -138,7 +135,6 @@ class Setup:
                     limit_group("Sponsor tickets", 200),
                 ],
                 price_cents=550_00,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -150,7 +146,6 @@ class Setup:
             #         limit_group("Standard tickets", 412 - 2 * y),
             #     ],
             #     price_cents=400_00,
-            #     requires_shipping=False,
             #     electronic_ticket=True,
             #     available=True,
             #     ordering=ordering(),
@@ -162,7 +157,6 @@ class Setup:
             #         limit_group("Discount tickets", y),
             #     ],
             #     price_cents=250_00,
-            #     requires_shipping=False,
             #     electronic_ticket=True,
             #     available=True,
             #     ordering=ordering(),
@@ -174,7 +168,6 @@ class Setup:
                     limit_group("Team tickets", 25),
                 ],
                 price_cents=300_00,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -187,7 +180,6 @@ class Setup:
                     limit_group("Volunteer tickets", 15),
                 ],
                 price_cents=350_00,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -200,7 +192,6 @@ class Setup:
                     limit_group("Community host tickets", 12),
                 ],
                 price_cents=400_00,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),

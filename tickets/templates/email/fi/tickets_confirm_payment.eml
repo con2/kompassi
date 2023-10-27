@@ -4,10 +4,9 @@ Kiitos tilauksestasi {{ order.event.name_genitive }} verkkokaupassa! Tilauksesi 
 
 Vahvistamme maksetuiksi seuraavat lipputuotteet:
 
-{% for op in order.order_product_set.all %}{{ op.count }} kpl  {{ op.product.name }}
+{% for op in order.nonzero_order_products %}{{ op.count }} kpl  {{ op.product.name }}
     {{ op.count }} x {{ op.product.formatted_price }} = {{ op.formatted_price }}
-{% endfor %}{% if order.requires_shipping %}
-Toimituskulut: {{ order.formatted_shipping_and_handling }}{% endif %}
+{% endfor %}
 
 Yhteensä: {{ order.formatted_price }} (ALV 0%)
 
@@ -18,10 +17,9 @@ näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös jokaisesta
 e-lipusta viivakoodin alla oleva neljästä tai viidestä sanasta koostuva
 sanakoodi ja ilmoita se lipunvaihtopisteessä.
 
-{% endif %}{% if order.requires_shipping %}Postitettavat tuotteet toimitetaan seuraavaan osoitteeseen:{% else %}Antamasi yhteystiedot:{% endif %}
+{% endif %}Antamasi yhteystiedot:
 
-{{ order.formatted_address }}
-
+{{ order.customer.name }}
 {% if order.customer.phone_number %}{{ order.customer.phone_number }}
 {% endif %}{{ order.customer.email }}
 
@@ -30,12 +28,7 @@ Jos ylläolevissa tiedoissa on virheitä, pyydämme ottamaan viipymättä
 yhteyttä lipunmyyntiin joko vastaamalla tähän viestiin tai lähettämällä
 sähköpostia: {{ order.event.tickets_event_meta.plain_contact_email }}.
 
-{% if order.requires_shipping %}Huomioithan, että lippuja toimitetaan isommissa erissä,
-eli tilauksen toimituksessa voi kestää useampi viikko. Kaikki
-lipputilaukset toimitetaan kuitenkin hyvissä ajoin ennen tapahtumaa eikä
-kukaan lippunsa ajoissa maksanut jää vaille lippuja.
-
-{% endif %}{% for message in order.messages %}{{ message }}
+{% for message in order.messages %}{{ message }}
 
 {% endfor %}Ystävällisin terveisin
 --

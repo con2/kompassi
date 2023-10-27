@@ -8,15 +8,10 @@ from csp.decorators import csp_update
 from core.utils import groupby_strict, initialize_form, url
 from payments.models import CHECKOUT_PAYMENT_WALL_ORIGIN
 
+# XXX * imports
 from ..forms import *
 from ..helpers import *
-
-# XXX * imports
-from ..models import (
-    OrderProduct,
-    ShirtOrder,
-    ShirtSize,
-)
+from ..models import OrderProduct
 from ..utils import *
 
 
@@ -250,9 +245,7 @@ class TicketsPhase(Phase):
     def next(self, request, event):
         order = get_order(request, event)
 
-        if order.t_shirts > 0:
-            return redirect("tickets_shirts_view", event.slug)
-        elif order.requires_accommodation_information:
+        if order.requires_accommodation_information:
             return redirect("tickets_accommodation_view", event.slug)
         else:
             return redirect(self.next_phase, event.slug)
@@ -291,90 +284,9 @@ class AccommodationPhase(Phase):
             info = form.save()
             info.limit_groups.set(info.order_product.product.limit_groups.all())
 
-    def next(self, request, event):
-        order = get_order(request, event)
-
-        if order.t_shirts > 0:
-            return redirect("tickets_shirts_view", event.slug)
-        else:
-            return redirect(self.next_phase, event.slug)
-
 
 tickets_accommodation_phase = AccommodationPhase()
 tickets_accommodation_view = decorate(tickets_accommodation_phase)
-
-
-class ShirtsPhase(Phase):
-    """
-    Some events want to sell T-shirts in advance. This phase queries the customer for shirt sizes.
-    This phase is only displayed if the order contains T-shirts (order.t_shirts > 0).
-    """
-
-    name = "tickets_shirts_view"
-    friendly_name = _("Shirt sizes")
-    template = "tickets_shirts_phase.html"
-    next_phase = "tickets_address_view"
-    prev_phase = "tickets_tickets_view"
-
-    def _get_sizes(self, event, **kwargs):
-        return groupby_strict(ShirtSize.objects.filter(type__event=event).order_by("id"), lambda ss: ss.type)
-
-    def vars(self, request, event, form):
-        order = get_order(request, event)
-        num_shirts = order.t_shirts
-        shirt_sizes_by_type = self._get_sizes(event)
-        return dict(
-            num_shirts=num_shirts,
-            shirt_sizes_by_type=shirt_sizes_by_type,
-        )
-
-    def make_form(self, request, event):
-        order = get_order(request, event)
-        sizes_by_type = self._get_sizes(event)
-        forms = []
-
-        for shirt_type, shirt_sizes in sizes_by_type:
-            for size in shirt_sizes:
-                shirt_order, created = ShirtOrder.objects.get_or_create(order=order, size=size)
-                form = initialize_form(
-                    ShirtOrderForm, request, instance=shirt_order, prefix="s%d" % shirt_order.pk
-                )
-                forms.append(form)
-
-        return forms
-
-    def validate(self, request, event, form):
-        order = get_order(request, event)
-        errors = multiform_validate(form)
-
-        if errors:
-            return errors
-
-        if sum(i.cleaned_data["count"] for i in form) != order.t_shirts:
-            errors.append("num_tshirts")
-
-        return errors
-
-    def save(self, request, event, form):
-        multiform_save(form)
-
-    def available(self, request, event):
-        order = get_order(request, event)
-        sup_available = super().available(request, event)
-
-        return sup_available and order.t_shirts > 0
-
-    def prev(self, request, event):
-        order = get_order(request, event)
-
-        if order.requires_accommodation_information:
-            return redirect("tickets_accommodation_view", event.slug)
-        else:
-            return redirect(self.prev_phase, event.slug)
-
-
-tickets_shirts_phase = ShirtsPhase()
-tickets_shirts_view = decorate(tickets_shirts_phase)
 
 
 class AddressPhase(Phase):
@@ -399,8 +311,6 @@ class AddressPhase(Phase):
     def prev(self, request, event):
         order = get_order(request, event)
 
-        if order.t_shirts > 0:
-            return redirect("tickets_shirts_view", event.slug)
         if order.requires_accommodation_information:
             return redirect("tickets_accommodation_view", event.slug)
         else:
@@ -507,7 +417,6 @@ ALL_PHASES = [
     tickets_welcome_phase,
     tickets_tickets_phase,
     tickets_accommodation_phase,
-    tickets_shirts_phase,
     tickets_address_phase,
     tickets_confirm_phase,
     tickets_thanks_phase,

@@ -67,7 +67,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
-            shipping_and_handling_cents=0,
             reference_number_template="2019{:05d}",
             contact_email="Popcult Helsinki <liput@popcult.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Popcult Nights 2019 -tapahtumaan. Voit tulostaa tämän lipun tai\n"
@@ -112,7 +111,6 @@ class Setup:
                     limit_group("Pääsyliput", 180),
                 ],
                 price_cents=900,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -121,7 +119,9 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, unused = Product.objects.get_or_create(
+                event=self.event, name=name, defaults=product_info
+            )
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)

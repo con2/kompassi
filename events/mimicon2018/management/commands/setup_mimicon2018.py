@@ -70,7 +70,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
-            shipping_and_handling_cents=0,
             reference_number_template="2018{:05d}",
             contact_email="Mimicon <lipunmyynti@mimicon.moe>",
             ticket_free_text="Tämä on sähköinen lippusi Mimicon 2018 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
@@ -119,7 +118,6 @@ class Setup:
                     limit_group("Pääsyliput", 500),
                 ],
                 price_cents=1800,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -131,7 +129,6 @@ class Setup:
             #         limit_group('Lattiamajoitus', 80),
             #     ],
             #     price_cents=500,
-            #     requires_shipping=False,
             #     electronic_ticket=False,
             #     available=True,
             #     ordering=ordering(),
@@ -143,7 +140,6 @@ class Setup:
             #         limit_group('Lounas', 100),
             #     ],
             #     price_cents=780,
-            #     requires_shipping=False,
             #     electronic_ticket=True,
             #     available=False,
             #     ordering=ordering(),

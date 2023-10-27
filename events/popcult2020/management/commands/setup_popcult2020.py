@@ -175,7 +175,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             due_days=14,
-            shipping_and_handling_cents=0,
             reference_number_template="2020{:06d}",
             contact_email="Popcult Helsinki <liput@popcult.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Popcult Helsinki 2020 -tapahtumaan. Sähköinen lippu vaihdetaan\n"
@@ -221,7 +220,6 @@ class Setup:
                     limit_group("Pääsyliput", 950),
                 ],
                 price_cents=2500,
-                requires_shipping=False,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -234,7 +232,6 @@ class Setup:
             #         limit_group('Kahden lipun tarjouspaketit', 100),
             #     ],
             #     price_cents=2500,
-            #     requires_shipping=False,
             #     electronic_ticket=True,
             #     electronic_tickets_per_product=2,
             #     available=True,

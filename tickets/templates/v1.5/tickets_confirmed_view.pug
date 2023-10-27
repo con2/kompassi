@@ -11,7 +11,7 @@ block content
     p {% trans "Your order is now complete. A confirmation message with electronic tickets has been sent to the e-mail address you provided." %}
   else
     h2 {% trans "Your order is not yet complete!" %}
-    p {% trans "Tickets have been reserved for you but payment has not yet been made. If you believe this is in error, please contact ticket sales with your order number. Otherwise, please proceed to payment to complete your order." %}
+    p {% trans "You have already confirmed your order and it can no longer be changed. However, we have not yet received word of your successful payment. If the payment is still in progress in another tab or browser window, please complete it there. If you cancelled the payment, please proceed to payment again or cancel the order using the buttons below. If you completed the payment, it is likely that you did not return to the web shop using the link provided by the payment provider. In this case, please wait three to five banking days before contacting our customer service." %}
 
   p: <strong>{% trans "Order number:" %}</strong>: {{ order.formatted_order_number }}
 

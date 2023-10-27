@@ -52,13 +52,14 @@ class Setup:
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
+        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(
+            self.event, ["admins", "pos"]
+        )
 
         defaults = dict(
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
             due_days=14,
-            shipping_and_handling_cents=0,
             reference_number_template="2023{:06d}",
             contact_email="Traconin lipunmyynti <liput@tracon.fi>",
             front_page_text=(
@@ -95,7 +96,6 @@ class Setup:
                     limit_group("Edustustuotteet", 9999),
                 ],
                 price_cents=1500,
-                requires_shipping=False,
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -107,7 +107,6 @@ class Setup:
                     limit_group("Edustustuotteet", 9999),
                 ],
                 price_cents=1500,
-                requires_shipping=False,
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -119,7 +118,6 @@ class Setup:
                     limit_group("Edustustuotteet", 9999),
                 ],
                 price_cents=2000,
-                requires_shipping=False,
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -128,7 +126,9 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, unused = Product.objects.get_or_create(
+                event=self.event, name=name, defaults=product_info
+            )
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -137,6 +137,7 @@ class Setup:
         if not meta.receipt_footer:
             meta.receipt_footer = "Tracon ry / Y-tunnus 2886274-5 / liput@tracon.fi"
             meta.save()
+
 
 class Command(BaseCommand):
     args = ""

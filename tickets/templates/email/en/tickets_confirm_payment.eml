@@ -1,0 +1,37 @@
+Dear {{ order.customer.first_name }},
+
+Thank you for your order at the {{ order.event.name }} web shop!
+The number of your order is {{ order.formatted_order_number }}.
+
+We confirm the following products have been paid for:
+
+{% for op in order.nonzero_order_products %}{{ op.count }} kpl  {{ op.product.name }}
+    {{ op.count }} x {{ op.product.formatted_price }} = {{ op.formatted_price }}
+{% endfor %}
+
+Total: {{ order.formatted_price }} (VAT 0%)
+
+{% if order.contains_electronic_tickets %}Please find attached your electronic tickets. The electronic ticket will be
+exchanged for a wristband at the ticket exchange when you arrive at the event.
+You can print the electronic ticket or show it from the screen of your smartphone
+or tablet device. If neither of these is possible, please make note of the
+ticket code under each ticket barcode and supply it at the ticket exchange.
+
+{% endif %}The contact details you supplied:
+
+{{ order.customer.name }}
+{% if order.customer.phone_number %}{{ order.customer.phone_number }}
+{% endif %}{{ order.customer.email }}
+
+
+If there are any errors in the details above, please contact us without delay
+at: {{ order.event.tickets_event_meta.plain_contact_email }}.
+
+{% for message in order.messages %}{{ message }}
+
+{% endfor %}Yours sincerely
+--
+{{ order.event.tickets_event_meta.contact_email|safe }}
+
+Under Finnish tax regulations, the seller is not required to pay VAT
+as it is a non-profit organization.

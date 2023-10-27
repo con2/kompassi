@@ -46,7 +46,6 @@ msgstr "Asiakaspalvelun sähköpostiosoite (selitteen kanssa)"
 msgid "Contact information"
 msgstr "Yhteystiedot"
 
-#: templates/tickets_admin_shirts_view.pug
 msgid "Count"
 msgstr "Lukumäärä"
 
@@ -70,7 +69,6 @@ msgstr "E-lipun teksti"
 msgid "Event"
 msgstr "Tapahtuma"
 
-#: models.py templates/tickets_admin_shirts_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
@@ -121,13 +119,6 @@ msgstr "Seuraava"
 #: templates/tickets_confirm_phase.pug
 msgid "Note!"
 msgstr "Huom!"
-
-#: templates/tickets_admin_shirts_view.pug
-#, python-format
-msgid "One shirt."
-msgid_plural "%(num_shirts)s shirts."
-msgstr[0] "Yksi paita."
-msgstr[1] "%(num_shirts)s paitaa."
 
 #: models.py
 msgid "Payment due (days)"
@@ -189,39 +180,6 @@ msgstr "Varausaika (sekuntia)"
 msgid "Return to event home page"
 msgstr "Palaa tapahtuman kotisivuille"
 
-#: templates/tickets_order_fragment.pug
-msgid "Shipping and handling"
-msgstr "Toimituskulut"
-
-#: models.py
-msgid "Shipping and handling (cents)"
-msgstr "Toimituskulut (senttejä)"
-
-#: templates/tickets_admin_shirts_view.pug
-msgid "Shirt list"
-msgstr "Paitalista"
-
-#: templates/tickets_admin_shirts_view.pug
-msgid "Shirt orders"
-msgstr "Paitatilaukset"
-
-#: templates/tickets_admin_shirts_view.pug
-msgid "Shirt size"
-msgstr "Paitakoko"
-
-#: templates/tickets_admin_shirts_view.pug
-msgid "Shirt size summary"
-msgstr "Paitakokojen yhteenveto"
-
-#: views/public_views.py
-msgid "Shirt sizes"
-msgstr "Paitakoot"
-
-#: templates/tickets_admin_shirts_view.pug
-msgid "Shirt type"
-msgstr "Paitatyyppi"
-
-#: models.py templates/tickets_admin_shirts_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -396,3 +354,15 @@ msgstr "Valitettavasti valitsemaasi tuotetta ei ole saatavilla pyytämääsi luk
 
 msgid "Sold out"
 msgstr "Loppuunmyyty"
+
+msgid "E-ticket"
+msgstr "E-lippu"
+
+msgid "Order cancelled"
+msgstr "Tilaus peruttu"
+
+msgid "Order confirmation"
+msgstr "Tilausvahvistus"
+
+msgid "Order reinstated"
+msgstr "Tilaus palautettu voimaan"

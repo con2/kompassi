@@ -1,14 +1,12 @@
-from datetime import date
 from functools import wraps
-import re
 
 from django.contrib import messages
-from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.translation import get_language
 
 from core.utils import get_ip
 
-from .models import Order, OrderProduct
+from .models import Order
 
 
 __all__ = [
@@ -51,6 +49,7 @@ def get_order(request, event):
     return Order(
         event=event,
         ip_address=get_ip(request) or "",
+        language=get_language(),
     )
 
 

@@ -13,7 +13,6 @@ from .models import (
     Order,
     OrderProduct,
     Product,
-    ShirtOrder,
 )
 
 
@@ -98,10 +97,7 @@ class OrderProductForm(forms.ModelForm):
         else:
             order_product = OrderProduct(order=order, product=product)
 
-        readonly = admin and (
-            (order.batch is not None and product.requires_shipping)
-            or (order.is_paid and product.electronic_ticket)
-        )
+        readonly = admin and ((order.is_paid and product.electronic_ticket))
 
         return initialize_form(
             OrderProductForm,
@@ -137,8 +133,6 @@ class CustomerForm(forms.ModelForm):
             "last_name",
             "phone_number",
             "email",
-            # this field has really never been used
-            # indented_without_label("allow_marketing_email"),
         ]
 
         terms_and_conditions_url = meta.terms_and_conditions_url.translate()
@@ -161,7 +155,6 @@ class CustomerForm(forms.ModelForm):
             "last_name",
             "phone_number",
             "email",
-            "allow_marketing_email",
         ]
 
 
@@ -204,13 +197,11 @@ class AdminOrderForm(forms.ModelForm):
             "payment_date",
             "cancellation_time",
             "ip_address",
-            "batch",
         )
 
     class Meta:
         model = Order
         fields = (
-            "batch",
             "cancellation_time",
             "confirm_time",
             "ip_address",
@@ -218,27 +209,3 @@ class AdminOrderForm(forms.ModelForm):
             "reference_number",
             # 'start_time',
         )
-
-
-class CreateBatchForm(forms.Form):
-    max_items = forms.IntegerField(label="Kuinka monta tilausta (enintään)?", initial=100)
-    product = forms.ModelChoiceField(
-        queryset=Product.objects.all(),
-        required=False,
-        label="Tuote",
-        help_text="Jos valitset tästä kentästä tuotteen, saat erän jossa on ainoastaan sellaisia "
-        "tilauksia jotka sisältävät vähintään yhden kappaleen valittua tuotetta.",
-    )
-
-    def __init__(self, *args, **kwargs):
-        event = kwargs.pop("event")
-
-        super().__init__(*args, **kwargs)
-
-        self.fields["product"].queryset = Product.objects.filter(event=event)
-
-
-class ShirtOrderForm(forms.ModelForm):
-    class Meta:
-        model = ShirtOrder
-        fields = ("count",)
