@@ -355,6 +355,7 @@ KOMPASSI_MAY_SEND_INFO_GROUP_NAME = "kompassi-maysendinfo"
 AUTHENTICATION_BACKENDS = (
     "core.backends.PasswordlessLoginBackend",
     "django.contrib.auth.backends.ModelBackend",
+    "oauth2_provider.backends.OAuth2Backend",
 )
 
 
@@ -411,24 +412,24 @@ if "api" in INSTALLED_APPS:
     KOMPASSI_APPLICATION_USER_GROUP = f"{KOMPASSI_INSTALLATION_SLUG}-apps"
 
 
-if "api_v2" in INSTALLED_APPS:
-    AUTHENTICATION_BACKENDS = ("oauth2_provider.backends.OAuth2Backend",) + AUTHENTICATION_BACKENDS
+OAUTH2_PROVIDER = dict(
+    OIDC_ENABLED=True,
+    OIDC_RP_INITIATED_LOGOUT_ENABLED=True,
+    OIDC_RP_INITIATED_LOGOUT_ALWAYS_PROMPT=False,
+    OAUTH2_VALIDATOR_CLASS="api_v2.custom_oauth2_validator.CustomOAuth2Validator",
+    SCOPES=dict(
+        # oidc scope
+        openid="Kirjautua sisään muihin sovelluksiin",
+        # legacy oauth2 scopes
+        read="Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi",
+        write="Muokata käyttäjä- ja henkilötietojasi",
+    ),
+    PKCE_REQUIRED=False,
+    OIDC_RSA_PRIVATE_KEY=env("OIDC_RSA_PRIVATE_KEY", default=""),
+)
 
-    OAUTH2_PROVIDER = dict(
-        OIDC_ENABLED=True,
-        OIDC_RP_INITIATED_LOGOUT_ENABLED=True,
-        OIDC_RP_INITIATED_LOGOUT_ALWAYS_PROMPT=False,
-        OAUTH2_VALIDATOR_CLASS="api_v2.custom_oauth2_validator.CustomOAuth2Validator",
-        SCOPES=dict(
-            # oidc scope
-            openid="Kirjautua sisään muihin sovelluksiin",
-            # legacy oauth2 scopes
-            read="Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi",
-            write="Muokata käyttäjä- ja henkilötietojasi",
-        ),
-        PKCE_REQUIRED=False,
-        OIDC_RSA_PRIVATE_KEY=env("OIDC_RSA_PRIVATE_KEY", default=""),
-    )
+# if True, users must verify their email address before they can log in to other services via Kompassi
+KOMPASSI_OIDC_EMAIL_VERIFICATION_REQUIRED = False
 
 if env("KOMPASSI_CROWD_APPLICATION_NAME", default=""):
     INSTALLED_APPS = INSTALLED_APPS + ("crowd_integration",)

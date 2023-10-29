@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.base import View
@@ -30,7 +31,7 @@ class EventResource(View):
 
 class CustomAuthorizationView(AuthorizationView):
     def get(self, request, *args, **kwargs):
-        if not request.user.person.is_email_verified:
+        if settings.KOMPASSI_OIDC_EMAIL_VERIFICATION_REQUIRED and not request.user.person.is_email_verified:
             messages.error(
                 request,
                 _(
