@@ -83,32 +83,6 @@ def set_defaults(obj, **attrs):
     return obj
 
 
-def simple_object_init(self, *args, **kwargs):
-    """
-    Want a simple class that has a number of attributes writable via assignment or
-    keywords in initialization?
-
-    class MySimpleClass(object):
-        __slots__ = ['foo', 'bar']
-        from core.utils import simple_object_init as __init__
-
-    my_simple_objects = MySimpleClass(foo=5)
-    """
-
-    for key, value in zip(self.__slots__, args):
-        setattr(self, key, value)
-
-    for key, value in kwargs.items():
-        setattr(self, key, value)
-
-
-def simple_object_repr(self):
-    return "{class_name}({property_list})".format(
-        class_name=self.__class__.__name__,
-        property_list=", ".join(f"{slot}={repr(getattr(self, slot))}" for slot in self.__slots__),
-    )
-
-
 def pick_attrs(obj, *attr_names, **extra_attrs):
     return dict(((attr_name, getattr(obj, attr_name)) for attr_name in attr_names), **extra_attrs)
 

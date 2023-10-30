@@ -1,21 +1,13 @@
 from collections import namedtuple
+from dataclasses import dataclass
 
 
+@dataclass
 class Tab:
-    __slots__ = [
-        "id",
-        "title",
-        "active",
-        "notifications",
-    ]
-
-    def __init__(self, id: str, title: str, active=False, notifications=0):
-        self.id = id
-        self.title = title
-        self.active = active
-        self.notifications = notifications
-
-    from core.utils import simple_object_repr as __repr__
+    id: str
+    title: str
+    active: bool = False
+    notifications: int = 0
 
     @property
     def active_css(self):

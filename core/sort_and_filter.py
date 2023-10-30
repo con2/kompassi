@@ -1,26 +1,19 @@
 from collections import OrderedDict
+from dataclasses import dataclass
+from typing import Optional
 
 from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import force_str
 
-from core.utils import mutate_query_params, simple_object_repr
+from core.utils import mutate_query_params
 
 
+@dataclass
 class Definition:
-    __slots__ = [
-        "slug",
-        "name",
-        "definition",
-        "owner",
-    ]
-
-    def __init__(self, slug, name, definition, owner=None):
-        self.slug = slug
-        self.name = name
-        self.definition = definition
-        self.owner = owner
-
-    __repr__ = simple_object_repr
+    slug: str
+    name: str
+    definition: str
+    owner: Optional[str] = None
 
     @property
     def qs_add(self):
@@ -145,7 +138,7 @@ class Filter(SortAndFilterBase):
         :param choices: Choices to add
         :return: Self, for chaining
         """
-        for (slug, name) in choices:
+        for slug, name in choices:
             self.add(slug=slug, name=name, definition={filter_field: slug})
         return self
 

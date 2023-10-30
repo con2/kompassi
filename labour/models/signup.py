@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from dataclasses import dataclass
 from functools import cached_property
 
 from django.conf import settings
@@ -32,6 +33,7 @@ from .constants import (
 )
 
 
+@dataclass
 class StateTransition:
     """
     This class represents a potential state transition of a Signup from its current state to
@@ -44,13 +46,11 @@ class StateTransition:
     These state transitions will be represented by buttons on the State tab of the admin signup view.
     """
 
-    __slots__ = ["signup", "to_state", "disabled_reason"]
+    signup: "Signup"
+    to_state: str
+    disabled_reason: str = ""
 
-    from core.utils import simple_object_repr as __repr__
-
-    def __init__(self, signup, to_state):
-        self.signup = signup
-        self.to_state = to_state
+    def __post_init__(self):
         self.disabled_reason = self._determine_disabled_reason()
 
     @property

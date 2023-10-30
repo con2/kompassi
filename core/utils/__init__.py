@@ -25,8 +25,6 @@ from .misc_utils import (
     pick_attrs,
     set_attrs,
     set_defaults,
-    simple_object_init,
-    simple_object_repr,
     omit_keys,
     get_ip,
 )

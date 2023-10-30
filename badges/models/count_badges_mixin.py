@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from itertools import cycle
 
 from django.db.models import Q
@@ -6,39 +7,39 @@ from django.utils.translation import gettext_lazy as _
 from .constants import BADGE_ELIGIBLE_FOR_BATCHING, PROGRESS_ELEMENT_MIN_WIDTH
 
 
+@dataclass
 class Progress:
-    __slots__ = [
-        "css_class",
-        "max",
-        "text",
-        "value",
-        "width",
-        "inflated",
-    ]
-    from core.utils import simple_object_init as __init__
-    from core.utils import simple_object_repr as __repr__
+    css_class: str
+    max: int
+    text: str
+    value: int
+    width: int
+    inflated: bool
 
 
 class CountBadgesMixin:
-    def count_printed_badges(self):
+    def count_printed_badges(self) -> int:
         return (
             self.badges.filter(
-                Q(batch__isnull=False, batch__printed_at__isnull=False) | Q(printed_separately_at__isnull=False)
+                Q(batch__isnull=False, batch__printed_at__isnull=False)
+                | Q(printed_separately_at__isnull=False)
             )
             .distinct()
             .count()
         )
 
-    def count_badges_waiting_in_batch(self):
-        return self.badges.filter(batch__isnull=False, batch__printed_at__isnull=True, revoked_at__isnull=True).count()
+    def count_badges_waiting_in_batch(self) -> int:
+        return self.badges.filter(
+            batch__isnull=False, batch__printed_at__isnull=True, revoked_at__isnull=True
+        ).count()
 
-    def count_badges_awaiting_batch(self):
+    def count_badges_awaiting_batch(self) -> int:
         return self.badges.filter(**BADGE_ELIGIBLE_FOR_BATCHING).count()
 
-    def count_badges(self):
+    def count_badges(self) -> int:
         return self.badges.count()
 
-    def count_revoked_badges(self):
+    def count_revoked_badges(self) -> int:
         return self.badges.filter(revoked_at__isnull=False).count()
 
     def get_progress(self):
@@ -63,7 +64,6 @@ class CountBadgesMixin:
             ("progress-bar-info", _("Waiting in batch"), self.count_badges_waiting_in_batch()),
             ("progress-bar-grey", _("Awaiting allocation into batch"), self.count_badges_awaiting_batch()),
         ]:
-
             if pb_value > 0:
                 width = 100.0 * pb_value / max(pb_max, 1)
                 width = int(width + 0.5)

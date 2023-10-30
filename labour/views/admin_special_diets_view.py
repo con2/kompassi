@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dataclasses import dataclass
 
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -10,14 +11,10 @@ from ..helpers import labour_admin_required
 NO_SPECIAL_DIET_REPLIES = ["", "-", "N/A", "Ei ole", "Ei ole."]
 
 
+@dataclass
 class DietRow:
-    __slots__ = ("name", "count")
-
-    def __init__(self, name):
-        self.name = name
-        self.count = 0
-
-    from core.utils import simple_object_repr as __repr__
+    name: str
+    count: int = 0
 
 
 class SpecialDiets(defaultdict):
@@ -46,7 +43,9 @@ def admin_special_diets_view(request, vars, event):
         signup_extras = SignupExtra.objects.filter(is_active=True)
 
     if special_diet_field:
-        signup_extras_with_standard_special_diets = signup_extras.filter(special_diet__isnull=False).distinct()
+        signup_extras_with_standard_special_diets = signup_extras.filter(
+            special_diet__isnull=False
+        ).distinct()
 
         special_diets = SpecialDiets()
 
@@ -62,7 +61,9 @@ def admin_special_diets_view(request, vars, event):
 
     if special_diet_other_field:
         # TODO assumes name special_diet_other
-        signup_extras_with_other_special_diets = signup_extras.exclude(special_diet_other__in=NO_SPECIAL_DIET_REPLIES)
+        signup_extras_with_other_special_diets = signup_extras.exclude(
+            special_diet_other__in=NO_SPECIAL_DIET_REPLIES
+        )
     else:
         signup_extras_with_other_special_diets = []
 
