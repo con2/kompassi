@@ -185,16 +185,6 @@ kompassi_environment:
     value: !Var kompassi_installation_name
   - name: KOMPASSI_INSTALLATION_SLUG
     value: !Var kompassi_installation_slug
-  - name: KOMPASSI_CROWD_APPLICATION_NAME
-    valueFrom:
-      secretKeyRef:
-        name: kompassi
-        key: crowdApplicationName
-  - name: KOMPASSI_CROWD_APPLICATION_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: kompassi
-        key: crowdApplicationPassword
   - name: KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID
     valueFrom:
       secretKeyRef:

@@ -55,15 +55,14 @@ def core_login_view(request):
 
 def do_login(request, user, password=None, next="core_frontpage_view"):
     """
-    Performs Django login, possible Crowd login and required post-login steps.
+    Performs Django login and required post-login steps.
 
     `django.contrib.auth.authenticate` must be called first.
     """
 
-    if "api" in settings.INSTALLED_APPS:
-        if user.groups.filter(name=settings.KOMPASSI_APPLICATION_USER_GROUP).exists():
-            messages.error(request, "API-käyttäjätunnuksilla sisäänkirjautuminen on estetty.")
-            return redirect("core_frontpage_view")
+    if user.groups.filter(name=settings.KOMPASSI_APPLICATION_USER_GROUP).exists():
+        messages.error(request, "API-käyttäjätunnuksilla sisäänkirjautuminen on estetty.")
+        return redirect("core_frontpage_view")
 
     login(request, user)
     remind_email_verification_if_needed(request, next)

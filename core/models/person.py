@@ -15,8 +15,6 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
-from crowd_integration.utils import CrowdError
-
 from ..utils import pick_attrs, calculate_age, format_phone_number, phone_number_validator
 from .constants import (
     EMAIL_LENGTH,
@@ -457,11 +455,9 @@ class Person(models.Model):
         In this instance, we check the Badges of the person for all future events in case the user has
         changed their name.
         """
-        self.apply_state_sync()
-        self.apply_state_async()
 
-    def apply_state_sync(self):
         self.apply_state_update_badges()
+        self.apply_state_update_may_send_info_group_membership()
 
     def apply_state_update_badges(self):
         if "badges" not in settings.INSTALLED_APPS:
@@ -473,31 +469,6 @@ class Person(models.Model):
         for badge in self.badges.filter(personnel_class__event__start_time__gte=now()):
             Badge.ensure(person=self, event=badge.personnel_class.event)
 
-    def apply_state_async(self):
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import person_apply_state_async
-
-            person_apply_state_async.delay(self.pk)
-        else:
-            self._apply_state_async()
-
-    def _apply_state_async(self):
-        self.apply_state_update_crowd()
-        self.apply_state_update_may_send_info_group_membership()
-
-    def apply_state_update_crowd(self):
-        if "crowd_integration" not in settings.INSTALLED_APPS:
-            return
-
-        from crowd_integration.utils import update_user
-
-        # FIXME: Changing e-mail address via Crowd API does not work
-        # {"reason":"APPLICATION_PERMISSION_DENIED","message":"External applications are not allowed to change user emails"}
-        try:
-            update_user(self.user)
-        except CrowdError:
-            logger.error("Failed to update Crowd user", exc_info=True)
-
     def apply_state_update_may_send_info_group_membership(self):
         from ..utils import ensure_user_is_member_of_group
 
@@ -508,58 +479,12 @@ class Person(models.Model):
         )
 
     def ensure_basic_groups(self):
-        """
-        Note that this method handles the basic groups only locally.
-
-        If the Crowd integration is active, basic groups will be added in Crowd by
-        apply_state_new_user_async.
-        """
         for group_name in settings.KOMPASSI_NEW_USER_GROUPS:
             self.user.groups.add(Group.objects.get(name=group_name))
 
     def apply_state_new_user(self, request, password):
-        self.apply_state_new_user_sync(request)
-        self.apply_state_new_user_async(password)
-
-    def apply_state_new_user_sync(self, request):
         self.setup_email_verification(request)
         self.ensure_basic_groups()
-
-    def apply_state_new_user_async(self, password):
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import person_apply_state_new_user_async
-
-            person_apply_state_new_user_async.delay(self.pk, password)
-        else:
-            self._apply_state_new_user_async(password)
-
-    def _apply_state_new_user_async(self, password):
-        if "crowd_integration" in settings.INSTALLED_APPS:
-            self.crowd_create_user(password)
-            self.crowd_sync_groups()
-
-    def crowd_create_user(self, password):
-        assert "crowd_integration" in settings.INSTALLED_APPS
-        from crowd_integration.utils import create_user
-
-        create_user(self.user, password)
-
-    def crowd_sync_groups(self):
-        """
-        Ensures the user has their group membership set also in Crowd. Necessary for new users
-        to ensure basic groups, but not usually necessary for existing users because when eg.
-        labour changes the groups, it updates Crowd on the fly.
-
-        Really just used for initial groups (most importantly `users`).
-
-        TODO Propagate django-admin group changes to Crowd
-        https://docs.djangoproject.com/en/1.10/ref/signals/#m2m-changed
-        """
-        assert "crowd_integration" in settings.INSTALLED_APPS
-        from crowd_integration.utils import ensure_user_group_membership
-
-        for group in self.user.groups.all():
-            ensure_user_group_membership(self.user, group.name)
 
     def get_email_for_event(self, event):
         from labour.models import Signup

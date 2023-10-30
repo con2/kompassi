@@ -37,15 +37,6 @@ def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
     for group in groups_to_remove:
         group.user_set.remove(user)
 
-    if "crowd_integration" in settings.INSTALLED_APPS:
-        from crowd_integration.utils import ensure_user_group_membership as cr_ensure_user_group_membership
-
-        for group in groups_to_add:
-            cr_ensure_user_group_membership(user, group.name, True)
-
-        for group in groups_to_remove:
-            cr_ensure_user_group_membership(user, group.name, False)
-
 
 def ensure_user_is_member_of_group(user, group, should_belong_to_group=True):
     if isinstance(group, str):
@@ -60,30 +51,9 @@ def ensure_user_is_member_of_group(user, group, should_belong_to_group=True):
     else:
         group.user_set.remove(user)
 
-    if "crowd_integration" in settings.INSTALLED_APPS:
-        from crowd_integration.utils import ensure_user_group_membership as cr_ensure_user_group_membership
-
-        try:
-            cr_ensure_user_group_membership(user, group.name, should_belong_to_group)
-        except Exception:
-            logger.exception(
-                "crowd failed to update group membership: %s %s %s", user, group, should_belong_to_group
-            )
-
 
 def ensure_groups_exist(group_names):
-    groups = [Group.objects.get_or_create(name=group_name)[0] for group_name in group_names]
-
-    if "crowd_integration" in settings.INSTALLED_APPS:
-        from crowd_integration.utils import ensure_group_exists
-
-        for group_name in group_names:
-            try:
-                ensure_group_exists(group_name)
-            except Exception:
-                logger.exception("crowd failed to ensure group exists: %s", group_name)
-
-    return groups
+    return [Group.objects.get_or_create(name=group_name)[0] for group_name in group_names]
 
 
 def get_code(path):

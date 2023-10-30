@@ -19,21 +19,5 @@ def send_email(**opts):
 
 
 @shared_task(ignore_result=True)
-def person_apply_state_async(person_id):
-    from .models import Person
-
-    person = Person.objects.get(id=person_id)
-    person._apply_state_async()
-
-
-@shared_task(ignore_result=True)
-def person_apply_state_new_user_async(person_id, password):
-    from .models import Person
-
-    person = Person.objects.get(id=person_id)
-    person._apply_state_new_user_async(password)
-
-
-@shared_task(ignore_result=True)
 def run_admin_command(*args, **kwargs):
     call_command(*args, **kwargs)

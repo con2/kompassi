@@ -431,13 +431,6 @@ OAUTH2_PROVIDER = dict(
 # if True, users must verify their email address before they can log in to other services via Kompassi
 KOMPASSI_OIDC_EMAIL_VERIFICATION_REQUIRED = False
 
-if env("KOMPASSI_CROWD_APPLICATION_NAME", default=""):
-    INSTALLED_APPS = INSTALLED_APPS + ("crowd_integration",)
-    KOMPASSI_CROWD_APPLICATION_NAME = env("KOMPASSI_CROWD_APPLICATION_NAME")
-    KOMPASSI_CROWD_APPLICATION_PASSWORD = env("KOMPASSI_CROWD_APPLICATION_PASSWORD")
-    KOMPASSI_CROWD_HOST = env("KOMPASSI_CROWD_HOST", default="https://crowd.tracon.fi")
-    KOMPASSI_CROWD_BASE_URL = f"{KOMPASSI_CROWD_HOST}/crowd/rest/usermanagement/1"
-
 
 if "desuprofile_integration" in INSTALLED_APPS:
     KOMPASSI_DESUPROFILE_HOST = env("KOMPASSI_DESUPROFILE_HOST", default="https://desucon.fi")
