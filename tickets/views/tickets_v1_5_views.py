@@ -9,8 +9,10 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import gettext_lazy as _
 
+from csp.decorators import csp_update
+
 from core.utils import initialize_form
-from payments.models import CheckoutPayment
+from payments.models import CheckoutPayment, CHECKOUT_PAYMENT_WALL_ORIGIN
 
 from ..forms import OrderProductForm, CustomerForm
 from ..helpers import tickets_event_required
@@ -27,6 +29,7 @@ def tickets_router_view(request, event, *args, **kwargs):
         return tickets_welcome_view(request, event.slug, *args, **kwargs)
 
 
+@csp_update(FORM_ACTION=CHECKOUT_PAYMENT_WALL_ORIGIN)
 def tickets_view(request, event):
     order = get_order(request, event)
     if order.is_confirmed:
