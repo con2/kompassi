@@ -20,6 +20,9 @@ kompassi_installation_slug: turskadev
 kompassi_admins:
   - Santtu Pajukanta <santtu@pajukanta.fi>
 
+kompassi_csp_allowed_login_redirects:
+  - dev.ropekonsti.fi
+
 # kompassi_readiness_probe: !Void
 # kompassi_liveness_probe: !Void
 kompassi_workers: 8

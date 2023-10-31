@@ -30,6 +30,9 @@ CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_URLS_REGEX = r"^/(api|oauth2|oidc)/.*$"
 CORS_ORIGIN_WHITELIST = env("CORS_ORIGIN_WHITELIST", default="").split()
 
+# /login?next= and /register?next= as protected by CSP
+KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS = env("KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS", default="").split()
+
 ADMINS = [parseaddr(addr) for addr in env("ADMINS", default="").split(",") if addr]
 
 MANAGERS = ADMINS

@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.debug import sensitive_post_parameters
 
-from csp.decorators import csp_exempt
+from csp.decorators import csp_update
 
 from ..models import Person
 from ..forms import LoginForm
@@ -16,7 +16,7 @@ from .email_verification_views import remind_email_verification_if_needed
 
 @sensitive_post_parameters("password")
 @require_http_methods(["GET", "POST"])
-@csp_exempt  # FIXME
+@csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
 def core_login_view(request):
     next = get_next(request, "core_frontpage_view")
     form = initialize_form(LoginForm, request, initial=dict(next=next))
@@ -30,10 +30,12 @@ def core_login_view(request):
             if username and password and "@" in username:
                 try:
                     person = Person.objects.get(email=username, user__isnull=False)
-                    username = person.user.username
                 except (Person.DoesNotExist, Person.MultipleObjectsReturned) as e:
                     # TODO warn
                     pass
+                else:
+                    if person.user:
+                        username = person.user.username
 
             user = authenticate(username=username, password=password)
             if user:
@@ -71,7 +73,7 @@ def do_login(request, user, password=None, next="core_frontpage_view"):
 
 
 @require_http_methods(["GET", "HEAD", "POST"])
-@csp_exempt  # FIXME
+@csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
 def core_logout_view(request):
     next = get_next(request)
     logout(request)

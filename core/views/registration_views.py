@@ -8,6 +8,8 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.debug import sensitive_post_parameters
 
+from csp.decorators import csp_update
+
 from ..models import Person
 from ..forms import RegistrationPersonForm, RegistrationForm, TermsAndConditionsForm
 from ..utils import get_next, initialize_form
@@ -17,6 +19,7 @@ from .login_views import do_login
 
 @sensitive_post_parameters("registration-password", "registration-password_again")
 @require_http_methods(["GET", "HEAD", "POST"])
+@csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
 def core_registration_view(request):
     vars = page_wizard_vars(request)
     next = vars["next"]
