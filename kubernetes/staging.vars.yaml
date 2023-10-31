@@ -22,6 +22,8 @@ kompassi_admins:
 
 kompassi_csp_allowed_login_redirects:
   - dev.ropekonsti.fi
+  - localhost:3000
+  - localhost:5000
 
 # kompassi_readiness_probe: !Void
 # kompassi_liveness_probe: !Void
