@@ -8,9 +8,7 @@ block content
       .col-md-8
         h2 {{ event.name }}
           small.text-muted
-            | &nbsp; {{ event.venue.name_inessive }}
-            if event.start_time
-              {{ event.formatted_start_and_end_date }}
+            | &nbsp; {{ event.headline }}
 
         {{ event.description|linebreaks }}
 

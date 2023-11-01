@@ -1,5 +1,6 @@
 import logging
 from datetime import timedelta
+from functools import cached_property
 
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
@@ -72,7 +73,7 @@ TRISTATE_CHOICES = [
 
 TRISTATE_FIELD_PARAMS = dict(
     choices=TRISTATE_CHOICES,
-    max_length=max(len(key) for (key, label) in TRISTATE_CHOICES),
+    max_length=max(len(key) for (key, _) in TRISTATE_CHOICES),
 )
 
 ENCUMBERED_CONTENT_CHOICES = [
@@ -93,7 +94,9 @@ RERUN_CHOICES = [
     ("might", _("Maybe. The programme might be presented in a convention that takes place before this one.")),
     (
         "original",
-        _("No. The programme is original to this convention and I promise not to present it elsewhere before."),
+        _(
+            "No. The programme is original to this convention and I promise not to present it elsewhere before."
+        ),
     ),
 ]
 
@@ -167,6 +170,32 @@ CSV_EXPORT_EXCLUDED_FIELDS = [
     "paikkala_program",
 ]
 
+ROPECON2018_AUDIENCE_SIZE_CHOICES = [
+    ("unknown", _("No estimate")),
+    ("lt50", _("Less than 50")),
+    ("50-100", _("50 – 100")),
+    ("100-150", _("100 – 150")),
+    ("150-200", _("150 – 200")),
+    ("200-250", _("200 – 250")),
+    ("gt250", _("Over 250")),
+]
+
+SOLMUKOHTA2024_COMPUTER_USAGE_CHOICES = [
+    ("", ""),
+    ("own_pc", "I will bring my own laptop (PC)"),
+    ("own_mac", "I will bring my own laptop (Mac)"),
+    ("borrow", "I will need to borrow someone else's laptop"),
+    ("nope", "I do not need a computer for my programme item"),
+]
+
+SOLMUKOHTA2024_HAVE_YOU_HOSTED_BEFORE_CHOICES = [
+    ("", ""),
+    ("many", "Yes, many times"),
+    ("couple", "Yes, a couple of times"),
+    ("few", "Yes, once or twice"),
+    ("nope", "No, this is my first time"),
+]
+
 valid_hex_color = RegexValidator(r"#[\da-fA-F]{3,6}")
 
 
@@ -185,7 +214,9 @@ class Programme(models.Model, CsvExportMixin):
         "programme.Category",
         on_delete=models.CASCADE,
         verbose_name=_("category"),
-        help_text=_("Choose the category that fits your programme the best. We reserve the right to change this."),
+        help_text=_(
+            "Choose the category that fits your programme the best. We reserve the right to change this."
+        ),
     )
     form_used = models.ForeignKey(
         "programme.AlternativeProgrammeForm",
@@ -232,6 +263,15 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name=_("Three-word description"),
         help_text=_("Describe your game in three words: for example, genre, theme and attitude."),
     )
+    hosts_from_host = models.CharField(
+        max_length=1023,
+        blank=True,
+        default="",
+        verbose_name=_("Programme host names"),
+        help_text=_(
+            "Please provide the names as they should be presented in the programme guide; please also indicate their role in the programme, if there are multiple roles (moderator, panelist, etc.)"
+        ),
+    )
 
     use_audio = models.CharField(
         default="no",
@@ -258,7 +298,10 @@ class Programme(models.Model, CsvExportMixin):
             (3, "3"),
             (4, "4"),
             (5, "5"),
-            (99, _('More than five – Please elaborate on your needs in the "Other tech requirements" field.')),
+            (
+                99,
+                _('More than five – Please elaborate on your needs in the "Other tech requirements" field.'),
+            ),
         ],
     )
 
@@ -477,7 +520,9 @@ class Programme(models.Model, CsvExportMixin):
     )
     is_beginner_friendly = models.BooleanField(
         verbose_name=_("beginner friendly"),
-        help_text=_("Please tick this box if your game can be enjoyed even without any prior role-playing experience."),
+        help_text=_(
+            "Please tick this box if your game can be enjoyed even without any prior role-playing experience."
+        ),
         default=False,
     )
     is_intended_for_experienced_participants = models.BooleanField(
@@ -487,7 +532,9 @@ class Programme(models.Model, CsvExportMixin):
     is_available_for_panel = models.BooleanField(
         default=False,
         verbose_name=_("Panel discussions"),
-        help_text=_("I can participate in a panel discussion on my field of expertise during the convention."),
+        help_text=_(
+            "I can participate in a panel discussion on my field of expertise during the convention."
+        ),
     )
     field_of_expertise = models.CharField(
         max_length=1023,
@@ -635,12 +682,16 @@ class Programme(models.Model, CsvExportMixin):
     ropecon2020_not_suitable_for_children = models.BooleanField(
         default=False,
         verbose_name=_("Not suitable for children"),
-        help_text=_("If your game programme is not suitable for children under 15 years of age, please tick this box."),
+        help_text=_(
+            "If your game programme is not suitable for children under 15 years of age, please tick this box."
+        ),
     )
     ropecon2020_theme_end_of_the_world = models.BooleanField(
         default=False,
         verbose_name=_("Theme: End of the world"),
-        help_text=_("If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box."),
+        help_text=_(
+            "If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box."
+        ),
     )
     ropecon2020_theme_dinosaurs = models.BooleanField(
         default=False,
@@ -821,12 +872,16 @@ class Programme(models.Model, CsvExportMixin):
     ropecon2023_aimed_at_children_under_13 = models.BooleanField(
         default=False,
         verbose_name=_("Aimed at children under 13"),
-        help_text=_("If your programme is designed for attendees under the age of 13 years, please tick this box."),
+        help_text=_(
+            "If your programme is designed for attendees under the age of 13 years, please tick this box."
+        ),
     )
     ropecon2023_aimed_at_children_between_13_17 = models.BooleanField(
         default=False,
         verbose_name=_("Aimed at children between 13-17"),
-        help_text=_("If your programme is designed for attendees between 13-17 years of age, please tick this box."),
+        help_text=_(
+            "If your programme is designed for attendees between 13-17 years of age, please tick this box."
+        ),
     )
     ropecon2023_aimed_at_adult_attendees = models.BooleanField(
         default=False,
@@ -983,16 +1038,6 @@ class Programme(models.Model, CsvExportMixin):
         ),
     )
 
-    ROPECON2018_AUDIENCE_SIZE_CHOICES = [
-        ("unknown", _("No estimate")),
-        ("lt50", _("Less than 50")),
-        ("50-100", _("50 – 100")),
-        ("100-150", _("100 – 150")),
-        ("150-200", _("150 – 200")),
-        ("200-250", _("200 – 250")),
-        ("gt250", _("Over 250")),
-    ]
-
     ropecon2018_audience_size = models.CharField(
         default="unknown",
         null=True,
@@ -1124,7 +1169,9 @@ class Programme(models.Model, CsvExportMixin):
 
     ropecon2018_characters = models.PositiveIntegerField(
         verbose_name=_("number of characters"),
-        help_text=_("If the game design requires characters with a specific gender let us know in the notes."),
+        help_text=_(
+            "If the game design requires characters with a specific gender let us know in the notes."
+        ),
         default=10,
         validators=[MinValueValidator(1), MaxValueValidator(999)],
         null=True,
@@ -1208,13 +1255,95 @@ class Programme(models.Model, CsvExportMixin):
         null=True,
     )
 
+    solmukohta2024_ticket = models.BooleanField(
+        default=False,
+        verbose_name=_("I have purchased or am about to purchase a Solmukohta 2024 ticket"),
+        help_text=_(
+            "I understand that if my programme item is accepted, I will still need to purchase "
+            "a Solmukohta 2024 ticket in order to attend."
+        ),
+    )
+
+    solmukohta2024_content_warnings = models.ManyToManyField(
+        "solmukohta2024.ContentWarning",
+        blank=True,
+        verbose_name=_("The programme item contains..."),
+        help_text=_(
+            'Please check all that apply; if there are other potential content warnings, add them under "other".'
+        ),
+    )
+
+    solmukohta2024_computer_usage = models.CharField(
+        max_length=max(len(key) for (key, text) in SOLMUKOHTA2024_COMPUTER_USAGE_CHOICES),
+        choices=SOLMUKOHTA2024_COMPUTER_USAGE_CHOICES,
+        default="",
+        verbose_name=_("Computer use"),
+    )
+
+    solmukohta2024_other_needs = models.TextField(
+        blank=True,
+        default="",
+        verbose_name=_("Other needs"),
+        help_text=_(
+            "Please enter any other needs here, such as paper and markers for a workshop, spatial needs for a larp, etc. Also mention here if you want to have your programme item outside, in the pool, or in an otherwise unusual environment."
+        ),
+    )
+
+    solmukohta2024_documentation = models.ManyToManyField(
+        "solmukohta2024.Documentation",
+        blank=True,
+        verbose_name=_("Documentation"),
+        help_text=_("Check all that apply; you can learn more about these options in the Hosting Guide."),
+    )
+
+    solmukohta2024_scheduling = models.TextField(
+        blank=True,
+        default="",
+        verbose_name=_("Scheduling restrictions"),
+        help_text=_(
+            "Please tell us if there are any restrictions to scheduling your programme item (if you will be arriving late or leaving early or the like)."
+        ),
+    )
+
+    solmukohta2024_panel_participation = models.ManyToManyField(
+        "solmukohta2024.PanelParticipation",
+        blank=True,
+        verbose_name=_("Panel participation"),
+    )
+
+    solmukohta2024_areas_of_expertise = models.TextField(
+        blank=True,
+        default="",
+        verbose_name=_("Areas of expertise"),
+        help_text=_("Please fill this in only if you checked the Panel participation box above"),
+    )
+
+    solmukohta2024_have_you_hosted_before = models.CharField(
+        max_length=max(len(key) for (key, text) in SOLMUKOHTA2024_HAVE_YOU_HOSTED_BEFORE_CHOICES),
+        choices=SOLMUKOHTA2024_HAVE_YOU_HOSTED_BEFORE_CHOICES,
+        default="",
+        verbose_name=_("Have you hosted program for SK/KP before?"),
+    )
+
+    solmukohta2024_mentoring = models.ManyToManyField(
+        "solmukohta2024.Mentoring",
+        blank=True,
+        verbose_name=_("Mentoring"),
+        help_text=_(
+            "Less experienced presenters who would like some guidance may request a mentor. "
+            "More experienced presenters can volunteer here to help. (This usually involves a "
+            "few emails or Skype calls 1-2 months leading up to the event.)"
+        ),
+    )
+
     other_author = models.CharField(
         max_length=1023,
         blank=True,
         default="",
         verbose_name=_("Author (if other than the GM)"),
         help_text=_(
-            "If the scenario has been written by someone else than the GM, we require that the author be " "disclosed."
+            "If the scenario has been written by someone else than the GM, we require that the author be "
+            "disclosed."
         ),
     )
 
@@ -1223,7 +1352,9 @@ class Programme(models.Model, CsvExportMixin):
         blank=True,
         default="",
         verbose_name=_("Content warnings"),
-        help_text=_("If your program contains heavy topics or potentially distressing themes, please mention it here."),
+        help_text=_(
+            "If your program contains heavy topics or potentially distressing themes, please mention it here."
+        ),
     )
 
     # Internal fields
@@ -1277,20 +1408,20 @@ class Programme(models.Model, CsvExportMixin):
 
         return ProgrammeRole.objects.filter(programme=self)
 
-    @property
+    @cached_property
     def formatted_hosts(self):
-        if not hasattr(self, "_formatted_hosts"):
-            from .freeform_organizer import FreeformOrganizer
+        from .freeform_organizer import FreeformOrganizer
 
-            parts = [f.text for f in FreeformOrganizer.objects.filter(programme=self)]
+        if self.hosts_from_host:
+            return self.hosts_from_host
 
-            public_programme_roles = self.programme_roles.filter(role__is_public=True).select_related("person")
+        parts = [f.text for f in FreeformOrganizer.objects.filter(programme=self)]
 
-            parts.extend(pr.person.display_name for pr in public_programme_roles)
+        public_programme_roles = self.programme_roles.filter(role__is_public=True).select_related("person")
 
-            self._formatted_hosts = ", ".join(parts)
+        parts.extend(pr.person.display_name for pr in public_programme_roles)
 
-        return self._formatted_hosts
+        return ", ".join(parts)
 
     @property
     def is_blank(self):
@@ -1426,8 +1557,12 @@ class Programme(models.Model, CsvExportMixin):
                 min_players=self.min_players,
                 max_players=self.max_players,
                 ropecon2018_characters=self.ropecon2018_characters if self.category.slug == "larp" else None,
-                ropecon2023_signuplist=self.ropecon2023_signuplist if self.form_used and self.form_used.slug == "pelitiski" else None,
-                ropecon2023_workshop_fee=self.ropecon2023_workshop_fee if self.form_used and self.form_used.slug == "tyopaja" else None,
+                ropecon2023_signuplist=self.ropecon2023_signuplist
+                if self.form_used and self.form_used.slug == "pelitiski"
+                else None,
+                ropecon2023_workshop_fee=self.ropecon2023_workshop_fee
+                if self.form_used and self.form_used.slug == "tyopaja"
+                else None,
                 identifier=f"p{self.id}",
                 tags=list(self.tags.values_list("slug", flat=True)),
                 ropecon2023_language=self.ropecon2023_language,
@@ -1653,7 +1788,9 @@ class Programme(models.Model, CsvExportMixin):
                     # inactive programmist
                     groups_to_remove.append(group)
 
-            ensure_user_group_membership(person.user, groups_to_add=groups_to_add, groups_to_remove=groups_to_remove)
+            ensure_user_group_membership(
+                person.user, groups_to_add=groups_to_add, groups_to_remove=groups_to_remove
+            )
 
     def apply_state_send_messages(self, resend=False):
         from mailings.models import Message

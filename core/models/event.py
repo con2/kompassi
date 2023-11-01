@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 from ..utils import (
     format_date_range,
@@ -143,15 +143,25 @@ class Event(models.Model):
 
     @property
     def formatted_start_and_end_date(self):
+        # TODO honor locale (currently always uses Finnish format)
         return format_date_range(self.start_time, self.end_time)
 
     @property
     def headline(self):
-        headline_parts = [
-            (self.venue.name_inessive if self.venue else None),
-            (self.formatted_start_and_end_date if self.start_time and self.end_time else None),
-        ]
-        headline_parts = [part for part in headline_parts if part]
+        """
+        fi: Susikeskuksessa 1.–3.4.2016
+        en: Susikeskus 1.–3.4.2016
+        """
+        headline_parts = []
+
+        if self.venue:
+            if get_language() == "fi":
+                headline_parts.append(self.venue.name_inessive)
+            else:
+                headline_parts.append(self.venue.name)
+
+        if self.start_time and self.end_time:
+            headline_parts.append(self.formatted_start_and_end_date)
 
         return " ".join(headline_parts)
 

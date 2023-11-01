@@ -26,6 +26,7 @@ class Setup:
         self.test = test
         self.tz = tzlocal()
         self.setup_core()
+        self.setup_programme()
         self.setup_tickets()
 
     def setup_core(self):
@@ -59,6 +60,162 @@ class Setup:
             ),
         )
 
+    def setup_programme(self):
+        from core.utils import full_hours_between
+        from labour.models import PersonnelClass
+        from programme.models import (
+            AlternativeProgrammeForm,
+            Category,
+            ProgrammeEventMeta,
+            Role,
+            SpecialStartTime,
+            TimeBlock,
+        )
+        from ...models import ContentWarning, Documentation, PanelParticipation, Mentoring
+
+        # make typechecker happy
+        assert self.event.start_time
+        assert self.event.end_time
+
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
+            self.event, ["admins", "hosts"]
+        )
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                public=False,
+                admin_group=programme_admin_group,
+                contact_email="Solmukohta programme <programme@solmukohta.eu>",
+                schedule_layout="full_width",
+            ),
+        )
+
+        if settings.DEBUG:
+            programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
+            programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
+            programme_event_meta.save()
+
+        for pc_slug, role_title, role_is_default in [
+            ("programme", "Programme host", True),
+        ]:
+            personnel_class, _ = PersonnelClass.objects.get_or_create(
+                event=self.event,
+                slug=pc_slug,
+                defaults=dict(
+                    name=role_title,
+                ),
+            )
+            Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                    is_public=False,
+                ),
+            )
+
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                ("Long talk", "color1"),
+                ("Short talk", "color1"),
+                ("Panel discussion", "color2"),
+                ("Roundtable discussion", "color3"),
+                ("Workshop", "color4"),
+                ("Larp", "color5"),
+                ("Social/party/ritual", "color6"),
+                ("Show", "color7"),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    title=title,
+                    defaults=dict(
+                        style=style,
+                    ),
+                )
+
+        for start_time, end_time in [
+            (
+                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=20, minute=0, tzinfo=self.tz),
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(end_time=end_time),
+            )
+
+        for time_block in TimeBlock.objects.filter(event=self.event):
+            # Quarter or half hours
+            # [:-1] – discard 18:00 to 19:00
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
+                # for minute in [15, 30, 45]:
+                for minute in [30]:
+                    SpecialStartTime.objects.get_or_create(
+                        event=self.event,
+                        start_time=hour_start_time.replace(minute=minute),
+                    )
+
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug="default",
+            defaults=dict(
+                title="Offer program for Solmukohta",
+                short_description="The program is hosted at the Scandic Rosendahl hotel on October 11–14, 2024.",
+                programme_form_code="events.solmukohta2024.forms:ProgrammeForm",
+                num_extra_invites=3,
+                order=10,
+            ),
+        )
+
+        AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug="aweek",
+            defaults=dict(
+                title="Offer program for A Week in Tampere",
+                short_description="The program is hosted at Artteli or another venue in downtown Tampere on October 8–10, 2024.",
+                programme_form_code="events.solmukohta2024.forms:ProgrammeForm",
+                num_extra_invites=3,
+                order=20,
+            ),
+        )
+
+        if not ContentWarning.objects.exists():
+            for name in [
+                "Loud noises (shouting, cheering, loud video, sound effects etc)",
+                "Depictions of violence",
+                "Depictions of or references to sexual assault",
+                "Flashing lights",
+            ]:
+                ContentWarning.objects.get_or_create(name=name)
+
+        if not Documentation.objects.exists():
+            for name in [
+                "My programme item may be photographed",
+                "My programme item may be streamed",
+                "My programme may be video recorded",
+                "My programme materials (slides, other documents) may be shared",
+                "I don't want any documentation, thank you!",
+            ]:
+                Documentation.objects.get_or_create(name=name)
+
+        if not PanelParticipation.objects.exists():
+            for name in [
+                "I am willing to participate in another host's panel discussion",
+                "I am suggesting a panel item and would welcome panelist suggestions from the programme team",
+            ]:
+                PanelParticipation.objects.get_or_create(name=name)
+
+        if not Mentoring.objects.exists():
+            for name in [
+                "I would like to have a mentor",
+                "I am willing to mentor others",
+            ]:
+                Mentoring.objects.get_or_create(name=name)
+
+        self.event.programme_event_meta.create_groups()
+
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
@@ -84,8 +241,8 @@ class Setup:
         if self.test:
             t = now()
             defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),
-                ticket_sales_ends=t + timedelta(days=60),
+                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
+                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -206,7 +363,7 @@ class Setup:
             )
 
             if not product.limit_groups.exists():
-                product.limit_groups.set(limit_groups)
+                product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
 
 
