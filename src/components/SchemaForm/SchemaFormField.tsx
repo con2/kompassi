@@ -57,12 +57,14 @@ export default function SchemaFormField({
           return (
             <div className="row mb-3">
               <div className="col-md-3" />
-              <div className="form-check col-md-9">
-                {children}
-                <Label field={field} layout={layout} />
-                {helpText && (
-                  <div className="form-text text-muted">{helpText}</div>
-                )}
+              <div className="col-md-9">
+                <div className="form-check">
+                  {children}
+                  <Label field={field} layout={layout} />
+                  {helpText && (
+                    <div className="form-text text-muted">{helpText}</div>
+                  )}
+                </div>
               </div>
             </div>
           );
