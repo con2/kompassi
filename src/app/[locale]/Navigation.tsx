@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import { SupportedLanguage, getTranslations, supportedLanguages } from "@/translations";
 
 interface NavigationProps {

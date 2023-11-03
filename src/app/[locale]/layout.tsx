@@ -1,7 +1,9 @@
-import { getTranslations, toSupportedLanguage } from "@/translations";
-import Navigation from "@/app/[locale]/Navigation";
-import "./globals.scss";
 import type { Metadata } from "next";
+
+import { toSupportedLanguage } from "@/translations";
+
+import Navigation from "./Navigation";
+import "./globals.scss";
 
 export const metadata: Metadata = {
   title: "Kompassi",
@@ -20,7 +22,6 @@ export default function RootLayout({
   params: { locale },
 }: RootLayoutProps) {
   const supportedLanguage = toSupportedLanguage(locale);
-  const translations = getTranslations(locale);
 
   return (
     <html lang={supportedLanguage}>
