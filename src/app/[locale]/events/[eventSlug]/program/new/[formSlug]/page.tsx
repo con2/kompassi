@@ -1,9 +1,20 @@
 import { SchemaForm } from "@/components/SchemaForm";
 import { FormSchema, dummyForm } from "@/components/SchemaForm/models";
+import { getTranslations } from "@/translations";
+import { gql } from "@/__generated__";
+import { getClient } from "@/apolloClient";
 
-async function getFormSchema(eventSlug: string, formSlug: string, locale: string): Promise<FormSchema> {
-  return dummyForm;
+const query = gql(`
+query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {
+  event(slug: $eventSlug) {
+    name
+
+    dimensions {
+      title(lang: $locale)
+    }
+  }
 }
+`);
 
 interface NewProgramProps {
   params: {
@@ -13,9 +24,23 @@ interface NewProgramProps {
   };
 }
 
+export async function generateMetadata({ params }: NewProgramProps) {
+  const { locale, eventSlug, formSlug } = params;
+  const t = getTranslations(locale);
+  const { data } = await getClient().query({
+    query,
+    variables: { eventSlug, locale },
+  });
+  // TODO
+  const { event } = data;
+  return {
+    title: `${event?.name}: ${dummyForm.title} – Kompassi`,
+  };
+}
+
 export default async function NewProgramPage({ params }: NewProgramProps) {
   const { locale, eventSlug, formSlug } = params;
-  const schema = await getFormSchema(eventSlug, formSlug, locale);
+  const schema = dummyForm;
   const { fields, layout, title } = schema;
 
   return (
