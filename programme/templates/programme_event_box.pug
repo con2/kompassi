@@ -1,12 +1,12 @@
 - load i18n
-h3 Ohjelma
+h3 {% trans "Programme" %}
 
 if event.programme_event_meta.is_public
-  h4 Tapahtuman ohjelmakartta on julkaistu
+  h4 {% trans "The programme schedule for this event has been published" %}
 
-  p: a(href='{% url "programme:schedule_view" event.slug %}').btn.btn-primary Tutustu ohjelma&shy;karttaan
+  p: a(href='{% url "programme:schedule_view" event.slug %}').btn.btn-primary {% trans "View programme schedule" %}
 else
-  h4 Tapahtuman ohjelmakarttaa ei ole vielä julkaistu.
+  h4 {% trans "The programme schedule for this event has not yet been published" %}
 
 if event.programme_event_meta.is_accepting_cold_offers
   h4 {% trans "The event is accepting programme offers" %}
@@ -19,6 +19,6 @@ if event.programme_event_meta.has_open_reservations
   p: a.btn.btn-primary(href='{% url "programme:profile_reservations_view" %}') {% trans "Go to reservations" %}
 
 if is_programme_admin
-  h4 Sinulla on ohjelma&shy;vastaavan oikeudet tähän tapahtumaan
+  h4 {% trans "You have programme admin privileges for this event" %}
 
-  p: a(href='{% url "programme:admin_view" event.slug %}').btn.btn-primary Siirry ohjelman hallintaan
+  p: a(href='{% url "programme:admin_view" event.slug %}').btn.btn-primary {% trans "Go to programme admin" %}

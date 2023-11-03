@@ -1600,3 +1600,18 @@ msgstr "Voin järjestää ohjelmani sekä lähi- että etäconissa"
 
 msgid "NOTE! Do not include yourself in these invites."
 msgstr "HUOM! Älä sisällytä itseäsi näihin kutsuihin."
+
+msgid "The programme schedule for this event has been published"
+msgstr "Tapahtuman ohjelmakartta on julkaistu"
+
+msgid "View programme schedule"
+msgstr "Näytä ohjelmakartta"
+
+msgid "The programme schedule for this event has not yet been published"
+msgstr "Tapahtuman ohjelmakarttaa ei ole vielä julkaistu"
+
+msgid "You have programme admin privileges for this event"
+msgstr "Sinulla on ohjelmavastaavan oikeudet tähän tapahtumaan"
+
+msgid "Go to programme admin"
+msgstr "Siirry ohjelmanhallintaan"

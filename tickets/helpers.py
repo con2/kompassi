@@ -2,7 +2,7 @@ from functools import wraps
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.translation import get_language
+from django.utils.translation import get_language, gettext_lazy as _
 
 from core.utils import get_ip
 
@@ -117,7 +117,7 @@ def tickets_admin_required(view_func):
         meta = event.tickets_event_meta
 
         if not meta:
-            messages.error(request, "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
+            messages.error(request, _("This event does not use Kompassi for ticket sales."))
             return redirect("core_event_view", event.slug)
 
         if not meta.is_user_admin(request.user):
@@ -143,11 +143,11 @@ def tickets_event_required(view_func):
         meta = event.tickets_event_meta
 
         if not meta:
-            messages.error(request, "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin.")
+            messages.error(request, _("This event does not use Kompassi for ticket sales."))
             return redirect("core_event_view", event.slug)
 
         if not (meta.is_ticket_sales_open or meta.is_user_admin(request.user)):
-            messages.error(request, "Tämän tapahtuman lipunmyynti ei ole vielä alkanut.")
+            messages.error(request, _("Ticket sales for this event has not yet started."))
             return redirect("core_event_view", event.slug)
 
         return view_func(request, event, *args, **kwargs)

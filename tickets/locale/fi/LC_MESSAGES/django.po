@@ -366,3 +366,9 @@ msgstr "Tilausvahvistus"
 
 msgid "Order reinstated"
 msgstr "Tilaus palautettu voimaan"
+
+msgid "This event does not use Kompassi for ticket sales."
+msgstr "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin."
+
+msgid "Ticket sales for this event has not yet started."
+msgstr "Tämän tapahtuman lipunmyynti ei ole vielä alkanut."
