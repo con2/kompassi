@@ -8,7 +8,7 @@ postgres_secret_managed: false
 
 # TODO push this to emskaffolden node-app template
 ingress_protocol: !If
-  test: !Var ingress_leterencrypt_enabled
+  test: !Var ingress_letsencrypt_enabled
   then: http
   else: https
 ingress_public_url: !Format "{ingress_protocol}://{ingress_public_hostname}"
