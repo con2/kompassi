@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -kn nextdev,codegen \"next dev\" \"graphql-codegen -w\"",
     "build": "next build",
     "start": "node .next/standalone/server.js",
     "lint": "next lint"
@@ -11,8 +11,6 @@
   "dependencies": {
     "@apollo/client": "^3.8.0-rc.2",
     "@apollo/experimental-nextjs-app-support": "^0.5.1",
-    "@graphql-codegen/cli": "^5.0.0",
-    "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@types/node": "20.8.10",
     "@types/react": "18.2.34",
@@ -27,5 +25,11 @@
     "sass": "^1.69.5",
     "typescript": "5.2.2"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/client-preset": "^4.1.0",
+    "@parcel/watcher": "^2.3.0",
+    "concurrently": "^8.2.2"
+  }
 }
