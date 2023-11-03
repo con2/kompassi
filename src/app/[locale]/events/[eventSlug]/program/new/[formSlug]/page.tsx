@@ -5,15 +5,15 @@ import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
 const query = gql(`
-query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {
-  event(slug: $eventSlug) {
-    name
+  query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {
+    event(slug: $eventSlug) {
+      name
 
-    dimensions {
-      title(lang: $locale)
+      dimensions {
+        title(lang: $locale)
+      }
     }
   }
-}
 `);
 
 interface NewProgramProps {
