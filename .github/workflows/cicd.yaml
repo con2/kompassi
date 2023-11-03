@@ -26,6 +26,7 @@ jobs:
       - uses: docker/setup-buildx-action@v1
       - id: build
         run: |
+          python3 -m pip install -U pip setuptools wheel
           python3 -m pip install emskaffolden==0.2.1
           emskaffolden -T node-app -E staging -- build --file-output build.json
       - name: Store build.json artifact
@@ -55,5 +56,6 @@ jobs:
           skaffold: '1.20.0'
       - uses: docker/setup-buildx-action@v1
       - run: |
+          python3 -m pip install -U pip setuptools wheel
           python3 -m pip install emskaffolden==0.2.1
           emskaffolden -T node-app -E staging -- deploy -n kompassi2-staging -a build.json
