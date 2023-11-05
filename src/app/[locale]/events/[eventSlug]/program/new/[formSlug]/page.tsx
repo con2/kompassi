@@ -1,22 +1,21 @@
+import { notFound } from "next/navigation";
+
 import { SchemaForm } from "@/components/SchemaForm";
-import { FormSchema, dummyForm } from "@/components/SchemaForm/models";
+import { Field } from "@/components/SchemaForm/models";
 import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
 const query = gql(`
-  query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {
+  query ProgrammeExampleQuery($eventSlug:String!, $formSlug:String!, $locale:String) {
     event(slug: $eventSlug) {
       name
 
-      dimensions {
-        title(lang: $locale)
-      }
-
-      offerForms {
+      offerForm(slug: $formSlug) {
         shortDescription(lang: $locale)
         form(lang: $locale) {
           title
+          description
           fields
         }
       }
@@ -32,29 +31,44 @@ interface NewProgramProps {
   };
 }
 
+export const revalidate = 15;
+
 export async function generateMetadata({ params }: NewProgramProps) {
   const { locale, eventSlug, formSlug } = params;
   const t = getTranslations(locale);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale },
+    variables: { eventSlug, formSlug, locale },
   });
-  // TODO
-  const { event } = data;
   return {
-    title: `${event?.name}: ${dummyForm.title} – Kompassi`,
+    title: `${data.event?.name}: ${data.event?.offerForm?.form?.title} – Kompassi`,
   };
 }
 
 export default async function NewProgramPage({ params }: NewProgramProps) {
   const { locale, eventSlug, formSlug } = params;
-  const schema = dummyForm;
-  const { fields, layout, title } = schema;
+  const t = getTranslations(locale);
+  const { data } = await getClient().query({
+    query,
+    variables: { eventSlug, formSlug, locale },
+  });
+  const { event } = data;
+  if (!event) {
+    notFound();
+  }
+  const { offerForm } = event;
+  if (!offerForm) {
+    notFound();
+  }
+  const { form } = offerForm;
+  const { title, description, fields: fieldsJson } = form!;
+  const fields: Field[] = JSON.parse(fieldsJson);
 
   return (
-    <div className="container mt-4">
+    <main className="container mt-4">
       <h1 className="mb-4">{title}</h1>
+      <p>{description}</p>
       <SchemaForm fields={fields} layout={"horizontal"} />
-    </div>
+    </main>
   );
 }

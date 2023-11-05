@@ -58,10 +58,11 @@ const SchemaFormInput = ({
           required={required}
           disabled={readOnly}
           id={name}
+          defaultValue={value}
         >
           {field.choices?.map((choice) => (
-            <option value={choice.value} key={choice.value} selected={value === choice.value}>
-              {choice.label}
+            <option value={choice.slug} key={choice.slug}>
+              {choice.title}
             </option>
           ))}
         </select>

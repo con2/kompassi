@@ -1,8 +1,9 @@
+import { notFound } from "next/navigation";
+import Link from "next/link";
+
 import { getClient } from "@/apolloClient";
 import { gql } from "@/__generated__";
 import { getTranslations } from "@/translations";
-import { notFound } from "next/navigation";
-import Link from "next/link";
 
 const query = gql(`
   query NewProgramFormSelectionQuery($eventSlug:String!, $locale:String) {

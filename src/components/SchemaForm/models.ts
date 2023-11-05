@@ -66,8 +66,8 @@ export interface SingleCheckbox extends BaseField {
 }
 
 export interface Choice {
-  value: string;
-  label: string;
+  slug: string;
+  title: string;
 }
 
 export interface SingleSelect extends BaseField {
