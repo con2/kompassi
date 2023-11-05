@@ -15,6 +15,7 @@ class CheckoutPaymentAdmin(admin.ModelAdmin):
         return False
 
     readonly_fields = (
+        "organization",
         "event",
         "created_at",
         "updated_at",
@@ -71,7 +72,7 @@ class CheckoutPaymentAdmin(admin.ModelAdmin):
                 )
             ),
         ),
-    )
+    )  # type: ignore
 
     list_display_links = ("stamp",)
     list_display = (
