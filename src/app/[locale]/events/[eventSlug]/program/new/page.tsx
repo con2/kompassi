@@ -54,7 +54,6 @@ export default async function NewProgramFormSelectionPage({
     query,
     variables: { eventSlug, locale },
   });
-  // TODO
   const { event } = data;
 
   if (!event) {
@@ -65,7 +64,9 @@ export default async function NewProgramFormSelectionPage({
 
   return (
     <main className="container mt-4">
-      <h1>{event?.name}: {translations.NewProgrammeView.title}</h1>
+      <h1>
+        {event?.name}: {translations.NewProgrammeView.title}
+      </h1>
       <p>{translations.NewProgrammeView.engagement(event.name)}</p>
 
       {offerForms.map((offerForm) => (
@@ -74,7 +75,11 @@ export default async function NewProgramFormSelectionPage({
             <h4 className="card-title">{offerForm.form?.title}</h4>
             <p className="card-text">
               {offerForm.shortDescription}
-              <Link className="stretched-link" href={`/events/${event.slug}/program/new/${offerForm.slug}`} aria-label={translations.NewProgrammeView.selectThisProgramType} />
+              <Link
+                className="stretched-link"
+                href={`/events/${event.slug}/program/new/${offerForm.slug}`}
+                aria-label={translations.NewProgrammeView.selectThisProgramType}
+              />
             </p>
           </div>
         </div>
