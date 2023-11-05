@@ -12,7 +12,13 @@ from django.utils.translation import gettext_lazy as _
 
 
 validate_slug = RegexValidator(
-    regex=r"[a-z0-9-]+", message="Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä väliviivoja."
+    regex=r"[a-z0-9-]+",
+    message="Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä väliviivoja.",
+)
+
+validate_slug_underscore = RegexValidator(
+    regex=r"[a-z0-9_]+",
+    message="Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä alaviivoja.",
 )
 
 
@@ -28,30 +34,45 @@ SLUG_FIELD_PARAMS = dict(
 NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
 
 
-SLUGIFY_CHAR_MAP = {
-    " ": "-",
-    ".": "-",
-    "_": "-",
-    "à": "a",
-    "á": "a",
-    "ä": "a",
-    "å": "a",
-    "è": "e",
-    "é": "e",
-    "ë": "e",
-    "ö": "o",
-    "ü": "",
-}
-SLUGIFY_FORBANNAD_RE = re.compile(r"[^a-z0-9-]", re.UNICODE)
-SLUGIFY_MULTIDASH_RE = re.compile(r"-+", re.UNICODE)
+def get_slugifier(sep: str = "-"):
+    """
+    >>> get_slugifier("-")("Foo Bar")
+    'foo-bar'
+    >>> get_slugifier("_")("Foo Bar")
+    'foo_bar'
+    """
+
+    assert len(sep) == 1, "Separator must be a single character"
+
+    char_map = {
+        " ": sep,
+        ".": sep,
+        "_": sep,
+        "à": "a",
+        "á": "a",
+        "ä": "a",
+        "å": "a",
+        "è": "e",
+        "é": "e",
+        "ë": "e",
+        "ö": "o",
+        "ü": "u",
+    }
+    forbannad_re = re.compile(f"[^a-z0-9{sep}]", re.UNICODE)
+    multisep_re = re.compile(sep + "+", re.UNICODE)
+
+    def _slugify(ustr):
+        ustr = ustr.lower()
+        ustr = "".join(char_map.get(c, c) for c in ustr)
+        ustr = forbannad_re.sub("", ustr)
+        ustr = multisep_re.sub(sep, ustr)
+        return ustr
+
+    return _slugify
 
 
-def slugify(ustr):
-    ustr = ustr.lower()
-    ustr = "".join(SLUGIFY_CHAR_MAP.get(c, c) for c in ustr)
-    ustr = SLUGIFY_FORBANNAD_RE.sub("", ustr)
-    ustr = SLUGIFY_MULTIDASH_RE.sub("-", ustr)
-    return ustr
+slugify = get_slugifier("-")
+slugify_underscore = get_slugifier("_")
 
 
 def get_previous_and_next(queryset, current):
