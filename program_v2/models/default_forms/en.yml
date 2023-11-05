@@ -1,0 +1,12 @@
+title: Offer a program item
+fields:
+  - name: title
+    type: SingleLineText
+    title: Program title
+    helpText: Make up a concise title for your programme. We reserve the right to edit the title.
+    required: true
+  - name: description
+    type: MultiLineText
+    title: Description
+    helpText: This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description.
+    required: true

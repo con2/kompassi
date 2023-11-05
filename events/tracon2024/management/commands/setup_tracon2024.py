@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta
 
+from pkg_resources import resource_stream
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 from django.urls import reverse
+
+import yaml
 
 from dateutil.tz import tzlocal
 
@@ -24,6 +28,7 @@ class Setup:
         self.setup_badges()
         # self.setup_tickets()
         self.setup_programme()
+        self.setup_program_v2()
         self.setup_intra()
         self.setup_access()
         self.setup_directory()
@@ -577,6 +582,143 @@ class Setup:
             default_form.save()
 
         self.event.programme_event_meta.create_groups()
+
+    def setup_program_v2(self):
+        """
+        This is for development purposes only. Once program v2 is up and running, there will be some
+        default form that will be used to initialize the event, and a feature will be provided to copy
+        forms from another event.
+        """
+        from programme.models import ProgrammeEventMeta
+        from forms.models import EventForm
+        from program_v2.models import ProgramV2EventMeta, OfferForm, Dimension, OfferFormLanguage
+
+        category_dimension, _ = Dimension.objects.get_or_create(
+            event=self.event,
+            slug="category",
+            defaults=dict(
+                title=dict(
+                    fi="Ohjelmatyyppi",
+                    en="Category",
+                ),
+            ),
+        )
+
+        (programme_admin_group,) = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins"])
+        ProgramV2EventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=programme_admin_group,
+                primary_dimension=category_dimension,
+            ),
+        )
+
+        with resource_stream("program_v2.models", "default_forms/fi.yml") as f:
+            default_form_fi_fields = yaml.safe_load(f)["fields"]
+
+        default_form_fi, _ = EventForm.objects.get_or_create(
+            event=self.event,
+            slug="programme-default-fi",
+            defaults=dict(
+                title="Tarjoa puhe- tai muuta ohjelmaa",
+                fields=default_form_fi_fields,
+            ),
+        )
+
+        with resource_stream("program_v2.models", "default_forms/en.yml") as f:
+            default_form_en_fields = yaml.safe_load(f)["fields"]
+
+        default_form_en, _ = EventForm.objects.get_or_create(
+            event=self.event,
+            slug="programme-default-en",
+            defaults=dict(
+                title="Offer a talk or other programme item",
+                fields=default_form_en_fields,
+            ),
+        )
+
+        default_form, _ = OfferForm.objects.get_or_create(
+            event=self.event,
+            slug="default",
+            defaults=dict(
+                short_description=dict(
+                    fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole pöytäroolipeli.",
+                    en="Select this option if your programme item is not a tabletop role-playing game.",
+                ),
+            ),
+        )
+
+        OfferFormLanguage.objects.get_or_create(
+            offer_form=default_form,
+            language_code="fi",
+            defaults=dict(
+                form=default_form_fi,
+            ),
+        )
+
+        OfferFormLanguage.objects.get_or_create(
+            offer_form=default_form,
+            language_code="en",
+            defaults=dict(
+                form=default_form_en,
+            ),
+        )
+
+        OfferForm.objects.get_or_create(
+            event=self.event,
+            slug="rpg",
+            defaults=dict(
+                short_description=dict(
+                    fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi on pöytäroolipeli.",
+                    en="Select this option if your programme item is a tabletop role-playing game.",
+                ),
+            ),
+        )
+
+        rpg_form, _ = OfferForm.objects.get_or_create(
+            event=self.event,
+            slug="rpg",
+            defaults=dict(
+                short_description=dict(
+                    fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi on pöytäroolipeli.",
+                    en="Select this option if your programme item is a tabletop role-playing game.",
+                ),
+            ),
+        )
+
+        rpg_form_fi, _ = EventForm.objects.get_or_create(
+            event=self.event,
+            slug="programme-rpg-fi",
+            defaults=dict(
+                title="Tarjoa pöytäroolipeliä",
+                fields=[],
+            ),
+        )
+
+        rpg_form_en, _ = EventForm.objects.get_or_create(
+            event=self.event,
+            slug="programme-rpg-en",
+            defaults=dict(
+                title="Offer a tabletop role-playing game",
+                fields=[],
+            ),
+        )
+
+        OfferFormLanguage.objects.get_or_create(
+            offer_form=rpg_form,
+            language_code="fi",
+            defaults=dict(
+                form=rpg_form_fi,
+            ),
+        )
+
+        OfferFormLanguage.objects.get_or_create(
+            offer_form=rpg_form,
+            language_code="en",
+            defaults=dict(
+                form=rpg_form_en,
+            ),
+        )
 
     def setup_access(self):
         from access.models import (

@@ -1,17 +1,24 @@
 from django.contrib import admin
 
-from .models import Form, FormResponse
+from .models import EventForm, GlobalForm, EventFormResponse, GlobalFormResponse
 
 
-class FormAdmin(admin.ModelAdmin):
-    model = Form
-    list_display = ("title", "active", "standalone")
+class GlobalFormAdmin(admin.ModelAdmin):
+    model = GlobalForm
+    list_display = ("slug", "title", "active", "standalone")
     list_filter = ("active", "standalone")
     search_fields = ("slug", "title")
 
 
-class FormResponseAdmin(admin.ModelAdmin):
-    model = FormResponse
+class EventFormAdmin(admin.ModelAdmin):
+    model = EventForm
+    list_display = ("event", "slug", "title", "active", "standalone")
+    list_filter = ("event", "active", "standalone")
+    search_fields = ("slug", "title")
+
+
+class GlobalFormResponseAdmin(admin.ModelAdmin):
+    model = GlobalFormResponse
     list_display = ("created_at", "form", "created_by")
     list_filter = ("form",)
     readonly_fields = ("form", "values", "created_by", "created_at", "updated_at")
@@ -20,5 +27,17 @@ class FormResponseAdmin(admin.ModelAdmin):
         return False
 
 
-admin.site.register(Form, FormAdmin)
-admin.site.register(FormResponse, FormResponseAdmin)
+class EventFormResponseAdmin(admin.ModelAdmin):
+    model = EventFormResponse
+    list_display = ("created_at", "form", "created_by")
+    list_filter = ("form__event", "form")
+    readonly_fields = ("form", "values", "created_by", "created_at", "updated_at")
+
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+
+admin.site.register(EventForm, EventFormAdmin)
+admin.site.register(GlobalForm, GlobalFormAdmin)
+admin.site.register(EventFormResponse, EventFormResponseAdmin)
+admin.site.register(GlobalFormResponse, GlobalFormResponseAdmin)

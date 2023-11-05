@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import SLUG_FIELD_PARAMS
+from core.utils import SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS
 from django.db.models import JSONField
 
 
@@ -16,8 +16,7 @@ LAYOUT_CHOICES = [
 ]
 
 
-class Form(models.Model):
-    slug = models.CharField(**SLUG_FIELD_PARAMS)
+class AbstractForm(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     active = models.BooleanField(default=True)
@@ -52,3 +51,18 @@ class Form(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        abstract = True
+
+
+class GlobalForm(AbstractForm):
+    slug = models.CharField(**SLUG_FIELD_PARAMS)  # type: ignore
+
+
+class EventForm(AbstractForm):
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="forms")
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
+
+    class Meta:
+        unique_together = [("event", "slug")]

@@ -1,0 +1,12 @@
+title: Tarjoa ohjelmaa
+fields:
+  - name: title
+    type: SingleLineText
+    title: Ohjelman nimi
+    helpText: Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa.
+    required: true
+  - name: description
+    type: MultiLineText
+    title: Kuvaus
+    helpText: Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta.
+    required: true

@@ -1,30 +1,36 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from django.utils import translation
+from django.conf import settings
 
 import graphene
 from graphene_django import DjangoObjectType
 
 from core.models import Event
+from forms.models import EventForm
 
-from .models import Dimension, DimensionValue, ProgramDimensionValue, Program, ScheduleItem
-
-
-DEFAULT_LANGUAGE = "fi"
+from .models import Dimension, DimensionValue, ProgramDimensionValue, Program, ScheduleItem, OfferForm
 
 
-def resolve_localized_field(parent, info, lang: Optional[str] = DEFAULT_LANGUAGE):
+DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
+
+
+def resolve_localized_field(field_name: str):
     """
     Given a LocalizedCharField or similar, this will resolve into its value in the currently active language.
+    Field name is required to be provided because info.field_name is in camelCase.
     """
-    with translation.override(lang):
-        return getattr(parent, info.field_name).translate()
+
+    def _resolve(parent, info, lang: str = DEFAULT_LANGUAGE):
+        with translation.override(lang):
+            return getattr(parent, field_name).translate()
+
+    return _resolve
 
 
 class DimensionType(DjangoObjectType):
     title = graphene.String(lang=graphene.String())
-    resolve_title = resolve_localized_field
+    resolve_title = resolve_localized_field("title")
 
     class Meta:
         model = Dimension
@@ -33,7 +39,7 @@ class DimensionType(DjangoObjectType):
 
 class DimensionValueType(DjangoObjectType):
     title = graphene.String(lang=graphene.String())
-    resolve_title = resolve_localized_field
+    resolve_title = resolve_localized_field("title")
 
     class Meta:
         model = DimensionValue
@@ -84,7 +90,11 @@ class LanguageType(graphene.ObjectType):
     name = graphene.String(lang=graphene.String())
 
     @staticmethod
-    def resolve_name(language: Language, info, lang: Optional[str] = DEFAULT_LANGUAGE):
+    def resolve_name(
+        language: Language,
+        info,
+        lang: str = DEFAULT_LANGUAGE,
+    ):
         if lang == "fi":
             return language.name_fi
         else:
@@ -96,13 +106,38 @@ class DimensionFilterInput(graphene.InputObjectType):
     values = graphene.List(graphene.String)
 
 
+class EventFormType(DjangoObjectType):
+    class Meta:
+        model = EventForm
+        fields = ("slug", "title", "description", "active", "layout", "fields")
+
+
+class OfferFormType(DjangoObjectType):
+    form = graphene.Field(EventFormType, lang=graphene.String())
+
+    @staticmethod
+    def resolve_form(
+        parent: OfferForm,
+        info,
+        lang: str = DEFAULT_LANGUAGE,
+    ) -> EventForm | None:
+        return parent.get_form(lang)
+
+    short_description = graphene.String(lang=graphene.String())
+    resolve_short_description = resolve_localized_field("short_description")
+
+    class Meta:
+        model = OfferForm
+        fields = ("slug",)
+
+
 class EventType(DjangoObjectType):
     class Meta:
         model = Event
         fields = ("slug", "name")
 
     programs = graphene.List(
-        ProgramType,
+        graphene.NonNull(ProgramType),
         filters=graphene.List(DimensionFilterInput),
     )
 
@@ -110,7 +145,7 @@ class EventType(DjangoObjectType):
     def resolve_programs(
         event: Event,
         info,
-        filters: Optional[list[DimensionFilterInput]] = None,
+        filters: list[DimensionFilterInput] = [],
     ):
         queryset = Program.objects.filter(event=event)
 
@@ -123,21 +158,33 @@ class EventType(DjangoObjectType):
 
         return queryset
 
-    dimensions = graphene.List(
-        DimensionType,
-    )
+    dimensions = graphene.List(graphene.NonNull(DimensionType))
 
     @staticmethod
-    def resolve_dimensions(
+    def resolve_dimensions(event: Event, info):
+        return Dimension.objects.filter(event=event)
+
+    offer_forms = graphene.List(graphene.NonNull(OfferFormType))
+
+    @staticmethod
+    def resolve_offer_forms(event: Event, info):
+        return OfferForm.objects.filter(event=event)
+
+    offer_form = graphene.Field(OfferFormType, slug=graphene.String(required=True))
+
+    @staticmethod
+    def resolve_offer_form(event: Event, info, slug: str):
+        return OfferForm.objects.get(event=event, slug=slug)
+
+    languages = graphene.List(graphene.NonNull(LanguageType))
+
+    @staticmethod
+    def resolve_languages(
         event: Event,
         info,
     ):
-        return Dimension.objects.filter(event=event)
-
-    languages = graphene.List(
-        LanguageType,
-        event=graphene.String(required=True),
-    )
+        # TODO
+        return LANGUAGES
 
 
 class Query(graphene.ObjectType):
