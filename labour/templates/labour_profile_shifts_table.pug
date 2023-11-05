@@ -21,7 +21,7 @@ if signup.is_finished
           th
             - trans "Job"
       tbody
-        for shift in signup.shifts.all
+        for shift in signup.ordered_shifts
           tr
             td {{ shift.start_time|skeletonfmt:"MEd" }} klo {{ shift.start_time|skeletonfmt:"Hm" }}
             td {{ shift.end_time|skeletonfmt:"MEd" }} klo {{ shift.end_time|skeletonfmt:"Hm" }}

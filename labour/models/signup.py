@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from dataclasses import dataclass
 from functools import cached_property
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.db import models
@@ -31,6 +32,9 @@ from .constants import (
     STATE_TIME_FIELDS,
     SIGNUP_STATE_GROUPS,
 )
+
+if TYPE_CHECKING:
+    from .roster import Shift
 
 
 @dataclass
@@ -309,6 +313,8 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     is_processed = property(lambda self: self.state != "new")
     is_alive = property(lambda self: self.is_active and self.is_accepted and not self.is_cancelled)
 
+    shifts: models.QuerySet["Shift"]
+
     class Meta:
         verbose_name = _("signup")
         verbose_name_plural = _("signups")
@@ -383,6 +389,10 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         from access.models import Privilege
 
         return Privilege.get_potential_privileges(person=self.person, group_privileges__event=self.event)
+
+    @property
+    def ordered_shifts(self):
+        return self.shifts.order_by("start_time")
 
     @classmethod
     def get_or_create_dummy(cls, accepted=False):
