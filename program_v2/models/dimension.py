@@ -30,6 +30,8 @@ class Dimension(LocalizedModel):
     color = models.CharField(max_length=63, blank=True, default="")
     icon = models.FileField(upload_to="program_v2/dimension_icons", blank=True)
 
+    values: models.QuerySet["DimensionValue"]
+
     class Meta:
         unique_together = ("event", "slug")
 

@@ -720,6 +720,11 @@ class Setup:
             ),
         )
 
+        Dimension.ensure_v1_default_dimensions(
+            self.event,
+            clear=False,
+        )
+
     def setup_access(self):
         from access.models import (
             Privilege,

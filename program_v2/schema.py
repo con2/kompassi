@@ -8,6 +8,7 @@ from graphene_django import DjangoObjectType
 
 from core.models import Event
 from forms.models import EventForm
+from forms.utils import enrich_fields
 
 from .models import Dimension, DimensionValue, ProgramDimensionValue, Program, ScheduleItem, OfferForm
 
@@ -107,9 +108,15 @@ class DimensionFilterInput(graphene.InputObjectType):
 
 
 class EventFormType(DjangoObjectType):
+    fields = graphene.Field(graphene.JSONString())
+
+    @staticmethod
+    def resolve_fields(parent: EventForm, info):
+        return enrich_fields(parent.fields, event=parent.event)
+
     class Meta:
         model = EventForm
-        fields = ("slug", "title", "description", "active", "layout", "fields")
+        fields = ("slug", "title", "description", "active", "layout")
 
 
 class OfferFormType(DjangoObjectType):

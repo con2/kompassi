@@ -10,3 +10,10 @@ fields:
     title: Kuvaus
     helpText: Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä markkinoida ohjelmaasi. Varaamme oikeuden muokata kuvausta.
     required: true
+  - name: category
+    type: SingleSelect
+    title: Ohjelman tyyppi
+    helpText: Valitse ohjelmasi tyyppi. Jos et löydä sopivaa, valitse "Muu".
+    required: true
+    choicesFrom:
+      dimension: category
