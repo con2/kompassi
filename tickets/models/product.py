@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 from functools import cached_property
 
 from django.db import models
@@ -132,9 +133,11 @@ class Product(models.Model):
         return [weekend, saturday, sunday]
 
     @classmethod
-    def get_products_for_event(cls, event: "Event", code: str = ""):
+    def get_products_for_event(cls, event: "Event", code: str = "", admin: bool = False):
         """
         Returns a list of products that are available for the given event and code.
         """
-        products = cls.objects.filter(event=event, available=True, code=code).order_by("ordering", "id")
-        return products
+        criteria: dict[str, Any] = dict(event=event, available=True)
+        if not admin:
+            criteria.update(code=code)
+        return cls.objects.filter(**criteria).order_by("ordering", "id")

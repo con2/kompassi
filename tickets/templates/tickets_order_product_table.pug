@@ -14,7 +14,7 @@ tbody
       td: p.lead {{ iform.instance.product.formatted_price }}
       td
         div
-          if iform.instance.product.in_stock
+          if admin or iform.instance.product.in_stock
             - crispy iform
           else
             input(type="hidden", name="p{{ iform.instance.product.id }}-count", value="0")

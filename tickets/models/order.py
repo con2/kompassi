@@ -210,18 +210,11 @@ class Order(models.Model):
 
     @property
     def messages(self):
-        seen = set()
-        result = list()
-
-        for op in self.order_product_set.all():
-            md = op.product.mail_description
-
-            if md is not None:
-                if md not in seen:
-                    seen.add(md)
-                    result.append(md)
-
-        return result
+        return {
+            op.product.mail_description
+            for op in self.order_product_set.all()
+            if op.product.mail_description and op.count > 0
+        }
 
     @property
     def email_vars(self):

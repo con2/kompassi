@@ -87,7 +87,7 @@ class OrderProductForm(forms.ModelForm):
     def get_for_order(cls, request, order, admin=False, code=""):
         return [
             cls.get_for_order_and_product(request, order, product, admin=admin)
-            for product in Product.get_products_for_event(order.event, code=code)
+            for product in Product.get_products_for_event(order.event, code=code, admin=admin)
         ]
 
     @classmethod
@@ -99,16 +99,21 @@ class OrderProductForm(forms.ModelForm):
 
         readonly = admin and ((order.is_paid and product.electronic_ticket))
 
+        max_count_per_product = order.event.tickets_event_meta.max_count_per_product
+        if not admin:
+            if product.amount_available < max_count_per_product:
+                max_count_per_product = product.amount_available
+            if max_count_per_product < 0:
+                # oops, we have accidentially oversold the product
+                max_count_per_product = 0
+
         return initialize_form(
             OrderProductForm,
             request,
             instance=order_product,
             prefix="p%d" % product.pk,
             readonly=readonly,
-            max_count_per_product=min(
-                product.amount_available,
-                order.event.tickets_event_meta.max_count_per_product,
-            ),
+            max_count_per_product=max_count_per_product,
         )
 
     class Meta:

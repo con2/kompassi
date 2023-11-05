@@ -259,6 +259,7 @@ def tickets_admin_order_view(request, vars, event, order_id):
         can_uncancel=can_uncancel,
         # XXX due to template being shared with public view, needs to be named "form"
         form=order_product_forms,
+        admin=True,
     )
 
     # Slightly abusing the core.person.view entry type as there is no Person.
