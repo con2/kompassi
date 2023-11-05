@@ -57,25 +57,39 @@ export type DimensionValueTypeTitleArgs = {
   lang?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type EventType = {
-  __typename?: 'EventType';
-  dimensions?: Maybe<Array<Maybe<DimensionType>>>;
-  languages?: Maybe<Array<Maybe<LanguageType>>>;
-  name: Scalars['String']['output'];
-  programs?: Maybe<Array<Maybe<ProgramType>>>;
+export type EventFormType = {
+  __typename?: 'EventFormType';
+  active: Scalars['Boolean']['output'];
+  fields: Scalars['JSONString']['output'];
+  layout: FormsEventFormLayoutChoices;
   /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
   slug: Scalars['String']['output'];
+  title: Scalars['String']['output'];
 };
 
-
-export type EventTypeLanguagesArgs = {
-  event: Scalars['String']['input'];
+export type EventType = {
+  __typename?: 'EventType';
+  dimensions?: Maybe<Array<DimensionType>>;
+  languages?: Maybe<Array<LanguageType>>;
+  name: Scalars['String']['output'];
+  offerForms?: Maybe<Array<OfferFormType>>;
+  programs?: Maybe<Array<ProgramType>>;
+  /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
+  slug: Scalars['String']['output'];
 };
 
 
 export type EventTypeProgramsArgs = {
   filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
 };
+
+/** An enumeration. */
+export enum FormsEventFormLayoutChoices {
+  /** Horizontal */
+  Horizontal = 'HORIZONTAL',
+  /** Vertical */
+  Vertical = 'VERTICAL'
+}
 
 export type LanguageType = {
   __typename?: 'LanguageType';
@@ -85,6 +99,24 @@ export type LanguageType = {
 
 
 export type LanguageTypeNameArgs = {
+  lang?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type OfferFormType = {
+  __typename?: 'OfferFormType';
+  form?: Maybe<EventFormType>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
+  slug: Scalars['String']['output'];
+};
+
+
+export type OfferFormTypeFormArgs = {
+  lang?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type OfferFormTypeShortDescriptionArgs = {
   lang?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -127,7 +159,16 @@ export type ProgrammeExampleQueryQueryVariables = Exact<{
 }>;
 
 
-export type ProgrammeExampleQueryQuery = { __typename?: 'Query', event?: { __typename?: 'EventType', name: string, dimensions?: Array<{ __typename?: 'DimensionType', title?: string | null } | null> | null } | null };
+export type ProgrammeExampleQueryQuery = { __typename?: 'Query', event?: { __typename?: 'EventType', name: string, dimensions?: Array<{ __typename?: 'DimensionType', title?: string | null }> | null, offerForms?: Array<{ __typename?: 'OfferFormType', shortDescription?: string | null, form?: { __typename?: 'EventFormType', title: string, fields: any } | null }> | null } | null };
+
+export type NewProgramFormSelectionQueryQueryVariables = Exact<{
+  eventSlug: Scalars['String']['input'];
+  locale?: InputMaybe<Scalars['String']['input']>;
+}>;
 
 
-export const ProgrammeExampleQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProgrammeExampleQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"dimensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}}]}}]}}]} as unknown as DocumentNode<ProgrammeExampleQueryQuery, ProgrammeExampleQueryQueryVariables>;
+export type NewProgramFormSelectionQueryQuery = { __typename?: 'Query', event?: { __typename?: 'EventType', name: string, slug: string, offerForms?: Array<{ __typename?: 'OfferFormType', slug: string, shortDescription?: string | null, form?: { __typename?: 'EventFormType', title: string, slug: string } | null }> | null } | null };
+
+
+export const ProgrammeExampleQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProgrammeExampleQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"dimensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"offerForms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortDescription"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"fields"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ProgrammeExampleQueryQuery, ProgrammeExampleQueryQueryVariables>;
+export const NewProgramFormSelectionQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NewProgramFormSelectionQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"offerForms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"shortDescription"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}}]}}]}}]}}]}}]} as unknown as DocumentNode<NewProgramFormSelectionQueryQuery, NewProgramFormSelectionQueryQueryVariables>;

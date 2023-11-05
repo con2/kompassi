@@ -13,7 +13,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      dimensions {\n        title(lang: $locale)\n      }\n    }\n  }\n": types.ProgrammeExampleQueryDocument,
+    "\n  query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      dimensions {\n        title(lang: $locale)\n      }\n\n      offerForms {\n        shortDescription(lang: $locale)\n        form(lang: $locale) {\n          title\n          fields\n        }\n      }\n    }\n  }\n": types.ProgrammeExampleQueryDocument,
+    "\n  query NewProgramFormSelectionQuery($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      offerForms {\n        slug\n        shortDescription(lang: $locale)\n        form(lang: $locale) {\n          title\n          slug\n        }\n      }\n    }\n  }\n": types.NewProgramFormSelectionQueryDocument,
 };
 
 /**
@@ -33,7 +34,11 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      dimensions {\n        title(lang: $locale)\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      dimensions {\n        title(lang: $locale)\n      }\n    }\n  }\n"];
+export function gql(source: "\n  query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      dimensions {\n        title(lang: $locale)\n      }\n\n      offerForms {\n        shortDescription(lang: $locale)\n        form(lang: $locale) {\n          title\n          fields\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgrammeExampleQuery($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      dimensions {\n        title(lang: $locale)\n      }\n\n      offerForms {\n        shortDescription(lang: $locale)\n        form(lang: $locale) {\n          title\n          fields\n        }\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query NewProgramFormSelectionQuery($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      offerForms {\n        slug\n        shortDescription(lang: $locale)\n        form(lang: $locale) {\n          title\n          slug\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query NewProgramFormSelectionQuery($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      offerForms {\n        slug\n        shortDescription(lang: $locale)\n        form(lang: $locale) {\n          title\n          slug\n        }\n      }\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

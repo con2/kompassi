@@ -203,6 +203,14 @@ const translations = {
     },
   },
 
+  NewProgrammeView: {
+    title: "Offer a program item",
+    engagement(eventName: string) {
+      return (<>Thank you for your interest in offering programme at {eventName}! Please begin by selecting the type of program you wish to offer below.</>);
+    },
+    selectThisProgramType: "Select this program type",
+  },
+
   Brand: {
     appName: (
       <>

@@ -1,3 +1,4 @@
+import { kompassiBaseUrl } from "@/config";
 import { getTranslations, supportedLanguages } from "../../translations";
 
 interface SplashViewProps {
@@ -18,7 +19,7 @@ export default function SplashView({ params: { locale }}: SplashViewProps) {
       <div className="container-fluid py-5">
         <h1 className="display-5 fw-bold">{translations.Brand.appName}</h1>
         <p className="col-md-8 fs-4">{translations.SplashView.engagement}</p>
-        <a className="btn btn-primary btn-lg" href="https://kompassi.eu">
+        <a className="btn btn-primary btn-lg" href={kompassiBaseUrl}>
           {translations.SplashView.backToKompassi}…
         </a>
       </div>

@@ -12,6 +12,14 @@ const query = gql(`
       dimensions {
         title(lang: $locale)
       }
+
+      offerForms {
+        shortDescription(lang: $locale)
+        form(lang: $locale) {
+          title
+          fields
+        }
+      }
     }
   }
 `);

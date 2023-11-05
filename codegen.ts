@@ -1,7 +1,9 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
 
+import { kompassiBaseUrl } from "./src/config";
+
 const config: CodegenConfig = {
-  schema: "https://kompassi.eu/graphql",
+  schema: `${kompassiBaseUrl}/graphql`,
   documents: ["src/**/*.{ts,tsx}"],
   generates: {
     "./src/__generated__/": {

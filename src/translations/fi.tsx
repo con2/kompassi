@@ -187,7 +187,6 @@ const translations: Translations = {
     title: "Tapahtumat",
   },
 
-
   TicketsView: {
     title: "Osta lippuja",
     productsTable: {
@@ -202,6 +201,14 @@ const translations: Translations = {
     acceptTermsAndConditions(url: string) {
       return (<>Hyväksyn <a href={url} target="_blank" rel="noopener noreferrer">lipunmyynnin ehdot</a> (pakollinen).</>);
     },
+  },
+
+  NewProgrammeView: {
+    title: "Tarjoa ohjelmanumeroa",
+    engagement(eventName: string) {
+      return (<>Tervetuloa tarjoamaan ohjelmaa {eventName}{eventName.includes(" ") ? " " : ""}-tapahtumaan! Aloita valitsemalla tarjottavan ohjelman tyyppi alta.</>);
+    },
+    selectThisProgramType: "Valitse tämä ohjelmatyyppi",
   },
 
   Brand: {
