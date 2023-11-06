@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 
 import { getClient } from "@/apolloClient";
@@ -62,6 +62,10 @@ export default async function NewProgramFormSelectionPage({
   }
 
   const offerForms = event.offerForms ?? [];
+
+  if (offerForms.length === 1) {
+    return redirect(`/events/${event.slug}/program/new/${offerForms[0].slug}`);
+  }
 
   return (
     <main className="container mt-4">

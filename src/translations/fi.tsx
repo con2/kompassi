@@ -199,16 +199,30 @@ const translations: Translations = {
     },
     purchaseButtonText: "Osta",
     acceptTermsAndConditions(url: string) {
-      return (<>Hyväksyn <a href={url} target="_blank" rel="noopener noreferrer">lipunmyynnin ehdot</a> (pakollinen).</>);
+      return (
+        <>
+          Hyväksyn{" "}
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            lipunmyynnin ehdot
+          </a>{" "}
+          (pakollinen).
+        </>
+      );
     },
   },
 
   NewProgrammeView: {
     title: "Tarjoa ohjelmanumeroa",
-    engagement(eventName: string) {
-      return (<>Tervetuloa tarjoamaan ohjelmaa {eventName}{eventName.includes(" ") ? " " : ""}-tapahtumaan! Aloita valitsemalla tarjottavan ohjelman tyyppi alta.</>);
-    },
+    engagement: (eventName: string) => (
+      <>
+        Tervetuloa tarjoamaan ohjelmaa {eventName}
+        {eventName.includes(" ") ? " " : ""}-tapahtumaan! Aloita valitsemalla
+        tarjottavan ohjelman tyyppi alta.
+      </>
+    ),
     selectThisProgramType: "Valitse tämä ohjelmatyyppi",
+    backToProgramFormSelection: "Takaisin ohjelmatyypin valintaan",
+    forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
   },
 
   Brand: {

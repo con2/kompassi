@@ -199,16 +199,29 @@ const translations = {
     },
     purchaseButtonText: "Purchase",
     acceptTermsAndConditions(url: string) {
-      return (<>I accept the <a href={url} target="_blank" rel="noopener noreferrer">terms and conditions</a> (required).</>);
+      return (
+        <>
+          I accept the{" "}
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            terms and conditions
+          </a>{" "}
+          (required).
+        </>
+      );
     },
   },
 
   NewProgrammeView: {
     title: "Offer a program item",
-    engagement(eventName: string) {
-      return (<>Thank you for your interest in offering programme at {eventName}! Please begin by selecting the type of program you wish to offer below.</>);
-    },
+    engagement: (eventName: string) => (
+      <>
+        Thank you for your interest in offering programme at {eventName}! Please
+        begin by selecting the type of program you wish to offer below.
+      </>
+    ),
     selectThisProgramType: "Select this program type",
+    backToProgramFormSelection: "Back to program type selection",
+    forEvent: (eventName: string) => <>for {eventName}</>,
   },
 
   Brand: {
