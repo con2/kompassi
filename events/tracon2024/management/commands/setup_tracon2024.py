@@ -695,7 +695,7 @@ class Setup:
             ),
         )
 
-        if created:
+        if not rpg_form.languages.exists():
             rpg_form.languages.set([rpg_form_fi, rpg_form_en])
 
         Dimension.ensure_v1_default_dimensions(
