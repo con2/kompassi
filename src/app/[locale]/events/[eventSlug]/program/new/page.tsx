@@ -48,48 +48,55 @@ export async function generateMetadata({
 export default async function NewProgramFormSelectionPage({
   params,
 }: NewProgramFormSelectionProps) {
-  const { locale, eventSlug } = params;
-  const t = getTranslations(locale).NewProgrammeView;
+  try {
+    const { locale, eventSlug } = params;
+    const t = getTranslations(locale).NewProgrammeView;
 
-  const { data } = await getClient().query({
-    query,
-    variables: { eventSlug, locale },
-  });
-  const { event } = data;
+    const { data } = await getClient().query({
+      query,
+      variables: { eventSlug, locale },
+    });
+    const { event } = data;
 
-  if (!event) {
-    notFound();
-  }
+    if (!event) {
+      notFound();
+    }
 
-  const offerForms = event.offerForms ?? [];
+    const offerForms = event.offerForms ?? [];
 
-  if (offerForms.length === 1) {
-    return redirect(`/events/${event.slug}/program/new/${offerForms[0].slug}`);
-  }
+    if (offerForms.length === 1) {
+      return redirect(
+        `/events/${event.slug}/program/new/${offerForms[0].slug}`
+      );
+    }
 
-  return (
-    <main className="container mt-4">
-      <h1>
-        {t.title}{" "}
-        <span className="fs-5 text-muted">{t.forEvent(event.name)}</span>
-      </h1>
-      <p>{t.engagement(event.name)}</p>
+    return (
+      <main className="container mt-4">
+        <h1>
+          {t.title}{" "}
+          <span className="fs-5 text-muted">{t.forEvent(event.name)}</span>
+        </h1>
+        <p>{t.engagement(event.name)}</p>
 
-      {offerForms.map((offerForm) => (
-        <div key={offerForm.slug} className="card mb-2">
-          <div className="card-body">
-            <h4 className="card-title">{offerForm.form?.title}</h4>
-            <p className="card-text">
-              {offerForm.shortDescription}
-              <Link
-                className="stretched-link"
-                href={`/events/${event.slug}/program/new/${offerForm.slug}`}
-                aria-label={t.selectThisProgramType}
-              />
-            </p>
+        {offerForms.map((offerForm) => (
+          <div key={offerForm.slug} className="card mb-2">
+            <div className="card-body">
+              <h4 className="card-title">{offerForm.form?.title}</h4>
+              <p className="card-text">
+                {offerForm.shortDescription}
+                <Link
+                  className="stretched-link"
+                  href={`/events/${event.slug}/program/new/${offerForm.slug}`}
+                  aria-label={t.selectThisProgramType}
+                />
+              </p>
+            </div>
           </div>
-        </div>
-      ))}
-    </main>
-  );
+        ))}
+      </main>
+    );
+  } catch (err: any) {
+    console.log(JSON.stringify(err?.graphQLErrors, null, 2));
+    throw err;
+  }
 }
