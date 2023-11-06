@@ -55,14 +55,18 @@ def membership_admin_members_view(request, vars, organization, format="screen"):
     current_term = organization.membership_organization_meta.get_current_term()
     if current_term:
         payment_filters = Filter(request, "paid")
-        paymentinator = lambda is_paid: lambda member: member.get_payment_for_term().is_paid == is_paid
+        paymentinator = (
+            lambda is_paid: lambda member: (term := member.get_payment_for_term()) and term.is_paid == is_paid
+        )
         payment_filters.add("1", "Maksettu", paymentinator(True))
         payment_filters.add("0", "Ei maksettu", paymentinator(False))
         memberships = payment_filters.filter_queryset(memberships)
 
         all_filters.append(payment_filters)
     else:
-        messages.warning(request, "Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä.")
+        messages.warning(
+            request, "Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä."
+        )
         payment_filters = None
 
     filter_active = any(f.selected_slug != f.default for f in all_filters)
