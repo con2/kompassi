@@ -68,6 +68,11 @@ export type EventFormType = {
   title: Scalars['String']['output'];
 };
 
+
+export type EventFormTypeFieldsArgs = {
+  enrich?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type EventType = {
   __typename?: 'EventType';
   dimensions?: Maybe<Array<DimensionType>>;

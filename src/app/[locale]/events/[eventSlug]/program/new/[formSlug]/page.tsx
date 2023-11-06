@@ -79,7 +79,7 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
         <nav className="mb-0">
           <Link
             className="link-subtle"
-            href={`/${locale}/events/${eventSlug}/program/new`}
+            href={`/events/${eventSlug}/program/new`}
           >
             &lt; {t.backToProgramFormSelection}
           </Link>
