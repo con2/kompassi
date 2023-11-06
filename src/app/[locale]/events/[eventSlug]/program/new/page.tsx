@@ -51,10 +51,18 @@ export default async function NewProgramFormSelectionPage({
   const { locale, eventSlug } = params;
   const t = getTranslations(locale).NewProgrammeView;
 
-  const { data } = await getClient().query({
-    query,
-    variables: { eventSlug, locale },
-  });
+  let data: any;
+  try {
+    const response = await getClient().query({
+      query,
+      variables: { eventSlug, locale },
+    });
+    data = response.data;
+  } catch (err: any) {
+    console.error(JSON.stringify(err.graphQLErrors, null, 2));
+    throw err;
+  }
+
   const { event } = data;
 
   if (!event) {
