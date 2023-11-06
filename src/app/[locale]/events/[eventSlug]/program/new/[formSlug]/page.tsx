@@ -66,7 +66,7 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
 
   return (
     <main className="container mt-4">
-      <h1 className="mb-4">${event.name}: {title}</h1>
+      <h1 className="mb-4">{event.name}: {title}</h1>
       <p>{description}</p>
       <SchemaForm fields={fields} layout={"horizontal"} />
     </main>
