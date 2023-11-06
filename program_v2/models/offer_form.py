@@ -23,46 +23,35 @@ class OfferForm(LocalizedModel):
         help_text=_("Visible on the page that offers different kinds of forms."),
     )
 
-    languages: models.QuerySet["OfferFormLanguage"]
+    languages = models.ManyToManyField(
+        "forms.EventForm",
+        verbose_name=_("language versions"),
+        help_text=_(
+            "The form will be available in these languages. "
+            "Each language can have its own set of fields. "
+            "There must be exactly one form per supported language."
+        ),
+    )
 
     def get_form(self, requested_language: str) -> Optional[EventForm]:
         try:
-            return self.languages.get(language_code=requested_language).form
-        except OfferFormLanguage.DoesNotExist:
+            return self.languages.get(language=requested_language)
+        except EventForm.DoesNotExist:
             pass
 
-        for language_code, _ in settings.LANGUAGES:
-            if language_code == requested_language:
+        for language, _ in settings.LANGUAGES:
+            if language == requested_language:
                 # already tried above, skip one extra query
                 continue
 
             try:
-                return self.languages.get(language_code=language_code).form
-            except OfferFormLanguage.DoesNotExist:
+                return self.languages.get(language=language)
+            except EventForm.DoesNotExist:
                 pass
 
-        return None
+        raise EventForm.DoesNotExist()
 
     class Meta:
         unique_together = [
             ("event", "slug"),
         ]
-
-
-class OfferFormLanguage(models.Model):
-    offer_form = models.ForeignKey(
-        OfferForm,
-        on_delete=models.CASCADE,
-        related_name="languages",
-    )
-
-    language_code = models.CharField(
-        max_length=2,
-        verbose_name=_("language"),
-    )
-
-    form = models.ForeignKey(
-        "forms.EventForm",
-        on_delete=models.CASCADE,
-        related_name="+",
-    )

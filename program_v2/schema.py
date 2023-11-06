@@ -8,7 +8,6 @@ from graphene_django import DjangoObjectType
 
 from core.models import Event
 from forms.models import EventForm
-from forms.utils import enrich_fields
 
 from .models import Dimension, DimensionValue, ProgramDimensionValue, Program, ScheduleItem, OfferForm
 
@@ -108,11 +107,22 @@ class DimensionFilterInput(graphene.InputObjectType):
 
 
 class EventFormType(DjangoObjectType):
-    fields = graphene.Field(graphene.JSONString())
+    fields = graphene.Field(
+        graphene.JSONString(),
+        enrich=graphene.Boolean(
+            description=(
+                "Enriched fields have dynamic choices populated for them. This is the default. "
+                'Pass enrich: false to get access to "raw" unenriched fields. This is used by the form editor.'
+            ),
+        ),
+    )
 
     @staticmethod
-    def resolve_fields(parent: EventForm, info):
-        return enrich_fields(parent.fields, event=parent.event)
+    def resolve_fields(parent: EventForm, info, enrich: bool = True):
+        if enrich:
+            return parent.enriched_fields
+        else:
+            return parent.fields
 
     class Meta:
         model = EventForm

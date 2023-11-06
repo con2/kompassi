@@ -5,6 +5,7 @@ from .models import Dimension, DimensionValue
 
 class DimensionValueInline(admin.TabularInline):
     model = DimensionValue
+    extra = 0
 
 
 class DimensionAdmin(admin.ModelAdmin):

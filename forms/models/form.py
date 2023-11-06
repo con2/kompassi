@@ -1,11 +1,14 @@
 import logging
+from copy import deepcopy
+from functools import cached_property
+from typing import Any
 
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS
-from django.db.models import JSONField
+from program_v2.models.dimension import Dimension
 
 
 logger = logging.getLogger("kompassi")
@@ -15,10 +18,13 @@ LAYOUT_CHOICES = [
     ("vertical", _("Vertical")),
 ]
 
+DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
+
 
 class AbstractForm(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
+    language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=settings.LANGUAGES)
     active = models.BooleanField(default=True)
     standalone = models.BooleanField(
         default=True,
@@ -47,7 +53,7 @@ class AbstractForm(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    fields = JSONField()
+    fields = models.JSONField()
 
     def __str__(self):
         return self.title
@@ -66,3 +72,36 @@ class EventForm(AbstractForm):
 
     class Meta:
         unique_together = [("event", "slug")]
+
+    @cached_property
+    def enriched_fields(self):
+        return [self._enrich_field(field) for field in self.fields]
+
+    def _enrich_field(self, field: dict[str, Any]) -> dict[str, Any]:
+        """
+        Some field types may contain server side directives that need to be resolved before
+        turning the form specification over to the frontend.
+        """
+        field = deepcopy(field)
+
+        if choices_from := field.get("choicesFrom"):
+            assert len(choices_from) == 1, "choicesFrom must have exactly one key: value pair"
+            ((source_type, source),) = choices_from.items()
+            if source_type == "dimension":
+                dimension = Dimension.objects.get(event=self.event, slug=source)
+                field["choices"] = [
+                    dict(
+                        slug=value.slug,
+                        title=value.title.translate(self.language),
+                    )
+                    for value in dimension.values.all()
+                ]
+
+                print("self", self)
+                print("choices", field["choices"])
+            else:
+                raise NotImplementedError(f"choicesFrom: {choices_from}")
+
+            del field["choicesFrom"]
+
+        return field
