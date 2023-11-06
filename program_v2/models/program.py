@@ -1,15 +1,17 @@
 import logging
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Self, Optional
 
-from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models, transaction
 
+from core.models import Event
 from core.utils import log_get_or_create, log_delete, validate_slug
 
 from ..consts import TAG_DIMENSION_TITLE_LOCALIZED, CATEGORY_DIMENSION_TITLE_LOCALIZED
 
 if TYPE_CHECKING:
-    from core.models import Event
     from .dimension import ProgramDimensionValue
 
 
@@ -22,6 +24,8 @@ class Program(models.Model):
     slug = models.CharField(max_length=1023, validators=[validate_slug])
     description = models.TextField(blank=True)
     other_fields = models.JSONField(blank=True, default=dict)
+
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -62,9 +66,98 @@ class Program(models.Model):
             program.cached_dimensions = program._dimensions
             program.save(update_fields=["cached_dimensions"])
 
+    @staticmethod
+    def create_from_form_data(
+        event: Event,
+        values: dict[str, Any],
+        created_by: Optional["User"] = None,
+    ) -> "Program":
+        """
+        Given the responses from a program form, creates a new program.
+        Basic fields such as title and description are populated from the form.
+        Fields whose names match dimension names are assumed to be dimensions.
+        All other fields are stored in other_fields.
+        """
+        from ..forms import ProgramForm
+        from .dimension import DimensionValue, ProgramDimensionValue
+
+        values = values.copy()
+
+        with transaction.atomic():
+            dimension_values: list[DimensionValue] = []
+            for dimension in event.dimensions.all():
+                # TODO multiple values per dimension
+                dimension_value_slug = values.pop(dimension.slug, None)
+                if dimension_value_slug is None:
+                    continue
+
+                dimension_value = DimensionValue.objects.get(dimension=dimension, slug=dimension_value_slug)
+                dimension_values.append(dimension_value)
+
+            program = ProgramForm(values).save(commit=False)
+            program.event = event
+            program.created_by = created_by
+
+            for field_name in ProgramForm.Meta.fields:
+                values.pop(field_name, None)
+
+            program.other_fields = values
+            program.save()
+
+            for dimension_value in dimension_values:
+                ProgramDimensionValue.objects.create(
+                    program=program,
+                    dimension=dimension_value.dimension,
+                    value=dimension_value,
+                )
+
+        return program
+
+    def update_from_form_data(self, values: dict[str, Any]):
+        """
+        Given the responses from a program form, updates the program.
+        Matches semantics from create_from_form_data.
+
+        NOTE: if you need the instance afterwards, use the returned one or do a refresh_from_db.
+        """
+        from ..forms import ProgramForm
+        from .dimension import DimensionValue, ProgramDimensionValue
+
+        values = values.copy()
+
+        with transaction.atomic():
+            for dimension in self.event.dimensions.all():
+                # TODO multiple values per dimension
+                dimension_value_slug = values.pop(dimension.slug, None)
+                if dimension_value_slug is None:
+                    continue
+
+                dimension_value = DimensionValue.objects.get(dimension=dimension, slug=dimension_value_slug)
+
+                ProgramDimensionValue.objects.filter(
+                    program=self,
+                    dimension=dimension,
+                ).delete()
+                ProgramDimensionValue.objects.create(
+                    program=self,
+                    dimension=dimension,
+                    value=dimension_value,
+                )
+
+            program = ProgramForm(values, instance=self).save(commit=False)
+
+            for field_name in ProgramForm.Meta.fields:
+                values.pop(field_name, None)
+
+            program.other_fields = values
+            program.save()
+
+        return program
+
     @classmethod
     def import_program_v1(cls, event: "Event", clear=False):
-        from . import Dimension, DimensionValue, ProgramDimensionValue, ScheduleItem
+        from .dimension import Dimension, DimensionValue, ProgramDimensionValue
+        from .schedule import ScheduleItem
         from programme.models import Programme
 
         if clear:

@@ -684,7 +684,7 @@ class Setup:
             ),
         )
 
-        rpg_form, created = OfferForm.objects.get_or_create(
+        rpg_form, _ = OfferForm.objects.get_or_create(
             event=self.event,
             slug="rpg",
             defaults=dict(
