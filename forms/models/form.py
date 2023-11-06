@@ -96,9 +96,6 @@ class EventForm(AbstractForm):
                     )
                     for value in dimension.values.all()
                 ]
-
-                print("self", self)
-                print("choices", field["choices"])
             else:
                 raise NotImplementedError(f"choicesFrom: {choices_from}")
 

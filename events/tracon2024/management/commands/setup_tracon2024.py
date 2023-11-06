@@ -639,7 +639,7 @@ class Setup:
             ),
         )
 
-        default_form, created = OfferForm.objects.get_or_create(
+        default_form, _ = OfferForm.objects.get_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
@@ -650,7 +650,7 @@ class Setup:
             ),
         )
 
-        if created:
+        if not default_form.languages.exists():
             default_form.languages.set([default_form_fi, default_form_en])
 
         OfferForm.objects.get_or_create(
