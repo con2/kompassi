@@ -13,11 +13,16 @@ ingress_protocol: !If
   else: https
 ingress_public_url: !Format "{ingress_protocol}://{ingress_public_hostname}"
 
+# which kompassi instance to connect to
+kompassi_base_url: https://dev.kompassi.eu
+
 node_environment:
   - name: PORT
     value: "3000"
   - name: NEXTAUTH_URL
     value: !Var ingress_public_url
+  - name: NEXT_PUBLIC_KOMPASSI_BASE_URL
+    value: !Var kompassi_base_url
 
 node_volumes: []
 node_volume_mounts: []
