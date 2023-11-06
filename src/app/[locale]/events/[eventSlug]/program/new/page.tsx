@@ -49,7 +49,7 @@ export default async function NewProgramFormSelectionPage({
   params,
 }: NewProgramFormSelectionProps) {
   const { locale, eventSlug } = params;
-  const translations = getTranslations(locale);
+  const t = getTranslations(locale).NewProgrammeView;
 
   const { data } = await getClient().query({
     query,
@@ -70,9 +70,10 @@ export default async function NewProgramFormSelectionPage({
   return (
     <main className="container mt-4">
       <h1>
-        {event?.name}: {translations.NewProgrammeView.title}
+        {t.title}{" "}
+        <span className="fs-5 text-muted">{t.forEvent(event.name)}</span>
       </h1>
-      <p>{translations.NewProgrammeView.engagement(event.name)}</p>
+      <p>{t.engagement(event.name)}</p>
 
       {offerForms.map((offerForm) => (
         <div key={offerForm.slug} className="card mb-2">
@@ -83,7 +84,7 @@ export default async function NewProgramFormSelectionPage({
               <Link
                 className="stretched-link"
                 href={`/events/${event.slug}/program/new/${offerForm.slug}`}
-                aria-label={translations.NewProgrammeView.selectThisProgramType}
+                aria-label={t.selectThisProgramType}
               />
             </p>
           </div>
