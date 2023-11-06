@@ -222,6 +222,7 @@ const translations = {
     selectThisProgramType: "Select this program type",
     backToProgramFormSelection: "Back to program type selection",
     forEvent: (eventName: string) => <>for {eventName}</>,
+    submit: "Submit",
   },
 
   Brand: {

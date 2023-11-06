@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 import { SchemaForm } from "@/components/SchemaForm";
 import { Field } from "@/components/SchemaForm/models";
 import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import Link from "next/link";
+import { submit } from "./actions";
 
 const query = gql(`
   query NewProgramQuery($eventSlug:String!, $formSlug:String!, $locale:String) {
@@ -90,7 +91,15 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
         <span className="fs-5 text-muted">{t.forEvent(event.name)}</span>
       </h1>
       <p>{description}</p>
-      <SchemaForm fields={fields} layout={"horizontal"} />
+      <form action={submit.bind(null, locale, eventSlug, formSlug)}>
+        <SchemaForm fields={fields} layout={"horizontal"} />
+        <div className="row">
+          <div className="col-md-3"></div>
+          <div className="col-md-9">
+           <button type="submit" className="btn btn-primary">{t.submit}</button>
+          </div>
+        </div>
+      </form>
     </main>
   );
 }

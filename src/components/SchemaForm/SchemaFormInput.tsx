@@ -26,6 +26,7 @@ const SchemaFormInput = ({
           required={required}
           readOnly={readOnly}
           id={name}
+          name={name}
         />
       );
     case "MultiLineText":
@@ -37,6 +38,7 @@ const SchemaFormInput = ({
           required={required}
           readOnly={readOnly}
           id={name}
+          name={name}
         />
       );
     case "SingleCheckbox":
@@ -49,6 +51,7 @@ const SchemaFormInput = ({
           required={required}
           disabled={readOnly}
           id={name}
+          name={name}
         />
       );
     case "SingleSelect":
@@ -58,6 +61,7 @@ const SchemaFormInput = ({
           required={required}
           disabled={readOnly}
           id={name}
+          name={name}
           defaultValue={value}
         >
           {field.choices?.map((choice) => (
