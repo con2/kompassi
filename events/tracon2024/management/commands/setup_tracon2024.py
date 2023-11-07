@@ -647,22 +647,12 @@ class Setup:
                     fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole pöytäroolipeli.",
                     en="Select this option if your programme item is not a tabletop role-playing game.",
                 ),
+                active_from=now(),
             ),
         )
 
         if not default_form.languages.exists():
             default_form.languages.set([default_form_fi, default_form_en])
-
-        OfferForm.objects.get_or_create(
-            event=self.event,
-            slug="rpg",
-            defaults=dict(
-                short_description=dict(
-                    fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi on pöytäroolipeli.",
-                    en="Select this option if your programme item is a tabletop role-playing game.",
-                ),
-            ),
-        )
 
         rpg_form_fi, _ = EventForm.objects.get_or_create(
             event=self.event,
@@ -692,6 +682,7 @@ class Setup:
                     fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi on pöytäroolipeli.",
                     en="Select this option if your programme item is a tabletop role-playing game.",
                 ),
+                active_from=now(),
             ),
         )
 

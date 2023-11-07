@@ -11,4 +11,13 @@ class ProgramV2EventMeta(EventMetaBase):
         blank=True,
     )
 
+    skip_offer_form_selection = models.BooleanField(
+        default=False,
+        verbose_name="Skip offer form selection",
+        help_text=(
+            "If checked, the user will not be able to choose an offer form. "
+            "Instead they will be redirected to the default offer form."
+        ),
+    )
+
     use_cbac = True

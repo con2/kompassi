@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from localized_fields.models import LocalizedModel
 from localized_fields.fields import LocalizedTextField
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
 from forms.models.form import EventForm
 
 
@@ -53,6 +53,10 @@ class OfferForm(LocalizedModel):
             "provided that active_from is set and has passed."
         ),
     )
+
+    @property
+    def is_active(self):
+        return is_within_period(self.active_from, self.active_until)
 
     def get_form(self, requested_language: str) -> Optional[EventForm]:
         try:

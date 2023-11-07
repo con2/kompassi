@@ -223,6 +223,19 @@ class Event(models.Model):
     enrollment_event_meta = event_meta_property("enrollment")
     intra_event_meta = event_meta_property("intra")
 
+    @property
+    def program_v2_event_meta(self):
+        """
+        for program_v2, app_label is program_v2 but prefix is programv2
+        so event_meta_property("programv2") did not
+        """
+        from program_v2.models import ProgramV2EventMeta
+
+        try:
+            return ProgramV2EventMeta.objects.get(event=self)
+        except ProgramV2EventMeta.DoesNotExist:
+            return None
+
     def get_app_event_meta(self, app_label: str):
         return getattr(self, f"{app_label}_event_meta")
 

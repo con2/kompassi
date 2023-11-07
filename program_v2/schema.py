@@ -6,6 +6,7 @@ from django.conf import settings
 import graphene
 from graphene_django import DjangoObjectType
 
+from core.utils import get_objects_within_period
 from core.models import Event
 from forms.models import EventForm
 
@@ -140,6 +141,12 @@ class OfferFormType(DjangoObjectType):
     ) -> EventForm | None:
         return parent.get_form(lang)
 
+    is_active = graphene.Field(graphene.NonNull(graphene.Boolean))
+
+    @staticmethod
+    def resolve_is_active(parent: OfferForm, info) -> bool:
+        return parent.is_active
+
     short_description = graphene.String(lang=graphene.String())
     resolve_short_description = resolve_localized_field("short_description")
 
@@ -181,11 +188,17 @@ class EventType(DjangoObjectType):
     def resolve_dimensions(event: Event, info):
         return Dimension.objects.filter(event=event)
 
-    offer_forms = graphene.List(graphene.NonNull(OfferFormType))
+    offer_forms = graphene.List(graphene.NonNull(OfferFormType), include_inactive=graphene.Boolean())
 
     @staticmethod
-    def resolve_offer_forms(event: Event, info):
-        return OfferForm.objects.filter(event=event)
+    def resolve_offer_forms(event: Event, info, include_inactive: bool = False):
+        if include_inactive:
+            # TODO must be admin
+            qs = OfferForm.objects.filter(event=event)
+        else:
+            qs = get_objects_within_period(OfferForm, event=event)
+
+        return qs
 
     offer_form = graphene.Field(OfferFormType, slug=graphene.String(required=True))
 
@@ -202,6 +215,16 @@ class EventType(DjangoObjectType):
     ):
         # TODO
         return LANGUAGES
+
+    # TODO program namespace that maps to ProgramV2EventMeta
+    skip_offer_form_selection = graphene.Field(graphene.Boolean)
+
+    @staticmethod
+    def resolve_skip_offer_form_selection(
+        event: Event,
+        info,
+    ):
+        return event.program_v2_event_meta.skip_offer_form_selection
 
 
 class Query(graphene.ObjectType):

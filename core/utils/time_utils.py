@@ -1,6 +1,6 @@
 import sys
 from datetime import date, datetime, timedelta
-from typing import Union
+from typing import Optional
 
 from django.db.models import Q
 from django.utils.timezone import now
@@ -46,11 +46,15 @@ def full_hours_between(start_time_inclusive, end_time_inclusive, unless=lambda x
     return result
 
 
-def is_within_period(period_start, period_end, t=None):
+def is_within_period(
+    period_start: Optional[datetime],
+    period_end: Optional[datetime],
+    t: Optional[datetime] = None,
+):
     if t is None:
         t = now()
 
-    return period_start and period_start <= t and not (period_end and period_end <= t)
+    return bool(period_start and period_start <= t and not (period_end and period_end <= t))
 
 
 def get_objects_within_period(
