@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from core.models import Organization
-from payments.models import META_DEFAULTS
+from payments.models.payments_organization_meta import META_DEFAULTS
 
 
 class Setup:

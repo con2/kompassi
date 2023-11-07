@@ -10,7 +10,7 @@ from access.models import EmailAliasDomain, EmailAliasType, AccessOrganizationMe
 from core.models import Organization, organization
 from core.utils import slugify
 from membership.models import MembershipOrganizationMeta, Term
-from payments.models import META_DEFAULTS
+from payments.models.payments_organization_meta import META_DEFAULTS
 
 
 class Setup:
@@ -50,7 +50,9 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
         self.organization.save()
 
     def setup_membership(self):
-        (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
+        (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(
+            self.organization, ["admins"]
+        )
         (members_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["members"])
 
         self.meta, created = MembershipOrganizationMeta.objects.get_or_create(
