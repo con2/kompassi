@@ -224,7 +224,7 @@ class EventType(DjangoObjectType):
         event: Event,
         info,
     ):
-        return event.program_v2_event_meta.skip_offer_form_selection
+        return meta.skip_offer_form_selection if (meta := event.program_v2_event_meta) else None
 
 
 class Query(graphene.ObjectType):
