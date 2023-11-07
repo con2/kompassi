@@ -12,12 +12,7 @@ const query = gql(`
   query NewProgramQuery($eventSlug:String!, $formSlug:String!, $locale:String) {
     event(slug: $eventSlug) {
       name
-
-      # this is only needed to check if there is exactly one program form
-      # in which case the link back to form selection should not be shown
-      offerForms {
-        slug
-      }
+      skipOfferFormSelection
 
       offerForm(slug: $formSlug) {
         shortDescription(lang: $locale)
@@ -64,7 +59,7 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
   if (!event) {
     notFound();
   }
-  const { offerForms, offerForm } = event;
+  const { offerForm, skipOfferFormSelection } = event;
   if (!offerForm) {
     notFound();
   }
@@ -72,11 +67,9 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
   const { title, description, fields: fieldsJson } = form!;
   const fields: Field[] = JSON.parse(fieldsJson);
 
-  const showBackToProgramFormSelectionLink = offerForms?.length !== 1;
-
   return (
     <main className="container mt-4">
-      {showBackToProgramFormSelectionLink && (
+      {skipOfferFormSelection || (
         <nav className="mb-0">
           <Link
             className="link-subtle"

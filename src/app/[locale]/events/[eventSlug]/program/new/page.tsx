@@ -10,6 +10,7 @@ const query = gql(`
     event(slug: $eventSlug) {
       name
       slug
+      skipOfferFormSelection
 
       offerForms {
         slug
@@ -61,9 +62,10 @@ export default async function NewProgramFormSelectionPage({
     notFound();
   }
 
+  const { skipOfferFormSelection } = event;
   const offerForms = event.offerForms ?? [];
 
-  if (offerForms.length === 1) {
+  if (skipOfferFormSelection) {
     return redirect(`/events/${event.slug}/program/new/${offerForms[0].slug}`);
   }
 
