@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from csp.decorators import csp_update
 
 from core.utils import initialize_form
-from payments.models import CheckoutPayment, CHECKOUT_PAYMENT_WALL_ORIGIN
+from payments.models.checkout_payment import CheckoutPayment, CHECKOUT_PAYMENT_WALL_ORIGIN
 
 from ..forms import OrderProductForm, CustomerForm
 from ..helpers import tickets_event_required

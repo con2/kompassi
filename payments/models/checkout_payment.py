@@ -1,25 +1,27 @@
-import hashlib
 import json
 import logging
-from datetime import datetime, timezone, date
+from dataclasses import dataclass
+from datetime import date
 from uuid import uuid4
+from pkg_resources import resource_string
 
 from django.conf import settings
-from django.db import models
+from django.db import models, connection
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import redirect
+from django.db.models import JSONField
 
-from dateutil.parser import parse as parse_datetime
 import requests
 
 from tickets.utils import format_price
 
-from .utils import calculate_hmac
-from django.db.models import JSONField
+from ..utils import calculate_hmac
+from .payments_organization_meta import META_DEFAULTS
 
 
 logger = logging.getLogger("kompassi")
+
 
 CHECKOUT_API_BASE_URL = "https://api.checkout.fi"
 CHECKOUT_PAYMENT_WALL_ORIGIN = "pay.checkout.fi"
@@ -30,59 +32,51 @@ CHECKOUT_STATUSES = [
     ("pending", _("Pending")),
     ("delayed", _("Delayed")),
 ]
-META_DEFAULTS = dict(
-    checkout_password="SAIPPUAKAUPPIAS",
-    checkout_merchant="375917",
-)
 
 
-class PaymentsOrganizationMeta(models.Model):
-    organization = models.OneToOneField("core.Organization", on_delete=models.CASCADE, primary_key=True)
-    checkout_password = models.CharField(max_length=255)
-    checkout_merchant = models.CharField(max_length=255)
+@dataclass
+class PaymentsByPaymentMethod:
+    provider: str
 
-    @classmethod
-    def get_or_create_dummy(cls, organization=None):
-        """
-        Creates a POM with Checkout test merchant. Suitable for development, but try to use it in production and you'll get 500 ISE.
-        """
-        from core.models import Organization
+    num_new: int = 0
+    num_ok: int = 0
+    num_pending: int = 0
+    num_fail: int = 0
+    num_delayed: int = 0
 
-        if organization is None:
-            organization, uwused = Organization.get_or_create_dummy()
-
-        return cls.objects.get_or_create(
-            organization=organization,
-            defaults=META_DEFAULTS,
-        )
-
-    def get_checkout_params(self, method="POST", t=None):
-        if t is None:
-            t = datetime.now(timezone.utc)
-
-        return {
-            "checkout-account": self.checkout_merchant,
-            "checkout-algorithm": "sha256",
-            "checkout-method": method,
-            "checkout-nonce": str(uuid4()),
-            "checkout-timestamp": t.isoformat(),
-        }
+    @property
+    def num_total(self):
+        return self.num_new + self.num_ok + self.num_pending + self.num_fail + self.num_delayed
 
 
-class Payment(models.Model):
-    """
-    Legacy payment, not used by v2 api
-    """
+@dataclass
+class OrdersByPaymentStatus:
+    new: int
+    fail: int
+    ok_after_fail: int
+    ok_without_fail: int
 
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
+    QUERY = resource_string(__name__, "queries/orders_by_payment_status.sql").decode("utf-8")
 
-    VERSION = models.CharField(max_length=4)
-    STAMP = models.CharField(max_length=20)
-    REFERENCE = models.CharField(max_length=20)
-    PAYMENT = models.CharField(max_length=20)
-    STATUS = models.IntegerField()
-    ALGORITHM = models.IntegerField()
-    MAC = models.CharField(max_length=32)
+    @property
+    def total(self):
+        return self.new + self.fail + self.ok_after_fail + self.ok_without_fail
+
+    @property
+    def new_percentage(self):
+        return self.new / self.total * 100
+
+    @property
+    def fail_percentage(self):
+        return self.fail / self.total * 100
+
+    @property
+    def ok_after_fail_percentage(self):
+        return self.ok_after_fail / self.total * 100
+
+    @property
+    def ok_without_fail_percentage(self):
+        return self.ok_without_fail / self.total * 100
 
 
 class CheckoutPayment(models.Model):
@@ -349,3 +343,44 @@ class CheckoutPayment(models.Model):
             return redirect("core_organization_view", self.membership_fee_payment.term.organization.slug)
         else:
             raise NotImplementedError(f"Received payment without handler: {self.stamp}")
+
+    @classmethod
+    def get_payments_by_payment_method(cls, event):
+        results: dict[str, PaymentsByPaymentMethod] = dict()
+
+        for payment in cls.objects.filter(event=event):
+            result = results.setdefault(payment.provider, PaymentsByPaymentMethod(provider=payment.provider))
+
+            if payment.status == "new":
+                result.num_new += 1
+            elif payment.status == "ok":
+                result.num_ok += 1
+            elif payment.status == "pending":
+                result.num_pending += 1
+            elif payment.status == "fail":
+                result.num_fail += 1
+            elif payment.status == "delayed":
+                result.num_delayed += 1
+            else:
+                raise NotImplementedError(payment.status)
+
+        total_row = PaymentsByPaymentMethod(provider="Total")
+        for result in results.values():
+            total_row.num_new += result.num_new
+            total_row.num_ok += result.num_ok
+            total_row.num_pending += result.num_pending
+            total_row.num_fail += result.num_fail
+            total_row.num_delayed += result.num_delayed
+
+        results_sorted = sorted(results.values(), key=lambda result: result.num_total, reverse=True)
+        results_sorted.append(total_row)
+
+        return results_sorted
+
+    @classmethod
+    def get_orders_by_payment_status(cls, event):
+        with connection.cursor() as cursor:
+            cursor.execute(OrdersByPaymentStatus.QUERY, [event.id])
+            (one_row,) = cursor.fetchall()
+
+        return OrdersByPaymentStatus(*one_row)

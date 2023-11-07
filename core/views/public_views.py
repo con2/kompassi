@@ -5,7 +5,7 @@ from django.utils.timezone import now
 
 from csp.decorators import csp_update
 
-from payments.models import CHECKOUT_PAYMENT_WALL_ORIGIN
+from payments.models.checkout_payment import CHECKOUT_PAYMENT_WALL_ORIGIN
 
 from ..models import Event
 from ..utils import groups_of_n
@@ -17,7 +17,9 @@ from ..helpers import public_organization_required
 def core_organization_view(request, organization):
     t = now()
 
-    past_events = Event.objects.filter(organization=organization, public=True, end_time__lte=t).order_by("-start_time")
+    past_events = Event.objects.filter(organization=organization, public=True, end_time__lte=t).order_by(
+        "-start_time"
+    )
     current_events = Event.objects.filter(
         organization=organization, public=True, start_time__lte=t, end_time__gt=t
     ).order_by("-start_time")
