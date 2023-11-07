@@ -33,6 +33,27 @@ class OfferForm(LocalizedModel):
         ),
     )
 
+    active_from = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("active from"),
+        help_text=_(
+            "The form will be available from this date onwards. "
+            "If not set, the form will not be available."
+        ),
+    )
+
+    active_until = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("active until"),
+        help_text=_(
+            "The form will be available until this date. "
+            "If not set, the form will be available indefinitely "
+            "provided that active_from is set and has passed."
+        ),
+    )
+
     def get_form(self, requested_language: str) -> Optional[EventForm]:
         try:
             return self.languages.get(language=requested_language)
