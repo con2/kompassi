@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "django.contrib.admin",
     "django.contrib.postgres",
+    "django.contrib.humanize",
     # 3rd party apps
     "psqlextra",
     "localized_fields",

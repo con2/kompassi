@@ -1,24 +1,83 @@
 extends core_admin_base
+- load i18n
+- load humanize
 block title
   | Raportit
 
 block admin_content
+  .panel.panel-default
+    .panel-heading: strong {% trans "Payments by payment method" %}
+    table.table.table-striped
+      thead
+        tr
+          th {% trans "Payment method" %}
+          th.text-right {% trans "New" %}
+          th.text-right {% trans "OK" %}
+          th.text-right {% trans "Pending" %}
+          th.text-right {% trans "Fail" %}
+          th.text-right {% trans "Delayed" %}
+          th.text-right {% trans "Total" %}
+
+      tbody
+        for row in payments_by_payment_method
+          tr
+            td {{ row.provider }}
+            td.text-right {{ row.num_new }}
+            td.text-right {{ row.num_ok }}
+            td.text-right {{ row.num_pending }}
+            td.text-right {{ row.num_fail }}
+            td.text-right {{ row.num_delayed }}
+            td.text-right {{ row.num_total }}
+
+    .panel-footer: .text-muted {% blocktrans %}For information on what these mean, see the <a href="https://docs.paytrail.com/#/?id=statuses">Paytrail documentation</a>.{% endblocktrans %}
+
+  .panel.panel-default
+    .panel-heading: strong {% trans "Orders by payment status" %}
+    table.table.table-striped
+      thead
+        tr
+          th {% trans "Payment status (according to Paytrail)" %}
+          th.text-right {% trans "Amount of orders" %}
+          th.text-right {% trans "Percentage of orders" %}
+
+      tbody
+        tr
+          td New <small class="text-muted">(new &gt; 0, ok = 0, fail = 0)</small>
+          td.text-right {{ orders_by_payment_status.new }}
+          td.text-right {{ orders_by_payment_status.new_percentage|floatformat:1 }} %
+        tr
+          td Failed <small class="text-muted">(ok = 0, fail &gt; 0)</small>
+          td.text-right {{ orders_by_payment_status.fail }}
+          td.text-right {{ orders_by_payment_status.fail_percentage|floatformat:1 }} %
+        tr
+          td OK after failed attempts <small class="text-muted">(ok &gt; 0, fail &gt; 0)</small>
+          td.text-right {{ orders_by_payment_status.ok_after_fail }}
+          td.text-right {{ orders_by_payment_status.ok_after_fail_percentage|floatformat:1 }} %
+        tr
+          td OK without failed attempts <small class="text-muted">(ok &gt; 0, fail = 0)</small>
+          td.text-right {{ orders_by_payment_status.ok_without_fail }}
+          td.text-right {{ orders_by_payment_status.ok_without_fail_percentage|floatformat:1 }} %
+        tr
+          td Total <small class="text-muted">covered by above cases</small>
+          td.text-right {{ orders_by_payment_status.total }}
+          td.text-right {{ 100|floatformat:1 }} %
+
   .panel.panel-default
     .panel-heading: strong Lippujen lunastustilanne
     table.table.table-striped
       thead
         tr
           th Tuote
-          th Lunastettu
-          th Lunastamatta
-          th Yhteensä
+          th.text-right Lunastettu
+          th.text-right Lunastamatta
+          th.text-right Yhteensä
       tbody
         for product_handout in product_handouts
           tr
             td {{ product_handout.title }}
-            td {{ product_handout.handed_out_count }}
-            td {{ product_handout.not_handed_out_count }}
-            td {{ product_handout.total_count }}
+            td.text-right {{ product_handout.handed_out_count }}
+            td.text-right {{ product_handout.not_handed_out_count }}
+            td.text-right {{ product_handout.total_count }}
 
 
 
@@ -28,11 +87,11 @@ block admin_content
       thead
         tr
           th Tunti
-          th Tunnilla lunastettu
-          th Yhteensä
+          th.text-right Tunnilla lunastettu
+          th.text-right Yhteensä
       tbody
         for arrival_row in arrivals_by_hour
           tr
             td {{ arrival_row.hour|date:"SHORT_DATETIME_FORMAT"|default:"Ei lunastettu" }}
-            td {{ arrival_row.arrivals }}
-            td {{ arrival_row.cum_arrivals }}
+            td.text-right {{ arrival_row.arrivals }}
+            td.text-right {{ arrival_row.cum_arrivals }}

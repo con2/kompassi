@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from csp.decorators import csp_update
 
 from core.utils import groupby_strict, initialize_form, url
-from payments.models import CHECKOUT_PAYMENT_WALL_ORIGIN
+from payments.models.checkout_payment import CHECKOUT_PAYMENT_WALL_ORIGIN
 
 # XXX * imports
 from ..forms import *

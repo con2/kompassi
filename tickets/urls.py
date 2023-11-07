@@ -54,18 +54,18 @@ urlpatterns = [
         name="tickets_thanks_view",
     ),
     re_path(
-        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin$",
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/?$",
         tickets_admin_stats_view,
         name="tickets_admin_stats_view",
     ),
     re_path(
-        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/by-date/raw$",
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/by-date/raw/?$",
         tickets_admin_stats_by_date_view,
         {"raw": True},
         name="tickets_admin_stats_by_date_view",
     ),
     re_path(
-        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders$",
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders/?$",
         tickets_admin_orders_view,
         name="tickets_admin_orders_view",
     ),
@@ -75,7 +75,7 @@ urlpatterns = [
         name="tickets_admin_export_view",
     ),
     re_path(
-        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders/(?P<order_id>\d+)/$",
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/orders/(?P<order_id>\d+)/?$",
         tickets_admin_order_view,
         name="tickets_admin_order_view",
     ),
@@ -105,7 +105,7 @@ urlpatterns = [
         name="tickets_admin_accommodation_create_view",
     ),
     re_path(
-        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/tools$",
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/tools/?$",
         tickets_admin_tools_view,
         name="tickets_admin_tools_view",
     ),
@@ -115,7 +115,7 @@ urlpatterns = [
         name="tickets_admin_reports_view",
     ),
     re_path(
-        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/pos$",
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/pos/?$",
         tickets_admin_pos_view,
         name="tickets_admin_pos_view",
     ),

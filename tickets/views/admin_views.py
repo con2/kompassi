@@ -544,7 +544,7 @@ def tickets_admin_menu_items(request, event):
 
     reports_url = url("tickets_admin_reports_view", event.slug)
     reports_active = request.path == reports_url
-    reports_text = "Lunastustilanne"
+    reports_text = _("Reports")
 
     pos_url = url("tickets_admin_pos_view", event.slug)
     pos_active = False
