@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Dimension, DimensionValue
+from .models import Dimension, DimensionValue, OfferForm
 
 
 class DimensionValueInline(admin.TabularInline):
@@ -15,4 +15,11 @@ class DimensionAdmin(admin.ModelAdmin):
     list_filter = ("event",)
 
 
+class OfferFormAdmin(admin.ModelAdmin):
+    model = OfferForm
+    list_display = ("event", "slug", "short_description")
+    list_filter = ("event",)
+
+
 admin.site.register(Dimension, DimensionAdmin)
+admin.site.register(OfferForm, OfferFormAdmin)
