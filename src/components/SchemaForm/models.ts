@@ -1,3 +1,5 @@
+import { FormsEventFormLayoutChoices } from "@/__generated__/graphql";
+
 export type FieldType =
   | "SingleLineText"
   | "MultiLineText"
@@ -5,7 +7,9 @@ export type FieldType =
   | "StaticText"
   | "Spacer"
   | "SingleCheckbox"
-  | "SingleSelect";
+  | "SingleSelect"
+  | "MultiSelect"
+  | "RadioMatrix";
 
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
@@ -15,6 +19,8 @@ export const fieldTypes: FieldType[] = [
   "Divider",
   "Spacer",
   "SingleSelect",
+  "MultiSelect",
+  "RadioMatrix",
 ];
 
 /** These field types represent static elements on the form and don't have values. */
@@ -24,8 +30,16 @@ export const nonValueFieldTypes: FieldType[] = [
   "Spacer",
 ];
 
-interface LayoutItem {
+export type HtmlType = "text" | "number" | "email" | "password";
+
+interface BaseField {
   type: FieldType;
+  slug: string;
+  title?: string;
+  helpText?: string;
+  required?: boolean;
+  readOnly?: boolean;
+  htmlType?: string;
 }
 
 export interface Divider extends BaseField {
@@ -38,14 +52,6 @@ export interface Spacer extends BaseField {
 
 export interface StaticText extends BaseField {
   type: "StaticText";
-}
-
-interface BaseField extends LayoutItem {
-  name: string;
-  title?: string;
-  helpText?: string;
-  required?: boolean;
-  readOnly?: boolean;
 }
 
 export interface SingleLineText extends BaseField {
@@ -72,8 +78,25 @@ export interface Choice {
 
 export interface SingleSelect extends BaseField {
   type: "SingleSelect";
-  choices?: Choice[];
+  choices: Choice[];
 }
+
+export interface MultiSelect extends BaseField {
+  type: "MultiSelect";
+  choices: Choice[];
+}
+
+/**
+ * choices are columns, questions are rows
+ */
+interface RadioMatrix extends BaseField {
+  type: "RadioMatrix";
+  questions: Choice[];
+  choices: Choice[];
+}
+
+export type Layout = FormsEventFormLayoutChoices;
+export const Layout = FormsEventFormLayoutChoices;
 
 export type Field =
   | SingleLineText
@@ -82,57 +105,50 @@ export type Field =
   | Spacer
   | StaticText
   | SingleCheckbox
-  | SingleSelect;
-
-export type Layout = "horizontal" | "vertical";
-export const defaultLayout: Layout = "vertical";
+  | SingleSelect
+  | MultiSelect
+  | RadioMatrix;
 
 export interface FormSchema {
   title: string;
   slug: string;
   fields: Field[];
   layout: Layout;
-  loginRequired: boolean;
-  active: boolean;
-  standalone: boolean;
 }
 
 export const dummyForm: FormSchema = {
   title: "Dummy form",
   slug: "dummy-form",
-  layout: "vertical",
-  loginRequired: false,
-  active: true,
-  standalone: true,
+  layout: Layout.Horizontal,
   fields: [
     {
       type: "SingleLineText",
       title: "Required text field",
       helpText:
         "This is the help text for the required text field which is required.",
-      name: "requiredField",
+      slug: "requiredField",
       required: true,
     },
     {
       type: "SingleLineText",
       title: "Optional text field",
-      name: "optionalField",
+      slug: "optionalField",
     },
     {
       type: "Spacer",
-      name: "spacer1",
+      slug: "spacer-1",
     },
     {
       type: "SingleCheckbox",
       title: "Required checkbox",
-      name: "requiredCheckbox",
+      slug: "requiredCheckbox",
       helpText: "This checkbox is required. You need to check it.",
       required: true,
     },
     {
       type: "SingleCheckbox",
       title: "Optional checkbox",
-      name: "optionalCheckbox",
+      slug: "optionalCheckbox",
       helpText: "This checkbox is not required. You don't need to check it.",
       required: false,
     },
@@ -142,5 +158,5 @@ export const dummyForm: FormSchema = {
 export const emptyField: Field = {
   type: "SingleLineText",
   title: "",
-  name: "",
+  slug: "",
 };

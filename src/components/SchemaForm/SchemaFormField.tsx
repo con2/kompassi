@@ -3,20 +3,16 @@ import { ReactNode } from "react";
 import { Field, Layout } from "./models";
 
 function Label({ field, layout }: { field: Field; layout: Layout }) {
-  const { type, title, required, name } = field;
+  const { type, title, required, slug } = field;
   const classNames =
-    type === "SingleCheckbox" ? ["form-check-label"] : ["form-label"];
+    type === "SingleCheckbox" ? ["form-check-label"] : ["form-label", "fw-bold"];
 
-  if (layout === "horizontal" && type !== "SingleCheckbox") {
+  if (layout === Layout.Horizontal && type !== "SingleCheckbox") {
     classNames.push("col-md-3");
   }
 
-  if (required) {
-    classNames.push("fw-bold");
-  }
-
   return (
-    <label className={classNames.join(" ")} htmlFor={name}>
+    <label className={classNames.join(" ")} htmlFor={slug}>
       {title}
       {required && "*"}
     </label>
@@ -41,9 +37,14 @@ export default function SchemaFormField({
   const { type, helpText } = field;
   const title = field.required ? `${field.title}*` : field.title;
 
-  if (type === "StaticText" && !title) {
-    // Full-width static text
-    return <p>{helpText}</p>;
+  if (type === "StaticText") {
+    return (
+      <>
+        {title && <h2>{title}</h2>}
+        {helpText && <p>{helpText}</p>}
+        {children}
+      </>
+    );
   } else if (type === "Divider") {
     return <hr />;
   } else if (type === "Spacer") {
@@ -53,10 +54,10 @@ export default function SchemaFormField({
   switch (type) {
     case "SingleCheckbox":
       switch (layout) {
-        case "horizontal":
+        case Layout.Horizontal:
           return (
-            <div className="row mb-3">
-              <div className="col-md-3" />
+            <div className="row mb-4">
+              <div className="col-md-3">{title}</div>
               <div className="col-md-9">
                 <div className="form-check">
                   {children}
@@ -70,7 +71,7 @@ export default function SchemaFormField({
           );
         default:
           return (
-            <div className="form-check mb-3">
+            <div className="form-check mb-4">
               {children}
               <Label field={field} layout={layout} />
               {helpText && (
@@ -82,9 +83,9 @@ export default function SchemaFormField({
 
     default:
       switch (layout) {
-        case "horizontal":
+        case Layout.Horizontal:
           return (
-            <div className="row mb-3">
+            <div className="row mb-4">
               <Label field={field} layout={layout} />
               <div className="col-md-9">
                 {children}
@@ -94,14 +95,13 @@ export default function SchemaFormField({
               </div>
             </div>
           );
-        case "vertical":
         default:
           return (
-            <div className="mb-3">
+            <div className="mb-4">
               <Label field={field} layout={layout} />
               {children}
               {helpText && (
-                <div className="form-text text-muted">{helpText}</div>
+                <div className="form-text text-muted" dangerouslySetInnerHTML={{__html: helpText}} />
               )}
             </div>
           );

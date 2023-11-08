@@ -10,15 +10,23 @@ interface SchemaFormProps {
 export function SchemaForm({ fields, layout }: SchemaFormProps) {
   return (
     <>
-      {fields.map((field) => (
-        <SchemaFormField
-          key={field.name}
-          field={field}
-          layout={layout ?? "vertical"}
-        >
-          <SchemaFormInput field={field} value="" />
-        </SchemaFormField>
-      ))}
+      {fields.map((field, index) => {
+        let slug = field.slug;
+        if (!slug) {
+          console.warn(`Field ${index} has no slug`);
+          slug = `field-${index}`;
+        }
+
+        return (
+          <SchemaFormField
+            key={slug}
+            field={field}
+            layout={layout ?? Layout.Vertical}
+          >
+            <SchemaFormInput field={field} value="" />
+          </SchemaFormField>
+        );
+      })}
     </>
   );
 }

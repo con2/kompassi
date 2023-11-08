@@ -7,6 +7,7 @@ import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { submit } from "./actions";
+import SubmitButton from "@/components/SchemaForm/SubmitButton";
 
 const query = gql(`
   query NewProgramQuery($eventSlug:String!, $formSlug:String!, $locale:String) {
@@ -15,11 +16,11 @@ const query = gql(`
       skipOfferFormSelection
 
       offerForm(slug: $formSlug) {
-        shortDescription(lang: $locale)
         form(lang: $locale) {
           title
           description
           fields
+          layout
         }
       }
     }
@@ -64,7 +65,7 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
     notFound();
   }
   const { form } = offerForm;
-  const { title, description, fields: fieldsJson } = form!;
+  const { title, description, fields: fieldsJson, layout } = form!;
   const fields: Field[] = JSON.parse(fieldsJson);
 
   return (
@@ -73,7 +74,7 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
         <nav className="mb-0">
           <Link
             className="link-subtle"
-            href={`/events/${eventSlug}/program/new`}
+            href={`/events/${eventSlug}/programs/new`}
           >
             &lt; {t.backToProgramFormSelection}
           </Link>
@@ -85,13 +86,8 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
       </h1>
       <p>{description}</p>
       <form action={submit.bind(null, locale, eventSlug, formSlug)}>
-        <SchemaForm fields={fields} layout={"horizontal"} />
-        <div className="row">
-          <div className="col-md-3"></div>
-          <div className="col-md-9">
-           <button type="submit" className="btn btn-primary">{t.submit}</button>
-          </div>
-        </div>
+        <SchemaForm fields={fields} layout={layout} />
+        <SubmitButton layout={layout}>{t.submit}</SubmitButton>
       </form>
     </main>
   );

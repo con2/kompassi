@@ -68,7 +68,7 @@ export default async function NewProgramFormSelectionPage({
   const offerForms = event.offerForms ?? [];
 
   if (skipOfferFormSelection) {
-    return redirect(`/events/${event.slug}/program/new/${offerForms[0].slug}`);
+    return redirect(`/events/${event.slug}/programs/new/${offerForms[0].slug}`);
   }
 
   return (
@@ -87,7 +87,7 @@ export default async function NewProgramFormSelectionPage({
               {offerForm.shortDescription}
               <Link
                 className="stretched-link"
-                href={`/events/${event.slug}/program/new/${offerForm.slug}`}
+                href={`/events/${event.slug}/programs/new/${offerForm.slug}`}
                 aria-label={t.selectThisProgramType}
               />
             </p>
