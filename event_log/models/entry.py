@@ -41,21 +41,12 @@ class Entry(models.Model):
     person = models.ForeignKey("core.Person", **TARGET_FKEY_ATTRS)
     organization = models.ForeignKey("core.Organization", **TARGET_FKEY_ATTRS)
     feedback_message = models.ForeignKey("feedback.FeedbackMessage", **TARGET_FKEY_ATTRS)
-    event_survey_result = models.ForeignKey("surveys.EventSurveyResult", **TARGET_FKEY_ATTRS)
-    global_survey_result = models.ForeignKey("surveys.GlobalSurveyResult", **TARGET_FKEY_ATTRS)
     accommodation_information = models.ForeignKey("tickets.AccommodationInformation", **TARGET_FKEY_ATTRS)
     limit_group = models.ForeignKey("tickets.LimitGroup", **TARGET_FKEY_ATTRS)
     search_term = models.CharField(max_length=255, blank=True, default="")
 
     # we should probably have shoved them in a jsonfield in the first place
     other_fields = JSONField(blank=True, default=dict)
-
-    @property
-    def survey_result(self):
-        """
-        Shortcut for templates etc. that apply to both GlobalSurveyResults and EventSurveyResults.
-        """
-        return self.event_survey_result if self.event_survey_result else self.global_survey_result
 
     @property
     def cbac_claims(self):
@@ -87,11 +78,6 @@ class Entry(models.Model):
             # Implement the event filter. Subscriptions without event_filter receive updates from
             # all events. Subscriptions with event_filter receive only updates from that event.
             q &= Q(event_filter=self.event) | Q(event_filter__isnull=True)
-
-        if self.event_survey_result:
-            # Implement event survey filter.
-            survey = self.event_survey_result.survey
-            q &= Q(event_survey_filter=survey) | Q(event_survey_filter__isnull=True)
 
         if self.event and self.person:
             # Implement job category filter

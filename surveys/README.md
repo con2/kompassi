@@ -1,11 +1,5 @@
 # Survey application
 
-This is an application that lets you make generic ad-hoc surveys using [Survey.js](https://github.com/surveyjs/surveyjs). They have a [visual survey builder](http://surveyjs.org/builder/) to help you create the form.
+This used to be an application that lets you make generic ad-hoc surveys using [Survey.js](https://github.com/surveyjs/surveyjs).
 
-The app uses the PostgreSQL-specific `JSONField`. The app is disabled if you use a database other than PostgreSQL.
-
-## Tips
-
-When copying & pasting the survey from the survey builder to Kompassi, remember to select `Generate valid JSON` instead of `Generate readable JSON` from `Options`.
-
-Remember to set the `completeText` or `completeHtml` property of the query in the query builder. This controls the text we display to the user after completion.
+Now deprecated in favour of `forms`. Can't remove altogether due to cross-app references (bad).

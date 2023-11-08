@@ -39,14 +39,6 @@ class Subscription(models.Model):
         verbose_name=_("Event filter"),
         help_text=_("When specified, only entries related to this event will match the subscription."),
     )
-    event_survey_filter = models.ForeignKey(
-        "surveys.EventSurvey",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        verbose_name=_("Event survey filter"),
-        help_text=_("When specified, only entries related to this EventSurvey will match the subscription."),
-    )
     job_category_filter = models.ForeignKey(
         "labour.JobCategory",
         on_delete=models.CASCADE,

@@ -33,7 +33,6 @@ for app_name in [
     "enrollment",
     "intra",
     "feedback",
-    "surveys",
     "directory",
     "listings",
     "metrics",
