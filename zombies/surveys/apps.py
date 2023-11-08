@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class SurveysAppConfig(AppConfig):
-    name = "surveys"
+    name: str = "zombies.surveys"
     verbose_name = _("Surveys")
 
     def ready(self):

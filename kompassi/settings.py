@@ -193,7 +193,6 @@ INSTALLED_APPS = (
     "enrollment",
     "feedback",
     "event_log",
-    "surveys",
     "directory",
     "listings",
     "forms",
@@ -204,7 +203,6 @@ INSTALLED_APPS = (
     "organizations.kotae_ry",
     "organizations.ropecon_ry",
     # events
-    "events.hitpoint2017",
     "events.frostbite2018",
     "events.kuplii2018",
     "events.tracon2018",
@@ -270,6 +268,10 @@ INSTALLED_APPS = (
     "events.tracon2024",
     "events.kuplii2024",
     "events.solmukohta2024",
+    "events.hitpoint2024",
+    # zombies are obsolete apps that can't be removed due to cross-app references in models
+    "zombies.surveys",
+    "zombies.hitpoint2017",
 )
 
 LOGGING = {

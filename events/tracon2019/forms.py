@@ -6,7 +6,10 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
-from events.hitpoint2017.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT
+from zombies.hitpoint2017.forms import (
+    APPROXIMATE_LENGTH_HELP_TEXT,
+    DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT,
+)
 from labour.forms import AlternativeFormMixin
 from labour.models import Signup, JobCategory
 from programme.models import Category, Programme, AlternativeProgrammeFormMixin
@@ -68,7 +71,8 @@ class SignupExtraForm(forms.ModelForm):
 
         if want_certificate and not certificate_delivery_address:
             raise forms.ValidationError(
-                "Koska olet valinnut haluavasi työtodistuksen, on " "työtodistuksen toimitusosoite täytettävä."
+                "Koska olet valinnut haluavasi työtodistuksen, on "
+                "työtodistuksen toimitusosoite täytettävä."
             )
 
         return certificate_delivery_address
