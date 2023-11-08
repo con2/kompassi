@@ -13,7 +13,7 @@ class Survey(models.Model):
     initialize_form(Form, request, instance=instance, event=event).
     """
 
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="labour_surveys")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
     title = models.CharField(
         max_length=255,
@@ -49,7 +49,8 @@ class Survey(models.Model):
         default="",
         verbose_name=_("Message when denied access"),
         help_text=_(
-            "This message will be shown to the user when they attempt to access a query they don't" "have access to."
+            "This message will be shown to the user when they attempt to access a query they don't"
+            "have access to."
         ),
     )
 

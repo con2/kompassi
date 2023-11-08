@@ -5,15 +5,14 @@ from .models import EventForm, GlobalForm, EventFormResponse, GlobalFormResponse
 
 class GlobalFormAdmin(admin.ModelAdmin):
     model = GlobalForm
-    list_display = ("slug", "title", "active", "standalone")
-    list_filter = ("active", "standalone")
+    list_display = ("slug", "title")
     search_fields = ("slug", "title")
 
 
 class EventFormAdmin(admin.ModelAdmin):
     model = EventForm
-    list_display = ("event", "slug", "title", "active", "standalone")
-    list_filter = ("event", "active", "standalone")
+    list_display = ("event", "slug", "title")
+    list_filter = ("event",)
     search_fields = ("slug", "title")
 
 

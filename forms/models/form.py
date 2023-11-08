@@ -25,28 +25,11 @@ class AbstractForm(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=settings.LANGUAGES)
-    active = models.BooleanField(default=True)
-    standalone = models.BooleanField(
-        default=True,
-        verbose_name=_("Stand-alone"),
-        help_text=_(
-            "Stand-alone forms can be used via the generic form views whereas "
-            "non-stand-alone forms can only be accessed from some other facility."
-        ),
-    )
     layout = models.CharField(
         verbose_name=_("Layout"),
         choices=LAYOUT_CHOICES,
         max_length=max(len(c) for (c, t) in LAYOUT_CHOICES),
         default=LAYOUT_CHOICES[0][0],
-    )
-    login_required = models.BooleanField(
-        default=False,
-        verbose_name=_("Login required"),
-        help_text=_(
-            "This switch only takes effect in a stand-alone context. In non-stand-alone "
-            "contexts the use case will direct whether or not login is required."
-        ),
     )
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)

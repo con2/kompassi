@@ -3,6 +3,7 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.db.models import JSONField
+from django.utils.translation import gettext_lazy as _
 
 
 class AbstractFormResponse(models.Model):
@@ -12,6 +13,13 @@ class AbstractFormResponse(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    ip_address = models.CharField(
+        max_length=48,
+        blank=True,
+        default="",
+        verbose_name=_("IP address"),
+    )
 
     class Meta:
         abstract = True

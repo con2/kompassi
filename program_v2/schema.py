@@ -8,7 +8,7 @@ from graphene_django import DjangoObjectType
 
 from core.utils import get_objects_within_period
 from core.models import Event
-from forms.models import EventForm
+from forms.models import EventForm, EventSurvey
 
 from .models import Dimension, DimensionValue, ProgramDimensionValue, Program, ScheduleItem, OfferForm
 
@@ -127,7 +127,7 @@ class EventFormType(DjangoObjectType):
 
     class Meta:
         model = EventForm
-        fields = ("slug", "title", "description", "active", "layout")
+        fields = ("slug", "title", "description", "layout")
 
 
 class OfferFormType(DjangoObjectType):
@@ -153,6 +153,32 @@ class OfferFormType(DjangoObjectType):
     class Meta:
         model = OfferForm
         fields = ("slug",)
+
+
+class EventSurveyType(DjangoObjectType):
+    is_active = graphene.Field(graphene.NonNull(graphene.Boolean))
+
+    @staticmethod
+    def resolve_is_active(parent: EventSurvey, info) -> bool:
+        return parent.is_active
+
+    form = graphene.Field(EventFormType, lang=graphene.String())
+
+    @staticmethod
+    def resolve_form(
+        parent: EventSurvey,
+        info,
+        lang: str = DEFAULT_LANGUAGE,
+    ) -> EventForm | None:
+        return parent.get_form(lang)
+
+    class Meta:
+        model = EventSurvey
+        fields = (
+            "slug",
+            "active_from",
+            "active_until",
+        )
 
 
 class EventType(DjangoObjectType):
@@ -225,6 +251,24 @@ class EventType(DjangoObjectType):
         info,
     ):
         return meta.skip_offer_form_selection if (meta := event.program_v2_event_meta) else None
+
+    surveys = graphene.List(graphene.NonNull(EventSurveyType), include_inactive=graphene.Boolean())
+
+    @staticmethod
+    def resolve_surveys(event: Event, info, include_inactive: bool = False):
+        if include_inactive:
+            # TODO must be admin
+            qs = EventSurvey.objects.filter(event=event)
+        else:
+            qs = get_objects_within_period(EventSurvey, event=event)
+
+        return qs
+
+    survey = graphene.Field(EventSurveyType, slug=graphene.String(required=True))
+
+    @staticmethod
+    def resolve_survey(event: Event, info, slug: str):
+        return EventSurvey.objects.get(event=event, slug=slug)
 
 
 class Query(graphene.ObjectType):

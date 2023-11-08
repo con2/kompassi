@@ -1,0 +1,192 @@
+title: Kysely Tracon Hitpointin larppiohjelmasta
+layout: vertical
+description: >
+  Tracon Hitpoint suunnittelee larppiaiheisen ohjelmansa laajentamista
+  visionaan ”Kiinnostavin larppiaiheinen tapahtuma Tampereella vuonna 2025”.
+  Tämän kyselyn tarkoituksena on selvittää, millaiselle larppiaiheiselle
+  tapahtumalle olisi kysyntää ja minkälaista ohjelmaa siltä toivotaan.
+  Mihinkään kysymykseen ei ole pakko vastata. Kyselyn lopussa on mahdollisuus
+  jättää yhteystietonsa, jos haluaa, että Tracon Hitpoint ottaa yhteyttä
+  liittyen tapahtuman larppiaiheisen ohjelman järjestämiseen.
+fields:
+  - type: StaticText
+    title: Taustatiedot
+    slug: background
+
+  - slug: age
+    title: Ikäsi vuosissa?
+    type: SingleLineText
+    htmlType: number
+
+  - slug: gender
+    title: Sukupuolesi?
+    type: SingleSelect
+    choices:
+      - slug: m
+        title: Mies
+      - slug: f
+        title: Nainen
+      - slug: x
+        title: Muu
+
+  - slug: participated_in_tracon_hitpoint
+    title: Montako kertaa olet osallistunut Tracon Hitpointiin?
+    helpText: "Tracon Hitpoint on järjestetty neljä kertaa: vuosina 2015, 2017, 2019 ja 2024."
+    type: SingleLineText
+    htmlType: number
+
+  - slug: hobbies
+    title: Mitä seuraavista harrastuksista harrastat?
+    type: MultiSelect
+    choices:
+      - slug: larp
+        title: Larppaaminen
+      - slug: tabletop
+        title: Pöytäroolipelaaminen
+      - slug: boardgames
+        title: Lautapelit
+      - slug: video_games
+        title: Videopelit
+      - slug: cosplay
+        title: Cosplay
+      - slug: anime-manga
+        title: Anime ja/tai manga
+      - slug: boffer
+        title: Boffaus
+      - slug: reenactment
+        title: Historianelävöitys
+      - slug: hema
+        title: Historiallinen miekkailu (HEMA, viikinkimiekkailu ym.)
+      - slug: fighting-other
+        title: Muut kamppailulajit
+      - slug: dance
+        title: Historiallinen tanssi
+
+  - slug: larping
+    title: Millä seuraavista tavoista osallistut yleensä larppeihin?
+    type: MultiSelect
+    choices:
+      - slug: player
+        title: Pelaajana
+      - slug: gm-ingame
+        title: Pelinjohtajana, vastuulla hahmokirjoittaminen tai muut tarinalliset asiat
+      - slug: gm-offgame
+        title: Pelinjohtajana, vastuulla käytännön asiat
+      - slug: photographer
+        title: Valokuvaajana
+      - slug: kitchen
+        title: Keittiöhenkilökuntaan kuuluvana
+      - slug: team-other
+        title: Muuna järjestävän tiimin jäsenenä, kuten yleisapulaisena tai tuki- ja turvahenkilönä
+      - slug: not-participating
+        title: En osallistu larppeihin
+
+  - slug: how_many_larps
+    title: Kuinka moneen larppiin osallistut karkeasti keskimäärin vuodessa?
+    type: SingleSelect
+    choices:
+      - slug: never
+        title: En ole koskaan larpannut
+      - slug: fewer_than_one
+        title: Harvemmin kuin yhteen larppiin vuodessa
+      - slug: one_or_a_few
+        title: Yhdestä muutamaan larppiin vuodessa
+      - slug: several
+        title: Useampaan larppiin vuodessa
+
+  - slug: groups
+    title: Kuulutko johonkin seuraavista ryhmistä, kerhoista tai järjestöistä tai oletko muutoin mukana aktiivisesti niiden toiminnassa (esim. osallistumalla säännöllisesti yhdistyksen järjestämiin larppeihin)?
+    type: MultiSelect
+    choices:
+      - slug: exca
+        title: Tampereen akateeeminen roolipelikerho Excalibur ry
+      - slug: epel
+        title: Epel Larp ry
+      - slug: myssy
+        title: Mielikuvitusystävät ry
+      - slug: stl
+        title: Tampereen seudun larppaajat (Facebook-ryhmä)
+      - slug: suomilarp
+        title: Suomi Larp (Facebook-ryhmä)
+      - slug: tawerna
+        title: Tawerna (Discord)
+
+  - slug: groups_other
+    title: Tulisiko meidän huomioida tamperelaisen larppitapahtuman järjestämisessä jokin muu järjestö, kerho tai ryhmä, jota ei ole mainittu yllä? Miten kyseiseen ryhmään saa yhteyden?
+    type: MultiLineText
+
+  - type: StaticText
+    title: Larppiaiheinen tapahtuma Tampereella
+    slug: larp_event
+
+  - slug: claims
+    title: Miten suhtaudut seuraaviin väitteisiin?
+    type: RadioMatrix
+    choices:
+      - slug: "1"
+        title: Täysin eri mieltä
+      - slug: "2"
+        title: Jokseenkin eri mieltä
+      - slug: "3"
+        title: Jokseenkin samaa mieltä
+      - slug: "4"
+        title: Täysin samaa mieltä
+      - slug: "x"
+        title: En osaa sanoa / En halua vastata
+    questions:
+      - slug: need_larp_event
+        title: Tampere tarvitsee larppaajille suunnatun tapahtuman
+      - slug: would_partake
+        title: Jos Tampereella olisi larppaajille suunnattu tapahtuma, osallistuisin siihen
+      - slug: should_have_larps
+        title: Tamperelaisen larppitapahtuman ohjelmassa tulisi olla larppeja
+      - slug: should_have_talks
+        title: Tamperelaisen larppitapahtuman ohjelmassa tulisi olla larppaamista käsittelevää puhe- ja keskusteluohjelmaa
+      - slug: should_have_workshops
+        title: Tamperelaisen larppitapahtuman ohjelmassa tulisi olla larppaamista käsittelevää osallistavaa ohjelmaa, kuten työpajoja
+      - slug: finnish_language
+        title: Tamperelaisen larppitapahtuman tulisi olla yksikielisesti suomenkielinen
+      - slug: english_language
+        title: Tamperelaisen larppitapahtuman tulisi olla yksikielisesti englanninkielinen
+      - slug: finnish_and_english_language
+        title: Tamperelaisen larppitapahtuman tulisi sisältää sekä suomen- että englanninkielistä ohjelmaa
+      - slug: part_of_hitpoint
+        title: Tamperelainen larppitapahtuma voitaisiin järjestää osana toista tapahtumaa, kuten Tracon Hitpointia
+      - slug: own_event
+        title: Tamperelainen larppitapahtuma tulisi järjestää omana erillisenä, itsenäisenä tapahtumanaan
+
+  - type: StaticText
+    title: Tamperelaisen larppitapahtuman järjestäminen
+    helpText: >
+      Tämän osion kysymyksiin vastaaminen ei sido sinua mihinkään.
+      Olet lämpimästi tervetullut tarjoamaan tapahtumaan ohjelmaa ja
+      osallistumaan sen tekemiseen myös myöhemmin ottamalla yhteyttä hitpoint.larp@tracon.fi.
+
+  - slug: would_like_to
+    title: Haluaisitko olla mukana tekemässä tamperelaista larppitapahtumaa jollain seuraavista tavoista?
+    helpText: Nämä tavat osallistua tapahtuman tekemiseen oikeuttavat maksuttomaan sisäänpääsyyn ja muihin etuihin. Niistä ei kuitenkaan makseta palkkaa tai palkkiota.
+    type: MultiSelect
+    choices:
+      - slug: run_larp
+        title: Haluaisin järjestää larpin tapahtumassa
+      - slug: host_talk
+        title: Haluaisin pitää puhe- tai muuta ohjelmaa tapahtumassa
+      - slug: volunteer
+        title: Haluaisin tehdä vapaaehtoistyötä tapahtumassa
+
+  - slug: would_like_to_other
+    title: Haluaisitko olla mukana tekemässä tamperelaista larppitapahtumaa jollain muulla tavalla?
+    helpText: >
+      Jos haluaisit olla mukana tekemässä tapahtumaa jollain muulla tavalla, kerro siitä tässä.
+      Voit myös tarkentaa edellisen kohdan vastauksiasi ja esimerkiksi ideoida,
+      millaista larppia tai muuta ohjelmaa haluaisit tapahtumassa järjestää.
+    type: MultiLineText
+
+  - slug: free_text
+    title: Vapaamuotoiset terveiset
+    type: MultiLineText
+
+  - slug: contact
+    title: Jos haluat, että otamme sinuun yhteyttä koskien tamperelaisen larppitapahtuman järjestämistä, jätä tähän yhteystietosi (sähköposti, puhelinnumero ja pikaviestimet, Discord-tunnus tms.).
+    helpText: Henkilötietojen käsittelijä on Tracon ry edustajanaan Santtu "Japsu" Pajukanta. Tietoja käytetään vain tamperelaisen larppitapahtuman järjestämistä koskevaan yhteydenottoon. Tietoja säilytetään yhteydenottokierroksen ajan ja sen jälkeen ne poistetaan. Tietoja ei luovuteta ulkopuolisille. Tietoja ei käytetä suoramarkkinointiin. Tietoja ei siirretä EU:n tai Euroopan talousalueen ulkopuolelle. Rekisteröitynä sinulla on oikeuksia, joihin voit tutustua <a href="https://tietosuoja.fi/yksityishenkilot">Tietosuojavaltuutetun sivuilla</a>.
+    type: MultiLineText
