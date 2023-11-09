@@ -63,8 +63,10 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     notFound();
   }
   const { form } = survey;
-  const { title, description, fields: fieldsJson, layout } = form!;
-  const fields: Field[] = JSON.parse(fieldsJson);
+  const { title, description, layout } = form!;
+
+  // TODO validate
+  const fields: Field[] = form!.fields ?? [];
 
   return (
     <main className="container mt-4">
