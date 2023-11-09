@@ -225,6 +225,13 @@ const translations = {
     submit: "Submit",
   },
 
+  SurveyView: {
+    thankYou: {
+      title: "Thank you for your answers!",
+      defaultMessage: "Your messages have been recorded. You can now close this tab.",
+    },
+  },
+
   Brand: {
     appName: (
       <>

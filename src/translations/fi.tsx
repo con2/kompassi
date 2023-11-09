@@ -226,6 +226,14 @@ const translations: Translations = {
     submit: "Lähetä",
   },
 
+  SurveyView: {
+    thankYou: {
+      title: "Kiitos vastauksistasi!",
+      defaultMessage: "Vastauksesi on tallennettu. Voit nyt sulkea tämän välilehden.",
+    },
+  },
+
+
   Brand: {
     appName: (
       <>
