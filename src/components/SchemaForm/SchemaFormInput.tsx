@@ -59,24 +59,51 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
       );
     case "SingleSelect":
       const choices = field.choices ?? [];
-      choices.unshift({ slug: "", title: "" });
 
-      return (
-        <select
-          className="form-select"
-          required={required}
-          disabled={readOnly}
-          id={slug}
-          name={slug}
-          defaultValue={value}
-        >
-          {choices.map((choice) => (
-            <option value={choice.slug} key={choice.slug}>
-              {choice.title}
-            </option>
-          ))}
-        </select>
-      );
+      switch (field.presentation) {
+        case "dropdown":
+          choices.unshift({ slug: "", title: "" });
+
+          return (
+            <select
+              className="form-select"
+              required={required}
+              disabled={readOnly}
+              id={slug}
+              name={slug}
+              defaultValue={value}
+            >
+              {choices.map((choice) => (
+                <option value={choice.slug} key={choice.slug}>
+                  {choice.title}
+                </option>
+              ))}
+            </select>
+          );
+        default:
+          // radio button group
+          return (
+            <>
+              {choices.map((choice) => (
+                <div key={choice.slug} className="mb-2">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    required={required}
+                    disabled={readOnly}
+                    id={choice.slug}
+                    name={slug}
+                    value={choice.slug}
+                    defaultChecked={choice.slug === value}
+                  />{" "}
+                  <label htmlFor={choice.slug} className="form-check-label">
+                    {choice.title}
+                  </label>
+                </div>
+              ))}
+            </>
+          );
+      }
     case "MultiSelect":
       return (
         <>

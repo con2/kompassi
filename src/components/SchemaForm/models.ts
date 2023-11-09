@@ -76,9 +76,12 @@ export interface Choice {
   title: string;
 }
 
+export type SingleSelectPresentation = "dropdown" | "radio";
+
 export interface SingleSelect extends BaseField {
   type: "SingleSelect";
   choices: Choice[];
+  presentation: SingleSelectPresentation;
 }
 
 export interface MultiSelect extends BaseField {
