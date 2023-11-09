@@ -24,6 +24,7 @@ DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 class AbstractForm(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
+    thank_you_message = models.TextField(blank=True, default="")
     language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=settings.LANGUAGES)
     layout = models.CharField(
         verbose_name=_("Layout"),

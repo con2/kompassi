@@ -4,11 +4,13 @@ from django.utils import translation
 from django.conf import settings
 
 import graphene
+from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
 from core.utils import get_objects_within_period
 from core.models import Event
 from forms.models import EventForm, EventSurvey
+from forms.graphql import EventFormType, EventSurveyType, CreateEventSurveyResponse
 
 from .models import Dimension, DimensionValue, ProgramDimensionValue, Program, ScheduleItem, OfferForm
 
@@ -71,6 +73,8 @@ class ScheduleItemType(DjangoObjectType):
 
 
 class ProgramType(DjangoObjectType):
+    cached_dimensions = graphene.Field(GenericScalar)
+
     class Meta:
         model = Program
         fields = ("title", "slug", "dimensions", "cached_dimensions", "schedule_items")
@@ -107,29 +111,6 @@ class DimensionFilterInput(graphene.InputObjectType):
     values = graphene.List(graphene.String)
 
 
-class EventFormType(DjangoObjectType):
-    fields = graphene.Field(
-        graphene.JSONString(),
-        enrich=graphene.Boolean(
-            description=(
-                "Enriched fields have dynamic choices populated for them. This is the default. "
-                'Pass enrich: false to get access to "raw" unenriched fields. This is used by the form editor.'
-            ),
-        ),
-    )
-
-    @staticmethod
-    def resolve_fields(parent: EventForm, info, enrich: bool = True):
-        if enrich:
-            return parent.enriched_fields
-        else:
-            return parent.fields
-
-    class Meta:
-        model = EventForm
-        fields = ("slug", "title", "description", "layout")
-
-
 class OfferFormType(DjangoObjectType):
     form = graphene.Field(EventFormType, lang=graphene.String())
 
@@ -153,32 +134,6 @@ class OfferFormType(DjangoObjectType):
     class Meta:
         model = OfferForm
         fields = ("slug",)
-
-
-class EventSurveyType(DjangoObjectType):
-    is_active = graphene.Field(graphene.NonNull(graphene.Boolean))
-
-    @staticmethod
-    def resolve_is_active(parent: EventSurvey, info) -> bool:
-        return parent.is_active
-
-    form = graphene.Field(EventFormType, lang=graphene.String())
-
-    @staticmethod
-    def resolve_form(
-        parent: EventSurvey,
-        info,
-        lang: str = DEFAULT_LANGUAGE,
-    ) -> EventForm | None:
-        return parent.get_form(lang)
-
-    class Meta:
-        model = EventSurvey
-        fields = (
-            "slug",
-            "active_from",
-            "active_until",
-        )
 
 
 class EventType(DjangoObjectType):
@@ -279,4 +234,8 @@ class Query(graphene.ObjectType):
         return Event.objects.filter(slug=slug).first()
 
 
-schema = graphene.Schema(query=Query)
+class Mutation(graphene.ObjectType):
+    create_event_survey_response = CreateEventSurveyResponse.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)

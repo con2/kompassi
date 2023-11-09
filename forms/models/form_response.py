@@ -6,9 +6,12 @@ from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
 
 
+from .form import AbstractForm
+
+
 class AbstractFormResponse(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    values = JSONField()
+    form_data = JSONField()
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

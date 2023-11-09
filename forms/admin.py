@@ -20,7 +20,7 @@ class GlobalFormResponseAdmin(admin.ModelAdmin):
     model = GlobalFormResponse
     list_display = ("created_at", "form", "created_by")
     list_filter = ("form",)
-    readonly_fields = ("form", "values", "created_by", "created_at", "updated_at")
+    readonly_fields = ("form", "form_data", "created_by", "created_at", "updated_at")
 
     def has_add_permission(self, *args, **kwargs):
         return False
@@ -30,7 +30,7 @@ class EventFormResponseAdmin(admin.ModelAdmin):
     model = EventFormResponse
     list_display = ("created_at", "form", "created_by")
     list_filter = ("form__event", "form")
-    readonly_fields = ("form", "values", "created_by", "created_at", "updated_at")
+    readonly_fields = ("form", "form_data", "created_by", "created_at", "updated_at")
 
     def has_add_permission(self, *args, **kwargs):
         return False
