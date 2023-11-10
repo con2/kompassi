@@ -17,9 +17,6 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
     case "Divider":
     case "StaticText":
       return null;
-    case "RadioMatrix":
-      // TODO
-      return null;
     case "SingleLineText":
       return (
         <input
@@ -125,8 +122,41 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
           ))}
         </>
       );
-    // default:
-    //   throw new Error(`field.type not implemented: ${field.type}`);
+    case "RadioMatrix":
+      const questions = field.questions ?? [];
+      return (
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              {field.choices?.map((choice) => (
+                <th key={choice.slug}>{choice.title}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {questions.map((question) => (
+              <tr key={question.slug}>
+                <td>{question.title}</td>
+                {field.choices?.map((choice) => (
+                  <td key={choice.slug}>
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      required={required}
+                      disabled={readOnly}
+                      id={choice.slug}
+                      name={question.slug}
+                      value={choice.slug}
+                      defaultChecked={choice.slug === value}
+                    />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
   }
 };
 

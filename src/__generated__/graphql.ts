@@ -212,7 +212,7 @@ export type ProgramDimensionValueType = {
 
 export type ProgramType = {
   __typename?: 'ProgramType';
-  cachedDimensions: Scalars['JSONString']['output'];
+  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
   dimensions: Array<ProgramDimensionValueType>;
   scheduleItems: Array<ScheduleItemType>;
   slug: Scalars['String']['output'];
