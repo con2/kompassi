@@ -31,7 +31,7 @@ interface NewProgramFormSelectionProps {
   };
 }
 
-export const revalidate = 15;
+export const revalidate = 5;
 
 export async function generateMetadata({
   params,

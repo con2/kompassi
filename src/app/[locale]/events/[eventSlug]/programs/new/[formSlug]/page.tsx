@@ -35,7 +35,7 @@ interface NewProgramProps {
   };
 }
 
-export const revalidate = 15;
+export const revalidate = 5;
 
 export async function generateMetadata({ params }: NewProgramProps) {
   const { locale, eventSlug, formSlug } = params;
