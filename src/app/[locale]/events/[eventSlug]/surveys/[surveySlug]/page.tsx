@@ -44,6 +44,7 @@ export async function generateMetadata({ params }: SurveyPageProps) {
   });
   return {
     title: `${data.event?.name}: ${data.event?.survey?.form?.title} – Kompassi`,
+    description: data.event?.survey?.form?.description ?? "",
   };
 }
 
