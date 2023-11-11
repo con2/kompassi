@@ -541,12 +541,34 @@ class Setup:
         with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        form_fi, _ = EventForm.objects.get_or_create(
+        form_fi, created = EventForm.objects.get_or_create(
             event=self.event,
             slug="larp-survey-fi",
             language="fi",
             defaults=data,
         )
+
+        # TODO temporary for development
+        if not created:
+            for key, value in data.items():
+                setattr(form_fi, key, value)
+            form_fi.save()
+
+        with resource_stream("events.hitpoint2024", "forms/larp-survey-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        form_en, created = EventForm.objects.get_or_create(
+            event=self.event,
+            slug="larp-survey-en",
+            language="en",
+            defaults=data,
+        )
+
+        # TODO temporary for development
+        if not created:
+            for key, value in data.items():
+                setattr(form_en, key, value)
+            form_en.save()
 
         survey, _ = EventSurvey.objects.get_or_create(
             event=self.event,
@@ -556,8 +578,7 @@ class Setup:
             ),
         )
 
-        if not survey.languages.exists():
-            survey.languages.set([form_fi])
+        survey.languages.set([form_fi, form_en])
 
 
 class Command(BaseCommand):

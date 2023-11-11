@@ -131,8 +131,6 @@ fields:
         title: Jokseenkin samaa mieltä
       - slug: "4"
         title: Täysin samaa mieltä
-      - slug: "x"
-        title: En osaa sanoa / En halua vastata
     questions:
       - slug: need_larp_event
         title: Tampere tarvitsee larppaajille suunnatun tapahtuman
@@ -183,10 +181,13 @@ fields:
     type: MultiLineText
 
   - slug: free_text
-    title: Vapaamuotoiset terveiset
+    title: Vapaamuotoiset terveiset Tracon Hitpointin järjestäjille
     type: MultiLineText
+    helpText: >
+      Tuleeko Tracon Hitpointin tiimoilta mieleen jotain sellaista,
+      mikä ei sovi mihinkään aiemmista kentistä?
 
   - slug: contact
-    title: Jos haluat, että otamme sinuun yhteyttä koskien tamperelaisen larppitapahtuman järjestämistä, jätä tähän yhteystietosi (sähköposti, puhelinnumero ja pikaviestimet, Discord-tunnus tms.).
+    title: Jos haluat, että otamme sinuun yhteyttä, jätä tähän yhteystietosi (sähköposti, puhelinnumero ja pikaviestimet, Discord-tunnus tms.).
     helpText: Henkilötietojen käsittelijä on Tracon ry edustajanaan Santtu "Japsu" Pajukanta. Tietoja käytetään vain tamperelaisen larppitapahtuman järjestämistä koskevaan yhteydenottoon. Tietoja säilytetään yhteydenottokierroksen ajan ja sen jälkeen ne poistetaan. Tietoja ei luovuteta ulkopuolisille. Tietoja ei käytetä suoramarkkinointiin. Tietoja ei siirretä EU:n tai Euroopan talousalueen ulkopuolelle. Rekisteröitynä sinulla on oikeuksia, joihin voit tutustua <a href="https://tietosuoja.fi/yksityishenkilot">Tietosuojavaltuutetun sivuilla</a>.
     type: MultiLineText
