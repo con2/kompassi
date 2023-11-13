@@ -33,6 +33,7 @@ passlib
 phonenumberslite
 Pillow
 psycopg[c]
+pydantic
 pypugjs
 pytest-django
 python-dateutil
