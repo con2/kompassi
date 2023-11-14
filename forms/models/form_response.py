@@ -1,14 +1,14 @@
 import uuid
 from functools import cached_property
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from django.conf import settings
 from django.db import models
 from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
 
-
-from ..utils import process_form_data
+if TYPE_CHECKING:
+    from ..utils import FieldWarning
 
 
 class AbstractFormResponse(models.Model):
@@ -29,6 +29,8 @@ class AbstractFormResponse(models.Model):
     form: Any
 
     def _process_form_data(self):
+        from ..utils import process_form_data
+
         return process_form_data(self.form, self.form_data)
 
     @cached_property
@@ -36,11 +38,11 @@ class AbstractFormResponse(models.Model):
         return self._process_form_data()
 
     @property
-    def values(self):
+    def values(self) -> dict[str, Any]:
         return self.processed_form_data[0]
 
     @property
-    def warnings(self):
+    def warnings(self) -> dict[str, list[FieldWarning]]:
         return self.processed_form_data[1]
 
     class Meta:
@@ -55,4 +57,6 @@ class EventFormResponse(AbstractFormResponse):
     form = models.ForeignKey("forms.EventForm", on_delete=models.CASCADE)
 
     def _process_form_data(self):
+        from ..utils import process_form_data
+
         return process_form_data(self.form.enriched_fields, self.form_data)
