@@ -42,7 +42,7 @@ class AbstractFormResponse(models.Model):
         return self.processed_form_data[0]
 
     @property
-    def warnings(self) -> dict[str, list[FieldWarning]]:
+    def warnings(self) -> dict[str, list["FieldWarning"]]:
         return self.processed_form_data[1]
 
     class Meta:
