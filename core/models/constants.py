@@ -7,8 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255
 
-# TODO how do I localize this
-BIRTH_DATE_HELP_TEXT = f"Syntymäaika muodossa {format_date(date(1994, 2, 24), settings.DATE_FORMAT)}"
+BIRTH_DATE_HELP_TEXT = _("Birth date in the following format: DD.MM.YYYY")
 
 NAME_DISPLAY_STYLE_CHOICES = [
     ("firstname_nick_surname", _('Firstname "Nickname" Surname')),

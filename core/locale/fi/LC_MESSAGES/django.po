@@ -380,3 +380,15 @@ msgstr "Lähetä vahvistuslinkki"
 
 msgid "Verify your email address"
 msgstr "Vahvista sähköpostiosoitteesi"
+
+msgid "Birth date in the following format: DD.MM.YYYY"
+msgstr "Syntymäaika muodossa PP.KK.VVVV"
+
+msgid "Your phone number is used only for urgent contact regarding your participation in the event."
+msgstr "Puhelinnumeroasi käytetään tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan."
+
+msgid "Email is the primary means of contact for event-related matters."
+msgstr "Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä asioissa."
+
+msgid "I may be sent information about future events by email <i>(optional)</i>"
+msgstr "Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>"

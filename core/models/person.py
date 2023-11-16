@@ -84,21 +84,23 @@ class Person(models.Model):
     email = models.EmailField(
         blank=True,
         max_length=EMAIL_LENGTH,
-        verbose_name="Sähköpostiosoite",
-        help_text="Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä asioissa.",
+        verbose_name=_("email address"),
+        help_text=_("Email is the primary means of contact for event-related matters."),
     )
 
     phone = models.CharField(
         blank=True,
         max_length=PHONE_NUMBER_LENGTH,
         validators=[phone_number_validator],
-        verbose_name="Puhelinnumero",
-        help_text="Puhelinnumeroasi käytetään tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan.",
+        verbose_name=_("phone number"),
+        help_text=_(
+            "Your phone number is used only for urgent contact regarding your participation in the event."
+        ),
     )
 
     may_send_info = models.BooleanField(
         default=False,
-        verbose_name="Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>",
+        verbose_name=_("I may be sent information about future events by email <i>(optional)</i>"),
     )
 
     allow_work_history_sharing = models.BooleanField(
