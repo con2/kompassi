@@ -377,3 +377,6 @@ msgstr "Sähköpostiosoitteen vahvistaminen"
 
 msgid "Send verification link"
 msgstr "Lähetä vahvistuslinkki"
+
+msgid "Verify your email address"
+msgstr "Vahvista sähköpostiosoitteesi"

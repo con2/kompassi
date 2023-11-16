@@ -40,4 +40,4 @@ class Field(pydantic.BaseModel):
     questions: Optional[list[Choice]] = pydantic.Field(None, alias="questions")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_field_name = True

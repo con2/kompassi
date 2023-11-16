@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.template.loader import render_to_string
+from django.utils.translation import get_language, gettext_lazy as _
 
 from ..utils import url
 from .one_time_code import OneTimeCode
@@ -20,9 +21,13 @@ class EmailVerificationToken(OneTimeCode):
         return super().save(*args, **kwargs)
 
     def render_message_subject(self, request):
-        return f"{settings.KOMPASSI_INSTALLATION_NAME}: Vahvista sähköpostiosoitteesi!"
+        verify_email = _("Verify your email address")
+        return f"{settings.KOMPASSI_INSTALLATION_NAME}: {verify_email}"
 
     def render_message_body(self, request):
         vars = dict(link=request.build_absolute_uri(url("core_email_verification_view", self.code)))
+        language = get_language()
 
-        return render_to_string("core_email_verification_message.eml", vars, request=request)
+        return render_to_string(
+            f"emails/{language}/core_email_verification_message.eml", vars, request=request
+        )

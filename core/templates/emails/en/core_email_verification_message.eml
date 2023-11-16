@@ -1,0 +1,11 @@
+Hello,
+
+This email address was used to register as a user account for {{ settings.KOMPASSI_INSTALLATION_NAME }}.
+
+If you registered yourself, please confirm your email address by visiting the following address:
+
+{{ link|safe }}
+
+Best regards,
+--
+{{ settings.KOMPASSI_INSTALLATION_NAME }} <{{ settings.DEFAULT_FROM_EMAIL }}>
