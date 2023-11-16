@@ -13,54 +13,11 @@ fields:
     title: Background information
     slug: background
 
-  - slug: age
-    title: Your age in years?
-    type: SingleLineText
-    htmlType: number
-
-  - slug: gender
-    title: Your gender?
-    type: SingleSelect
-    choices:
-      - slug: m
-        title: Male
-      - slug: f
-        title: Female
-      - slug: x
-        title: Other
-
   - slug: participated_in_tracon_hitpoint
     title: How many times have you participated in Tracon Hitpoint?
     helpText: "Tracon Hitpoint has been organized four times: in 2015, 2017, 2019 and 2024."
     type: SingleLineText
     htmlType: number
-
-  - slug: hobbies
-    title: What are your hobbies?
-    type: MultiSelect
-    choices:
-      - slug: larp
-        title: Larping
-      - slug: tabletop
-        title: Tabletop role-playing
-      - slug: boardgames
-        title: Board games
-      - slug: video_games
-        title: Video games
-      - slug: cosplay
-        title: Cosplay
-      - slug: anime-manga
-        title: Anime and/or manga
-      - slug: boffer
-        title: Boffering
-      - slug: reenactment
-        title: Historical reenactment
-      - slug: hema
-        title: Historical fencing (HEMA, Viking fencing, etc.)
-      - slug: fighting-other
-        title: Other martial arts
-      - slug: dance
-        title: Historical dance
 
   - slug: larping
     title: In which of the following ways do you usually participate in larps?
@@ -153,8 +110,15 @@ fields:
       - slug: own_event
         title: The larp event in Tampere should be organized as its own separate, independent event
 
+  - slug: free_text
+    title: Free-form greetings to the organizers of Tracon Hitpoint
+    type: MultiLineText
+    helpText: >
+      Is there something related to Tracon Hitpoint that comes to mind,
+      which does not fit into any of the previous fields?
+
   - type: StaticText
-    title: Organizing a larp event in Tampere
+    title: Participating in organizing a larp event in Tampere
     helpText: >
       Answering the questions in this section does not commit you to anything.
       You are warmly welcome to offer programming for the event and
@@ -179,13 +143,6 @@ fields:
       You can also specify your answers to the previous point and for example brainstorm,
       what kind of larp or other program you would like to organize at the event.
     type: MultiLineText
-
-  - slug: free_text
-    title: Free-form greetings to the organizers of Tracon Hitpoint
-    type: MultiLineText
-    helpText: >
-      Is there something related to Tracon Hitpoint that comes to mind,
-      which does not fit into any of the previous fields?
 
   - slug: contact
     title: If you want us to contact you, leave your contact information here (email, phone number and instant messaging, Discord username, etc.).

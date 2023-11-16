@@ -13,54 +13,11 @@ fields:
     title: Taustatiedot
     slug: background
 
-  - slug: age
-    title: Ikäsi vuosissa?
-    type: SingleLineText
-    htmlType: number
-
-  - slug: gender
-    title: Sukupuolesi?
-    type: SingleSelect
-    choices:
-      - slug: m
-        title: Mies
-      - slug: f
-        title: Nainen
-      - slug: x
-        title: Muu
-
   - slug: participated_in_tracon_hitpoint
     title: Montako kertaa olet osallistunut Tracon Hitpointiin?
     helpText: "Tracon Hitpoint on järjestetty neljä kertaa: vuosina 2015, 2017, 2019 ja 2024."
     type: SingleLineText
     htmlType: number
-
-  - slug: hobbies
-    title: Mitä seuraavista harrastuksista harrastat?
-    type: MultiSelect
-    choices:
-      - slug: larp
-        title: Larppaaminen
-      - slug: tabletop
-        title: Pöytäroolipelaaminen
-      - slug: boardgames
-        title: Lautapelit
-      - slug: video_games
-        title: Videopelit
-      - slug: cosplay
-        title: Cosplay
-      - slug: anime-manga
-        title: Anime ja/tai manga
-      - slug: boffer
-        title: Boffaus
-      - slug: reenactment
-        title: Historianelävöitys
-      - slug: hema
-        title: Historiallinen miekkailu (HEMA, viikinkimiekkailu ym.)
-      - slug: fighting-other
-        title: Muut kamppailulajit
-      - slug: dance
-        title: Historiallinen tanssi
 
   - slug: larping
     title: Millä seuraavista tavoista osallistut yleensä larppeihin?
@@ -153,8 +110,15 @@ fields:
       - slug: own_event
         title: Tamperelainen larppitapahtuma tulisi järjestää omana erillisenä, itsenäisenä tapahtumanaan
 
+  - slug: free_text
+    title: Vapaamuotoiset terveiset Tracon Hitpointin järjestäjille
+    type: MultiLineText
+    helpText: >
+      Tuleeko Tracon Hitpointin tiimoilta mieleen jotain sellaista,
+      mikä ei sovi mihinkään aiemmista kentistä?
+
   - type: StaticText
-    title: Tamperelaisen larppitapahtuman järjestäminen
+    title: Tamperelaisen larppitapahtuman järjestämiseen osallistuminen
     helpText: >
       Tämän osion kysymyksiin vastaaminen ei sido sinua mihinkään.
       Olet lämpimästi tervetullut tarjoamaan tapahtumaan ohjelmaa ja
@@ -180,12 +144,6 @@ fields:
       millaista larppia tai muuta ohjelmaa haluaisit tapahtumassa järjestää.
     type: MultiLineText
 
-  - slug: free_text
-    title: Vapaamuotoiset terveiset Tracon Hitpointin järjestäjille
-    type: MultiLineText
-    helpText: >
-      Tuleeko Tracon Hitpointin tiimoilta mieleen jotain sellaista,
-      mikä ei sovi mihinkään aiemmista kentistä?
 
   - slug: contact
     title: Jos haluat, että otamme sinuun yhteyttä, jätä tähän yhteystietosi (sähköposti, puhelinnumero ja pikaviestimet, Discord-tunnus tms.).
