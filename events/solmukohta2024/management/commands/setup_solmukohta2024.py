@@ -296,28 +296,6 @@ class Setup:
                 available=True,
                 ordering=ordering(),
             ),
-            # dict(
-            #     name="Standard ticket",
-            #     description="The standard ticket includes one spot in either a two-person or a three-person room.",
-            #     limit_groups=[
-            #         limit_group("Standard tickets", 412 - 2 * y),
-            #     ],
-            #     price_cents=400_00,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
-            # dict(
-            #     name="Discount ticket",
-            #     description="The discount ticket includes one spot in either a two-person or a three-person room.",
-            #     limit_groups=[
-            #         limit_group("Discount tickets", y),
-            #     ],
-            #     price_cents=250_00,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
             dict(
                 name="Team ticket",
                 description="This ticket type is intended for the <strong>Solmukohta team members</strong> and includes a spot in either a two-person or a three-person room.",
@@ -353,6 +331,29 @@ class Setup:
                 available=True,
                 ordering=ordering(),
                 code="communityhost-lksxrdjr",
+            ),
+            dict(
+                name="Standard ticket",
+                description="The standard ticket includes one spot in either a two-person or a three-person room.",
+                limit_groups=[
+                    limit_group("Standard tickets", 322),
+                ],
+                price_cents=400_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+            ),
+            dict(
+                name="Discount ticket",
+                description="The discount ticket includes one spot in either a two-person or a three-person room. NOTE: Only purchase this if you have been specifically instucted to do so by the Solmukohta team. Only purchase one discount ticket for yourself.",
+                limit_groups=[
+                    limit_group("Discount tickets", 37),
+                ],
+                price_cents=250_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+                code="discount-rnndcwsb",
             ),
         ]:
             name = product_info.pop("name")
