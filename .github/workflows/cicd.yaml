@@ -34,8 +34,6 @@ jobs:
         with:
           name: build-json
           path: build.json
-    outputs:
-      build_json: ${{ steps.build.outputs.build_json }}
 
   deploy_staging:
     runs-on: self-hosted
