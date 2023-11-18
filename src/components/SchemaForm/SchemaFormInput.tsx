@@ -104,22 +104,24 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
     case "MultiSelect":
       return (
         <>
-          {field.choices?.map((choice) => (
-            <div key={choice.slug} className="mb-2">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                // defaultChecked={!!value}
-                disabled={readOnly}
-                // FIXME
-                id={choice.slug}
-                name={choice.slug}
-              />{" "}
-              <label htmlFor={choice.slug} className="form-check-label">
-                {choice.title}
-              </label>
-            </div>
-          ))}
+          {field.choices?.map((choice) => {
+            const name = `${field.slug}.${choice.slug}`;
+            return (
+              <div key={choice.slug} className="mb-2">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  // defaultChecked={!!value}
+                  disabled={readOnly}
+                  id={name}
+                  name={name}
+                />{" "}
+                <label htmlFor={name} className="form-check-label">
+                  {choice.title}
+                </label>
+              </div>
+            );
+          })}
         </>
       );
     case "RadioMatrix":
@@ -145,9 +147,9 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
                       type="radio"
                       required={required}
                       disabled={readOnly}
-                      id={choice.slug}
-                      name={question.slug}
+                      name={`${field.slug}.${question.slug}`}
                       value={choice.slug}
+                      // FIXME
                       defaultChecked={choice.slug === value}
                     />
                   </td>
