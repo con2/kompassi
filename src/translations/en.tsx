@@ -228,7 +228,7 @@ const translations = {
   SurveyView: {
     thankYou: {
       title: "Thank you for your answers!",
-      defaultMessage: "Your messages have been recorded. You can now close this tab.",
+      defaultMessage: "Your answers have been recorded. You can now close this tab.",
     },
   },
 
