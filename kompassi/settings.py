@@ -70,7 +70,7 @@ DATETIME_FORMAT = "j.n.Y G:i:s"
 SHORT_DATETIME_FORMAT = DATETIME_FORMAT
 DATETIME_FORMAT_STRFTIME = "%d.%m.%Y %H:%M:%S"
 
-LANGUAGE_CODE = "fi"
+LANGUAGE_CODE = "en"
 LANGUAGES = (
     ("fi", _("Finnish")),
     ("en", _("English")),
