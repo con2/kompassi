@@ -15,8 +15,8 @@ with status_counts_by_reference as (
 )
 
 select
-  sum(case when num_new > 0 and num_fail = 0 and num_ok = 0 then 1 else 0 end) as new,
-  sum(case when num_fail > 0 and num_ok = 0 then 1 else 0 end) as fail,
-  sum(case when num_fail > 0 and num_ok > 0 then 1 else 0 end) as ok_after_fail,
-  sum(case when num_fail = 0 and num_ok > 0 then 1 else 0 end) as ok_without_fail
+  coalesce(sum(case when num_new > 0 and num_fail = 0 and num_ok = 0 then 1 else 0 end), 0) as new,
+  coalesce(sum(case when num_fail > 0 and num_ok = 0 then 1 else 0 end), 0) as fail,
+  coalesce(sum(case when num_fail > 0 and num_ok > 0 then 1 else 0 end), 0) as ok_after_fail,
+  coalesce(sum(case when num_fail = 0 and num_ok > 0 then 1 else 0 end), 0) as ok_without_fail
 from status_counts_by_reference;

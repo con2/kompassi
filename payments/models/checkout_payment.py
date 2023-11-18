@@ -2,8 +2,9 @@ import json
 import logging
 from dataclasses import dataclass
 from datetime import date
-from uuid import uuid4
+from functools import cached_property
 from pkg_resources import resource_string
+from uuid import uuid4
 
 from django.conf import settings
 from django.db import models, connection
@@ -58,25 +59,25 @@ class OrdersByPaymentStatus:
 
     QUERY = resource_string(__name__, "queries/orders_by_payment_status.sql").decode("utf-8")
 
-    @property
+    @cached_property
     def total(self):
         return self.new + self.fail + self.ok_after_fail + self.ok_without_fail
 
     @property
     def new_percentage(self):
-        return self.new / self.total * 100
+        return self.new / self.total * 100 if self.total else 0
 
     @property
     def fail_percentage(self):
-        return self.fail / self.total * 100
+        return self.fail / self.total * 100 if self.total else 0
 
     @property
     def ok_after_fail_percentage(self):
-        return self.ok_after_fail / self.total * 100
+        return self.ok_after_fail / self.total * 100 if self.total else 0
 
     @property
     def ok_without_fail_percentage(self):
-        return self.ok_without_fail / self.total * 100
+        return self.ok_without_fail / self.total * 100 if self.total else 0
 
 
 class CheckoutPayment(models.Model):
