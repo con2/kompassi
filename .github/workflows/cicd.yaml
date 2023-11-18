@@ -57,7 +57,7 @@ jobs:
       - run: |
           python3 -m pip install -U pip setuptools wheel
           python3 -m pip install emskaffolden==0.2.1
-          emskaffolden -T node-app -E ${EMSKAFFOLDEN_ENVIRONMENT} -- deploy -n ${KUBERNETES_NAMESPACE} -a build.json
+          emskaffolden -T node-app -E staging -- deploy -n kompassi2-staging -a build.json
 
   deploy_production:
     runs-on: self-hosted
@@ -83,4 +83,4 @@ jobs:
       - run: |
           python3 -m pip install -U pip setuptools wheel
           python3 -m pip install emskaffolden==0.2.1
-          emskaffolden -T node-app -E ${EMSKAFFOLDEN_ENVIRONMENT} -- deploy -n ${KUBERNETES_NAMESPACE} -a build.json
+          emskaffolden -T node-app -E production -- deploy -n kompassi2-production -a build.json
