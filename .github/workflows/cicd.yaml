@@ -37,11 +37,12 @@ jobs:
     outputs:
       build_json: ${{ steps.build.outputs.build_json }}
 
-  deploy:
+  deploy_staging:
     runs-on: self-hosted
     needs: build
+    environment: Staging
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    steps:
+    steps: &deploy_steps
       - uses: actions/checkout@v1
       - name: Get build.json from build step
         uses: actions/download-artifact@v3
@@ -58,4 +59,13 @@ jobs:
       - run: |
           python3 -m pip install -U pip setuptools wheel
           python3 -m pip install emskaffolden==0.2.1
-          emskaffolden -T node-app -E staging -- deploy -n kompassi2-staging -a build.json
+          emskaffolden -T node-app -E ${EMSKAFFOLDEN_ENVIRONMENT} -- deploy -n ${KUBERNETES_NAMESPACE} -a build.json
+
+  deploy_production:
+    runs-on: self-hosted
+    needs:
+      - build
+      - deploy_staging
+    environment: Production
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps: *deploy_steps
