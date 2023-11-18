@@ -1,8 +1,12 @@
-from typing import Any, BinaryIO, Iterable
+from typing import Any, BinaryIO, overload
 
+from django.db import models
 from django.http import HttpResponse
+from django.utils.timezone import localtime
 
 from .models.field import Field, FieldType
+from .models.form import GlobalForm, EventForm
+from .models.form_response import EventFormResponse, GlobalFormResponse
 
 
 def get_header_cells(field: Field) -> list[str]:
@@ -47,20 +51,37 @@ def get_response_cells(field: Field, values: dict[str, Any]) -> list[Any]:
     return cells
 
 
+@overload
 def write_responses_as_excel(
-    fields: list[Field],
-    responses: Iterable[dict[str, Any]],
+    form: EventForm,
+    responses: models.QuerySet[EventFormResponse],
     output_stream: BinaryIO | HttpResponse,
 ):
+    pass
+
+
+@overload
+def write_responses_as_excel(
+    form: GlobalForm,
+    responses: models.QuerySet[GlobalFormResponse],
+    output_stream: BinaryIO | HttpResponse,
+):
+    pass
+
+
+def write_responses_as_excel(form, responses, output_stream):
     from core.excel_export import XlsxWriter
 
     output = XlsxWriter(output_stream)
+    fields: list[Field] = form.validated_fields
 
-    header_row = [cell for field in fields for cell in get_header_cells(field)]
+    header_row = ["created_at"]
+    header_row.extend(cell for field in fields for cell in get_header_cells(field))
     output.writerow(header_row)
 
-    for values in responses:
-        response_row = [cell for field in fields for cell in get_response_cells(field, values)]
+    for response in form.responses.all():
+        response_row = [localtime(response.created_at).replace(tzinfo=None)]
+        response_row.extend(cell for field in fields for cell in get_response_cells(field, response.values))
         output.writerow(response_row)
 
     output.close()

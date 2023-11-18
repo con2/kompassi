@@ -21,7 +21,6 @@ def forms_excel_export_view(request: HttpRequest, event_slug: Optional[str], for
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = 'attachment; filename="forms.xlsx"'
 
-    valuesies = (response.values for response in form.responses.all().only("form_data"))
-    write_responses_as_excel(form.validated_fields, valuesies, response)
+    write_responses_as_excel(form, form.responses.all().only("form_data"), response)
 
     return response

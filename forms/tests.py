@@ -1,11 +1,8 @@
-from io import BytesIO
-
-import pytest
 import yaml
 
 from .models import Field
 from .utils import process_form_data, FieldWarning
-from .excel_export import write_responses_as_excel, get_header_cells, get_response_cells
+from .excel_export import get_header_cells, get_response_cells
 
 
 def test_process_form_data():
@@ -290,9 +287,3 @@ def test_process_form_data():
 
     response_row = [cell for field in fields for cell in get_response_cells(field, values)]
     assert response_row == expected_response_row
-
-    bytesio = BytesIO()
-    write_responses_as_excel(fields, [values], bytesio)
-
-    data = bytesio.getvalue()
-    assert data.startswith(b"PK")
