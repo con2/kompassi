@@ -1,8 +1,11 @@
+from io import BytesIO
+
 import pytest
 import yaml
 
 from .models import Field
 from .utils import process_form_data, FieldWarning
+from .excel_export import write_responses_as_excel, get_header_cells, get_response_cells
 
 
 def test_process_form_data():
@@ -107,6 +110,45 @@ def test_process_form_data():
         )
     ]
 
+    header_row = [cell for field in fields for cell in get_header_cells(field)]
+
+    expected_header_row = [
+        # single line text fields
+        "singleLineText",
+        "singleLineTextRequiredMissing",
+        "singleLineTextHtmlNumber",
+        # single checkbox fields
+        "thisIsFalse",
+        "thisIsTrue",
+        "singleCheckboxRequiredMissing",
+        # single select fields
+        "singleSelect",
+        "dropdown",
+        "singleSelectRequiredMissing",
+        "singleSelectInvalidChoice",
+        # multi select fields
+        "multiSelect.choice1",
+        "multiSelect.choice2",
+        "multiSelect.choice3",
+        "multiSelectNothingSelected.choice1",
+        "multiSelectNothingSelected.choice2",
+        "multiSelectNothingSelected.choice3",
+        "multiSelectRequiredMissing.choice1",
+        "multiSelectRequiredMissing.choice2",
+        "multiSelectRequiredMissing.choice3",
+        # radio matrix fields
+        "radioMatrix.foo",
+        "radioMatrix.bar",
+        "radioMatrixRequiredMissing.foo",
+        "radioMatrixRequiredMissing.bar",
+        "radioMatrixInvalidChoice.foo",
+        "radioMatrixInvalidChoice.bar",
+        "radioMatrixInvalidQuestion.foo",
+        "radioMatrixInvalidQuestion.bar",
+    ]
+
+    assert header_row == expected_header_row
+
     form_data = {
         # single line text fields
         "singleLineText": "Hello world",
@@ -188,3 +230,69 @@ def test_process_form_data():
 
     assert values == expected_values
     assert warnings == expected_warnings
+
+    expected_response_row = [
+        # singleLineText
+        "Hello world",
+        # singleLineTextRequiredMissing
+        "",
+        # singleLineTextHtmlNumber
+        123,
+        # thisIsFalse
+        False,
+        # thisIsTrue
+        True,
+        # singleCheckboxRequiredMissing
+        False,
+        # singleSelect
+        "choice1",
+        # dropdown
+        "choice2",
+        # singleSelectRequiredMissing
+        "",
+        # singleSelectInvalidChoice
+        "choice666",
+        # multiSelect.choice1
+        True,
+        # multiSelect.choice2
+        False,
+        # multiSelect.choice3
+        True,
+        # multiSelectNothingSelected.choice1
+        False,
+        # multiSelectNothingSelected.choice2
+        False,
+        # multiSelectNothingSelected.choice3
+        False,
+        # multiSelectRequiredMissing.choice1
+        False,
+        # multiSelectRequiredMissing.choice2
+        False,
+        # multiSelectRequiredMissing.choice3
+        False,
+        # radioMatrix.foo
+        "choice1",
+        # radioMatrix.bar
+        "choice2",
+        # radioMatrixRequiredMissing.foo
+        "choice3",
+        # radioMatrixRequiredMissing.bar
+        "",
+        # radioMatrixInvalidChoice.foo
+        "choice666",
+        # radioMatrixInvalidChoice.bar
+        "choice1",
+        # radioMatrixInvalidQuestion.foo
+        "choice2",
+        # radioMatrixInvalidQuestion.bar
+        "choice2",
+    ]
+
+    response_row = [cell for field in fields for cell in get_response_cells(field, values)]
+    assert response_row == expected_response_row
+
+    bytesio = BytesIO()
+    write_responses_as_excel(fields, [values], bytesio)
+
+    data = bytesio.getvalue()
+    assert data.startswith(b"PK")

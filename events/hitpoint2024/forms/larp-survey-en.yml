@@ -117,7 +117,8 @@ fields:
       Is there something related to Tracon Hitpoint that comes to mind,
       which does not fit into any of the previous fields?
 
-  - type: StaticText
+  - slug: participation
+    type: StaticText
     title: Participating in organizing a larp event in Tampere
     helpText: >
       Answering the questions in this section does not commit you to anything.

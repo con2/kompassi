@@ -36,6 +36,7 @@ for app_name in [
     "directory",
     "listings",
     "metrics",
+    "forms",
 ]:
     if app_name in settings.INSTALLED_APPS:
         urlpatterns.append(path(r"", include(f"{app_name}.urls")))

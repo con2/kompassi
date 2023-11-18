@@ -1,7 +1,7 @@
 import logging
 from copy import deepcopy
 from functools import cached_property
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from django.conf import settings
 from django.db import models
@@ -9,6 +9,11 @@ from django.utils.translation import gettext_lazy as _
 
 from core.utils import SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS
 from program_v2.models.dimension import Dimension
+
+from .field import Field, FieldType
+
+if TYPE_CHECKING:
+    from .form_response import AbstractFormResponse
 
 
 logger = logging.getLogger("kompassi")
@@ -39,8 +44,14 @@ class AbstractForm(models.Model):
 
     fields = models.JSONField()
 
+    responses: models.QuerySet[Any]
+
     def __str__(self):
         return self.title
+
+    @cached_property
+    def validated_fields(self):
+        return [Field.model_validate(field_dict) for field_dict in self.fields]
 
     class Meta:
         abstract = True
@@ -86,3 +97,7 @@ class EventForm(AbstractForm):
             del field["choicesFrom"]
 
         return field
+
+    @cached_property
+    def validated_fields(self):
+        return [Field.model_validate(field_dict) for field_dict in self.enriched_fields]

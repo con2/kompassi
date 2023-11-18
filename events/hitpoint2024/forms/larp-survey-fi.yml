@@ -117,7 +117,8 @@ fields:
       Tuleeko Tracon Hitpointin tiimoilta mieleen jotain sellaista,
       mikä ei sovi mihinkään aiemmista kentistä?
 
-  - type: StaticText
+  - slug: participation
+    type: StaticText
     title: Tamperelaisen larppitapahtuman järjestämiseen osallistuminen
     helpText: >
       Tämän osion kysymyksiin vastaaminen ei sido sinua mihinkään.

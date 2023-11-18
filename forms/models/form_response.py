@@ -31,7 +31,7 @@ class AbstractFormResponse(models.Model):
     def _process_form_data(self):
         from ..utils import process_form_data
 
-        return process_form_data(self.form, self.form_data)
+        return process_form_data(self.form.validated_fields, self.form_data)
 
     @cached_property
     def processed_form_data(self):
@@ -50,13 +50,8 @@ class AbstractFormResponse(models.Model):
 
 
 class GlobalFormResponse(AbstractFormResponse):
-    form = models.ForeignKey("forms.GlobalForm", on_delete=models.CASCADE)
+    form = models.ForeignKey("forms.GlobalForm", on_delete=models.CASCADE, related_name="responses")
 
 
 class EventFormResponse(AbstractFormResponse):
-    form = models.ForeignKey("forms.EventForm", on_delete=models.CASCADE)
-
-    def _process_form_data(self):
-        from ..utils import process_form_data
-
-        return process_form_data(self.form.enriched_fields, self.form_data)
+    form = models.ForeignKey("forms.EventForm", on_delete=models.CASCADE, related_name="responses")
