@@ -25,3 +25,7 @@ class PanelParticipation(SimpleChoice):
 
 class Mentoring(SimpleChoice):
     pass
+
+
+class Technology(SimpleChoice):
+    pass

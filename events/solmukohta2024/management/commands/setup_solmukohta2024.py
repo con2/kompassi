@@ -71,7 +71,7 @@ class Setup:
             SpecialStartTime,
             TimeBlock,
         )
-        from ...models import ContentWarning, Documentation, PanelParticipation, Mentoring
+        from ...models import ContentWarning, Documentation, PanelParticipation, Mentoring, Technology
 
         # make typechecker happy
         assert self.event.start_time
@@ -114,17 +114,16 @@ class Setup:
                 ),
             )
 
-        have_categories = Category.objects.filter(event=self.event).exists()
-        if not have_categories:
+        if not Category.objects.filter(event=self.event).exists():
             for title, style in [
-                ("Long talk", "color1"),
-                ("Short talk", "color1"),
+                ("Talk (lecture, lightning talks etc.)", "color1"),
+                # ("Short talk", "color1"),
                 ("Panel discussion", "color2"),
                 ("Roundtable discussion", "color3"),
                 ("Workshop", "color4"),
                 ("Larp", "color5"),
-                ("Social/party/ritual", "color6"),
                 ("Show", "color7"),
+                ("Social/party/ritual", "color6"),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
@@ -169,24 +168,27 @@ class Setup:
             ),
         )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        a_form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="aweek",
             defaults=dict(
                 title="Offer program for A Week in Tampere",
                 short_description="The program is hosted at Artteli or another venue in downtown Tampere on October 8–10, 2024.",
-                programme_form_code="events.solmukohta2024.forms:ProgrammeForm",
+                programme_form_code="events.solmukohta2024.forms:AForm",
                 num_extra_invites=3,
                 order=20,
             ),
         )
 
+        if a_form.programme_form_code == "events.solmukohta2024.forms:ProgrammeForm":
+            a_form.programme_form_code = "events.solmukohta2024.forms:AForm"
+            a_form.save()
+
         if not ContentWarning.objects.exists():
             for name in [
                 "Loud noises (shouting, cheering, loud video, sound effects etc)",
-                "Depictions of violence",
-                "Depictions of or references to sexual assault",
                 "Flashing lights",
+                "Other content warnings (describe below)",
             ]:
                 ContentWarning.objects.get_or_create(name=name)
 
@@ -213,6 +215,17 @@ class Setup:
                 "I am willing to mentor others",
             ]:
                 Mentoring.objects.get_or_create(name=name)
+
+        if not Technology.objects.exists():
+            for name in [
+                "Bringing my own laptop",
+                "Need to borrow a laptop",
+                "Projector / screen / TV",
+                "Music / sound playback",
+                "Special lighting",
+                "Microphone(s)",
+            ]:
+                Technology.objects.get_or_create(name=name)
 
         self.event.programme_event_meta.create_groups()
 

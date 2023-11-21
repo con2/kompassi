@@ -180,14 +180,6 @@ ROPECON2018_AUDIENCE_SIZE_CHOICES = [
     ("gt250", _("Over 250")),
 ]
 
-SOLMUKOHTA2024_COMPUTER_USAGE_CHOICES = [
-    ("", ""),
-    ("own_pc", "I will bring my own laptop (PC)"),
-    ("own_mac", "I will bring my own laptop (Mac)"),
-    ("borrow", "I will need to borrow someone else's laptop"),
-    ("nope", "I do not need a computer for my programme item"),
-]
-
 SOLMUKOHTA2024_HAVE_YOU_HOSTED_BEFORE_CHOICES = [
     ("", ""),
     ("many", "Yes, many times"),
@@ -446,7 +438,7 @@ class Programme(models.Model, CsvExportMixin):
         max_length=127,
         blank=True,
         null=True,
-        verbose_name="Ohjelman pituus",
+        verbose_name=_("Length of the programme"),
         help_text=(
             "Huomaathan, että emme voi taata juuri toivomasi pituista ohjelmapaikkaa. Ohjelmavastaava vahvistaa "
             "ohjelmasi pituuden."
@@ -1273,11 +1265,10 @@ class Programme(models.Model, CsvExportMixin):
         ),
     )
 
-    solmukohta2024_computer_usage = models.CharField(
-        max_length=max(len(key) for (key, text) in SOLMUKOHTA2024_COMPUTER_USAGE_CHOICES),
-        choices=SOLMUKOHTA2024_COMPUTER_USAGE_CHOICES,
-        default="",
-        verbose_name=_("Computer use"),
+    solmukohta2024_technology = models.ManyToManyField(
+        "solmukohta2024.Technology",
+        blank=True,
+        verbose_name=_("Technical needs"),
     )
 
     solmukohta2024_other_needs = models.TextField(
@@ -1319,6 +1310,7 @@ class Programme(models.Model, CsvExportMixin):
     )
 
     solmukohta2024_have_you_hosted_before = models.CharField(
+        blank=True,
         max_length=max(len(key) for (key, text) in SOLMUKOHTA2024_HAVE_YOU_HOSTED_BEFORE_CHOICES),
         choices=SOLMUKOHTA2024_HAVE_YOU_HOSTED_BEFORE_CHOICES,
         default="",
@@ -1334,6 +1326,42 @@ class Programme(models.Model, CsvExportMixin):
             "More experienced presenters can volunteer here to help. (This usually involves a "
             "few emails or Skype calls 1-2 months leading up to the event.)"
         ),
+    )
+
+    aweek2024_when = models.TextField(
+        blank=True,
+        default="",
+        verbose_name=_("When would you like to run your programme?"),
+        help_text=_(
+            "A Week-in is happening from Monday to Wednesday. "
+            "Check above the available times at the main location Artteli. "
+            "Please include your preparation time on the location as well, "
+            "if your programme item is happening at Artteli. "
+            "We do our best to make things not overlap!"
+        ),
+    )
+
+    aweek2024_participants = models.CharField(
+        max_length=1023,
+        blank=True,
+        default="",
+        verbose_name=_("For how many people your program item is for?"),
+    )
+
+    aweek2024_signup = models.CharField(
+        max_length=1023,
+        blank=True,
+        default="",
+        verbose_name=_("Sign-up requirements"),
+        help_text=_("Does your program item need sign-up or is it free for everyone to attend?"),
+    )
+
+    aweek2024_prepare = models.CharField(
+        max_length=1023,
+        blank=True,
+        default="",
+        verbose_name=_("Preparations required"),
+        help_text=_("Do the participants need to prepare somehow?"),
     )
 
     other_author = models.CharField(

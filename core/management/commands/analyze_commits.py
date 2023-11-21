@@ -26,7 +26,13 @@ def get_kind_and_scope(line: str) -> tuple[str, str]:
 
 @cache
 def get_events() -> list[str]:
-    return [event for event in os.listdir("events") if os.path.isdir(os.path.join("events", event))]
+    events = [event for event in os.listdir("events") if os.path.isdir(os.path.join("events", event))]
+
+    # some but not all folders under zombies are events
+    # also some events have been excised
+    events += ["hitpoint2017", "tracrossf2016", "tracon2023paidat"]
+
+    return events
 
 
 def is_event(scope: str) -> bool:

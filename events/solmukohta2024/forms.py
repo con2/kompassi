@@ -23,11 +23,11 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "category",
             "title",
             "description",
-            "length",
+            "length_from_host",
             "solmukohta2024_content_warnings",
             "content_warnings",
             "max_players",
-            "solmukohta2024_computer_usage",
+            "solmukohta2024_technology",
             "solmukohta2024_other_needs",
             "solmukohta2024_documentation",
             "solmukohta2024_scheduling",
@@ -44,10 +44,8 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "solmukohta2024_ticket",
                 "hosts_from_host",
                 "description",
-                "length",
-                "solmukohta2024_computer_usage",
+                "length_from_host",
                 "solmukohta2024_documentation",
-                "solmukohta2024_have_you_hosted_before",
             ]:
                 self.fields[field_name].required = True
 
@@ -69,22 +67,25 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "The suggested length is 300 - 500 characters."
         )
 
-        self.fields["length"].help_text = _(
-            "Please enter the desired programme length IN MINUTES. "
-            "Talks, panels and roundtables should be 45 or 105 minutes in length. "
-            "Workshops and larps have a maximum length of 225 minutes including debrief."
+        self.fields["length_from_host"].help_text = _("Programme length")
+        self.fields["length_from_host"].help_text = _(
+            "How long should your item be? Please note that each programme slot ends at "
+            "least 15 minutes before the next slot begins. (So a 1-hour slot is 45 minutes, "
+            "a 2-hour one is 105 minutes, and so on. We suggest larps and workshops have a "
+            "maximum of 3:45 including debrief. One-hour room parties, however, are a whole "
+            "hour!)"
         )
 
         self.fields["content_warnings"].label = _("Other content warnings")
         self.fields["content_warnings"].help_text = _(
-            "If your programme item has other content warnings not covered by the choices above, please list them here."
+            "If your programme item has other content warnings not covered by the choices "
+            "above (depictions of or references to violence, etc.), please list them here. "
+            "See the Guide to Hosting Programme for more info."
         )
 
         self.fields["max_players"].label = _("Maximum number of participants")
         self.fields["max_players"].help_text = _(
-            "For workshops, larps, roundtables and other programme items with limited attendance, "
-            "please enter the maximum number of participants (numeric values only). "
-            "If there is a minimum number, put it in the open comment field at the end of this form."
+            "What’s the maximum number of participants? (If unlimited, leave this blank.)",
         )
 
         self.fields["notes_from_host"].help_text = _(
@@ -102,11 +103,11 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "category",
             "title",
             "description",
-            "length",
+            "length_from_host",
             "solmukohta2024_content_warnings",
             "content_warnings",
             "max_players",
-            "solmukohta2024_computer_usage",
+            "solmukohta2024_technology",
             "solmukohta2024_other_needs",
             "solmukohta2024_documentation",
             "solmukohta2024_scheduling",
@@ -118,6 +119,66 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
+            solmukohta2024_technology=forms.CheckboxSelectMultiple,
+            solmukohta2024_content_warnings=forms.CheckboxSelectMultiple,
+            solmukohta2024_documentation=forms.CheckboxSelectMultiple,
+            solmukohta2024_panel_participation=forms.CheckboxSelectMultiple,
+            solmukohta2024_mentoring=forms.CheckboxSelectMultiple,
+        )
+
+
+class AForm(forms.ModelForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop("event")
+        admin = kwargs.pop("admin") if "admin" in kwargs else False
+
+        super().__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.helper.layout = Layout(
+            "title",
+            "aweek2024_when",
+            "long_description",
+            "description",
+            "length_from_host",
+            "aweek2024_participants",
+            "content_warnings",
+            "aweek2024_signup",
+            "aweek2024_prepare",
+            "notes_from_host",
+        )
+
+        self.fields["long_description"].label = _("What do you want to organize?")
+        self.fields["long_description"].help_text = _("Describe your programme item to us.")
+
+        self.fields["description"].help_text = _("Public description of your programme item.")
+
+        self.fields["length_from_host"].label = _("Length of the program item?")
+
+        self.fields["content_warnings"].label = _("Trigger warnings")
+        self.fields["content_warnings"].help_text = None
+
+        self.fields["notes_from_host"].help_text = _("Anything else you would like to say?")
+
+    class Meta:
+        model = Programme
+        fields = (
+            "title",
+            "aweek2024_when",
+            "long_description",
+            "description",
+            "length_from_host",
+            "aweek2024_participants",
+            "content_warnings",
+            "aweek2024_signup",
+            "aweek2024_prepare",
+            "notes_from_host",
+        )
+
+        widgets = dict(
+            solmukohta2024_technology=forms.CheckboxSelectMultiple,
             solmukohta2024_content_warnings=forms.CheckboxSelectMultiple,
             solmukohta2024_documentation=forms.CheckboxSelectMultiple,
             solmukohta2024_panel_participation=forms.CheckboxSelectMultiple,
