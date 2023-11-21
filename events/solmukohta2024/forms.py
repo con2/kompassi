@@ -156,6 +156,7 @@ class AForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields["description"].help_text = _("Public description of your programme item.")
 
         self.fields["length_from_host"].label = _("Length of the program item?")
+        self.fields["length_from_host"].help_text = None
 
         self.fields["content_warnings"].label = _("Trigger warnings")
         self.fields["content_warnings"].help_text = None
