@@ -1283,7 +1283,7 @@ class Programme(models.Model, CsvExportMixin):
     solmukohta2024_documentation = models.ManyToManyField(
         "solmukohta2024.Documentation",
         blank=True,
-        verbose_name=_("Documentation"),
+        verbose_name="Documentation",
         help_text=_("Check all that apply; you can learn more about these options in the Hosting Guide."),
     )
 

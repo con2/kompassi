@@ -61,6 +61,10 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "Solmukohta 2024 reserves the right to edit the name for length or clarity."
         )
 
+        # prevent translation; single translated label looks funny
+        self.fields["description"].label = "Description"
+        self.fields["notes_from_host"].label = "Anything else?"
+
         self.fields["description"].help_text = _(
             "Please enter the programme description as it should be shown in the programme guide. "
             "Solmukohta 2024 reserves the right to edit the description. "
@@ -150,18 +154,22 @@ class AForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "notes_from_host",
         )
 
-        self.fields["long_description"].label = _("What do you want to organize?")
-        self.fields["long_description"].help_text = _("Describe your programme item to us.")
+        self.fields["title"].label = "Title"
+        self.fields["description"].label = "Description"
+        self.fields["notes_from_host"].label = "Anything else?"
 
-        self.fields["description"].help_text = _("Public description of your programme item.")
+        self.fields["long_description"].label = "What do you want to organize?"
+        self.fields["long_description"].help_text = "Describe your programme item to us."
 
-        self.fields["length_from_host"].label = _("Length of the program item?")
+        self.fields["description"].help_text = "Public description of your programme item."
+
+        self.fields["length_from_host"].label = "Length of the program item?"
         self.fields["length_from_host"].help_text = None
 
-        self.fields["content_warnings"].label = _("Trigger warnings")
+        self.fields["content_warnings"].label = "Trigger warnings"
         self.fields["content_warnings"].help_text = None
 
-        self.fields["notes_from_host"].help_text = _("Anything else you would like to say?")
+        self.fields["notes_from_host"].help_text = "Anything else you would like to say?"
 
     class Meta:
         model = Programme
