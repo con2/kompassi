@@ -66,8 +66,12 @@ class SignupExtraMixin:
 
 
 class SignupExtraBase(SignupExtraMixin, models.Model):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extras")
-    person = models.OneToOneField("core.Person", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra")
+    event = models.ForeignKey(
+        "core.Event", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extras"
+    )
+    person = models.OneToOneField(
+        "core.Person", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra"
+    )
 
     is_active = models.BooleanField(default=True)
 
@@ -151,6 +155,8 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
 
 
 class EmptySignupExtra(SignupExtraBase):
+    supports_programme = False
+
     @classmethod
     def get_form_class(cls):
         from ..forms import EmptySignupExtraForm
