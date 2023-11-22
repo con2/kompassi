@@ -156,17 +156,21 @@ class Setup:
                         start_time=hour_start_time.replace(minute=minute),
                     )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        sk_form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
                 title="Offer program for Solmukohta",
                 short_description="The program is hosted at the Scandic Rosendahl hotel on October 11–14, 2024.",
                 programme_form_code="events.solmukohta2024.forms:ProgrammeForm",
-                num_extra_invites=3,
+                num_extra_invites=0,
                 order=10,
             ),
         )
+
+        if sk_form.num_extra_invites > 0:
+            sk_form.num_extra_invites = 0
+            sk_form.save()
 
         a_form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
@@ -175,10 +179,14 @@ class Setup:
                 title="Offer program for A Week in Tampere",
                 short_description="The program is hosted at Artteli or another venue in downtown Tampere on October 8–10, 2024.",
                 programme_form_code="events.solmukohta2024.forms:AForm",
-                num_extra_invites=3,
+                num_extra_invites=0,
                 order=20,
             ),
         )
+
+        if a_form.num_extra_invites > 0:
+            a_form.num_extra_invites = 0
+            a_form.save()
 
         if a_form.programme_form_code == "events.solmukohta2024.forms:ProgrammeForm":
             a_form.programme_form_code = "events.solmukohta2024.forms:AForm"

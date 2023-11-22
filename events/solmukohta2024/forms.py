@@ -20,6 +20,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.helper.layout = Layout(
             "solmukohta2024_ticket",
             "hosts_from_host",
+            "solmukohta2024_other_emails",
             "category",
             "title",
             "description",
@@ -104,6 +105,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         fields = (
             "solmukohta2024_ticket",
             "hosts_from_host",
+            "solmukohta2024_other_emails",
             "category",
             "title",
             "description",

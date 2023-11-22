@@ -261,7 +261,9 @@ class Programme(models.Model, CsvExportMixin):
         default="",
         verbose_name=_("Programme host names"),
         help_text=_(
-            "Please provide the names as they should be presented in the programme guide; please also indicate their role in the programme, if there are multiple roles (moderator, panelist, etc.)"
+            "Please provide the names as they should be presented in the programme guide. "
+            "Please indicate their role in the programme, if there are multiple roles (moderator, panelist, etc.). "
+            "Please also include yourself in the list.",
         ),
     )
 
@@ -1325,6 +1327,17 @@ class Programme(models.Model, CsvExportMixin):
             "Less experienced presenters who would like some guidance may request a mentor. "
             "More experienced presenters can volunteer here to help. (This usually involves a "
             "few emails or Skype calls 1-2 months leading up to the event.)"
+        ),
+    )
+
+    solmukohta2024_other_emails = models.CharField(
+        max_length=1023,
+        blank=True,
+        default="",
+        verbose_name=_("Email addresses of other programme hosts"),
+        help_text=_(
+            "We will make a mailing list to reach all our programme hosts for the purpose of keeping you informed. "
+            "You need not add your own email address here – it will be shared with us when you submit this form."
         ),
     )
 
