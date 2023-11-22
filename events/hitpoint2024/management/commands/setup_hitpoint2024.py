@@ -222,7 +222,7 @@ class Setup:
                 title="Conitean ilmoittautumislomake",
                 signup_form_class_path="events.hitpoint2024.forms:OrganizerSignupForm",
                 signup_extra_form_class_path="events.hitpoint2024.forms:OrganizerSignupExtraForm",
-                active_from=datetime.now(),
+                active_from=now(),
                 active_until=self.event.end_time,
             ),
         )
