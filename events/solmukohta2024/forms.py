@@ -156,7 +156,12 @@ class AForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "notes_from_host",
         )
 
+        # disable translations
         self.fields["title"].label = "Title"
+        self.fields[
+            "title"
+        ].help_text = "Make up a concise title for your programme. We reserve the right to edit the title."
+
         self.fields["description"].label = "Description"
         self.fields["notes_from_host"].label = "Anything else?"
 
