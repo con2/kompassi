@@ -178,6 +178,11 @@ class AForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.fields["notes_from_host"].help_text = "Anything else you would like to say?"
 
+    def get_excluded_field_defaults(self):
+        return dict(
+            category=Category.objects.get(event__slug="solmukohta2024", slug="aweek-program"),
+        )
+
     class Meta:
         model = Programme
         fields = (

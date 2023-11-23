@@ -124,12 +124,14 @@ class Setup:
                 ("Larp", "color5"),
                 ("Show", "color7"),
                 ("Social/party/ritual", "color6"),
+                ("AWeek program", "color8"),
             ]:
                 Category.objects.get_or_create(
                     event=self.event,
                     title=title,
                     defaults=dict(
                         style=style,
+                        public=title != "AWeek program",
                     ),
                 )
 
