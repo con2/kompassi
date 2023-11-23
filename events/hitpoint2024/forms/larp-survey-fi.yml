@@ -79,7 +79,7 @@ fields:
   - slug: claims
     title: Miten suhtaudut seuraaviin väitteisiin?
     type: RadioMatrix
-    choices:
+    choices: &choices
       - slug: "1"
         title: Täysin eri mieltä
       - slug: "2"
@@ -93,22 +93,51 @@ fields:
         title: Tampere tarvitsee larppaajille suunnatun tapahtuman
       - slug: would_partake
         title: Jos Tampereella olisi larppaajille suunnattu tapahtuma, osallistuisin siihen
-      - slug: should_have_larps
-        title: Tamperelaisen larppitapahtuman ohjelmassa tulisi olla larppeja
-      - slug: should_have_talks
-        title: Tamperelaisen larppitapahtuman ohjelmassa tulisi olla larppaamista käsittelevää puhe- ja keskusteluohjelmaa
-      - slug: should_have_workshops
-        title: Tamperelaisen larppitapahtuman ohjelmassa tulisi olla larppaamista käsittelevää osallistavaa ohjelmaa, kuten työpajoja
-      - slug: finnish_language
-        title: Tamperelaisen larppitapahtuman tulisi olla yksikielisesti suomenkielinen
-      - slug: english_language
-        title: Tamperelaisen larppitapahtuman tulisi olla yksikielisesti englanninkielinen
-      - slug: finnish_and_english_language
-        title: Tamperelaisen larppitapahtuman tulisi sisältää sekä suomen- että englanninkielistä ohjelmaa
       - slug: part_of_hitpoint
-        title: Tamperelainen larppitapahtuma voitaisiin järjestää osana toista tapahtumaa, kuten Tracon Hitpointia
+        title: Tapahtuma voitaisiin järjestää osana toista tapahtumaa, kuten Tracon Hitpointia
       - slug: own_event
-        title: Tamperelainen larppitapahtuma tulisi järjestää omana erillisenä, itsenäisenä tapahtumanaan
+        title: Tapahtuma tulisi järjestää omana erillisenä, itsenäisenä tapahtumanaan
+
+  - slug: program
+    title: Miten suhtaudut seuraaviin tapahtuman ohjelmaa koskeviin väitteisiin?
+    type: RadioMatrix
+    choices: *choices
+    questions:
+      - slug: should_have_larps
+        title: Tapahtuman ohjelmassa tulisi olla larppeja
+      - slug: should_have_talks
+        title: Tapahtuman ohjelmassa tulisi olla larppaamista käsittelevää puhe- ja keskusteluohjelmaa
+      - slug: should_have_workshops
+        title: Tapahtuman ohjelmassa tulisi olla larppaamista käsittelevää osallistavaa ohjelmaa, kuten työpajoja
+      - slug: players_pov
+        title: Tapahtuman ohjelmassa tulisi olla ohjelmaa, joka käsittelee larppaamista pelaajan näkökulmasta
+      - slug: gms_pov
+        title: Tapahtuman ohjelmassa tulisi olla ohjelmaa, joka käsittelee larpin järjestämistä pelinjohtajan näkökulmasta
+
+  - slug: audience
+    title: Miten suhtaudut seuraaviin tapahtuman kieltä ja kohdeyleisöä koskeviin väitteisiin?
+    type: RadioMatrix
+    choices: *choices
+    questions:
+      - slug: finnish_language
+        title: Tapahtuman tulisi olla yksikielisesti suomenkielinen
+      - slug: english_language
+        title: Tapahtuman tulisi olla yksikielisesti englanninkielinen
+      - slug: finnish_and_english_language
+        title: Tapahtuman tulisi sisältää sekä suomen- että englanninkielistä ohjelmaa
+      - slug: newbies
+        title: Aloittelevat larppaajat ja larppaamisesta kiinnostuneet tulisi erityisesti huomioida tapahtumassa
+      - slug: younglings
+        title: Nuoret larppaajat ja larppaamisesta kiinnostuneet tulisi erityisesti huomioida tapahtumassa
+
+  - slug: what_kinda
+    title: Millaista tapahtumaa toivoisit? Millaista ohjelmaa toivoisit siellä olevan?
+    type: MultiLineText
+    helpText: >
+      Voit tässä avata ajatuksiasi yllä oleviin väitteisiin ja ideoida
+      vapaasti ohjelmanumeroita tai aktiviteettejä.
+      Sinun ei tarvitse itse vapaaehtoistua järjestämään juuri niitä
+      tai tietää kuka järjestäisi.
 
   - slug: free_text
     title: Vapaamuotoiset terveiset Tracon Hitpointin järjestäjille
@@ -130,23 +159,33 @@ fields:
     helpText: Nämä tavat osallistua tapahtuman tekemiseen oikeuttavat maksuttomaan sisäänpääsyyn ja muihin etuihin. Niistä ei kuitenkaan makseta palkkaa tai palkkiota.
     type: MultiSelect
     choices:
-      - slug: run_larp
+      - slug: larp
         title: Haluaisin järjestää larpin tapahtumassa
-      - slug: host_talk
-        title: Haluaisin pitää puhe- tai muuta ohjelmaa tapahtumassa
+      - slug: workshop
+        title: Haluaisin järjestää työpajan tai muun osallistavan ohjelmanumeron
+      - slug: talk
+        title: Haluaisin pitää puhe- tai muuta ohjelmaa
       - slug: volunteer
-        title: Haluaisin tehdä vapaaehtoistyötä tapahtumassa
+        title: Haluaisin tehdä vapaaehtoistyötä
+      - slug: other
+        title: Haluaisin olla mukana tekemässä tapahtumaa jollain muulla tavalla (kerro alla)
 
   - slug: would_like_to_other
-    title: Haluaisitko olla mukana tekemässä tamperelaista larppitapahtumaa jollain muulla tavalla?
-    helpText: >
-      Jos haluaisit olla mukana tekemässä tapahtumaa jollain muulla tavalla, kerro siitä tässä.
-      Voit myös tarkentaa edellisen kohdan vastauksiasi ja esimerkiksi ideoida,
-      millaista larppia tai muuta ohjelmaa haluaisit tapahtumassa järjestää.
+    title: Tarkenna halutessasi edellisen kohdan vastauksiasi!
     type: MultiLineText
-
+    helpText: >
+      Onko sinulla pöytälaatikossa tai suunnitteilla larppi, joka voisi soveltua pelattavaksi tapahtumassa?
+      Millaista ohjelmaa haluaisit järjestää tai minkälaista vapaaehtoistyötä haluaisit tehdä?
+      Jos haluaisit olla mukana tekemässä tapahtumaa jollain muulla tavalla, kerro siitä tässä.
 
   - slug: contact
     title: Jos haluat, että otamme sinuun yhteyttä, jätä tähän yhteystietosi (sähköposti, puhelinnumero ja pikaviestimet, Discord-tunnus tms.).
-    helpText: Henkilötietojen käsittelijä on Tracon ry edustajanaan Santtu "Japsu" Pajukanta. Tietoja käytetään vain tamperelaisen larppitapahtuman järjestämistä koskevaan yhteydenottoon. Tietoja säilytetään yhteydenottokierroksen ajan ja sen jälkeen ne poistetaan. Tietoja ei luovuteta ulkopuolisille. Tietoja ei käytetä suoramarkkinointiin. Tietoja ei siirretä EU:n tai Euroopan talousalueen ulkopuolelle. Rekisteröitynä sinulla on oikeuksia, joihin voit tutustua <a href="https://tietosuoja.fi/yksityishenkilot">Tietosuojavaltuutetun sivuilla</a>.
     type: MultiLineText
+    helpText: >
+      Henkilötietojen käsittelijä on Tracon ry edustajanaan Santtu "Japsu" Pajukanta.
+      Tietoja käytetään vain tamperelaisen larppitapahtuman järjestämistä koskevaan yhteydenottoon.
+      Tietoja säilytetään yhteydenottokierroksen ajan ja sen jälkeen ne poistetaan.
+      Tietoja ei luovuteta ulkopuolisille.
+      Tietoja ei käytetä suoramarkkinointiin.
+      Tietoja ei siirretä EU:n tai Euroopan talousalueen ulkopuolelle.
+      Rekisteröitynä sinulla on oikeuksia, joihin voit tutustua <a href="https://tietosuoja.fi/yksityishenkilot">Tietosuojavaltuutetun sivuilla</a>.

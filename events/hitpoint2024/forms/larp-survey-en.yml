@@ -58,13 +58,13 @@ fields:
       - slug: exca
         title: Tampereen akateeeminen roolipelikerho Excalibur ry
       - slug: epel
-        title: Epel larp ry
+        title: Epel Larp ry
       - slug: myssy
         title: Mielikuvitusystävät ry
       - slug: stl
-        title: Tampereen seudun larppaajat (Facebook-ryhmä)
+        title: Tampereen seudun larppaajat (Facebook group)
       - slug: suomilarp
-        title: Suomi larp (Facebook-ryhmä)
+        title: Suomi Larp (Facebook group)
       - slug: tawerna
         title: Tawerna (Discord)
 
@@ -79,7 +79,7 @@ fields:
   - slug: claims
     title: How do you feel about the following statements?
     type: RadioMatrix
-    choices:
+    choices: &choices
       - slug: "1"
         title: Strongly disagree
       - slug: "2"
@@ -93,22 +93,51 @@ fields:
         title: Tampere needs an event aimed at larpers
       - slug: would_partake
         title: If there was an event aimed at larpers in Tampere, I would participate
-      - slug: should_have_larps
-        title: The program of a larp event in Tampere should include larps
-      - slug: should_have_talks
-        title: The program of a larp event in Tampere should include talks and discussions about larping
-      - slug: should_have_workshops
-        title: The program of a larp event in Tampere should include participatory programs about larping, such as workshops
-      - slug: finnish_language
-        title: The larp event in Tampere should be monolingually in Finnish
-      - slug: english_language
-        title: The larp event in Tampere should be monolingually in English
-      - slug: finnish_and_english_language
-        title: The larp event in Tampere should include both Finnish and English programs
       - slug: part_of_hitpoint
-        title: The larp event in Tampere could be organized as part of another event, such as Tracon Hitpoint
+        title: The event could be organized as part of another event, such as Tracon Hitpoint
       - slug: own_event
-        title: The larp event in Tampere should be organized as its own separate, independent event
+        title: The event should be organized as its own separate, independent event
+
+  - slug: program
+    title: How do you feel about the following statements regarding the event program?
+    type: RadioMatrix
+    choices: *choices
+    questions:
+      - slug: should_have_larps
+        title: The event program should include larps
+      - slug: should_have_talks
+        title: The event program should include speech and discussion programs about larping
+      - slug: should_have_workshops
+        title: The event program should include participatory programs about larping, such as workshops
+      - slug: players_pov
+        title: The event program should include programs that deal with larping from the player's perspective
+      - slug: gms_pov
+        title: The event program should include programs that deal with organizing a larp from the game master's perspective
+
+  - slug: audience
+    title: How do you feel about the following statements regarding the event language and target audience?
+    type: RadioMatrix
+    choices: *choices
+    questions:
+      - slug: finnish_language
+        title: The event should be unilingually in Finnish
+      - slug: english_language
+        title: The event should be unilingually in English
+      - slug: finnish_and_english_language
+        title: The event should include programming both in Finnish and in English
+      - slug: newbies
+        title: Beginners and those interested in larping should be especially taken into consideration at the event
+      - slug: younglings
+        title: Young larpers and young people interested in larping should be especially taken into consideration at the event
+
+  - slug: what_kinda
+    title: What kind of event would you like? What kind of program would you like there to be?
+    type: MultiLineText
+    helpText: >
+      Here you can freely express your thoughts on the above statements and brainstorm
+      program items or activities.
+      You do not have to volunteer to organize them
+      or know who would.
 
   - slug: free_text
     title: Free-form greetings to the organizers of Tracon Hitpoint
@@ -130,22 +159,33 @@ fields:
     helpText: These ways to participate in the event entitle you to free admission and other benefits. However, they do not pay a salary or fee.
     type: MultiSelect
     choices:
-      - slug: run_larp
+      - slug: larp
         title: I would like to organize a larp at the event
-      - slug: host_talk
-        title: I would like to give a speech or other program at the event
+      - slug: workshop
+        title: I would like to organize a workshop or similar participatory program item
+      - slug: talk
+        title: I would like to give a talk or other program
       - slug: volunteer
-        title: I would like to do volunteer work at the event
+        title: I would like to do volunteer work
+      - slug: other
+        title: I would like to participate in making the event in some other way (specify below)
 
   - slug: would_like_to_other
-    title: Would you like to be involved in making a larp event in Tampere in some other way?
-    helpText: >
-      If you would like to be involved in making the event in some other way, tell us about it here.
-      You can also specify your answers to the previous point and for example brainstorm,
-      what kind of larp or other program you would like to organize at the event.
+    title: Please elaborate on your above answers if you feel like!
     type: MultiLineText
+    helpText: >
+      Do you have a larp either already written or in planning that could be suitable to be played at the event?
+      What kind of program would you like to organize or what kind of volunteer work would you like to do?
+      If you would like to be involved in making the event in some other way, please tell about it here.
 
   - slug: contact
     title: If you want us to contact you, leave your contact information here (email, phone number and instant messaging, Discord username, etc.).
-    helpText: The controller of personal data is Tracon ry, represented by Santtu "Japsu" Pajukanta. The information is used only for contact regarding the organization of the larp event in Tampere. The information is stored for the duration of the contact round and then deleted. The information is not disclosed to third parties. The information is not used for direct marketing. The information is not transferred outside the EU or the European Economic Area. As a data subject, you have rights that you can familiarize yourself with on the <a href="https://tietosuoja.fi/en/private-persons">Data Protection Ombudsman's website</a>.
     type: MultiLineText
+    helpText: >
+      The controller of personal data is Tracon ry represented by Santtu "Japsu" Pajukanta.
+      The information is used only for contact regarding the organization of a larp event in Tampere.
+      The information is stored for the duration of the contact round and then deleted.
+      The information is not disclosed to third parties.
+      The information is not used for direct marketing.
+      The information is not transferred outside the EU or the European Economic Area.
+      As a data subject, you have rights that you can familiarize yourself with on the <a href="https://tietosuoja.fi/en/private-persons">Data Protection Ombudsman's website</a>.
