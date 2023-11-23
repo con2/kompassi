@@ -7,6 +7,7 @@ import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { submit } from "./actions";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
+import ParagraphsDangerousHtml from "@/components/SchemaForm/ParagraphsDangerousHtml";
 
 const query = gql(`
   query SurveyPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {
@@ -75,7 +76,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
         {title}{" "}
         <span className="fs-5 text-muted">{t.forEvent(event.name)}</span>
       </h1>
-      <p dangerouslySetInnerHTML={{ __html: description ?? "" }}></p>
+      <ParagraphsDangerousHtml html={description} />
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
         <SchemaForm fields={fields} layout={layout} />
         <SubmitButton layout={layout}>{t.submit}</SubmitButton>
