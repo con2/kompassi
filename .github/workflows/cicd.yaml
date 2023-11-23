@@ -61,9 +61,7 @@ jobs:
 
   deploy_production:
     runs-on: self-hosted
-    needs:
-      - build
-      - deploy_staging
+    needs: build
     environment: Production
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
