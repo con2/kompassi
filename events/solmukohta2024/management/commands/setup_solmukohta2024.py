@@ -114,26 +114,25 @@ class Setup:
                 ),
             )
 
-        if not Category.objects.filter(event=self.event).exists():
-            for title, style in [
-                ("Talk (lecture, lightning talks etc.)", "color1"),
-                # ("Short talk", "color1"),
-                ("Panel discussion", "color2"),
-                ("Roundtable discussion", "color3"),
-                ("Workshop", "color4"),
-                ("Larp", "color5"),
-                ("Show", "color7"),
-                ("Social/party/ritual", "color6"),
-                ("AWeek program", "color8"),
-            ]:
-                Category.objects.get_or_create(
-                    event=self.event,
-                    title=title,
-                    defaults=dict(
-                        style=style,
-                        public=title != "AWeek program",
-                    ),
-                )
+        for title, style in [
+            ("Talk (lecture, lightning talks etc.)", "color1"),
+            # ("Short talk", "color1"),
+            ("Panel discussion", "color2"),
+            ("Roundtable discussion", "color3"),
+            ("Workshop", "color4"),
+            ("Larp", "color5"),
+            ("Show", "color7"),
+            ("Social/party/ritual", "color6"),
+            ("AWeek program", "color8"),
+        ]:
+            Category.objects.get_or_create(
+                event=self.event,
+                title=title,
+                defaults=dict(
+                    style=style,
+                    public=title != "AWeek program",
+                ),
+            )
 
         for start_time, end_time in [
             (
