@@ -63,7 +63,7 @@ export default function SchemaFormField({
                   {children}
                   <Label field={field} layout={layout} />
                   {helpText && (
-                    <div className="form-text text-muted">{helpText}</div>
+                    <div className="form-text">{helpText}</div>
                   )}
                 </div>
               </div>
@@ -75,7 +75,7 @@ export default function SchemaFormField({
               {children}
               <Label field={field} layout={layout} />
               {helpText && (
-                <div className="form-text text-muted">{helpText}</div>
+                <div className="form-text">{helpText}</div>
               )}
             </div>
           );
@@ -90,7 +90,7 @@ export default function SchemaFormField({
               <div className="col-md-9">
                 {children}
                 {helpText && (
-                  <div className="form-text text-muted">{helpText}</div>
+                  <div className="form-text">{helpText}</div>
                 )}
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function SchemaFormField({
               <Label field={field} layout={layout} />
               {children}
               {helpText && (
-                <div className="form-text text-muted" dangerouslySetInnerHTML={{__html: helpText}} />
+                <div className="form-text" dangerouslySetInnerHTML={{__html: helpText}} />
               )}
             </div>
           );
