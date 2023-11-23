@@ -7,7 +7,8 @@ description: >
   and what kind of programme is expected from it. You don't have to answer
   any questions. At the end of the survey, there is an opportunity to leave
   your contact information if you want Tracon Hitpoint to contact you about
-  organising the larp programme for the event.
+  organising the larp programme for the event.</p>
+  <p lang="fi"><strong>Suomeksi:</strong> Tämä kysely on saatavilla myös <a href="/fi/events/hitpoint2024/surveys/larp-survey">suomeksi</a>.
 fields:
   - type: StaticText
     title: Background information

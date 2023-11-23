@@ -7,7 +7,8 @@ description: >
   tapahtumalle olisi kysyntää ja minkälaista ohjelmaa siltä toivotaan.
   Mihinkään kysymykseen ei ole pakko vastata. Kyselyn lopussa on mahdollisuus
   jättää yhteystietonsa, jos haluaa, että Tracon Hitpoint ottaa yhteyttä
-  liittyen tapahtuman larppiaiheisen ohjelman järjestämiseen.
+  liittyen tapahtuman larppiaiheisen ohjelman järjestämiseen.</p>
+  <p lang="en"><strong>Suomeksi:</strong> This survey is also available <a href="/en/events/hitpoint2024/surveys/larp-survey">in English</a>.
 fields:
   - type: StaticText
     title: Taustatiedot
