@@ -1,14 +1,15 @@
 title: Kysely Tracon Hitpointin larppiohjelmasta
 layout: vertical
-description: >
+description: |
   Tracon Hitpoint suunnittelee larppiaiheisen ohjelmansa laajentamista
   visionaan ”Kiinnostavin larppiaiheinen tapahtuma Tampereella vuonna 2025”.
   Tämän kyselyn tarkoituksena on selvittää, millaiselle larppiaiheiselle
   tapahtumalle olisi kysyntää ja minkälaista ohjelmaa siltä toivotaan.
   Mihinkään kysymykseen ei ole pakko vastata. Kyselyn lopussa on mahdollisuus
   jättää yhteystietonsa, jos haluaa, että Tracon Hitpoint ottaa yhteyttä
-  liittyen tapahtuman larppiaiheisen ohjelman järjestämiseen.</p>
-  <p lang="en"><strong>Suomeksi:</strong> This survey is also available <a href="/en/events/hitpoint2024/surveys/larp-survey">in English</a>.
+  liittyen tapahtuman larppiaiheisen ohjelman järjestämiseen.
+
+  <strong>Englanniksi / In English:</strong> This survey is also available <a href="/en/events/hitpoint2024/surveys/larp-survey">in English</a>.
 fields:
   - type: StaticText
     title: Taustatiedot
