@@ -75,7 +75,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
         {title}{" "}
         <span className="fs-5 text-muted">{t.forEvent(event.name)}</span>
       </h1>
-      <p>{description}</p>
+      <p dangerouslySetInnerHTML={{ __html: description ?? "" }}></p>
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
         <SchemaForm fields={fields} layout={layout} />
         <SubmitButton layout={layout}>{t.submit}</SubmitButton>
