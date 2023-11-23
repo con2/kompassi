@@ -3,12 +3,10 @@ name: cicd
 on:
   push:
     branches:
-      - development
-      - master
+      - main
   pull_request:
     branches:
-      - development
-      - master
+      - main
 
 jobs:
   test:
@@ -54,7 +52,8 @@ jobs:
   deploy_staging:
     runs-on: self-hosted
     needs: build
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/development' }}
+    environment: staging
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v1
       - uses: actions/download-artifact@v2
@@ -76,7 +75,8 @@ jobs:
   deploy_production:
     runs-on: self-hosted
     needs: build
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    environment: production
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v1
       - uses: actions/download-artifact@v2
