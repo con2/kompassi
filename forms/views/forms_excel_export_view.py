@@ -12,7 +12,11 @@ from ..excel_export import write_responses_as_excel
 
 
 @default_cbac_required
-def forms_excel_export_view(request: HttpRequest, event_slug: Optional[str], form_slug: str):
+def forms_excel_export_view(
+    request: HttpRequest,
+    event_slug: Optional[str],
+    form_slug: str,
+):
     timestamp = now().strftime("%Y%m%d%H%M%S")
 
     if event_slug:
@@ -26,6 +30,6 @@ def forms_excel_export_view(request: HttpRequest, event_slug: Optional[str], for
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-    write_responses_as_excel(form, form.responses.all().only("form_data"), response)
+    write_responses_as_excel(form.validated_fields, form.responses.all().only("form_data"), response)
 
     return response

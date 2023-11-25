@@ -6,7 +6,7 @@ Note that fields present in only one language version are not guaranteed to be
 in any particular order.
 """
 
-from collections.abc import Sequence
+from collections.abc import Sequence, Iterable
 from functools import reduce
 from typing import Protocol, TypeVar, Optional
 
@@ -49,5 +49,5 @@ def _merge_fields(fields: Sequence[Field], other_fields: Sequence[Field]) -> lis
     return list(result.values())
 
 
-def merge_form_fields(forms: Sequence[AbstractForm]) -> list[Field]:
+def merge_fields(forms: Iterable[AbstractForm]) -> list[Field]:
     return reduce(_merge_fields, (form.validated_fields for form in forms), [])
