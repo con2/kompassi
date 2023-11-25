@@ -1,7 +1,8 @@
 import yaml
 
-from .models import Field
-from .utils import process_form_data, FieldWarning
+from .models.field import Field, FieldType, Choice
+from .utils.process_form_data import process_form_data, FieldWarning
+from .utils.merge_form_fields import _merge_form_fields, _merge_into
 from .excel_export import get_header_cells, get_response_cells
 
 
@@ -287,3 +288,66 @@ def test_process_form_data():
 
     response_row = [cell for field in fields for cell in get_response_cells(field, values)]
     assert response_row == expected_response_row
+
+
+def test_merge_into():
+    lhs_choices = [
+        Choice(slug="foo", title="Foo"),
+        Choice(slug="bar", title="Bar"),
+        Choice(slug="quux", title="Quux"),
+    ]
+
+    rhs_choices = [
+        Choice(slug="bar", title="Bar"),
+        Choice(slug="baz", title="Baz"),
+    ]
+
+    expected_merged_choices = [
+        Choice(slug="foo", title="Foo"),
+        Choice(slug="bar", title="Bar"),
+        Choice(slug="baz", title="Baz"),
+        Choice(slug="quux", title="Quux"),
+    ]
+
+    assert _merge_into(lhs_choices, rhs_choices) == expected_merged_choices
+
+
+def test_merge_form_fields():
+    lhs_fields = [
+        Field(
+            type=FieldType.SINGLE_LINE_TEXT,
+            slug="presentInBoth",
+        ),
+        Field(
+            type=FieldType.SINGLE_LINE_TEXT,
+            slug="presentInLhs",
+        ),
+    ]
+
+    rhs_fields = [
+        Field(
+            type=FieldType.SINGLE_LINE_TEXT,
+            slug="presentInBoth",
+        ),
+        Field(
+            type=FieldType.SINGLE_LINE_TEXT,
+            slug="presentInRhs",
+        ),
+    ]
+
+    expected_merged_fields = [
+        Field(
+            type=FieldType.SINGLE_LINE_TEXT,
+            slug="presentInBoth",
+        ),
+        Field(
+            type=FieldType.SINGLE_LINE_TEXT,
+            slug="presentInRhs",
+        ),
+        Field(
+            type=FieldType.SINGLE_LINE_TEXT,
+            slug="presentInLhs",
+        ),
+    ]
+
+    assert _merge_form_fields(lhs_fields, rhs_fields) == expected_merged_fields

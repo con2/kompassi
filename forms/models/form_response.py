@@ -8,7 +8,7 @@ from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
 
 if TYPE_CHECKING:
-    from ..utils import FieldWarning
+    from ..utils.process_form_data import FieldWarning
 
 
 class AbstractFormResponse(models.Model):
@@ -29,7 +29,7 @@ class AbstractFormResponse(models.Model):
     form: Any
 
     def _process_form_data(self):
-        from ..utils import process_form_data
+        from ..utils.process_form_data import process_form_data
 
         return process_form_data(self.form.validated_fields, self.form_data)
 

@@ -29,15 +29,15 @@ class Field(pydantic.BaseModel):
     provided for convenience.
     """
 
-    type: FieldType = pydantic.Field(alias="type")
+    type: FieldType = pydantic.Field(alias="type", repr=False)
     slug: str = pydantic.Field(alias="slug")
-    title: Optional[str] = pydantic.Field(None, alias="title")
-    help_text: Optional[str] = pydantic.Field(None, alias="helpText")
-    required: Optional[bool] = pydantic.Field(None, alias="required")
-    read_only: Optional[bool] = pydantic.Field(None, alias="readOnly")
-    html_type: Optional[str] = pydantic.Field(None, alias="htmlType")
-    choices: Optional[list[Choice]] = pydantic.Field(None, alias="choices")
-    questions: Optional[list[Choice]] = pydantic.Field(None, alias="questions")
+    title: Optional[str] = pydantic.Field(default=None, alias="title", repr=False)
+    help_text: Optional[str] = pydantic.Field(default=None, alias="helpText", repr=False)
+    required: Optional[bool] = pydantic.Field(default=None, alias="required", repr=False)
+    read_only: Optional[bool] = pydantic.Field(default=None, alias="readOnly", repr=False)
+    html_type: Optional[str] = pydantic.Field(default=None, alias="htmlType", repr=False)
+    choices: Optional[list[Choice]] = pydantic.Field(default=None, alias="choices", repr=False)
+    questions: Optional[list[Choice]] = pydantic.Field(default=None, alias="questions", repr=False)
 
     class Config:
         populate_by_field_name = True
