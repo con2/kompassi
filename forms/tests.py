@@ -2,7 +2,7 @@ import yaml
 
 from .models.field import Field, FieldType, Choice
 from .utils.process_form_data import process_form_data, FieldWarning
-from .utils.merge_form_fields import _merge_form_fields, _merge_into
+from .utils.merge_form_fields import _merge_fields, _merge_choices
 from .excel_export import get_header_cells, get_response_cells
 
 
@@ -290,7 +290,7 @@ def test_process_form_data():
     assert response_row == expected_response_row
 
 
-def test_merge_into():
+def test_merge_choices():
     lhs_choices = [
         Choice(slug="foo", title="Foo"),
         Choice(slug="bar", title="Bar"),
@@ -305,14 +305,14 @@ def test_merge_into():
     expected_merged_choices = [
         Choice(slug="foo", title="Foo"),
         Choice(slug="bar", title="Bar"),
-        Choice(slug="baz", title="Baz"),
         Choice(slug="quux", title="Quux"),
+        Choice(slug="baz", title="Baz"),
     ]
 
-    assert _merge_into(lhs_choices, rhs_choices) == expected_merged_choices
+    assert _merge_choices(lhs_choices, rhs_choices) == expected_merged_choices
 
 
-def test_merge_form_fields():
+def test_merge_fields():
     lhs_fields = [
         Field(
             type=FieldType.SINGLE_LINE_TEXT,
@@ -342,12 +342,12 @@ def test_merge_form_fields():
         ),
         Field(
             type=FieldType.SINGLE_LINE_TEXT,
-            slug="presentInRhs",
+            slug="presentInLhs",
         ),
         Field(
             type=FieldType.SINGLE_LINE_TEXT,
-            slug="presentInLhs",
+            slug="presentInRhs",
         ),
     ]
 
-    assert _merge_form_fields(lhs_fields, rhs_fields) == expected_merged_fields
+    assert _merge_fields(lhs_fields, rhs_fields) == expected_merged_fields
