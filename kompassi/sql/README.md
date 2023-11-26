@@ -15,7 +15,7 @@ To refresh the schema snapshot, run `migrate` (NOTE: not `setup`) on an empty da
 
     # Then test it before committing
     docker compose down -v
-    docker compose up
+    docker compose up --build
 
 ## Hardened security configuration
 
