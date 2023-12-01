@@ -7,7 +7,7 @@ import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { submit } from "./actions";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
-import ParagraphsDangerousHtml from "@/components/SchemaForm/ParagraphsDangerousHtml";
+import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 
 const query = gql(`
   query SurveyPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {
