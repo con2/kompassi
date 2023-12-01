@@ -185,6 +185,7 @@ INSTALLED_APPS = (
     "mailings",
     "api",
     "api_v2",
+    "graphql_api",
     "badges",
     "access",
     "membership",

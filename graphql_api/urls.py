@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 from csp.decorators import csp_exempt
 
-from .graphql import schema
+from .schema import schema
 
 urlpatterns = [
     # TODO csp_exempt, csrf_exempt

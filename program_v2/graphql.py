@@ -7,28 +7,21 @@ import graphene
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
-from core.utils import get_objects_within_period
 from core.models import Event
-from forms.models import EventForm, EventSurvey
+from core.utils import get_objects_within_period
 from forms.graphql import EventFormType, EventSurveyType, CreateEventSurveyResponse
+from forms.models import EventForm, EventSurvey
+from graphql_api.utils import resolve_localized_field, DEFAULT_LANGUAGE
 
-from .models import Dimension, DimensionValue, ProgramDimensionValue, Program, ScheduleItem, OfferForm
-
-
-DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
-
-
-def resolve_localized_field(field_name: str):
-    """
-    Given a LocalizedCharField or similar, this will resolve into its value in the currently active language.
-    Field name is required to be provided because info.field_name is in camelCase.
-    """
-
-    def _resolve(parent, info, lang: str = DEFAULT_LANGUAGE):
-        with translation.override(lang):
-            return getattr(parent, field_name).translate()
-
-    return _resolve
+from .models import (
+    Dimension,
+    DimensionValue,
+    ProgramDimensionValue,
+    Program,
+    ScheduleItem,
+    OfferForm,
+    ProgramV2EventMeta,
+)
 
 
 class DimensionType(DjangoObjectType):
@@ -80,32 +73,6 @@ class ProgramType(DjangoObjectType):
         fields = ("title", "slug", "dimensions", "cached_dimensions", "schedule_items")
 
 
-@dataclass
-class Language:
-    code: str
-    name_fi: str
-    name_en: str
-
-
-LANGUAGES = [Language("fi", "suomi", "Finnish"), Language("en", "englanti", "English")]
-
-
-class LanguageType(graphene.ObjectType):
-    code = graphene.String()
-    name = graphene.String(lang=graphene.String())
-
-    @staticmethod
-    def resolve_name(
-        language: Language,
-        info,
-        lang: str = DEFAULT_LANGUAGE,
-    ):
-        if lang == "fi":
-            return language.name_fi
-        else:
-            return language.name_en
-
-
 class DimensionFilterInput(graphene.InputObjectType):
     dimension = graphene.String()
     values = graphene.List(graphene.String)
@@ -136,10 +103,10 @@ class OfferFormType(DjangoObjectType):
         fields = ("slug",)
 
 
-class EventType(DjangoObjectType):
+class ProgramV2EventMetaType(DjangoObjectType):
     class Meta:
-        model = Event
-        fields = ("slug", "name")
+        model = ProgramV2EventMeta
+        fields = ("skip_offer_form_selection",)
 
     programs = graphene.List(
         graphene.NonNull(ProgramType),
@@ -148,11 +115,11 @@ class EventType(DjangoObjectType):
 
     @staticmethod
     def resolve_programs(
-        event: Event,
+        meta: ProgramV2EventMeta,
         info,
         filters: list[DimensionFilterInput] = [],
     ):
-        queryset = Program.objects.filter(event=event)
+        queryset = Program.objects.filter(event=meta.event)
 
         if filters:
             for filter in filters:
@@ -166,76 +133,23 @@ class EventType(DjangoObjectType):
     dimensions = graphene.List(graphene.NonNull(DimensionType))
 
     @staticmethod
-    def resolve_dimensions(event: Event, info):
-        return Dimension.objects.filter(event=event)
+    def resolve_dimensions(meta: ProgramV2EventMeta, info):
+        return Dimension.objects.filter(event=meta.event)
 
     offer_forms = graphene.List(graphene.NonNull(OfferFormType), include_inactive=graphene.Boolean())
 
     @staticmethod
-    def resolve_offer_forms(event: Event, info, include_inactive: bool = False):
+    def resolve_offer_forms(meta: ProgramV2EventMeta, info, include_inactive: bool = False):
         if include_inactive:
             # TODO must be admin
-            qs = OfferForm.objects.filter(event=event)
+            qs = OfferForm.objects.filter(event=meta.event)
         else:
-            qs = get_objects_within_period(OfferForm, event=event)
+            qs = get_objects_within_period(OfferForm, event=meta.event)
 
         return qs
 
     offer_form = graphene.Field(OfferFormType, slug=graphene.String(required=True))
 
     @staticmethod
-    def resolve_offer_form(event: Event, info, slug: str):
-        return OfferForm.objects.get(event=event, slug=slug)
-
-    languages = graphene.List(graphene.NonNull(LanguageType))
-
-    @staticmethod
-    def resolve_languages(
-        event: Event,
-        info,
-    ):
-        # TODO
-        return LANGUAGES
-
-    # TODO program namespace that maps to ProgramV2EventMeta
-    skip_offer_form_selection = graphene.Field(graphene.Boolean)
-
-    @staticmethod
-    def resolve_skip_offer_form_selection(
-        event: Event,
-        info,
-    ):
-        return meta.skip_offer_form_selection if (meta := event.program_v2_event_meta) else None
-
-    surveys = graphene.List(graphene.NonNull(EventSurveyType), include_inactive=graphene.Boolean())
-
-    @staticmethod
-    def resolve_surveys(event: Event, info, include_inactive: bool = False):
-        if include_inactive:
-            # TODO must be admin
-            qs = EventSurvey.objects.filter(event=event)
-        else:
-            qs = get_objects_within_period(EventSurvey, event=event)
-
-        return qs
-
-    survey = graphene.Field(EventSurveyType, slug=graphene.String(required=True))
-
-    @staticmethod
-    def resolve_survey(event: Event, info, slug: str):
-        return EventSurvey.objects.get(event=event, slug=slug)
-
-
-class Query(graphene.ObjectType):
-    event = graphene.Field(EventType, slug=graphene.String(required=True))
-
-    @staticmethod
-    def resolve_event(root, info, slug: str):
-        return Event.objects.filter(slug=slug).first()
-
-
-class Mutation(graphene.ObjectType):
-    create_event_survey_response = CreateEventSurveyResponse.Field()
-
-
-schema = graphene.Schema(query=Query, mutation=Mutation)
+    def resolve_offer_form(meta: ProgramV2EventMeta, info, slug: str):
+        return OfferForm.objects.get(event=meta.event, slug=slug)

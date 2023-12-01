@@ -4,10 +4,12 @@ import graphene
 from graphene_django import DjangoObjectType
 from graphene.types.generic import GenericScalar
 
-from core.utils import get_ip
+from core.utils import get_ip, get_objects_within_period
 
-from .models import EventSurvey, EventForm, GlobalForm, EventFormResponse, GlobalFormResponse
-
+from .models.form import EventForm
+from .models.survey import EventSurvey
+from .models.form_response import EventFormResponse
+from .models.meta import FormsEventMeta
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
@@ -65,6 +67,26 @@ class EventSurveyResponseType(DjangoObjectType):
     class Meta:
         model = EventFormResponse
         fields = ("id", "form_data", "created_at")
+
+
+class FormsEventMetaType(graphene.ObjectType):
+    surveys = graphene.List(graphene.NonNull(EventSurveyType), include_inactive=graphene.Boolean())
+
+    @staticmethod
+    def resolve_surveys(meta: FormsEventMeta, info, include_inactive: bool = False):
+        if include_inactive:
+            # TODO must be admin
+            qs = EventSurvey.objects.filter(event=meta.event)
+        else:
+            qs = get_objects_within_period(EventSurvey, event=meta.event)
+
+        return qs
+
+    survey = graphene.Field(EventSurveyType, slug=graphene.String(required=True))
+
+    @staticmethod
+    def resolve_survey(meta: FormsEventMeta, info, slug: str):
+        return EventSurvey.objects.get(event=meta.event, slug=slug)
 
 
 class CreateEventSurveyResponse(graphene.Mutation):
