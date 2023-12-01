@@ -10,14 +10,17 @@ const query = gql(`
     event(slug: $eventSlug) {
       name
       slug
-      skipOfferFormSelection
 
-      offerForms {
-        slug
-        shortDescription(lang: $locale)
-        form(lang: $locale) {
-          title
+      program {
+        skipOfferFormSelection
+
+        offerForms {
           slug
+          shortDescription(lang: $locale)
+          form(lang: $locale) {
+            title
+            slug
+          }
         }
       }
     }
@@ -64,8 +67,8 @@ export default async function NewProgramFormSelectionPage({
     notFound();
   }
 
-  const { skipOfferFormSelection } = event;
-  const offerForms = event.offerForms ?? [];
+  const skipOfferFormSelection = event?.program?.skipOfferFormSelection ?? false;
+  const offerForms = event.program?.offerForms ?? [];
 
   if (skipOfferFormSelection) {
     return redirect(`/events/${event.slug}/programs/new/${offerForms[0].slug}`);

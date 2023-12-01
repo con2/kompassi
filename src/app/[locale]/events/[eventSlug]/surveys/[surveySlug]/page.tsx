@@ -14,12 +14,14 @@ const query = gql(`
     event(slug: $eventSlug) {
       name
 
-      survey(slug: $surveySlug) {
-        form(lang: $locale) {
-          title
-          description
-          fields
-          layout
+      forms {
+        survey(slug: $surveySlug) {
+          form(lang: $locale) {
+            title
+            description
+            fields
+            layout
+          }
         }
       }
     }
@@ -44,8 +46,8 @@ export async function generateMetadata({ params }: SurveyPageProps) {
     variables: { eventSlug, surveySlug, locale },
   });
   return {
-    title: `${data.event?.name}: ${data.event?.survey?.form?.title} – Kompassi`,
-    description: data.event?.survey?.form?.description ?? "",
+    title: `${data.event?.name}: ${data.event?.forms?.survey?.form?.title} – Kompassi`,
+    description: data.event?.forms?.survey?.form?.description ?? "",
   };
 }
 
@@ -60,7 +62,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
   if (!event) {
     notFound();
   }
-  const { survey } = event;
+  const survey = event.forms?.survey;
   if (!survey) {
     notFound();
   }

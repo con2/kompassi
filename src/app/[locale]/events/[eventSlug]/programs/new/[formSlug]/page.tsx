@@ -13,14 +13,16 @@ const query = gql(`
   query NewProgramQuery($eventSlug:String!, $formSlug:String!, $locale:String) {
     event(slug: $eventSlug) {
       name
-      skipOfferFormSelection
+      program {
+        skipOfferFormSelection
 
-      offerForm(slug: $formSlug) {
-        form(lang: $locale) {
-          title
-          description
-          fields
-          layout
+        offerForm(slug: $formSlug) {
+          form(lang: $locale) {
+            title
+            description
+            fields
+            layout
+          }
         }
       }
     }
@@ -45,7 +47,7 @@ export async function generateMetadata({ params }: NewProgramProps) {
     variables: { eventSlug, formSlug, locale },
   });
   return {
-    title: `${data.event?.name}: ${data.event?.offerForm?.form?.title} – Kompassi`,
+    title: `${data.event?.name}: ${data.event?.program?.offerForm?.form?.title} – Kompassi`,
   };
 }
 
@@ -60,13 +62,13 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
   if (!event) {
     notFound();
   }
-  const { offerForm, skipOfferFormSelection } = event;
+  const offerForm = event.program?.offerForm;
   if (!offerForm) {
     notFound();
   }
+  const skipOfferFormSelection = event.program?.skipOfferFormSelection ?? false;
   const { form } = offerForm;
-  const { title, description, fields: fieldsJson, layout } = form!;
-  const fields: Field[] = JSON.parse(fieldsJson);
+  const { title, description, fields, layout } = form!;
 
   return (
     <main className="container mt-4">
