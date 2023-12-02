@@ -18,6 +18,11 @@ REDIS_CACHE_DATABASE="${REDIS_CACHE_DATABASE:-2}"
 export BROKER_URL="${BROKER_URL:-redis://$REDIS_HOSTNAME/$REDIS_BROKER_DATABASE}"
 export CACHE_URL="${CACHE_URL:-rediscache://$REDIS_HOSTNAME/$REDIS_CACHE_DATABASE}"
 
+# In debug mode, generate ephemeral RSA key if not set
+if [[ "$DEBUG" == "true" ]]; then
+    export OIDC_RSA_PRIVATE_KEY="${OIDC_RSA_PRIVATE_KEY:-$(openssl genrsa 2048)}"
+fi
+
 # Wait for postgres to be up before continuing
 "$DIR/wait-for-it.sh" -s -t 120 "$POSTGRES_HOSTNAME:$POSTGRES_PORT"
 
