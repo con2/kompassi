@@ -20,14 +20,11 @@ class Command(BaseCommand):
                             "http://ssoexample.dev:8001/oauth2/callback",
                             "http://infokala.dev:8001/oauth2/callback",
                             "http://tracontent.dev:8001/oauth2/callback",
-                            "http://localhost:3000/api/auth/callback/kompassi",  # kompassi2
                         ]
                     ),
                     client_type="confidential",  # hah
                     authorization_grant_type="authorization-code",
                     client_secret="kompassi_insecure_test_client_secret",
                     name="Insecure test application",
-                    skip_authorization=True,
-                    algorithm="RS256",
                 ),
             )

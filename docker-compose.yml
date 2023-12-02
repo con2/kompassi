@@ -14,7 +14,7 @@ services:
       - web-media:/usr/src/app/media
     environment: &environment
       PYTHONUNBUFFERED: 1
-      DEBUG: "true"
+      DEBUG: 1
       BROKER_URL: redis://redis/1
       CACHE_URL: rediscache://redis/1
       ALLOWED_HOSTS: '*'
