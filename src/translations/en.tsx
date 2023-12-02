@@ -43,8 +43,8 @@ const translations = {
   },
   Navigation: {
     forms: "Forms",
-    logIn: "Log in",
-    logOut: "Log out",
+    signIn: "Sign in",
+    signOut: "Sign out",
   },
   NotFound: {
     notFoundHeader: "Page not found",

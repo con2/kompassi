@@ -17,7 +17,7 @@ export default function UserMenu({ session, translations }: UserMenuProps) {
   if (!session?.user) {
     return (
       <button onClick={() => signIn("kompassi")} className="nav-link btn btn-link">
-        {translations.logIn}
+        {translations.signIn}…
       </button>
     );
   }
@@ -36,7 +36,7 @@ export default function UserMenu({ session, translations }: UserMenuProps) {
       <ul className={`dropdown-menu dropdown-menu-end ${isOpen ? "show": ""}`} aria-labelledby="user-menu">
         <li>
           <button className="dropdown-item" onClick={() => signOut()}>
-            {translations.logOut}
+            {translations.signOut}
           </button>
         </li>
       </ul>

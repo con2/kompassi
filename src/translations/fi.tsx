@@ -45,8 +45,8 @@ const translations: Translations = {
   },
   Navigation: {
     forms: "Lomakkeet",
-    logIn: "Kirjaudu sisään",
-    logOut: "Kirjaudu ulos",
+    signIn: "Kirjaudu sisään",
+    signOut: "Kirjaudu ulos",
   },
   NotFound: {
     notFoundHeader: "Sivua ei löydy",
