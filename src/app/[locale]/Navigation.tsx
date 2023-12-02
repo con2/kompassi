@@ -1,32 +1,18 @@
-// TODO: remove usePathname, make server component
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { getServerSession } from "next-auth/next";
 
-import { SupportedLanguage, getTranslations, supportedLanguages } from "@/translations";
+import { authOptions } from "@/auth";
+import { SupportedLanguage, getTranslations } from "@/translations";
+import LanguageSwitcher from "./LanguageSwitcher";
+import UserMenu from "./UserMenu";
 
 interface NavigationProps {
   locale: SupportedLanguage;
 }
 
-export default function Navigation({ locale }: NavigationProps) {
+export default async function Navigation({ locale }: NavigationProps) {
   const translations = getTranslations(locale);
-  const { otherLanguage } = translations.LanguageSelection;
-  let pathname = usePathname();
-
-  // Remove the language prefix from the pathname
-  // If we were using <Link>, Next.js would handle this for us
-  // But that also sometimes preloads the link, causing a language change
-  for (const supportedLanguage of supportedLanguages) {
-    if (pathname === `/${supportedLanguage}` || pathname.startsWith(`/${supportedLanguage}/`)) {
-      pathname = pathname.slice(supportedLanguage.length + 1);
-      break;
-    }
-  }
-
-  // implemented in ../middleware.ts
-  const languageToggleUri = `/${otherLanguage.code}${pathname}`;
+  const session = await getServerSession(authOptions);
 
   return (
     <div className="navbar navbar-dark bg-primary navbar-expand-lg">
@@ -35,13 +21,8 @@ export default function Navigation({ locale }: NavigationProps) {
           {translations.Brand.appName}
         </Link>
         <div className="navbar-nav ms-auto">
-          <a
-            href={languageToggleUri}
-            className="nav-link"
-            lang={otherLanguage.code}
-          >
-            {otherLanguage.nameInOtherLanguage}
-          </a>
+          <LanguageSwitcher otherLanguage={translations.LanguageSelection.otherLanguage} />
+          <UserMenu session={session} translations={translations.Navigation} />
         </div>
       </div>
     </div>
