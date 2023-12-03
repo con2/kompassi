@@ -9,11 +9,11 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.timezone import now
-from django.views.decorators.http import require_POST, require_http_methods
+from django.views.decorators.http import require_POST, require_http_methods, require_safe
 
 from csp.decorators import csp_exempt
 
-from api.utils import api_login_required, handle_api_errors
+from api.utils import api_login_required, handle_api_errors, cbac_api_view
 from core.helpers import person_required
 from core.models import Person
 from core.utils import groupby_strict, url, pick_attrs
@@ -120,7 +120,9 @@ def access_profile_aliases_view(request):
             emailaliastype__email_aliases__person=request.user.person,
         )
 
-        newly_created_password, unused = SMTPPassword.create_for_domain_and_person(domain, request.user.person)
+        newly_created_password, unused = SMTPPassword.create_for_domain_and_person(
+            domain, request.user.person
+        )
     else:
         newly_created_password = None
 
@@ -216,19 +218,16 @@ def access_admin_group_emails_api(request, group_name):
         content_type="text/plain; charset=UTF-8",
     )
 
-@handle_api_errors
-@api_login_required
+
+@require_safe
+@cbac_api_view
 def access_admin_group_members_api(request, group_name):
     group = get_object_or_404(Group, name=group_name)
 
-    return JsonResponse([
-        pick_attrs(user.person,
-                   "first_name",
-                   "surname",
-                   "nick",
-                   "email",
-                   "phone")
-        for user in group.user_set.all()], safe=False)
+    return [
+        pick_attrs(user.person, "first_name", "surname", "nick", "email", "phone")
+        for user in group.user_set.all()  # type: ignore
+    ]
 
 
 def access_admin_menu_items(request, organization):
