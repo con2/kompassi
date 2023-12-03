@@ -4,6 +4,7 @@ from .views import (
     access_admin_aliases_api,
     access_admin_aliases_view,
     access_admin_group_emails_api,
+    access_admin_group_members_api,
     access_profile_aliases_view,
     access_profile_privilege_view,
     access_profile_privileges_view,
@@ -42,6 +43,11 @@ urlpatterns = [
         r"^api/v1/groups/(?P<group_name>[a-z0-9-]+)/emails.txt$",
         access_admin_group_emails_api,
         name="access_admin_group_emails_api",
+    ),
+    re_path(
+        r"^api/v1/groups/(?P<group_name>[a-z0-9-]+)/members$",
+        access_admin_group_members_api,
+        name="access_admin_group_members_api",
     ),
     re_path(
         r"^organizations/(?P<organization_slug>[a-z0-9-]+)/admin/aliases/?$",
