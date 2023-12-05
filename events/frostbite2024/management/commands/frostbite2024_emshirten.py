@@ -14,19 +14,19 @@ TITLE_MAPPING = {
     "Työpajanpitäjä": "NO_SHIRT",
     "Keskustelupiirin vetäjä": "NO_SHIRT",
     "Tuomari": "NO_SHIRT",
-    "Tiedotus, valokuvaus ja Kompassi": "KUVAAJA",  # that's me!
+    "Kompassi": "KUVAAJA",  # that's me!
     "Yövastaava": "DESURITY",
     "Manager of Desurity": "DESURITY",
     "DesuTv Lead": "DESUTV",
     "DesuTV Vastaava": "DESUTV",
     "Turvallisuusvastaava": "DESURITY",
-    "Turvallisuusvastaava II": "DESURITY",
+    "Turvallisuussuunnittelu": "DESURITY",
 }
 
 JOB_CATEGORY_MAPPING = {
     "DesuTV": "DESUTV",
     "Järjestyksenvalvoja": "DESURITY",
-    "Valokuvaaja": "KUVAAJA",
+    "Valokuvaus": "KUVAAJA",
     # "Taltiointi": "KUVAAJA",
 }
 
