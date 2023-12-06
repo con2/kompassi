@@ -25,12 +25,12 @@ class Setup:
         self.test = test
         self.tz = tzlocal()
         self.setup_core()
-        # self.setup_labour()
-        # self.setup_intra()
+        self.setup_labour()
+        self.setup_intra()
         # self.setup_tickets()
-        # self.setup_programme()
-        # self.setup_access()
-        # self.setup_badges()
+        self.setup_programme()
+        self.setup_access()
+        self.setup_badges()
         self.setup_forms()
 
     def setup_core(self):
@@ -52,24 +52,28 @@ class Setup:
                 name_inessive="Tracon Hitpoint 2024 -tapahtumassa",
                 homepage_url="http://2024.hitpoint.tracon.fi",
                 organization=self.organization,
-                # start_time=datetime(2024, 11, 4, 10, 0, tzinfo=self.tz),
-                # end_time=datetime(2024, 11, 5, 18, 0, tzinfo=self.tz),
+                start_time=datetime(2024, 11, 2, 10, 0, tzinfo=self.tz),
+                end_time=datetime(2024, 11, 3, 18, 0, tzinfo=self.tz),
                 venue=self.venue,
-                public=False,
+                public=True,
             ),
         )
 
+        if self.event.start_time is None:
+            self.event.start_time = datetime(2024, 11, 2, 10, 0, tzinfo=self.tz)
+            self.event.end_time = datetime(2024, 11, 3, 18, 0, tzinfo=self.tz)
+            self.event.public = True
+            self.event.save()
+
     def setup_labour(self):
-        from core.models import Person
+        from core.models import Person, Event
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
-            Job,
             JobCategory,
             LabourEventMeta,
             PersonnelClass,
             Qualification,
-            WorkPeriod,
             Survey,
         )
         from ...models import SignupExtra, SpecialDiet
@@ -130,69 +134,10 @@ class Setup:
         ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
 
         if not JobCategory.objects.filter(event=self.event).exists():
-            for jc_data in [
-                ("Conitea", "Tapahtuman järjestelytoimikunnan eli conitean jäsen", [conitea]),
-                (
-                    "Erikoistehtävä",
-                    "Mikäli olet sopinut erikseen työtehtävistä ja/tai sinut on ohjeistettu täyttämään lomake, valitse tämä ja kerro tarkemmin Vapaa alue -kentässä mihin tehtävään ja kenen toimesta sinut on valittu.",
-                    [tyovoima, ylivankari],
-                ),
-                (
-                    "Järjestyksenvalvoja",
-                    "Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
-                    [tyovoima, ylivankari],
-                ),
-                (
-                    "Ensiapu",
-                    "Toimit osana tapahtuman omaa ensiapuryhmää. Vuoroja päivisin ja öisin tapahtuman aukioloaikoina. Vaaditaan vähintään voimassa oleva EA1 -kortti ja osalta myös voimassa oleva EA2 -kortti. Kerro Työkokemus -kohdassa osaamisestasi, esim. oletko toiminut EA-tehtävissä tapahtumissa tai oletko sairaanhoitaja/lähihoitaja koulutuksestaltasi.",
-                    [tyovoima, ylivankari],
-                ),
-                (
-                    "Kasaus ja purku",
-                    "Kalusteiden siirtelyä & opasteiden kiinnittämistä. Ei vaadi erikoisosaamista. Työvuoroja myös jo pe sekä su conin sulkeuduttua, kerro lisätiedoissa jos voit osallistua näihin.",
-                    [tyovoima, ylivankari],
-                ),
-                (
-                    "Logistiikka",
-                    "Autokuskina toimimista ja tavaroiden/ihmisten hakua ja noutamista. B-luokan ajokortti vaaditaan. Työvuoroja myös perjantaille.",
-                    [tyovoima, ylivankari],
-                ),
-                (
-                    "Majoitusvalvoja",
-                    "Huolehtivat lattiamajoituspaikkojen pyörittämisestä yöaikaan. Työvuoroja myös molempina öinä.",
-                    [tyovoima, ylivankari],
-                ),
-                (
-                    "myynti",
-                    "Lipunmyynti ja narikka",
-                    "Pääsylippujen ja Tracon-oheistuotteiden myyntiä sekä lippujen tarkastamista. Myyjiltä edellytetään täysi-ikäisyyttä, asiakaspalveluhenkeä ja huolellisuutta rahankäsittelyssä. Vuoroja myös perjantaina.",
-                    [tyovoima, ylivankari],
-                ),
-                (
-                    "info",
-                    "Info-, ohjelma- ja yleisvänkäri",
-                    "Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman paikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.",
-                    [tyovoima, ylivankari],
-                ),
-                ("Ohjelmanpitäjä", "Luennon tai muun vaativan ohjelmanumeron pitäjä", [ohjelma]),
-            ]:
-                if len(jc_data) == 3:
-                    name, description, pcs = jc_data
-                    slug = slugify(name)
-                elif len(jc_data) == 4:
-                    slug, name, description, pcs = jc_data
-
-                job_category, created = JobCategory.objects.get_or_create(
-                    event=self.event,
-                    slug=slug,
-                    defaults=dict(
-                        name=name,
-                        description=description,
-                    ),
-                )
-
-                if created:
-                    job_category.personnel_classes.set(pcs)
+            JobCategory.copy_from_event(
+                source_event=Event.objects.get(slug="hitpoint2023"),
+                target_event=self.event,
+            )
 
         labour_event_meta.create_groups()
 
@@ -240,11 +185,11 @@ class Setup:
         )
 
         for url, link_title, link_group in [
-            (
-                "https://wiki.tracon.fi/collection/hitpoint-2024-WgmibvZ0M1",
-                "Coniteawiki",
-                "conitea",
-            ),
+            # (
+            #     "https://wiki.tracon.fi/collection/hitpoint-2024-WgmibvZ0M1",
+            #     "Coniteawiki",
+            #     "conitea",
+            # ),
             (
                 "https://wiki.tracon.fi/collection/hitpointin-tyovoimawiki-WjWtE61vAT",
                 "Työvoimawiki",
