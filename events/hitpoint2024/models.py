@@ -23,19 +23,20 @@ TOTAL_WORK_CHOICES = [
 
 SHIRT_SIZES = [
     ("NO_SHIRT", "Ei paitaa"),
-    ("XS", "XS Unisex"),
-    ("S", "S Unisex"),
-    ("M", "M Unisex"),
-    ("L", "L Unisex"),
-    ("XL", "XL Unisex"),
-    ("XXL", "XXL Unisex"),
-    ("3XL", "3XL Unisex"),
-    ("4XL", "4XL Unisex"),
-    ("5XL", "5XL Unisex"),
-    ("LF_S", "S Ladyfit"),
-    ("LF_M", "M Ladyfit"),
-    ("LF_L", "L Ladyfit"),
-    ("LF_XL", "XL Ladyfit"),
+    ("BEANIE", "Pipo"),
+    ("XS", "Paita – XS Unisex"),
+    ("S", "Paita – S Unisex"),
+    ("M", "Paita – M Unisex"),
+    ("L", "Paita – L Unisex"),
+    ("XL", "Paita – XL Unisex"),
+    ("XXL", "Paita – XXL Unisex"),
+    ("3XL", "Paita – 3XL Unisex"),
+    ("4XL", "Paita – 4XL Unisex"),
+    ("5XL", "Paita – 5XL Unisex"),
+    ("LF_S", "Paita – S Ladyfit"),
+    ("LF_M", "Paita – M Ladyfit"),
+    ("LF_L", "Paita – L Ladyfit"),
+    ("LF_XL", "Paita – XL Ladyfit"),
 ]
 
 
@@ -101,13 +102,13 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         max_length=8,
         choices=SHIRT_SIZES,
         default="NO_SHIRT",
-        verbose_name="Paidan koko",
+        verbose_name="Swägivalinta",
         help_text=(
-            "Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan. "
-            "Valitse tässä paidan koko. "
-            'Kokotaulukot: <a href="http://www.bc-collection.eu/uploads/sizes/TU004.jpg" '
-            'target="_blank">unisex-paita</a>, <a href="http://www.bc-collection.eu/uploads/sizes/TW040.jpg" '
-            'target="_blank">ladyfit-paita</a>'
+            "Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan tai pipon. "
+            "Valitse tässä, haluatko pipon vai paidan, ja paidan tapauksessa myös paidan koko. "
+            'Kokotaulukot: <a href="https://dc-collection.fi/product/TU03T" '
+            'target="_blank" rel="noopener noreferrer">unisex-paita</a>, <a href="https://dc-collection.fi/product/TW04T" '
+            'target="_blank" rel="noopener noreferrer">ladyfit-paita</a>'
         ),
     )
 
