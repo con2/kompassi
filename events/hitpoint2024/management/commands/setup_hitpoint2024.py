@@ -185,11 +185,11 @@ class Setup:
         )
 
         for url, link_title, link_group in [
-            # (
-            #     "https://wiki.tracon.fi/collection/hitpoint-2024-WgmibvZ0M1",
-            #     "Coniteawiki",
-            #     "conitea",
-            # ),
+            (
+                "https://wiki.tracon.fi/collection/hitpoint-2024-xSGNrS6PW9",
+                "Coniteawiki",
+                "conitea",
+            ),
             (
                 "https://wiki.tracon.fi/collection/hitpointin-tyovoimawiki-WjWtE61vAT",
                 "Työvoimawiki",
