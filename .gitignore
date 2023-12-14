@@ -23,3 +23,7 @@ media/
 *.local.yaml
 *.key
 *.crt
+
+# google api credentials for solmukohta2024 only, remove when not needed anymore
+credentials.json
+token.json
