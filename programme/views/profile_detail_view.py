@@ -51,7 +51,7 @@ def profile_detail_view(request, programme_id):
     forms = [form, sired_invitation_formset]
 
     SignupExtra = event.programme_event_meta.signup_extra_model
-    if SignupExtra.supports_programme:
+    if SignupExtra and SignupExtra.supports_programme:
         SignupExtraForm = SignupExtra.get_programme_form_class()
         signup_extra = SignupExtra.for_event_and_person(event, request.user.person)
         signup_extra_form = initialize_form(

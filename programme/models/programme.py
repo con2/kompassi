@@ -1722,7 +1722,7 @@ class Programme(models.Model, CsvExportMixin):
     def signup_extras(self):
         SignupExtra = self.event.programme_event_meta.signup_extra_model
 
-        if SignupExtra.supports_programme:
+        if SignupExtra and SignupExtra.supports_programme:
             return SignupExtra.objects.filter(event=self.event, person__in=self.organizers.all())
         else:
             return SignupExtra.objects.none()

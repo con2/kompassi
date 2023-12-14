@@ -45,7 +45,9 @@ def admin_detail_view(request, vars, event, programme_id):
     programme_form = initialize_form(
         FormClass, request, instance=programme, event=event, prefix="programme", admin=True
     )
-    internal_form = initialize_form(ProgrammeInternalForm, request, instance=programme, event=event, prefix="internal")
+    internal_form = initialize_form(
+        ProgrammeInternalForm, request, instance=programme, event=event, prefix="internal"
+    )
     schedule_form = initialize_form(ScheduleForm, request, instance=programme, event=event, prefix="schedule")
     is_using_paikkala_form = initialize_form(
         IsUsingPaikkalaForm,
@@ -68,7 +70,7 @@ def admin_detail_view(request, vars, event, programme_id):
     freeform_organizer_form = initialize_form(FreeformOrganizerForm, request, prefix="freeform")
 
     SignupExtra = event.programme_event_meta.signup_extra_model
-    if SignupExtra.supports_programme:
+    if SignupExtra and SignupExtra.supports_programme:
         SignupExtraForm = SignupExtra.get_programme_form_class()
     else:
         SignupExtraForm = None
@@ -76,10 +78,15 @@ def admin_detail_view(request, vars, event, programme_id):
     programme_roles = ProgrammeRole.objects.filter(programme=programme)
     forms_per_host = []
     for role in programme_roles:
-        change_host_role_form = initialize_form(ChangeHostRoleForm, request, prefix="chr", instance=role, event=event)
+        change_host_role_form = initialize_form(
+            ChangeHostRoleForm, request, prefix="chr", instance=role, event=event
+        )
         if SignupExtraForm is not None:
             signup_extra_form = initialize_form(
-                SignupExtraForm, request, prefix="sex", instance=SignupExtra.for_event_and_person(event, role.person)
+                SignupExtraForm,
+                request,
+                prefix="sex",
+                instance=SignupExtra.for_event_and_person(event, role.person),
             )
         else:
             signup_extra_form = None
@@ -228,11 +235,13 @@ def admin_detail_view(request, vars, event, programme_id):
 def admin_change_host_role_view(request, vars, event, programme_id, programme_role_id):
     programme = get_object_or_404(ProgrammeManagementProxy, id=int(programme_id), category__event=event)
     programme_role = ProgrammeRole.objects.get(id=int(programme_role_id), programme=programme)
-    change_role_form = initialize_form(ChangeHostRoleForm, request, prefix="chr", event=event, instance=programme_role)
+    change_role_form = initialize_form(
+        ChangeHostRoleForm, request, prefix="chr", event=event, instance=programme_role
+    )
     forms = [change_role_form]
 
     SignupExtra = event.programme_event_meta.signup_extra_model
-    if SignupExtra.supports_programme:
+    if SignupExtra and SignupExtra.supports_programme:
         SignupExtraForm = SignupExtra.get_programme_form_class()
         signup_extra = SignupExtra.for_event_and_person(event, request.user.person)
         signup_extra_form = initialize_form(SignupExtraForm, request, prefix="sex", instance=signup_extra)
