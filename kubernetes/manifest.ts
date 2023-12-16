@@ -1,4 +1,4 @@
-const { writeFileSync, unlinkSync } = require("fs");
+import { writeFileSync, unlinkSync, existsSync } from "fs";
 
 interface Environment {
   hostname: string;
@@ -42,7 +42,7 @@ function getEnvironmentName(): EnvironmentName {
 const environmentConfiguration =
   environmentConfigurations[getEnvironmentName()];
 
-const stack = "kompassi2";
+export const stack = "kompassi2";
 const image = "kompassi2";
 const nodeServiceName = "node";
 const clusterIssuer = "letsencrypt-prod";
@@ -69,7 +69,7 @@ const probe = {
   },
 };
 
-function labels(component?: string) {
+export function labels(component?: string) {
   return {
     stack,
     component,
@@ -203,7 +203,7 @@ const ingress = {
   },
 };
 
-function b64(str: string) {
+export function b64(str: string) {
   return Buffer.from(str).toString("base64");
 }
 
@@ -223,7 +223,7 @@ const secret = {
   },
 };
 
-function writeManifest(filename: string, manifest: unknown) {
+export function writeManifest(filename: string, manifest: unknown) {
   writeFileSync(filename, JSON.stringify(manifest, null, 2), {
     encoding: "utf-8",
   });
@@ -236,7 +236,7 @@ function main() {
 
   if (secretManaged) {
     writeManifest("secret.json", secret);
-  } else {
+  } else if (existsSync("secret.json")) {
     unlinkSync("secret.json");
   }
 }
