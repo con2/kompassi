@@ -1,4 +1,0 @@
-ingress_public_hostname: v2.dev.kompassi.eu
-ingress_letsencrypt_enabled: true
-ingress_letsencrypt_cluster_issuer: letsencrypt-prod
-kompassi_base_url: https://dev.kompassi.eu

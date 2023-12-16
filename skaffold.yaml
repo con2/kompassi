@@ -1,17 +1,15 @@
 apiVersion: skaffold/v2beta9
 kind: Config
 metadata:
-  name: !Var nodeapp_image
-
+  name: kompassi2
 build:
   local:
     useBuildkit: true
   artifacts:
-    - image: !Var nodeapp_image
-      context: .
-
+  - image: kompassi2
+    context: .
 deploy:
   statusCheckDeadlineSeconds: 300
   kubectl:
     manifests:
-      - kubernetes/template.compiled.yaml
+    - kubernetes/*.json

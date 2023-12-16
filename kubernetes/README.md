@@ -1,10 +1,15 @@
 # Kubernetes deployment for kompassi2
 
-Uses the [`node-app` default template]() of Emskaffolden. Examples:
+Generate Kubernetes manifests using
 
-    # test locally (eg. Docker Desktop)
-    emsk -T node-app dev
+    cd kubernetes
+    npx ts-node manifest.ts
 
-    # deploy to a cluster
-    emsk -T node-app -E staging -- build --file-output build.json
-    emsk -T node-app -E staging -- deploy -n kompassi2-staging -a build.json
+Test with Skaffold:
+
+    skaffold dev
+
+Generate config for staging or production:
+
+    ENV=staging npx ts-node manifest.ts
+    ENV=production npx ts-node manifest.ts
