@@ -21,13 +21,13 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     hostname: "v2.dev.kompassi.eu",
     secretManaged: false,
     kompassiBaseUrl: "https://dev.kompassi.eu",
-    tlsEnabled: false,
+    tlsEnabled: true,
   },
   production: {
     hostname: "v2.kompassi.eu",
     secretManaged: false,
     kompassiBaseUrl: "https://kompassi.eu",
-    tlsEnabled: false,
+    tlsEnabled: true,
   },
 };
 
