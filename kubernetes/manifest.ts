@@ -88,6 +88,7 @@ function secretKeyRef(key: string) {
 const env = Object.entries({
   PORT: port,
   NEXTAUTH_SECRET: secretKeyRef("NEXTAUTH_SECRET"),
+  NEXTAUTH_URL: publicUrl,
   NEXT_PUBLIC_KOMPASSI_BASE_URL: "https://kompassi.eu",
   KOMPASSI_OIDC_CLIENT_ID: secretKeyRef("KOMPASSI_OIDC_CLIENT_ID"),
   KOMPASSI_OIDC_CLIENT_SECRET: secretKeyRef("KOMPASSI_OIDC_CLIENT_SECRET"),
@@ -169,13 +170,20 @@ const tls = tlsEnabled
   ? [{ hosts: [hostname], secretName: tlsSecretName }]
   : [];
 
+const ingressAnnotations = tlsEnabled
+  ? {
+      "cert-manager.io/cluster-issuer": clusterIssuer,
+      "nginx.ingress.kubernetes.io/ssl-redirect": "true",
+    }
+  : {};
+
 const ingress = {
   apiVersion: "networking.k8s.io/v1",
   kind: "Ingress",
   metadata: {
     name: stack,
     labels: labels(),
-    annotations: {},
+    annotations: ingressAnnotations,
   },
   spec: {
     tls,
