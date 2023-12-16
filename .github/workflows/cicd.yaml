@@ -12,18 +12,27 @@ jobs:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
       - uses: actions/checkout@v1
-      - uses: daisaru11/setup-cd-tools@v1.0.0
-        with:
-          skaffold: '2.9.0'
       - uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_PASSWORD }}
+
+      - id: cache-bin
+        uses: actions/cache@v3
+        with:
+          path: bin
+          key: ${{ runner.os }}-bin
+      - if: steps.cache-bin.outputs.cache-hit != 'true'
+        run: |
+          mkdir bin
+          curl -Lo bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+          chmod +x bin/skaffold
+
       - uses: docker/setup-buildx-action@v1
       - id: build
         run: |
-          skaffold build --file-output build.json
+          bin/skaffold build --file-output build.json
       - name: Store build.json artifact
         uses: actions/upload-artifact@v3
         with:
@@ -44,9 +53,18 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - uses: daisaru11/setup-cd-tools@v1.0.0
+
+      - id: cache-bin
+        uses: actions/cache@v3
         with:
-          skaffold: '2.9.0'
+          path: bin
+          key: ${{ runner.os }}-bin
+      - if: steps.cache-bin.outputs.cache-hit != 'true'
+        run: |
+          mkdir bin
+          curl -Lo bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+          chmod +x bin/skaffold
+
       - uses: docker/setup-buildx-action@v1
       - run: |
           npm ci
@@ -67,9 +85,18 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - uses: daisaru11/setup-cd-tools@v1.0.0
+
+      - id: cache-bin
+        uses: actions/cache@v3
         with:
-          skaffold: '2.9.0'
+          path: bin
+          key: ${{ runner.os }}-bin
+      - if: steps.cache-bin.outputs.cache-hit != 'true'
+        run: |
+          mkdir bin
+          curl -Lo bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+          chmod +x bin/skaffold
+
       - uses: docker/setup-buildx-action@v1
       - run: |
           npm ci
