@@ -34,7 +34,7 @@ jobs:
       - uses: docker/setup-buildx-action@v3
       - id: build
         run: |
-          bin/skaffold build --file-output build.json
+          skaffold build --file-output build.json
       - name: Store build.json artifact
         uses: actions/upload-artifact@v3
         with:
@@ -69,7 +69,6 @@ jobs:
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
-      - uses: docker/setup-buildx-action@v1
       - run: |
           npm ci
           cd kubernetes && ENV=staging npx ts-node manifest.ts && cd ..
@@ -103,7 +102,6 @@ jobs:
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
-      - uses: docker/setup-buildx-action@v1
       - run: |
           npm ci
           cd kubernetes && ENV=production npx ts-node manifest.ts && cd ..
