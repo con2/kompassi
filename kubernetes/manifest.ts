@@ -89,7 +89,7 @@ const env = Object.entries({
   PORT: port,
   NEXTAUTH_SECRET: secretKeyRef("NEXTAUTH_SECRET"),
   NEXTAUTH_URL: publicUrl,
-  NEXT_PUBLIC_KOMPASSI_BASE_URL: "https://kompassi.eu",
+  NEXT_PUBLIC_KOMPASSI_BASE_URL: kompassiBaseUrl,
   KOMPASSI_OIDC_CLIENT_ID: secretKeyRef("KOMPASSI_OIDC_CLIENT_ID"),
   KOMPASSI_OIDC_CLIENT_SECRET: secretKeyRef("KOMPASSI_OIDC_CLIENT_SECRET"),
 }).map(([key, value]) => {
