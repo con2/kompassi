@@ -69,7 +69,7 @@ jobs:
       - run: |
           npm ci
           cd kubernetes && ENV=staging npx ts-node manifest.ts && cd ..
-          skaffold deploy -n kompassi2-staging -a build.json
+          bin/skaffold deploy -n kompassi2-staging -a build.json
 
   deploy_production:
     runs-on: self-hosted
@@ -101,4 +101,4 @@ jobs:
       - run: |
           npm ci
           cd kubernetes && ENV=production npx ts-node manifest.ts && cd ..
-          skaffold deploy -n kompassi2-production -a build.json
+          bin/skaffold deploy -n kompassi2-production -a build.json
