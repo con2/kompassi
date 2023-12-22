@@ -206,7 +206,7 @@ class Setup:
                 description=(
                     "Voidaksemme ilmoittaa erikoisruokavaliot mahdollisimman tarkasti pitopalvelulle "
                     "pyydämme ilmoittamaan, aiotko osallistua kaatajaisiin Desuconin purun jälkeen "
-                    "sunnuntaina 19. kesäkuuta 2024 noin kello 19:00."
+                    "tapahtumaviikonlopun sunnuntaina noin kello 19."
                 ),
                 form_class_path="events.desucon2024.forms:AfterpartyParticipationSurvey",
                 active_from=now(),

@@ -193,7 +193,7 @@ class Setup:
                 description=(
                     "Voidaksemme ilmoittaa erikoisruokavaliot mahdollisimman tarkasti pitopalvelulle "
                     "pyydämme ilmoittamaan, aiotko osallistua kaatajaisiin Desuconin purun jälkeen "
-                    "sunnuntaina 10. kesäkuuta 2019 noin kello 19:00."
+                    "tapahtumaviikonlopun sunnuntaina noin kello 19."
                 ),
                 form_class_path="events.frostbite2024.forms:AfterpartyParticipationSurvey",
                 active_from=now(),
