@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from django.conf import settings
 from django.db import models
@@ -8,9 +8,15 @@ from core.utils import is_within_period, SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD
 from core.models import Event
 
 from .form import EventForm, GlobalForm
+from ..utils.merge_form_fields import merge_fields
+
+
+DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
 class AbstractSurvey(models.Model):
+    languages: Any
+
     active = models.BooleanField(default=True)
     standalone = models.BooleanField(
         default=True,
@@ -54,6 +60,27 @@ class AbstractSurvey(models.Model):
     def is_active(self):
         return is_within_period(self.active_from, self.active_until)
 
+    @property
+    def combined_fields(self):
+        return self.get_combined_fields()
+
+    def get_combined_fields(self, base_language: str = DEFAULT_LANGUAGE):
+        """
+        See ../graphql.py:EventSurveyType.resolve_combined_fields
+        for documentation.
+        """
+        # TODO as an optimization, store boolean field in survey model that indicates
+        # whether the fields are the same across languages. If so, return the fields
+        # from the base language directly.
+
+        # if a specific language is requested, put it first
+        languages = sorted(
+            list(self.languages.all()),
+            key=lambda form: form.language != base_language,
+        )
+
+        return merge_fields(languages)
+
     class Meta:
         abstract = True
 
@@ -88,6 +115,12 @@ class GlobalSurvey(AbstractSurvey):
                 pass
 
         raise GlobalForm.DoesNotExist()
+
+    @property
+    def responses(self):
+        from .form_response import GlobalFormResponse
+
+        return GlobalFormResponse.objects.filter(form__in=self.languages.all())
 
     def __str__(self):
         return self.slug
@@ -124,6 +157,12 @@ class EventSurvey(AbstractSurvey):
                 pass
 
         raise EventForm.DoesNotExist()
+
+    @property
+    def responses(self):
+        from .form_response import EventFormResponse
+
+        return EventFormResponse.objects.filter(form__in=self.languages.all())
 
     class Meta:
         unique_together = [("event", "slug")]

@@ -70,3 +70,5 @@ from .locale_utils import (
 
 from .log_utils import log_get_or_create, log_delete
 from .password_utils import validate_password
+
+from .text_utils import normalize_whitespace

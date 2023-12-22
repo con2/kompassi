@@ -42,7 +42,8 @@ class CBACEntry(models.Model):
 
     def __str__(self):
         return ", ".join(
-            f"{key}={value}" for (key, value) in dict(user=self.user.username, mode=self.mode, **self.claims).items()
+            f"{key}={value}"
+            for (key, value) in dict(user=self.user.username, mode=self.mode, **self.claims).items()
         )
 
     class Meta:
@@ -93,7 +94,7 @@ class CBACEntry(models.Model):
     @classmethod
     def is_allowed(cls, user: AbstractUser, claims: Claims, t: Optional[datetime] = None):
         entries = cls.get_entries(user, claims, t=t)
-        return entries.filter(mode="+").exists() and not entries.filter(mode="-").exists()
+        return bool(entries.filter(mode="+").exists()) and not entries.filter(mode="-").exists()
 
     @classmethod
     def ensure_admin_group_privileges(cls, t: Optional[datetime] = None):
@@ -126,7 +127,9 @@ class CBACEntry(models.Model):
             admin_group_members = admin_group.user_set.all()
 
             # remove access from those who should not have it
-            entries_to_remove = cls.objects.filter(granted_by_group=admin_group).exclude(user__in=admin_group_members)
+            entries_to_remove = cls.objects.filter(granted_by_group=admin_group).exclude(
+                user__in=admin_group_members
+            )
             for cbac_entry in entries_to_remove:
                 emit(
                     "access.cbacentry.deleted",
@@ -166,7 +169,9 @@ class CBACEntry(models.Model):
             t = now()
 
         expired_entries = cls.objects.filter(valid_until__lte=t)
-        logger.info("Removing %d CBAC entries expired on or before %s", expired_entries.count(), t.isoformat())
+        logger.info(
+            "Removing %d CBAC entries expired on or before %s", expired_entries.count(), t.isoformat()
+        )
 
         for cbac_entry in expired_entries:
             emit(

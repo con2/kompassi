@@ -4,7 +4,8 @@ import graphene
 from graphene_django import DjangoObjectType
 from graphene.types.generic import GenericScalar
 
-from core.utils import get_ip, get_objects_within_period
+from core.utils import get_ip, get_objects_within_period, normalize_whitespace
+from access.cbac import graphql_query_cbac_required
 
 from .models.form import EventForm
 from .models.survey import EventSurvey
@@ -37,7 +38,34 @@ class EventFormType(DjangoObjectType):
         fields = ("slug", "title", "description", "thank_you_message", "layout")
 
 
+class EventFormResponseType(DjangoObjectType):
+    values = graphene.Field(GenericScalar)
+
+    @staticmethod
+    def resolve_values(parent: EventFormResponse, info):
+        return parent.values
+
+    @staticmethod
+    def resolve_language(parent: EventFormResponse, info):
+        return parent.form.language
+
+    language = graphene.Field(
+        graphene.String,
+        description="Language code of the form used to submit this response.",
+    )
+
+    class Meta:
+        model = EventFormResponse
+        fields = ("id", "form_data", "created_at")
+
+
 class EventSurveyType(DjangoObjectType):
+    title = graphene.Field(graphene.String, lang=graphene.String())
+
+    @staticmethod
+    def resolve_title(parent: EventSurvey, info, lang: str = DEFAULT_LANGUAGE):
+        return form.title if (form := parent.get_form(lang)) else None
+
     is_active = graphene.Field(graphene.NonNull(graphene.Boolean))
 
     @staticmethod
@@ -53,6 +81,46 @@ class EventSurveyType(DjangoObjectType):
         lang: str = DEFAULT_LANGUAGE,
     ) -> EventForm | None:
         return parent.get_form(lang)
+
+    @staticmethod
+    def resolve_combined_fields(
+        parent: EventSurvey,
+        info,
+        lang: str = DEFAULT_LANGUAGE,
+    ):
+        """
+        A survey's language versions may have differing fields. This field presents
+        them combined as a single list of fields. If a language is specified,
+        that language is used as the base for the combined fields. Order of fields
+        not present in the base language is not guaranteed.
+        """
+        return [
+            field.model_dump(
+                exclude_none=True,
+                by_alias=True,
+            )
+            for field in parent.get_combined_fields(lang)
+        ]
+
+    combined_fields = graphene.Field(
+        GenericScalar,
+        lang=graphene.String(),
+        description=normalize_whitespace(resolve_combined_fields.__doc__ or ""),
+    )
+
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_responses(survey: EventSurvey, info):
+        """
+        Returns the responses to this survey regardless of language version used.
+        Authorization required.
+        """
+        return survey.responses.all()
+
+    responses = graphene.List(
+        graphene.NonNull(EventFormResponseType),
+        description=normalize_whitespace(resolve_responses.__doc__ or ""),
+    )
 
     class Meta:
         model = EventSurvey

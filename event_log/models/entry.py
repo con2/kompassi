@@ -124,6 +124,9 @@ class Entry(models.Model):
         else:
             return meta.message.format(entry=self)
 
+    def __str__(self):
+        return self.message
+
     @property
     def email_subject(self):
         return f"[{settings.KOMPASSI_INSTALLATION_NAME}] {self.message}"

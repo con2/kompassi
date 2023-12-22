@@ -17,7 +17,7 @@ logger = logging.getLogger("kompassi")
 def give_all_app_perms_to_group(app_label, group):
     for ctype in ContentType.objects.filter(app_label=app_label):
         for perm in ctype.permission_set.all():
-            perm.group_set.add(group)
+            perm.group_set.add(group)  # type: ignore
 
 
 def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
@@ -47,9 +47,9 @@ def ensure_user_is_member_of_group(user, group, should_belong_to_group=True):
         group = group.group
 
     if should_belong_to_group:
-        group.user_set.add(user)
+        group.user_set.add(user)  # type: ignore
     else:
-        group.user_set.remove(user)
+        group.user_set.remove(user)  # type: ignore
 
 
 def ensure_groups_exist(group_names):

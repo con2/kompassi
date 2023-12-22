@@ -8,7 +8,8 @@ ENTRY_READ_ONLY_FIELDS = (
     "created_by",
     "ip_address",
     "entry_type",
-    "message",
+    # __str__ displayed as heading
+    # "message",
     "context",
     "organization",
     "event",

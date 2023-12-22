@@ -4,7 +4,7 @@ from typing import Optional
 import pydantic
 
 
-class FieldType(Enum):
+class FieldType(str, Enum):
     SINGLE_LINE_TEXT = "SingleLineText"
     MULTI_LINE_TEXT = "MultiLineText"
     SINGLE_CHECKBOX = "SingleCheckbox"

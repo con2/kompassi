@@ -1,7 +1,10 @@
 import logging
+from functools import wraps
+from typing import TYPE_CHECKING, Literal, Protocol, Callable
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.http import HttpRequest
 
 from functools import wraps
 
@@ -10,11 +13,14 @@ from event_log.utils import emit
 from .models.cbac_entry import CBACEntry, Claims
 from .exceptions import CBACPermissionDenied
 
+if TYPE_CHECKING:
+    from core.models.event import Event
+
 
 logger = logging.getLogger("kompassi")
 
 
-def get_default_claims(request):
+def get_default_claims(request, **overrides: str):
     claims = {}
 
     # from core.middleware.EventOrganizationMiddleware
@@ -31,6 +37,8 @@ def get_default_claims(request):
         claims["view"] = url_name
     if app_name := request.resolver_match.app_name:
         claims["app"] = app_name
+
+    claims.update(overrides)
 
     return claims
 
@@ -51,3 +59,113 @@ def default_cbac_required(view_func):
         return view_func(request, *args, **kwargs)
 
     return wrapped_view
+
+
+def make_graphql_claims(
+    *,
+    event: "Event",
+    operation: Literal["query"] | Literal["mutation"],
+    app: str,
+    object_type: str,
+    field: str,
+    **extra: str,
+) -> Claims:
+    return dict(
+        event=event.slug,
+        organization=event.organization.slug,
+        operation=operation,
+        app=app,
+        object_type=object_type,
+        field=field,
+        view="graphql",
+        **extra,
+    )
+
+
+def is_graphql_allowed(
+    user,
+    *,
+    event: "Event",
+    operation: Literal["query"] | Literal["mutation"],
+    app: str,
+    object_type: str,
+    field: str,
+    **extra: str,
+):
+    claims = make_graphql_claims(
+        event=event,
+        operation=operation,
+        app=app,
+        object_type=object_type,
+        field=field,
+        **extra,
+    )
+
+    return CBACEntry.is_allowed(user, claims), claims
+
+
+class HasEventProperty(Protocol):
+    event: "Event"
+
+
+class HasEventForeignKey(Protocol):
+    event: models.ForeignKey["Event"]
+
+
+def is_graphql_allowed_for_model(
+    user,
+    *,
+    instance: HasEventProperty | HasEventForeignKey,
+    operation: Literal["query"] | Literal["mutation"],
+    field: str,
+    **extra: str,
+):
+    event = instance.event
+    object_type = instance.__class__.__name__
+    app = instance.__class__._meta.app_label  # type: ignore
+
+    return is_graphql_allowed(
+        user,
+        event=event,  # type: ignore
+        operation=operation,
+        app=app,
+        object_type=object_type,
+        field=field,
+        **extra,
+    )
+
+
+def graphql_query_cbac_required(func: Callable):
+    """
+    Wrap a field resolver with this function to make it
+    require CBAC permissions.
+
+    The object type must be a Django object type.
+    """
+
+    @wraps(func)
+    def wrapper(instance, info, *args, **kwargs):
+        user = info.context.user
+        operation = "query"
+        field = func.__name__.removeprefix("resolve_")
+        extra = dict(slug=instance.slug) if hasattr(instance, "slug") else {}
+
+        allowed, claims = is_graphql_allowed_for_model(
+            user,
+            instance=instance,
+            operation=operation,
+            field=field,
+            **extra,
+        )
+        if not allowed:
+            emit(
+                "access.cbac.denied",
+                request=info.context,
+                other_fields={"claims": claims},
+            )
+
+            raise Exception("Unauthorized")
+
+        return func(instance, info, *args, **kwargs)
+
+    return wrapper
