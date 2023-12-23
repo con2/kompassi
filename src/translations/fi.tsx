@@ -229,10 +229,18 @@ const translations: Translations = {
   SurveyView: {
     thankYou: {
       title: "Kiitos vastauksistasi!",
-      defaultMessage: "Vastauksesi on tallennettu. Voit nyt sulkea tämän välilehden.",
+      defaultMessage:
+        "Vastauksesi on tallennettu. Voit nyt sulkea tämän välilehden.",
     },
   },
 
+  EventSurveyResponsesView: {
+    title: "Vastaukset",
+    columns: {
+      createdAt: "Lähetysaika",
+      language: "Kieli",
+    },
+  },
 
   Brand: {
     appName: (

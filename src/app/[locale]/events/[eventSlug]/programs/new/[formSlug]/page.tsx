@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 
 import { SchemaForm } from "@/components/SchemaForm";
-import { Field } from "@/components/SchemaForm/models";
 import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";

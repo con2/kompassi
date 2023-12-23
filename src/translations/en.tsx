@@ -228,7 +228,16 @@ const translations = {
   SurveyView: {
     thankYou: {
       title: "Thank you for your answers!",
-      defaultMessage: "Your answers have been recorded. You can now close this tab.",
+      defaultMessage:
+        "Your answers have been recorded. You can now close this tab.",
+    },
+  },
+
+  EventSurveyResponsesView: {
+    title: "Responses",
+    columns: {
+      createdAt: "Created at",
+      language: "Language",
     },
   },
 
