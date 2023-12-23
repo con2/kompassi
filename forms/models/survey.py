@@ -17,15 +17,6 @@ DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 class AbstractSurvey(models.Model):
     languages: Any
 
-    active = models.BooleanField(default=True)
-    standalone = models.BooleanField(
-        default=True,
-        verbose_name=_("Stand-alone"),
-        help_text=_(
-            "Stand-alone forms can be used via the generic form views whereas "
-            "non-stand-alone forms can only be accessed from some other facility."
-        ),
-    )
     login_required = models.BooleanField(
         default=False,
         verbose_name=_("Login required"),
@@ -59,6 +50,12 @@ class AbstractSurvey(models.Model):
     @property
     def is_active(self):
         return is_within_period(self.active_from, self.active_until)
+
+    def admin_is_active(self):
+        return self.is_active
+
+    admin_is_active.short_description = _("active")
+    admin_is_active.boolean = True
 
     @property
     def combined_fields(self):
