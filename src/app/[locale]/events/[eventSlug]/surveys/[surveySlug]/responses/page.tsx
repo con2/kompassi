@@ -4,8 +4,17 @@ import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { DataTable } from "@/components/DataTable";
-import { EventFormResponsesQuery } from "@/__generated__/graphql";
+import { EventSurveyResponseFragment } from "@/__generated__/graphql";
 import Link from "next/link";
+
+gql(`
+  fragment EventSurveyResponse on EventFormResponseType {
+    id
+    createdAt
+    language
+    values
+  }
+`);
 
 const query = gql(`
   query EventFormResponses($eventSlug:String!, $surveySlug:String!, $locale:String) {
@@ -17,25 +26,13 @@ const query = gql(`
           title(lang: $locale)
 
           responses {
-            id
-            createdAt
-            language
-            values
+            ...EventSurveyResponse
           }
         }
       }
     }
   }
 `);
-
-// TODO help :D
-type ResponseRow = NonNullable<
-  NonNullable<
-    NonNullable<
-      NonNullable<EventFormResponsesQuery["event"]>["forms"]
-    >["survey"]
-  >["responses"]
->[number];
 
 interface EventFormResponsesProps {
   params: {
@@ -73,7 +70,7 @@ export default async function EventFormResponsesPage({
     {
       slug: "createdAt",
       title: t.columns.createdAt,
-      getCell: (row: ResponseRow) => (
+      getCell: (row: EventSurveyResponseFragment) => (
         <Link
           href={`/events/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}
         >
