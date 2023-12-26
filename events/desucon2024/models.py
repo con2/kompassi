@@ -37,6 +37,13 @@ SHIRT_TYPES = [
     ("TOOLATE", "Myöhästyi paitatilauksesta"),
 ]
 
+ACCOMMODATION_CHOICES = [
+    ("no_need", "En majoitu Kuusessa"),
+    ("pe_la", "Majoitun pe-la"),
+    ("la_su", "Majoitun la-su"),
+    ("whole_weekend", "Majoitun koko viikonlopun"),
+]
+
 
 class SpecialDiet(models.Model):
     name = models.CharField(max_length=63)
@@ -121,6 +128,18 @@ class SignupExtra(SignupExtraBase):
         help_text=(
             "Ruksaa tämä ruutu, mikäli haluat osallistua kaatajaisiin. Mikäli mielesi muuttuu "
             "tai sinulle tulee este, peru ilmoittautumisesi poistamalla rasti tästä ruudusta."
+        ),
+    )
+
+    accommodation = models.CharField(
+        max_length=max(len(c) for (c, t) in ACCOMMODATION_CHOICES),
+        choices=ACCOMMODATION_CHOICES,
+        default=ACCOMMODATION_CHOICES[0][0],
+        verbose_name="Työvoimamajoitus",
+        help_text=(
+            "Tarjoamme työvoimalle ja ohjelmanjärjestäjille tarvittaessa maksuttoman lattiamajoituksen Kuusi-salissa "
+            "tapahtuman molempina öinä. Majoitustilan riittävyyden arvioimiseksi pyydämme ilmoittamaan, "
+            "tarvitsetko majoitusta ja mille öille."
         ),
     )
 

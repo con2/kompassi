@@ -185,7 +185,12 @@ class Setup:
             ),
         )
 
-        Survey.objects.get_or_create(
+        assert self.event.end_time is not None
+        active_until = self.event.end_time.replace(
+            hour=23, minute=59, second=59, microsecond=0, tzinfo=self.tz
+        ) - timedelta(days=21)
+
+        kaatoilmo, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="kaatoilmo",
             defaults=dict(
@@ -197,9 +202,33 @@ class Setup:
                 ),
                 form_class_path="events.frostbite2024.forms:AfterpartyParticipationSurvey",
                 active_from=now(),
-                active_until=self.event.end_time - timedelta(days=7),
+                active_until=active_until,
             ),
         )
+
+        # remove for frostbite2025
+        kaatoilmo.active_until = active_until
+        kaatoilmo.save()
+
+        majoitus, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="tyovoimamajoitus",
+            defaults=dict(
+                title="Ilmoittautuminen työvoimamajoitukseen",
+                description=(
+                    "Tarjoamme työvoimalle ja ohjelmanjärjestäjille tarvittaessa maksuttoman lattiamajoituksen Kuusi-salissa "
+                    "tapahtuman molempina öinä. Majoitustilan riittävyyden arvioimiseksi pyydämme ilmoittamaan, "
+                    "tarvitsetko majoitusta ja mille öille."
+                ),
+                form_class_path="events.frostbite2024.forms:AccommodationSurvey",
+                active_from=now(),
+                active_until=active_until,
+            ),
+        )
+
+        # remove for frostbite2025
+        majoitus.active_until = active_until
+        majoitus.save()
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
