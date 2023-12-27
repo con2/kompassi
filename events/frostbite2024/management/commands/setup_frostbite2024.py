@@ -410,6 +410,8 @@ class Setup:
             )
             tag_order += 10
 
+        self.event.programme_event_meta.create_groups()
+
     def setup_access(self):
         from access.models import Privilege, GroupPrivilege
 
