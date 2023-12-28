@@ -1,6 +1,6 @@
 from django.db import models
 
-from labour.models import ObsoleteSignupExtraBaseV1
+from labour.models import SignupExtraBase
 
 
 NIGHT_WORK_CHOICES = [
@@ -58,7 +58,7 @@ class TimeSlot(SimpleChoice):
     pass
 
 
-class SignupExtra(ObsoleteSignupExtraBaseV1):
+class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(
         max_length=15,
         verbose_name="Toivottu työvuoron pituus",
@@ -147,6 +147,15 @@ class SignupExtra(ObsoleteSignupExtraBaseV1):
         verbose_name="Vapaa alue",
         help_text="Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole "
         "omaa kenttää yllä, käytä tätä kenttää.",
+    )
+
+    afterparty_participation = models.BooleanField(
+        default=False,
+        verbose_name="Osallistun kaatajaisiin",
+        help_text=(
+            "Ruksaa tämä ruutu, mikäli haluat osallistua kaatajaisiin. Mikäli mielesi muuttuu "
+            "tai sinulle tulee este, peru ilmoittautumisesi poistamalla rasti tästä ruudusta. "
+        ),
     )
 
     @classmethod

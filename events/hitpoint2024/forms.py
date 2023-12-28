@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
@@ -325,3 +327,35 @@ class SwagSurvey(forms.ModelForm):
     class Meta:
         model = SignupExtra
         fields = ("shirt_size",)
+
+
+class AfterpartyParticipationSurvey(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("event")
+
+        super().__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    @classmethod
+    def get_instance_for_event_and_person(cls, event, person):
+        year = event.start_time.year
+        t = event.start_time.date().replace(year=year - 18) + timedelta(days=15)
+        return SignupExtra.objects.get(
+            event=event,
+            person=person,
+            person__birth_date__lte=t,
+            is_active=True,
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            "afterparty_participation",
+            "special_diet",
+            "special_diet_other",
+        )
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+        )

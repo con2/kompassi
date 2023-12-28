@@ -205,6 +205,21 @@ class Setup:
                 ),
             )
 
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug="kaatoilmo",
+            defaults=dict(
+                title="Ilmoittautuminen kaatajaisiin",
+                description=(
+                    "Kiitokseksi työpanoksestasi tapahtumassa Tracon tarjoaa sinulle mahdollisuuden "
+                    "osallistua kaatajaisiin lauantaina 20. tammikuuta 2024 Tampereella. Kaatajaisiin osallistuminen edellyttää ilmoittautumista ja 18 vuoden ikää. "
+                ),
+                form_class_path="events.hitpoint2024.forms:AfterpartyParticipationSurvey",
+                active_from=self.event.end_time,
+                active_until=datetime(2024, 1, 14, 23, 59, 59, tzinfo=self.tz),
+            ),
+        )
+
     def setup_programme(self):
         from labour.models import PersonnelClass
         from programme.models import (
