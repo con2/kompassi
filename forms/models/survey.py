@@ -117,7 +117,7 @@ class GlobalSurvey(AbstractSurvey):
     def responses(self):
         from .form_response import GlobalFormResponse
 
-        return GlobalFormResponse.objects.filter(form__in=self.languages.all())
+        return GlobalFormResponse.objects.filter(form__in=self.languages.all()).order_by("created_at")
 
     def __str__(self):
         return self.slug
@@ -159,7 +159,7 @@ class EventSurvey(AbstractSurvey):
     def responses(self):
         from .form_response import EventFormResponse
 
-        return EventFormResponse.objects.filter(form__in=self.languages.all())
+        return EventFormResponse.objects.filter(form__in=self.languages.all()).order_by("created_at")
 
     class Meta:
         unique_together = [("event", "slug")]

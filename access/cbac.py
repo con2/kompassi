@@ -135,6 +135,28 @@ def is_graphql_allowed_for_model(
     )
 
 
+def graphql_check_access(instance, info, field: str):
+    user = info.context.user
+    operation = "query"
+    extra = dict(slug=instance.slug) if hasattr(instance, "slug") else {}
+
+    allowed, claims = is_graphql_allowed_for_model(
+        user,
+        instance=instance,
+        operation=operation,
+        field=field,
+        **extra,
+    )
+    if not allowed:
+        emit(
+            "access.cbac.denied",
+            request=info.context,
+            other_fields={"claims": claims},
+        )
+
+        raise Exception("Unauthorized")
+
+
 def graphql_query_cbac_required(func: Callable):
     """
     Wrap a field resolver with this function to make it
@@ -145,27 +167,7 @@ def graphql_query_cbac_required(func: Callable):
 
     @wraps(func)
     def wrapper(instance, info, *args, **kwargs):
-        user = info.context.user
-        operation = "query"
-        field = func.__name__.removeprefix("resolve_")
-        extra = dict(slug=instance.slug) if hasattr(instance, "slug") else {}
-
-        allowed, claims = is_graphql_allowed_for_model(
-            user,
-            instance=instance,
-            operation=operation,
-            field=field,
-            **extra,
-        )
-        if not allowed:
-            emit(
-                "access.cbac.denied",
-                request=info.context,
-                other_fields={"claims": claims},
-            )
-
-            raise Exception("Unauthorized")
-
+        graphql_check_access(instance, info, field=func.__name__)
         return func(instance, info, *args, **kwargs)
 
     return wrapper

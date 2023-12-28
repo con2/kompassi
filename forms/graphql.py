@@ -5,7 +5,7 @@ from graphene_django import DjangoObjectType
 from graphene.types.generic import GenericScalar
 
 from core.utils import get_ip, get_objects_within_period, normalize_whitespace
-from access.cbac import graphql_query_cbac_required
+from access.cbac import graphql_query_cbac_required, graphql_check_access
 
 from .models.form import EventForm
 from .models.survey import EventSurvey
@@ -143,7 +143,7 @@ class FormsEventMetaType(graphene.ObjectType):
     @staticmethod
     def resolve_surveys(meta: FormsEventMeta, info, include_inactive: bool = False):
         if include_inactive:
-            # TODO must be admin
+            graphql_check_access(meta, info, "surveys")
             qs = EventSurvey.objects.filter(event=meta.event)
         else:
             qs = get_objects_within_period(EventSurvey, event=meta.event)
@@ -154,7 +154,12 @@ class FormsEventMetaType(graphene.ObjectType):
 
     @staticmethod
     def resolve_survey(meta: FormsEventMeta, info, slug: str):
-        return EventSurvey.objects.get(event=meta.event, slug=slug)
+        survey = EventSurvey.objects.get(event=meta.event, slug=slug)
+
+        if not survey.is_active:
+            graphql_check_access(meta, info, "survey")
+
+        return survey
 
 
 class CreateEventSurveyResponse(graphene.Mutation):
@@ -176,6 +181,10 @@ class CreateEventSurveyResponse(graphene.Mutation):
         locale: str = "",
     ):
         survey = EventSurvey.objects.get(event__slug=event_slug, slug=survey_slug)
+
+        if not survey.is_active:
+            raise Exception("Survey is not active")
+
         form = survey.get_form(locale)
 
         ip_address = get_ip(info.context)
