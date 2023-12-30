@@ -426,8 +426,11 @@ OAUTH2_PROVIDER = dict(
     OIDC_RP_INITIATED_LOGOUT_ALWAYS_PROMPT=False,
     OAUTH2_VALIDATOR_CLASS="api_v2.custom_oauth2_validator.CustomOAuth2Validator",
     SCOPES=dict(
-        # oidc scope
+        # oidc scope (this is really the only one needed)
         openid="Kirjautua sisään muihin sovelluksiin",
+        # some oidc apps assume email and profile scopes
+        email="Tietää sähköpostiosoitteesi",
+        profile="Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi",
         # legacy oauth2 scopes
         read="Tietää nimesi, sähköpostiosoitteesi, puhelinnumerosi ja syntymäaikasi",
         write="Muokata käyttäjä- ja henkilötietojasi",
