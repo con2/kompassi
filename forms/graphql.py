@@ -59,6 +59,18 @@ class EventFormResponseType(DjangoObjectType):
         fields = ("id", "form_data", "created_at")
 
 
+class SingleEventFormResponseType(EventFormResponseType):
+    form = graphene.Field(EventFormType)
+
+    @staticmethod
+    def resolve_form(parent: EventFormResponse, info):
+        return parent.form
+
+    class Meta:
+        model = EventFormResponse
+        fields = ("id", "form_data", "created_at")
+
+
 class EventSurveyType(DjangoObjectType):
     title = graphene.Field(graphene.String, lang=graphene.String())
 
@@ -122,6 +134,20 @@ class EventSurveyType(DjangoObjectType):
         description=normalize_whitespace(resolve_responses.__doc__ or ""),
     )
 
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_response(survey: EventSurvey, info, id: str):
+        """
+        Returns a single response to this survey regardless of language version used.
+        Authorization required.
+        """
+        return survey.responses.filter(id=id).first()
+
+    response = graphene.Field(
+        SingleEventFormResponseType,
+        id=graphene.String(required=True),
+    )
+
     class Meta:
         model = EventSurvey
         fields = (
@@ -129,12 +155,6 @@ class EventSurveyType(DjangoObjectType):
             "active_from",
             "active_until",
         )
-
-
-class EventSurveyResponseType(DjangoObjectType):
-    class Meta:
-        model = EventFormResponse
-        fields = ("id", "form_data", "created_at")
 
 
 class FormsEventMetaType(graphene.ObjectType):
@@ -169,7 +189,7 @@ class CreateEventSurveyResponse(graphene.Mutation):
         form_data = GenericScalar(required=True)
         locale = graphene.String()
 
-    response = graphene.Field(EventSurveyResponseType)
+    response = graphene.Field(SingleEventFormResponseType)
 
     @staticmethod
     def mutate(
