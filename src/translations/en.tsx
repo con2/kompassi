@@ -241,6 +241,15 @@ const translations = {
     },
   },
 
+  SignInRequired: {
+    metadata: {
+      title: "Sign-in required – Kompassi",
+    },
+    title: "Sign-in required",
+    message: "You need to sign in to access this page.",
+    signIn: "Sign in",
+  },
+
   Brand: {
     appName: (
       <>

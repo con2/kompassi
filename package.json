@@ -11,8 +11,8 @@
     "k8s:dev": "npm run k8s:generate && skaffold dev"
   },
   "dependencies": {
-    "@apollo/client": "^3.8.0-rc.2",
-    "@apollo/experimental-nextjs-app-support": "^0.5.1",
+    "@apollo/client": "^3.9.0-alpha.3",
+    "@apollo/experimental-nextjs-app-support": "^0.5.2",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@types/node": "20.8.10",
     "@types/react": "18.2.34",

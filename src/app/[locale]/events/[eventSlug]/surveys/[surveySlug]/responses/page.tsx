@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getTranslations } from "@/translations";
@@ -5,8 +6,11 @@ import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { DataTable } from "@/components/DataTable";
 import { EventSurveyResponseFragment } from "@/__generated__/graphql";
-import Link from "next/link";
+import { SignInRequired } from "@/components/SignInRequired";
 
+import { auth } from "@/auth";
+
+// this fragment is just to give a name to the type so that we can import it from generated
 gql(`
   fragment EventSurveyResponse on EventFormResponseType {
     id
@@ -34,7 +38,7 @@ const query = gql(`
   }
 `);
 
-interface EventFormResponsesProps {
+interface Props {
   params: {
     locale: string;
     eventSlug: string;
@@ -42,30 +46,46 @@ interface EventFormResponsesProps {
   };
 }
 
-export async function generateMetadata({ params }: EventFormResponsesProps) {
+export async function generateMetadata({ params }: Props) {
   const { locale, eventSlug, surveySlug } = params;
-  const t = getTranslations(locale);
+  const translations = getTranslations(locale);
+
+  // TODO encap
+  const session = await auth();
+  if (!session) {
+    return translations.SignInRequired.metadata;
+  }
+
+  const t = translations.EventSurveyResponsesView;
+
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, surveySlug, locale },
   });
+
   return {
-    title: `${data.event?.name}: ${data.event?.forms?.survey?.title} – Kompassi`,
+    title: `${data.event?.name}: ${data.event?.forms?.survey?.title} (${t.title}) – Kompassi`,
   };
 }
 
 export const revalidate = 0;
 
-export default async function EventFormResponsesPage({
-  params,
-}: EventFormResponsesProps) {
+export default async function EventFormResponsesPage({ params }: Props) {
   const { locale, eventSlug, surveySlug } = params;
-  const t = getTranslations(locale).EventSurveyResponsesView;
+  const translations = getTranslations(locale);
+  const session = await auth();
+
+  // TODO encap
+  if (!session) {
+    return <SignInRequired translations={translations.SignInRequired} />;
+  }
+
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, surveySlug, locale },
   });
 
+  const t = translations.EventSurveyResponsesView;
   const columns = [
     {
       slug: "createdAt",
@@ -90,7 +110,10 @@ export default async function EventFormResponsesPage({
 
   return (
     <main className="container mt-4">
-      <h1>{data.event.forms.survey.title}</h1>
+      <h1 className="mt-2 mb-4">
+        {t.title}{" "}
+        <span className="fs-5 text-muted">{data.event.forms.survey.title}</span>
+      </h1>
       <DataTable
         rows={data.event.forms.survey.responses || []}
         columns={columns}

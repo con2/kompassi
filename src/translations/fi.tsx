@@ -242,6 +242,15 @@ const translations: Translations = {
     },
   },
 
+  SignInRequired: {
+    metadata: {
+      title: "Kirjautuminen vaaditaan – Kompassi",
+    },
+    title: "Kirjautuminen vaaditaan",
+    message: "Tämä sivu edellyttää sisäänkirjautumista.",
+    signIn: "Kirjaudu sisään",
+  },
+
   Brand: {
     appName: (
       <>
