@@ -167,7 +167,10 @@ def graphql_query_cbac_required(func: Callable):
 
     @wraps(func)
     def wrapper(instance, info, *args, **kwargs):
-        graphql_check_access(instance, info, field=func.__name__)
+        # used instead of info.field_name because info.field_name is camel case
+        field = func.__name__.removeprefix("resolve_")
+
+        graphql_check_access(instance, info, field=field)
         return func(instance, info, *args, **kwargs)
 
     return wrapper
