@@ -111,7 +111,7 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  // defaultChecked={!!value}
+                  defaultChecked={value?.includes(choice.slug)}
                   disabled={readOnly}
                   id={name}
                   name={name}
@@ -149,8 +149,7 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
                       disabled={readOnly}
                       name={`${field.slug}.${question.slug}`}
                       value={choice.slug}
-                      // FIXME
-                      defaultChecked={choice.slug === value}
+                      defaultChecked={choice.slug === value?.[question.slug]}
                     />
                   </td>
                 ))}
