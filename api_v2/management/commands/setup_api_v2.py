@@ -11,7 +11,7 @@ class Command(BaseCommand):
         if settings.DEBUG:
             person, unused = Person.get_or_create_dummy()
 
-            algorithm = "RS256" if settings.OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] else None
+            algorithm = "RS256" if settings.OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] else ""
 
             Application.objects.get_or_create(
                 client_id="kompassi_insecure_test_client_id",
