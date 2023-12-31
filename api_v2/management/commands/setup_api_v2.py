@@ -11,20 +11,23 @@ class Command(BaseCommand):
         if settings.DEBUG:
             person, unused = Person.get_or_create_dummy()
 
+            algorithm = "RS256" if settings.OAUTH2_PROVIDER["OIDC_RSA_PRIVATE_KEY"] else None
+
             Application.objects.get_or_create(
                 client_id="kompassi_insecure_test_client_id",
                 defaults=dict(
                     user=person.user,
                     redirect_uris="\n".join(
                         [
-                            "http://ssoexample.dev:8001/oauth2/callback",
-                            "http://infokala.dev:8001/oauth2/callback",
-                            "http://tracontent.dev:8001/oauth2/callback",
+                            # kompassi2, edegal etc.
+                            "http://localhost:3000/api/auth/callback/kompassi",
                         ]
                     ),
                     client_type="confidential",  # hah
                     authorization_grant_type="authorization-code",
                     client_secret="kompassi_insecure_test_client_secret",
                     name="Insecure test application",
+                    algorithm=algorithm,
+                    skip_authorization=True,
                 ),
             )
