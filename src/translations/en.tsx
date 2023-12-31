@@ -233,9 +233,11 @@ const translations = {
     },
   },
 
-  EventSurveyResponsesView: {
-    title: "Responses",
-    columns: {
+  EventSurveyResponse: {
+    listTitle: "Responses",
+    singleTitle: "Response",
+    returnToResponseList: "Return to the list of responses",
+    attributes: {
       createdAt: "Created at",
       language: "Language",
     },

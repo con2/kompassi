@@ -30,7 +30,12 @@ export const nonValueFieldTypes: FieldType[] = [
   "Spacer",
 ];
 
-export type HtmlType = "text" | "number" | "email" | "password";
+export type HtmlType =
+  | "text"
+  | "number"
+  | "email"
+  | "password"
+  | "datetime-local";
 
 interface BaseField {
   type: FieldType;
@@ -100,6 +105,8 @@ interface RadioMatrix extends BaseField {
 
 export type Layout = FormsEventFormLayoutChoices;
 export const Layout = FormsEventFormLayoutChoices;
+
+export const defaultLayout = Layout.Horizontal;
 
 export type Field =
   | SingleLineText

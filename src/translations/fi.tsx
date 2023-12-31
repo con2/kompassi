@@ -234,9 +234,11 @@ const translations: Translations = {
     },
   },
 
-  EventSurveyResponsesView: {
-    title: "Vastaukset",
-    columns: {
+  EventSurveyResponse: {
+    listTitle: "Kyselyvastaukset",
+    singleTitle: "Kyselyvastaus",
+    returnToResponseList: "Palaa vastauslistaukseen",
+    attributes: {
       createdAt: "Lähetysaika",
       language: "Kieli",
     },

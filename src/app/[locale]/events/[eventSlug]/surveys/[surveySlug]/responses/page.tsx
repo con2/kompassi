@@ -56,15 +56,19 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.EventSurveyResponsesView;
+  const t = translations.EventSurveyResponse;
 
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, surveySlug, locale },
   });
 
+  if (!data.event?.forms?.survey) {
+    notFound();
+  }
+
   return {
-    title: `${data.event?.name}: ${data.event?.forms?.survey?.title} (${t.title}) – Kompassi`,
+    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.listTitle}) – Kompassi`,
   };
 }
 
@@ -85,11 +89,15 @@ export default async function EventFormResponsesPage({ params }: Props) {
     variables: { eventSlug, surveySlug, locale },
   });
 
-  const t = translations.EventSurveyResponsesView;
+  if (!data.event?.forms?.survey) {
+    notFound();
+  }
+
+  const t = translations.EventSurveyResponse;
   const columns = [
     {
       slug: "createdAt",
-      title: t.columns.createdAt,
+      title: t.attributes.createdAt,
       getCell: (row: EventSurveyResponseFragment) => (
         <Link
           href={`/events/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}
@@ -100,18 +108,14 @@ export default async function EventFormResponsesPage({ params }: Props) {
     },
     {
       slug: "language",
-      title: t.columns.language,
+      title: t.attributes.language,
     },
   ];
-
-  if (!data.event?.forms?.survey) {
-    notFound();
-  }
 
   return (
     <main className="container mt-4">
       <h1 className="mt-2 mb-4">
-        {t.title}{" "}
+        {t.listTitle}{" "}
         <span className="fs-5 text-muted">{data.event.forms.survey.title}</span>
       </h1>
       <DataTable
