@@ -32,7 +32,9 @@ export function DataTable<Row>(props: DataTableProps<Row>) {
       <thead>
         <tr>
           {columns.map((column) => (
-            <th key={column.slug}>{column.title}</th>
+            <th key={column.slug} scope="col">
+              {column.title}
+            </th>
           ))}
         </tr>
       </thead>

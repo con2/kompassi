@@ -132,14 +132,16 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
             <tr>
               <th></th>
               {field.choices?.map((choice) => (
-                <th key={choice.slug}>{choice.title}</th>
+                <th key={choice.slug} scope="col">
+                  {choice.title}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {questions.map((question) => (
               <tr key={question.slug}>
-                <td>{question.title}</td>
+                <td scope="row">{question.title}</td>
                 {field.choices?.map((choice) => (
                   <td key={choice.slug}>
                     <input
@@ -150,6 +152,7 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
                       name={`${field.slug}.${question.slug}`}
                       value={choice.slug}
                       defaultChecked={choice.slug === value?.[question.slug]}
+                      title={`${choice.title}`}
                     />
                   </td>
                 ))}
