@@ -238,6 +238,12 @@ const translations: Translations = {
     listTitle: "Kyselyvastaukset",
     singleTitle: "Kyselyvastaus",
     returnToResponseList: "Palaa vastauslistaukseen",
+    responseTableFooter: (count: number) => (
+      <>
+        {count} kyselyvastaus{count === 1 ? "" : "ta"}.
+      </>
+    ),
+    downloadAsExcel: "Lataa Excel-tiedostona",
     attributes: {
       createdAt: "Lähetysaika",
       language: "Kieli",

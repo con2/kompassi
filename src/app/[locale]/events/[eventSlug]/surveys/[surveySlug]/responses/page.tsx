@@ -7,6 +7,7 @@ import { getClient } from "@/apolloClient";
 import { DataTable } from "@/components/DataTable";
 import { EventSurveyResponseFragment } from "@/__generated__/graphql";
 import { SignInRequired } from "@/components/SignInRequired";
+import { kompassiBaseUrl } from "@/config";
 
 import { auth } from "@/auth";
 
@@ -112,16 +113,26 @@ export default async function EventFormResponsesPage({ params }: Props) {
     },
   ];
 
+  const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
+  const responses = data.event.forms.survey.responses || [];
+
   return (
     <main className="container mt-4">
-      <h1 className="mt-2 mb-4">
-        {t.listTitle}{" "}
-        <span className="fs-5 text-muted">{data.event.forms.survey.title}</span>
-      </h1>
-      <DataTable
-        rows={data.event.forms.survey.responses || []}
-        columns={columns}
-      />
+      <div className="d-flex align-items-baseline mt-2 mb-2">
+        <h1>
+          {t.listTitle}{" "}
+          <span className="fs-5 text-muted">
+            {data.event.forms.survey.title}
+          </span>
+        </h1>
+        <div className="ms-auto">
+          <a className="btn btn-outline-primary" href={excelUrl}>
+            {t.downloadAsExcel}…
+          </a>
+        </div>
+      </div>
+      <DataTable rows={responses} columns={columns} />
+      <p>{t.responseTableFooter(responses.length)}</p>
     </main>
   );
 }

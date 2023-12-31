@@ -236,6 +236,12 @@ const translations = {
   EventSurveyResponse: {
     listTitle: "Responses",
     singleTitle: "Response",
+    responseTableFooter: (count: number) => (
+      <>
+        {count} response{count === 1 ? "" : "s"}.
+      </>
+    ),
+    downloadAsExcel: "Download as Excel",
     returnToResponseList: "Return to the list of responses",
     attributes: {
       createdAt: "Created at",

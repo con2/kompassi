@@ -9,6 +9,7 @@ export interface Column<Row> {
 interface DataTableProps<Row> {
   rows: Row[];
   columns: Column<Row>[];
+  getTotalMessage?: (total: number) => ReactNode;
 }
 
 function defaultCellGetter<Row>(this: Column<Row>, row: Row) {
@@ -27,26 +28,31 @@ export function DataTable<Row>(props: DataTableProps<Row>) {
     ...column,
   }));
 
+  const totalMessage = props.getTotalMessage?.(props.rows.length);
+
   return (
-    <table className="table table-striped table-bordered">
-      <thead>
-        <tr>
-          {columns.map((column) => (
-            <th key={column.slug} scope="col">
-              {column.title}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {props.rows.map((row, idx) => (
-          <tr key={idx}>
+    <>
+      <table className="table table-striped table-bordered">
+        <thead>
+          <tr>
             {columns.map((column) => (
-              <td key={column.slug}>{column.getCell(row)}</td>
+              <th key={column.slug} scope="col">
+                {column.title}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {props.rows.map((row, idx) => (
+            <tr key={idx}>
+              {columns.map((column) => (
+                <td key={column.slug}>{column.getCell(row)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {totalMessage && <p>{totalMessage}</p>}
+    </>
   );
 }
