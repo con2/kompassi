@@ -3,6 +3,7 @@ from django.urls import path
 from .views.forms_excel_export_view import forms_excel_export_view
 from .views.forms_survey_excel_export_view import forms_survey_excel_export_view
 
+app_name = "forms"
 urlpatterns = [
     path(
         "forms/<slug:form_slug>/responses.xlsx",
