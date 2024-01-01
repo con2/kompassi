@@ -126,7 +126,7 @@ export default async function EventSurveyResponsePage({ params }: Props) {
         className="link-subtle"
         href={`/events/${eventSlug}/surveys/${surveySlug}/responses`}
       >
-        &lt; {t.returnToResponseList}
+        &lt; {t.actions.returnToResponseList}
       </Link>
 
       <h1 className="mt-2 mb-4">

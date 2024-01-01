@@ -10,6 +10,9 @@ interface DataTableProps<Row> {
   rows: Row[];
   columns: Column<Row>[];
   getTotalMessage?: (total: number) => ReactNode;
+
+  /// By default, first column (0) is designated scope="row". Set to -1 to disable.
+  rowScopeColumnIndex?: number;
 }
 
 function defaultCellGetter<Row>(this: Column<Row>, row: Row) {
@@ -29,6 +32,7 @@ export function DataTable<Row>(props: DataTableProps<Row>) {
   }));
 
   const totalMessage = props.getTotalMessage?.(props.rows.length);
+  const rowScopeColumnIndex = props.rowScopeColumnIndex ?? 0;
 
   return (
     <>
@@ -36,7 +40,7 @@ export function DataTable<Row>(props: DataTableProps<Row>) {
         <thead>
           <tr>
             {columns.map((column) => (
-              <th key={column.slug} scope="col">
+              <th key={column.slug} scope="col" className="align-middle">
                 {column.title}
               </th>
             ))}
@@ -46,7 +50,13 @@ export function DataTable<Row>(props: DataTableProps<Row>) {
           {props.rows.map((row, idx) => (
             <tr key={idx}>
               {columns.map((column) => (
-                <td key={column.slug}>{column.getCell(row)}</td>
+                <td
+                  key={column.slug}
+                  scope={idx === rowScopeColumnIndex ? "row" : undefined}
+                  className="align-middle"
+                >
+                  {column.getCell(row)}
+                </td>
               ))}
             </tr>
           ))}

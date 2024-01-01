@@ -234,19 +234,52 @@ const translations: Translations = {
     },
   },
 
+  EventSurvey: {
+    listTitle: "Kyselyt",
+    singleTitle: "Kysely",
+    forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
+    tableFooter: (count: number) => (
+      <>
+        {count} kysely{count === 1 ? "" : "ä"}.
+      </>
+    ),
+    attributes: {
+      title: "Otsikko",
+      isActive: {
+        title: "Avoinna vastauksille",
+        untilFurtherNotice: "Avoinna toistaiseksi",
+        untilTime: (time: Date) => `Avoinna ${time.toLocaleString()} asti`,
+        openingAt: (time: Date) => `Avautuu ${time.toLocaleString()}`,
+        closed: "Suljettu",
+      },
+      languages: "Kielet",
+      actions: "Toiminnot",
+    },
+    actions: {
+      fillIn: {
+        title: "Täytä",
+        disabled: "Suljettua kyselyä ei voi täyttää",
+      },
+      viewResponses: "Vastaukset",
+    },
+  },
+
   EventSurveyResponse: {
     listTitle: "Kyselyvastaukset",
     singleTitle: "Kyselyvastaus",
-    returnToResponseList: "Palaa vastauslistaukseen",
-    responseTableFooter: (count: number) => (
+    tableFooter: (count: number) => (
       <>
         {count} kyselyvastaus{count === 1 ? "" : "ta"}.
       </>
     ),
-    downloadAsExcel: "Lataa Excel-tiedostona",
     attributes: {
       createdAt: "Lähetysaika",
       language: "Kieli",
+    },
+    actions: {
+      downloadAsExcel: "Lataa Excel-tiedostona",
+      returnToResponseList: "Palaa vastauslistaukseen",
+      returnToSurveyList: "Palaa kyselylistaukseen",
     },
   },
 

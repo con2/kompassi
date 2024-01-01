@@ -118,6 +118,10 @@ export default async function EventFormResponsesPage({ params }: Props) {
 
   return (
     <main className="container mt-4">
+      <Link className="link-subtle" href={`/events/${eventSlug}/surveys`}>
+        &lt; {t.actions.returnToSurveyList}
+      </Link>
+
       <div className="d-flex align-items-baseline mt-2 mb-2">
         <h1>
           {t.listTitle}{" "}
@@ -127,12 +131,12 @@ export default async function EventFormResponsesPage({ params }: Props) {
         </h1>
         <div className="ms-auto">
           <a className="btn btn-outline-primary" href={excelUrl}>
-            {t.downloadAsExcel}…
+            {t.actions.downloadAsExcel}…
           </a>
         </div>
       </div>
       <DataTable rows={responses} columns={columns} />
-      <p>{t.responseTableFooter(responses.length)}</p>
+      <p>{t.tableFooter(responses.length)}</p>
     </main>
   );
 }

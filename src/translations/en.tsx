@@ -233,19 +233,52 @@ const translations = {
     },
   },
 
+  EventSurvey: {
+    listTitle: "Surveys",
+    singleTitle: "Survey",
+    forEvent: (eventName: string) => <>for {eventName}</>,
+    tableFooter: (count: number) => (
+      <>
+        {count} survey{count === 1 ? "" : "s"}.
+      </>
+    ),
+    attributes: {
+      title: "Title",
+      isActive: {
+        title: "Receiving responses",
+        untilFurtherNotice: "Open until further notice",
+        untilTime: (time: Date) => `Open until ${time.toLocaleString()}`,
+        openingAt: (time: Date) => `Opening at ${time.toLocaleString()}`,
+        closed: "Closed",
+      },
+      languages: "Languages",
+      actions: "Actions",
+    },
+    actions: {
+      fillIn: {
+        title: "Fill in",
+        disabled: "Closed survey cannot be filled in",
+      },
+      viewResponses: "View responses",
+    },
+  },
+
   EventSurveyResponse: {
     listTitle: "Responses",
     singleTitle: "Response",
-    responseTableFooter: (count: number) => (
+    tableFooter: (count: number) => (
       <>
         {count} response{count === 1 ? "" : "s"}.
       </>
     ),
-    downloadAsExcel: "Download as Excel",
-    returnToResponseList: "Return to the list of responses",
     attributes: {
       createdAt: "Created at",
       language: "Language",
+    },
+    actions: {
+      downloadAsExcel: "Download as Excel",
+      returnToResponseList: "Return to the list of responses",
+      returnToSurveyList: "Return to the list of surveys",
     },
   },
 

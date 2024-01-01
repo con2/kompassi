@@ -21,6 +21,8 @@ const documents = {
     "\n  fragment EventSurveyResponse on EventFormResponseType {\n    id\n    createdAt\n    language\n    values\n  }\n": types.EventSurveyResponseFragmentDoc,
     "\n  query EventFormResponses($eventSlug:String!, $surveySlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n\n          responses {\n            ...EventSurveyResponse\n          }\n        }\n      }\n    }\n  }\n": types.EventFormResponsesDocument,
     "\n  query SurveyThankYouPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          form(lang: $locale) {\n            title\n            thankYouMessage\n          }\n        }\n      }\n    }\n  }\n": types.SurveyThankYouPageQueryDocument,
+    "\n  fragment EventSurvey on EventSurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n\n    languages {\n      language\n    }\n  }\n": types.EventSurveyFragmentDoc,
+    "\n  query EventSurveys($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys {\n          ...EventSurvey\n        }\n      }\n    }\n  }\n": types.EventSurveysDocument,
 };
 
 /**
@@ -69,6 +71,14 @@ export function gql(source: "\n  query EventFormResponses($eventSlug:String!, $s
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  query SurveyThankYouPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          form(lang: $locale) {\n            title\n            thankYouMessage\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query SurveyThankYouPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          form(lang: $locale) {\n            title\n            thankYouMessage\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  fragment EventSurvey on EventSurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n\n    languages {\n      language\n    }\n  }\n"): (typeof documents)["\n  fragment EventSurvey on EventSurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n\n    languages {\n      language\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query EventSurveys($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys {\n          ...EventSurvey\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query EventSurveys($eventSlug:String!, $locale:String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys {\n          ...EventSurvey\n        }\n      }\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};
