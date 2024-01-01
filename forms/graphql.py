@@ -35,7 +35,7 @@ class EventFormType(DjangoObjectType):
 
     class Meta:
         model = EventForm
-        fields = ("slug", "title", "description", "thank_you_message", "layout")
+        fields = ("slug", "title", "description", "thank_you_message", "layout", "language")
 
 
 class EventFormResponseType(DjangoObjectType):
@@ -84,15 +84,23 @@ class EventSurveyType(DjangoObjectType):
     def resolve_is_active(parent: EventSurvey, info) -> bool:
         return parent.is_active
 
-    form = graphene.Field(EventFormType, lang=graphene.String())
-
     @staticmethod
     def resolve_form(
         parent: EventSurvey,
         info,
         lang: str = DEFAULT_LANGUAGE,
     ) -> EventForm | None:
+        """
+        Will attempt to give the form in the requested language, falling back
+        to another language if that language is not available.
+        """
         return parent.get_form(lang)
+
+    form = graphene.Field(
+        EventFormType,
+        lang=graphene.String(),
+        description=normalize_whitespace(resolve_form.__doc__ or ""),
+    )
 
     @staticmethod
     def resolve_combined_fields(
@@ -154,6 +162,7 @@ class EventSurveyType(DjangoObjectType):
             "slug",
             "active_from",
             "active_until",
+            "languages",
         )
 
 
