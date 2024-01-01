@@ -1,0 +1,6 @@
+- load trans from i18n
+if is_forms_admin
+  h3 {% trans "Surveys" %}<sup>v2 BETA</sup>
+  h4 {% trans "You have survey admin privileges for this event" %}
+  p: a(href='{{ settings.KOMPASSI_V2_BASE_URL }}/events/{{ event.slug }}/surveys').btn.btn-primary {% trans "Go to admin" %}…
+  hr

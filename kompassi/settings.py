@@ -355,6 +355,7 @@ KOMPASSI_INSTALLATION_NAME_PARTITIVE = "Kompassin kehitys\u00ADinstanssia" if DE
 KOMPASSI_INSTALLATION_SLUG = env("KOMPASSI_INSTALLATION_SLUG", default="turskadev")
 KOMPASSI_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi"
 FEEDBACK_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute"
+KOMPASSI_V2_BASE_URL = env("KOMPASSI_V2_BASE_URL", default="http://localhost:3000")
 
 # Confluence & co. require a group of users
 KOMPASSI_NEW_USER_GROUPS = ["users"]

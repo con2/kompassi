@@ -1,0 +1,8 @@
+msgid "Surveys"
+msgstr "Kyselyt"
+
+msgid "You have survey admin privileges for this event"
+msgstr "Sinulla on kyselyiden hallintaoikeudet tähän tapahtumaan"
+
+msgid "Go to admin"
+msgstr "Siirry hallintaan"

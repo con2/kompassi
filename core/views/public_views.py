@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
@@ -27,7 +29,7 @@ def core_organization_view(request, organization):
         Q(organization=organization, public=True) & (Q(start_time__gt=t) | Q(start_time__isnull=True))
     ).order_by("start_time")
 
-    vars = dict(
+    vars: dict[str, Any] = dict(
         organization=organization,
         past_events_rows=list(groups_of_n(past_events, 4)),
         current_events_rows=list(groups_of_n(current_events, 4)),
@@ -45,7 +47,7 @@ def core_organization_view(request, organization):
 def core_event_view(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
 
-    vars = dict(
+    vars: dict[str, Any] = dict(
         event=event,
         settings=settings,
     )
@@ -69,6 +71,10 @@ def core_event_view(request, event_slug):
         from tickets.views import tickets_event_box_context
 
         vars.update(tickets_event_box_context(request, event))
+
+    from forms.views.forms_event_box_context import forms_event_box_context
+
+    vars.update(forms_event_box_context(request, event))
 
     if event.badges_event_meta:
         from badges.views import badges_event_box_context

@@ -218,8 +218,9 @@ class Event(models.Model):
 
     labour_event_meta = event_meta_property("labour")
     programme_event_meta = event_meta_property("programme")
-    badges_event_meta = event_meta_property("badges")
     tickets_event_meta = event_meta_property("tickets")
+    forms_event_meta = event_meta_property("forms")
+    badges_event_meta = event_meta_property("badges")
     enrollment_event_meta = event_meta_property("enrollment")
     intra_event_meta = event_meta_property("intra")
 
