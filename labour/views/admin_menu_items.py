@@ -53,17 +53,16 @@ def labour_admin_menu_items(request, event):
         (startstop_active, startstop_url, startstop_text),
     ]
 
-    if event.labour_event_meta.signup_extra_model.get_shirt_size_field():
+    SignupExtra = event.labour_event_meta.signup_extra_model
+
+    if SignupExtra and SignupExtra.get_shirt_size_field():
         shirts_url = url("labour:admin_shirts_view", event.slug)
         shirts_active = request.path == shirts_url
         shirts_text = _("Shirt sizes")
 
         menu_items.append((shirts_active, shirts_url, shirts_text))
 
-    if (
-        event.labour_event_meta.signup_extra_model.get_special_diet_field()
-        or event.labour_event_meta.signup_extra_model.get_special_diet_other_field()
-    ):
+    if SignupExtra and (SignupExtra.get_special_diet_field() or SignupExtra.get_special_diet_other_field()):
         special_diets_url = url("labour:admin_special_diets_view", event.slug)
         special_diets_active = request.path == special_diets_url
         special_diets_text = _("Special diets")

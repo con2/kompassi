@@ -39,12 +39,16 @@ def badges_admin_onboarding_view(request, event):
         if lem:
             SignupExtra = event.labour_event_meta.signup_extra_model
 
-            shirt_type_field = SignupExtra.get_shirt_type_field()
-            shirt_size_field = SignupExtra.get_shirt_size_field()
+            if SignupExtra:
+                shirt_type_field = SignupExtra.get_shirt_type_field()
+                shirt_size_field = SignupExtra.get_shirt_size_field()
+            else:
+                shirt_type_field = None
+                shirt_size_field = None
 
             # Accessing badge.signup_extra for each badge causes one extra query per badge
             # So cache them.
-            if SignupExtra.schema_version >= 2:
+            if SignupExtra and SignupExtra.schema_version >= 2:
                 people = [badge.person_id for badge in badges if badge.person]
                 signup_extras = SignupExtra.objects.filter(event=event, person_id__in=people)
                 signup_extras_by_person_id = {sx.person_id: sx for sx in signup_extras}
@@ -71,7 +75,9 @@ def badges_admin_onboarding_view(request, event):
         badge.save()
 
         if badge.person:
-            sop = SignupOnboardingProxy.objects.filter(event=event, person=badge.person, is_active=True).first()
+            sop = SignupOnboardingProxy.objects.filter(
+                event=event, person=badge.person, is_active=True
+            ).first()
             if sop:
                 sop.mark_arrived(is_arrived)
 
