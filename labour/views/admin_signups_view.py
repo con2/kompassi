@@ -77,7 +77,9 @@ def admin_signups_view(request, vars, event, format="screen"):
     all_filters.append(personnel_class_filters)
 
     if not archive_mode:
-        job_category_filters = Filter(request, "job_category").add_objects("job_categories__slug", job_categories)
+        job_category_filters = Filter(request, "job_category").add_objects(
+            "job_categories__slug", job_categories
+        )
         signups = job_category_filters.filter_queryset(signups)
         all_filters.append(job_category_filters)
 
@@ -85,9 +87,10 @@ def admin_signups_view(request, vars, event, format="screen"):
         signups = state_filter.filter_queryset(signups)
         all_filters.append(state_filter)
 
-    if SignupExtra.get_field("night_work"):
+    if SignupExtra and SignupExtra.get_field("night_work"):
         night_work_path = "{prefix}{app_label}_signup_extra__night_work".format(
-            prefix="person__" if SignupExtra.schema_version >= 2 else "", app_label=SignupExtra._meta.app_label
+            prefix="person__" if SignupExtra.schema_version >= 2 else "",
+            app_label=SignupExtra._meta.app_label,
         )
         night_work_filter = Filter(request, "night_work").add_booleans(night_work_path)
         signups = night_work_filter.filter_queryset(signups)
