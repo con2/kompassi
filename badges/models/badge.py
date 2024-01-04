@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from dataclasses import dataclass
 from pkg_resources import resource_string
+from typing import Optional
 
 from django.conf import settings
 from django.db import models, transaction, connection
@@ -29,6 +30,7 @@ class ArrivalsRow:
 
 
 class Badge(models.Model, CsvExportMixin):
+    person_id: Optional[int]
     person = models.ForeignKey(
         "core.Person",
         on_delete=models.CASCADE,
@@ -280,18 +282,23 @@ class Badge(models.Model, CsvExportMixin):
 
         return Signup.objects.filter(event=self.event, person=self.person).first()
 
+    def get_signup_extra(self):
+        if self.person_id is None or self.event.labour_event_meta is None:
+            return None
+
+        SignupExtra = self.event.labour_event_meta.signup_extra_model
+        if SignupExtra is None:
+            return None
+
+        try:
+            return SignupExtra.get_for_event_and_person(self.event, self.person)
+        except SignupExtra.DoesNotExist:
+            return None
+
     @property
     def signup_extra(self):
         if not hasattr(self, "_signup_extra"):
-            if self.person_id is None or self.event.labour_event_meta is None:
-                self._signup_extra = None
-            else:
-                SignupExtra = self.event.labour_event_meta.signup_extra_model
-
-                try:
-                    self._signup_extra = SignupExtra.get_for_event_and_person(self.event, self.person)
-                except SignupExtra.DoesNotExist:
-                    self._signup_extra = None
+            self._signup_extra = self.get_signup_extra()
 
         return self._signup_extra
 
