@@ -11,6 +11,8 @@ import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
 import Link from "next/link";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
+import ViewContainer from "@/components/ViewContainer";
+import ViewHeading from "@/components/ViewHeading";
 
 const query = gql(`
   query EventSurveyResponseDetail($eventSlug:String!, $surveySlug:String!, $responseId:String!, $locale:String) {
@@ -121,7 +123,7 @@ export default async function EventSurveyResponsePage({ params }: Props) {
   };
 
   return (
-    <main className="container mt-4">
+    <ViewContainer>
       <Link
         className="link-subtle"
         href={`/events/${eventSlug}/surveys/${surveySlug}/responses`}
@@ -129,10 +131,10 @@ export default async function EventSurveyResponsePage({ params }: Props) {
         &lt; {t.actions.returnToResponseList}
       </Link>
 
-      <h1 className="mt-2 mb-4">
-        {t.singleTitle}{" "}
-        <span className="fs-5 text-muted">{data.event.forms.survey.title}</span>
-      </h1>
+      <ViewHeading>
+        {t.singleTitle}
+        <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
+      </ViewHeading>
 
       <SchemaFormField field={createdAtField} layout={layout}>
         <SchemaFormInput
@@ -147,6 +149,6 @@ export default async function EventSurveyResponsePage({ params }: Props) {
       </SchemaFormField>
 
       <SchemaFormResponse fields={fields} values={values} layout={layout} />
-    </main>
+    </ViewContainer>
   );
 }

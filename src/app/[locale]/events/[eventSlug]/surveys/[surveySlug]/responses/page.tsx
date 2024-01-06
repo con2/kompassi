@@ -10,6 +10,8 @@ import { SignInRequired } from "@/components/SignInRequired";
 import { kompassiBaseUrl } from "@/config";
 
 import { auth } from "@/auth";
+import ViewContainer from "@/components/ViewContainer";
+import ViewHeading from "@/components/ViewHeading";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 gql(`
@@ -117,18 +119,16 @@ export default async function EventFormResponsesPage({ params }: Props) {
   const responses = data.event.forms.survey.responses || [];
 
   return (
-    <main className="container mt-4">
+    <ViewContainer>
       <Link className="link-subtle" href={`/events/${eventSlug}/surveys`}>
         &lt; {t.actions.returnToSurveyList}
       </Link>
 
-      <div className="d-flex align-items-baseline mt-2 mb-2">
-        <h1>
-          {t.listTitle}{" "}
-          <span className="fs-5 text-muted">
-            {data.event.forms.survey.title}
-          </span>
-        </h1>
+      <div className="d-flex align-items-middle">
+        <ViewHeading>
+          {t.listTitle}
+          <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
+        </ViewHeading>
         <div className="ms-auto">
           <a className="btn btn-outline-primary" href={excelUrl}>
             {t.actions.downloadAsExcel}…
@@ -137,6 +137,6 @@ export default async function EventFormResponsesPage({ params }: Props) {
       </div>
       <DataTable rows={responses} columns={columns} />
       <p>{t.tableFooter(responses.length)}</p>
-    </main>
+    </ViewContainer>
   );
 }

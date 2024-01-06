@@ -9,8 +9,10 @@ import { EventSurveyFragment } from "@/__generated__/graphql";
 import { SignInRequired } from "@/components/SignInRequired";
 import CopyButton from "@/components/CopyButton";
 import { publicUrl } from "@/config";
+import ViewHeading from "@/components/ViewHeading";
 
 import { auth } from "@/auth";
+import ViewContainer from "@/components/ViewContainer";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 gql(`
@@ -184,13 +186,13 @@ export default async function EventSurveysPage({ params }: Props) {
   const surveys = data.event.forms.surveys;
 
   return (
-    <main className="container mt-4">
-      <h1>
-        {t.listTitle}{" "}
-        <span className="fs-5 text-muted">{t.forEvent(data.event.name)}</span>
-      </h1>
+    <ViewContainer>
+      <ViewHeading>
+        {t.listTitle}
+        <ViewHeading.Sub>{t.forEvent(data.event.name)}</ViewHeading.Sub>
+      </ViewHeading>
       <DataTable rows={surveys} columns={columns} />
       <p>{t.tableFooter(surveys.length)}</p>
-    </main>
+    </ViewContainer>
   );
 }

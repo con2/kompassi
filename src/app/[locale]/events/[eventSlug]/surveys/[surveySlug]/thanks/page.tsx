@@ -4,6 +4,8 @@ import { Field } from "@/components/SchemaForm/models";
 import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
+import ViewHeading from "@/components/ViewHeading";
+import ViewContainer from "@/components/ViewContainer";
 
 const query = gql(`
   query SurveyThankYouPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {
@@ -64,11 +66,9 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
   const message = thankYouMessage || t.thankYou.defaultMessage;
 
   return (
-    <main className="container mt-4">
-      <h1>
-        {t.thankYou.title}
-      </h1>
+    <ViewContainer>
+      <ViewHeading>{t.thankYou.title}</ViewHeading>
       <p>{message}</p>
-    </main>
+    </ViewContainer>
   );
 }

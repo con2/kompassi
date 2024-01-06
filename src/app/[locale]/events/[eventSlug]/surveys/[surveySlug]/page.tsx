@@ -8,6 +8,8 @@ import { getClient } from "@/apolloClient";
 import { submit } from "./actions";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
+import ViewHeading from "@/components/ViewHeading";
+import ViewContainer from "@/components/ViewContainer";
 
 const query = gql(`
   query SurveyPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {
@@ -73,16 +75,16 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
   const fields: Field[] = form!.fields ?? [];
 
   return (
-    <main className="container mt-4">
-      <h1 className="mt-2 mb-4">
-        {title}{" "}
-        <span className="fs-5 text-muted">{t.forEvent(event.name)}</span>
-      </h1>
+    <ViewContainer>
+      <ViewHeading>
+        {title}
+        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+      </ViewHeading>
       <ParagraphsDangerousHtml html={description} />
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
         <SchemaForm fields={fields} layout={layout} />
         <SubmitButton layout={layout}>{t.submit}</SubmitButton>
       </form>
-    </main>
+    </ViewContainer>
   );
 }
