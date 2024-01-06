@@ -5,16 +5,16 @@ import { signIn } from "next-auth/react";
 import type { Translations } from "@/translations/en";
 
 interface SignInRequiredProps {
-  translations: Translations["SignInRequired"];
+  messages: Translations["SignInRequired"];
 }
 
-export function SignInRequired({ translations }: SignInRequiredProps) {
+export function SignInRequired({ messages }: SignInRequiredProps) {
   return (
     <div className="container mt-4">
-      <h1>{translations.title}</h1>
-      <p>{translations.message}</p>
+      <h1>{messages.title}</h1>
+      <p>{messages.message}</p>
       <button onClick={() => signIn("kompassi")} className="btn btn-primary">
-        {translations.signIn}…
+        {messages.signIn}…
       </button>
     </div>
   );

@@ -8,16 +8,19 @@ import type { Translations } from "@/translations/en";
 
 interface UserMenuProps {
   session: Session | null;
-  translations: Translations["Navigation"];
+  messages: Translations["Navigation"];
 }
 
-export default function UserMenu({ session, translations }: UserMenuProps) {
+export default function UserMenu({ session, messages }: UserMenuProps) {
   const [isOpen, toggleOpen] = useReducer((isOpen) => !isOpen, false);
 
   if (!session?.user) {
     return (
-      <button onClick={() => signIn("kompassi")} className="nav-link btn btn-link">
-        {translations.signIn}…
+      <button
+        onClick={() => signIn("kompassi")}
+        className="nav-link btn btn-link"
+      >
+        {messages.signIn}…
       </button>
     );
   }
@@ -33,10 +36,13 @@ export default function UserMenu({ session, translations }: UserMenuProps) {
       >
         {session.user.name}
       </button>
-      <ul className={`dropdown-menu dropdown-menu-end ${isOpen ? "show": ""}`} aria-labelledby="user-menu">
+      <ul
+        className={`dropdown-menu dropdown-menu-end ${isOpen ? "show" : ""}`}
+        aria-labelledby="user-menu"
+      >
         <li>
           <button className="dropdown-item" onClick={() => signOut()}>
-            {translations.signOut}
+            {messages.signOut}
           </button>
         </li>
       </ul>

@@ -11,3 +11,5 @@ export const kompassiOidc = {
     process.env.KOMPASSI_OIDC_CLIENT_SECRET ||
     "kompassi_insecure_test_client_secret",
 };
+
+export const publicUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";

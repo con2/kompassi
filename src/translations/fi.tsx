@@ -244,6 +244,7 @@ const translations: Translations = {
       </>
     ),
     attributes: {
+      slug: "Tekninen nimi",
       title: "Otsikko",
       isActive: {
         title: "Avoinna vastauksille",
@@ -258,7 +259,12 @@ const translations: Translations = {
     actions: {
       fillIn: {
         title: "Täytä",
-        disabled: "Suljettua kyselyä ei voi täyttää",
+        disabledTooltip: "Suljettua kyselyä ei voi täyttää",
+      },
+      share: {
+        title: "Jaa",
+        tooltip: "Kopioi linkki leikepöydälle",
+        success: "Linkki kyselyyn on kopioitu leikepöydälle.",
       },
       viewResponses: "Vastaukset",
     },

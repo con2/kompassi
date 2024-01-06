@@ -83,7 +83,7 @@ export default async function EventSurveyResponsePage({ params }: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired translations={translations.SignInRequired} />;
+    return <SignInRequired messages={translations.SignInRequired} />;
   }
 
   const { data } = await getClient().query({

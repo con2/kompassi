@@ -7,6 +7,8 @@ import { getClient } from "@/apolloClient";
 import { Column, DataTable } from "@/components/DataTable";
 import { EventSurveyFragment } from "@/__generated__/graphql";
 import { SignInRequired } from "@/components/SignInRequired";
+import CopyButton from "@/components/CopyButton";
+import { publicUrl } from "@/config";
 
 import { auth } from "@/auth";
 
@@ -81,7 +83,7 @@ export default async function EventSurveysPage({ params }: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired translations={translations.SignInRequired} />;
+    return <SignInRequired messages={translations.SignInRequired} />;
   }
 
   const { data } = await getClient().query({
@@ -95,6 +97,11 @@ export default async function EventSurveysPage({ params }: Props) {
 
   const t = translations.EventSurvey;
   const columns: Column<EventSurveyFragment>[] = [
+    {
+      slug: "slug",
+      title: t.attributes.slug,
+      getCell: (survey) => <em>{survey.slug}</em>,
+    },
     {
       slug: "title",
       title: t.attributes.title,
@@ -139,32 +146,38 @@ export default async function EventSurveysPage({ params }: Props) {
     {
       slug: "actions",
       title: t.attributes.actions,
-      getCell: (survey) => (
-        <>
-          {survey.isActive ? (
+      getCell: (survey) => {
+        const url = `/events/${eventSlug}/surveys/${survey.slug}`;
+        const absoluteUrl = `${publicUrl}${url}`;
+        return (
+          <>
+            {survey.isActive ? (
+              <Link href={url} className="btn btn-sm btn-outline-primary">
+                {t.actions.fillIn.title}…
+              </Link>
+            ) : (
+              <button
+                disabled
+                className="btn btn-sm btn-outline-primary"
+                title={t.actions.fillIn.disabledTooltip}
+              >
+                {t.actions.fillIn.title}…
+              </button>
+            )}{" "}
+            <CopyButton
+              className="btn btn-sm btn-outline-primary"
+              data={absoluteUrl}
+              messages={t.actions.share}
+            />{" "}
             <Link
-              href={`/events/${eventSlug}/surveys/${survey.slug}`}
+              href={`${url}/responses`}
               className="btn btn-sm btn-outline-primary"
             >
-              {t.actions.fillIn.title}…
+              {t.actions.viewResponses}…
             </Link>
-          ) : (
-            <button
-              disabled
-              className="btn btn-sm btn-outline-primary"
-              title={t.actions.fillIn.disabled}
-            >
-              {t.actions.fillIn.title}…
-            </button>
-          )}{" "}
-          <Link
-            href={`/events/${eventSlug}/surveys/${survey.slug}/responses`}
-            className="btn btn-sm btn-outline-primary"
-          >
-            {t.actions.viewResponses}…
-          </Link>
-        </>
-      ),
+          </>
+        );
+      },
     },
   ];
 

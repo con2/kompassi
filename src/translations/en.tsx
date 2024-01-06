@@ -243,6 +243,7 @@ const translations = {
       </>
     ),
     attributes: {
+      slug: "Slug",
       title: "Title",
       isActive: {
         title: "Receiving responses",
@@ -257,7 +258,12 @@ const translations = {
     actions: {
       fillIn: {
         title: "Fill in",
-        disabled: "Closed survey cannot be filled in",
+        disabledTooltip: "Closed survey cannot be filled in",
+      },
+      share: {
+        title: "Share",
+        tooltip: "Copy link to clipboard",
+        success: "A link to the survey has been copied to clipboard.",
       },
       viewResponses: "View responses",
     },
