@@ -1,16 +1,15 @@
 import { notFound } from "next/navigation";
-
-import { getTranslations } from "@/translations";
-import { gql } from "@/__generated__";
-import { getClient } from "@/apolloClient";
-import { SignInRequired } from "@/components/SignInRequired";
+import Link from "next/link";
 
 import { auth } from "@/auth";
 import { defaultLayout, Field } from "@/components/SchemaForm/models";
+import { getClient } from "@/apolloClient";
+import { getTranslations } from "@/translations";
+import { gql } from "@/__generated__";
 import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
-import Link from "next/link";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
+import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 

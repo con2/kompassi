@@ -1,18 +1,17 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-
-import { getTranslations } from "@/translations";
-import { gql } from "@/__generated__";
-import { getClient } from "@/apolloClient";
-import { Column, DataTable } from "@/components/DataTable";
-import { SurveyFragment } from "@/__generated__/graphql";
-import { SignInRequired } from "@/components/SignInRequired";
-import CopyButton from "@/components/CopyButton";
-import { publicUrl } from "@/config";
-import ViewHeading from "@/components/ViewHeading";
+import Link from "next/link";
 
 import { auth } from "@/auth";
+import { Column, DataTable } from "@/components/DataTable";
+import { getClient } from "@/apolloClient";
+import { getTranslations } from "@/translations";
+import { gql } from "@/__generated__";
+import { publicUrl } from "@/config";
+import { SurveyFragment } from "@/__generated__/graphql";
+import CopyButton from "@/components/CopyButton";
+import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
+import ViewHeading from "@/components/ViewHeading";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 gql(`

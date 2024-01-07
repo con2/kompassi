@@ -8,7 +8,7 @@ interface SignInRequiredProps {
   messages: Translations["SignInRequired"];
 }
 
-export function SignInRequired({ messages }: SignInRequiredProps) {
+export default function SignInRequired({ messages }: SignInRequiredProps) {
   return (
     <div className="container mt-4">
       <h1>{messages.title}</h1>

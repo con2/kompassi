@@ -1,8 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { gql } from "@/__generated__";
+
 import { getClient } from "@/apolloClient";
+import { gql } from "@/__generated__";
 
 const mutation = gql(`
   mutation CreateSurveyResponse(

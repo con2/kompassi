@@ -1,14 +1,13 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-
-import { getTranslations } from "@/translations";
-import { gql } from "@/__generated__";
-import { getClient } from "@/apolloClient";
-import { Column, DataTable } from "@/components/DataTable";
-import { OwnResponseFragment } from "@/__generated__/graphql";
-import { SignInRequired } from "@/components/SignInRequired";
+import Link from "next/link";
 
 import { auth } from "@/auth";
+import { Column, DataTable } from "@/components/DataTable";
+import { getClient } from "@/apolloClient";
+import { getTranslations } from "@/translations";
+import { gql } from "@/__generated__";
+import { OwnResponseFragment } from "@/__generated__/graphql";
+import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 

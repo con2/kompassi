@@ -127,6 +127,7 @@ export type FormsProfileMetaType = {
   __typename?: 'FormsProfileMetaType';
   /** Returns a single response submitted by the current user. */
   response?: Maybe<FullResponseType>;
+  /** Returns all responses submitted by the current user. */
   responses: Array<FullResponseType>;
 };
 
@@ -206,8 +207,16 @@ export type OfferFormTypeShortDescriptionArgs = {
 
 export type ProfileType = {
   __typename?: 'ProfileType';
+  displayName?: Maybe<Scalars['String']['output']>;
+  /** Email is the primary means of contact for event-related matters. */
+  email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
   /** Namespace for queries related to forms and the current user. */
   forms: FormsProfileMetaType;
+  lastName?: Maybe<Scalars['String']['output']>;
+  /** If you go by a nick name or handle that you want printed in your badge and programme details, enter it here. */
+  nick: Scalars['String']['output'];
+  phoneNumber?: Maybe<Scalars['String']['output']>;
 };
 
 export type ProgramDimensionValueType = {
