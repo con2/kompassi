@@ -1,4 +1,4 @@
-FROM python:3.11 AS deps
+FROM python:3.12 AS deps
 WORKDIR /tmp
 RUN mkdir /deps
 ADD requirements.txt ./
@@ -6,7 +6,7 @@ RUN pip install -U pip setuptools wheel && \
     pip wheel -r requirements.txt --no-cache-dir --wheel-dir /deps && \
     rm -f /deps/setuptools-*.whl
 
-FROM python:3.11-slim
+FROM python:3.12-slim
 WORKDIR /usr/src/app
 RUN groupadd -g 998 -r kompassi && useradd -r -g kompassi -u 998 kompassi && apt-get update && apt-get -y install libpq5 && rm -rf /var/lib/apt/lists
 ADD requirements.txt ./
