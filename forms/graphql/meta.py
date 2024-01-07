@@ -51,8 +51,8 @@ class FormsProfileMetaType(graphene.ObjectType):
     responses = graphene.NonNull(
         graphene.List(
             graphene.NonNull(FullResponseType),
-            description=normalize_whitespace(resolve_responses.__doc__ or ""),
-        )
+        ),
+        description=normalize_whitespace(resolve_responses.__doc__ or ""),
     )
 
     @staticmethod
