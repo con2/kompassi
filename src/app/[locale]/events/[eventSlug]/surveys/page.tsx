@@ -5,7 +5,7 @@ import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { Column, DataTable } from "@/components/DataTable";
-import { EventSurveyFragment } from "@/__generated__/graphql";
+import { SurveyFragment } from "@/__generated__/graphql";
 import { SignInRequired } from "@/components/SignInRequired";
 import CopyButton from "@/components/CopyButton";
 import { publicUrl } from "@/config";
@@ -16,7 +16,7 @@ import ViewContainer from "@/components/ViewContainer";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 gql(`
-  fragment EventSurvey on EventSurveyType {
+  fragment Survey on SurveyType {
     slug
     title(lang: $locale)
     isActive
@@ -30,13 +30,13 @@ gql(`
 `);
 
 const query = gql(`
-  query EventSurveys($eventSlug:String!, $locale:String) {
+  query Surveys($eventSlug:String!, $locale:String) {
     event(slug: $eventSlug) {
       name
 
       forms {
         surveys {
-          ...EventSurvey
+          ...Survey
         }
       }
     }
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.EventSurvey;
+  const t = translations.Survey;
 
   const { data } = await getClient().query({
     query,
@@ -78,7 +78,7 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function EventSurveysPage({ params }: Props) {
+export default async function SurveysPage({ params }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const session = await auth();
@@ -97,8 +97,8 @@ export default async function EventSurveysPage({ params }: Props) {
     notFound();
   }
 
-  const t = translations.EventSurvey;
-  const columns: Column<EventSurveyFragment>[] = [
+  const t = translations.Survey;
+  const columns: Column<SurveyFragment>[] = [
     {
       slug: "slug",
       title: t.attributes.slug,

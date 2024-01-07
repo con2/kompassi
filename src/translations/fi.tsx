@@ -43,9 +43,9 @@ const translations: Translations = {
     workInProgress:
       "Kompassi v2 on työn alla. Tämä ei ole vielä valmis etusivu, vaan taulukkokomponentin demo.",
   },
-  Navigation: {
-    forms: "Lomakkeet",
+  UserMenu: {
     signIn: "Kirjaudu sisään",
+    responses: "Kyselyvastaukset",
     signOut: "Kirjaudu ulos",
   },
   NotFound: {
@@ -234,7 +234,7 @@ const translations: Translations = {
     },
   },
 
-  EventSurvey: {
+  Survey: {
     listTitle: "Kyselyt",
     singleTitle: "Kysely",
     forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
@@ -270,9 +270,10 @@ const translations: Translations = {
     },
   },
 
-  EventSurveyResponse: {
+  SurveyResponse: {
     listTitle: "Kyselyvastaukset",
     singleTitle: "Kyselyvastaus",
+    ownResponses: "Omat kyselyvastaukset",
     tableFooter: (count: number) => (
       <>
         {count} kyselyvastaus{count === 1 ? "" : "ta"}.
@@ -281,6 +282,8 @@ const translations: Translations = {
     attributes: {
       createdAt: "Lähetysaika",
       language: "Kieli",
+      event: "Tapahtuma",
+      formTitle: "Kyselyn otsikko",
     },
     actions: {
       downloadAsExcel: "Lataa Excel-tiedostona",

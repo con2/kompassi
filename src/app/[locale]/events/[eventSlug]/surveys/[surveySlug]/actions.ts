@@ -5,13 +5,13 @@ import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
 const mutation = gql(`
-  mutation CreateEventSurveyResponse(
+  mutation CreateSurveyResponse(
       $eventSlug: String!,
       $surveySlug: String!,
       $formData: GenericScalar!,
       $locale: String
   ) {
-    createEventSurveyResponse(
+    createSurveyResponse(
       eventSlug: $eventSlug
       surveySlug: $surveySlug
       formData: $formData

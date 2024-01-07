@@ -41,8 +41,8 @@ const translations = {
     workInProgress:
       "Kompassi v2 is a work in progress. This is not the final front page, but rather a demo of the table component.",
   },
-  Navigation: {
-    forms: "Forms",
+  UserMenu: {
+    responses: "Survey responses",
     signIn: "Sign in",
     signOut: "Sign out",
   },
@@ -233,7 +233,7 @@ const translations = {
     },
   },
 
-  EventSurvey: {
+  Survey: {
     listTitle: "Surveys",
     singleTitle: "Survey",
     forEvent: (eventName: string) => <>for {eventName}</>,
@@ -269,9 +269,10 @@ const translations = {
     },
   },
 
-  EventSurveyResponse: {
+  SurveyResponse: {
     listTitle: "Responses",
     singleTitle: "Response",
+    ownResponses: "My responses",
     tableFooter: (count: number) => (
       <>
         {count} response{count === 1 ? "" : "s"}.
@@ -280,6 +281,8 @@ const translations = {
     attributes: {
       createdAt: "Created at",
       language: "Language",
+      event: "Event",
+      formTitle: "Survey title",
     },
     actions: {
       downloadAsExcel: "Download as Excel",

@@ -1,4 +1,4 @@
-import { FormsEventFormLayoutChoices } from "@/__generated__/graphql";
+import { FormsFormLayoutChoices } from "@/__generated__/graphql";
 
 export type FieldType =
   | "SingleLineText"
@@ -103,8 +103,8 @@ interface RadioMatrix extends BaseField {
   choices: Choice[];
 }
 
-export type Layout = FormsEventFormLayoutChoices;
-export const Layout = FormsEventFormLayoutChoices;
+export type Layout = FormsFormLayoutChoices;
+export const Layout = FormsFormLayoutChoices;
 
 export const defaultLayout = Layout.Horizontal;
 

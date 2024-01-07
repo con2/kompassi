@@ -15,24 +15,22 @@ import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 
 const query = gql(`
-  query SurveyResponseDetail($eventSlug:String!, $surveySlug:String!, $responseId:String!, $locale:String) {
-    event(slug: $eventSlug) {
-      name
-
+  query OwnResponseDetail($responseId: String!) {
+    profile {
       forms {
-        survey(slug: $surveySlug) {
-          title(lang: $locale)
-          slug
-
-          response(id: $responseId) {
-            id
-            createdAt
+        response(id: $responseId) {
+          id
+          createdAt
+          values
+          form {
+            slug
+            title
             language
-            values
-
-            form {
-              fields
-              layout
+            fields
+            layout
+            event {
+              slug
+              name
             }
           }
         }
@@ -44,42 +42,24 @@ const query = gql(`
 interface Props {
   params: {
     locale: string;
-    eventSlug: string;
-    surveySlug: string;
     responseId: string;
   };
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { locale, eventSlug, surveySlug, responseId } = params;
+  const { locale } = params;
   const translations = getTranslations(locale);
-
-  // TODO encap
-  const session = await auth();
-  if (!session) {
-    return translations.SignInRequired.metadata;
-  }
-
   const t = translations.SurveyResponse;
 
-  const { data } = await getClient().query({
-    query,
-    variables: { eventSlug, surveySlug, locale, responseId },
-  });
-
-  if (!data.event?.forms?.survey?.response) {
-    notFound();
-  }
-
   return {
-    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.singleTitle}) – Kompassi`,
+    title: `${t.ownResponses} – Kompassi`,
   };
 }
 
 export const revalidate = 0;
 
 export default async function SurveyResponsePage({ params }: Props) {
-  const { locale, eventSlug, surveySlug, responseId } = params;
+  const { locale, responseId } = params;
   const translations = getTranslations(locale);
   const session = await auth();
 
@@ -90,20 +70,21 @@ export default async function SurveyResponsePage({ params }: Props) {
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, surveySlug, locale, responseId },
+    variables: { responseId },
   });
 
-  if (!data.event?.forms?.survey?.response?.form) {
+  if (!data.profile?.forms?.response) {
     notFound();
   }
 
   const t = translations.SurveyResponse;
 
-  const { createdAt, language, form } = data.event.forms.survey.response;
+  const response = data.profile.forms.response;
+  const { createdAt, form } = response;
+  const language = form.language;
   const fields: Field[] = form.fields ?? [];
   const layout = form.layout ?? defaultLayout;
-  const values: Record<string, any> =
-    data.event.forms.survey.response.values ?? {};
+  const values: Record<string, any> = response.values ?? {};
 
   // TODO using synthetic form fields for presentation is a hack
   // but it shall suffice until someone comes up with a Design Vision™
@@ -124,16 +105,13 @@ export default async function SurveyResponsePage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <Link
-        className="link-subtle"
-        href={`/events/${eventSlug}/surveys/${surveySlug}/responses`}
-      >
+      <Link className="link-subtle" href={`/profile/responses`}>
         &lt; {t.actions.returnToResponseList}
       </Link>
 
       <ViewHeading>
         {t.singleTitle}
-        <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
+        <ViewHeading.Sub>{form.title}</ViewHeading.Sub>
       </ViewHeading>
 
       <SchemaFormField field={createdAtField} layout={layout}>

@@ -5,7 +5,7 @@ import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { DataTable } from "@/components/DataTable";
-import { EventSurveyResponseFragment } from "@/__generated__/graphql";
+import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { SignInRequired } from "@/components/SignInRequired";
 import { kompassiBaseUrl } from "@/config";
 
@@ -15,7 +15,7 @@ import ViewHeading from "@/components/ViewHeading";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 gql(`
-  fragment EventSurveyResponse on EventFormResponseType {
+  fragment SurveyResponse on LimitedResponseType {
     id
     createdAt
     language
@@ -24,7 +24,7 @@ gql(`
 `);
 
 const query = gql(`
-  query EventFormResponses($eventSlug:String!, $surveySlug:String!, $locale:String) {
+  query FormResponses($eventSlug:String!, $surveySlug:String!, $locale:String) {
     event(slug: $eventSlug) {
       name
 
@@ -33,7 +33,7 @@ const query = gql(`
           title(lang: $locale)
 
           responses {
-            ...EventSurveyResponse
+            ...SurveyResponse
           }
         }
       }
@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.EventSurveyResponse;
+  const t = translations.SurveyResponse;
 
   const { data } = await getClient().query({
     query,
@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function EventFormResponsesPage({ params }: Props) {
+export default async function FormResponsesPage({ params }: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
   const session = await auth();
@@ -96,12 +96,12 @@ export default async function EventFormResponsesPage({ params }: Props) {
     notFound();
   }
 
-  const t = translations.EventSurveyResponse;
+  const t = translations.SurveyResponse;
   const columns = [
     {
       slug: "createdAt",
       title: t.attributes.createdAt,
-      getCell: (row: EventSurveyResponseFragment) => (
+      getCell: (row: SurveyResponseFragment) => (
         <Link
           href={`/events/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}
         >

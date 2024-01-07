@@ -24,7 +24,7 @@ export default async function Navigation({ locale }: NavigationProps) {
           <LanguageSwitcher
             otherLanguage={translations.LanguageSelection.otherLanguage}
           />
-          <UserMenu session={session} messages={translations.Navigation} />
+          <UserMenu session={session} messages={translations.UserMenu} />
         </div>
       </div>
     </div>
