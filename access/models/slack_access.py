@@ -16,14 +16,24 @@ class SlackError(RuntimeError):
 
 
 class SlackAccess(models.Model):
-    privilege = models.OneToOneField("access.Privilege", on_delete=models.CASCADE, related_name="slack_access")
-    team_name = models.CharField(max_length=255, verbose_name="Slack-yhteisön nimi")
+    privilege = models.OneToOneField(
+        "access.Privilege",
+        on_delete=models.CASCADE,
+        related_name="slack_access",
+    )
+    team_name = models.CharField(
+        max_length=255,
+        verbose_name="Slack-yhteisön nimi",
+    )
     invite_link = models.CharField(
         max_length=255,
         default="https://example.com",
         verbose_name="Kutsulinkki",
         help_text='Saat kutsulinkin Slackin sovelluksesta vasemman yläkulman valikosta valitsemalla "Invite people to …". Valitse "Edit link settings", aseta kutsulinkin kelpoisuusajaksi ikuinen ja poista ruksi ruudusta "Send me Slacbot message…".',
     )
+
+    def __str__(self):
+        return self.team_name
 
     @classmethod
     def get_or_create_dummy(cls):

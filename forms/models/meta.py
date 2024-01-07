@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from core.models import Event
+from core.models import Event, Person
 
 
 @dataclass
@@ -10,3 +10,12 @@ class FormsEventMeta:
     """
 
     event: Event
+
+
+@dataclass
+class FormsProfileMeta:
+    """
+    No need for an actual model for now. This serves as a stand-in for GraphQL.
+    """
+
+    person: Person

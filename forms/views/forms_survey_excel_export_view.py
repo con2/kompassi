@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from access.cbac import default_cbac_required
 from core.models import Event
 
-from ..models.survey import EventSurvey, GlobalSurvey
+from ..models.survey import Survey
 from ..excel_export import write_responses_as_excel
 
 
@@ -21,10 +21,10 @@ def forms_survey_excel_export_view(
 
     if event_slug:
         event = get_object_or_404(Event, slug=event_slug)
-        survey = get_object_or_404(EventSurvey, event=event, slug=survey_slug)
+        survey = get_object_or_404(Survey, event=event, slug=survey_slug)
         filename = f"{event.slug}_{survey.slug}_responses_{timestamp}.xlsx"
     else:
-        survey = get_object_or_404(GlobalSurvey, slug=survey_slug)
+        survey = get_object_or_404(Survey, event__isnull=True, slug=survey_slug)
         filename = f"{survey.slug}_responses_{timestamp}.xlsx"
 
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")

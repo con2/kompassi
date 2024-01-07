@@ -9,7 +9,7 @@ from localized_fields.models import LocalizedModel
 from localized_fields.fields import LocalizedTextField
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
-from forms.models.form import EventForm
+from forms.models.form import Form
 
 
 class OfferForm(LocalizedModel):
@@ -24,7 +24,7 @@ class OfferForm(LocalizedModel):
     )
 
     languages = models.ManyToManyField(
-        "forms.EventForm",
+        "forms.Form",
         verbose_name=_("language versions"),
         help_text=_(
             "The form will be available in these languages. "
@@ -58,10 +58,10 @@ class OfferForm(LocalizedModel):
     def is_active(self):
         return is_within_period(self.active_from, self.active_until)
 
-    def get_form(self, requested_language: str) -> Optional[EventForm]:
+    def get_form(self, requested_language: str) -> Optional[Form]:
         try:
             return self.languages.get(language=requested_language)
-        except EventForm.DoesNotExist:
+        except Form.DoesNotExist:
             pass
 
         for language, _ in settings.LANGUAGES:
@@ -71,10 +71,10 @@ class OfferForm(LocalizedModel):
 
             try:
                 return self.languages.get(language=language)
-            except EventForm.DoesNotExist:
+            except Form.DoesNotExist:
                 pass
 
-        raise EventForm.DoesNotExist()
+        raise Form.DoesNotExist()
 
     class Meta:
         unique_together = [

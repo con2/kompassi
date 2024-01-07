@@ -1,16 +1,10 @@
-from dataclasses import dataclass
-
-from django.utils import translation
-from django.conf import settings
-
 import graphene
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
-from core.models import Event
 from core.utils import get_objects_within_period
-from forms.graphql import EventFormType, EventSurveyType, CreateEventSurveyResponse
-from forms.models import EventForm, EventSurvey
+from forms.graphql.form import FormType
+from forms.models import Form
 from graphql_api.utils import resolve_localized_field, DEFAULT_LANGUAGE
 
 from .models import (
@@ -79,14 +73,14 @@ class DimensionFilterInput(graphene.InputObjectType):
 
 
 class OfferFormType(DjangoObjectType):
-    form = graphene.Field(EventFormType, lang=graphene.String())
+    form = graphene.Field(FormType, lang=graphene.String())
 
     @staticmethod
     def resolve_form(
         parent: OfferForm,
         info,
         lang: str = DEFAULT_LANGUAGE,
-    ) -> EventForm | None:
+    ) -> Form | None:
         return parent.get_form(lang)
 
     is_active = graphene.Field(graphene.NonNull(graphene.Boolean))

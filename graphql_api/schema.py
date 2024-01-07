@@ -3,15 +3,12 @@ from dataclasses import dataclass
 from django.conf import settings
 
 import graphene
-from graphene_django import DjangoObjectType
 
-from core.models import Event
-from forms.graphql import FormsEventMetaType, CreateEventSurveyResponse
-from forms.models.meta import FormsEventMeta
-from program_v2.graphql import ProgramV2EventMetaType
+from core.models import Event, Person
+from forms.graphql.mutations.create_survey_response import CreateSurveyResponse
 
-
-DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
+from core.graphql.event import FullEventType
+from core.graphql.profile import ProfileType
 
 
 @dataclass
@@ -22,6 +19,7 @@ class Language:
 
 
 LANGUAGES = [Language("fi", "suomi", "Finnish"), Language("en", "englanti", "English")]
+DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
 class LanguageType(graphene.ObjectType):
@@ -40,34 +38,28 @@ class LanguageType(graphene.ObjectType):
             return language.name_en
 
 
-class EventType(DjangoObjectType):
-    class Meta:
-        model = Event
-        fields = ("slug", "name")
-
-    program = graphene.Field(ProgramV2EventMetaType)
-
-    @staticmethod
-    def resolve_program(parent: Event, info):
-        return parent.program_v2_event_meta
-
-    forms = graphene.Field(FormsEventMetaType)
-
-    @staticmethod
-    def resolve_forms(event: Event, info):
-        return FormsEventMeta(event)
-
-
 class Query(graphene.ObjectType):
-    event = graphene.Field(EventType, slug=graphene.String(required=True))
-
     @staticmethod
     def resolve_event(root, info, slug: str):
         return Event.objects.filter(slug=slug).first()
 
+    event = graphene.Field(FullEventType, slug=graphene.String(required=True))
+
+    @staticmethod
+    def resolve_profile(root, info):
+        if not info.context.user.is_authenticated:
+            return None
+
+        try:
+            return info.context.user.person
+        except Person.DoesNotExist:
+            return None
+
+    profile = graphene.Field(ProfileType)
+
 
 class Mutation(graphene.ObjectType):
-    create_event_survey_response = CreateEventSurveyResponse.Field()
+    create_survey_response = CreateSurveyResponse.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

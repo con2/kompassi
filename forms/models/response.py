@@ -11,8 +11,9 @@ if TYPE_CHECKING:
     from ..utils.process_form_data import FieldWarning
 
 
-class AbstractFormResponse(models.Model):
+class Response(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    form = models.ForeignKey("forms.Form", on_delete=models.CASCADE, related_name="responses")
     form_data = JSONField()
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
@@ -28,14 +29,11 @@ class AbstractFormResponse(models.Model):
 
     form: Any
 
-    def _process_form_data(self):
+    @cached_property
+    def processed_form_data(self):
         from ..utils.process_form_data import process_form_data
 
         return process_form_data(self.form.validated_fields, self.form_data)
-
-    @cached_property
-    def processed_form_data(self):
-        return self._process_form_data()
 
     @property
     def values(self) -> dict[str, Any]:
@@ -44,14 +42,3 @@ class AbstractFormResponse(models.Model):
     @property
     def warnings(self) -> dict[str, list["FieldWarning"]]:
         return self.processed_form_data[1]
-
-    class Meta:
-        abstract = True
-
-
-class GlobalFormResponse(AbstractFormResponse):
-    form = models.ForeignKey("forms.GlobalForm", on_delete=models.CASCADE, related_name="responses")
-
-
-class EventFormResponse(AbstractFormResponse):
-    form = models.ForeignKey("forms.EventForm", on_delete=models.CASCADE, related_name="responses")

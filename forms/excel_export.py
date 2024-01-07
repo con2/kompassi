@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.utils.timezone import localtime
 
 from .models.field import Field, FieldType
-from .models.form_response import GlobalFormResponse, EventFormResponse
+from .models.response import Response
 
 
 def get_header_cells(field: Field) -> list[str]:
@@ -53,7 +53,7 @@ def get_response_cells(field: Field, values: dict[str, Any]) -> list[Any]:
 
 def write_responses_as_excel(
     fields: Sequence[Field],
-    responses: models.QuerySet[EventFormResponse] | models.QuerySet[GlobalFormResponse],
+    responses: models.QuerySet[Response],
     output_stream: BinaryIO | HttpResponse,
 ):
     from core.excel_export import XlsxWriter

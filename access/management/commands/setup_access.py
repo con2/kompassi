@@ -1,8 +1,18 @@
+import logging
+from datetime import timedelta
+
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
+from django.utils.timezone import now
 
-from ...models import Privilege, SlackAccess
+from core.models import Person
+from core.utils import log_get_or_create
+
+from ...models import Privilege, SlackAccess, CBACEntry
+
+
+logger = logging.getLogger("kompassi")
 
 
 class Command(BaseCommand):
@@ -15,12 +25,16 @@ class Command(BaseCommand):
                 slug=slug,
                 defaults=dict(
                     title=title,
-                    description="""TODO WRITE ME""".strip().format(default_from_email=settings.DEFAULT_FROM_EMAIL),
+                    description="""TODO WRITE ME""".strip().format(
+                        default_from_email=settings.DEFAULT_FROM_EMAIL
+                    ),
                     request_success_message="",
                     grant_code="access.privileges:invite_to_slack",
                     url=f"https://{team_name}.slack.com",
                 ),
             )
+
+            log_get_or_create(logger, privilege, created)
 
             slack_access, created = SlackAccess.objects.get_or_create(
                 privilege=privilege,
@@ -28,3 +42,20 @@ class Command(BaseCommand):
                     team_name=team_name,
                 ),
             )
+
+            log_get_or_create(logger, slack_access, created)
+
+        if settings.DEBUG:
+            mahti, _ = Person.get_or_create_dummy()
+
+            # NOTE: claims={} effectively means "all privileges"
+            entry, created = CBACEntry.objects.get_or_create(
+                user=mahti.user,
+                claims={},
+                defaults=dict(
+                    valid_from=now(),
+                    valid_until=now() + timedelta(days=100 * 365),
+                ),
+            )
+
+            log_get_or_create(logger, entry, created)

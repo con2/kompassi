@@ -23,6 +23,6 @@ urlpatterns = [
     path(
         "events/<slug:event_slug>/surveys/<slug:survey_slug>/responses.xlsx",
         forms_survey_excel_export_view,
-        name="forms_event_survey_excel_export_view",
+        name="forms_survey_excel_export_view",
     ),
 ]

@@ -83,14 +83,14 @@ class Setup:
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
-            labour_admin_group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-            work_begins=self.event.start_time.replace(hour=8, tzinfo=self.tz),
-            work_ends=self.event.end_time.replace(hour=23, minute=59, second=59, tzinfo=self.tz),
+            work_begins=self.event.start_time.replace(hour=8, tzinfo=self.tz),  # type: ignore
+            work_ends=self.event.end_time.replace(hour=23, minute=59, second=59, tzinfo=self.tz),  # type: ignore
             admin_group=labour_admin_group,
             contact_email="Tracon Hitpoint 2024 -työvoimatiimi <hitpoint@tracon.fi>",
         )
@@ -291,12 +291,12 @@ class Setup:
 
         for start_time, end_time in [
             (
-                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
-                self.event.end_time.replace(hour=1, minute=0, tzinfo=self.tz),
+                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),  # type: ignore
+                self.event.end_time.replace(hour=1, minute=0, tzinfo=self.tz),  # type: ignore
             ),
             (
-                self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),
-                self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),  # type: ignore
+                self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),  # type: ignore
             ),
         ]:
             TimeBlock.objects.get_or_create(
@@ -390,8 +390,8 @@ class Setup:
         if self.test:
             t = now()
             defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),
-                ticket_sales_ends=t + timedelta(days=60),
+                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
+                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -426,7 +426,7 @@ class Setup:
             )
 
             if not product.limit_groups.exists():
-                product.limit_groups.set(limit_groups)
+                product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
 
     def setup_access(self):
@@ -496,12 +496,12 @@ class Setup:
             )
 
     def setup_forms(self):
-        from forms.models import EventSurvey, EventForm
+        from forms.models import Survey, Form
 
         with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        form_fi, created = EventForm.objects.get_or_create(
+        form_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="larp-survey-fi",
             language="fi",
@@ -517,7 +517,7 @@ class Setup:
         with resource_stream("events.hitpoint2024", "forms/larp-survey-en.yml") as f:
             data = yaml.safe_load(f)
 
-        form_en, created = EventForm.objects.get_or_create(
+        form_en, created = Form.objects.get_or_create(
             event=self.event,
             slug="larp-survey-en",
             language="en",
@@ -530,7 +530,7 @@ class Setup:
                 setattr(form_en, key, value)
             form_en.save()
 
-        survey, _ = EventSurvey.objects.get_or_create(
+        survey, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="larp-survey",
             defaults=dict(

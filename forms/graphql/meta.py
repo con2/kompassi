@@ -1,0 +1,70 @@
+from django.conf import settings
+
+import graphene
+
+from core.utils import get_objects_within_period, normalize_whitespace
+from access.cbac import graphql_check_access
+
+from ..models.survey import Survey
+from ..models.response import Response
+from ..models.meta import FormsEventMeta, FormsProfileMeta
+from .survey import SurveyType
+from .form_response import FullResponseType
+
+DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
+
+
+class FormsEventMetaType(graphene.ObjectType):
+    surveys = graphene.List(graphene.NonNull(SurveyType), include_inactive=graphene.Boolean())
+
+    @staticmethod
+    def resolve_surveys(meta: FormsEventMeta, info, include_inactive: bool = False):
+        if include_inactive:
+            graphql_check_access(meta, info, "surveys")
+            qs = Survey.objects.filter(event=meta.event)
+        else:
+            qs = get_objects_within_period(Survey, event=meta.event)
+
+        return qs
+
+    survey = graphene.Field(SurveyType, slug=graphene.String(required=True))
+
+    @staticmethod
+    def resolve_survey(meta: FormsEventMeta, info, slug: str):
+        survey = Survey.objects.get(event=meta.event, slug=slug)
+
+        if not survey.is_active:
+            graphql_check_access(meta, info, "survey")
+
+        return survey
+
+
+class FormsProfileMetaType(graphene.ObjectType):
+    @staticmethod
+    def resolve_responses(meta: FormsProfileMeta, info):
+        """
+        Returns all responses submitted by the current user.
+        """
+        assert info.context.user == meta.person.user
+        return Response.objects.filter(created_by=meta.person.user).order_by("-created_at")
+
+    responses = graphene.NonNull(
+        graphene.List(
+            graphene.NonNull(FullResponseType),
+            description=normalize_whitespace(resolve_responses.__doc__ or ""),
+        )
+    )
+
+    @staticmethod
+    def resolve_response(meta: FormsProfileMeta, info, id: int):
+        """
+        Returns a single response submitted by the current user.
+        """
+        assert info.context.user == meta.person.user
+        return Response.objects.get(created_by=meta.person.user, id=id)
+
+    response = graphene.Field(
+        FullResponseType,
+        id=graphene.String(required=True),
+        description=normalize_whitespace(resolve_response.__doc__ or ""),
+    )

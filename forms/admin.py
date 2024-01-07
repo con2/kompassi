@@ -1,33 +1,17 @@
 from django.contrib import admin
 
-from .models import EventForm, EventFormResponse, EventSurvey
+from .models import Form, Response, Survey
 
 
-# class GlobalFormAdmin(admin.ModelAdmin):
-#     model = GlobalForm
-#     list_display = ("slug", "title")
-#     search_fields = ("slug", "title")
-
-
-class EventFormAdmin(admin.ModelAdmin):
-    model = EventForm
+class FormAdmin(admin.ModelAdmin):
+    model = Form
     list_display = ("event", "slug", "title")
     list_filter = ("event",)
     search_fields = ("slug", "title")
 
 
-# class GlobalFormResponseAdmin(admin.ModelAdmin):
-#     model = GlobalFormResponse
-#     list_display = ("created_at", "form", "created_by")
-#     list_filter = ("form",)
-#     readonly_fields = ("form", "form_data", "created_by", "created_at", "updated_at")
-
-#     def has_add_permission(self, *args, **kwargs):
-#         return False
-
-
-class EventFormResponseAdmin(admin.ModelAdmin):
-    model = EventFormResponse
+class ResponseAdmin(admin.ModelAdmin):
+    model = Response
     list_display = ("created_at", "form", "created_by")
     list_filter = ("form__event", "form")
     readonly_fields = ("form", "form_data", "created_by", "created_at", "updated_at")
@@ -36,21 +20,19 @@ class EventFormResponseAdmin(admin.ModelAdmin):
         return False
 
 
-class EventSurveyFormInline(admin.TabularInline):
-    model = EventSurvey.languages.through
+class SurveyFormInline(admin.TabularInline):
+    model = Survey.languages.through
     extra = 1
 
 
-class EventSurveyAdmin(admin.ModelAdmin):
-    model = EventSurvey
+class SurveyAdmin(admin.ModelAdmin):
+    model = Survey
     list_display = ("event", "slug", "admin_is_active")
     list_filter = ("event",)
     fields = ("event", "slug", "active_from", "active_until")
-    inlines = (EventSurveyFormInline,)
+    inlines = (SurveyFormInline,)
 
 
-admin.site.register(EventForm, EventFormAdmin)
-# admin.site.register(GlobalForm, GlobalFormAdmin)
-admin.site.register(EventFormResponse, EventFormResponseAdmin)
-# admin.site.register(GlobalFormResponse, GlobalFormResponseAdmin)
-admin.site.register(EventSurvey, EventSurveyAdmin)
+admin.site.register(Form, FormAdmin)
+admin.site.register(Response, ResponseAdmin)
+admin.site.register(Survey, SurveyAdmin)

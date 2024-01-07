@@ -7,13 +7,13 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 from program_v2.models.dimension import Dimension
 
-from .field import Field, FieldType
+from .field import Field
 
 if TYPE_CHECKING:
-    from .form_response import AbstractFormResponse
+    from .response import Response
 
 
 logger = logging.getLogger("kompassi")
@@ -26,7 +26,9 @@ LAYOUT_CHOICES = [
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
-class AbstractForm(models.Model):
+class Form(models.Model):
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="forms")
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     thank_you_message = models.TextField(blank=True, default="")
@@ -44,29 +46,13 @@ class AbstractForm(models.Model):
 
     fields = models.JSONField()
 
-    responses: models.QuerySet[Any]
-
-    def __str__(self):
-        return self.title
-
-    @cached_property
-    def validated_fields(self):
-        return [Field.model_validate(field_dict) for field_dict in self.fields]
-
-    class Meta:
-        abstract = True
-
-
-class GlobalForm(AbstractForm):
-    slug = models.CharField(**SLUG_FIELD_PARAMS)  # type: ignore
-
-
-class EventForm(AbstractForm):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="forms")
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
+    responses: models.QuerySet["Response"]
 
     class Meta:
         unique_together = [("event", "slug")]
+
+    def __str__(self):
+        return self.title
 
     @cached_property
     def enriched_fields(self):

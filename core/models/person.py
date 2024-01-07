@@ -258,6 +258,7 @@ class Person(models.Model):
                 birth_date=date(1984, 1, 1),
                 email="mahti@example.com",
                 phone="+358 50 555 1234",
+                email_verified_at=now(),
             ),
         )
 

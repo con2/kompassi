@@ -10,7 +10,7 @@ from collections.abc import Sequence, Iterable
 from functools import reduce
 from typing import Protocol, TypeVar, Optional
 
-from ..models.form import AbstractForm
+from ..models.form import Form
 from ..models.field import Field
 
 
@@ -49,5 +49,5 @@ def _merge_fields(fields: Sequence[Field], other_fields: Sequence[Field]) -> lis
     return list(result.values())
 
 
-def merge_fields(forms: Iterable[AbstractForm]) -> list[Field]:
+def merge_fields(forms: Iterable[Form]) -> list[Field]:
     return reduce(_merge_fields, (form.validated_fields for form in forms), [])

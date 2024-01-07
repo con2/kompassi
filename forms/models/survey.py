@@ -7,15 +7,16 @@ from django.utils.translation import gettext_lazy as _
 from core.utils import is_within_period, SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS
 from core.models import Event
 
-from .form import EventForm, GlobalForm
+from .form import Form
 from ..utils.merge_form_fields import merge_fields
 
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
-class AbstractSurvey(models.Model):
-    languages: Any
+class Survey(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     login_required = models.BooleanField(
         default=False,
@@ -47,6 +48,16 @@ class AbstractSurvey(models.Model):
         ),
     )
 
+    languages = models.ManyToManyField(
+        "forms.Form",
+        verbose_name=_("language versions"),
+        help_text=_(
+            "The form will be available in these languages. "
+            "Each language can have its own set of fields. "
+            "There must be exactly one form per supported language."
+        ),
+    )
+
     @property
     def is_active(self):
         return is_within_period(self.active_from, self.active_until)
@@ -63,7 +74,7 @@ class AbstractSurvey(models.Model):
 
     def get_combined_fields(self, base_language: str = DEFAULT_LANGUAGE):
         """
-        See ../graphql.py:EventSurveyType.resolve_combined_fields
+        See ../graphql.py:SurveyType.resolve_combined_fields
         for documentation.
         """
         # TODO as an optimization, store boolean field in survey model that indicates
@@ -78,27 +89,10 @@ class AbstractSurvey(models.Model):
 
         return merge_fields(languages)
 
-    class Meta:
-        abstract = True
-
-
-class GlobalSurvey(AbstractSurvey):
-    slug = models.CharField(**SLUG_FIELD_PARAMS)  # type: ignore
-
-    languages = models.ManyToManyField(
-        GlobalForm,
-        verbose_name=_("language versions"),
-        help_text=_(
-            "The form will be available in these languages. "
-            "Each language can have its own set of fields. "
-            "There must be exactly one form per supported language."
-        ),
-    )
-
-    def get_form(self, requested_language: str) -> Optional[GlobalForm]:
+    def get_form(self, requested_language: str) -> Optional[Form]:
         try:
             return self.languages.get(language=requested_language)
-        except GlobalForm.DoesNotExist:
+        except Form.DoesNotExist:
             pass
 
         for language, _ in settings.LANGUAGES:
@@ -108,58 +102,16 @@ class GlobalSurvey(AbstractSurvey):
 
             try:
                 return self.languages.get(language=language)
-            except GlobalForm.DoesNotExist:
+            except Form.DoesNotExist:
                 pass
 
-        raise GlobalForm.DoesNotExist()
+        raise Form.DoesNotExist()
 
     @property
     def responses(self):
-        from .form_response import GlobalFormResponse
+        from .response import Response
 
-        return GlobalFormResponse.objects.filter(form__in=self.languages.all()).order_by("created_at")
-
-    def __str__(self):
-        return self.slug
-
-
-class EventSurvey(AbstractSurvey):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
-
-    languages = models.ManyToManyField(
-        "forms.EventForm",
-        verbose_name=_("language versions"),
-        help_text=_(
-            "The form will be available in these languages. "
-            "Each language can have its own set of fields. "
-            "There must be exactly one form per supported language."
-        ),
-    )
-
-    def get_form(self, requested_language: str) -> Optional[EventForm]:
-        try:
-            return self.languages.get(language=requested_language)
-        except EventForm.DoesNotExist:
-            pass
-
-        for language, _ in settings.LANGUAGES:
-            if language == requested_language:
-                # already tried above, skip one extra query
-                continue
-
-            try:
-                return self.languages.get(language=language)
-            except EventForm.DoesNotExist:
-                pass
-
-        raise EventForm.DoesNotExist()
-
-    @property
-    def responses(self):
-        from .form_response import EventFormResponse
-
-        return EventFormResponse.objects.filter(form__in=self.languages.all()).order_by("created_at")
+        return Response.objects.filter(form__in=self.languages.all()).order_by("created_at")
 
     class Meta:
         unique_together = [("event", "slug")]

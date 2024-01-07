@@ -310,85 +310,111 @@ class Setup:
             return limit_group
 
         for product_info in [
+            # dict(
+            #     name="Viikonloppulippu",
+            #     description="Voimassa koko tapahtuman ajan perjantaista sunnuntaihin. Toimitetaan sähköpostitse PDF-tiedostona.",
+            #     limit_groups=[
+            #         limit_group("Perjantain liput", 5200),
+            #         limit_group("Lauantain liput", 5200),
+            #         limit_group("Sunnuntain liput", 5200),
+            #     ],
+            #     price_cents=4500,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Perjantailippu",
+            #     description="Voimassa perjantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+            #     limit_groups=[
+            #         limit_group("Perjantain liput", 5200),
+            #     ],
+            #     price_cents=2000,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Lauantailippu",
+            #     description="Voimassa lauantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+            #     limit_groups=[
+            #         limit_group("Lauantain liput", 5200),
+            #     ],
+            #     price_cents=3500,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Sunnuntailippu",
+            #     description="Voimassa sunnuntaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+            #     limit_groups=[
+            #         limit_group("Sunnuntain liput", 5200),
+            #     ],
+            #     price_cents=3000,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="K18 Iltabilelippu",
+            #     description="Voimassa Traconin iltabileiden ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+            #     limit_groups=[
+            #         limit_group("Iltabileliput", 1300),
+            #     ],
+            #     price_cents=1500,
+            #     electronic_ticket=True,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Lattiamajoitus 1 yö pe–la – Amurin koulutalo (ei sis. makuualustaa)",
+            #     description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
+            #     limit_groups=[
+            #         limit_group("Majoitus Amuri pe-la", 235),
+            #     ],
+            #     price_cents=1000,
+            #     requires_accommodation_information=True,
+            #     electronic_ticket=False,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Lattiamajoitus 1 yö la–su – Amurin koulutalo (ei sis. makuualustaa)",
+            #     description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
+            #     limit_groups=[
+            #         limit_group("Majoitus Amuri la-su", 235),
+            #     ],
+            #     price_cents=1000,
+            #     requires_accommodation_information=True,
+            #     electronic_ticket=False,
+            #     available=True,
+            #     ordering=self.get_ordering_number(),
+            # ),
             dict(
-                name="Viikonloppulippu",
-                description="Voimassa koko tapahtuman ajan perjantaista sunnuntaihin. Toimitetaan sähköpostitse PDF-tiedostona.",
+                name="Taru sormusten herrasta 20.9.2024 – Conitealippu",
+                description="Teatterilippu <strong>Traconin conitean, Hitpointin conitean tai yhdistyksen hallituksen jäsenelle itselleen</strong> alennettuun hintaan.",
                 limit_groups=[
-                    limit_group("Perjantain liput", 5200),
-                    limit_group("Lauantain liput", 5200),
-                    limit_group("Sunnuntain liput", 5200),
+                    limit_group("TSH-coniteanäytäntö", 90),
                 ],
-                price_cents=4500,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Perjantailippu",
-                description="Voimassa perjantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-                limit_groups=[
-                    limit_group("Perjantain liput", 5200),
-                ],
-                price_cents=2000,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Lauantailippu",
-                description="Voimassa lauantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-                limit_groups=[
-                    limit_group("Lauantain liput", 5200),
-                ],
-                price_cents=3500,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Sunnuntailippu",
-                description="Voimassa sunnuntaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-                limit_groups=[
-                    limit_group("Sunnuntain liput", 5200),
-                ],
-                price_cents=3000,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="K18 Iltabilelippu",
-                description="Voimassa Traconin iltabileiden ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-                limit_groups=[
-                    limit_group("Iltabileliput", 1300),
-                ],
-                price_cents=1500,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Lattiamajoitus 1 yö pe–la – Amurin koulutalo (ei sis. makuualustaa)",
-                description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
-                limit_groups=[
-                    limit_group("Majoitus Amuri pe-la", 235),
-                ],
-                price_cents=1000,
-                requires_accommodation_information=True,
+                price_cents=35_00,
+                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
                 ordering=self.get_ordering_number(),
             ),
             dict(
-                name="Lattiamajoitus 1 yö la–su – Amurin koulutalo (ei sis. makuualustaa)",
-                description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
+                name="Taru sormusten herrasta 20.9.2024 – Avec-lippu",
+                description="Teatterilippu seuralaiselle ilman Tracon ry:n subventiota.",
                 limit_groups=[
-                    limit_group("Majoitus Amuri la-su", 235),
+                    limit_group("TSH-coniteanäytäntö", 90),
                 ],
-                price_cents=1000,
-                requires_accommodation_information=True,
+                price_cents=75_00,
+                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
                 ordering=self.get_ordering_number(),
             ),
         ]:
@@ -590,7 +616,7 @@ class Setup:
         forms from another event.
         """
         from programme.models import ProgrammeEventMeta
-        from forms.models import EventForm
+        from forms.models import Form
         from program_v2.models import ProgramV2EventMeta, OfferForm, Dimension
 
         category_dimension, _ = Dimension.objects.get_or_create(
@@ -616,7 +642,7 @@ class Setup:
         with resource_stream("program_v2.models", "default_forms/fi.yml") as f:
             default_form_fi_fields = yaml.safe_load(f)["fields"]
 
-        default_form_fi, _ = EventForm.objects.get_or_create(
+        default_form_fi, _ = Form.objects.get_or_create(
             event=self.event,
             slug="program-default-fi",
             language="fi",
@@ -629,7 +655,7 @@ class Setup:
         with resource_stream("program_v2.models", "default_forms/en.yml") as f:
             default_form_en_fields = yaml.safe_load(f)["fields"]
 
-        default_form_en, _ = EventForm.objects.get_or_create(
+        default_form_en, _ = Form.objects.get_or_create(
             event=self.event,
             slug="program-default-en",
             language="en",
@@ -654,7 +680,7 @@ class Setup:
         if not default_form.languages.exists():
             default_form.languages.set([default_form_fi, default_form_en])
 
-        rpg_form_fi, _ = EventForm.objects.get_or_create(
+        rpg_form_fi, _ = Form.objects.get_or_create(
             event=self.event,
             slug="program-rpg-fi",
             defaults=dict(
@@ -664,7 +690,7 @@ class Setup:
             ),
         )
 
-        rpg_form_en, _ = EventForm.objects.get_or_create(
+        rpg_form_en, _ = Form.objects.get_or_create(
             event=self.event,
             slug="program-rpg-en",
             defaults=dict(
