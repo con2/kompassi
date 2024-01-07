@@ -1,5 +1,6 @@
 import logging
 from datetime import date, datetime
+from typing import TYPE_CHECKING
 
 import phonenumbers
 import vobject
@@ -23,6 +24,9 @@ from .constants import (
     NAME_DISPLAY_STYLE_CHOICES,
     NAME_DISPLAY_STYLE_FORMATS,
 )
+
+if TYPE_CHECKING:
+    from badges.models.badge import Badge
 
 
 logger = logging.getLogger("kompassi")
@@ -129,6 +133,8 @@ class Person(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     email_verified_at = models.DateTimeField(null=True, blank=True)
+
+    badges: models.QuerySet["Badge"]
 
     class Meta:
         ordering = ["surname"]
@@ -252,8 +258,8 @@ class Person(models.Model):
         return cls.objects.get_or_create(
             user=user,
             defaults=dict(
-                first_name=user.first_name,
-                surname=user.last_name,
+                first_name=user.first_name,  # type: ignore
+                surname=user.last_name,  # type: ignore
                 nick="Mahti",
                 birth_date=date(1984, 1, 1),
                 email="mahti@example.com",
@@ -482,6 +488,7 @@ class Person(models.Model):
         )
 
     def ensure_basic_groups(self):
+        assert self.user
         for group_name in settings.KOMPASSI_NEW_USER_GROUPS:
             self.user.groups.add(Group.objects.get(name=group_name))
 
@@ -501,7 +508,7 @@ class Person(models.Model):
         vcard = vobject.vCard()
 
         vcard.add("n")
-        vcard.n.value = vobject.vcard.Name(family=self.surname, given=self.first_name)
+        vcard.n.value = vobject.vcard.Name(family=self.surname, given=self.first_name)  # type: ignore
 
         vcard.add("fn")
         vcard.fn.value = self.firstname_surname
