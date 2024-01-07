@@ -10,7 +10,25 @@ from forms.models.meta import FormsProfileMeta
 class ProfileType(DjangoObjectType):
     class Meta:
         model = Person
-        fields = ()
+        fields = ("first_name", "nick", "email")
+
+    @staticmethod
+    def resolve_last_name(person: Person, info):
+        return person.surname
+
+    last_name = graphene.Field(graphene.String)
+
+    @staticmethod
+    def resolve_phone_number(person: Person, info):
+        return person.normalized_phone_number
+
+    phone_number = graphene.Field(graphene.String)
+
+    @staticmethod
+    def resolve_display_name(person: Person, info):
+        return person.display_name
+
+    display_name = graphene.Field(graphene.String)
 
     @staticmethod
     def resolve_forms(person: Person, info):
