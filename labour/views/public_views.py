@@ -385,7 +385,7 @@ def person_disqualify_view(request, qualification):
         person_qualification = get_object_or_404(PersonQualification, person=person, qualification=qualification)
         person_qualification.delete()
         messages.success(request, _("The qualification has been removed."))
-    except:
+    except Exception:
         pass
 
     return redirect("labour:qualifications_view")
