@@ -173,7 +173,6 @@ class Message(models.Model):
 
             if created or resend:
                 person_message.actually_send()
-                bodylen = len(person_message.body.text)
 
     def expire(self):
         assert self.expired_at is None, "re-expiring an expired message does not make sense"

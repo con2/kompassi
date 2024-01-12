@@ -10,7 +10,7 @@ from event_log.utils import emit
 from labour.helpers import labour_admin_required
 
 from .proxies import SignupExtraAfterpartyProxy
-from .models import SignupExtra, Poison
+from .models import Poison
 
 
 @labour_admin_required
@@ -62,7 +62,6 @@ def tracon2019_afterparty_summary_view(request, event_slug):
             )
         )
     )
-    signup_extras = SignupExtra.objects.filter(afterparty_participation=True)
 
     vars = dict(
         event=event,

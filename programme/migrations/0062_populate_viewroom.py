@@ -3,7 +3,6 @@ from django.db import migrations
 
 def populate_view_room(apps, schema_editor):
     View = apps.get_model("programme", "View")
-    Room = apps.get_model("programme", "Room")
     ViewRoom = apps.get_model("programme", "ViewRoom")
 
     for view in View.objects.all():

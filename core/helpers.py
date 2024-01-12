@@ -91,7 +91,7 @@ def unperson_page_wizard(*pages):
             assert request.user.is_authenticated
 
             try:
-                person = request.user.person
+                _person = request.user.person
             except Person.DoesNotExist:
                 pages.append(view_func.__name__)
 
