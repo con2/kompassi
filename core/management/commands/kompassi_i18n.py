@@ -42,7 +42,7 @@ def filtered_walk(root):
 def _get_langs(langs, auto_lang):
     langs = set(langs or ())
     if auto_lang:
-        langs.update({l[0] for l in settings.LANGUAGES})
+        langs.update({lang[0] for lang in settings.LANGUAGES})
     if "en" in langs:  # Ignore `en` (as that's the source language)
         langs.remove("en")
     return langs
