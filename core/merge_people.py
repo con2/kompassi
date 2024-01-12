@@ -96,7 +96,10 @@ def compare_persons(left, right):
         return -1
 
     # Otherwise the newer the better
-    return cmp(left.pk, right.pk)
+    if left.pk > right.pk:
+        return -1
+    if right.pk > left.pk:
+        return 1
 
 
 @atomic
