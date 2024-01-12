@@ -9,7 +9,7 @@ from dateutil.parser import parse as parse_date
 from dateutil.tz import tzlocal
 
 from api.utils import JSONSchemaObject
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, ONE_HOUR, slugify, pick_attrs, format_datetime, format_interval
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, ONE_HOUR, slugify, pick_attrs, format_interval
 from core.csv_export import CsvExportMixin
 
 

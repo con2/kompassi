@@ -61,16 +61,13 @@ class Setup:
         )
 
     def setup_labour(self):
-        from core.models import Event, Person
         from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
-            InfoLink,
             JobCategory,
             LabourEventMeta,
             PersonnelClass,
             Qualification,
-            Survey,
         )
         from ...models import SignupExtra, SpecialDiet, KnownLanguage, NativeLanguage
         from django.contrib.contenttypes.models import ContentType
@@ -278,9 +275,7 @@ class Setup:
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(
-            self.event, ["admins", "pos"]
-        )
+        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 
         defaults = dict(
             admin_group=tickets_admin_group,
@@ -349,9 +344,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(
-                event=self.event, name=name, defaults=product_info
-            )
+            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -375,19 +368,14 @@ class Setup:
         from programme.models import (
             AlternativeProgrammeForm,
             Category,
-            Programme,
             ProgrammeEventMeta,
             Role,
-            Room,
             SpecialStartTime,
             Tag,
             TimeBlock,
-            View,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
-            self.event, ["admins", "hosts"]
-        )
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(

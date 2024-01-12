@@ -1,12 +1,9 @@
 from itertools import groupby
 from random import randint
-import re
 import logging
 
-from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.contenttypes.models import ContentType
-from django.forms import ValidationError
 
 from ipware import get_client_ip
 

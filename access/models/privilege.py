@@ -4,7 +4,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import get_code, SLUG_FIELD_PARAMS
-from core.models import Person
 
 
 class Privilege(models.Model):

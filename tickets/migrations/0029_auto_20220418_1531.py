@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tickets", "0028_ticketseventmeta_terms_and_conditions_url"),
     ]

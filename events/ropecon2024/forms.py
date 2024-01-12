@@ -2,14 +2,14 @@ from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from crispy_forms.layout import Layout, Fieldset, HTML
+from crispy_forms.layout import Layout, Fieldset
 
 from core.forms import horizontal_form_helper
 from labour.forms import AlternativeFormMixin, SignupForm
 from labour.models import Signup, JobCategory
 from programme.forms import AlternativeProgrammeFormMixin
 from programme.models import Category, Programme
-from core.utils.form_utils import RenderTemplate, indented_without_label
+from core.utils.form_utils import RenderTemplate
 
 from .models import SignupExtra
 
@@ -152,10 +152,10 @@ RPG_FORM_FIELD_TEXTS = dict(
         ),
     ),
     photography=(
+        _("Programme photography"),
         _(
-            "Programme photography"
+            "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
         ),
-        _("The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."),
     ),
 )
 
@@ -315,9 +315,7 @@ LARP_FORM_FIELD_TEXTS = dict(
     ),
     approximate_length=(
         _("Estimated duration (minutes)"),
-        _(
-            "This includes time for propping, brief and debrief, as well as the actual game."
-        ),
+        _("This includes time for propping, brief and debrief, as well as the actual game."),
     ),
     ropecon2018_sessions=(
         _("Number of runs"),
@@ -379,10 +377,10 @@ LARP_FORM_FIELD_TEXTS = dict(
         ),
     ),
     photography=(
+        _("Programme photography"),
         _(
-            "Programme photography"
+            "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
         ),
-        _("The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."),
     ),
 )
 
@@ -597,10 +595,10 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
         _("Do you give Ropecon permission to record your programme and publish it on the Internet?"),
     ),
     photography=(
+        _("Programme photography"),
         _(
-            "Programme photography"
+            "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
         ),
-        _("The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."),
     ),
 )
 
@@ -749,7 +747,9 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 GAMING_DESK_FORM_FIELD_TEXTS = dict(
     title=(
         _("Title of your game programme"),
-        _("Come up with a catchy, concise title for your game programme. Ropecon reserves the right to edit the title if necessary.<br/>Write the title of the game programme in the language the game will be played in (Finnish or English). You can also write the title in both languages, if you prefer."),
+        _(
+            "Come up with a catchy, concise title for your game programme. Ropecon reserves the right to edit the title if necessary.<br/>Write the title of the game programme in the language the game will be played in (Finnish or English). You can also write the title in both languages, if you prefer."
+        ),
     ),
     description=(
         _("Description"),
@@ -757,15 +757,30 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
             "Describe your game programme to your potential players in an appealing way. Inform players what is expected of them and what themes your game contains. If your game programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your game programme is meant as humorous or entertaining in nature, let it show in the description as well.<br/>Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the game programme if necessary.<br/>Write the description of the game programme in the language the game will be played in (Finnish or English). You can also write the description in both languages, if you prefer."
         ),
     ),
-    category=(_("Category of the game programme"), _("Choose the category that best suits your game programme. Ropecon reserves the right to change the programme category if necessary.<br/>Experience Point - Demo games (i.e. showcasing, demonstrating or running a game) and open games (i.e. running a certain card game or board game for attendees by request) organized at the Experience Point.<br/>Miniature wargames - demonstrations and open games organized at the miniature wargame area.<br/>Tournaments - organizing a game tournament or a competition at the tournament area or the miniature wargame area.<br/>Other game programme - something other than mentioned above, e.g. jigsaw puzzles.")),
+    category=(
+        _("Category of the game programme"),
+        _(
+            "Choose the category that best suits your game programme. Ropecon reserves the right to change the programme category if necessary.<br/>Experience Point - Demo games (i.e. showcasing, demonstrating or running a game) and open games (i.e. running a certain card game or board game for attendees by request) organized at the Experience Point.<br/>Miniature wargames - demonstrations and open games organized at the miniature wargame area.<br/>Tournaments - organizing a game tournament or a competition at the tournament area or the miniature wargame area.<br/>Other game programme - something other than mentioned above, e.g. jigsaw puzzles."
+        ),
+    ),
     approximate_length=(
         _("Estimated duration (minutes)"),
         _(
             "Please make an estimation for the duration of your game programme.<br/>For game programme held at the Experience Point, shorter games of 1-3 hours (60-180 min) are preferred."
         ),
     ),
-    min_players=(_("Minimum number of players"), _("How many players are needed for the game programe to be organized?<br/>Select the minimum number of players carefully: by setting the minimum number of players as low as possible, you maximize the chances for your game programme to be organized successfully.")),
-    max_players=(_("Maximum number of players"), _("If the maximum number of players in your game programme is limited, please set the maximum number of players that can participate at the same time.")),
+    min_players=(
+        _("Minimum number of players"),
+        _(
+            "How many players are needed for the game programe to be organized?<br/>Select the minimum number of players carefully: by setting the minimum number of players as low as possible, you maximize the chances for your game programme to be organized successfully."
+        ),
+    ),
+    max_players=(
+        _("Maximum number of players"),
+        _(
+            "If the maximum number of players in your game programme is limited, please set the maximum number of players that can participate at the same time."
+        ),
+    ),
     rpg_system=(
         _("Game system"),
         _(
@@ -774,9 +789,7 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
     ),
     ropecon2020_materials_language=(
         _("Language used in game materials"),
-        _(
-            "What language is used in the game materials offered for attendees?"
-        ),
+        _("What language is used in the game materials offered for attendees?"),
     ),
     ropecon2021_gamedesk_materials=(
         _("Does your programme require materials from the players?"),
@@ -798,9 +811,7 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
     ),
     notes_from_host=(
         _("Comments"),
-        _(
-            "Is there anything else you would like to tell the game programme coordinators?"
-        ),
+        _("Is there anything else you would like to tell the game programme coordinators?"),
     ),
     is_available_for_panel=(
         _("Panel discussions"),
@@ -808,10 +819,10 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
     ),
     field_of_expertise=(_("My field(s) of expertise"), None),
     photography=(
+        _("Programme photography"),
         _(
-            "Programme photography"
+            "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
         ),
-        _("The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."),
     ),
     ropecon_theme=(
         _("Theme: Past and Future"),
@@ -965,6 +976,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
+
 WORKSHOP_FORM_FIELD_TEXTS = dict(
     title=(
         _("Title of your programme"),
@@ -986,9 +998,7 @@ WORKSHOP_FORM_FIELD_TEXTS = dict(
     ),
     approximate_length=(
         _("Estimated duration (minutes)"),
-        _(
-            "Duration of workshops is either 45 minutes, 105 minutes or 165 minutes."
-        ),
+        _("Duration of workshops is either 45 minutes, 105 minutes or 165 minutes."),
     ),
     ropecon2023_language=(
         _("Choose the language used in your programme"),
@@ -1014,9 +1024,7 @@ WORKSHOP_FORM_FIELD_TEXTS = dict(
     ),
     tech_requirements=(
         _("Other technical needs"),
-        _(
-            "Inform us about other possible technical needs at your workshop."
-        ),
+        _("Inform us about other possible technical needs at your workshop."),
     ),
     ropecon2023_blocked_time_slots=(
         _("When are you NOT able to host your programme?"),
@@ -1034,10 +1042,10 @@ WORKSHOP_FORM_FIELD_TEXTS = dict(
     ),
     field_of_expertise=(_("My field(s) of expertise"), None),
     photography=(
+        _("Programme photography"),
         _(
-            "Programme photography"
+            "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
         ),
-        _("The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."),
     ),
 )
 

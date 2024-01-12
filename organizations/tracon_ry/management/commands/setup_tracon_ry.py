@@ -1,14 +1,11 @@
-from datetime import date, datetime, timedelta
+from datetime import date
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils.timezone import now
 
-from dateutil.tz import tzlocal
 
 from access.models import EmailAliasDomain, EmailAliasType, AccessOrganizationMeta, SMTPServer
-from core.models import Organization, organization
-from core.utils import slugify
+from core.models import Organization
 from membership.models import MembershipOrganizationMeta, Term
 from payments.models.payments_organization_meta import META_DEFAULTS
 
@@ -50,9 +47,7 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
         self.organization.save()
 
     def setup_membership(self):
-        (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(
-            self.organization, ["admins"]
-        )
+        (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
         (members_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["members"])
 
         self.meta, created = MembershipOrganizationMeta.objects.get_or_create(

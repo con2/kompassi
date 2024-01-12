@@ -1,6 +1,3 @@
-from labour.models import PersonnelClass
-
-
 def get_priority(pair):
     personnel_class, job_title = pair
     return personnel_class.priority

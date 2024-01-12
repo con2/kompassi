@@ -1,22 +1,14 @@
 from django.contrib import messages
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods
 
-from api.utils import api_login_required, handle_api_errors
-from core.admin_menus import AdminMenuItem
 from core.csv_export import CSV_EXPORT_FORMATS, csv_response
-from core.models import Organization
 from core.sort_and_filter import Filter
-from core.tabs import Tab
-from core.utils import initialize_form, url
 from event_log.utils import emit
-from tickets.utils import format_price
 
-from ..forms import MemberForm, MembershipForm
 from ..helpers import membership_admin_required
-from ..models import STATE_CHOICES, Membership, MembershipFeePayment
+from ..models import STATE_CHOICES, Membership
 
 
 EXPORT_FORMATS = [
@@ -64,9 +56,7 @@ def membership_admin_members_view(request, vars, organization, format="screen"):
 
         all_filters.append(payment_filters)
     else:
-        messages.warning(
-            request, "Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä."
-        )
+        messages.warning(request, "Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä.")
         payment_filters = None
 
     filter_active = any(f.selected_slug != f.default for f in all_filters)

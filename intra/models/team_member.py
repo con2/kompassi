@@ -156,7 +156,11 @@ def on_team_member_update(sender, instance, **kwargs):
 
     # only one primary team per person per event
     if instance.is_primary_team:
-        TeamMember.objects.filter(team__event=instance.event, person=instance.person, is_primary_team=True,).exclude(
+        TeamMember.objects.filter(
+            team__event=instance.event,
+            person=instance.person,
+            is_primary_team=True,
+        ).exclude(
             id=instance.id,
         ).update(is_primary_team=False)
 

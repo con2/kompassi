@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0100_programme_hitpoint2020_preferred_time_slots"),
     ]

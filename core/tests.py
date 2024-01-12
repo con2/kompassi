@@ -1,7 +1,6 @@
 from core.utils.time_utils import format_date_range
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
-from django.forms import ValidationError
 from django.test import TestCase
 from django.utils.timezone import get_current_timezone
 

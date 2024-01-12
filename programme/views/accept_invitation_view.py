@@ -1,11 +1,10 @@
 from django.db import transaction
 from django.contrib import messages
-from django.forms.models import modelformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import gettext_lazy as _
 
 from core.helpers import person_required
-from core.utils import initialize_form, initialize_form_set, set_defaults
+from core.utils import initialize_form
 
 from ..forms import ProgrammeSelfServiceForm, get_sired_invitation_formset
 from ..helpers import programme_event_required
@@ -22,14 +21,10 @@ def accept_invitation_view(request, event, code):
     is_already_used = bool(existing_role or invitation.state == "used")
 
     if is_already_used and programme.host_can_edit:
-        messages.warning(
-            request, _("You have already accepted this invitation. You can edit the programme below.")
-        )
+        messages.warning(request, _("You have already accepted this invitation. You can edit the programme below."))
         return redirect("programme:profile_detail_view", programme.pk)
     elif is_already_used and not programme.host_can_edit:
-        messages.error(
-            request, _("You have already accepted this invitation. You can no longer edit the programme.")
-        )
+        messages.error(request, _("You have already accepted this invitation. You can no longer edit the programme."))
         return redirect("programme:profile_view")
     elif not (invitation.state == "valid" and programme.host_can_edit):
         messages.error(request, _("The invitation is no longer valid."))
@@ -49,9 +44,7 @@ def accept_invitation_view(request, event, code):
         prefix="needs",
     )
 
-    sired_invitation_formset = get_sired_invitation_formset(
-        request, num_extra_invites=invitation.extra_invites_left
-    )
+    sired_invitation_formset = get_sired_invitation_formset(request, num_extra_invites=invitation.extra_invites_left)
 
     forms = [form, sired_invitation_formset]
 
@@ -91,9 +84,7 @@ def accept_invitation_view(request, event, code):
 
             messages.success(
                 request,
-                _(
-                    "Thank you for accepting the invitation. You can change the information later from your profile."
-                ),
+                _("Thank you for accepting the invitation. You can change the information later from your profile."),
             )
 
             return redirect("programme:profile_detail_view", programme.pk)

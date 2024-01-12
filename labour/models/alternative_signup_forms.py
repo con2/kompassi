@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, set_defaults, set_attrs
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, set_defaults
 
 
 class AlternativeSignupForm(models.Model):

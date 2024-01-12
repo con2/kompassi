@@ -147,12 +147,10 @@ class Setup:
             # Half hours
             # [:-1] – discard 22:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(
-                    event=self.event, start_time=hour_start_time.replace(minute=30)
-                )
+                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
 
     def setup_labour(self):
-        from core.models import Event, Person
+        from core.models import Person
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
@@ -323,9 +321,7 @@ class Setup:
             team, created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
-                defaults=dict(
-                    name=team_name, order=self.get_ordering_number(), group=team_group, email=email
-                ),
+                defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
 
 

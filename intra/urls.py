@@ -1,5 +1,3 @@
-from django.conf.urls import include
-
 from .views import (
     intra_admin_privileges_view,
     intra_admin_team_member_view,

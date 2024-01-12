@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tickets", "0024_ticketseventmeta_pos_access_group"),
     ]

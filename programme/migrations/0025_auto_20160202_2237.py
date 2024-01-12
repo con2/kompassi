@@ -37,7 +37,6 @@ def populate_slug(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0024_auto_20160202_2236"),
     ]

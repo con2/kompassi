@@ -1,4 +1,4 @@
-from django.db import models, migrations
+from django.db import migrations
 
 
 def forwards_func(apps, schema_editor):
@@ -36,7 +36,6 @@ def forwards_func(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour", "0002_auto_20141115_1102"),
         ("badges", "0001_initial"),

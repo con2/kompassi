@@ -10,7 +10,6 @@ def populate_accommodation_limit_group(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tickets", "0008_auto_20151108_1905"),
     ]

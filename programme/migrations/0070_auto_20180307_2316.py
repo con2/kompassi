@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0069_ropecon2018_kp_20180306_0934"),
     ]

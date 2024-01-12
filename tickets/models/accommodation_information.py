@@ -22,9 +22,7 @@ class AccommodationInformation(models.Model, CsvExportMixin):
     )
 
     # XXX ugly hack: We hijack limit groups to represent (night, accommodation centre).
-    limit_groups = models.ManyToManyField(
-        LimitGroup, blank=True, related_name="accommodation_information_set"
-    )
+    limit_groups = models.ManyToManyField(LimitGroup, blank=True, related_name="accommodation_information_set")
 
     # allow blank because these are pre-created
     first_name = models.CharField(max_length=100, blank=True, default="", verbose_name="Etunimi")

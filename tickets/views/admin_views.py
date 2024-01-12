@@ -4,7 +4,7 @@ from collections import defaultdict
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.db.models import Case, IntegerField, Q, Sum, When
+from django.db.models import Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import now
@@ -15,7 +15,6 @@ from django.views.decorators.http import require_safe, require_http_methods, req
 from csp.decorators import csp_exempt
 from lippukala.views import POSView
 from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC
-from reportlab.pdfgen import canvas
 
 from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
 from core.sort_and_filter import Filter
@@ -202,8 +201,7 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
     if request.method == "POST":
         if customer_form.is_valid() and all(
-            form.fields["count"].widget.attrs.get("readonly", False) or form.is_valid()
-            for form in order_product_forms
+            form.fields["count"].widget.attrs.get("readonly", False) or form.is_valid() for form in order_product_forms
         ):
 
             def save():
@@ -298,9 +296,7 @@ def tickets_admin_tools_view(request, vars, event):
 
     vars.update(
         unpaid_cancel_hours=unpaid_cancel_hours,
-        num_unpaid_orders_to_cancel=Order.get_unpaid_orders_to_cancel(
-            event, hours=unpaid_cancel_hours
-        ).count(),
+        num_unpaid_orders_to_cancel=Order.get_unpaid_orders_to_cancel(event, hours=unpaid_cancel_hours).count(),
     )
 
     return render(request, "tickets_admin_tools_view.pug", vars)
@@ -380,9 +376,7 @@ def tickets_admin_accommodation_view(request, event, limit_group_id=None):
             accommodation_information_set__isnull=False,
         )
 
-        filters = [
-            (limit_group_id == lg.id, lg) for lg in LimitGroup.objects.filter(q).distinct().order_by("id")
-        ]
+        filters = [(limit_group_id == lg.id, lg) for lg in LimitGroup.objects.filter(q).distinct().order_by("id")]
 
         vars.update(
             accommodees=accommodees,
@@ -426,7 +420,7 @@ def tickets_admin_accommodation_presence_view(request, event, limit_group_id, ac
         elif action == "arrived":
             accommodee.state = State.ARRIVED
             event_type = "tickets.accommodation.presence.arrived"
-            message = _(f"Accommodee marked as arrived.")
+            message = _("Accommodee marked as arrived.")
 
         else:
             event_type = None
@@ -474,7 +468,7 @@ def tickets_admin_accommodation_create_view(request, event, limit_group_id):
             info.limit_groups.set([limit_group])
 
             emit(
-                f"tickets.accommodation.presence.arrived",
+                "tickets.accommodation.presence.arrived",
                 request=request,
                 event=event,
                 accommodation_information=info,
@@ -499,9 +493,7 @@ def tickets_admin_accommodation_create_view(request, event, limit_group_id):
 class KompassiPOSView(POSView):
     def get_valid_codes(self, request):
         # Kompassi uses the MIR state for cancelled orders.
-        return (
-            super().get_valid_codes(request).exclude(status__in=(MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC))
-        )
+        return super().get_valid_codes(request).exclude(status__in=(MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC))
 
 
 lippukala_pos_view = KompassiPOSView.as_view()

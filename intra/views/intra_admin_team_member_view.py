@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from core.models import Person
 from core.utils import initialize_form
 
-from ..forms import TeamMemberForm, PrivilegesForm
+from ..forms import TeamMemberForm
 from ..helpers import intra_admin_required
 from ..models import Team, TeamMember
 

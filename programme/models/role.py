@@ -1,10 +1,7 @@
 from django.db import models
-from django.dispatch import receiver
-from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, url
-from core.models import OneTimeCode, OneTimeCodeLite
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 
 
 class Role(models.Model):

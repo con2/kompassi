@@ -18,16 +18,14 @@ def noop_context():
     yield
 
 
-def setup_should_run(
-    run_id=settings.KOMPASSI_SETUP_RUN_ID, expire_seconds=settings.KOMPASSI_SETUP_EXPIRE_SECONDS
-):
+def setup_should_run(run_id=settings.KOMPASSI_SETUP_RUN_ID, expire_seconds=settings.KOMPASSI_SETUP_EXPIRE_SECONDS):
     """
     When deployed under Kubernetes and using multiple replicas, we want only the first replica
     to perform the setup. This is achieved using an environment variable KOMPASSI_SETUP_RUN_ID
     that is filled in in the Deployment to contain the pod template hash.
     """
     if not run_id:
-        logger.info(f"manage.py setup: KOMPASSI_SETUP_RUN_ID not supplied, running unconditionally.")
+        logger.info("manage.py setup: KOMPASSI_SETUP_RUN_ID not supplied, running unconditionally.")
         return True
 
     cache_key = f"kompassi:setup_should_run:{run_id}"
@@ -49,30 +47,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if not setup_should_run():
-            logger.info(
-                f"manage.py setup: has already run for {settings.KOMPASSI_SETUP_RUN_ID}, doing nothing"
-            )
+            logger.info(f"manage.py setup: has already run for {settings.KOMPASSI_SETUP_RUN_ID}, doing nothing")
             return
 
         commands = get_commands()
 
         organizations = [
-            app_name.split(".")[-1]
-            for app_name in settings.INSTALLED_APPS
-            if app_name.startswith("organizations.")
+            app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("organizations.")
         ]
         organization_commands = [
-            command
-            for command in (f"setup_{organization}" for organization in organizations)
-            if command in commands
+            command for command in (f"setup_{organization}" for organization in organizations) if command in commands
         ]
 
-        events = [
-            app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("events.")
-        ]
-        event_commands = [
-            command for command in (f"setup_{event}" for event in events) if command in commands
-        ]
+        events = [app_name.split(".")[-1] for app_name in settings.INSTALLED_APPS if app_name.startswith("events.")]
+        event_commands = [command for command in (f"setup_{event}" for event in events) if command in commands]
 
         management_commands = [
             # (('kompassi_i18n', '-acv2'), dict()),

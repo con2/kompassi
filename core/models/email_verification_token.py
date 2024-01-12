@@ -28,6 +28,4 @@ class EmailVerificationToken(OneTimeCode):
         vars = dict(link=request.build_absolute_uri(url("core_email_verification_view", self.code)))
         language = get_language()
 
-        return render_to_string(
-            f"emails/{language}/core_email_verification_message.eml", vars, request=request
-        )
+        return render_to_string(f"emails/{language}/core_email_verification_message.eml", vars, request=request)

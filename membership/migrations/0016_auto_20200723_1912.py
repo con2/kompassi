@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0034_event_cancelled"),
         ("membership", "0015_auto_20190921_1449"),

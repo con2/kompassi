@@ -21,7 +21,6 @@ def populate_payments_organization_meta(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("payments", "0005_payments_organization_meta"),
     ]

@@ -1,16 +1,16 @@
 from django.db.models import F, Sum
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page, cache_control
+from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.http import require_safe
+from lippukala.consts import USED
+from lippukala.models import Code
+from paikkala.models import Ticket
 
 from core.models import Event
-from programme.models.programme import Programme, PROGRAMME_STATES_LIVE
-from labour.models import Signup
+from labour.models import ArchivedSignup, Signup
+from programme.models.programme import PROGRAMME_STATES_LIVE, Programme
 from tickets.models import Order, OrderProduct
 from tickets.utils import format_price
-from lippukala.models import Code
-from lippukala.consts import USED
-from paikkala.models import Ticket
 
 
 @require_safe
@@ -27,12 +27,15 @@ def core_stats_view(request):
         .aggregate(revenue=Sum("sum"))["revenue"]
     )
 
+    signup_count = Signup.objects.count() + ArchivedSignup.objects.count()
+    accepted_signup_count = Signup.objects.filter(time_accepted__isnull=False).count() + ArchivedSignup.objects.count()
+
     vars = dict(
         events_count=Event.objects.count(),
         program_count=Programme.objects.count(),
         accepted_program_count=Programme.objects.filter(state__in=PROGRAMME_STATES_LIVE).count(),
-        signup_count=Signup.objects.count(),
-        accepted_signup_count=Signup.objects.filter(time_accepted__isnull=False).count(),
+        signup_count=signup_count,
+        accepted_signup_count=accepted_signup_count,
         confirmed_order_count=Order.objects.filter(confirm_time__isnull=False).count(),
         paid_order_count=Order.objects.filter(
             confirm_time__isnull=False,

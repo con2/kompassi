@@ -45,7 +45,6 @@ def make_role_event_specific(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour", "0016_auto_20160128_1805"),
         ("programme", "0019_auto_20160201_0003"),

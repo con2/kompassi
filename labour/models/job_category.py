@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
@@ -50,7 +49,6 @@ class JobCategory(models.Model):
 
     @classmethod
     def get_or_create_dummy(cls, name="Courier"):
-        from core.models import Event
         from .labour_event_meta import LabourEventMeta
         from .personnel_class import PersonnelClass
 

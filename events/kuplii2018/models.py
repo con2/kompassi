@@ -1,6 +1,5 @@
 from django.db import models
 
-from core.utils import validate_slug
 from labour.models import SignupExtraBase
 
 

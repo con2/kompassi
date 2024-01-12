@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from crispy_forms.layout import Layout, Fieldset
+from crispy_forms.layout import Layout
 
 from core.utils import horizontal_form_helper
 from programme.models import AlternativeProgrammeFormMixin, Category, Programme
@@ -53,14 +53,10 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields["category"].queryset = Category.objects.filter(event=event, public=True)
 
         self.fields["category"].label = _("What type of programme are you suggesting?")
-        self.fields["category"].help_text = _(
-            "See the Hosting Guide for descriptions of the programme types."
-        )
+        self.fields["category"].help_text = _("See the Hosting Guide for descriptions of the programme types.")
 
         self.fields["title"].label = _("Name of programme item")
-        self.fields["title"].help_text = _(
-            "Solmukohta 2024 reserves the right to edit the name for length or clarity."
-        )
+        self.fields["title"].help_text = _("Solmukohta 2024 reserves the right to edit the name for length or clarity.")
 
         # prevent translation; single translated label looks funny
         self.fields["description"].label = "Description"
@@ -93,9 +89,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "What’s the maximum number of participants? (If unlimited, leave this blank.)",
         )
 
-        self.fields["notes_from_host"].help_text = _(
-            "If you have anything else to say, this is the place for it!"
-        )
+        self.fields["notes_from_host"].help_text = _("If you have anything else to say, this is the place for it!")
 
     def get_excluded_field_defaults(self):
         return dict()

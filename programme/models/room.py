@@ -2,7 +2,6 @@ import logging
 import os
 
 from django.db import models
-from django.db.models import Max
 from django.db.transaction import atomic
 from django.utils.translation import gettext_lazy as _
 
@@ -16,9 +15,7 @@ logger = logging.getLogger("kompassi")
 
 class Room(models.Model):
     id: int
-    event = models.ForeignKey(
-        "core.Event", on_delete=models.CASCADE, null=True, blank=True, related_name="rooms"
-    )
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, null=True, blank=True, related_name="rooms")
     name = models.CharField(max_length=ROOM_NAME_MAX_LENGTH)
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)

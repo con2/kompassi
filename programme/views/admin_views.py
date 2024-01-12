@@ -32,9 +32,7 @@ logger = logging.getLogger("kompassi")
 @programme_admin_required
 def admin_view(request, vars, event, format="screen"):
     programmes = (
-        Programme.objects.filter(category__event=event)
-        .select_related("category__event")
-        .select_related("room")
+        Programme.objects.filter(category__event=event).select_related("category__event").select_related("room")
         # Does not do the needful due to formatted_organizers operating on the "through" model
         # .prefetch_related('organizers')
     )

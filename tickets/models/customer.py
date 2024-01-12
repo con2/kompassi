@@ -73,9 +73,7 @@ class Customer(models.Model):
 
     @property
     def sanitized_name(self):
-        return "".join(
-            i for i in self.name if i.isalpha() or i in ("ä", "Ä", "ö", "Ö", "å", "Å", "-", "'", " ")
-        )
+        return "".join(i for i in self.name if i.isalpha() or i in ("ä", "Ä", "ö", "Ö", "å", "Å", "-", "'", " "))
 
     @property
     def name_and_email(self):

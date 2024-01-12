@@ -9,7 +9,7 @@ from core.helpers import person_required
 from core.utils import initialize_form
 
 from ..forms import ProgrammeSelfServiceForm, get_sired_invitation_formset
-from ..models import Programme, ProgrammeRole, Invitation, FreeformOrganizer
+from ..models import ProgrammeRole, Invitation, FreeformOrganizer
 
 
 logger = logging.getLogger("kompassi")

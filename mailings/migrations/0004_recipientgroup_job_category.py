@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour", "0019_auto_20160207_2330"),
         ("mailings", "0003_message_channel_help"),

@@ -1,10 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from badges.models import Badge
-from core.models import Event
 from labour.models.signup import Signup
-
-from ...models import SignupExtra
 
 
 TITLE_ALLOWLIST = {

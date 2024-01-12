@@ -1,7 +1,6 @@
 import logging
 
 from oauth2_provider.oauth2_validators import OAuth2Validator
-from oauth2_provider.exceptions import FatalClientError
 
 
 logger = logging.getLogger("kompassi")

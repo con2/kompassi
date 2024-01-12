@@ -1,16 +1,14 @@
 from django.contrib.auth.decorators import user_passes_test
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from django.utils.timezone import now
 from django.views.decorators.http import require_safe
-from django.http import HttpResponse
-
 from paikkala.models import Ticket
 
 from badges.models import Badge
-from core.models import Event
 from core.excel_export import XlsxWriter
-from tickets.models import Order
+from core.models import Event
 from event_log.utils import emit
+from tickets.models import Order
 
 
 @require_safe
@@ -93,7 +91,7 @@ def core_fobba_export_view(request, event_slug, format="xlsx"):
         )
 
     for ticket in Ticket.objects.filter(program__kompassi_programme__category__event=event):
-        person = ticket.user.person
+        person = ticket.user.person  # type: ignore
 
         id_fields = (
             person.surname,

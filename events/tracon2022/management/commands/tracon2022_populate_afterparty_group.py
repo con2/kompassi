@@ -4,9 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from core.models import Event
-from core.utils import log_get_or_create
 from labour.models import LabourEventMeta
-from mailings.models import RecipientGroup
 
 from ...models import SignupExtra
 

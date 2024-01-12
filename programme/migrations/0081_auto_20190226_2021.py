@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("ropecon2019", "0001_initial"),
         ("programme", "0080_alternativeprogrammeform_is_active"),

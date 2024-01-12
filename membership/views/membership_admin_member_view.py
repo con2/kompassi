@@ -1,20 +1,16 @@
 from datetime import date
 
 from django.contrib import messages
-from django.http import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods
 
-from api.utils import api_login_required, handle_api_errors
 from core.tabs import Tab
 from core.utils import initialize_form
 from event_log.utils import emit
-from tickets.utils import format_price
 
 from ..forms import MemberForm, MembershipFeePaymentForm, MembershipForm
 from ..helpers import membership_admin_required
-from ..models import STATE_CHOICES, Membership, MembershipFeePayment
+from ..models import Membership, MembershipFeePayment
 
 
 @membership_admin_required

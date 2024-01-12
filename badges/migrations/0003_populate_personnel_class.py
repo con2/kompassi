@@ -1,4 +1,4 @@
-from django.db import models, migrations
+from django.db import migrations
 
 
 def populate_badge_personnel_class(apps, schema_editor):
@@ -36,7 +36,6 @@ def populate_batch_personnel_class(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("badges", "0002_personnel_class"),
     ]

@@ -1,5 +1,4 @@
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 
 from core.admin_menus import AdminMenuItem
 from core.utils import url

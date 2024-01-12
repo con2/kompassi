@@ -7,8 +7,6 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from core.utils import slugify
-
 
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
@@ -149,9 +147,7 @@ class Setup:
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(
-                    event=self.event, start_time=hour_start_time.replace(minute=30)
-                )
+                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
 
         default_form, created = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,

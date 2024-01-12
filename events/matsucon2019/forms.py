@@ -4,7 +4,7 @@ from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin
-from labour.models import Signup, JobCategory, WorkPeriod
+from labour.models import Signup, JobCategory
 
 from .models import SignupExtra
 

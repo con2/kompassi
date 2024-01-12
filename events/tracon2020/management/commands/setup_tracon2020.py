@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from django.urls import reverse
 
 from dateutil.tz import tzlocal
 
@@ -58,7 +57,6 @@ class Setup:
 
     def setup_labour(self):
         from core.models import Event, Person
-        from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
@@ -68,7 +66,7 @@ class Setup:
             Qualification,
             Survey,
         )
-        from ...models import SignupExtra, Night, Poison
+        from ...models import SignupExtra, Night
         from django.contrib.contenttypes.models import ContentType
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
@@ -233,9 +231,7 @@ class Setup:
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(
-            self.event, ["admins", "pos"]
-        )
+        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 
         defaults = dict(
             admin_group=tickets_admin_group,
@@ -374,9 +370,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(
-                event=self.event, name=name, defaults=product_info
-            )
+            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -392,19 +386,14 @@ class Setup:
         from programme.models import (
             AlternativeProgrammeForm,
             Category,
-            Programme,
             ProgrammeEventMeta,
             Role,
-            Room,
             SpecialStartTime,
             Tag,
             TimeBlock,
-            View,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
-            self.event, ["admins", "hosts"]
-        )
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -477,9 +466,7 @@ class Setup:
                 self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),
             ),
         ]:
-            TimeBlock.objects.get_or_create(
-                event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
-            )
+            TimeBlock.objects.get_or_create(event=self.event, start_time=start_time, defaults=dict(end_time=end_time))
 
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Quarter hours
@@ -540,9 +527,7 @@ class Setup:
             self.event.labour_event_meta.get_group("accepted"),
             self.event.programme_event_meta.get_group("hosts"),
         ]:
-            GroupPrivilege.objects.get_or_create(
-                group=group, privilege=privilege, defaults=dict(event=self.event)
-            )
+            GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
         cc_group = self.event.labour_event_meta.get_group("conitea")
 
@@ -632,9 +617,7 @@ class Setup:
                 title=coach_title,
                 defaults=dict(
                     room=Room.objects.get_or_create(event=self.event, name=room_title)[0],
-                    start_time=(saturday + timedelta(days=14)).replace(
-                        hour=hour, minute=0, second=0, tzinfo=self.tz
-                    ),
+                    start_time=(saturday + timedelta(days=14)).replace(hour=hour, minute=0, second=0, tzinfo=self.tz),
                     length=4 * 60,  # minutes
                     is_using_paikkala=True,
                     is_paikkala_public=False,

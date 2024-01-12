@@ -3,20 +3,18 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.shortcuts import render, redirect
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_http_methods
 from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.http import require_http_methods
 
 from event_log.utils import emit
 
-from ..models import Person
 from ..forms import PasswordForm, PersonForm
-from ..utils import initialize_form
 from ..helpers import person_required
-
+from ..models import Person
+from ..utils import initialize_form
 
 logger = logging.getLogger("kompassi")
 

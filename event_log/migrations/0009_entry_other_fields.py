@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("event_log", "0008_subscription_job_category_filter"),
     ]

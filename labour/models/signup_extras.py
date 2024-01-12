@@ -1,9 +1,6 @@
 from functools import cached_property
 from typing import Literal
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-
-from core.utils.misc_utils import pick_attrs
 
 
 class SignupExtraMixin:
@@ -66,12 +63,8 @@ class SignupExtraMixin:
 
 
 class SignupExtraBase(SignupExtraMixin, models.Model):
-    event = models.ForeignKey(
-        "core.Event", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extras"
-    )
-    person = models.OneToOneField(
-        "core.Person", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra"
-    )
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extras")
+    person = models.OneToOneField("core.Person", on_delete=models.CASCADE, related_name="%(app_label)s_signup_extra")
 
     is_active = models.BooleanField(default=True)
 

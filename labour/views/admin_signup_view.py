@@ -1,38 +1,22 @@
-from collections import Counter, OrderedDict, namedtuple
 import json
 
-import datetime
 
-from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.urls import reverse
-from django.db.models import Q, Sum
-from django.http import Http404, HttpResponse
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.decorators.http import require_http_methods, require_safe
-from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 
-from dateutil.tz import tzlocal
 
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
-from core.sort_and_filter import Filter, Sorter
-from core.models import Event, Person
+from core.models import Person
 from core.tabs import Tab
-from core.utils import initialize_form, url
+from core.utils import initialize_form
 
-from ..forms import AdminPersonForm, SignupForm, SignupAdminForm
-from ..helpers import labour_admin_required, labour_event_required
-from ..models.constants import SIGNUP_STATE_NAMES
+from ..forms import AdminPersonForm
+from ..helpers import labour_admin_required
 from ..models import (
     JobCategory,
-    LabourEventMeta,
-    PersonQualification,
-    Qualification,
     Signup,
 )
-from ..proxies.signup.onboarding import SignupOnboardingProxy
 
 from .view_helpers import initialize_signup_forms
 

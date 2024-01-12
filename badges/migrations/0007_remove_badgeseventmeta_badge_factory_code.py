@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("badges", "0006_badgeseventmeta_real_name_must_be_visible"),
     ]

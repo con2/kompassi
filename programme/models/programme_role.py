@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from six import text_type
 
 from core.csv_export import CsvExportMixin
 
@@ -84,8 +83,6 @@ class ProgrammeRole(models.Model, CsvExportMixin):
 
     @property
     def extra_invites_used(self):
-        from .invitation import Invitation
-
         return self.sired_invitation_set.count()
 
     @property

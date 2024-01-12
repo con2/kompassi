@@ -4,7 +4,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("enrollment", "0003_auto_20170417_2259"),
     ]

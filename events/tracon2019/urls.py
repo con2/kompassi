@@ -1,4 +1,3 @@
-
 from .views import tracon2019_afterparty_participants_view, tracon2019_afterparty_summary_view
 from django.urls import re_path
 

@@ -4,7 +4,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour", "0032_survey_override_does_not_apply_message"),
     ]

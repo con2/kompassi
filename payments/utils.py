@@ -1,7 +1,4 @@
 import hmac
-from typing import Dict
-
-import requests
 
 
 def calculate_hmac(

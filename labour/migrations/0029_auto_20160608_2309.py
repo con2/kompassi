@@ -7,7 +7,6 @@ import re
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour", "0028_auto_20160608_0018"),
     ]

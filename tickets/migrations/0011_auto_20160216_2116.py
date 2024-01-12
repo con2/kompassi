@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0022_auto_20160202_2235"),
         ("tickets", "0010_product_requires_shirt_size"),

@@ -2,8 +2,6 @@ from django.db import models
 
 from labour.models import SignupExtraBase
 
-from core.utils import validate_slug
-
 
 TOTAL_WORK_CHOICES = [
     ("8h", "8 tuntia"),

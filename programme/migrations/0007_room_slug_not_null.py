@@ -3,7 +3,6 @@ import django.core.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0006_room_slug"),
     ]

@@ -1,4 +1,3 @@
-
 from .views import directory_view, directory_person_view
 from django.urls import re_path
 

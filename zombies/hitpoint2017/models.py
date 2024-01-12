@@ -1,7 +1,5 @@
 from django.db import models
 
-from labour.models import ObsoleteSignupExtraBaseV1
-
 
 NIGHT_WORK_CHOICES = [
     ("miel", "Työskentelen mielelläni yövuorossa"),

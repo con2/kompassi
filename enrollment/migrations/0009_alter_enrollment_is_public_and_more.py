@@ -5,21 +5,34 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0037_alter_organization_panel_css_class'),
-        ('enrollment', '0008_auto_20190409_2051'),
+        ("core", "0037_alter_organization_panel_css_class"),
+        ("enrollment", "0008_auto_20190409_2051"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='enrollment',
-            name='is_public',
-            field=models.BooleanField(choices=[(True, 'Sallin nimeni julkaisemisen osallistujalistassa'), (False, 'Kiellän nimeni julkaisemisen osallistujalistassa')], help_text='Tästä tapahtumasta julkistetaan osallistujalista, jossa näkyvät niiden osallistujien nimet, jotka ovat antaneet siihen luvan. Nimesi näytetään valitsemassasi muodossa, jonka voit tarkistaa ja muuttaa <a href="/profile" target="_blank">profiilissasi</a>.', null=True, verbose_name='Näkyminen osallistujalistassa'),
+            model_name="enrollment",
+            name="is_public",
+            field=models.BooleanField(
+                choices=[
+                    (True, "Sallin nimeni julkaisemisen osallistujalistassa"),
+                    (False, "Kiellän nimeni julkaisemisen osallistujalistassa"),
+                ],
+                help_text='Tästä tapahtumasta julkistetaan osallistujalista, jossa näkyvät niiden osallistujien nimet, jotka ovat antaneet siihen luvan. Nimesi näytetään valitsemassasi muodossa, jonka voit tarkistaa ja muuttaa <a href="/profile" target="_blank">profiilissasi</a>.',
+                null=True,
+                verbose_name="Näkyminen osallistujalistassa",
+            ),
         ),
         migrations.AlterField(
-            model_name='enrollmenteventmeta',
-            name='event',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='%(class)s', serialize=False, to='core.event'),
+            model_name="enrollmenteventmeta",
+            name="event",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                primary_key=True,
+                related_name="%(class)s",
+                serialize=False,
+                to="core.event",
+            ),
         ),
     ]

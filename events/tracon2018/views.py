@@ -22,7 +22,6 @@ def tracon2018_afterparty_participants_view(request, vars, event):
     filename = "{event.slug}_afterparty_participants_{timestamp}.xlsx".format(
         event=event,
         timestamp=now().strftime("%Y%m%d%H%M%S"),
-        format=format,
     )
 
     emit("core.person.exported", request=request, event=event)

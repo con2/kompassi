@@ -1,4 +1,4 @@
-from event_log.utils import log_creations, INSTANCE
+from event_log.utils import log_creations
 
 from ..models import Signup
 

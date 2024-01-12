@@ -49,8 +49,7 @@ class Survey(models.Model):
         default="",
         verbose_name=_("Message when denied access"),
         help_text=_(
-            "This message will be shown to the user when they attempt to access a query they don't"
-            "have access to."
+            "This message will be shown to the user when they attempt to access a query they don't" "have access to."
         ),
     )
 

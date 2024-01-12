@@ -1,17 +1,14 @@
 import logging
 from functools import wraps
-from typing import TYPE_CHECKING, Literal, Protocol, Callable
+from typing import TYPE_CHECKING, Callable, Literal, Protocol
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
-from django.http import HttpRequest
-
-from functools import wraps
 
 from event_log.utils import emit
 
-from .models.cbac_entry import CBACEntry, Claims
 from .exceptions import CBACPermissionDenied
+from .models.cbac_entry import CBACEntry, Claims
 
 if TYPE_CHECKING:
     from core.models.event import Event

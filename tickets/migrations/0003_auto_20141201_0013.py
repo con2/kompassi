@@ -2,7 +2,6 @@ from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tickets", "0002_ticketseventmeta_front_page_text"),
     ]

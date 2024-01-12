@@ -7,7 +7,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0034_event_cancelled"),
         ("payments", "0003_payment_event"),

@@ -18,7 +18,6 @@ def populate_view_room(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0061_auto_20171125_1229"),
     ]

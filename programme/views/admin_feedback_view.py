@@ -1,9 +1,6 @@
-from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404, render
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import render
 from django.views.decorators.http import require_safe
 
-from core.utils import initialize_form
 
 from ..helpers import programme_admin_required
 from ..models import ProgrammeFeedback

@@ -1,15 +1,9 @@
 import logging
 
-from django.http import HttpResponseRedirect, HttpResponseNotAllowed, HttpResponse
-from django.conf import settings
+from django.http import HttpResponse
 from django.contrib import messages
-from django.core.exceptions import ValidationError
-from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_GET
 
-from csp.decorators import csp_update
-from core.utils import url
 
 from .helpers import valid_signature_required
 

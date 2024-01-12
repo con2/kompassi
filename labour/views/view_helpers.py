@@ -1,5 +1,3 @@
-from ..models import JobCategory
-
 from core.utils import initialize_form
 
 

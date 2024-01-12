@@ -13,7 +13,6 @@ def populate_slug(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0090_alternativeprogrammeform_role"),
     ]

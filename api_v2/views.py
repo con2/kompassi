@@ -7,8 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 from oauth2_provider.views.generic import ReadWriteScopedResourceView
 from oauth2_provider.views import AuthorizationView
-from oauth2_provider.exceptions import FatalClientError
-from oauthlib.oauth2 import OAuth2Error
 
 from core.models import Person, Event
 

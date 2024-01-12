@@ -2,7 +2,6 @@ from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0016_person_allow_work_history_sharing"),
         ("access", "0007_accessorganizationmeta"),

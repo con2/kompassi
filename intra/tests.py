@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import IntraEventMeta, Team, TeamMember
+from .models import IntraEventMeta, TeamMember
 
 
 class TeamMembersTestCase(TestCase):

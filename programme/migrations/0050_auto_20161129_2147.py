@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0023_auto_20160704_2155"),
         ("hitpoint2017", "0003_timeslot"),

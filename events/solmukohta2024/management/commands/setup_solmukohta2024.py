@@ -7,8 +7,6 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from core.utils import slugify
-
 
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
@@ -77,9 +75,7 @@ class Setup:
         assert self.event.start_time
         assert self.event.end_time
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
-            self.event, ["admins", "hosts"]
-        )
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -381,9 +377,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(
-                event=self.event, name=name, defaults=product_info
-            )
+            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)  # type: ignore

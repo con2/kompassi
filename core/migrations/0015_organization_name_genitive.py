@@ -14,7 +14,6 @@ def populate_name_genitive(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0014_auto_20151011_2016"),
     ]

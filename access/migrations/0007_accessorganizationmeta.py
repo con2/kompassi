@@ -3,7 +3,6 @@ import core.models.group_management_mixin
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0016_person_allow_work_history_sharing"),
         ("auth", "0001_initial"),

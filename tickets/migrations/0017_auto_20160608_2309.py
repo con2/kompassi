@@ -7,7 +7,6 @@ import re
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tickets", "0016_remove_ticketseventmeta_plain_contact_email"),
     ]

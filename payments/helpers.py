@@ -1,7 +1,7 @@
 import logging
 from functools import wraps
 
-from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 
 from .models import CheckoutPayment

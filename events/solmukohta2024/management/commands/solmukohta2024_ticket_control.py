@@ -33,7 +33,7 @@ from tickets.models import Order
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 # TODO: FILL IN! The ID and range of a sample spreadsheet.
-SPREADSHEET_ID = ""
+SPREADSHEET_ID = "1WCF0J7Aw0Hzd-rU9txQKnyzGIK4nF85sLvKm1YM1TyY"
 ORDER_NUMBER_RANGE = "Form responses 1!C:C"
 
 # Forward results will be stored in a column on the same sheet as original responses.

@@ -2,7 +2,6 @@ from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("membership", "0002_membershiporganizationmeta_receiving_applications"),
     ]

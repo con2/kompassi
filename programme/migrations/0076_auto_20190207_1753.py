@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("paikkala", "0010_nonblank_room"),
         ("programme", "0075_auto_20181019_1918"),

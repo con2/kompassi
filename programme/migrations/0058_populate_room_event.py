@@ -38,7 +38,6 @@ def populate_room_event(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0029_auto_20170827_1818"),
         ("programme", "0057_room_event"),

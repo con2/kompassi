@@ -1,16 +1,14 @@
-from datetime import date, datetime
 from typing import Any
 
 from django import forms
 from django.db.models import Q
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
 from core.forms import PersonForm
 from core.models import Person
-from core.utils import horizontal_form_helper, indented_without_label, slugify
+from core.utils import horizontal_form_helper, slugify
 
 from .models import (
     AlternativeFormMixin,
@@ -151,9 +149,7 @@ class SignupAdminForm(forms.ModelForm):
 
         self.fields["job_categories_accepted"].queryset = JobCategory.objects.filter(event=event)
         self.fields["job_categories_rejected"].queryset = self.fields["job_categories_accepted"].queryset
-        self.fields["personnel_classes"].queryset = PersonnelClass.objects.filter(event=event).order_by(
-            "priority"
-        )
+        self.fields["personnel_classes"].queryset = PersonnelClass.objects.filter(event=event).order_by("priority")
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
@@ -177,18 +173,12 @@ class SignupAdminForm(forms.ModelForm):
     def clean_job_categories_accepted(self):
         job_categories_accepted = self.cleaned_data["job_categories_accepted"]
 
-        if (
-            self.instance.is_accepted
-            and not job_categories_accepted
-            and self.instance.job_categories.count() != 1
-        ):
+        if self.instance.is_accepted and not job_categories_accepted and self.instance.job_categories.count() != 1:
             raise forms.ValidationError(
                 "Kun ilmoittautuminen on hyväksytty, tulee valita vähintään yksi tehtäväalue. Henkilön hakema tehtävä ei ole yksikäsitteinen, joten tehtäväaluetta ei voitu valita automaattisesti."
             )
         elif (self.instance.is_rejected or self.instance.is_cancelled) and job_categories_accepted:
-            raise forms.ValidationError(
-                "Kun ilmoittautuminen on hylätty, mikään tehtäväalue ei saa olla valittuna."
-            )
+            raise forms.ValidationError("Kun ilmoittautuminen on hylätty, mikään tehtäväalue ei saa olla valittuna.")
 
         return job_categories_accepted
 
@@ -217,9 +207,7 @@ class JobCategoryForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        self.fields["personnel_classes"].queryset = PersonnelClass.objects.filter(event=event).order_by(
-            "priority"
-        )
+        self.fields["personnel_classes"].queryset = PersonnelClass.objects.filter(event=event).order_by("priority")
         self.fields["personnel_classes"].required = True
 
         self.helper = horizontal_form_helper()
@@ -246,9 +234,7 @@ class JobCategoryForm(forms.ModelForm):
             slug = slugify(name)
             if JobCategory.objects.filter(event=self.instance.event, slug=slug).exists():
                 raise forms.ValidationError(
-                    _(
-                        "The slug that would be derived from this name is already taken. Please choose another name."
-                    )
+                    _("The slug that would be derived from this name is already taken. Please choose another name.")
                 )
 
         return name
@@ -277,9 +263,7 @@ class StartStopForm(forms.ModelForm):
         registration_closes = self.cleaned_data.get("registration_closes")
 
         if registration_opens and registration_closes and registration_opens >= registration_closes:
-            raise forms.ValidationError(
-                _("The registration closing time must be after the registration opening time.")
-            )
+            raise forms.ValidationError(_("The registration closing time must be after the registration opening time."))
 
         return registration_closes
 

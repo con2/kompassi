@@ -67,8 +67,7 @@ class SignupExtra(SignupExtraBase):
         max_length=15,
         verbose_name="Toivottu kokonaistyömäärä",
         help_text=(
-            "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti "
-            "kymmenen tuntia."
+            "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti " "kymmenen tuntia."
         ),
         choices=TOTAL_WORK_CHOICES,
     )

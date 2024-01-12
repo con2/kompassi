@@ -1,12 +1,10 @@
-from datetime import date
-
 from django import forms
 
-from crispy_forms.layout import Layout, Fieldset
+from crispy_forms.layout import Layout
 
 from core.forms import PersonForm
 from core.models import Person
-from core.utils import indented_without_label, horizontal_form_helper
+from core.utils import horizontal_form_helper
 
 from .models import Membership, MembershipFeePayment, Term
 

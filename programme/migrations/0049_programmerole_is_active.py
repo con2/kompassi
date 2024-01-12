@@ -16,7 +16,6 @@ def populate_programme_role_is_active(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0048_auto_20160813_1948"),
     ]

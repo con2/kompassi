@@ -1,6 +1,3 @@
-from django.conf.urls import include
-from django.views.generic.base import RedirectView
-
 from .views import (
     membership_admin_emails_api,
     membership_admin_member_view,

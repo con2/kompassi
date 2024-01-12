@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("paikkala", "0016_zone_ordering"),
         ("programme", "0094_programme_is_paikkala_public"),

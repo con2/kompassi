@@ -6,7 +6,6 @@ import programme.proxies.helpers
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0016_freeformorganizer"),
     ]

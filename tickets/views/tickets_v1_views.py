@@ -1,11 +1,11 @@
 from django.contrib import messages
-from django.http import HttpResponseNotAllowed, HttpResponseRedirect
+from django.http import HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from csp.decorators import csp_update
 
-from core.utils import groupby_strict, initialize_form, url
+from core.utils import initialize_form, url
 from payments.models.checkout_payment import CHECKOUT_PAYMENT_WALL_ORIGIN
 
 # XXX * imports
@@ -18,9 +18,7 @@ from ..utils import *
 def multiform_validate(forms):
     return (
         ["syntax"]
-        if not all(
-            i.is_valid() and (i.instance.target.available or i.cleaned_data["count"] == 0) for i in forms
-        )
+        if not all(i.is_valid() and (i.instance.target.available or i.cleaned_data["count"] == 0) for i in forms)
         else []
     )
 
@@ -133,9 +131,7 @@ class Phase:
 
         for phase in ALL_PHASES:
             phases.append(
-                dict(
-                    url=url(phase.name, event.slug), friendly_name=phase.friendly_name, current=phase is self
-                )
+                dict(url=url(phase.name, event.slug), friendly_name=phase.friendly_name, current=phase is self)
             )
 
         phase = dict(

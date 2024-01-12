@@ -1,13 +1,11 @@
 import logging
-from datetime import date, timedelta
+from datetime import date
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from core.models import Event
-from core.utils import log_get_or_create
 from labour.models import LabourEventMeta
-from mailings.models import RecipientGroup
 
 from ...models import SignupExtra
 
@@ -35,9 +33,7 @@ class Command(BaseCommand):
 
             cutoff = date(2024 - 18, 9, 23)
 
-            for sex in SignupExtra.objects.filter(
-                event=event, is_active=True, person__birth_date__lte=cutoff
-            ):
+            for sex in SignupExtra.objects.filter(event=event, is_active=True, person__birth_date__lte=cutoff):
                 privileged.user_set.add(sex.person.user)
                 print(".", end="", flush=True)
 

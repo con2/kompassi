@@ -27,12 +27,8 @@ class EventFilterTestCase(TestCase):
             callback_code=f"{__name__}:notification_callback",
         )
 
-        subscription_with_event_filter, unused = Subscription.get_or_create_dummy(
-            event_filter=event, **kwargs
-        )
-        subscription_without_event_filter, unused = Subscription.get_or_create_dummy(
-            event_filter=None, **kwargs
-        )
+        subscription_with_event_filter, unused = Subscription.get_or_create_dummy(event_filter=event, **kwargs)
+        subscription_without_event_filter, unused = Subscription.get_or_create_dummy(event_filter=None, **kwargs)
 
         entry_type = subscription_with_event_filter.entry_type
 

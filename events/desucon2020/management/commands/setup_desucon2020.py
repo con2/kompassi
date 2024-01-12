@@ -61,16 +61,13 @@ class Setup:
 
     def setup_labour(self):
         from core.models import Person, Event
-        from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
             JobCategory,
             LabourEventMeta,
             PersonnelClass,
             Qualification,
-            Survey,
         )
-        from mailings.models import RecipientGroup
         from ...models import SignupExtra, SpecialDiet
         from django.contrib.auth import get_user_model
         from django.contrib.contenttypes.models import ContentType
@@ -348,7 +345,8 @@ class Setup:
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
                 SpecialStartTime.objects.get_or_create(
-                    event=self.event, start_time=hour_start_time.replace(minute=30)  # look, no tz
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30),  # look, no tz
                 )
 
         view, created = View.objects.get_or_create(
@@ -400,9 +398,7 @@ class Setup:
             self.event.labour_event_meta.get_group("accepted"),
             self.event.programme_event_meta.get_group("hosts"),
         ]:
-            GroupPrivilege.objects.get_or_create(
-                group=group, privilege=privilege, defaults=dict(event=self.event)
-            )
+            GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team
@@ -426,9 +422,7 @@ class Setup:
             team, created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
-                defaults=dict(
-                    name=team_name, order=self.get_ordering_number(), group=team_group, email=email
-                ),
+                defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
 
     def setup_directory(self):

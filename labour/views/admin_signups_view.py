@@ -77,9 +77,7 @@ def admin_signups_view(request, vars, event, format="screen"):
     all_filters.append(personnel_class_filters)
 
     if not archive_mode:
-        job_category_filters = Filter(request, "job_category").add_objects(
-            "job_categories__slug", job_categories
-        )
+        job_category_filters = Filter(request, "job_category").add_objects("job_categories__slug", job_categories)
         signups = job_category_filters.filter_queryset(signups)
         all_filters.append(job_category_filters)
 

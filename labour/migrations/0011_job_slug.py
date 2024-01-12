@@ -3,7 +3,6 @@ import django.core.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour", "0010_auto_20150929_1545"),
     ]

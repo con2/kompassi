@@ -1,7 +1,6 @@
 from django.views.decorators.http import require_safe
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from access.cbac import default_cbac_required
 
 from core.models import Person
 from labour.helpers import labour_event_required

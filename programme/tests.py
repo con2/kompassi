@@ -45,8 +45,7 @@ class UtilsTestCase(TestCase):
 
 
 @pytest.mark.skip(
-    "Need an actual SignupExtra class for this test. "
-    "Cannot use EmptySignupExtra due to supports_programme=False"
+    "Need an actual SignupExtra class for this test. " "Cannot use EmptySignupExtra due to supports_programme=False"
 )
 @pytest.mark.django_db
 def test_condb_164_programme_to_labour_to_nothing():

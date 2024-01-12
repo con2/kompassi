@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 import logging
 import typing
 

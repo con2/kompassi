@@ -1,16 +1,11 @@
-from datetime import datetime, timedelta
-
 from django import forms
 from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
-from events.hitpoint2020.forms import APPROXIMATE_LENGTH_HELP_TEXT, DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT
 from labour.forms import AlternativeFormMixin, SignupForm
 from labour.models import Signup, JobCategory
-from programme.models import Category, Programme, AlternativeProgrammeFormMixin
 
 from .models import SignupExtra
 
@@ -89,7 +84,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         )
 
         self.fields["job_title"].help_text = "Mikä on vastuualueesi? Printataan badgeen."
-        self.fields['job_title'].required = True
+        self.fields["job_title"].required = True
 
     class Meta:
         model = Signup

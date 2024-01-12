@@ -38,8 +38,7 @@ class OfferForm(LocalizedModel):
         blank=True,
         verbose_name=_("active from"),
         help_text=_(
-            "The form will be available from this date onwards. "
-            "If not set, the form will not be available."
+            "The form will be available from this date onwards. " "If not set, the form will not be available."
         ),
     )
 

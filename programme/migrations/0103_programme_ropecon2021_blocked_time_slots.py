@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("ropecon2021", "0001_initial"),
         ("programme", "0102_auto_20210222_2104"),

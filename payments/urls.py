@@ -1,5 +1,3 @@
-from django.conf.urls import include
-
 from payments.views import (
     payments_checkout_success_view,
     payments_checkout_cancel_view,

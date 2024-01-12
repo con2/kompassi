@@ -1,10 +1,10 @@
-from typing import Optional, Any
+from typing import Optional
 
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import is_within_period, SLUG_FIELD_PARAMS, NONUNIQUE_SLUG_FIELD_PARAMS
+from core.utils import is_within_period, NONUNIQUE_SLUG_FIELD_PARAMS
 from core.models import Event
 
 from .form import Form
@@ -32,8 +32,7 @@ class Survey(models.Model):
         blank=True,
         verbose_name=_("active from"),
         help_text=_(
-            "The form will be available from this date onwards. "
-            "If not set, the form will not be available."
+            "The form will be available from this date onwards. " "If not set, the form will not be available."
         ),
     )
 

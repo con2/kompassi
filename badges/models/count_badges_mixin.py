@@ -21,17 +21,14 @@ class CountBadgesMixin:
     def count_printed_badges(self) -> int:
         return (
             self.badges.filter(
-                Q(batch__isnull=False, batch__printed_at__isnull=False)
-                | Q(printed_separately_at__isnull=False)
+                Q(batch__isnull=False, batch__printed_at__isnull=False) | Q(printed_separately_at__isnull=False)
             )
             .distinct()
             .count()
         )
 
     def count_badges_waiting_in_batch(self) -> int:
-        return self.badges.filter(
-            batch__isnull=False, batch__printed_at__isnull=True, revoked_at__isnull=True
-        ).count()
+        return self.badges.filter(batch__isnull=False, batch__printed_at__isnull=True, revoked_at__isnull=True).count()
 
     def count_badges_awaiting_batch(self) -> int:
         return self.badges.filter(**BADGE_ELIGIBLE_FOR_BATCHING).count()

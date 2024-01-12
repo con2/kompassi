@@ -4,7 +4,6 @@ import core.csv_export
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("auth", "0001_initial"),
         ("contenttypes", "0001_initial"),

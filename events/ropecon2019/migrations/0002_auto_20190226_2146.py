@@ -6,7 +6,6 @@ import labour.models.signup_extras
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0030_auto_20180926_1252"),
         ("ropecon2019", "0001_initial"),

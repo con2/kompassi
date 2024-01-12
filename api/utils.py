@@ -55,13 +55,13 @@ def handle_api_errors(view_func):
     def _decorator(request, *args, **kwargs):
         try:
             return view_func(request, *args, **kwargs)
-        except (ValueError, JSONValidationError, DjangoValidationError, BadRequest) as e:
+        except (ValueError, JSONValidationError, DjangoValidationError, BadRequest):
             logger.exception("Bad Request at %s", request.path)
             return JsonResponse(
                 dict(error="Bad Request"),
                 status=400,
             )
-        except NotAuthorized as e:
+        except NotAuthorized:
             logger.exception("Unauthorized at %s", request.path)
             response = JsonResponse(
                 dict(error="Unauthorized"),
@@ -69,13 +69,13 @@ def handle_api_errors(view_func):
             )
             response["WWW-Authenticate"] = "Basic realm=api"
             return response
-        except Http404 as e:
+        except Http404:
             logger.exception("Not Found at %s", request.path)
             return JsonResponse(
                 dict(error="Not Found"),
                 status=404,
             )
-        except MethodNotAllowed as e:
+        except MethodNotAllowed:
             logger.exception("Method Not Allowed at %s", request.path)
             return JsonResponse(
                 dict(error="Not Found"),

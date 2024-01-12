@@ -39,6 +39,7 @@ BUILD_PARTICIPATION_CHOICES = [
     ("molemmat", "Pystyn osallistumaan molempiin"),
 ]
 
+
 class SimpleChoice(models.Model):
     name = models.CharField(max_length=63)
 
@@ -52,11 +53,14 @@ class SimpleChoice(models.Model):
 class SpecialDiet(SimpleChoice):
     pass
 
+
 class EventDay(SimpleChoice):
     pass
 
+
 class NativeLanguage(SimpleChoice):
     pass
+
 
 class KnownLanguage(SimpleChoice):
     pass
@@ -160,7 +164,7 @@ class SignupExtra(SignupExtraBase):
         help_text="Kerro mikä Shumiconissa viehättää ja miksi haluaisit tulla juuri tähän tapahtumaan",
     )
 
-    why_you= models.TextField(
+    why_you = models.TextField(
         blank=True,
         verbose_name="Miksi olisit hyvä valinta hakemaasi työtehtävään?",
         help_text="Kerro miksi hait juuri kyseisiin tehtäviin ja miksi juuri sinut tulisi valita",

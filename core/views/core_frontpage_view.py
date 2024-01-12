@@ -4,7 +4,7 @@ from django.utils.timezone import now
 
 from core.utils import groups_of_n, groupby_strict
 
-from ..models import Event, Organization, CarouselSlide
+from ..models import Event, CarouselSlide
 
 
 def get_year(event):

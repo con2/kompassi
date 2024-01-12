@@ -8,7 +8,6 @@ NOTE: The exact semantics of `process_form_data` are defined by and documented i
 `forms/tests.py:test_process_form_data`.
 """
 
-import sys
 from enum import Enum
 from typing import Any
 
@@ -129,11 +128,7 @@ class MultiSelectFieldProcessor(FieldProcessor):
 
 class RadioMatrixFieldProcessor(FieldProcessor):
     def extract_value(self, field: Field, form_data: dict[str, Any]):
-        return {
-            key.split(".", 1)[1]: value
-            for key, value in form_data.items()
-            if key.startswith(f"{field.slug}.")
-        }
+        return {key.split(".", 1)[1]: value for key, value in form_data.items() if key.startswith(f"{field.slug}.")}
 
     def validate_value(self, field: Field, value: Any) -> list[FieldWarning]:
         values: dict[str, str] = value

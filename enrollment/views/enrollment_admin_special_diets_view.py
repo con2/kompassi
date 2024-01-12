@@ -1,13 +1,8 @@
-from collections import defaultdict, namedtuple
-
-from django.contrib import messages
-from django.db.models import Case, Count, When
-from django.shortcuts import render, redirect
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import render
 
 from labour.views.admin_special_diets_view import NO_SPECIAL_DIET_REPLIES, SpecialDiets
 
-from ..models import Enrollment, SpecialDiet
+from ..models import Enrollment
 from ..helpers import enrollment_admin_required
 
 

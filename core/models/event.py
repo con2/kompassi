@@ -6,25 +6,21 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.translation import get_language
+from django.utils.translation import gettext_lazy as _
 
-from ..utils import (
-    format_date_range,
-    pick_attrs,
-    SLUG_FIELD_PARAMS,
-    slugify,
-    event_meta_property,
-)
+from ..utils import SLUG_FIELD_PARAMS, event_meta_property, format_date_range, pick_attrs, slugify
 
 if typing.TYPE_CHECKING:
-    from program_v2.models import Program, Dimension
+    from labour.models.signup import Signup
+    from program_v2.models import Dimension, Program
 
 
 logger = logging.getLogger("kompassi")
 
 
 class Event(models.Model):
-    slug = models.CharField(**SLUG_FIELD_PARAMS)
+    slug = models.CharField(**SLUG_FIELD_PARAMS)  # type: ignore
 
     name = models.CharField(max_length=63, verbose_name="Tapahtuman nimi")
 
@@ -113,6 +109,7 @@ class Event(models.Model):
     # related fields
     programs: models.QuerySet["Program"]
     dimensions: models.QuerySet["Dimension"]
+    signup_set: models.QuerySet["Signup"]
 
     class Meta:
         verbose_name = "Tapahtuma"
@@ -139,11 +136,13 @@ class Event(models.Model):
 
     @property
     def name_and_year(self):
-        return f"{self.name} ({self.start_time.year})"
+        return f"{self.name} ({self.start_time.year})" if self.start_time else self.name
 
     @property
     def formatted_start_and_end_date(self):
         # TODO honor locale (currently always uses Finnish format)
+        if not self.start_time or not self.end_time:
+            return ""
         return format_date_range(self.start_time, self.end_time)
 
     @property
@@ -171,11 +170,11 @@ class Event(models.Model):
 
     @classmethod
     def get_or_create_dummy(cls, name="Dummy event"):
-        from .venue import Venue
-        from .organization import Organization
-
         # TODO not the best place for this, encap. see also admin command core_update_maysendinfo
         from django.contrib.auth.models import Group
+
+        from .organization import Organization
+        from .venue import Venue
 
         Group.objects.get_or_create(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME)
 
@@ -269,4 +268,5 @@ class Event(models.Model):
         """
         Shorthand for commonly used CBAC claims.
         """
+        return dict(organization=self.organization.slug, event=self.slug, **extra_claims)
         return dict(organization=self.organization.slug, event=self.slug, **extra_claims)

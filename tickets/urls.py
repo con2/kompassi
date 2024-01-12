@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from .views import (
     tickets_accommodation_view,
     tickets_address_view,

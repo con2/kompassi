@@ -7,7 +7,6 @@ import re
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tickets", "0014_auto_20160305_1902"),
     ]

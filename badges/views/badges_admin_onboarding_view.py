@@ -1,12 +1,11 @@
-from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
-
 from csp.decorators import csp_update
-from core.utils.view_utils import login_redirect
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.http import require_http_methods
 
-from labour.proxies.signup.onboarding import SignupOnboardingProxy
+from core.utils.view_utils import login_redirect
 from labour.models.personnel_class import PersonnelClass
+from labour.proxies.signup.onboarding import SignupOnboardingProxy
 
 from ..helpers import badges_event_required
 from ..models import Badge
@@ -75,9 +74,7 @@ def badges_admin_onboarding_view(request, event):
         badge.save()
 
         if badge.person:
-            sop = SignupOnboardingProxy.objects.filter(
-                event=event, person=badge.person, is_active=True
-            ).first()
+            sop = SignupOnboardingProxy.objects.filter(event=event, person=badge.person, is_active=True).first()
             if sop:
                 sop.mark_arrived(is_arrived)
 

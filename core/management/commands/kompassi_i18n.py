@@ -134,7 +134,7 @@ class Command(BaseCommand):
             extractor, options = extractor_tup
 
             with open(filename, "rb") as fp:
-                for (lineno, message, comments, context) in extract(extractor, fp, options=options):
+                for lineno, message, comments, context in extract(extractor, fp, options=options):
                     catalog.add(message, locations=[(rel_filename, 0)], auto_comments=comments)
         if len(catalog):
             pot_path = _get_pot_path(app)

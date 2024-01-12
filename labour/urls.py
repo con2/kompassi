@@ -1,4 +1,3 @@
-from django.conf.urls import include
 from django.views.generic.base import RedirectView
 
 from .views import (
@@ -74,7 +73,9 @@ urlpatterns = [
         name="labour_admin_old_urls_redirect",
     ),
     re_path(r"^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/?$", admin_dashboard_view, name="admin_dashboard_view"),
-    re_path(r"^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups/?$", admin_signups_view, name="admin_signups_view"),
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups/?$", admin_signups_view, name="admin_signups_view"
+    ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/signups\.(?P<format>xlsx|csv|tsv|html)/?$",
         admin_signups_view,
@@ -107,7 +108,9 @@ urlpatterns = [
         admin_roster_view,
         name="admin_roster_job_category_view",
     ),
-    re_path(r"^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/start/?$", admin_startstop_view, name="admin_startstop_view"),
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/start/?$", admin_startstop_view, name="admin_startstop_view"
+    ),
     re_path(r"^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/mail/?$", admin_mail_view, name="admin_mail_view"),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/labour/admin/mail/new/?$",

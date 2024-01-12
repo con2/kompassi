@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour_common_qualifications", "0002_auto_20150521_1557"),
     ]

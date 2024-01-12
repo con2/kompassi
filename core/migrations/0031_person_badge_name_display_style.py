@@ -10,7 +10,6 @@ def populate_badge_name_display_style(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0030_auto_20180926_1252"),
     ]

@@ -3,7 +3,6 @@ import core.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0002_auto_20150126_1611"),
     ]

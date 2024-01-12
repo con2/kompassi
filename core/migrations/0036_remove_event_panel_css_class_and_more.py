@@ -13,7 +13,6 @@ def populate_panel_classes(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0035_person_discord_handle"),
     ]

@@ -12,7 +12,6 @@ def populate_end_times(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0004_auto_20151024_1644"),
     ]

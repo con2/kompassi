@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 from core.utils import get_ip
 
-from core.helpers import person_required
 from core.utils import initialize_form
 
 from ..forms import ProgrammeFeedbackForm, AnonymousProgrammeFeedbackForm

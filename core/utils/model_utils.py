@@ -3,10 +3,7 @@ import re
 import phonenumbers
 
 from django.conf import settings
-from django.urls import reverse
 from django.core.validators import RegexValidator
-from django.db import models
-from django.db.models import Q
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -103,7 +100,7 @@ def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_
 
     try:
         phone_number = phonenumbers.parse(value, region)
-    except phonenumbers.NumberParseException as e:
+    except phonenumbers.NumberParseException:
         raise ValidationError(exc)
     else:
         if not phonenumbers.is_valid_number(phone_number):

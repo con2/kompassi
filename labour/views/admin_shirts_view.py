@@ -22,9 +22,7 @@ def admin_shirts_view(request, vars, event):
     shirt_sizes = shirt_size_field.choices
 
     if shirt_type_field:
-        shirt_types = [
-            (slug, name) for (slug, name) in shirt_type_field.choices if slug not in ("NO_SHIRT", "TOOLATE")
-        ]
+        shirt_types = [(slug, name) for (slug, name) in shirt_type_field.choices if slug not in ("NO_SHIRT", "TOOLATE")]
     else:
         shirt_types = [("default", _("Paita"))]
 
@@ -49,9 +47,7 @@ def admin_shirts_view(request, vars, event):
 
         shirt_size_rows.append((shirt_size_name, num_shirts_by_shirt_type))
 
-    shirt_type_totals = [
-        shirt_type_totals[shirt_type_slug] for (shirt_type_slug, shirt_type_name) in shirt_types
-    ]
+    shirt_type_totals = [shirt_type_totals[shirt_type_slug] for (shirt_type_slug, shirt_type_name) in shirt_types]
 
     num_shirts = sum(shirt_type_totals)
 

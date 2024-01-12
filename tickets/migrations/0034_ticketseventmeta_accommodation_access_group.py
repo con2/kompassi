@@ -5,16 +5,23 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
-        ('tickets', '0033_remove_accommodationinformation_is_present_and_more'),
+        ("auth", "0012_alter_user_first_name_max_length"),
+        ("tickets", "0033_remove_accommodationinformation_is_present_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ticketseventmeta',
-            name='accommodation_access_group',
-            field=models.ForeignKey(blank=True, help_text='Members of this group are granted access to the accommodation onboarding view without being ticket admins.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='as_accommodation_access_group_for', to='auth.group', verbose_name='Accommodation access group'),
+            model_name="ticketseventmeta",
+            name="accommodation_access_group",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Members of this group are granted access to the accommodation onboarding view without being ticket admins.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="as_accommodation_access_group_for",
+                to="auth.group",
+                verbose_name="Accommodation access group",
+            ),
         ),
     ]

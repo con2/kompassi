@@ -1,4 +1,4 @@
-from django.db import models, transaction
+from django.db import models
 
 from event_log.utils import emit
 

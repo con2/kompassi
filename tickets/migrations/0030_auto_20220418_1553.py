@@ -6,7 +6,6 @@ import psqlextra.manager.manager
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tickets", "0029_auto_20220418_1531"),
     ]

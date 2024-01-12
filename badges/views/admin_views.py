@@ -36,8 +36,7 @@ def badges_admin_dashboard_view(request, vars, event):
 
     vars.update(
         personnel_classes=[
-            PersonnelClassProxy(personnel_class)
-            for personnel_class in PersonnelClass.objects.filter(event=event)
+            PersonnelClassProxy(personnel_class) for personnel_class in PersonnelClass.objects.filter(event=event)
         ],
         num_badges_total=meta.count_badges(),
         num_badges_printed=meta.count_printed_badges(),

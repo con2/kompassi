@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("enrollment", "0002_enrollmenteventmeta_override_enrollment_form_message"),
     ]

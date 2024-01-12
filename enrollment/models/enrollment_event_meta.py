@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
 from core.models import EventMetaBase
-from core.utils import alias_property, is_within_period
+from core.utils import is_within_period
 
 
 INITIAL_STATE_CHOICES = [

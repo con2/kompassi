@@ -94,9 +94,7 @@ RERUN_CHOICES = [
     ("might", _("Maybe. The programme might be presented in a convention that takes place before this one.")),
     (
         "original",
-        _(
-            "No. The programme is original to this convention and I promise not to present it elsewhere before."
-        ),
+        _("No. The programme is original to this convention and I promise not to present it elsewhere before."),
     ),
 ]
 
@@ -206,9 +204,7 @@ class Programme(models.Model, CsvExportMixin):
         "programme.Category",
         on_delete=models.CASCADE,
         verbose_name=_("category"),
-        help_text=_(
-            "Choose the category that fits your programme the best. We reserve the right to change this."
-        ),
+        help_text=_("Choose the category that fits your programme the best. We reserve the right to change this."),
     )
     form_used = models.ForeignKey(
         "programme.AlternativeProgrammeForm",
@@ -514,9 +510,7 @@ class Programme(models.Model, CsvExportMixin):
     )
     is_beginner_friendly = models.BooleanField(
         verbose_name=_("beginner friendly"),
-        help_text=_(
-            "Please tick this box if your game can be enjoyed even without any prior role-playing experience."
-        ),
+        help_text=_("Please tick this box if your game can be enjoyed even without any prior role-playing experience."),
         default=False,
     )
     is_intended_for_experienced_participants = models.BooleanField(
@@ -526,9 +520,7 @@ class Programme(models.Model, CsvExportMixin):
     is_available_for_panel = models.BooleanField(
         default=False,
         verbose_name=_("Panel discussions"),
-        help_text=_(
-            "I can participate in a panel discussion on my field of expertise during the convention."
-        ),
+        help_text=_("I can participate in a panel discussion on my field of expertise during the convention."),
     )
     field_of_expertise = models.CharField(
         max_length=1023,
@@ -676,16 +668,12 @@ class Programme(models.Model, CsvExportMixin):
     ropecon2020_not_suitable_for_children = models.BooleanField(
         default=False,
         verbose_name=_("Not suitable for children"),
-        help_text=_(
-            "If your game programme is not suitable for children under 15 years of age, please tick this box."
-        ),
+        help_text=_("If your game programme is not suitable for children under 15 years of age, please tick this box."),
     )
     ropecon2020_theme_end_of_the_world = models.BooleanField(
         default=False,
         verbose_name=_("Theme: End of the world"),
-        help_text=_(
-            "If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box."
-        ),
+        help_text=_("If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box."),
     )
     ropecon2020_theme_dinosaurs = models.BooleanField(
         default=False,
@@ -866,16 +854,12 @@ class Programme(models.Model, CsvExportMixin):
     ropecon2023_aimed_at_children_under_13 = models.BooleanField(
         default=False,
         verbose_name=_("Aimed at children under 13"),
-        help_text=_(
-            "If your programme is designed for attendees under the age of 13 years, please tick this box."
-        ),
+        help_text=_("If your programme is designed for attendees under the age of 13 years, please tick this box."),
     )
     ropecon2023_aimed_at_children_between_13_17 = models.BooleanField(
         default=False,
         verbose_name=_("Aimed at children between 13-17"),
-        help_text=_(
-            "If your programme is designed for attendees between 13-17 years of age, please tick this box."
-        ),
+        help_text=_("If your programme is designed for attendees between 13-17 years of age, please tick this box."),
     )
     ropecon2023_aimed_at_adult_attendees = models.BooleanField(
         default=False,
@@ -1163,9 +1147,7 @@ class Programme(models.Model, CsvExportMixin):
 
     ropecon2018_characters = models.PositiveIntegerField(
         verbose_name=_("number of characters"),
-        help_text=_(
-            "If the game design requires characters with a specific gender let us know in the notes."
-        ),
+        help_text=_("If the game design requires characters with a specific gender let us know in the notes."),
         default=10,
         validators=[MinValueValidator(1), MaxValueValidator(999)],
         null=True,
@@ -1383,8 +1365,7 @@ class Programme(models.Model, CsvExportMixin):
         default="",
         verbose_name=_("Author (if other than the GM)"),
         help_text=_(
-            "If the scenario has been written by someone else than the GM, we require that the author be "
-            "disclosed."
+            "If the scenario has been written by someone else than the GM, we require that the author be " "disclosed."
         ),
     )
 
@@ -1393,9 +1374,7 @@ class Programme(models.Model, CsvExportMixin):
         blank=True,
         default="",
         verbose_name=_("Content warnings"),
-        help_text=_(
-            "If your program contains heavy topics or potentially distressing themes, please mention it here."
-        ),
+        help_text=_("If your program contains heavy topics or potentially distressing themes, please mention it here."),
     )
 
     # Internal fields
@@ -1829,9 +1808,7 @@ class Programme(models.Model, CsvExportMixin):
                     # inactive programmist
                     groups_to_remove.append(group)
 
-            ensure_user_group_membership(
-                person.user, groups_to_add=groups_to_add, groups_to_remove=groups_to_remove
-            )
+            ensure_user_group_membership(person.user, groups_to_add=groups_to_add, groups_to_remove=groups_to_remove)
 
     def apply_state_send_messages(self, resend=False):
         from mailings.models import Message

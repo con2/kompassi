@@ -35,7 +35,6 @@ def populate_denormalized_fields(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("badges", "0009_add_denormalized_fields"),
     ]

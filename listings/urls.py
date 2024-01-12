@@ -1,4 +1,3 @@
-
 from .views import listings_listing_view, listings_api_view
 from django.urls import re_path
 

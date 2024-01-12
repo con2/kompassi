@@ -7,7 +7,7 @@ from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper
 from labour.forms import AlternativeFormMixin
-from labour.models import Signup, JobCategory, WorkPeriod
+from labour.models import Signup, JobCategory
 from programme.models import AlternativeProgrammeFormMixin, Programme, Category
 
 from .models import SignupExtra
@@ -69,8 +69,7 @@ class SignupExtraForm(forms.ModelForm):
 
         if want_certificate and not certificate_delivery_address:
             raise forms.ValidationError(
-                "Koska olet valinnut haluavasi työtodistuksen, on "
-                "työtodistuksen toimitusosoite täytettävä."
+                "Koska olet valinnut haluavasi työtodistuksen, on " "työtodistuksen toimitusosoite täytettävä."
             )
 
         return certificate_delivery_address
@@ -194,9 +193,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.fields["three_word_description"].required = True
         self.fields["three_word_description"].label = _("Summary in one sentence")
-        self.fields["three_word_description"].help_text = _(
-            "Summarize the description of your game in one sentence."
-        )
+        self.fields["three_word_description"].help_text = _("Summarize the description of your game in one sentence.")
 
         self.fields["rpg_system"].required = True
 
@@ -273,9 +270,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         self.fields["three_word_description"].required = True
         self.fields["three_word_description"].label = _("Summary in one sentence")
-        self.fields["three_word_description"].help_text = _(
-            "Summarize the description of your game in one sentence."
-        )
+        self.fields["three_word_description"].help_text = _("Summarize the description of your game in one sentence.")
 
         self.fields["description"].required = True
         self.fields["description"].help_text = DESCRIPTION_HELP_TEXT

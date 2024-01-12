@@ -146,7 +146,9 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields["approximate_length"].initial = 60
         self.fields[
             "approximate_length"
-        ].help_text = "Arvio ohjelman pituudesta minuutteina. Huomaathan, että lopullinen ohjelmapaikan pituus voi poiketa tästä."
+        ].help_text = (
+            "Arvio ohjelman pituudesta minuutteina. Huomaathan, että lopullinen ohjelmapaikan pituus voi poiketa tästä."
+        )
 
     def get_excluded_field_defaults(self):
         return dict()

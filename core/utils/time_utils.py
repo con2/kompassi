@@ -101,10 +101,7 @@ def format_date_range(
     # If an event ends on the first second of a day, it is considered to
     # end at the end of the previous day. This is time zone specific.
     if (
-        isinstance(end_date, datetime)
-        and end_date.hour == 0
-        and end_date.minute == 0
-        and end_date.second == 0
+        isinstance(end_date, datetime) and end_date.hour == 0 and end_date.minute == 0 and end_date.second == 0
         # and end_date.microsecond == 0  # microseconds other than 0 are likely user error
     ):
         end_date = end_date - timedelta(seconds=1)

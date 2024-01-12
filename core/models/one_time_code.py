@@ -8,9 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .constants import EMAIL_LENGTH
 
-
 logger = logging.getLogger("kompassi")
-
 
 ONE_TIME_CODE_LENGTH = 40
 ONE_TIME_CODE_ALPHABET = "0123456789abcdef"
@@ -40,10 +38,10 @@ class OneTimeCodeMixin:
         self.save()
 
     def render_message_subject(self, request):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def render_message_body(self, request):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def send(self, request, **kwargs):
         body = self.render_message_body(request)

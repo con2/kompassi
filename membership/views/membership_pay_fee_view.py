@@ -3,8 +3,7 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import redirect
 
 
-from core.helpers import person_required
-from payments.models.checkout_payment import CheckoutPayment, CHECKOUT_PAYMENT_WALL_ORIGIN
+from payments.models.checkout_payment import CheckoutPayment
 
 from ..helpers import membership_required
 

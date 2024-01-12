@@ -15,7 +15,6 @@ def populate_slug(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0052_tag_slug"),
     ]

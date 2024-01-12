@@ -6,8 +6,6 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from core.utils import slugify
-
 
 class Setup:
     def __init__(self):

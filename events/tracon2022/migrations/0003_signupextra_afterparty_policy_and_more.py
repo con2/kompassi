@@ -5,26 +5,32 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0037_alter_organization_panel_css_class'),
-        ('tracon2022', '0002_auto_20220530_1429'),
+        ("core", "0037_alter_organization_panel_css_class"),
+        ("tracon2022", "0002_auto_20220530_1429"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='signupextra',
-            name='afterparty_policy',
-            field=models.BooleanField(default=False, verbose_name='Olen tutustunut Traconin <a href="https://tracon.fi/hairinta" target="_blank" rel="noopener noreferrer">häirinnän vastaiseen linjaukseen</a>, ymmärrän sen olevan voimassa myös kaadossa ja sitoudun noudattamaan sitä.'),
+            model_name="signupextra",
+            name="afterparty_policy",
+            field=models.BooleanField(
+                default=False,
+                verbose_name='Olen tutustunut Traconin <a href="https://tracon.fi/hairinta" target="_blank" rel="noopener noreferrer">häirinnän vastaiseen linjaukseen</a>, ymmärrän sen olevan voimassa myös kaadossa ja sitoudun noudattamaan sitä.',
+            ),
         ),
         migrations.AlterField(
-            model_name='signupextra',
-            name='event',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_signup_extras', to='core.event'),
+            model_name="signupextra",
+            name="event",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, related_name="%(app_label)s_signup_extras", to="core.event"
+            ),
         ),
         migrations.AlterField(
-            model_name='signupextra',
-            name='person',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_signup_extra', to='core.person'),
+            model_name="signupextra",
+            name="person",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE, related_name="%(app_label)s_signup_extra", to="core.person"
+            ),
         ),
     ]

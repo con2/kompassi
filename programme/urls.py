@@ -1,5 +1,3 @@
-from django.conf import settings
-from django.conf.urls import include
 from django.views.generic import RedirectView
 
 from programme.views.paikkala_views import paikkala_special_reservation_view

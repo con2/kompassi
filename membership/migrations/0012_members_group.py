@@ -21,7 +21,6 @@ def populate_members_group(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("auth", "0001_initial"),
         ("membership", "0011_auto_20151020_0016"),

@@ -51,18 +51,12 @@ class ConfirmationCode(OneTimeCode):
         return f"{settings.KOMPASSI_INSTALLATION_NAME}: Desuprofiilin yhdistäminen"
 
     def render_message_body(self, request):
-        context = dict(
-            link=request.build_absolute_uri(url("desuprofile_integration_confirmation_view", self.code))
-        )
+        context = dict(link=request.build_absolute_uri(url("desuprofile_integration_confirmation_view", self.code)))
 
-        return render_to_string(
-            "desuprofile_integration_confirmation_message.eml", context=context, request=request
-        )
+        return render_to_string("desuprofile_integration_confirmation_message.eml", context=context, request=request)
 
 
-DesuprofileBase = namedtuple(
-    "Desuprofile", "id username first_name last_name nickname email phone birth_date"
-)
+DesuprofileBase = namedtuple("Desuprofile", "id username first_name last_name nickname email phone birth_date")
 
 
 class Desuprofile(DesuprofileBase, JSONSchemaObject):
@@ -88,9 +82,7 @@ class Desuprofile(DesuprofileBase, JSONSchemaObject):
     )
 
 
-DesuprogrammeFeedbackBase = namedtuple(
-    "DesuprogrammeFeedback", "feedback desucon_username anonymous ip_address"
-)
+DesuprogrammeFeedbackBase = namedtuple("DesuprogrammeFeedback", "feedback desucon_username anonymous ip_address")
 
 
 class DesuprogrammeFeedback(DesuprogrammeFeedbackBase, JSONSchemaObject):

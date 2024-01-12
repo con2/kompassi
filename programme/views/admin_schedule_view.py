@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods, require_POST
 from django.shortcuts import redirect, get_object_or_404
@@ -16,7 +14,7 @@ from ..forms import (
     RemoveViewRoomForm,
     ViewForm,
 )
-from ..models import View, ViewRoom
+from ..models import View
 
 
 schedule_actions = {

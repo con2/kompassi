@@ -3,12 +3,12 @@ from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.layout import Layout, Fieldset
 
-from core.utils import horizontal_form_helper, indented_without_label
+from core.utils import horizontal_form_helper
 from labour.forms import AlternativeFormMixin
-from labour.models import Signup, JobCategory, WorkPeriod
+from labour.models import Signup, JobCategory
 from programme.models import Category, Programme, AlternativeProgrammeFormMixin
 
-from .models import SignupExtra, EventDay
+from .models import SignupExtra
 
 
 class SignupExtraForm(forms.ModelForm):
@@ -61,6 +61,7 @@ class SignupExtraForm(forms.ModelForm):
             special_diet=forms.CheckboxSelectMultiple,
             work_days=forms.CheckboxSelectMultiple,
         )
+
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
@@ -137,23 +138,23 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             Fieldset(
                 "Lisätiedot",
                 "build_participation",
-                #"shirt_size",
+                # "shirt_size",
                 "special_diet",
                 "special_diet_other",
-            Fieldset(
-                _("Language skills"),
-                "native_language",
-                "native_language_other",
-                "known_language",
-                "known_language_other",
-            ),
+                Fieldset(
+                    _("Language skills"),
+                    "native_language",
+                    "native_language_other",
+                    "known_language",
+                    "known_language_other",
+                ),
             ),
         )
 
     class Meta:
         model = SignupExtra
         fields = (
-            #"shirt_size",
+            # "shirt_size",
             "build_participation",
             "native_language",
             "native_language_other",
@@ -187,6 +188,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict(
             # work_days=EventDay.objects.all(),
         )
+
 
 class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):

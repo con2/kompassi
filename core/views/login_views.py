@@ -30,7 +30,7 @@ def core_login_view(request):
             if username and password and "@" in username:
                 try:
                     person = Person.objects.get(email=username, user__isnull=False)
-                except (Person.DoesNotExist, Person.MultipleObjectsReturned) as e:
+                except (Person.DoesNotExist, Person.MultipleObjectsReturned):
                     # TODO warn
                     pass
                 else:

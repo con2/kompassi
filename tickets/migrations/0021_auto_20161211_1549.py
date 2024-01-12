@@ -8,7 +8,6 @@ import re
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tickets", "0020_auto_20160706_2207"),
     ]

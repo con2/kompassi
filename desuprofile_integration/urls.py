@@ -1,4 +1,3 @@
-from django.conf.urls import include
 from django.views.generic.base import TemplateView
 
 from .views import (

@@ -1,5 +1,3 @@
-from django.conf.urls import include
-
 from .views import api_discord_view, api_person_view, api_status_view
 from django.urls import re_path
 

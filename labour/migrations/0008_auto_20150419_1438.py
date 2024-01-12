@@ -2,7 +2,6 @@ from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour", "0007_jobcategory_personnel_classes"),
     ]

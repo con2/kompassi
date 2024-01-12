@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0037_alter_organization_panel_css_class"),
         ("labour", "0034_archivedsignup"),

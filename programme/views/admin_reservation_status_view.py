@@ -1,6 +1,5 @@
 from django.shortcuts import render
 
-from paikkala.models import Zone
 
 from ..helpers import programme_admin_required
 from ..models import Programme

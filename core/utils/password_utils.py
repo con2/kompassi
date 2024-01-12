@@ -1,7 +1,6 @@
 import logging
 from hashlib import sha1
 
-from django.conf import settings
 from django.core.cache import caches
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _

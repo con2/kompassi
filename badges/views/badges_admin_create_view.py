@@ -1,5 +1,6 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
@@ -47,4 +48,5 @@ def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
         form=form,
     )
 
+    return render(request, "badges_admin_create_view.pug", vars)
     return render(request, "badges_admin_create_view.pug", vars)

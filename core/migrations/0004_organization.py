@@ -20,7 +20,6 @@ def populate_organization(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0003_auto_20150813_1907"),
     ]

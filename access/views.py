@@ -1,11 +1,10 @@
 from datetime import timedelta
 import logging
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.timezone import now
@@ -120,9 +119,7 @@ def access_profile_aliases_view(request):
             emailaliastype__email_aliases__person=request.user.person,
         )
 
-        newly_created_password, unused = SMTPPassword.create_for_domain_and_person(
-            domain, request.user.person
-        )
+        newly_created_password, unused = SMTPPassword.create_for_domain_and_person(domain, request.user.person)
     else:
         newly_created_password = None
 

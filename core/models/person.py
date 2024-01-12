@@ -9,7 +9,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -97,9 +96,7 @@ class Person(models.Model):
         max_length=PHONE_NUMBER_LENGTH,
         validators=[phone_number_validator],
         verbose_name=_("phone number"),
-        help_text=_(
-            "Your phone number is used only for urgent contact regarding your participation in the event."
-        ),
+        help_text=_("Your phone number is used only for urgent contact regarding your participation in the event."),
     )
 
     may_send_info = models.BooleanField(
@@ -372,7 +369,7 @@ class Person(models.Model):
         if isinstance(code, str):
             try:
                 code = EmailVerificationToken.objects.get(code=code)
-            except EmailVerificationToken.DoesNotExist as e:
+            except EmailVerificationToken.DoesNotExist:
                 raise EmailVerificationError("invalid_code")
 
         if code:

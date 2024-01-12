@@ -97,7 +97,7 @@ class OrderProductForm(forms.ModelForm):
         else:
             order_product = OrderProduct(order=order, product=product)
 
-        readonly = admin and ((order.is_paid and product.electronic_ticket))
+        readonly = admin and (order.is_paid and product.electronic_ticket)
 
         max_count_per_product = order.event.tickets_event_meta.max_count_per_product
         if not admin:

@@ -43,9 +43,7 @@ def admin_special_diets_view(request, vars, event):
         signup_extras = SignupExtra.objects.filter(is_active=True)
 
     if special_diet_field:
-        signup_extras_with_standard_special_diets = signup_extras.filter(
-            special_diet__isnull=False
-        ).distinct()
+        signup_extras_with_standard_special_diets = signup_extras.filter(special_diet__isnull=False).distinct()
 
         special_diets = SpecialDiets()
 
@@ -61,9 +59,7 @@ def admin_special_diets_view(request, vars, event):
 
     if special_diet_other_field:
         # TODO assumes name special_diet_other
-        signup_extras_with_other_special_diets = signup_extras.exclude(
-            special_diet_other__in=NO_SPECIAL_DIET_REPLIES
-        )
+        signup_extras_with_other_special_diets = signup_extras.exclude(special_diet_other__in=NO_SPECIAL_DIET_REPLIES)
     else:
         signup_extras_with_other_special_diets = []
 

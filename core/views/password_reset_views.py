@@ -38,7 +38,7 @@ def core_password_reset_view(request, code):
         if form.is_valid():
             try:
                 user = PasswordResetToken.reset_password(code, form.cleaned_data["new_password"])
-            except PasswordResetError as e:
+            except PasswordResetError:
                 messages.error(
                     request,
                     "Salasanan nollaus epäonnistui. Ole hyvä ja yritä uudestaan. Tarvittaessa voit "
@@ -84,9 +84,7 @@ def core_password_reset_request_view(request):
             else:
                 person.setup_password_reset(request)
 
-            messages.success(
-                request, "Ohjeet salasanan vaihtamiseksi on lähetetty antamaasi sähköpostiosoitteeseen."
-            )
+            messages.success(request, "Ohjeet salasanan vaihtamiseksi on lähetetty antamaasi sähköpostiosoitteeseen.")
         else:
             messages.error(request, "Ole hyvä ja korjaa lomakkeen virheet.")
 

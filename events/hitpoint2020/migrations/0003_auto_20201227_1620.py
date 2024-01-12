@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("hitpoint2020", "0002_remove_signupextra_overseer"),
     ]

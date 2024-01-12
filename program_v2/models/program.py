@@ -1,6 +1,6 @@
 import logging
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, Self, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -9,7 +9,6 @@ from django.db import models, transaction
 from core.models import Event
 from core.utils import log_get_or_create, log_delete, validate_slug
 
-from ..consts import TAG_DIMENSION_TITLE_LOCALIZED, CATEGORY_DIMENSION_TITLE_LOCALIZED
 
 if TYPE_CHECKING:
     from .dimension import ProgramDimensionValue

@@ -1,8 +1,4 @@
-from functools import reduce
-
 from django.core.management.base import BaseCommand
-from django.db.models import Q
-from django.utils.timezone import now
 
 
 class Command(BaseCommand):
@@ -14,7 +10,9 @@ class Command(BaseCommand):
         from ...models import Listing, ExternalEvent
 
         # Hide ExternalEvents for which there is an actual Event counterpart
-        ExternalEvent.objects.filter(slug__in=Event.objects.filter(public=True).values_list("slug", flat=True),).update(
+        ExternalEvent.objects.filter(
+            slug__in=Event.objects.filter(public=True).values_list("slug", flat=True),
+        ).update(
             public=False,
         )
 

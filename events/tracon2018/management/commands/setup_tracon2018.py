@@ -291,9 +291,7 @@ class Setup:
     def setup_tickets(self):
         from tickets.models import TicketsEventMeta, LimitGroup, Product
 
-        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(
-            self.event, ["admins", "pos"]
-        )
+        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 
         defaults = dict(
             admin_group=tickets_admin_group,
@@ -440,9 +438,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(
-                event=self.event, name=name, defaults=product_info
-            )
+            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -468,9 +464,7 @@ class Setup:
             View,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
-            self.event, ["admins", "hosts"]
-        )
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -541,17 +535,13 @@ class Setup:
                 datetime(2018, 9, 9, 18, 0, tzinfo=self.tz),
             ),
         ]:
-            TimeBlock.objects.get_or_create(
-                event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
-            )
+            TimeBlock.objects.get_or_create(event=self.event, start_time=start_time, defaults=dict(end_time=end_time))
 
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(
-                    event=self.event, start_time=hour_start_time.replace(minute=30)
-                )
+                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
 
         have_views = View.objects.filter(event=self.event).exists()
         if not have_views:
@@ -573,9 +563,7 @@ class Setup:
                 for room_name in room_names:
                     Room.objects.get_or_create(event=self.event, name=room_name)
 
-                rooms = [
-                    Room.objects.get(name__iexact=room_name, event=self.event) for room_name in room_names
-                ]
+                rooms = [Room.objects.get(name__iexact=room_name, event=self.event) for room_name in room_names]
 
                 view, created = View.objects.get_or_create(event=self.event, name=view_name)
                 view.rooms = rooms
@@ -631,9 +619,7 @@ class Setup:
             self.event.labour_event_meta.get_group("accepted"),
             self.event.programme_event_meta.get_group("hosts"),
         ]:
-            GroupPrivilege.objects.get_or_create(
-                group=group, privilege=privilege, defaults=dict(event=self.event)
-            )
+            GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
         cc_group = self.event.labour_event_meta.get_group("conitea")
 
@@ -693,9 +679,7 @@ class Setup:
             team, created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
-                defaults=dict(
-                    name=team_name, order=self.get_ordering_number(), group=team_group, email=email
-                ),
+                defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
 
     def setup_directory(self):

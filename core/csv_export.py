@@ -56,7 +56,7 @@ class CsvExportMixin:
 
         header_row = []
 
-        for (model, field) in fields:
+        for model, field in fields:
             if isinstance(field, str):
                 field_name = field
                 field_type = None
@@ -71,7 +71,7 @@ class CsvExportMixin:
                 elif m2m_mode == "comma_separated":
                     header_row.append(field_name)
                 else:
-                    raise NotImplemented(m2m_mode)
+                    raise NotImplementedError(m2m_mode)
             else:
                 header_row.append(field_name)
 
@@ -104,7 +104,7 @@ class CsvExportMixin:
                 elif m2m_mode == "comma_separated":
                     result_row.append(", ".join(item.__str__() for item in field_value.all()))
                 else:
-                    raise NotImplemented(m2m_mode)
+                    raise NotImplementedError(m2m_mode)
             elif field_type is models.DateTimeField and field_value is not None:
                 from django.utils.timezone import localtime
 
@@ -124,7 +124,6 @@ def get_m2m_choices(event, field):
     cache_key = (event.id, target_model._meta.app_label, target_model._meta.model_name)
 
     if cache_key not in get_m2m_choices.cache:
-
         if any(f.name == "event" for f in target_model._meta.fields):
             choices = target_model.objects.filter(event=event)
         else:

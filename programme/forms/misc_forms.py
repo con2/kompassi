@@ -17,10 +17,8 @@ from ..models import (
     Invitation,
     Programme,
     ProgrammeEventMeta,
-    ProgrammeFeedback,
     ProgrammeRole,
     Role,
-    Room,
     Tag,
 )
 from ..proxies.programme_event_meta.cold_offers import ColdOffersProgrammeEventMetaProxy

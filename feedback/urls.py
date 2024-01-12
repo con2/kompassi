@@ -5,7 +5,9 @@ from django.urls import path, re_path
 
 
 urlpatterns = [
-    path('feedback', feedback_view,
+    path(
+        "feedback",
+        feedback_view,
         name="feedback_view",
     ),
     re_path(

@@ -1,5 +1,3 @@
-from sys import stderr
-
 from django.core.management.base import BaseCommand
 
 
@@ -17,7 +15,6 @@ class Command(BaseCommand):
     def handle(*args, **opts):
         from programme.models import Programme
         from core.models import Event
-        from badges.models import Badge
 
         for event_slug in opts["event_slugs"]:
             event = Event.objects.get(slug=event_slug)

@@ -1,7 +1,6 @@
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
 
-from core.utils import slugify
 
 from ..models import ViewRoom
 

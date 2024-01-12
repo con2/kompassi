@@ -1,7 +1,6 @@
 from collections import namedtuple
 
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from core.models import EventMetaBase, Person
 from labour.models import Signup
@@ -41,7 +40,9 @@ class IntraEventMeta(EventMetaBase):
     def unassigned_organizers(self):
         if not hasattr(self, "_unassigned_organizers"):
             self._unassigned_organizers = []
-            for person in Person.objects.filter(user__groups=self.organizer_group,).exclude(
+            for person in Person.objects.filter(
+                user__groups=self.organizer_group,
+            ).exclude(
                 user__person__team_memberships__team__event_id=self.event.id,
             ):
                 signup = Signup.objects.filter(event=self.event, person=person).first()

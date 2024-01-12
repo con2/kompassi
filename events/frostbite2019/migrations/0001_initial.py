@@ -5,7 +5,6 @@ import labour.models.signup_extras
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

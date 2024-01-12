@@ -1,9 +1,7 @@
 from django.db import models
-from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from django.utils.timezone import now
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, set_defaults, set_attrs
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, set_defaults
 
 
 class AlternativeProgrammeForm(models.Model):

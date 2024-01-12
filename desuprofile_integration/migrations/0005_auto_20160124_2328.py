@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("desuprofile_integration", "0004_auto_20151108_1905"),
     ]

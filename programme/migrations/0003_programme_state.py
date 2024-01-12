@@ -11,7 +11,6 @@ def publish_all_existing_programme(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0002_auto_20150115_1949"),
     ]

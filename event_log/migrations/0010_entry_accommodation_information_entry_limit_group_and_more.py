@@ -5,26 +5,32 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tickets', '0032_accommodationinformation_is_present_and_more'),
-        ('event_log', '0009_entry_other_fields'),
+        ("tickets", "0032_accommodationinformation_is_present_and_more"),
+        ("event_log", "0009_entry_other_fields"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='entry',
-            name='accommodation_information',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tickets.accommodationinformation'),
+            model_name="entry",
+            name="accommodation_information",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="tickets.accommodationinformation",
+            ),
         ),
         migrations.AddField(
-            model_name='entry',
-            name='limit_group',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tickets.limitgroup'),
+            model_name="entry",
+            name="limit_group",
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to="tickets.limitgroup"
+            ),
         ),
         migrations.AlterField(
-            model_name='entry',
-            name='other_fields',
+            model_name="entry",
+            name="other_fields",
             field=models.JSONField(blank=True, default=dict),
         ),
     ]

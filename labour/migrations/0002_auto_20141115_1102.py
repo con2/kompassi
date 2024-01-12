@@ -3,7 +3,6 @@ import django.core.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0001_initial"),
         ("labour", "0001_initial"),

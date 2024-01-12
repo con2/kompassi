@@ -53,15 +53,11 @@ class Setup:
         )
 
     def setup_labour(self):
-        from core.models import Event, Person
-        from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
-            InfoLink,
             JobCategory,
             LabourEventMeta,
             PersonnelClass,
-            Qualification,
             Survey,
         )
         from ...models import SignupExtra, KnownLanguage, Accommodation

@@ -1,7 +1,5 @@
-from django import forms
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 
 
 STATE_CHOICES = [

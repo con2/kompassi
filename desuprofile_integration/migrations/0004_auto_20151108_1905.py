@@ -3,7 +3,6 @@ from django.conf import settings
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("desuprofile_integration", "0003_auto_20151016_2135"),
     ]

@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.utils.timezone import now
 
-from core.utils import groupby_strict, groups_of_n
+from core.utils import groupby_strict
 
 from ..models import Listing
 

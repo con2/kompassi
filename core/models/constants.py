@@ -1,7 +1,3 @@
-from datetime import date
-
-from django.conf import settings
-from django.utils.dateformat import format as format_date
 from django.utils.translation import gettext_lazy as _
 
 

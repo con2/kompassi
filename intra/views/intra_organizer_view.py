@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render
 
 from core.csv_export import ExportFormat, EXPORT_FORMATS, CSV_EXPORT_FORMATS

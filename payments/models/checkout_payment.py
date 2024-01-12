@@ -168,17 +168,14 @@ class CheckoutPayment(models.Model):
             }
         ]
 
-        if (
-            term.entrance_fee_cents
-            and membership_fee_payment.payment_type == "membership_fee_with_entrance_fee"
-        ):
+        if term.entrance_fee_cents and membership_fee_payment.payment_type == "membership_fee_with_entrance_fee":
             items.append(
                 {
                     "unitPrice": term.entrance_fee_cents,
                     "units": 1,
                     "vatPercentage": 0,
                     "productCode": f"{organization.slug}-entrance-{term.title}",
-                    "description": f"Liittymismaksu",
+                    "description": "Liittymismaksu",
                     "deliveryDate": date.today().isoformat(),
                 }
             )
@@ -219,17 +216,13 @@ class CheckoutPayment(models.Model):
         if not hasattr(self, "_membership_fee_payment"):
             from membership.models import MembershipFeePayment
 
-            self._membership_fee_payment = MembershipFeePayment.objects.filter(
-                reference_number=self.reference
-            ).first()
+            self._membership_fee_payment = MembershipFeePayment.objects.filter(reference_number=self.reference).first()
 
         return self._membership_fee_payment
 
     def perform_create_payment_request(self, request):
         if not settings.DEBUG and self.meta.checkout_merchant == META_DEFAULTS["checkout_merchant"]:
-            raise ValueError(
-                f"Event {self.event} has testing merchant in production, please change this in admin"
-            )
+            raise ValueError(f"Event {self.event} has testing merchant in production, please change this in admin")
 
         body = {
             "stamp": str(self.stamp),

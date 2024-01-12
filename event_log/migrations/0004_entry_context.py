@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("event_log", "0003_subscription_event_survey_filter"),
     ]

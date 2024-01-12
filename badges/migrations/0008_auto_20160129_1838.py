@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("badges", "0007_remove_badgeseventmeta_badge_factory_code"),
     ]

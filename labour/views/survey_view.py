@@ -2,7 +2,6 @@ from collections import namedtuple
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods

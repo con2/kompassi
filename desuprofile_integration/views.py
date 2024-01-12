@@ -1,4 +1,3 @@
-import json
 import logging
 from datetime import datetime
 
@@ -79,10 +78,7 @@ class CallbackView(View):
     """
 
     def get(self, request):
-        if (
-            "desuprofile_oauth_state" not in request.session
-            or "desuprofile_oauth_next" not in request.session
-        ):
+        if "desuprofile_oauth_state" not in request.session or "desuprofile_oauth_next" not in request.session:
             return HttpResponse("OAuth2 callback accessed outside OAuth2 authorization flow", status=400)
 
         session = get_session(request, state=request.session["desuprofile_oauth_state"])
@@ -216,9 +212,7 @@ class CallbackView(View):
             connection.save()
 
         person.apply_state_new_user(request, password)
-        messages.success(
-            request, "Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!"
-        )
+        messages.success(request, "Sinulle on luotu Desuprofiiliisi liitetty Kompassi-tunnus. Tervetuloa Kompassiin!")
 
         return respond_with_connection(request, next_url, connection)
 

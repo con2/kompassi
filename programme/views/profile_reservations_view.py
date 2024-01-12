@@ -1,10 +1,7 @@
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import render
 from django.utils.timezone import now
 
-from core.utils import initialize_form
 from paikkala.models import Ticket
 
 from programme.models.programme import PROGRAMME_STATES_ACTIVE

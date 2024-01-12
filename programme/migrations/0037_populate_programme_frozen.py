@@ -15,7 +15,6 @@ def populate_frozen(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("programme", "0036_programme_frozen"),
     ]

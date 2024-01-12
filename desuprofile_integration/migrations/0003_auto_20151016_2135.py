@@ -2,7 +2,6 @@ from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("desuprofile_integration", "0002_confirmationcode_next_url"),
     ]

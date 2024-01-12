@@ -9,7 +9,6 @@ from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.utils.translation import gettext_lazy as _
 
-from six import text_type
 
 from core.csv_export import CsvExportMixin
 from core.utils import (
@@ -73,10 +72,7 @@ class StateTransition:
         # XXX In the Grand Order, the first flag is `is_active`.
         # If the worker would end up in an inactive state, they must not have shifts.
         if not STATE_FLAGS_BY_NAME[self.to_state][0] and self.signup.shifts.exists():
-            return _(
-                "This signup has shifts. Please remove the shifts before cancelling or "
-                "rejecting the signup."
-            )
+            return _("This signup has shifts. Please remove the shifts before cancelling or " "rejecting the signup.")
 
         return ""
 
@@ -118,7 +114,7 @@ class SignupMixin:
         else:
             from warnings import warn
 
-            warn("Unknown state: {state}".format(self=self))
+            warn("Unknown state: {state}".format())
             labels = []
 
         return labels
@@ -544,11 +540,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         Message.send_messages(self.event, "labour", self.person)
 
     def apply_state_ensure_job_categories_accepted_is_set(self):
-        if (
-            self.is_accepted
-            and not self.job_categories_accepted.exists()
-            and self.job_categories.count() == 1
-        ):
+        if self.is_accepted and not self.job_categories_accepted.exists() and self.job_categories.count() == 1:
             self.job_categories_accepted.add(self.job_categories.get())
 
     def apply_state_ensure_personnel_class_is_set(self):

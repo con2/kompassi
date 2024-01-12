@@ -7,8 +7,6 @@ from django.utils.timezone import now
 
 from dateutil.tz import tzlocal
 
-from core.utils import slugify
-
 
 def mkpath(*parts):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
@@ -68,7 +66,6 @@ class Setup:
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
-            Job,
             JobCategory,
             LabourEventMeta,
             PersonnelClass,
@@ -313,9 +310,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(
-                event=self.event, name=name, defaults=product_info
-            )
+            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -327,18 +322,13 @@ class Setup:
         from programme.models import (
             AlternativeProgrammeForm,
             Category,
-            Programme,
             ProgrammeEventMeta,
             Role,
-            Room,
             SpecialStartTime,
             TimeBlock,
-            View,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
-            self.event, ["admins", "hosts"]
-        )
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -386,9 +376,7 @@ class Setup:
                 self.event.end_time,
             ),
         ]:
-            TimeBlock.objects.get_or_create(
-                event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
-            )
+            TimeBlock.objects.get_or_create(event=self.event, start_time=start_time, defaults=dict(end_time=end_time))
 
         SpecialStartTime.objects.get_or_create(
             event=self.event,
@@ -398,9 +386,7 @@ class Setup:
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(
-                    event=self.event, start_time=hour_start_time.replace(minute=30)
-                )
+                SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
 
         form, created = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,

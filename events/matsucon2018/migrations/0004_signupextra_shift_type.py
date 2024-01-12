@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("matsucon2018", "0003_signupextra_shirt_size"),
     ]

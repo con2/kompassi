@@ -81,9 +81,7 @@ class Command(BaseCommand):
                 results: list[tuple[str, int, int, int]] = []
                 for zone in paikkala_program.zones:
                     status: ZoneReservationStatus = zone.get_reservation_status(paikkala_program)
-                    results.append(
-                        (zone.name, status.total_reserved, status.total_remaining, status.total_capacity)
-                    )
+                    results.append((zone.name, status.total_reserved, status.total_remaining, status.total_capacity))
 
                 total_reserved = sum(r[1] for r in results)
                 total_remaining = sum(r[2] for r in results)

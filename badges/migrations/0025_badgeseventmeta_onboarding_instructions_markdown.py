@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("badges", "0024_badgeseventmeta_onboarding_access_group_and_more"),
     ]

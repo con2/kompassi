@@ -58,7 +58,7 @@ class Setup:
         )
 
     def setup_labour(self):
-        from core.models import Person, Event
+        from core.models import Person
         from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
@@ -204,9 +204,7 @@ class Setup:
             View,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(
-            self.event, ["admins", "hosts"]
-        )
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -256,16 +254,15 @@ class Setup:
             (saturday_start, saturday_end),
             (sunday_start, sunday_end),
         ]:
-            TimeBlock.objects.get_or_create(
-                event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
-            )
+            TimeBlock.objects.get_or_create(event=self.event, start_time=start_time, defaults=dict(end_time=end_time))
 
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
                 SpecialStartTime.objects.get_or_create(
-                    event=self.event, start_time=hour_start_time.replace(minute=30)  # look, no tz
+                    event=self.event,
+                    start_time=hour_start_time.replace(minute=30),  # look, no tz
                 )
 
         have_views = View.objects.filter(event=self.event).exists()
@@ -297,9 +294,7 @@ class Setup:
                 for room_name in room_names:
                     Room.objects.get_or_create(event=self.event, name=room_name)
 
-                rooms = [
-                    Room.objects.get(name__iexact=room_name, event=self.event) for room_name in room_names
-                ]
+                rooms = [Room.objects.get(name__iexact=room_name, event=self.event) for room_name in room_names]
 
                 view, created = View.objects.get_or_create(
                     event=self.event,

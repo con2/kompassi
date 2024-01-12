@@ -53,4 +53,6 @@ KEYSPACES = {
     Queue.ONE_QUEUE: KEYSPACE,
 }
 
-select_queue = lambda order: Queue.ONE_QUEUE
+
+def select_queue(_):
+    return Queue.ONE_QUEUE

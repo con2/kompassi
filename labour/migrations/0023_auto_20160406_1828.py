@@ -12,7 +12,6 @@ def fix_signup_extra_form_class_paths(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labour", "0022_rename_empty_signup_extra"),
     ]

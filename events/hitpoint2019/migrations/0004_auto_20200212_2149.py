@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("hitpoint2019", "0003_signupextra_shirt_size"),
     ]

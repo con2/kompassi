@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 
-from math import ceil
 
 from django.conf import settings
 from django.db import models
@@ -31,9 +30,7 @@ class RecipientGroup(models.Model):
     group = models.ForeignKey("auth.Group", on_delete=models.CASCADE, verbose_name="Käyttäjäryhmä")
     verbose_name = models.CharField(max_length=255, verbose_name="Nimi", blank=True, default="")
     job_category = models.ForeignKey(JobCategory, on_delete=models.CASCADE, null=True, blank=True)
-    programme_category = models.ForeignKey(
-        "programme.Category", on_delete=models.CASCADE, null=True, blank=True
-    )
+    programme_category = models.ForeignKey("programme.Category", on_delete=models.CASCADE, null=True, blank=True)
     programme_form = models.ForeignKey(
         "programme.AlternativeProgrammeForm", on_delete=models.CASCADE, null=True, blank=True
     )
@@ -156,13 +153,9 @@ class Message(models.Model):
             self.sent_at = timezone.now()
             self.save()
 
-        message_send.delay(
-            self.pk, [person.pk for person in recipients] if recipients is not None else None, resend
-        )
+        message_send.delay(self.pk, [person.pk for person in recipients] if recipients is not None else None, resend)
 
     def _send(self, recipients, resend):
-        from django.contrib.auth.models import User
-
         if recipients is None:
             recipients = [user.person for user in self.recipient.group.user_set.all()]
 
@@ -272,9 +265,7 @@ class PersonMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        self.subject, unused = PersonMessageSubject.get_or_create(
-            self.render_message(self.message.subject_template)
-        )
+        self.subject, unused = PersonMessageSubject.get_or_create(self.render_message(self.message.subject_template))
         self.body, unused = PersonMessageBody.get_or_create(self.render_message(self.message.body_template))
 
         return super().save(*args, **kwargs)

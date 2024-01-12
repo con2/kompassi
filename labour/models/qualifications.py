@@ -72,7 +72,7 @@ class QualificationExtraBase(models.Model):
 
     @classmethod
     def get_form_class(cls):
-        raise NotImplemented("Remember to override get_form_class in your QualificationExtra model")
+        raise NotImplementedError("Remember to override get_form_class in your QualificationExtra model")
 
     class Meta:
         abstract = True

@@ -65,13 +65,11 @@ class Setup:
         from core.models import Person
         from labour.models import (
             AlternativeSignupForm,
-            InfoLink,
             Job,
             JobCategory,
             LabourEventMeta,
             PersonnelClass,
             Qualification,
-            WorkPeriod,
         )
         from ...models import SignupExtra
         from django.contrib.contenttypes.models import ContentType
@@ -307,9 +305,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(
-                event=self.event, name=name, defaults=product_info
-            )
+            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)

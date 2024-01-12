@@ -5,22 +5,35 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
-        ('core', '0035_person_discord_handle'),
-        ('tickets', '0030_auto_20220418_1553'),
+        ("auth", "0012_alter_user_first_name_max_length"),
+        ("core", "0035_person_discord_handle"),
+        ("tickets", "0030_auto_20220418_1553"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ticketseventmeta',
-            name='event',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='%(class)s', serialize=False, to='core.event'),
+            model_name="ticketseventmeta",
+            name="event",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                primary_key=True,
+                related_name="%(class)s",
+                serialize=False,
+                to="core.event",
+            ),
         ),
         migrations.AlterField(
-            model_name='ticketseventmeta',
-            name='pos_access_group',
-            field=models.ForeignKey(blank=True, help_text='Members of this group are granted access to the ticket exchange view without being ticket admins.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='as_pos_access_group_for', to='auth.group', verbose_name='POS access group'),
+            model_name="ticketseventmeta",
+            name="pos_access_group",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Members of this group are granted access to the ticket exchange view without being ticket admins.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="as_pos_access_group_for",
+                to="auth.group",
+                verbose_name="POS access group",
+            ),
         ),
     ]

@@ -1,6 +1,3 @@
-from django.conf.urls import include
-from django.shortcuts import redirect
-
 from .views import (
     badges_admin_badges_view,
     badges_admin_batches_view,

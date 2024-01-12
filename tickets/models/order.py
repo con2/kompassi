@@ -106,9 +106,7 @@ class Order(models.Model):
 
     @property
     def requires_accommodation_information(self):
-        return self.order_product_set.filter(
-            count__gt=0, product__requires_accommodation_information=True
-        ).exists()
+        return self.order_product_set.filter(count__gt=0, product__requires_accommodation_information=True).exists()
 
     @property
     def formatted_price(self):
@@ -135,9 +133,7 @@ class Order(models.Model):
 
     @property
     def formatted_reference_number(self):
-        return "".join((i if (n + 1) % 5 else i + " ") for (n, i) in enumerate(self.reference_number[::-1]))[
-            ::-1
-        ]
+        return "".join((i if (n + 1) % 5 else i + " ") for (n, i) in enumerate(self.reference_number[::-1]))[::-1]
 
     @property
     def formatted_order_number(self):

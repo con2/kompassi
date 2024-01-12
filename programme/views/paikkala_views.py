@@ -8,7 +8,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
-from django.views.generic.base import TemplateView
 
 from core.utils import horizontal_form_helper
 from paikkala.views import (

@@ -1,8 +1,8 @@
 from django.shortcuts import render
 
-from ..models import Organization
-
 from core.utils import groups_of_n
+
+from ..models import Organization
 
 
 def core_organizations_view(request):

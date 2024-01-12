@@ -27,9 +27,7 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         null=True,
         blank=True,
         verbose_name=_("Onboarding access group"),
-        help_text=_(
-            "Members of this group are granted access to the onboarding view without being badges admins."
-        ),
+        help_text=_("Members of this group are granted access to the onboarding view without being badges admins."),
         related_name="as_onboarding_access_group_for",
     )
 
@@ -59,9 +57,7 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
 
     @property
     def onboarding_instructions_html(self):
-        return (
-            markdown(self.onboarding_instructions_markdown) if self.onboarding_instructions_markdown else ""
-        )
+        return markdown(self.onboarding_instructions_markdown) if self.onboarding_instructions_markdown else ""
 
     def is_user_allowed_onboarding_access(self, user):
         if self.is_user_admin(user):

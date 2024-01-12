@@ -10,7 +10,6 @@ def delete_spurious_badges(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("badges", "0011_make_denormalized_fields_mandatory"),
     ]

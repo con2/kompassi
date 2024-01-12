@@ -1,5 +1,4 @@
 from itertools import islice
-from datetime import timedelta
 
 
 # from http://docs.python.org/release/2.3.5/lib/itertools-example.html

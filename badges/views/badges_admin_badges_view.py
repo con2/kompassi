@@ -1,20 +1,19 @@
+from typing import Any
+
 from django.contrib import messages
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_http_methods, require_safe
+from django.views.decorators.http import require_http_methods
 
-from core.batches_view import batches_view
-from core.utils import url, initialize_form, groupby_strict
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS
+from core.csv_export import CSV_EXPORT_FORMATS, csv_response
+from core.utils import groupby_strict, initialize_form
 from labour.models import PersonnelClass
 
-from ..forms import CreateBatchForm, BadgeForm, HiddenBadgeCrouchingForm
-from ..models import Badge, Batch, CountBadgesMixin
+from ..forms import HiddenBadgeCrouchingForm
 from ..helpers import badges_admin_required
+from ..models import Badge
 from ..proxies.badge.management import BadgeManagementProxy
-
 
 BADGE_ORDER = ("personnel_class", "person__surname", "person__first_name")
 BADGE_LIST_TEMPLATES = dict(
@@ -71,7 +70,7 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
                         ),
                     )
                 if not badge.is_revoked:
-                    message.warning(request, _("The badge was already valid."))
+                    messages.warning(request, _("The badge was already valid."))
                 else:
                     badge.unrevoke()
                     messages.success(request, _("The badge has been restored."))
@@ -132,7 +131,7 @@ def badges_admin_badges_view(request, vars, event, personnel_class_slug=None):
                 qualifier=active_filter.name if active_filter else "Nimilista",
             )
 
-            filters = [
+            filters: list[tuple[bool, Any]] = [
                 (personnel_class_slug == personnel_class.slug, personnel_class)
                 for personnel_class in PersonnelClass.objects.filter(event=event)
             ]

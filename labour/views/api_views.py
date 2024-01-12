@@ -1,19 +1,15 @@
-import json
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from django.conf import settings
-from django.views.decorators.http import require_http_methods, require_safe, require_POST
+from django.views.decorators.http import require_safe, require_POST
 from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
 
-from dateutil.tz import tzlocal
 from dateutil.parser import parse as parse_datetime
 
 from api.utils import api_view, MethodNotAllowed
 from core.utils import full_hours_between
 
-from ..helpers import labour_admin_required, labour_event_required
+from ..helpers import labour_admin_required
 from ..models import (
     EditJobRequest,
     EditShiftRequest,

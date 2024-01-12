@@ -1,8 +1,7 @@
-from django.db import models, migrations
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("badges", "0003_populate_personnel_class"),
     ]

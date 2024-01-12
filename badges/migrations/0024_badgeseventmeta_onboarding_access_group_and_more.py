@@ -5,22 +5,35 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
-        ('core', '0035_person_discord_handle'),
-        ('badges', '0023_remove_badgeseventmeta_is_using_fuzzy_reissuance_hack'),
+        ("auth", "0012_alter_user_first_name_max_length"),
+        ("core", "0035_person_discord_handle"),
+        ("badges", "0023_remove_badgeseventmeta_is_using_fuzzy_reissuance_hack"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='badgeseventmeta',
-            name='onboarding_access_group',
-            field=models.ForeignKey(blank=True, help_text='Members of this group are granted access to the onboarding view without being badges admins.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='as_onboarding_access_group_for', to='auth.group', verbose_name='Onboarding access group'),
+            model_name="badgeseventmeta",
+            name="onboarding_access_group",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Members of this group are granted access to the onboarding view without being badges admins.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="as_onboarding_access_group_for",
+                to="auth.group",
+                verbose_name="Onboarding access group",
+            ),
         ),
         migrations.AlterField(
-            model_name='badgeseventmeta',
-            name='event',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='%(class)s', serialize=False, to='core.event'),
+            model_name="badgeseventmeta",
+            name="event",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                primary_key=True,
+                related_name="%(class)s",
+                serialize=False,
+                to="core.event",
+            ),
         ),
     ]
