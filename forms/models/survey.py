@@ -93,7 +93,7 @@ class Survey(models.Model):
         except Form.DoesNotExist:
             pass
 
-        for language, _ in settings.LANGUAGES:
+        for language, _name in settings.LANGUAGES:
             if language == requested_language:
                 # already tried above, skip one extra query
                 continue

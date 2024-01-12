@@ -291,7 +291,7 @@ class Order(models.Model):
             return
 
         for op in self.order_product_set.filter(count__gt=0, product__electronic_ticket=True):
-            for _ in range(op.count * op.product.electronic_tickets_per_product):
+            for _i in range(op.count * op.product.electronic_tickets_per_product):
                 Code.objects.create(
                     order=lippukala_order,
                     prefix=self.lippukala_prefix,
