@@ -8,7 +8,6 @@ from ..models import Enrollment
 
 @enrollment_admin_required
 def enrollment_admin_special_diets_view(request, vars, event):
-    meta = event.enrollment_event_meta
     enrollments = Enrollment.objects.filter(event=event)
 
     enrollments_with_standard_special_diets = enrollments.filter(special_diet__isnull=False).distinct()

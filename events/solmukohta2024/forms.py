@@ -128,8 +128,8 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
 class AForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop("event")
-        admin = kwargs.pop("admin", False)
+        kwargs.pop("event")
+        kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
 

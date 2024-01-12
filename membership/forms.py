@@ -75,7 +75,6 @@ class MembershipFeePaymentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        term = self.instance.term
 
     class Meta:
         model = MembershipFeePayment

@@ -244,7 +244,6 @@ class BadgesTestCase(TestCase):
         and re-created.
         """
         programme_role, unused = ProgrammeRole.get_or_create_dummy()
-        programme = programme_role.programme
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
@@ -266,7 +265,6 @@ class BadgesTestCase(TestCase):
         programme_role, unused = ProgrammeRole.get_or_create_dummy()
         role = programme_role.role
         personnel_class = role.personnel_class
-        programme = programme_role.programme
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created

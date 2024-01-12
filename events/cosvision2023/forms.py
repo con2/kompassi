@@ -45,7 +45,7 @@ class SignupExtraForm(forms.ModelForm):
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop("event")
+        kwargs.pop("event")
         admin = kwargs.pop("admin")
 
         assert not admin
