@@ -8,7 +8,6 @@ from ..forms import PublishForm
 
 @programme_admin_required
 def admin_publish_view(request, vars, event):
-    meta = event.programme_event_meta
     return generic_publish_unpublish_view(
         request,
         vars,

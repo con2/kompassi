@@ -94,7 +94,7 @@ class SMTPServer(models.Model):
                 with sftp_client.file(self.password_file_path_on_server, "w") as output_file:
                     output_file.write(contents.encode("UTF-8"))
 
-                with sftp_client.file(self.trigger_file_path_on_server, "w") as trigger_file:
+                with sftp_client.file(self.trigger_file_path_on_server, "w"):
                     pass
 
         logger.info("Successfully pushed smtppasswd file for %s", self)

@@ -64,7 +64,7 @@ class SignupExtraForm(forms.ModelForm):
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
-        event = kwargs.pop("event")
+        kwargs.pop("event")
         admin = kwargs.pop("admin")
 
         assert not admin
@@ -198,7 +198,7 @@ LARP_BEGINNER_FRIENDLY_HELP_TEXT = _("Check this box if your game does not requi
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin", False)
+        kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -320,7 +320,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin", False)
+        kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -405,7 +405,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class KorttipeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin", False)
+        kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -468,7 +468,7 @@ class KorttipeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class FigupeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin", False)
+        kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -531,7 +531,7 @@ class FigupeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin", False)
+        kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -586,7 +586,7 @@ class KokemuspisteForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class LautapeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin", False)
+        kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -649,7 +649,7 @@ class LautapeliForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class PuheohjelmaForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin", False)
+        kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
