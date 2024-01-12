@@ -11,7 +11,6 @@ from django.db.models.signals import pre_save, post_save
 from django.conf import settings
 from django.db import models
 from django.template import Template, Context
-from django.utils import timezone
 
 from labour.models import JobCategory
 from labour.models import PersonnelClass

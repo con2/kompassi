@@ -13,7 +13,6 @@ from .public_views import (
 from .admin_views import (
     admin_email_list_view,
     admin_view,
-    admin_email_list_view,
     admin_special_view,
 )
 

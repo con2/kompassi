@@ -12,7 +12,6 @@ from .views import (
     admin_reservation_status_view,
     admin_reservations_export_view,
     admin_cold_offers_view,
-    admin_cold_offers_view,
     admin_create_view,
     admin_detail_view,
     admin_email_list_view,

@@ -16,7 +16,6 @@ from payments.models.checkout_payment import CheckoutPayment, CHECKOUT_PAYMENT_W
 
 from ..forms import OrderProductForm, CustomerForm
 from ..helpers import tickets_event_required
-from ..helpers import tickets_event_required
 from .tickets_v1_views import get_order, set_order, clear_order, tickets_welcome_view
 
 

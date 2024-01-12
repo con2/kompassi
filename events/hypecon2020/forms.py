@@ -135,12 +135,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            prior_experience="",
-            free_text="Syötetty käyttäen coniitin ilmoittautumislomaketta",
-        )
-
-    def get_excluded_field_defaults(self):
-        return dict(
             shift_type="kaikkikay",
             total_work="xx",
         )
