@@ -3,7 +3,7 @@ from django.template import Library
 
 from core.utils import slugify as core_slugify
 
-__all__ = ["removetags", "slugify"]
+__all__ = ["strip_html", "slugify"]
 register = Library()
 
 
