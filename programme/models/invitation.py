@@ -82,7 +82,7 @@ class Invitation(OneTimeCodeLite):
 
         with transaction.atomic():
             if sire and not sire.invitations_left:
-                raise NoInvitesLeft(sire)
+                raise RuntimeError(f"No invitations left: {sire}")
 
             self.mark_used()
 

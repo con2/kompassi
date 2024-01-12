@@ -22,7 +22,7 @@ class EnrollmentStartForm(forms.ModelForm):
         enrollment_closes = self.cleaned_data.get("enrollment_closes")
 
         if enrollment_opens and enrollment_closes and enrollment_opens >= enrollment_closes:
-            raise forms.ValidationError(_("The closing time must be after the opening time."))
+            raise forms.ValidationError("The closing time must be after the opening time.")
 
         return enrollment_closes
 

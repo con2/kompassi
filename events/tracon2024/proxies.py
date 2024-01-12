@@ -1,3 +1,5 @@
+import logging
+
 from dateutil.tz import tzlocal
 
 from paikkala.models import Ticket
@@ -5,6 +7,8 @@ from paikkala.models import Ticket
 from core.csv_export import CsvExportMixin
 
 from .models import SignupExtra
+
+logger = logging.getLogger("kompassi")
 
 
 class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
