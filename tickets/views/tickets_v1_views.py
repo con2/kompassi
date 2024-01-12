@@ -1,18 +1,24 @@
+from csp.decorators import csp_update
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
-from csp.decorators import csp_update
-
 from core.utils import initialize_form, url
 from payments.models.checkout_payment import CHECKOUT_PAYMENT_WALL_ORIGIN
 
 # XXX * imports
-from ..forms import *
-from ..helpers import *
+from ..forms import AccommodationInformationForm, CustomerForm, NullForm, OrderProductForm
+from ..helpers import (
+    clear_order,
+    complete_phase,
+    destroy_order,
+    get_order,
+    is_phase_completed,
+    set_order,
+    tickets_event_required,
+)
 from ..models import OrderProduct
-from ..utils import *
 
 
 def multiform_validate(forms):
