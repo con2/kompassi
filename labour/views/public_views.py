@@ -93,7 +93,7 @@ def signup_view(request, event, alternative_form_slug=None):
         return login_redirect(request)
 
     try:
-        person = request.user.person
+        _person = request.user.person
     except Person.DoesNotExist:
         pages = [
             ("core_personify_view", _("Complete contact information")),

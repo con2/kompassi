@@ -433,7 +433,6 @@ class Order(models.Model):
             event = meta.event
 
         customer, unused = Customer.get_or_create_dummy()
-        t = timezone.now()
 
         return cls.objects.get_or_create(
             event=event,
