@@ -1,4 +1,4 @@
-from django.urls import re_path, path
+from django.urls import path, re_path
 
 from .views import (
     access_admin_aliases_api,
@@ -11,7 +11,6 @@ from .views import (
     access_profile_request_privilege_view,
     sudo_view,
 )
-
 
 urlpatterns = [
     re_path(

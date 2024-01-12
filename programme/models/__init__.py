@@ -1,13 +1,13 @@
-from .programme_event_meta import ProgrammeEventMeta
+from .alternative_programme_form import AlternativeProgrammeForm, AlternativeProgrammeFormMixin
 from .category import Category
-from .room import Room
-from .role import Role
-from .programme_role import ProgrammeRole
 from .freeform_organizer import FreeformOrganizer
 from .invitation import Invitation
-from .tag import Tag
-from .programme import Programme, STATE_CHOICES, START_TIME_LABEL
+from .programme import START_TIME_LABEL, STATE_CHOICES, Programme
+from .programme_event_meta import ProgrammeEventMeta
 from .programme_feedback import ProgrammeFeedback
+from .programme_role import ProgrammeRole
+from .role import Role
+from .room import Room
 from .schedule import (
     AllRoomsPseudoView,
     SpecialStartTime,
@@ -16,5 +16,5 @@ from .schedule import (
     ViewMethodsMixin,
     ViewRoom,
 )
-from .alternative_programme_form import AlternativeProgrammeForm, AlternativeProgrammeFormMixin
 from .special_reservation import SpecialReservation
+from .tag import Tag

@@ -1,10 +1,8 @@
 from django.db import models
 
+from core.utils import validate_slug
 from enrollment.models import SimpleChoice, SpecialDiet
 from labour.models import SignupExtraBase
-
-from core.utils import validate_slug
-
 
 SHIRT_SIZES = [
     ("NO_SHIRT", "Ei paitaa"),

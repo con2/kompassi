@@ -1,11 +1,10 @@
 from django.contrib import messages
-from django.views.decorators.http import require_http_methods, require_POST
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods, require_POST
 
 from core.utils import initialize_form
 
-from ..helpers import programme_admin_required
 from ..forms import (
     AddRoomForm,
     DeleteViewForm,
@@ -14,8 +13,8 @@ from ..forms import (
     RemoveViewRoomForm,
     ViewForm,
 )
+from ..helpers import programme_admin_required
 from ..models import View
-
 
 schedule_actions = {
     "add-view": ViewForm,

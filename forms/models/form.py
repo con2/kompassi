@@ -1,7 +1,7 @@
 import logging
 from copy import deepcopy
 from functools import cached_property
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.db import models

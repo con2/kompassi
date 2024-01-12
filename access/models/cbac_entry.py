@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 from typing import Any, Optional
 
 from django.conf import settings
-from django.contrib.postgres.fields import HStoreField
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.utils.timezone import now
 
@@ -13,7 +13,6 @@ from event_log.utils import emit
 from intra.constants import SUPPORTED_APPS
 
 from ..constants import CBAC_VALID_AFTER_EVENT_DAYS
-
 
 Claims = dict[str, str]
 logger = logging.getLogger("kompassi")

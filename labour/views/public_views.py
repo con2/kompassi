@@ -2,27 +2,28 @@ import json
 
 from django.conf import settings
 from django.contrib import messages
-from django.urls import reverse
 from django.db import transaction
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_POST, require_safe
 
 from core.helpers import person_required
 from core.models import Person
-from core.utils import (
-    initialize_form,
-    login_redirect,
-    url,
-    set_attrs,
-)
 from core.page_wizard import (
     page_wizard_init,
     page_wizard_vars,
 )
+from core.utils import (
+    initialize_form,
+    login_redirect,
+    set_attrs,
+    url,
+)
 from event_log.utils import emit
 
+from ..helpers import labour_event_required
 from ..models import (
     AlternativeSignupForm,
     JobCategory,
@@ -30,8 +31,6 @@ from ..models import (
     Qualification,
     Signup,
 )
-from ..helpers import labour_event_required
-
 from .view_helpers import initialize_signup_forms
 
 

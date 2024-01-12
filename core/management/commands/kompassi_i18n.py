@@ -3,7 +3,7 @@ import logging
 import os
 import re
 
-from babel.messages import mofile, pofile, Catalog
+from babel.messages import Catalog, mofile, pofile
 from babel.messages.extract import extract, extract_javascript, extract_python
 from django.apps import apps
 from django.conf import settings
@@ -11,7 +11,6 @@ from django.core.management.base import BaseCommand
 from django.utils.encoding import force_str
 from django.utils.translation import templatize
 from pypugjs import Compiler, process
-
 
 ACCEPTABLE_FILENAMES_RE = re.compile(r"^.*\.(js|py|pug|html)$", re.I)
 

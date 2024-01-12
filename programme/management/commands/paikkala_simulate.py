@@ -2,17 +2,14 @@ import logging
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
-from django.utils.timezone import now
 from django.db import transaction
-
-from tabulate import tabulate
-
+from django.utils.timezone import now
 from paikkala.excs import NoCapacity
 from paikkala.models.zones import ZoneReservationStatus
+from tabulate import tabulate
 
-from programme.models import Programme, Category, Room
 from core.models import Event
-
+from programme.models import Category, Programme, Room
 
 logger = logging.getLogger("kompassi")
 

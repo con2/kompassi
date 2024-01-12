@@ -1,6 +1,6 @@
-from .views import api_discord_view, api_person_view, api_status_view
 from django.urls import re_path
 
+from .views import api_discord_view, api_person_view, api_status_view
 
 urlpatterns = [
     re_path(r"^api/v1/people/(?P<username>[a-zA-Z0-9_]+)/?$", api_person_view, name="api_person_view"),

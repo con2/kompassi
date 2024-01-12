@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 import phonenumbers
 import vobject
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -15,13 +14,13 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
-from ..utils import pick_attrs, calculate_age, format_phone_number, phone_number_validator
+from ..utils import calculate_age, format_phone_number, phone_number_validator, pick_attrs
 from .constants import (
-    EMAIL_LENGTH,
-    PHONE_NUMBER_LENGTH,
     BIRTH_DATE_HELP_TEXT,
+    EMAIL_LENGTH,
     NAME_DISPLAY_STYLE_CHOICES,
     NAME_DISPLAY_STYLE_FORMATS,
+    PHONE_NUMBER_LENGTH,
 )
 
 if TYPE_CHECKING:
@@ -356,12 +355,13 @@ class Person(models.Model):
 
     def setup_password_reset(self, request):
         from core.utils import get_ip
+
         from .password_reset_token import PasswordResetToken
 
         self.setup_code(request, PasswordResetToken, ip_address=get_ip(request) or "")
 
     def verify_email(self, code=None):
-        from .email_verification_token import EmailVerificationToken, EmailVerificationError
+        from .email_verification_token import EmailVerificationError, EmailVerificationToken
 
         if self.is_email_verified:
             raise EmailVerificationError("already_verified")

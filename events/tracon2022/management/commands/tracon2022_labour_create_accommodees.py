@@ -3,12 +3,11 @@ import logging
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from tickets.models import AccommodationInformation, LimitGroup
 from core.models import Event
 from core.utils import log_get_or_create
+from tickets.models import AccommodationInformation, LimitGroup
 
-from ...models import SignupExtra, Night
-
+from ...models import Night, SignupExtra
 
 logger = logging.getLogger("kompassi")
 

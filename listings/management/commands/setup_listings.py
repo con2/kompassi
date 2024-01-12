@@ -7,7 +7,8 @@ class Command(BaseCommand):
 
     def handle(*args, **opts):
         from core.models import Event
-        from ...models import Listing, ExternalEvent
+
+        from ...models import ExternalEvent, Listing
 
         # Hide ExternalEvents for which there is an actual Event counterpart
         ExternalEvent.objects.filter(

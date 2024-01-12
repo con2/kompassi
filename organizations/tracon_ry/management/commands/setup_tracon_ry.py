@@ -3,8 +3,7 @@ from datetime import date
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-
-from access.models import EmailAliasDomain, EmailAliasType, AccessOrganizationMeta, SMTPServer
+from access.models import AccessOrganizationMeta, EmailAliasDomain, EmailAliasType, SMTPServer
 from core.models import Organization
 from membership.models import MembershipOrganizationMeta, Term
 from payments.models.payments_organization_meta import META_DEFAULTS

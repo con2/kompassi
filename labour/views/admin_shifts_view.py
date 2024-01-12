@@ -2,12 +2,11 @@ from django.shortcuts import render
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
-from core.sort_and_filter import Filter, Sorter
 from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat, csv_response
+from core.sort_and_filter import Filter, Sorter
 
-from ..models import Shift, JobCategory
 from ..helpers import labour_admin_required
-
+from ..models import JobCategory, Shift
 
 HTML_TEMPLATES = dict(
     screen="labour_admin_shifts_view.pug",

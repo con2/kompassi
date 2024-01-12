@@ -1,9 +1,9 @@
-from core.helpers import person_required
-from core.utils import initialize_form
-
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
+
+from core.helpers import person_required
+from core.utils import initialize_form
 
 from ..helpers import enrollment_event_required
 from ..models import Enrollment

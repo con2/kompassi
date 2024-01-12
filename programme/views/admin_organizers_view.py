@@ -11,8 +11,7 @@ from event_log.utils import emit
 from labour.models import PersonnelClass
 
 from ..helpers import programme_admin_required
-from ..models import ProgrammeRole, Role, AlternativeProgrammeForm
-
+from ..models import AlternativeProgrammeForm, ProgrammeRole, Role
 
 EXPORT_FORMATS = EXPORT_FORMATS + [
     ExportFormat("Sähköpostiosoitteet", "txt", "txt"),

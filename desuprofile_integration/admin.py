@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Connection, ConfirmationCode
+from .models import ConfirmationCode, Connection
 
 
 class ConnectionAdmin(admin.ModelAdmin):

@@ -1,6 +1,5 @@
-from django.utils import translation
 from django.conf import settings
-
+from django.utils import translation
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 

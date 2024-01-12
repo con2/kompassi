@@ -2,16 +2,15 @@ from collections import namedtuple
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from core.helpers import person_required
 from core.utils import initialize_form
 
-from ..models import Signup, Survey, SurveyRecord
 from ..helpers import labour_event_required
-
+from ..models import Signup, Survey, SurveyRecord
 
 FakeSignup = namedtuple("FakeSignup", "event")
 

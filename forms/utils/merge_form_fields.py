@@ -6,12 +6,12 @@ Note that fields present in only one language version are not guaranteed to be
 in any particular order.
 """
 
-from collections.abc import Sequence, Iterable
+from collections.abc import Iterable, Sequence
 from functools import reduce
-from typing import Protocol, TypeVar, Optional
+from typing import Optional, Protocol, TypeVar
 
-from ..models.form import Form
 from ..models.field import Field
+from ..models.form import Form
 
 
 class HasSlug(Protocol):

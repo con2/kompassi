@@ -9,6 +9,7 @@ def badges_admin_required(view_func):
     def wrapper(request, event_slug, *args, **kwargs):
         from core.models import Event
         from core.utils import login_redirect
+
         from .views import badges_admin_menu_items
 
         event = get_object_or_404(Event, slug=event_slug)

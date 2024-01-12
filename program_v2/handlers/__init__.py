@@ -1,2 +1,1 @@
-from . import program
-from . import dimension
+from . import dimension, program

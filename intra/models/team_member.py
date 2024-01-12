@@ -1,14 +1,13 @@
 import logging
 
 from django.db import models
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import ensure_user_is_member_of_group, pick_attrs
 from core.models.constants import NAME_DISPLAY_STYLE_CHOICES
+from core.utils import ensure_user_is_member_of_group, pick_attrs
 from labour.models.constants import JOB_TITLE_LENGTH
-
 
 NAME_DISPLAY_STYLE_CHOICES = [
     ("", _("As set by the user themself")),
@@ -110,6 +109,7 @@ class TeamMember(models.Model):
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Person
+
         from .team import Team
 
         team, unused = Team.get_or_create_dummy()

@@ -1,10 +1,8 @@
-from django.template import Library
-
 from babel.dates import format_skeleton
 from dateutil.tz import tzlocal
+from django.template import Library
 
 from core.utils import get_current_locale
-
 
 __all__ = ["skeletonfmt"]
 register = Library()

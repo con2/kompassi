@@ -24,7 +24,6 @@ from enum import Enum
 from functools import cache
 
 from django.core.management.base import BaseCommand
-
 from tabulate import tabulate
 
 from tickets.models import Order

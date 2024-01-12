@@ -3,11 +3,10 @@ import logging
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
-from localized_fields.models import LocalizedModel
 from localized_fields.fields import LocalizedCharField
+from localized_fields.models import LocalizedModel
 
-from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
+from core.models import ContactEmailMixin, EventMetaBase, contact_email_validator
 
 from .consts import TICKETS_VIEW_VERSION_CHOICES
 
@@ -181,6 +180,7 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
     @classmethod
     def get_or_create_dummy(cls):
         from django.contrib.auth.models import Group
+
         from core.models import Event
 
         group, unused = Group.objects.get_or_create(name="Dummy ticket admin group")

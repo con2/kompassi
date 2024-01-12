@@ -5,7 +5,6 @@ import re
 
 from django.db import migrations
 
-
 SLUGIFY_CHAR_MAP = {
     "ä": "a",
     "å": "a",

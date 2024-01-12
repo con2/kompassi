@@ -2,11 +2,9 @@ import logging
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from markdown import markdown
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
-
 
 logger = logging.getLogger("kompassi")
 

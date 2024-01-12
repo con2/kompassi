@@ -4,8 +4,8 @@ from sys import stdin
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from core.models import Event
 from badges.models import Badge
+from core.models import Event
 from labour.models.personnel_class import PersonnelClass
 
 from .solmukohta2020_extract import Participant

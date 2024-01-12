@@ -1,8 +1,7 @@
+from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
-
-from crispy_forms.helper import FormHelper
+from django.shortcuts import get_object_or_404, redirect, render
 
 from core.utils import initialize_form
 

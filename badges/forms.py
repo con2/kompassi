@@ -7,7 +7,6 @@ from labour.models import PersonnelClass
 
 from .models import Badge
 
-
 MOON_RUNES_CHOICES = [
     ("dontcare", _("I don't care")),
     ("exclude", _("Exclude badges with moon runes")),

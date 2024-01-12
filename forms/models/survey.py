@@ -4,12 +4,11 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import is_within_period, NONUNIQUE_SLUG_FIELD_PARAMS
 from core.models import Event
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
 
-from .form import Form
 from ..utils.merge_form_fields import merge_fields
-
+from .form import Form
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 

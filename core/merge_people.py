@@ -6,7 +6,6 @@ from django.db.transaction import atomic
 
 from core.models import Person
 
-
 logger = logging.getLogger("kompassi")
 
 

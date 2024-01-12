@@ -1,6 +1,6 @@
-from .views import listings_listing_view, listings_api_view
 from django.urls import re_path
 
+from .views import listings_api_view, listings_listing_view
 
 urlpatterns = [
     re_path(

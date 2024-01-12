@@ -4,7 +4,6 @@ from django.db import models, transaction
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
-
 from core.utils import time_bool_property
 
 from .constants import BADGE_ELIGIBLE_FOR_BATCHING

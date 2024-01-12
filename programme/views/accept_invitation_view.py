@@ -1,6 +1,6 @@
-from django.db import transaction
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
+from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from core.helpers import person_required
@@ -8,7 +8,7 @@ from core.utils import initialize_form
 
 from ..forms import ProgrammeSelfServiceForm, get_sired_invitation_formset
 from ..helpers import programme_event_required
-from ..models import Invitation, ProgrammeRole, FreeformOrganizer
+from ..models import FreeformOrganizer, Invitation, ProgrammeRole
 
 
 @programme_event_required

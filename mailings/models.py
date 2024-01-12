@@ -1,21 +1,16 @@
-from hashlib import sha1
 import logging
 from datetime import datetime
-
-from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
-from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save
-
+from hashlib import sha1
 
 from django.conf import settings
 from django.db import models
-from django.template import Template, Context
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+from django.template import Context, Template
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
-from labour.models import JobCategory
-from labour.models import PersonnelClass
-
+from labour.models import JobCategory, PersonnelClass
 
 logger = logging.getLogger("kompassi")
 APP_LABEL_CHOICES = [

@@ -1,16 +1,15 @@
 import logging
 
-from django.db import transaction
-from django.shortcuts import get_object_or_404, render, redirect
-from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
+from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext_lazy as _
 
 from core.helpers import person_required
 from core.utils import initialize_form
 
 from ..forms import ProgrammeSelfServiceForm, get_sired_invitation_formset
-from ..models import ProgrammeRole, Invitation, FreeformOrganizer
-
+from ..models import FreeformOrganizer, Invitation, ProgrammeRole
 
 logger = logging.getLogger("kompassi")
 

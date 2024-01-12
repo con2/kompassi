@@ -2,7 +2,6 @@ from django.contrib import admin
 
 from .models import Entry, Subscription
 
-
 ENTRY_READ_ONLY_FIELDS = (
     "created_at",
     "created_by",

@@ -21,8 +21,8 @@ from ..models import (
     Role,
     Tag,
 )
-from ..proxies.programme_event_meta.cold_offers import ColdOffersProgrammeEventMetaProxy
 from ..models.programme import START_TIME_LABEL
+from ..proxies.programme_event_meta.cold_offers import ColdOffersProgrammeEventMetaProxy
 
 
 class ProgrammeAdminCreateForm(forms.ModelForm):

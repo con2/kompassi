@@ -1,15 +1,12 @@
 from datetime import datetime, timedelta
 
-from pkg_resources import resource_stream
-
+import yaml
+from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils.timezone import now
 from django.urls import reverse
-
-import yaml
-
-from dateutil.tz import tzlocal
+from django.utils.timezone import now
+from pkg_resources import resource_stream
 
 
 class Setup:
@@ -35,7 +32,7 @@ class Setup:
         # self.setup_kaatoilmo()
 
     def setup_core(self):
-        from core.models import Organization, Venue, Event
+        from core.models import Event, Organization, Venue
 
         self.organization, unused = Organization.objects.get_or_create(
             slug="tracon-ry",
@@ -61,6 +58,8 @@ class Setup:
         )
 
     def setup_labour(self):
+        from django.contrib.contenttypes.models import ContentType
+
         from core.models import Event, Person
         from labour.models import (
             AlternativeSignupForm,
@@ -71,8 +70,8 @@ class Setup:
             Qualification,
             Survey,
         )
-        from ...models import SignupExtra, Night
-        from django.contrib.contenttypes.models import ContentType
+
+        from ...models import Night, SignupExtra
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -263,7 +262,7 @@ class Setup:
         )
 
     def setup_tickets(self):
-        from tickets.models import TicketsEventMeta, LimitGroup, Product
+        from tickets.models import LimitGroup, Product, TicketsEventMeta
 
         tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 
@@ -441,7 +440,7 @@ class Setup:
             TimeBlock,
         )
 
-        from ...models import TimeSlot, AccessibilityWarning
+        from ...models import AccessibilityWarning, TimeSlot
 
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
@@ -605,9 +604,9 @@ class Setup:
         default form that will be used to initialize the event, and a feature will be provided to copy
         forms from another event.
         """
-        from programme.models import ProgrammeEventMeta
         from forms.models import Form
-        from program_v2.models import ProgramV2EventMeta, OfferForm, Dimension
+        from program_v2.models import Dimension, OfferForm, ProgramV2EventMeta
+        from programme.models import ProgrammeEventMeta
 
         category_dimension, _ = Dimension.objects.get_or_create(
             event=self.event,
@@ -712,10 +711,10 @@ class Setup:
 
     def setup_access(self):
         from access.models import (
-            Privilege,
-            GroupPrivilege,
             EmailAliasType,
             GroupEmailAliasGrant,
+            GroupPrivilege,
+            Privilege,
         )
 
         # Grant accepted workers access to Tracon Slack
@@ -799,7 +798,8 @@ class Setup:
 
     def setup_kaatoilmo(self):
         from labour.models import Survey
-        from programme.models import Programme, Category, Room
+        from programme.models import Category, Programme, Room
+
         from ...models import Poison
 
         saturday = self.event.start_time + timedelta(days=1)

@@ -1,6 +1,5 @@
 from django.utils.translation import gettext_lazy as _
 
-
 DESCRIPTION_HELP_TEXT = _(
     "Advertise your game to potential players. Also explain, what is expected of players "
     "and what kind of themes are involved. Be extra sure to inform about potentially "

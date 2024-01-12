@@ -1,17 +1,16 @@
 from typing import Any
 
+from csp.decorators import csp_update
 from django.conf import settings
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.timezone import now
-
-from csp.decorators import csp_update
 
 from payments.models.checkout_payment import CHECKOUT_PAYMENT_WALL_ORIGIN
 
+from ..helpers import public_organization_required
 from ..models import Event
 from ..utils import groups_of_n
-from ..helpers import public_organization_required
 
 
 @public_organization_required

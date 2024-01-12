@@ -1,14 +1,14 @@
 from django.contrib import messages
+from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.shortcuts import render, redirect
 
 from core.helpers import person_required
 from core.models import Organization, Person
 from core.utils import initialize_form
 
+from ..forms import ApplicationForm
 from ..helpers import membership_organization_required
 from ..models import Membership, Term
-from ..forms import ApplicationForm
 
 
 @membership_organization_required

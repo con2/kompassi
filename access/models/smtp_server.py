@@ -3,9 +3,7 @@ import logging
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from paramiko import SSHClient, RSAKey
-
+from paramiko import RSAKey, SSHClient
 
 logger = logging.getLogger("kompassi")
 

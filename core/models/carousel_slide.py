@@ -3,7 +3,6 @@ from django.utils.translation import gettext_lazy as _
 
 from core.utils import get_objects_within_period
 
-
 TARGET_CHOICES = [
     ("", _("Same window")),
     ("_blank", _("New window")),

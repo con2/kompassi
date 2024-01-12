@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
 
+from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-
-from dateutil.tz import tzlocal
 
 from core.utils import full_hours_between
 
@@ -29,7 +28,7 @@ class Setup:
         self.setup_directory()
 
     def setup_core(self):
-        from core.models import Venue, Event, Organization
+        from core.models import Event, Organization, Venue
 
         self.venue, unused = Venue.objects.get_or_create(
             name="Lahden Sibeliustalo",
@@ -60,6 +59,8 @@ class Setup:
         )
 
     def setup_labour(self):
+        from django.contrib.contenttypes.models import ContentType
+
         from core.models import Person
         from core.utils import slugify
         from labour.models import (
@@ -69,8 +70,8 @@ class Setup:
             PersonnelClass,
             Qualification,
         )
+
         from ...models import SignupExtra, SpecialDiet
-        from django.contrib.contenttypes.models import ContentType
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -358,7 +359,7 @@ class Setup:
             tag_order += 10
 
     def setup_access(self):
-        from access.models import Privilege, GroupPrivilege
+        from access.models import GroupPrivilege, Privilege
 
         # Grant accepted workers and programme hosts access to Desucon Slack
         privilege = Privilege.objects.get(slug="desuslack")

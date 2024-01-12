@@ -1,24 +1,23 @@
 import datetime
 from collections import defaultdict
 
+from csp.decorators import csp_exempt
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.db.models import Q, Sum
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_safe, require_http_methods, require_POST
-
-from csp.decorators import csp_exempt
+from django.views.decorators.http import require_http_methods, require_POST, require_safe
+from lippukala.consts import BEYOND_LOGIC, MANUAL_INTERVENTION_REQUIRED
 from lippukala.views import POSView
-from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, BEYOND_LOGIC
 
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS
+from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, csv_response
 from core.sort_and_filter import Filter
-from core.utils import url, initialize_form, slugify, login_redirect
+from core.utils import initialize_form, login_redirect, slugify, url
 from event_log.utils import emit
 
 from ..forms import (
@@ -29,8 +28,7 @@ from ..forms import (
     OrderProductForm,
     SearchForm,
 )
-from ..helpers import tickets_admin_required, tickets_event_required, perform_search
-from ..utils import format_price
+from ..helpers import perform_search, tickets_admin_required, tickets_event_required
 from ..models import (
     AccommodationInformation,
     LimitGroup,
@@ -38,7 +36,7 @@ from ..models import (
     OrderProduct,
 )
 from ..models.consts import UNPAID_CANCEL_HOURS
-
+from ..utils import format_price
 
 __all__ = [
     "tickets_admin_menu_items",

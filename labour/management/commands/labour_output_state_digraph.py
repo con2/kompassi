@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from ...models import Signup, SIGNUP_STATE_NAMES
+from ...models import SIGNUP_STATE_NAMES, Signup
 
 
 class Command(BaseCommand):

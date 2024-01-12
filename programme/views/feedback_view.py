@@ -1,14 +1,12 @@
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import get_ip
+from core.utils import get_ip, initialize_form
 
-from core.utils import initialize_form
-
-from ..forms import ProgrammeFeedbackForm, AnonymousProgrammeFeedbackForm
-from ..models import Programme
+from ..forms import AnonymousProgrammeFeedbackForm, ProgrammeFeedbackForm
 from ..helpers import programme_event_required
+from ..models import Programme
 
 
 @programme_event_required

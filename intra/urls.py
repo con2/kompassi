@@ -1,11 +1,11 @@
+from django.urls import re_path
+
 from .views import (
     intra_admin_privileges_view,
     intra_admin_team_member_view,
     intra_api_teams_view,
     intra_organizer_view,
 )
-from django.urls import re_path
-
 
 urlpatterns = [
     re_path(

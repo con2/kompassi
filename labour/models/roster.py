@@ -1,16 +1,15 @@
-from collections import namedtuple, defaultdict
+from collections import defaultdict, namedtuple
 from datetime import timedelta
 
+from dateutil.parser import parse as parse_date
+from dateutil.tz import tzlocal
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from dateutil.parser import parse as parse_date
-from dateutil.tz import tzlocal
-
 from api.utils import JSONSchemaObject
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, ONE_HOUR, slugify, pick_attrs, format_interval
 from core.csv_export import CsvExportMixin
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, ONE_HOUR, format_interval, pick_attrs, slugify
 
 
 class WorkPeriod(models.Model):
@@ -197,7 +196,8 @@ class Shift(models.Model, CsvExportMixin):
     @classmethod
     def get_csv_fields(cls, event):
         from core.models import Person
-        from ..models import JobCategory, Job
+
+        from ..models import Job, JobCategory
 
         return [
             (JobCategory, "name"),
@@ -212,7 +212,8 @@ class Shift(models.Model, CsvExportMixin):
 
     def get_csv_related(self):
         from core.models import Person
-        from ..models import JobCategory, Job
+
+        from ..models import Job, JobCategory
 
         return {
             JobCategory: self.job.job_category,

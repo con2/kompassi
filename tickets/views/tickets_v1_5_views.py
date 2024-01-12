@@ -3,21 +3,19 @@ For changes between v1 and v1.5, see
 https://outline.con2.fi/doc/ticket-sales-1cFCJvcZxc
 """
 
-from django.contrib import messages
-from django.db import transaction, connection
-from django.shortcuts import render, redirect
-from django.views.decorators.http import require_http_methods
-from django.utils.translation import gettext_lazy as _
-
 from csp.decorators import csp_update
+from django.contrib import messages
+from django.db import connection, transaction
+from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 
 from core.utils import initialize_form
-from payments.models.checkout_payment import CheckoutPayment, CHECKOUT_PAYMENT_WALL_ORIGIN
+from payments.models.checkout_payment import CHECKOUT_PAYMENT_WALL_ORIGIN, CheckoutPayment
 
-from ..forms import OrderProductForm, CustomerForm
+from ..forms import CustomerForm, OrderProductForm
 from ..helpers import tickets_event_required
-from ..helpers import tickets_event_required
-from .tickets_v1_views import get_order, set_order, clear_order, tickets_welcome_view
+from .tickets_v1_views import clear_order, get_order, set_order, tickets_welcome_view
 
 
 @tickets_event_required

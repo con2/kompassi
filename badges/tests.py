@@ -3,11 +3,10 @@ import logging
 from django.test import TestCase
 
 from core.models import Person
-from labour.models import LabourEventMeta, Signup, JobCategory, PersonnelClass
-from programme.models import ProgrammeEventMeta, Programme, ProgrammeRole, Role
+from labour.models import JobCategory, LabourEventMeta, PersonnelClass, Signup
+from programme.models import Programme, ProgrammeEventMeta, ProgrammeRole, Role
 
-from .models import BadgesEventMeta, Badge, Batch
-
+from .models import Badge, BadgesEventMeta, Batch
 
 logger = logging.getLogger("kompassi")
 

@@ -1,13 +1,11 @@
-from django.conf import settings
-
 import graphene
-from graphene_django import DjangoObjectType
+from django.conf import settings
 from graphene.types.generic import GenericScalar
+from graphene_django import DjangoObjectType
 
 from core.graphql.limited_event import LimitedEventType
 
 from ..models.form import Form
-
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 

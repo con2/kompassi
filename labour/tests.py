@@ -1,12 +1,12 @@
-from core.csv_export import export_csv
 from io import BytesIO
 
 from django.test import TestCase
 
-from core.models import Person
 from access.models import CBACEntry
+from core.csv_export import export_csv
+from core.models import Person
 
-from .models import LabourEventMeta, Qualification, JobCategory, Signup
+from .models import JobCategory, LabourEventMeta, Qualification, Signup
 
 
 class LabourEventAdminTest(TestCase):

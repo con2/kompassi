@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 
+from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
-from dateutil.tz import tzlocal
-
-from core.utils import slugify, full_hours_between
+from core.utils import full_hours_between, slugify
 
 
 class Setup:
@@ -29,7 +28,7 @@ class Setup:
         self.setup_badges()
 
     def setup_core(self):
-        from core.models import Venue, Event, Organization
+        from core.models import Event, Organization, Venue
 
         self.venue, unused = Venue.objects.get_or_create(
             name="Tredun Sammonkadun toimipiste",
@@ -54,6 +53,8 @@ class Setup:
         )
 
     def setup_labour(self):
+        from django.contrib.contenttypes.models import ContentType
+
         from core.models import Person
         from labour.models import (
             AlternativeSignupForm,
@@ -64,8 +65,8 @@ class Setup:
             Qualification,
             Survey,
         )
+
         from ...models import SignupExtra, SpecialDiet
-        from django.contrib.contenttypes.models import ContentType
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -262,6 +263,7 @@ class Setup:
             SpecialStartTime,
             TimeBlock,
         )
+
         from ...models import TimeSlot
 
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
@@ -389,7 +391,7 @@ class Setup:
         self.event.programme_event_meta.create_groups()
 
     def setup_tickets(self):
-        from tickets.models import TicketsEventMeta, LimitGroup, Product
+        from tickets.models import LimitGroup, Product, TicketsEventMeta
 
         (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -452,7 +454,7 @@ class Setup:
                 product.save()
 
     def setup_access(self):
-        from access.models import Privilege, GroupPrivilege, EmailAliasType, GroupEmailAliasGrant
+        from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
 
         # Grant accepted workers access to Tracon Slack
         group = self.event.labour_event_meta.get_group("accepted")

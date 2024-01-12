@@ -6,7 +6,6 @@ from labour.models.signup import Signup
 
 from ...models import SignupExtra
 
-
 TITLE_MAPPING = {
     "Ohjelmanjärjestäjä": "STAFF",
     "Näkymätön ohjelmanjärjestäjä": "NO_SHIRT",

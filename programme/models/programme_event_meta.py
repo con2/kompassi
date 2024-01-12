@@ -1,10 +1,9 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
 
+from core.models import ContactEmailMixin, EventMetaBase, contact_email_validator
 from core.utils import alias_property, is_within_period
-from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
-
 
 SCHEDULE_LAYOUT_CHOICES = [
     ("reasonable", _("Reasonable")),
@@ -76,8 +75,8 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         super().__init__(*args, **kwargs)
 
     def get_special_programmes(self, include_unpublished=False, **extra_criteria):
-        from .room import Room
         from .programme import Programme
+        from .room import Room
 
         schedule_rooms = Room.objects.filter(view_rooms__view__event=self.event).only("id")
         criteria = dict(category__event=self.event, **extra_criteria)
@@ -87,8 +86,9 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
 
     @classmethod
     def get_or_create_dummy(cls):
-        from core.models import Event
         from django.utils.timezone import now
+
+        from core.models import Event
 
         event, unused = Event.get_or_create_dummy()
         (admin_group,) = cls.get_or_create_groups(event, ["admins"])
@@ -122,8 +122,9 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     @classmethod
     def get_or_create_groups(cls, event, subjects):
         from mailings.models import RecipientGroup
-        from .category import Category
+
         from .alternative_programme_form import AlternativeProgrammeForm
+        from .category import Category
 
         suffixes = [subject if isinstance(subject, str) else subject.qualified_slug for subject in subjects]
 

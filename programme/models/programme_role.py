@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-
 from core.csv_export import CsvExportMixin
 
 
@@ -51,8 +50,9 @@ class ProgrammeRole(models.Model, CsvExportMixin):
     @classmethod
     def get_or_create_dummy(cls, programme=None, role=None):
         from core.models import Person
-        from .role import Role
+
         from .programme import Programme
+        from .role import Role
 
         person, unused = Person.get_or_create_dummy()
 
@@ -99,6 +99,7 @@ class ProgrammeRole(models.Model, CsvExportMixin):
     @classmethod
     def get_csv_fields(cls, event):
         from core.models import Person
+
         from .alternative_programme_form import AlternativeProgrammeForm
         from .programme import Programme
         from .role import Role
@@ -119,6 +120,7 @@ class ProgrammeRole(models.Model, CsvExportMixin):
 
     def get_csv_related(self):
         from core.models import Person
+
         from .alternative_programme_form import AlternativeProgrammeForm
         from .programme import Programme
         from .role import Role

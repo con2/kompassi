@@ -1,15 +1,13 @@
+from crispy_forms.layout import Fieldset, Layout, Submit
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 
-from crispy_forms.layout import Layout, Fieldset, Submit
-
 from core.utils import DateField, indented_without_label
 
-from .models import Person, EMAIL_LENGTH, BIRTH_DATE_HELP_TEXT
+from .models import BIRTH_DATE_HELP_TEXT, EMAIL_LENGTH, Person
 from .utils import horizontal_form_helper, validate_password
-
 
 valid_username = RegexValidator(
     regex=r"^[a-z0-9_]{4,30}$",

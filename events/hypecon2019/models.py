@@ -2,7 +2,6 @@ from django.db import models
 
 from labour.models import SignupExtraBase
 
-
 SHIRT_SIZES = [
     ("NO_SHIRT", "Ei paitaa"),
     ("XS", "XS Unisex"),

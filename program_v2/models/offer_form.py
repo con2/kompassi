@@ -1,12 +1,10 @@
 from typing import Optional
 
-
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from localized_fields.models import LocalizedModel
 from localized_fields.fields import LocalizedTextField
+from localized_fields.models import LocalizedModel
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
 from forms.models.form import Form

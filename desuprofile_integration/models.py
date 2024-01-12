@@ -1,14 +1,13 @@
 from collections import namedtuple
 
-from django.db import models
 from django.conf import settings
-from django.template.loader import render_to_string
+from django.db import models
 from django.forms import ValidationError
+from django.template.loader import render_to_string
 
 from api.utils import JSONSchemaObject
 from core.models import OneTimeCode
 from core.utils import url
-
 
 DESUPROFILE_USERNAME_MAX_LENGTH = 150
 

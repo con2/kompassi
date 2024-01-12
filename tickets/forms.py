@@ -1,9 +1,8 @@
+from crispy_forms.helper import FormHelper, Layout
+from crispy_forms.layout import Submit
 from django import forms
 from django.core import validators
 from django.utils.translation import gettext_lazy as _
-
-from crispy_forms.helper import FormHelper, Layout
-from crispy_forms.layout import Submit
 
 from core.utils import horizontal_form_helper, indented_without_label, initialize_form
 

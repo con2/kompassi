@@ -1,18 +1,19 @@
 from datetime import timedelta
 
+from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.utils.translation import gettext_lazy as _
-
-from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
 from events.hitpoint2020.forms import (
     APPROXIMATE_LENGTH_HELP_TEXT,
+)
+from events.hitpoint2020.forms import (
     DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT,
 )
 from labour.forms import AlternativeFormMixin
-from labour.models import Signup, JobCategory
-from programme.models import Category, Programme, AlternativeProgrammeFormMixin
+from labour.models import JobCategory, Signup
+from programme.models import AlternativeProgrammeFormMixin, Category, Programme
 
 from .models import SignupExtra
 

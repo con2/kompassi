@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import RecipientGroup, Message
+from .models import Message, RecipientGroup
 
 
 class RecipientGroupAdmin(admin.ModelAdmin):

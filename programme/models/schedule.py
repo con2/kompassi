@@ -2,17 +2,15 @@ import logging
 from collections import defaultdict
 from datetime import timedelta
 
+from dateutil.tz import tzlocal
 from django.contrib import messages
 from django.db import models
 from django.db.models import Max
 from django.utils.translation import gettext_lazy as _
 
-from dateutil.tz import tzlocal
-
 from core.utils import format_datetime, get_previous_and_next
 
 from .programme import Programme
-
 
 logger = logging.getLogger("kompassi")
 

@@ -7,7 +7,6 @@ from core.utils import initialize_form
 from ..forms import PrivilegesForm
 from ..helpers import intra_admin_required
 
-
 APP_NAMES = dict(
     labour=_("Volunteers"),
     programme=_("Programme"),

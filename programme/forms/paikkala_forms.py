@@ -1,8 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-
 from paikkala.forms import ReservationForm as PaikkalaReservationForm
 from paikkala.models import Program as PaikkalaProgram
+
 from core.utils import horizontal_form_helper
 
 from ..models import Programme

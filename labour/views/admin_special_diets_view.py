@@ -2,11 +2,10 @@ from collections import defaultdict
 from dataclasses import dataclass
 
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from ..helpers import labour_admin_required
-
 
 NO_SPECIAL_DIET_REPLIES = ["", "-", "N/A", "Ei ole", "Ei ole."]
 

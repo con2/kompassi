@@ -7,7 +7,6 @@ from core.models import Event
 
 from ...models import Program
 
-
 logger = logging.getLogger("kompassi")
 
 

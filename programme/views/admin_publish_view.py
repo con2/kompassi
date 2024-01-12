@@ -2,8 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 from labour.views.admin_startstop_view import generic_publish_unpublish_view
 
-from ..helpers import programme_admin_required
 from ..forms import PublishForm
+from ..helpers import programme_admin_required
 
 
 @programme_admin_required

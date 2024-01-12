@@ -1,10 +1,10 @@
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
 from core.utils import initialize_form
-from mailings.models import Message
 from mailings.forms import MessageForm
+from mailings.models import Message
 
 from ..helpers import programme_admin_required
 

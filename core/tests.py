@@ -1,13 +1,13 @@
-from core.utils.time_utils import format_date_range
 from datetime import date, datetime
-
-from django.test import TestCase
-from django.utils.timezone import get_current_timezone
 
 from babel import Locale
 from dateutil.tz import tzlocal
+from django.test import TestCase
+from django.utils.timezone import get_current_timezone
 
-from .utils import full_hours_between, slugify, format_interval
+from core.utils.time_utils import format_date_range
+
+from .utils import format_interval, full_hours_between, slugify
 
 
 class PersonTestCase(TestCase):

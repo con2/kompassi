@@ -2,8 +2,8 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from typing import Optional
 
-from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import mutate_query_params
 

@@ -1,13 +1,13 @@
 from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from core.utils import initialize_form
 
+from ..forms import IdForm
 from ..helpers import programme_admin_required
 from ..models import Invitation
-from ..forms import IdForm
 
 
 @programme_admin_required

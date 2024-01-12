@@ -1,12 +1,10 @@
+import logging
 from itertools import groupby
 from random import randint
-import logging
 
 from django.contrib.auth.models import Group, User
 from django.contrib.contenttypes.models import ContentType
-
 from ipware import get_client_ip
-
 
 logger = logging.getLogger("kompassi")
 

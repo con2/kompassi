@@ -3,7 +3,6 @@
 
 from django.db import migrations, models
 
-
 PROGRAMME_STATES_ACTIVE = ["idea", "asked", "offered", "accepted", "published"]
 
 

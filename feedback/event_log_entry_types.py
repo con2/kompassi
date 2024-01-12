@@ -2,7 +2,6 @@ from django.utils.translation import gettext_lazy as _
 
 from event_log import registry
 
-
 registry.register(
     name="feedback.feedbackmessage.created",
     message=_("Feedback received from {entry.feedback_message.author_display_name}"),

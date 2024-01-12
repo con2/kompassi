@@ -1,3 +1,5 @@
+from django.urls import re_path
+
 from .views import (
     badges_admin_badges_view,
     badges_admin_batches_view,
@@ -7,8 +9,6 @@ from .views import (
     badges_admin_onboarding_view,
     badges_admin_reports_view,
 )
-from django.urls import re_path
-
 
 urlpatterns = [
     re_path(

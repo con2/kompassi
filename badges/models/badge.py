@@ -1,21 +1,20 @@
 import logging
-from datetime import datetime
 from dataclasses import dataclass
-from pkg_resources import resource_string
+from datetime import datetime
 from typing import Optional
 
 from django.conf import settings
-from django.db import models, transaction, connection
+from django.db import connection, models, transaction
 from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
+from pkg_resources import resource_string
 
 from core.csv_export import CsvExportMixin
-from core.models.event import Event
 from core.models.constants import NAME_DISPLAY_STYLE_FORMATS
+from core.models.event import Event
 from core.utils import time_bool_property
 
 from ..proxies.badge.privacy import BadgePrivacyAdapter
-
 
 logger = logging.getLogger("kompassi")
 

@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import url
 from core.admin_menus import AdminMenuItem
+from core.utils import url
 
 
 def enrollment_admin_menu_items(request, event):

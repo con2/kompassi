@@ -1,6 +1,7 @@
-from django.db import models, migrations
-import programme.models
+from django.db import migrations, models
+
 import core.csv_export
+import programme.models
 
 
 class Migration(migrations.Migration):

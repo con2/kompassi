@@ -1,15 +1,14 @@
-from access.cbac import default_cbac_required
-
 from django.db import models
-from django.utils.timezone import now
 from django.shortcuts import render
+from django.utils.timezone import now
 
+from access.cbac import default_cbac_required
 from core.csv_export import csv_response
 from core.models import Event
 from event_log.utils import emit
 
-from .proxies import SignupExtraAfterpartyProxy
 from .models import Poison
+from .proxies import SignupExtraAfterpartyProxy
 
 
 @default_cbac_required

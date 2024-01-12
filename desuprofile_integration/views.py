@@ -1,31 +1,29 @@
 import logging
 from datetime import datetime
 
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.forms import ValidationError
 from django.http import HttpResponse
-from django.views.generic import View
-from django.shortcuts import redirect, get_object_or_404
-from django.conf import settings
-from django.core.exceptions import ValidationError as DjangoValidationError
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-from django.contrib import messages
 from django.views.decorators.http import require_POST
-
+from django.views.generic import View
 from jsonschema import ValidationError as JSONSchemaValidationError
 from requests_oauthlib import OAuth2Session
 
-from api.utils import api_view, api_login_required
+from api.utils import api_login_required, api_view
 from core.forms import valid_username
 from core.models import Person
-from core.views.login_views import do_login
 from core.utils import create_temporary_password, get_next
+from core.views.login_views import do_login
 from programme.helpers import programme_event_required
 from programme.models import Programme
 
-from .models import Connection, ConfirmationCode, Desuprofile, DesuprogrammeFeedback
-
+from .models import ConfirmationCode, Connection, Desuprofile, DesuprogrammeFeedback
 
 logger = logging.getLogger("kompassi")
 

@@ -4,7 +4,6 @@ from django.db.models import JSONField, Q
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-
 TARGET_FKEY_ATTRS = dict(
     null=True,
     blank=True,

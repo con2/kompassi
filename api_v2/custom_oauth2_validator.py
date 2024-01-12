@@ -2,7 +2,6 @@ import logging
 
 from oauth2_provider.oauth2_validators import OAuth2Validator
 
-
 logger = logging.getLogger("kompassi")
 
 

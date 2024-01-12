@@ -1,3 +1,7 @@
+from .feedback_forms import (
+    AnonymousProgrammeFeedbackForm,
+    ProgrammeFeedbackForm,
+)
 from .misc_forms import (
     AlternativeProgrammeFormMixin,
     ChangeHostRoleForm,
@@ -15,7 +19,11 @@ from .misc_forms import (
     SiredInvitationForm,
     get_sired_invitation_formset,
 )
-
+from .paikkala_forms import (
+    IsUsingPaikkalaForm,
+    PaikkalaProgramForm,
+    ReservationForm,
+)
 from .schedule_admin_forms import (
     AddRoomForm,
     DeleteRoomForm,
@@ -24,16 +32,4 @@ from .schedule_admin_forms import (
     MoveViewRoomForm,
     RemoveViewRoomForm,
     ViewForm,
-)
-
-
-from .feedback_forms import (
-    ProgrammeFeedbackForm,
-    AnonymousProgrammeFeedbackForm,
-)
-
-from .paikkala_forms import (
-    IsUsingPaikkalaForm,
-    PaikkalaProgramForm,
-    ReservationForm,
 )

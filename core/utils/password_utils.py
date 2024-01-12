@@ -1,15 +1,12 @@
 import logging
 from hashlib import sha1
 
+import requests
 from django.core.cache import caches
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
-
-import requests
-from requests.exceptions import Timeout, HTTPError, ConnectionError
-
+from requests.exceptions import ConnectionError, HTTPError, Timeout
 from zxcvbn import zxcvbn
-
 
 logger = logging.getLogger("kompassi")
 

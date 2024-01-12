@@ -11,7 +11,7 @@ NOTE: The exact semantics of `process_form_data` are defined by and documented i
 from enum import Enum
 from typing import Any
 
-from ..models.field import FieldType, Field
+from ..models.field import Field, FieldType
 
 
 class FieldWarning(Enum):

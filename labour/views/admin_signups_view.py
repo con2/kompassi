@@ -1,20 +1,19 @@
 from collections import OrderedDict, namedtuple
 
 from django.contrib import messages
-from django.views.decorators.http import require_http_methods
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 
-from core.sort_and_filter import Sorter, Filter
 from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, csv_response
+from core.sort_and_filter import Filter, Sorter
 from event_log.utils import emit
 
-from ..helpers import labour_admin_required
 from ..filters import SignupStateFilter
+from ..helpers import labour_admin_required
 from ..models import ArchivedSignup, Signup
 from ..proxies.signup.certificate import SignupCertificateProxy
-
 
 HTML_TEMPLATES = dict(
     screen="labour_admin_signups_view.pug",

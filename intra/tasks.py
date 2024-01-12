@@ -3,8 +3,10 @@ from celery import shared_task
 
 @shared_task(ignore_result=True)
 def privileges_form_save(event_id, data):
-    from core.models import Event
     from django.contrib.auth import get_user_model
+
+    from core.models import Event
+
     from .forms import PrivilegesForm
 
     User = get_user_model()

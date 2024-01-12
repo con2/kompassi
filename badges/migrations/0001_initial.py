@@ -1,6 +1,7 @@
-from django.db import models, migrations
-import badges.models
 import django.core.validators
+from django.db import migrations, models
+
+import badges.models
 import core.csv_export
 
 

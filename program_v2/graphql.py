@@ -5,16 +5,16 @@ from graphene_django import DjangoObjectType
 from core.utils import get_objects_within_period
 from forms.graphql.form import FormType
 from forms.models import Form
-from graphql_api.utils import resolve_localized_field, DEFAULT_LANGUAGE
+from graphql_api.utils import DEFAULT_LANGUAGE, resolve_localized_field
 
 from .models import (
     Dimension,
     DimensionValue,
-    ProgramDimensionValue,
-    Program,
-    ScheduleItem,
     OfferForm,
+    Program,
+    ProgramDimensionValue,
     ProgramV2EventMeta,
+    ScheduleItem,
 )
 
 

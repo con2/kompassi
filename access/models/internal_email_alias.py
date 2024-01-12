@@ -12,7 +12,6 @@ from core.utils import log_get_or_create
 
 from .email_alias_mixin import EmailAliasMixin
 
-
 logger = logging.getLogger("kompassi")
 
 
@@ -67,6 +66,7 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
     @classmethod
     def ensure_internal_email_aliases(cls):
         from core.models import Event
+
         from .email_alias_domain import EmailAliasDomain
 
         domains = EmailAliasDomain.objects.filter(has_internal_aliases=True)

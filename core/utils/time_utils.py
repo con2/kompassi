@@ -2,15 +2,13 @@ import sys
 from datetime import date, datetime, timedelta
 from typing import Optional
 
-from django.db.models import Q
-from django.utils.timezone import now
-from django.template import defaultfilters
-
 from babel.dates import format_skeleton
 from dateutil.tz import tzlocal
+from django.db.models import Q
+from django.template import defaultfilters
+from django.utils.timezone import now
 
 from .locale_utils import get_current_locale
-
 
 ONE_HOUR = timedelta(hours=1)
 

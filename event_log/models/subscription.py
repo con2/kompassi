@@ -1,12 +1,11 @@
 from django.conf import settings
-from django.forms import ValidationError
 from django.db import models
+from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import code_property
 
 from ..channels import channels
-
 
 CHANNEL_CHOICES = [
     ("email", _("E-mail")),
@@ -87,8 +86,9 @@ class Subscription(models.Model):
 
     @classmethod
     def get_or_create_dummy(cls, entry_type=None, **kwargs):
-        from .entry_type_metadata import EntryTypeMetadata
         from core.models import Person
+
+        from .entry_type_metadata import EntryTypeMetadata
 
         if entry_type is None:
             entry_type, unused = EntryTypeMetadata.get_or_create_dummy()

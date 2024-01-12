@@ -1,6 +1,5 @@
-from .page_wizard import page_wizard_clear
 from .models import Event, Organization
-
+from .page_wizard import page_wizard_clear
 
 NEVER_BLOW_PAGE_WIZARD_PREFIXES = [
     # we have addresses like /desuprofile/confirm/475712413a0ddc3c7a57c6721652b75449bf3c89

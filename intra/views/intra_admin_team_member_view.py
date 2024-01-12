@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.http import HttpResponseNotFound
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from core.models import Person

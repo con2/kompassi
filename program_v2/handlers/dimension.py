@@ -1,10 +1,10 @@
+from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save, post_delete
 from django.forms import ValidationError
 
 from core.utils import slugify
 
-from ..models import Program, Dimension, DimensionValue, ProgramDimensionValue
+from ..models import Dimension, DimensionValue, Program, ProgramDimensionValue
 
 
 @receiver(pre_save, sender=ProgramDimensionValue)

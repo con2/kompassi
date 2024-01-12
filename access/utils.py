@@ -3,7 +3,6 @@ from random import randint
 
 from core.utils import groups_of_n
 
-
 EMAILIFY_CHAR_MAP = {
     " ": ".",
     ".": ".",

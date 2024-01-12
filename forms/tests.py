@@ -1,9 +1,9 @@
 import yaml
 
-from .models.field import Field, FieldType, Choice
-from .utils.process_form_data import process_form_data, FieldWarning
-from .utils.merge_form_fields import _merge_fields, _merge_choices
 from .excel_export import get_header_cells, get_response_cells
+from .models.field import Choice, Field, FieldType
+from .utils.merge_form_fields import _merge_choices, _merge_fields
+from .utils.process_form_data import FieldWarning, process_form_data
 
 
 def test_process_form_data():

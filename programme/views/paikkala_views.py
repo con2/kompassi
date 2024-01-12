@@ -6,15 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
-
-from core.utils import horizontal_form_helper
-from paikkala.views import (
-    RelinquishView as BaseRelinquishView,
-    ReservationView as BaseReservationView,
-    InspectionView as BaseInspectionView,
-)
+from django.utils.translation import gettext_lazy as _
 from paikkala.excs import (
     BatchSizeOverflow,
     MaxTicketsPerUserReached,
@@ -24,12 +17,22 @@ from paikkala.excs import (
     Unreservable,
     UserRequired,
 )
+from paikkala.views import (
+    InspectionView as BaseInspectionView,
+)
+from paikkala.views import (
+    RelinquishView as BaseRelinquishView,
+)
+from paikkala.views import (
+    ReservationView as BaseReservationView,
+)
+
+from core.utils import horizontal_form_helper
 from programme.models.special_reservation import SpecialReservation
 
 from ..forms import ReservationForm
 from ..helpers import programme_event_required
 from ..models import Programme
-
 
 logger = logging.getLogger("kompassi")
 

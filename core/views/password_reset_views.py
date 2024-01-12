@@ -1,20 +1,20 @@
 from django.conf import settings
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
-from django.utils.translation import gettext_lazy as _
 
 from event_log.utils import emit
 
+from ..forms import (
+    PasswordResetForm,
+    PasswordResetRequestForm,
+)
 from ..models import (
     PasswordResetError,
     PasswordResetToken,
     Person,
-)
-from ..forms import (
-    PasswordResetForm,
-    PasswordResetRequestForm,
 )
 from ..utils import initialize_form
 

@@ -1,7 +1,8 @@
-from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
+from django.core.management.base import BaseCommand
 
 from labour.models import Qualification
+
 from ...models import JVKortti
 
 

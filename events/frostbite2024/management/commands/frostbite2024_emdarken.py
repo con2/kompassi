@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand
 
 from labour.models.signup import Signup
 
-
 TITLE_ALLOWLIST = {
     "Pääjärjestäjä",
     "Taltiointivastaava",

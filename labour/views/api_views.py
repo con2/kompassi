@@ -1,12 +1,11 @@
 import logging
 from datetime import timedelta
 
-from django.views.decorators.http import require_safe, require_POST
-from django.shortcuts import get_object_or_404
-
 from dateutil.parser import parse as parse_datetime
+from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_POST, require_safe
 
-from api.utils import api_view, MethodNotAllowed
+from api.utils import MethodNotAllowed, api_view
 from core.utils import full_hours_between
 
 from ..helpers import labour_admin_required
@@ -19,7 +18,6 @@ from ..models import (
     SetJobRequirementsRequest,
     Shift,
 )
-
 
 logger = logging.getLogger("kompassi")
 

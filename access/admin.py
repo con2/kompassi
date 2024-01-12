@@ -1,5 +1,6 @@
-from access.models.cbac_entry import CBACEntry
 from django.contrib import admin
+
+from access.models.cbac_entry import CBACEntry
 
 from .models import (
     AccessOrganizationMeta,

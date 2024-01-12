@@ -1,10 +1,8 @@
 from collections import namedtuple
 
 import unicodecsv as csv
-
-from django.http import HttpResponse
 from django.db import models
-
+from django.http import HttpResponse
 
 ENCODING = "ISO-8859-15"
 

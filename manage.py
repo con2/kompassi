@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
-import sys
 import signal
+import sys
 
 
 def sighandler(signum, frame):

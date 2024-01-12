@@ -6,8 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from core.csv_export import CsvExportMixin
 from core.utils import phone_number_validator
 
-from .order_product import OrderProduct
 from .limit_group import LimitGroup
+from .order_product import OrderProduct
 
 logger = logging.getLogger("kompassi")
 

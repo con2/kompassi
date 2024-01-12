@@ -1,32 +1,29 @@
+from django.urls import re_path
 from django.views.generic import RedirectView
 
 from programme.views.paikkala_views import paikkala_special_reservation_view
 
 from .views import (
-    paikkala_inspection_view,
-    paikkala_relinquish_view,
-    paikkala_reservation_view,
     accept_invitation_view,
     admin_change_host_role_view,
     admin_change_invitation_role_view,
-    admin_reservation_status_view,
-    admin_reservations_export_view,
-    admin_cold_offers_view,
     admin_cold_offers_view,
     admin_create_view,
     admin_detail_view,
     admin_email_list_view,
     admin_feedback_view,
     admin_invitations_view,
+    admin_mail_editor_view,
+    admin_mail_view,
     admin_organizers_view,
     admin_publish_view,
+    admin_reservation_status_view,
+    admin_reservations_export_view,
     admin_rooms_view,
     admin_schedule_update_view_view,
     admin_schedule_view,
     admin_special_view,
     admin_view,
-    admin_mail_editor_view,
-    admin_mail_view,
     feedback_view,
     internal_adobe_taggedtext_view,
     internal_schedule_view,
@@ -34,6 +31,9 @@ from .views import (
     mobile_schedule_view,
     offer_form_view,
     offer_view,
+    paikkala_inspection_view,
+    paikkala_relinquish_view,
+    paikkala_reservation_view,
     plaintext_view,
     profile_detail_view,
     profile_feedback_view,
@@ -42,8 +42,6 @@ from .views import (
     schedule_view,
     special_view,
 )
-from django.urls import re_path
-
 
 app_name = "programme"
 urlpatterns = [

@@ -1,6 +1,6 @@
-from .views import tracon2024_afterparty_participants_view, tracon2024_afterparty_summary_view
 from django.urls import re_path
 
+from .views import tracon2024_afterparty_participants_view, tracon2024_afterparty_summary_view
 
 urlpatterns = [
     re_path(

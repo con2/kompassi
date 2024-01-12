@@ -5,7 +5,6 @@ import csv
 import re
 import sys
 
-
 SECTION_HEADER_RE = re.compile(r"^;;\s*([\w\s]+) \((\d+)")
 PLACES_RE = re.compile(r"^([AB]\d+): (\d+)-(\d+)")
 

@@ -1,13 +1,11 @@
 from datetime import datetime, timedelta
-from pkg_resources import resource_stream
 
 import yaml
-
+from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-
-from dateutil.tz import tzlocal
+from pkg_resources import resource_stream
 
 from core.utils import full_hours_between
 
@@ -33,7 +31,7 @@ class Setup:
         self.setup_forms()
 
     def setup_core(self):
-        from core.models import Venue, Event, Organization
+        from core.models import Event, Organization, Venue
 
         self.venue, unused = Venue.objects.get_or_create(
             name="Tredun Sammonkadun toimipiste",
@@ -65,7 +63,9 @@ class Setup:
             self.event.save()
 
     def setup_labour(self):
-        from core.models import Person, Event
+        from django.contrib.contenttypes.models import ContentType
+
+        from core.models import Event, Person
         from labour.models import (
             AlternativeSignupForm,
             InfoLink,
@@ -75,8 +75,8 @@ class Setup:
             Qualification,
             Survey,
         )
+
         from ...models import SignupExtra, SpecialDiet
-        from django.contrib.contenttypes.models import ContentType
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -229,6 +229,7 @@ class Setup:
             SpecialStartTime,
             TimeBlock,
         )
+
         from ...models import TimeSlot
 
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
@@ -356,7 +357,7 @@ class Setup:
         self.event.programme_event_meta.create_groups()
 
     def setup_tickets(self):
-        from tickets.models import TicketsEventMeta, LimitGroup, Product
+        from tickets.models import LimitGroup, Product, TicketsEventMeta
 
         (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -419,7 +420,7 @@ class Setup:
                 product.save()
 
     def setup_access(self):
-        from access.models import Privilege, GroupPrivilege, EmailAliasType, GroupEmailAliasGrant
+        from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
 
         # Grant accepted workers access to Tracon Slack
         group = self.event.labour_event_meta.get_group("accepted")
@@ -483,7 +484,7 @@ class Setup:
             )
 
     def setup_forms(self):
-        from forms.models import Survey, Form
+        from forms.models import Form, Survey
 
         with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
             data = yaml.safe_load(f)

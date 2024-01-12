@@ -1,6 +1,5 @@
 from django.utils.translation import gettext_lazy as _
 
-
 EMAIL_LENGTH = PHONE_NUMBER_LENGTH = 255
 
 BIRTH_DATE_HELP_TEXT = _("Birth date in the following format: DD.MM.YYYY")

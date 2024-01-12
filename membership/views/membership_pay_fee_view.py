@@ -1,7 +1,6 @@
 from django.contrib import messages
-from django.views.decorators.http import require_http_methods
 from django.shortcuts import redirect
-
+from django.views.decorators.http import require_http_methods
 
 from payments.models.checkout_payment import CheckoutPayment
 

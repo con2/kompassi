@@ -1,14 +1,12 @@
 from dataclasses import dataclass
 
-from django.conf import settings
-
 import graphene
-
-from core.models import Event, Person
-from forms.graphql.mutations.create_survey_response import CreateSurveyResponse
+from django.conf import settings
 
 from core.graphql.event import FullEventType
 from core.graphql.profile import ProfileType
+from core.models import Event, Person
+from forms.graphql.mutations.create_survey_response import CreateSurveyResponse
 
 
 @dataclass

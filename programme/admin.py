@@ -11,12 +11,12 @@ from .models import (
     ProgrammeFeedback,
     Role,
     Room,
+    SpecialReservation,
     SpecialStartTime,
     Tag,
     TimeBlock,
     View,
     ViewRoom,
-    SpecialReservation,
 )
 from .proxies.freeform_organizer.admin import FreeformOrganizerAdminProxy
 from .proxies.invitation.admin import InvitationAdminProxy

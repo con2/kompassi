@@ -1,12 +1,11 @@
 import logging
 
-from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
+from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from core.models import Event
-from labour.models import ArchivedSignup, Signup, EmptySignupExtra, LabourEventMeta
-
+from labour.models import ArchivedSignup, EmptySignupExtra, LabourEventMeta, Signup
 
 logger = logging.getLogger("kompassi")
 

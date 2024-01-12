@@ -1,11 +1,9 @@
 import json
 
-
+from dateutil.tz import tzlocal
 from django.db.models.query import Q
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_safe
-
-from dateutil.tz import tzlocal
 
 from core.utils import url
 

@@ -1,12 +1,10 @@
-from django.conf.urls import include
-from django.conf import settings
-
 from csp.decorators import csp_exempt
-from oauth2_provider.views.base import TokenView, RevokeTokenView
+from django.conf import settings
+from django.conf.urls import include
+from django.urls import path, re_path
+from oauth2_provider.views.base import RevokeTokenView, TokenView
 
-from .views import MyselfResource, EventResource, CustomAuthorizationView
-from django.urls import re_path, path
-
+from .views import CustomAuthorizationView, EventResource, MyselfResource
 
 assert "oauth2_provider" in settings.INSTALLED_APPS, "api_v2 requires oauth2_provider"
 

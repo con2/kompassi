@@ -2,7 +2,6 @@ from django.db import models
 
 from labour.models import ObsoleteSignupExtraBaseV1
 
-
 TOTAL_WORK_CHOICES = [
     ("8h", "Minimi - 8 tuntia"),
     ("12h", "10–12 tuntia"),

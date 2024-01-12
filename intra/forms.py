@@ -1,18 +1,16 @@
-from access.models.cbac_entry import CBACEntry
-
+from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
-from crispy_forms.layout import Layout, Fieldset
-
-from core.models import Person, Event
-from core.utils import horizontal_form_helper, indented_without_label, ensure_user_is_member_of_group
+from access.models.cbac_entry import CBACEntry
+from core.models import Event, Person
+from core.utils import ensure_user_is_member_of_group, horizontal_form_helper, indented_without_label
 from labour.models.constants import JOB_TITLE_LENGTH
 
-from .models import TeamMember, Team
 from .constants import SUPPORTED_APPS
+from .models import Team, TeamMember
 
 
 class TeamMemberForm(forms.ModelForm):
