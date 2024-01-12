@@ -157,7 +157,7 @@ APPROXIMATE_LENGTH_HELP_TEXT = _(
 
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
-        kwargs.pop("admin") if "admin" in kwargs else False
+        kwargs.pop("admin", False)
         kwargs.pop("event")
 
         super().__init__(*args, **kwargs)
@@ -234,7 +234,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs.pop("admin") if "admin" in kwargs else False
+        kwargs.pop("admin", False)
         kwargs.pop("event")
 
         super().__init__(*args, **kwargs)

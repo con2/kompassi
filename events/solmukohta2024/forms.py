@@ -9,7 +9,7 @@ from programme.models import AlternativeProgrammeFormMixin, Category, Programme
 class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
-        admin = kwargs.pop("admin") if "admin" in kwargs else False
+        admin = kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
 
@@ -129,7 +129,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class AForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
-        admin = kwargs.pop("admin") if "admin" in kwargs else False
+        admin = kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
 
