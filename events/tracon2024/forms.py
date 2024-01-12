@@ -193,7 +193,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
-        admin = kwargs.pop("admin") if "admin" in kwargs else False
+        admin = kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
 
@@ -296,7 +296,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin") if "admin" in kwargs else False
+        admin = kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()

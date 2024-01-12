@@ -163,7 +163,7 @@ RPG_FORM_FIELD_TEXTS = dict(
 class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
-        admin = kwargs.pop("admin") if "admin" in kwargs else False
+        admin = kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
 
@@ -388,7 +388,7 @@ LARP_FORM_FIELD_TEXTS = dict(
 class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin") if "admin" in kwargs else False
+        admin = kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -606,7 +606,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
 class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
-        admin = kwargs.pop("admin") if "admin" in kwargs else False
+        admin = kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -834,7 +834,7 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
 class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
-        admin = kwargs.pop("admin") if "admin" in kwargs else False
+        admin = kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
@@ -1053,7 +1053,7 @@ WORKSHOP_FORM_FIELD_TEXTS = dict(
 class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
-        admin = kwargs.pop("admin") if "admin" in kwargs else False
+        admin = kwargs.pop("admin", False)
 
         super().__init__(*args, **kwargs)
         self.helper = horizontal_form_helper()
