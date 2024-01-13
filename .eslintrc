@@ -1,6 +1,0 @@
-{
-  "ecmaFeatures": {
-    "blockBindings": true,
-    "arrowFunctions": true
-  }
-}
