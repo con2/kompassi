@@ -1,0 +1,4 @@
+# chore: switch from Black to Ruff, run autofix
+bca30f9dcdb9f54d3087388958a7f547406abde7
+# update deps (also does a reformat)
+70805688b1baf08d7276acbd8dfc77646c377bc9
