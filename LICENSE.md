@@ -2,13 +2,13 @@
 
     The MIT License (MIT)
 
-    Copyright © 2009–2023 Santtu Pajukanta
+    Copyright © 2009–2024 Santtu Pajukanta
+    Copyright © 2015–2024 Aarni Koskela, Santeri Hiltunen
     Copyright © 2020–2023 Tuomas Puikkonen
     Copyright © 2019 Mikko Hänninen
     Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö
     Copyright © 2015–2017 Miika Ojamo
-    Copyright © 2015–2016 Aarni Koskela, Santeri Hiltunen
     Copyright © 2014–2016 Jyrki Launonen
     Copyright © 2012–2018 Meeri Panula
     Copyright © 2009–2015 Jussi Sorjonen

@@ -1,7 +1,7 @@
 version: '2.2'
 services:
-  web:
-    build: .
+  backend:
+    build: backend
     init: true
     command: python manage.py docker_start
     ports:
@@ -10,7 +10,7 @@ services:
       - redis
       - postgres
     volumes:
-      - .:/usr/src/app
+      - ./backend:/usr/src/app
       - web-media:/usr/src/app/media
     environment: &environment
       PYTHONUNBUFFERED: 1
@@ -24,19 +24,30 @@ services:
       MINIO_ENDPOINT_URL: http://minio:9000
       OIDC_RSA_PRIVATE_KEY: "${OIDC_RSA_PRIVATE_KEY:-}"
   celery:
-    build: .
+    build: backend
     init: true
     command: celery -A kompassi.celery_app:app worker
     links:
       - redis
       - postgres
     volumes:
-      - .:/usr/src/app:ro
+      - ./backend:/usr/src/app:ro
     environment:
       <<: *environment
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile.dev
+    init: true
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/src:/usr/src/app/src
+    environment:
+      NEXT_PUBLIC_KOMPASSI_BASE_URL: http://backend:8000
   postgres:
     # image: postgres
-    build: ./kompassi/sql/
+    build: backend/kompassi/sql/
     init: true
     ports:
       - 5432:5432

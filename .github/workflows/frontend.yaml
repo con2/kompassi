@@ -1,7 +1,10 @@
-name: cicd
+name: frontend
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -34,6 +37,7 @@ jobs:
       - uses: docker/setup-buildx-action@v3
       - id: build
         run: |
+          cd frontend
           skaffold build --file-output build.json
       - name: Store build.json artifact
         uses: actions/upload-artifact@v3
@@ -70,6 +74,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
       - run: |
+          cd frontend
           npm ci
           cd kubernetes && ENV=staging npx ts-node manifest.ts && cd ..
           skaffold deploy -n kompassi2-staging -a build.json
@@ -103,6 +108,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
       - run: |
+          cd frontend
           npm ci
           cd kubernetes && ENV=production npx ts-node manifest.ts && cd ..
           skaffold deploy -n kompassi2-production -a build.json

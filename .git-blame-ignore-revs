@@ -2,3 +2,7 @@
 bca30f9dcdb9f54d3087388958a7f547406abde7
 # update deps (also does a reformat)
 70805688b1baf08d7276acbd8dfc77646c377bc9
+# make frontend ready for monorepo
+455f7948cacce4e7150aaaaba13e1388b2f5241f
+# make backend ready for monorepo
+f8ae750336435a92a878f502b8deb30d981c833e
