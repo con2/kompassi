@@ -1,14 +1,13 @@
 from django.conf import settings
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.views.generic.base import View
-from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
-
-from oauth2_provider.views.generic import ReadWriteScopedResourceView
+from django.views.generic.base import View
 from oauth2_provider.views import AuthorizationView
+from oauth2_provider.views.generic import ReadWriteScopedResourceView
 
-from core.models import Person, Event
+from core.models import Event, Person
 
 
 class MyselfResource(ReadWriteScopedResourceView):

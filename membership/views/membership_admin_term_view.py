@@ -1,15 +1,15 @@
 from datetime import date
 
-from django.views.decorators.http import require_http_methods
-from django.shortcuts import get_object_or_404, render, redirect
-from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 
 from core.utils import initialize_form, url
 
+from ..forms import TermForm
 from ..helpers import membership_admin_required
 from ..models import MembershipFeePayment, Term
-from ..forms import TermForm
 
 
 class NewTerm:

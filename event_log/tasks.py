@@ -1,6 +1,6 @@
 from celery import shared_task
 
-from .models import Subscription, Entry
+from .models import Entry, Subscription
 
 
 @shared_task(ignore_result=True)

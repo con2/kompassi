@@ -13,8 +13,8 @@ class Command(BaseCommand):
         )
 
     def handle(*args, **opts):
-        from programme.models import Programme
         from core.models import Event
+        from programme.models import Programme
 
         for event_slug in opts["event_slugs"]:
             event = Event.objects.get(slug=event_slug)

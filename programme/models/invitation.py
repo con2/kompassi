@@ -2,8 +2,8 @@ from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import url
 from core.models import OneTimeCodeLite
+from core.utils import url
 
 
 class Invitation(OneTimeCodeLite):

@@ -10,6 +10,7 @@ def get_other_language(current_language_code):
 
 def core_context(request):
     from django.conf import settings
+
     from .views import core_profile_menu_items
 
     current_language_code = get_language_from_request(request)

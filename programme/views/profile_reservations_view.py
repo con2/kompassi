@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.utils.timezone import now
-
 from paikkala.models import Ticket
 
 from programme.models.programme import PROGRAMME_STATES_ACTIVE

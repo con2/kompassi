@@ -3,18 +3,18 @@ import json
 import logging
 from functools import wraps
 
+from django.conf import settings
+from django.forms import ValidationError as DjangoValidationError
+from django.http import Http404, HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from jsonschema import (
     ValidationError as JSONValidationError,
+)
+from jsonschema import (
     validate,
 )
 
-from django.conf import settings
-from django.forms import ValidationError as DjangoValidationError
-from django.http import JsonResponse, HttpResponse, Http404
-from django.views.decorators.csrf import csrf_exempt
-
 from access.cbac import default_cbac_required
-
 
 logger = logging.getLogger("kompassi")
 

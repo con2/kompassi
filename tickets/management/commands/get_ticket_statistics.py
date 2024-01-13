@@ -1,10 +1,11 @@
 import csv
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 from sys import stdout
 
 from django.core.management import BaseCommand
 
 from core.models import Event
+
 from ...models import OrderProduct, Product
 
 

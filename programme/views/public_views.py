@@ -3,24 +3,24 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.cache import cache_page, cache_control
+from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.http import require_safe
 
 from api.utils import api_view
-from core.tabs import Tab
 from core.sort_and_filter import Filter
+from core.tabs import Tab
 from core.utils import url
 
+from ..helpers import (
+    group_programmes_by_start_time,
+    programme_event_required,
+    public_programme_required,
+)
 from ..models import (
     AllRoomsPseudoView,
     Category,
     Programme,
     View,
-)
-from ..helpers import (
-    group_programmes_by_start_time,
-    programme_event_required,
-    public_programme_required,
 )
 
 
@@ -186,8 +186,9 @@ def actual_special_view(
 @user_passes_test(lambda u: u.is_superuser)
 @require_safe
 def internal_dumpdata_view(request):
-    from django.core import management
     from io import StringIO
+
+    from django.core import management
 
     buffer = StringIO()
     management.call_command("dumpdata", "programme", stdout=buffer)

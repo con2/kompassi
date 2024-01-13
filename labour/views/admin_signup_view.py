@@ -1,11 +1,9 @@
 import json
 
-
 from django.contrib import messages
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
-
 
 from core.models import Person
 from core.tabs import Tab
@@ -17,7 +15,6 @@ from ..models import (
     JobCategory,
     Signup,
 )
-
 from .view_helpers import initialize_signup_forms
 
 

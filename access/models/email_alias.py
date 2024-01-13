@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 from .email_alias_mixin import EmailAliasMixin
 
-
 logger = logging.getLogger("kompassi")
 
 
@@ -55,8 +54,9 @@ class EmailAlias(EmailAliasMixin, models.Model):
 
     @classmethod
     def get_or_create_dummy(cls):
-        from .email_alias_type import EmailAliasType
         from core.models import Person
+
+        from .email_alias_type import EmailAliasType
 
         alias_type, unused = EmailAliasType.get_or_create_dummy()
         person, unused = Person.get_or_create_dummy()

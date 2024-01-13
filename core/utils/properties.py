@@ -1,5 +1,5 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 
 from .misc_utils import get_code

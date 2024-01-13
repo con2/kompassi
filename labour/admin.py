@@ -3,8 +3,8 @@ from django.contrib import admin
 from .models import (
     AlternativeSignupForm,
     InfoLink,
-    JobCategory,
     Job,
+    JobCategory,
     LabourEventMeta,
     PersonnelClass,
     PersonQualification,

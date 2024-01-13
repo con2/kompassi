@@ -1,11 +1,10 @@
 import os
 from datetime import datetime, timedelta
 
+from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-
-from dateutil.tz import tzlocal
 
 from core.utils import slugify
 
@@ -33,7 +32,7 @@ class Setup:
         self.setup_intra()
 
     def setup_core(self):
-        from core.models import Venue, Event, Organization
+        from core.models import Event, Organization, Venue
 
         self.venue, unused = Venue.objects.get_or_create(
             name="Kuopion musiikkikeskus",
@@ -64,6 +63,8 @@ class Setup:
         )
 
     def setup_labour(self):
+        from django.contrib.contenttypes.models import ContentType
+
         from core.models import Person
         from labour.models import (
             AlternativeSignupForm,
@@ -74,8 +75,8 @@ class Setup:
             Qualification,
             WorkPeriod,
         )
-        from ...models import SignupExtra, SpecialDiet, Night
-        from django.contrib.contenttypes.models import ContentType
+
+        from ...models import Night, SignupExtra, SpecialDiet
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -222,7 +223,7 @@ class Setup:
             )
 
     def setup_tickets(self):
-        from tickets.models import TicketsEventMeta, LimitGroup, Product
+        from tickets.models import LimitGroup, Product, TicketsEventMeta
 
         (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
 

@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 
-
 ROOM_NAME_MAX_LENGTH = 1023
 
 logger = logging.getLogger("kompassi")
@@ -73,9 +72,10 @@ class Room(models.Model):
 
     @atomic
     def paikkalize(self):
-        from paikkala.models import Room as PaikkalaRoom
-        from paikkala.utils.importer import read_csv, import_zones
         from uuid import uuid4
+
+        from paikkala.models import Room as PaikkalaRoom
+        from paikkala.utils.importer import import_zones, read_csv
 
         if self.paikkala_room:
             logger.info("Room %s is alredy paikkalized, not re-paikkalizing", self)

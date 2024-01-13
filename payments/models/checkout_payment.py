@@ -3,23 +3,21 @@ import logging
 from dataclasses import dataclass
 from datetime import date
 from functools import cached_property
-from pkg_resources import resource_string
 from uuid import uuid4
 
+import requests
 from django.conf import settings
-from django.db import models, connection
+from django.db import connection, models
+from django.db.models import JSONField
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.shortcuts import redirect
-from django.db.models import JSONField
-
-import requests
+from pkg_resources import resource_string
 
 from tickets.utils import format_price
 
 from ..utils import calculate_hmac
 from .payments_organization_meta import META_DEFAULTS
-
 
 logger = logging.getLogger("kompassi")
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Listing, ExternalEvent
+from .models import ExternalEvent, Listing
 
 
 class ListingAdmin(admin.ModelAdmin):

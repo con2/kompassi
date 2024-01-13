@@ -1,9 +1,7 @@
+import bleach
 from django.template import Library
 
-import bleach
-
 from core.utils import slugify as core_slugify
-
 
 __all__ = ["removetags", "slugify"]
 register = Library()

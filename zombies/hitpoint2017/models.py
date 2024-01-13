@@ -1,6 +1,5 @@
 from django.db import models
 
-
 NIGHT_WORK_CHOICES = [
     ("miel", "Työskentelen mielelläni yövuorossa"),
     ("tarv", "Voin tarvittaessa työskennellä yövuorossa"),

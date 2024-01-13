@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import LimitGroup, Product, Order
+from .models import LimitGroup, Order, Product
 
 
 class LimitGroupsTestCase(TestCase):

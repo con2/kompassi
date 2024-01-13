@@ -1,10 +1,10 @@
-from pkg_resources import resource_string
 import logging
+
+from pkg_resources import resource_string
 
 from core.utils import get_previous_and_next
 
 from ...models import Programme
-
 
 logger = logging.getLogger("kompassi")
 

@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
 
+from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-
-from dateutil.tz import tzlocal
 
 
 class Setup:
@@ -18,7 +17,7 @@ class Setup:
         self.setup_enrollment()
 
     def setup_core(self):
-        from core.models import Organization, Venue, Event
+        from core.models import Event, Organization, Venue
 
         self.organization, unused = Organization.objects.get_or_create(
             slug="tracon-ry",

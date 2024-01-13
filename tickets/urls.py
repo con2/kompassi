@@ -1,3 +1,5 @@
+from django.urls import re_path
+
 from .views import (
     tickets_accommodation_view,
     tickets_address_view,
@@ -14,11 +16,10 @@ from .views import (
     tickets_admin_stats_view,
     tickets_admin_tools_view,
     tickets_confirm_view,
+    tickets_router_view,
     tickets_thanks_view,
     tickets_tickets_view,
-    tickets_router_view,
 )
-from django.urls import re_path
 
 urlpatterns = [
     re_path(

@@ -2,7 +2,6 @@ from django.db import models
 
 from labour.models import SignupExtraBase
 
-
 SHIFT_TYPE_CHOICES = [
     ("none", "Ei väliä"),
     ("4h", "Pari pitkää vuoroa"),

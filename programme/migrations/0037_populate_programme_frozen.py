@@ -3,7 +3,6 @@
 
 from django.db import migrations
 
-
 ACTIVE_EVENTS = ["tracon11", "animecon2016", "kawacon2016"]
 
 

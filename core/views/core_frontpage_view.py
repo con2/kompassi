@@ -2,9 +2,9 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.utils.timezone import now
 
-from core.utils import groups_of_n, groupby_strict
+from core.utils import groupby_strict, groups_of_n
 
-from ..models import Event, CarouselSlide
+from ..models import CarouselSlide, Event
 
 
 def get_year(event):

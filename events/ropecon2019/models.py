@@ -1,9 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from labour.models import SignupExtraBase
 from enrollment.models import SimpleChoice
-
+from labour.models import SignupExtraBase
 
 TOTAL_WORK_CHOICES = [
     ("8h", "Minimi - 8 tuntia"),

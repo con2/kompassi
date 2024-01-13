@@ -3,8 +3,8 @@ from graphene.types.generic import GenericScalar
 
 from core.utils import get_ip
 
-from ...models.survey import Survey
 from ...models.response import Response
+from ...models.survey import Survey
 from ..form_response import FullResponseType
 
 

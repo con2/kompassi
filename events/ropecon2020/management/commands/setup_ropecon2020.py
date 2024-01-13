@@ -1,12 +1,11 @@
 import os
 from datetime import datetime, timedelta
-from pkg_resources import resource_string
 
+from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-
-from dateutil.tz import tzlocal
+from pkg_resources import resource_string
 
 from core.utils import full_hours_between
 
@@ -34,7 +33,7 @@ class Setup:
         self.setup_badges()
 
     def setup_core(self):
-        from core.models import Venue, Event, Organization
+        from core.models import Event, Organization, Venue
 
         self.venue, unused = Venue.objects.get_or_create(
             name="Messukeskus",
@@ -65,6 +64,8 @@ class Setup:
         )
 
     def setup_labour(self):
+        from django.contrib.contenttypes.models import ContentType
+
         from core.models import Event, Person
         from labour.models import (
             AlternativeSignupForm,
@@ -73,8 +74,8 @@ class Setup:
             PersonnelClass,
             Qualification,
         )
+
         from ...models import SignupExtra, SpecialDiet
-        from django.contrib.contenttypes.models import ContentType
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -173,10 +174,11 @@ class Setup:
             Role,
             Room,
             SpecialStartTime,
+            Tag,
             TimeBlock,
             View,
-            Tag,
         )
+
         from ...models import TimeSlot
 
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
@@ -463,7 +465,7 @@ class Setup:
             Tag.objects.get_or_create(event=self.event, title=tag_title)
 
     def setup_tickets(self):
-        from tickets.models import TicketsEventMeta, LimitGroup, Product
+        from tickets.models import LimitGroup, Product, TicketsEventMeta
 
         tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 

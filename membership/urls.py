@@ -1,13 +1,14 @@
+from django.urls import re_path
+
 from .views import (
     membership_admin_emails_api,
     membership_admin_member_view,
     membership_admin_members_view,
     membership_admin_term_view,
     membership_apply_view,
-    membership_profile_view,
     membership_pay_fee_view,
+    membership_profile_view,
 )
-from django.urls import re_path
 
 urlpatterns = [
     re_path(

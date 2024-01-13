@@ -3,7 +3,6 @@ from uuid import uuid4
 
 from django.db import models
 
-
 META_DEFAULTS = dict(
     checkout_password="SAIPPUAKAUPPIAS",
     checkout_merchant="375917",

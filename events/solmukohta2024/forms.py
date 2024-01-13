@@ -1,7 +1,6 @@
+from crispy_forms.layout import Layout
 from django import forms
 from django.utils.translation import gettext_lazy as _
-
-from crispy_forms.layout import Layout
 
 from core.utils import horizontal_form_helper
 from programme.models import AlternativeProgrammeFormMixin, Category, Programme

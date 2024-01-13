@@ -1,5 +1,6 @@
 from functools import cached_property
 from typing import Literal
+
 from django.db import models
 
 
@@ -77,8 +78,8 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
             return True
 
         # See if this SignupExtra is active due to programme roles
-        from programme.models.programme_role import ProgrammeRole
         from programme.models.programme import PROGRAMME_STATES_ACTIVE
+        from programme.models.programme_role import ProgrammeRole
 
         result = ProgrammeRole.objects.filter(
             programme__category__event=self.event,
@@ -95,8 +96,8 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
         if self.signup and self.signup.is_alive:
             result.extend(pc.name for pc in self.signup.personnel_classes.all())
 
-        from programme.models.programme_role import ProgrammeRole
         from programme.models.programme import PROGRAMME_STATES_LIVE
+        from programme.models.programme_role import ProgrammeRole
 
         programme_roles = ProgrammeRole.objects.filter(
             programme__category__event=self.event,

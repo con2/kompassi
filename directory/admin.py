@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 from .models import (
-    DirectoryOrganizationMeta,
     DirectoryAccessGroup,
+    DirectoryOrganizationMeta,
 )
 
 

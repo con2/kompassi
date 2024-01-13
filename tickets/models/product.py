@@ -1,6 +1,6 @@
 import logging
-from typing import Any
 from functools import cached_property
+from typing import Any
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -9,7 +9,6 @@ from core.models import Event
 
 from ..utils import format_price
 from .consts import LOW_AVAILABILITY_THRESHOLD
-
 
 logger = logging.getLogger("kompassi")
 

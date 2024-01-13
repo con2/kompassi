@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db import models, migrations
+from django.db import migrations, models
 
 
 def populate_end_times(apps, schema_editor):

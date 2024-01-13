@@ -2,18 +2,16 @@ import logging
 import typing
 
 from django.db import models
-
-from localized_fields.models import LocalizedModel
 from localized_fields.fields import LocalizedCharField
+from localized_fields.models import LocalizedModel
 
-from core.utils import validate_slug, log_get_or_create, log_delete
+from core.utils import log_delete, log_get_or_create, validate_slug
 
 from ..consts import (
-    TAG_DIMENSION_TITLE_LOCALIZED,
     CATEGORY_DIMENSION_TITLE_LOCALIZED,
     ROOM_DIMENSION_TITLE_LOCALIZED,
+    TAG_DIMENSION_TITLE_LOCALIZED,
 )
-
 
 if typing.TYPE_CHECKING:
     from core.models import Event
@@ -43,7 +41,7 @@ class Dimension(LocalizedModel):
         For v1 import, this ensures that the default dimensions are present.
         Returns the default dimensions as a tuple.
         """
-        from programme.models import Category, Tag, Room
+        from programme.models import Category, Room, Tag
 
         if clear:
             log_delete(logger, event.dimensions.all().delete())

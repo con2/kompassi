@@ -1,10 +1,9 @@
 import logging
 
-from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from core.utils import get_ip
-
 
 logger = logging.getLogger("kompassi")
 INSTANCE = object()

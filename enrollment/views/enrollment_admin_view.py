@@ -3,7 +3,7 @@ from django.shortcuts import render
 from core.sort_and_filter import Filter
 
 from ..helpers import enrollment_admin_required
-from ..models.enrollment import Enrollment, STATE_CHOICES
+from ..models.enrollment import STATE_CHOICES, Enrollment
 
 
 @enrollment_admin_required

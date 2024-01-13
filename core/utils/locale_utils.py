@@ -1,8 +1,8 @@
-from babel import Locale
+from functools import cache
 
+from babel import Locale
 from django.conf import settings
 from django.utils.translation import get_language
-from functools import cache
 
 
 @cache

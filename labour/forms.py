@@ -1,10 +1,9 @@
 from typing import Any
 
+from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-
-from crispy_forms.layout import Layout, Fieldset
 
 from core.forms import PersonForm
 from core.models import Person
@@ -12,12 +11,12 @@ from core.utils import horizontal_form_helper, slugify
 
 from .models import (
     AlternativeFormMixin,
-    Signup,
-    JobCategory,
-    ObsoleteEmptySignupExtraV1,
     EmptySignupExtra,
+    JobCategory,
     LabourEventMeta,
+    ObsoleteEmptySignupExtraV1,
     PersonnelClass,
+    Signup,
 )
 
 

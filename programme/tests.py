@@ -1,17 +1,16 @@
+from datetime import datetime, timedelta
+
 import pytest
+from dateutil.tz import tzlocal
 from django.test import TestCase
 from django.utils.timezone import now
 
-from datetime import datetime, timedelta
-
-from dateutil.tz import tzlocal
-
-from access.models import SlackAccess, GroupPrivilege, Privilege, InternalEmailAlias, EmailAliasDomain
+from access.models import EmailAliasDomain, GroupPrivilege, InternalEmailAlias, Privilege, SlackAccess
 from labour.models import Signup
-from mailings.models import RecipientGroup, Message, PersonMessage
+from mailings.models import Message, PersonMessage, RecipientGroup
 
+from .models import Programme, ProgrammeEventMeta, ProgrammeRole
 from .utils import next_full_hour
-from .models import ProgrammeEventMeta, ProgrammeRole, Programme
 
 
 class UtilsTestCase(TestCase):

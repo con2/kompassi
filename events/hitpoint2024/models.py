@@ -2,7 +2,6 @@ from django.db import models
 
 from labour.models import SignupExtraBase
 
-
 NIGHT_WORK_CHOICES = [
     ("miel", "Työskentelen mielelläni yövuorossa"),
     ("tarv", "Voin tarvittaessa työskennellä yövuorossa"),

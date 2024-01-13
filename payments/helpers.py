@@ -7,7 +7,6 @@ from django.shortcuts import get_object_or_404
 from .models import CheckoutPayment
 from .utils import calculate_hmac
 
-
 logger = logging.getLogger("kompassi")
 
 

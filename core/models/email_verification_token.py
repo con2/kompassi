@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.template.loader import render_to_string
-from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.translation import get_language
+from django.utils.translation import gettext_lazy as _
 
 from ..utils import url
 from .one_time_code import OneTimeCode

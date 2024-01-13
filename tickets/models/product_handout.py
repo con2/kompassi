@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
-from lippukala.models import Code
 from lippukala.consts import UNUSED, USED
+from lippukala.models import Code
 
 from core.models import Event
 

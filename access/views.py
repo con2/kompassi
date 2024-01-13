@@ -1,25 +1,25 @@
-from datetime import timedelta
 import logging
+from datetime import timedelta
 
+from csp.decorators import csp_exempt
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
 from django.http import Http404, HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.timezone import now
-from django.views.decorators.http import require_POST, require_http_methods, require_safe
+from django.views.decorators.http import require_http_methods, require_POST, require_safe
 
-from csp.decorators import csp_exempt
-
-from api.utils import api_login_required, handle_api_errors, cbac_api_view
+from api.utils import api_login_required, cbac_api_view, handle_api_errors
 from core.helpers import person_required
 from core.models import Person
-from core.utils import groupby_strict, url, pick_attrs
+from core.utils import groupby_strict, pick_attrs, url
 from event_log.utils import emit
 
-from .constants import CBAC_SUDO_VALID_MINUTES, CBAC_SUDO_CLAIMS
+from .constants import CBAC_SUDO_CLAIMS, CBAC_SUDO_VALID_MINUTES
 from .exceptions import CBACPermissionDenied
+from .helpers import access_admin_required
 from .models import (
     CBACEntry,
     EmailAlias,
@@ -29,8 +29,6 @@ from .models import (
     SMTPPassword,
     SMTPServer,
 )
-from .helpers import access_admin_required
-
 
 logger = logging.getLogger("kompassi")
 

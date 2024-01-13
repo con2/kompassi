@@ -3,23 +3,21 @@ from datetime import timedelta
 from functools import cached_property
 
 from django.conf import settings
-from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.db.transaction import atomic
-from django.utils.timezone import now, get_default_timezone
+from django.utils.timezone import get_default_timezone, now
 from django.utils.translation import gettext_lazy as _
-
 
 from core.csv_export import CsvExportMixin
 from core.utils import (
-    format_datetime,
     NONUNIQUE_SLUG_FIELD_PARAMS,
+    format_datetime,
     slugify,
     url,
 )
 from core.utils.time_utils import format_interval
-
 
 logger = logging.getLogger("kompassi")
 
@@ -1743,6 +1741,7 @@ class Programme(models.Model, CsvExportMixin):
 
     def apply_state_group_membership(self):
         from core.utils import ensure_user_group_membership
+
         from .alternative_programme_form import AlternativeProgrammeForm
         from .category import Category
         from .programme_role import ProgrammeRole
@@ -1928,7 +1927,8 @@ class Programme(models.Model, CsvExportMixin):
         assert self.can_paikkalize
 
         from django.template.defaultfilters import truncatechars
-        from paikkala.models import Program as PaikkalaProgram, Row
+        from paikkala.models import Program as PaikkalaProgram
+        from paikkala.models import Row
 
         paikkala_room = self.room.paikkalize()
         meta = self.event.programme_event_meta

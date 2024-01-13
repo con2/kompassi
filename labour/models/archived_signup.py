@@ -5,7 +5,6 @@ from event_log.utils import emit
 from .constants import JOB_TITLE_LENGTH
 from .signup import SignupMixin
 
-
 # Only make positive archive records.
 ARCHIVE_STATES = [
     "accepted",

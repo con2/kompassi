@@ -1,8 +1,7 @@
-import re
 import logging
+import re
 
 from django.core.validators import RegexValidator
-
 
 logger = logging.getLogger("kompassi")
 

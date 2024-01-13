@@ -2,7 +2,6 @@ from django.utils.translation import gettext_lazy as _
 
 from event_log import registry
 
-
 registry.register(
     name="labour.signup.created",
     message=_("{entry.person} signed up for volunteer work in {entry.event}"),

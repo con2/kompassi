@@ -24,7 +24,7 @@ class EntryTypeMetadata:
 
     @classmethod
     def get_or_create_dummy(self, name="eventlog.dummy", **attrs):
-        from ..registry import register, get
+        from ..registry import get, register
 
         try:
             return get(name), False

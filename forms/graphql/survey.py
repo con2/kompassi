@@ -1,16 +1,15 @@
-from django.conf import settings
-
 import graphene
-from graphene_django import DjangoObjectType
+from django.conf import settings
 from graphene.types.generic import GenericScalar
+from graphene_django import DjangoObjectType
 
-from core.utils import normalize_whitespace
 from access.cbac import graphql_query_cbac_required
+from core.utils import normalize_whitespace
 
 from ..models.form import Form
 from ..models.survey import Survey
 from .form import FormType
-from .form_response import LimitedResponseType, FullResponseType
+from .form_response import FullResponseType, LimitedResponseType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 

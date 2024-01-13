@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
 
+from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-
-from dateutil.tz import tzlocal
 
 
 class Setup:
@@ -29,7 +28,7 @@ class Setup:
         # self.setup_sms()
 
     def setup_core(self):
-        from core.models import Organization, Venue, Event
+        from core.models import Event, Organization, Venue
 
         self.organization, unused = Organization.objects.get_or_create(
             slug="tracon-ry",
@@ -55,6 +54,8 @@ class Setup:
         )
 
     def setup_labour(self):
+        from django.contrib.contenttypes.models import ContentType
+
         from core.models import Person
         from core.utils import slugify
         from labour.models import (
@@ -66,8 +67,8 @@ class Setup:
             Qualification,
             Survey,
         )
-        from ...models import SignupExtra, Night, Poison
-        from django.contrib.contenttypes.models import ContentType
+
+        from ...models import Night, Poison, SignupExtra
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -289,7 +290,7 @@ class Setup:
         )
 
     def setup_tickets(self):
-        from tickets.models import TicketsEventMeta, LimitGroup, Product
+        from tickets.models import LimitGroup, Product, TicketsEventMeta
 
         tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 
@@ -611,7 +612,7 @@ class Setup:
             default_form.save()
 
     def setup_access(self):
-        from access.models import Privilege, GroupPrivilege, EmailAliasType, GroupEmailAliasGrant
+        from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
 
         # Grant accepted workers access to Tracon Slack
         privilege = Privilege.objects.get(slug="tracon-slack")

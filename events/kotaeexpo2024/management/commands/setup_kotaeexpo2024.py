@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
 
+from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-
-from dateutil.tz import tzlocal
 
 
 class Setup:
@@ -27,7 +26,7 @@ class Setup:
         self.setup_directory()
 
     def setup_core(self):
-        from core.models import Organization, Venue, Event
+        from core.models import Event, Organization, Venue
 
         self.organization, unused = Organization.objects.get_or_create(
             slug="kotae-ry",
@@ -53,6 +52,8 @@ class Setup:
         )
 
     def setup_labour(self):
+        from django.contrib.contenttypes.models import ContentType
+
         from labour.models import (
             AlternativeSignupForm,
             JobCategory,
@@ -60,8 +61,8 @@ class Setup:
             PersonnelClass,
             Survey,
         )
-        from ...models import SignupExtra, KnownLanguage, Accommodation
-        from django.contrib.contenttypes.models import ContentType
+
+        from ...models import Accommodation, KnownLanguage, SignupExtra
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 

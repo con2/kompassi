@@ -3,8 +3,7 @@ import logging
 from django.db import models
 from django.db.models import Q
 
-from ..utils import SLUG_FIELD_PARAMS, slugify, pick_attrs
-
+from ..utils import SLUG_FIELD_PARAMS, pick_attrs, slugify
 
 logger = logging.getLogger("kompassi")
 

@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_safe
 
-from api.utils import handle_api_errors, api_login_required
+from api.utils import api_login_required, handle_api_errors
 from core.models import Organization
 
 

@@ -2,7 +2,6 @@ from django.utils.translation import gettext_lazy as _
 
 from event_log import registry
 
-
 registry.register(
     name="surveys.globalsurveyresult.created",
     message=_("New survey answer: {entry.global_survey_result.survey.title}"),

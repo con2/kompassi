@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.models.constants import EMAIL_LENGTH
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, pick_attrs, slugify
 
 
 class Team(models.Model):

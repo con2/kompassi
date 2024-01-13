@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import PaymentsOrganizationMeta, CheckoutPayment
+from .models import CheckoutPayment, PaymentsOrganizationMeta
 
 
 class InlinePaymentsOrganizationMetaAdmin(admin.StackedInline):

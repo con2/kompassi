@@ -1,6 +1,6 @@
 import graphene
-from graphene_django import DjangoObjectType
 from graphene.types.generic import GenericScalar
+from graphene_django import DjangoObjectType
 
 from ..models.response import Response
 from .form import FormType

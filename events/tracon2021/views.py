@@ -1,14 +1,14 @@
 from django.db import models
-from django.utils.timezone import now
 from django.shortcuts import render
+from django.utils.timezone import now
 
 from core.csv_export import csv_response
 from core.models import Event
 from event_log.utils import emit
 from labour.helpers import labour_admin_required
 
+from .models import Poison, SignupExtra
 from .proxies import SignupExtraAfterpartyProxy
-from .models import SignupExtra, Poison
 
 
 @labour_admin_required

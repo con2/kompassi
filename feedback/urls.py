@@ -1,8 +1,7 @@
+from django.urls import path, re_path
 from django.views.generic import TemplateView
 
 from .views import feedback_view
-from django.urls import path, re_path
-
 
 urlpatterns = [
     path(

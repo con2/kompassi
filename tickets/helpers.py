@@ -2,12 +2,12 @@ from functools import wraps
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.translation import get_language
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import get_ip
 
 from .models import Order
-
 
 __all__ = [
     "clear_order",
@@ -111,6 +111,7 @@ def tickets_admin_required(view_func):
     def wrapper(request, event_slug, *args, **kwargs):
         from core.models import Event
         from core.utils import login_redirect
+
         from .views import tickets_admin_menu_items
 
         event = get_object_or_404(Event, slug=event_slug)

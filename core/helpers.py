@@ -4,9 +4,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 
-from .models import Person, Organization, Event
-from .utils import login_redirect, event_meta_property  # noqa
-from .page_wizard import page_wizard_init, page_wizard_clear
+from .models import Event, Organization, Person
+from .page_wizard import page_wizard_clear, page_wizard_init
+from .utils import event_meta_property, login_redirect  # noqa
 
 
 def person_required(view_func):
@@ -30,6 +30,7 @@ def app_admin_required(app_label, error_message="Tämä moduuli ei ole käytöss
         def inner(request, event, *args, **kwargs):
             from core.models import Event
             from core.utils import login_redirect
+
             from .views import labour_admin_menu_items
 
             event = get_object_or_404(Event, slug=event)

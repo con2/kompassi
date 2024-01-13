@@ -1,11 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from core.csv_export import ExportFormat, EXPORT_FORMATS, CSV_EXPORT_FORMATS
+from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat
 
 from ..helpers import intra_organizer_required
 from ..models import Team
-
 
 EXPORT_FORMATS = EXPORT_FORMATS + [
     ExportFormat("vCard", "vcf", "vcf"),

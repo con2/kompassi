@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group, User
 
 from access.admin import InlineAccessOrganizationMetaAdmin
 from badges.admin import InlineBadgesEventMetaAdmin
@@ -14,7 +14,7 @@ from payments.admin import InlinePaymentsOrganizationMetaAdmin
 from programme.admin import InlineProgrammeEventMetaAdmin
 from tickets.admin import InlineTicketsEventMetaAdmin
 
-from .models import Organization, Event, Person, Venue, CarouselSlide
+from .models import CarouselSlide, Event, Organization, Person, Venue
 
 
 class OrganizationAdmin(admin.ModelAdmin):

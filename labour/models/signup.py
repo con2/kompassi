@@ -9,7 +9,6 @@ from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.utils.translation import gettext_lazy as _
 
-
 from core.csv_export import CsvExportMixin
 from core.utils import (
     alias_property,
@@ -20,16 +19,16 @@ from core.utils import (
 
 from .constants import (
     JOB_TITLE_LENGTH,
-    SIGNUP_STATE_NAMES,
     NUM_FIRST_CATEGORIES,
-    SIGNUP_STATE_LABEL_CLASSES,
     SIGNUP_STATE_BUTTON_CLASSES,
     SIGNUP_STATE_DESCRIPTIONS,
+    SIGNUP_STATE_GROUPS,
     SIGNUP_STATE_IMPERATIVES,
+    SIGNUP_STATE_LABEL_CLASSES,
+    SIGNUP_STATE_NAMES,
     STATE_FLAGS_BY_NAME,
     STATE_NAME_BY_FLAGS,
     STATE_TIME_FIELDS,
-    SIGNUP_STATE_GROUPS,
 )
 
 if TYPE_CHECKING:
@@ -392,7 +391,8 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
 
     @classmethod
     def get_or_create_dummy(cls, accepted=False):
-        from core.models import Person, Event
+        from core.models import Event, Person
+
         from .job_category import JobCategory
 
         person, unused = Person.get_or_create_dummy()

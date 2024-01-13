@@ -3,7 +3,6 @@ from django.core.management.base import BaseCommand
 from core.models import Event
 from programme.models import Programme, Tag
 
-
 TAG_MAPPING = dict(
     is_english_ok="in-english",
     is_beginner_friendly="aloittelijaystavallinen",

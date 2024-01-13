@@ -1,11 +1,11 @@
-from payments.views import (
-    payments_checkout_success_view,
-    payments_checkout_cancel_view,
-    payments_checkout_success_callback,
-    payments_checkout_cancel_callback,
-)
 from django.urls import re_path
 
+from payments.views import (
+    payments_checkout_cancel_callback,
+    payments_checkout_cancel_view,
+    payments_checkout_success_callback,
+    payments_checkout_success_view,
+)
 
 urlpatterns = [
     re_path(

@@ -1,6 +1,5 @@
 from .models import EntryTypeMetadata
 
-
 entry_types = dict()
 
 

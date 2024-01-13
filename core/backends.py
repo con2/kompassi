@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 
-
 # Sentinel object
 YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN = object()
 

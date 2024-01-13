@@ -1,12 +1,11 @@
 from django.conf import settings
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods, require_safe
 
+from ..helpers import person_required
 from ..models import EmailVerificationError, Person
 from ..utils import url
-from ..helpers import person_required
-
 
 EMAIL_VERIFICATION_ERROR_MESSAGES = dict(
     default="Sähköpostiosoitteen vahvistus epäonnistui. Tarkista koodi.",

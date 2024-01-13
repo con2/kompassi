@@ -1,6 +1,5 @@
-from django import forms
-
 from crispy_forms.layout import Fieldset, Layout
+from django import forms
 
 from core.utils import horizontal_form_helper
 from labour.forms import AlternativeFormMixin

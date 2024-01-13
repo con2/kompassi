@@ -7,7 +7,6 @@ from labour.models import Signup
 
 from ..constants import SUPPORTED_APPS
 
-
 UnassignedOrganizer = namedtuple("UnassignedOrganizer", "person signup")
 
 

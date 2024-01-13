@@ -1,24 +1,24 @@
+from django.urls import path, re_path
+
 from .views import (
     core_admin_impersonate_view,
     core_email_verification_request_view,
     core_email_verification_view,
     core_event_view,
+    core_fobba_export_view,
     core_frontpage_view,
     core_login_view,
     core_logout_view,
     core_organization_view,
+    core_organizations_view,
     core_password_reset_request_view,
     core_password_reset_view,
     core_password_view,
     core_personify_view,
     core_profile_view,
     core_registration_view,
-    core_organizations_view,
-    core_fobba_export_view,
     core_stats_view,
 )
-from django.urls import path, re_path
-
 
 urlpatterns = [
     path("", core_frontpage_view, name="core_frontpage_view"),

@@ -1,6 +1,5 @@
 from django.template import Library
 
-
 __all__ = ["programme_list_heading"]
 register = Library()
 

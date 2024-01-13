@@ -1,12 +1,10 @@
 import re
 
 import phonenumbers
-
 from django.conf import settings
 from django.core.validators import RegexValidator
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
-
 
 validate_slug = RegexValidator(
     regex=r"[a-z0-9-]+",

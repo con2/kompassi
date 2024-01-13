@@ -2,7 +2,7 @@ import pytest
 
 from core.models import Event
 
-from .models import Program, Dimension, DimensionValue
+from .models import Dimension, DimensionValue, Program
 
 
 @pytest.mark.django_db

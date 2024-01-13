@@ -1,12 +1,11 @@
+from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from crispy_forms.layout import Layout, Fieldset
-
 from core.utils import horizontal_form_helper
 from labour.forms import AlternativeFormMixin
-from labour.models import Signup, JobCategory
-from programme.models import AlternativeProgrammeFormMixin, Programme, Category
+from labour.models import JobCategory, Signup
+from programme.models import AlternativeProgrammeFormMixin, Category, Programme
 
 from .models import SignupExtra
 

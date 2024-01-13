@@ -2,11 +2,9 @@ import os
 import warnings
 from email.utils import parseaddr
 
-from django.utils.translation import gettext_lazy as _
-from django.contrib.messages import constants as messages
-
 import environ
-
+from django.contrib.messages import constants as messages
+from django.utils.translation import gettext_lazy as _
 
 env = environ.Env(
     DEBUG=(bool, False),

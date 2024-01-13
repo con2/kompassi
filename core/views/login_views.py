@@ -1,16 +1,15 @@
+from csp.decorators import csp_update
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import redirect, render
 from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.http import require_http_methods
 
-from csp.decorators import csp_update
-
-from ..models import Person
 from ..forms import LoginForm
-from ..utils import get_next, initialize_form
+from ..models import Person
 from ..page_wizard import page_wizard_clear, page_wizard_vars
+from ..utils import get_next, initialize_form
 from .email_verification_views import remind_email_verification_if_needed
 
 

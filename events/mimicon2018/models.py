@@ -2,7 +2,6 @@ from django.db import models
 
 from labour.models import ObsoleteSignupExtraBaseV1
 
-
 SHIFT_TYPE_CHOICES = [
     ("yksipitka", "Yksi pitkä vuoro"),
     ("montalyhytta", "Monta lyhyempää vuoroa"),

@@ -45,6 +45,7 @@ def programme_admin_required(view_func):
     @default_cbac_required
     def wrapper(request, event_slug, *args, **kwargs):
         from core.models import Event
+
         from .views import programme_admin_menu_items
 
         event = get_object_or_404(Event, slug=event_slug)

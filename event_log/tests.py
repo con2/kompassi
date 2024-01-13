@@ -5,7 +5,6 @@ from core.models import Event
 from .models import Subscription
 from .utils import emit
 
-
 notifications = []
 
 

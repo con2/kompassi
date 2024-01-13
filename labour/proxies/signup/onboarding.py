@@ -1,6 +1,5 @@
 from ...models import Signup
 
-
 STATE_ARRIVED = "arrived"
 STATE_NOT_ARRIVED = "finished"
 

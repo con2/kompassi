@@ -2,11 +2,11 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
 
-from core.models import EventMetaBase, ContactEmailMixin, contact_email_validator
-from core.utils import full_hours_between, is_within_period, alias_property
+from core.models import ContactEmailMixin, EventMetaBase, contact_email_validator
+from core.utils import alias_property, full_hours_between, is_within_period
 
 from .constants import GROUP_VERBOSE_NAMES_BY_SUFFIX, SIGNUP_STATE_GROUPS
 
@@ -97,7 +97,9 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
     @classmethod
     def get_or_create_dummy(cls):
         from django.contrib.contenttypes.models import ContentType
+
         from core.models import Event
+
         from .signup_extras import EmptySignupExtra
 
         event, unused = Event.get_or_create_dummy()
@@ -127,6 +129,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
     @classmethod
     def get_or_create_groups(cls, event, job_categories_or_suffixes):
         from mailings.models import RecipientGroup
+
         from .job_category import JobCategory
         from .personnel_class import PersonnelClass
 

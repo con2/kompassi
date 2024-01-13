@@ -1,6 +1,6 @@
-from .views import directory_view, directory_person_view
 from django.urls import re_path
 
+from .views import directory_person_view, directory_view
 
 urlpatterns = [
     re_path(r"^organizations/(?P<organization_slug>[a-z0-9-]+)/people/?$", directory_view, name="directory_view"),

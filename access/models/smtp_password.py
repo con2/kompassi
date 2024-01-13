@@ -1,6 +1,5 @@
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
-
 from passlib.hash import md5_crypt
 
 from ..utils import generate_machine_password

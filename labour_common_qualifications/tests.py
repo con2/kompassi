@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from core.models import Person
-from labour.models import Qualification, PersonQualification
+from labour.models import PersonQualification, Qualification
 
 from .models import JVKortti
 

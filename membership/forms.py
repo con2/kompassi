@@ -1,6 +1,5 @@
-from django import forms
-
 from crispy_forms.layout import Layout
+from django import forms
 
 from core.forms import PersonForm
 from core.models import Person

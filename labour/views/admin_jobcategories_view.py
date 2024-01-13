@@ -1,11 +1,11 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
-from ..proxies.job_category.management import JobCategoryManagementProxy
-from ..helpers import labour_admin_required
 from ..forms import RemoveJobCategoryForm
+from ..helpers import labour_admin_required
+from ..proxies.job_category.management import JobCategoryManagementProxy
 
 
 @labour_admin_required

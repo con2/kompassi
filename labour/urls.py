@@ -1,3 +1,4 @@
+from django.urls import re_path
 from django.views.generic.base import RedirectView
 
 from .views import (
@@ -16,8 +17,8 @@ from .views import (
     api_job_categories_view,
     api_job_category_view,
     api_job_view,
-    api_shift_view,
     api_set_job_requirements_view,
+    api_shift_view,
     confirm_view,
     person_disqualify_view,
     person_qualification_view,
@@ -27,7 +28,6 @@ from .views import (
     signup_view,
     survey_view,
 )
-from django.urls import re_path
 
 app_name = "labour"
 urlpatterns = [

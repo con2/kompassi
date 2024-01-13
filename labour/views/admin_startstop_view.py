@@ -1,12 +1,12 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from core.utils import initialize_form
 
-from ..helpers import labour_admin_required
 from ..forms import StartStopForm
+from ..helpers import labour_admin_required
 
 
 @labour_admin_required

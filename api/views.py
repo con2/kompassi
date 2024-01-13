@@ -1,11 +1,11 @@
-from django.views.decorators.http import require_safe
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_safe
 
 from core.models import Person
 from labour.helpers import labour_event_required
 
-from .utils import api_view, api_login_required, cbac_api_view
+from .utils import api_login_required, api_view, cbac_api_view
 
 
 @require_safe

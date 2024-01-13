@@ -1,13 +1,12 @@
+from django.urls import re_path
 from django.views.generic.base import TemplateView
 
 from .views import (
     CallbackView,
-    LoginView,
     ConfirmationView,
+    LoginView,
     desuprogramme_feedback_view,
 )
-from django.urls import re_path
-
 
 urlpatterns = [
     re_path(

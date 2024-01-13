@@ -1,12 +1,12 @@
 from collections import namedtuple
 
 from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_POST
 
-from core.utils import initialize_form
 from core.tabs import Tab
+from core.utils import initialize_form
 
 from ..forms import (
     ChangeHostRoleForm,
@@ -26,7 +26,6 @@ from ..models import (
     ProgrammeRole,
 )
 from ..proxies.programme.management import ProgrammeManagementProxy
-
 
 PerHostForms = namedtuple("PerHostForms", "change_host_role_form signup_extra_form")
 

@@ -1,9 +1,11 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from paikkala.models import Program as PaikkalaProgram
+from paikkala.models import Room as PaikkalaRoom
+from paikkala.models import Zone as PaikkalaZone
 
-from programme.models import Programme
-from paikkala.models import Program as PaikkalaProgram, Room as PaikkalaRoom, Zone as PaikkalaZone
 from core.models import Event
+from programme.models import Programme
 from programme.models.room import Room
 
 

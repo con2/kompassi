@@ -1,7 +1,7 @@
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify, pick_attrs, omit_keys
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, omit_keys, pick_attrs, slugify
 
 
 def format_job_categories(job_categories):

@@ -10,7 +10,6 @@ from event_log.utils import emit
 from ..helpers import membership_admin_required
 from ..models import STATE_CHOICES, Membership
 
-
 EXPORT_FORMATS = [
     ("html", "Tulostettava versio"),
     ("xlsx", "Excel"),

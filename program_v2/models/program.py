@@ -7,8 +7,7 @@ from django.contrib.auth.models import User
 from django.db import models, transaction
 
 from core.models import Event
-from core.utils import log_get_or_create, log_delete, validate_slug
-
+from core.utils import log_delete, log_get_or_create, validate_slug
 
 if TYPE_CHECKING:
     from .dimension import ProgramDimensionValue
@@ -155,9 +154,10 @@ class Program(models.Model):
 
     @classmethod
     def import_program_v1(cls, event: "Event", clear=False):
+        from programme.models import Programme
+
         from .dimension import Dimension, DimensionValue, ProgramDimensionValue
         from .schedule import ScheduleItem
-        from programme.models import Programme
 
         if clear:
             log_delete(logger, cls.objects.filter(event=event).delete())

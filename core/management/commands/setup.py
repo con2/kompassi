@@ -1,14 +1,12 @@
-from contextlib import contextmanager
 import logging
+from contextlib import contextmanager
+from uuid import uuid4
 
 from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command, get_commands
 from django.core.management.base import BaseCommand
 from django.db.transaction import atomic
-
-from uuid import uuid4
-
 
 logger = logging.getLogger("kompassi")
 

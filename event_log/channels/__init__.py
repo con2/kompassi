@@ -1,6 +1,4 @@
-from . import email
-from . import callback
-
+from . import callback, email
 
 channels = dict(
     email=email,

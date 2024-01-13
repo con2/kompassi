@@ -2,13 +2,13 @@ from unittest import TestCase as NonDatabaseTestCase
 
 from django.test import TestCase
 
-from core.models.event import Event
 from core.models import Person
+from core.models.event import Event
 from labour.models import LabourEventMeta
 
-from .utils import emailify
 from .email_aliases import firstname_surname
-from .models import Claims, CBACEntry, EmailAlias, GroupEmailAliasGrant, EmailAliasType
+from .models import CBACEntry, Claims, EmailAlias, EmailAliasType, GroupEmailAliasGrant
+from .utils import emailify
 
 
 class FakePerson:

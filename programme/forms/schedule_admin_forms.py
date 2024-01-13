@@ -1,10 +1,10 @@
 from django import forms
-from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import horizontal_form_helper
 
-from ..models import View, Room, ViewRoom
+from ..models import Room, View, ViewRoom
 from ..models.room import ROOM_NAME_MAX_LENGTH
 
 

@@ -1,7 +1,7 @@
 import logging
 
-from django.core.management.base import BaseCommand
 from django.core.mail import EmailMessage
+from django.core.management.base import BaseCommand
 
 from tickets.models import Order
 

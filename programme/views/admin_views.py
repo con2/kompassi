@@ -5,10 +5,11 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_safe
 
-from core.csv_export import csv_response, CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat
+from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat, csv_response
 from core.models import Person
 from core.sort_and_filter import Filter, Sorter
 
+from ..helpers import group_programmes_by_start_time, programme_admin_required
 from ..models import (
     AlternativeProgrammeForm,
     Category,
@@ -16,12 +17,10 @@ from ..models import (
     Room,
 )
 from ..models.programme import (
+    PHOTOGRAPHY_CHOICES,
     STATE_CHOICES,
     VIDEO_PERMISSION_CHOICES,
-    PHOTOGRAPHY_CHOICES,
 )
-from ..helpers import programme_admin_required, group_programmes_by_start_time
-
 
 EXPORT_FORMATS = EXPORT_FORMATS + [
     ExportFormat("Tulostettava versio", "html", "html"),

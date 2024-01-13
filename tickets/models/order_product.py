@@ -8,7 +8,6 @@ from ..utils import format_price
 from .order import Order
 from .product import Product
 
-
 logger = logging.getLogger("kompassi")
 
 

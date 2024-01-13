@@ -1,15 +1,14 @@
 from django.contrib import messages
 from django.contrib.postgres.search import SearchVector
-from django.shortcuts import render, get_object_or_404
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 
 from core.sort_and_filter import Filter
 from event_log.utils import emit
 
 from ..forms import SearchForm
 from ..helpers import directory_access_required
-
 
 HIDE_WARNING_SESSION_KEY = "directory.directory_view.hide_warning"
 

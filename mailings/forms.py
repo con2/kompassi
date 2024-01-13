@@ -2,7 +2,7 @@ from django import forms
 
 from core.utils import horizontal_form_helper
 
-from .models import RecipientGroup, Message
+from .models import Message, RecipientGroup
 
 
 class MessageForm(forms.ModelForm):

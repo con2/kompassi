@@ -2,7 +2,6 @@ from django.utils.translation import gettext_lazy as _
 
 from event_log import registry
 
-
 registry.register(
     name="access.cbacentry.created",
     message=_("A CBAC entry for {entry.person} was created by {entry.created_by}: {entry.other_fields}"),

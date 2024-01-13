@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import BadgesEventMeta, Badge, Batch
+from .models import Badge, BadgesEventMeta, Batch
 
 
 class InlineBadgesEventMetaAdmin(admin.StackedInline):

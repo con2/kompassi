@@ -1,23 +1,22 @@
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, date
+from datetime import date, datetime, timedelta
 from datetime import time as dtime
-from pkg_resources import resource_string
 from typing import TYPE_CHECKING
 
-from django.db import models, connection
-from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
+from dateutil.tz import tzlocal
 from django.conf import settings
+from django.core.mail import EmailMessage
+from django.db import connection, models
+from django.template.loader import render_to_string
 from django.utils import timezone, translation
 from django.utils.translation import gettext_lazy as _
-
-from dateutil.tz import tzlocal
+from pkg_resources import resource_string
 
 from core.models.event import Event
 from core.utils import url
 
-from ..utils import format_date, format_price, append_reference_number_checksum
+from ..utils import append_reference_number_checksum, format_date, format_price
 from .consts import LANGUAGE_CHOICES, UNPAID_CANCEL_HOURS
 from .tickets_event_meta import TicketsEventMeta
 
@@ -273,7 +272,8 @@ class Order(models.Model):
         if not self.contains_electronic_tickets:
             return
 
-        from lippukala.models import Code, Order as LippukalaOrder
+        from lippukala.models import Code
+        from lippukala.models import Order as LippukalaOrder
 
         assert self.customer
 
@@ -305,7 +305,7 @@ class Order(models.Model):
         if not self.lippukala_order:
             return
 
-        from lippukala.consts import UNUSED, MANUAL_INTERVENTION_REQUIRED
+        from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, UNUSED
 
         self.lippukala_order.code_set.filter(status=UNUSED).update(status=MANUAL_INTERVENTION_REQUIRED)  # type: ignore
 
@@ -316,7 +316,7 @@ class Order(models.Model):
         if not self.lippukala_order:
             return
 
-        from lippukala.consts import UNUSED, MANUAL_INTERVENTION_REQUIRED
+        from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, UNUSED
 
         self.lippukala_order.code_set.filter(status=MANUAL_INTERVENTION_REQUIRED).update(status=UNUSED)  # type: ignore
 

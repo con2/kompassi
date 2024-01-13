@@ -1,16 +1,15 @@
 from collections import namedtuple
 
-from django.shortcuts import render, get_object_or_404
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404, render
 from django.utils.timezone import now
+from django.views.decorators.http import require_http_methods
 
+from enrollment.models import Enrollment
 from labour.models import ArchivedSignup, Signup
 from membership.models import Membership
 from programme.models import ProgrammeRole
-from enrollment.models import Enrollment
 
 from ..helpers import directory_access_required
-
 
 Involvement = namedtuple(
     "Involvement",

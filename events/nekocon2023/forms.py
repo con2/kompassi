@@ -1,12 +1,11 @@
+from crispy_forms.layout import Fieldset, Layout
 from django import forms
-
-from crispy_forms.layout import Layout, Fieldset
 
 from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin
-from labour.models import Signup, JobCategory
+from labour.models import JobCategory, Signup
 from programme.forms import AlternativeProgrammeFormMixin
-from programme.models import Programme, Category
+from programme.models import Category, Programme
 
 from .models import SignupExtra
 
