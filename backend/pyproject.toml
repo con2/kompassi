@@ -6,13 +6,16 @@ target-version = "py312"
 line-length = 120
 ignore-init-module-imports = true
 extend-select = [
+    "C",
     "I", # import sorting
     "PGH004",  # specific noqa
     "RUF100",  # unused noqa
 ]
 extend-ignore = [
-    "E731",  # do not assign a lambda expression, use a def
+    "C408",  # unnecessary dict call (these are likely stylistic)
+    "C901",  # function is too complex
     "E401",  # multiple imports on one line (handled by I)
+    "E731",  # do not assign a lambda expression, use a def
 ]
 
 [tool.ruff.extend-per-file-ignores]

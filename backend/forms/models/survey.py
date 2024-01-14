@@ -116,7 +116,7 @@ class Survey(models.Model):
 
         # if a specific language is requested, put it first
         languages = sorted(
-            list(self.languages.all()),
+            self.languages.all(),
             key=lambda form: form.language != base_language,
         )
 

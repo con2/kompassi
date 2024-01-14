@@ -20,7 +20,7 @@ def page_wizard_init(request, pages):
 
         cur_related = set(cur_related)
         cur_related.add(name)
-        cur_related = list(i if i.startswith("/") else url(i) for i in cur_related)
+        cur_related = [i if i.startswith("/") else url(i) for i in cur_related]
         all_related.update(cur_related)
 
         steps.append((name, title, cur_related))
