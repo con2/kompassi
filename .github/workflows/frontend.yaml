@@ -42,9 +42,8 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
       - id: build
-        run: |
-          cd frontend
-          skaffold build --file-output build.json
+        run: skaffold build --file-output build.json
+        working-directory: frontend
       - name: Store build.json artifact
         uses: actions/upload-artifact@v3
         with:
@@ -79,12 +78,14 @@ jobs:
           curl -Lo bin/kubectl https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
-
-      - run: |
-          cd frontend
-          npm ci
-          cd kubernetes && ENV=staging npx ts-node manifest.ts && cd ..
-          skaffold deploy -n kompassi2-staging -a ../build.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx ts-node manifest.ts
+        working-directory: frontend/kubernetes
+        env:
+          ENV: staging
+      - run: skaffold deploy -n kompassi2-staging -a ../build.json
+        working-directory: frontend
 
   deploy_production:
     runs-on: self-hosted
@@ -115,8 +116,11 @@ jobs:
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
-      - run: |
-          cd frontend
-          npm ci
-          cd kubernetes && ENV=production npx ts-node manifest.ts && cd ..
-          skaffold deploy -n kompassi2-production -a ../build.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx ts-node manifest.ts
+        working-directory: frontend/kubernetes
+        env:
+          ENV: production
+      - run: skaffold deploy -n kompassi2-production -a ../build.json
+        working-directory: frontend
