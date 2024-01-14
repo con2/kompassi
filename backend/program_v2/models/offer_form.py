@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -55,7 +53,7 @@ class OfferForm(LocalizedModel):
     def is_active(self):
         return is_within_period(self.active_from, self.active_until)
 
-    def get_form(self, requested_language: str) -> Optional[Form]:
+    def get_form(self, requested_language: str) -> Form | None:
         try:
             return self.languages.get(language=requested_language)
         except Form.DoesNotExist:

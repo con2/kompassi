@@ -156,7 +156,7 @@ def export_csv(event, model, model_instances, output_file, m2m_mode="separate_co
     writer.writerow(model.get_csv_header(event, fields, m2m_mode))
 
     for model_instance in model_instances:
-        if isinstance(model_instance, (str, int)):
+        if isinstance(model_instance, str | int):
             model_instance = model.objects.get(pk=int(model_instances))
 
         write_row(event, writer, fields, model_instance, m2m_mode)

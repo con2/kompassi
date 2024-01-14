@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import Any
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -58,8 +58,8 @@ class CBACEntry(models.Model):
     def get_entries(
         cls,
         user: AbstractUser,
-        claims: Optional[Claims] = None,
-        t: Optional[datetime] = None,
+        claims: Claims | None = None,
+        t: datetime | None = None,
         **extra_criteria,
     ):
         if not user.is_authenticated:
@@ -81,11 +81,11 @@ class CBACEntry(models.Model):
         return queryset
 
     @classmethod
-    def is_allowed(cls, user: AbstractUser, claims: Claims, t: Optional[datetime] = None):
+    def is_allowed(cls, user: AbstractUser, claims: Claims, t: datetime | None = None):
         return cls.get_entries(user, claims, t=t).exists()
 
     @classmethod
-    def ensure_admin_group_privileges(cls, t: Optional[datetime] = None):
+    def ensure_admin_group_privileges(cls, t: datetime | None = None):
         from core.models import Event
 
         if t is None:
@@ -99,7 +99,7 @@ class CBACEntry(models.Model):
         cls,
         event,
         *,
-        t: Optional[datetime] = None,
+        t: datetime | None = None,
         request=None,
     ):
         if t is None:
@@ -150,7 +150,7 @@ class CBACEntry(models.Model):
                     )
 
     @classmethod
-    def prune_expired(cls, *, t: Optional[datetime] = None, request=None):
+    def prune_expired(cls, *, t: datetime | None = None, request=None):
         if t is None:
             t = now()
 

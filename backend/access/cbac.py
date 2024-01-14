@@ -1,6 +1,7 @@
 import logging
+from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Callable, Literal, Protocol
+from typing import TYPE_CHECKING, Literal, Protocol
 
 from django.contrib.auth.decorators import login_required
 from django.db import models

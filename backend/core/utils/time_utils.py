@@ -1,6 +1,5 @@
 import sys
 from datetime import date, datetime, timedelta
-from typing import Optional
 
 from babel.dates import format_skeleton
 from dateutil.tz import tzlocal
@@ -45,9 +44,9 @@ def full_hours_between(start_time_inclusive, end_time_inclusive, unless=lambda x
 
 
 def is_within_period(
-    period_start: Optional[datetime],
-    period_end: Optional[datetime],
-    t: Optional[datetime] = None,
+    period_start: datetime | None,
+    period_end: datetime | None,
+    t: datetime | None = None,
 ):
     if t is None:
         t = now()

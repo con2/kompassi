@@ -182,7 +182,7 @@ def access_admin_aliases_api(request, domain_name):
     # Technical aliases
     for alias in InternalEmailAlias.objects.filter(domain=domain):
         if alias.normalized_target_emails:
-            lines.append("{alias.account_name}: {alias.normalized_target_emails}".format(alias=alias))
+            lines.append(f"{alias.account_name}: {alias.normalized_target_emails}")
         else:
             logger.warn("Internal alias %s does not have target emails", alias)
 

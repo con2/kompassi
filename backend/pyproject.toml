@@ -12,6 +12,7 @@ extend-select = [
     "PERF",
     "PGH004",  # specific noqa
     "RUF100",  # unused noqa
+    "UP",
 ]
 extend-ignore = [
     "C408",  # unnecessary dict call (these are likely stylistic)

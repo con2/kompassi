@@ -181,7 +181,7 @@ class Person(models.Model):
 
     @property
     def name_and_email(self):
-        return "{self.first_name} {self.surname} <{self.email}>".format(self=self)
+        return f"{self.first_name} {self.surname} <{self.email}>"
 
     def get_name_display_style(self, preferred_name_display_style):
         if preferred_name_display_style:

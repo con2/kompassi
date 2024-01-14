@@ -57,7 +57,7 @@ class RecipientGroup(models.Model):
         else:
             kind = f" ({num_ppl} hlö)"
 
-        return "{self.event.name}: {self.verbose_name}{kind}".format(self=self, kind=kind)
+        return f"{self.event.name}: {self.verbose_name}{kind}"
 
     class Meta:
         verbose_name = "vastaanottajaryhmä"

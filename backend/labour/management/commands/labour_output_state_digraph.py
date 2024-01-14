@@ -22,10 +22,7 @@ class Command(BaseCommand):
                     continue
 
                 print(
-                    '    "{src}" -> "{dest}";'.format(
-                        src=SIGNUP_STATE_NAMES[originating_state],
-                        dest=SIGNUP_STATE_NAMES[destination_state],
-                    ).encode("UTF-8")
+                    f'    "{SIGNUP_STATE_NAMES[originating_state]}" -> "{SIGNUP_STATE_NAMES[destination_state]}";'.encode()
                 )
             print()
         print("}")

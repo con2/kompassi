@@ -128,11 +128,7 @@ class Membership(models.Model, CsvExportMixin):
         return []
 
     def to_html_print(self):
-        return "{surname}, {official_first_names}, {muncipality}".format(
-            surname=self.person.surname,
-            official_first_names=self.person.official_first_names,
-            muncipality=self.person.muncipality,
-        )
+        return f"{self.person.surname}, {self.person.official_first_names}, {self.person.muncipality}"
 
     def __str__(self):
         return "{organization}/{person}".format(
@@ -295,10 +291,7 @@ class Term(models.Model):
         elif self.membership_fee_cents == 0:
             return f"Ei jäsenmaksua kaudella {self.title}."
         else:
-            return "{money} (voimassa {end_date} asti).".format(
-                money=format_price(self.membership_fee_cents),
-                end_date=format_date(self.end_date),
-            )
+            return f"{format_price(self.membership_fee_cents)} (voimassa {format_date(self.end_date)} asti)."
 
     def save(self, *args, **kwargs):
         if self.start_date and not self.title:

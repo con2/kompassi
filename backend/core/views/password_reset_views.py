@@ -42,7 +42,7 @@ def core_password_reset_view(request, code):
                 messages.error(
                     request,
                     "Salasanan nollaus epäonnistui. Ole hyvä ja yritä uudestaan. Tarvittaessa voit "
-                    "ottaa yhteyttä osoitteeseen {settings.DEFAULT_FROM_EMAIL}.".format(settings=settings),
+                    f"ottaa yhteyttä osoitteeseen {settings.DEFAULT_FROM_EMAIL}.",
                 )
                 return redirect("core_frontpage_view")
             else:

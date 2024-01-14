@@ -24,7 +24,7 @@ class LimitGroup(models.Model):
     limit = models.IntegerField(verbose_name=_("Maximum amount to sell"))
 
     def __str__(self):
-        return "{self.description} ({self.amount_available}/{self.limit})".format(self=self)
+        return f"{self.description} ({self.amount_available}/{self.limit})"
 
     class Meta:
         verbose_name = _("limit group")

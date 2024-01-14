@@ -1,6 +1,6 @@
 import argparse
 import logging
-from typing import Iterable
+from collections.abc import Iterable
 
 import pkg_resources
 from django.core.management.base import BaseCommand
