@@ -62,7 +62,9 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
           {locale.toUpperCase()}
         </button>
         <ul
-          className={`dropdown-menu dropdown-menu-end ${isLanguageMenuOpen ? "show" : ""}`}
+          className={`dropdown-menu dropdown-menu-end ${
+            isLanguageMenuOpen ? "show" : ""
+          }`}
           aria-labelledby="user-menu"
         >
           {Object.entries(supportedLanguages).map(([code, name]) => (
@@ -90,7 +92,9 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
             {session.user.name}
           </button>
           <ul
-            className={`dropdown-menu dropdown-menu-end ${isUserMenuOpen ? "show" : ""}`}
+            className={`dropdown-menu dropdown-menu-end ${
+              isUserMenuOpen ? "show" : ""
+            }`}
             aria-labelledby="user-menu"
           >
             <li>

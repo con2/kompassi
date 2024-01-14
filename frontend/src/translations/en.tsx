@@ -292,7 +292,9 @@ const translations = {
         maxResponsesPerUser: number,
         countResponsesByCurrentUser: number,
       ) =>
-        `You have already submitted ${countResponsesByCurrentUser} response${countResponsesByCurrentUser === 1 ? "" : "s"} to this survey. The maximum number of responses per user is ${maxResponsesPerUser}.`,
+        `You have already submitted ${countResponsesByCurrentUser} response${
+          countResponsesByCurrentUser === 1 ? "" : "s"
+        } to this survey. The maximum number of responses per user is ${maxResponsesPerUser}.`,
     },
   },
 

@@ -34,7 +34,6 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
-
 ## Moe (mobile programme schedule)
 
     The MIT License (MIT)
@@ -83,7 +82,6 @@ This software includes third-party code in the form of the Mithril.js library.
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 
-
 ## Lippukala (E-ticket system)
 
     The MIT License (MIT)
@@ -107,7 +105,6 @@ This software includes third-party code in the form of the Mithril.js library.
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
-
 
 ## Font Awesome
 

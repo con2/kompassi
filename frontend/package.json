@@ -42,5 +42,6 @@
     "sass": "^1.69.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
-  }
+  },
+  "prettier": {}
 }
