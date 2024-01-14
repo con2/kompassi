@@ -32,6 +32,7 @@ class Field(pydantic.BaseModel):
     type: FieldType = pydantic.Field(alias="type", repr=False)
     slug: str = pydantic.Field(alias="slug")
     title: Optional[str] = pydantic.Field(default=None, alias="title", repr=False)
+    summary_title: Optional[str] = pydantic.Field(default=None, alias="summaryTitle", repr=False)
     help_text: Optional[str] = pydantic.Field(default=None, alias="helpText", repr=False)
     required: Optional[bool] = pydantic.Field(default=None, alias="required", repr=False)
     read_only: Optional[bool] = pydantic.Field(default=None, alias="readOnly", repr=False)

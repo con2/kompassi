@@ -526,6 +526,10 @@ class Setup:
             ),
         )
 
+        if not survey.key_fields:
+            survey.key_fields = ["participated_in_tracon_hitpoint"]
+            survey.save()
+
         survey.languages.set([form_fi, form_en])
 
 

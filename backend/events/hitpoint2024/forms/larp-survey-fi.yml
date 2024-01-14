@@ -20,6 +20,7 @@ fields:
     helpText: "Tracon Hitpoint on järjestetty neljä kertaa: vuosina 2015, 2017, 2019 ja 2024."
     type: SingleLineText
     htmlType: number
+    summaryTitle: Osallistumiskerrat
 
   - slug: larping
     title: Millä seuraavista tavoista osallistut yleensä larppeihin?

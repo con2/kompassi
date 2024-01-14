@@ -1,6 +1,7 @@
 from typing import Optional
 
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -54,6 +55,14 @@ class Survey(models.Model):
             "Each language can have its own set of fields. "
             "There must be exactly one form per supported language."
         ),
+    )
+
+    key_fields = ArrayField(
+        models.CharField(max_length=255),
+        blank=True,
+        default=list,
+        verbose_name=_("key fields"),
+        help_text=_("Key fields will be shown in the response list."),
     )
 
     @property

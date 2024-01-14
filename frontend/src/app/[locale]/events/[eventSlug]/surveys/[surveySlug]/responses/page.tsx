@@ -5,7 +5,8 @@ import { gql } from "@/__generated__";
 import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { DataTable } from "@/components/DataTable";
+import { Column, DataTable } from "@/components/DataTable";
+import { validateFields } from "@/components/SchemaForm/models";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -18,7 +19,7 @@ gql(`
     id
     createdAt
     language
-    values
+    values(keyFieldsOnly: true)
   }
 `);
 
@@ -30,6 +31,8 @@ const query = gql(`
       forms {
         survey(slug: $surveySlug) {
           title(lang: $locale)
+
+          fields(lang: $locale, keyFieldsOnly: true)
 
           responses {
             ...SurveyResponse
@@ -79,6 +82,7 @@ export const revalidate = 0;
 export default async function FormResponsesPage({ params }: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
+  const t = translations.SurveyResponse;
   const session = await auth();
 
   // TODO encap
@@ -95,12 +99,14 @@ export default async function FormResponsesPage({ params }: Props) {
     notFound();
   }
 
-  const t = translations.SurveyResponse;
-  const columns = [
+  const keyFields = data.event.forms.survey.fields;
+  validateFields(keyFields);
+
+  const columns: Column<SurveyResponseFragment>[] = [
     {
       slug: "createdAt",
       title: t.attributes.createdAt,
-      getCell: (row: SurveyResponseFragment) => (
+      getCell: (row) => (
         <Link
           href={`/events/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}
         >
@@ -113,6 +119,18 @@ export default async function FormResponsesPage({ params }: Props) {
       title: t.attributes.language,
     },
   ];
+
+  keyFields.forEach((keyField) => {
+    columns.push({
+      slug: `keyFields.${keyField.slug}`,
+      title: keyField.summaryTitle ?? keyField.title ?? "",
+      getCell(row) {
+        // TODO as any
+        const values: Record<string, any> = row.values as any;
+        return values[keyField.slug];
+      },
+    });
+  });
 
   const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
   const responses = data.event.forms.survey.responses || [];

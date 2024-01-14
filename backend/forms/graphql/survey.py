@@ -46,10 +46,11 @@ class SurveyType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_combined_fields(
+    def resolve_fields(
         parent: Survey,
         info,
         lang: str = DEFAULT_LANGUAGE,
+        key_fields_only: bool = False,
     ):
         """
         A survey's language versions may have differing fields. This field presents
@@ -57,18 +58,24 @@ class SurveyType(DjangoObjectType):
         that language is used as the base for the combined fields. Order of fields
         not present in the base language is not guaranteed.
         """
+        fields = parent.get_combined_fields(lang)
+
+        if key_fields_only:
+            fields = (field for field in fields if field.slug in parent.key_fields)
+
         return [
             field.model_dump(
                 exclude_none=True,
                 by_alias=True,
             )
-            for field in parent.get_combined_fields(lang)
+            for field in fields
         ]
 
-    combined_fields = graphene.Field(
+    fields = graphene.Field(
         GenericScalar,
         lang=graphene.String(),
-        description=normalize_whitespace(resolve_combined_fields.__doc__ or ""),
+        key_fields_only=graphene.Boolean(),
+        description=normalize_whitespace(resolve_fields.__doc__ or ""),
     )
 
     @graphql_query_cbac_required
@@ -106,4 +113,5 @@ class SurveyType(DjangoObjectType):
             "active_from",
             "active_until",
             "languages",
+            "key_fields",
         )
