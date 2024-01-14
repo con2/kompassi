@@ -82,7 +82,7 @@ export type FormType = {
   layout: FormsFormLayoutChoices;
   /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
   slug: Scalars['String']['output'];
-  survey: LimitedSurveyType;
+  survey?: Maybe<LimitedSurveyType>;
   thankYouMessage: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
@@ -476,7 +476,7 @@ export type OwnResponseDetailQueryVariables = Exact<{
 }>;
 
 
-export type OwnResponseDetailQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', forms: { __typename?: 'FormsProfileMetaType', response?: { __typename?: 'FullResponseType', id: string, createdAt: string, values?: unknown | null, form: { __typename?: 'FormType', slug: string, title: string, language: FormsFormLanguageChoices, fields?: unknown | null, layout: FormsFormLayoutChoices, event: { __typename?: 'LimitedEventType', slug: string, name: string }, survey: { __typename?: 'LimitedSurveyType', anonymity: FormsSurveyAnonymityChoices } } } | null } } | null };
+export type OwnResponseDetailQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', forms: { __typename?: 'FormsProfileMetaType', response?: { __typename?: 'FullResponseType', id: string, createdAt: string, values?: unknown | null, form: { __typename?: 'FormType', slug: string, title: string, language: FormsFormLanguageChoices, fields?: unknown | null, layout: FormsFormLayoutChoices, event: { __typename?: 'LimitedEventType', slug: string, name: string }, survey?: { __typename?: 'LimitedSurveyType', anonymity: FormsSurveyAnonymityChoices } | null } } | null } } | null };
 
 export type OwnResponseFragment = { __typename?: 'FullResponseType', id: string, createdAt: string, form: { __typename?: 'FormType', slug: string, title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string } } };
 

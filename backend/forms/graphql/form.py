@@ -39,7 +39,7 @@ class FormType(DjangoObjectType):
     def resolve_survey(parent: Form, info):
         return parent.survey
 
-    survey = graphene.Field(graphene.NonNull(LimitedSurveyType))
+    survey = graphene.Field(LimitedSurveyType)
 
     class Meta:
         model = Form

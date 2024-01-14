@@ -91,7 +91,7 @@ export default async function SurveyResponsePage({ params }: Props) {
   const { fields, layout } = form;
   const values: Record<string, any> = response.values ?? {};
 
-  const anonymity = form.survey.anonymity;
+  const anonymity = form.survey?.anonymity;
   const anonymityMessages =
     translations.Survey.attributes.anonymity.secondPerson;
 
@@ -125,12 +125,14 @@ export default async function SurveyResponsePage({ params }: Props) {
         <ViewHeading.Sub>{form.title}</ViewHeading.Sub>
       </ViewHeading>
 
-      <p>
-        <small>
-          <strong>{anonymityMessages.title}: </strong>
-          {anonymityMessages.choices[anonymity]}
-        </small>
-      </p>
+      {anonymity && (
+        <p>
+          <small>
+            <strong>{anonymityMessages.title}: </strong>
+            {anonymityMessages.choices[anonymity]}
+          </small>
+        </p>
+      )}
 
       <SchemaFormField field={createdAtField} layout={layout}>
         <SchemaFormInput
