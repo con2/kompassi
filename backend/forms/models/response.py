@@ -27,8 +27,6 @@ class Response(models.Model):
         verbose_name=_("IP address"),
     )
 
-    form: Any
-
     @cached_property
     def processed_form_data(self):
         from ..utils.process_form_data import process_form_data

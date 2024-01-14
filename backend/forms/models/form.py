@@ -87,3 +87,7 @@ class Form(models.Model):
     @cached_property
     def validated_fields(self):
         return [Field.model_validate(field_dict) for field_dict in self.enriched_fields]
+
+    @property
+    def survey(self):
+        return self.event.surveys.filter(languages=self).get()

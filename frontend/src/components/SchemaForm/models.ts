@@ -41,10 +41,11 @@ interface BaseField {
   type: FieldType;
   slug: string;
   title?: string;
+  summaryTitle?: string;
   helpText?: string;
   required?: boolean;
   readOnly?: boolean;
-  htmlType?: string;
+  htmlType?: HtmlType;
 }
 
 export interface Divider extends BaseField {

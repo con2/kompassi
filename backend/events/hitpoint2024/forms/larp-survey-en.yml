@@ -20,6 +20,7 @@ fields:
     helpText: "Tracon Hitpoint has been organized four times: in 2015, 2017, 2019 and 2024."
     type: SingleLineText
     htmlType: number
+    summaryTitle: Times participated
 
   - slug: larping
     title: In which of the following ways do you usually participate in larps?
