@@ -4,7 +4,7 @@ import hmac
 def calculate_hmac(
     secret: str,
     params: dict[str, str],
-    body: str = None,
+    body: str | None = None,
     encoding="UTF-8",
     hash_algorithm="sha256",
 ):
