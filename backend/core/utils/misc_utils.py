@@ -15,7 +15,7 @@ def give_all_app_perms_to_group(app_label, group):
             perm.group_set.add(group)  # type: ignore
 
 
-def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
+def ensure_user_group_membership(user, groups_to_add=None, groups_to_remove=None):
     """
     Deprecated. Use ensure_user_is_member_of_group(user, group_or_name, True) # or False.
 
@@ -23,6 +23,10 @@ def ensure_user_group_membership(user, groups_to_add=[], groups_to_remove=[]):
     but being able to operate on multiple groups per call.
     """
 
+    if groups_to_remove is None:
+        groups_to_remove = []
+    if groups_to_add is None:
+        groups_to_add = []
     if not isinstance(user, User):
         user = user.user
 

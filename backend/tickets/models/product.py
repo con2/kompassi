@@ -97,9 +97,11 @@ class Product(models.Model):
         verbose_name_plural = _("products")
 
     @classmethod
-    def get_or_create_dummy(cls, name="Dummy product", limit_groups=[]):
+    def get_or_create_dummy(cls, name="Dummy product", limit_groups=None):
         from .tickets_event_meta import TicketsEventMeta
 
+        if limit_groups is None:
+            limit_groups = []
         meta, unused = TicketsEventMeta.get_or_create_dummy()
 
         dummy, created = cls.objects.get_or_create(

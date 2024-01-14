@@ -1713,7 +1713,9 @@ class Programme(models.Model, CsvExportMixin):
 
         return super().save(*args, **kwargs)
 
-    def apply_state(self, deleted_programme_roles=[]):
+    def apply_state(self, deleted_programme_roles=None):
+        if deleted_programme_roles is None:
+            deleted_programme_roles = []
         self.apply_state_sync(deleted_programme_roles)
         self.apply_state_async()
 
@@ -1815,7 +1817,9 @@ class Programme(models.Model, CsvExportMixin):
         for person in self.organizers.all():
             Message.send_messages(self.event, "programme", person)
 
-    def apply_state_create_badges(self, deleted_programme_roles=[]):
+    def apply_state_create_badges(self, deleted_programme_roles=None):
+        if deleted_programme_roles is None:
+            deleted_programme_roles = []
         if "badges" not in settings.INSTALLED_APPS:
             return
 

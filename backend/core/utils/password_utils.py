@@ -21,13 +21,15 @@ HIBP_TIMEOUT_SECONDS = 3
 HIBP_ENABLED = True
 
 
-def validate_password(password, user_inputs=[]):
+def validate_password(password, user_inputs=None):
     """
     Two-pronged password validity check suitable for use as a Django form validator function:
 
     1. Offline check using the zxcvbn library expecting a minimum score
     2. Check against the HIBPv2 API for known compromised passwords (https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/).
     """
+    if user_inputs is None:
+        user_inputs = []
     result = zxcvbn(password, user_inputs=user_inputs)
 
     if ZXCVBN_MINIMUM_SCORE is not None and result["score"] < ZXCVBN_MINIMUM_SCORE:

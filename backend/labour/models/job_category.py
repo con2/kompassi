@@ -69,9 +69,11 @@ class JobCategory(models.Model):
         return job_category, created
 
     @classmethod
-    def copy_from_event(cls, source_event, target_event, remap_personnel_classes=dict()):
+    def copy_from_event(cls, source_event, target_event, remap_personnel_classes=None):
         from .personnel_class import PersonnelClass
 
+        if remap_personnel_classes is None:
+            remap_personnel_classes = {}
         with transaction.atomic():
             for job_category in JobCategory.objects.filter(event=source_event):
                 new_job_category, created = cls.objects.get_or_create(
