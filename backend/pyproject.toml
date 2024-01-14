@@ -6,6 +6,8 @@ line-length = 120
 ignore-init-module-imports = true
 extend-select = [
     "I", # import sorting
+    "PGH004",  # specific noqa
+    "RUF100",  # unused noqa
 ]
 extend-ignore = [
     "E731",  # do not assign a lambda expression, use a def

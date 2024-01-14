@@ -6,4 +6,4 @@ class AccessAppConfig(AppConfig):
     verbose_name = "Pääsynhallinta"
 
     def ready(self):
-        from . import event_log_entry_types  # noqa
+        from . import event_log_entry_types  # noqa: F401

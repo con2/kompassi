@@ -1,5 +1,5 @@
-from .entry import Entry  # noqa
-from .subscription import Subscription  # noqa
+from .entry import Entry
 
 # not Django DB models
-from .entry_type_metadata import EntryTypeMetadata  # noqa
+from .entry_type_metadata import EntryTypeMetadata
+from .subscription import Subscription

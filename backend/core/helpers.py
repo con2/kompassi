@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect
 
 from .models import Event, Organization, Person
 from .page_wizard import page_wizard_clear, page_wizard_init
-from .utils import event_meta_property, login_redirect  # noqa
+from .utils import event_meta_property, login_redirect  # noqa: F401
 
 
 def person_required(view_func):
@@ -14,7 +14,7 @@ def person_required(view_func):
     @wraps(view_func)
     def inner(request, *args, **kwargs):
         try:
-            person = request.user.person  # noqa
+            person = request.user.person  # noqa: F841
         except Person.DoesNotExist:
             return login_redirect(request, view="core_personify_view")
 
