@@ -4,11 +4,7 @@ import { notFound } from "next/navigation";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import {
-  defaultLayout,
-  Field,
-  validateFields,
-} from "@/components/SchemaForm/models";
+import { Field, validateFields } from "@/components/SchemaForm/models";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
 import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
