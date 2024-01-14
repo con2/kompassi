@@ -54,7 +54,7 @@ class CsvExportMixin:
 
         header_row = []
 
-        for model, field in fields:
+        for _model, field in fields:
             if isinstance(field, str):
                 field_name = field
                 field_type = None

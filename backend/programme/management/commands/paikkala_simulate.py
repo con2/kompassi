@@ -68,7 +68,7 @@ class Command(BaseCommand):
 
                     try:
                         while True:
-                            for reservation in paikkala_program.reserve(zone=zone, count=1):
+                            for _reservation in paikkala_program.reserve(zone=zone, count=1):
                                 print(".", end="", flush=True)
                     except NoCapacity:
                         pass

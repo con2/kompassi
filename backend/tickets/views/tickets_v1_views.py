@@ -111,7 +111,7 @@ class Phase:
             # The "Previous" button should work regardless of form validity.
             if action == "prev":
                 # Clear any nastygrams left behind by validate
-                for message in messages.get_messages(request):
+                for _message in messages.get_messages(request):
                     pass
 
                 return self.prev(request, event)

@@ -24,5 +24,6 @@ extend-ignore = [
     "F401",  # imported but unused
 ]
 "events/**/setup_*.py" = [
+    "B007",  # loop control variable not used
     "F841",  # local variable is assigned to but never used
 ]

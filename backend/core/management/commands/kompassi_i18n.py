@@ -117,7 +117,7 @@ class Command(BaseCommand):
     def _extract(self, app):
         catalog = Catalog(domain="django", charset="utf8")
         files = {}
-        for dirpath, dirnames, filenames in filtered_walk(app.path):
+        for dirpath, _dirnames, filenames in filtered_walk(app.path):
             for filename in filenames:
                 filename = os.path.join(dirpath, filename)
                 if ACCEPTABLE_FILENAMES_RE.match(filename):
@@ -133,7 +133,7 @@ class Command(BaseCommand):
             extractor, options = extractor_tup
 
             with open(filename, "rb") as fp:
-                for lineno, message, comments, context in extract(extractor, fp, options=options):
+                for _lineno, message, comments, _context in extract(extractor, fp, options=options):
                     catalog.add(message, locations=[(rel_filename, 0)], auto_comments=comments)
         if len(catalog):
             pot_path = _get_pot_path(app)
@@ -151,7 +151,7 @@ class Command(BaseCommand):
         }
 
     def _compile(self, app):
-        for dirpath, dirnames, filenames in filtered_walk(os.path.join(app.path, "locale")):
+        for dirpath, _dirnames, filenames in filtered_walk(os.path.join(app.path, "locale")):
             for filename in filenames:
                 filename = os.path.join(dirpath, filename)
                 print(filename)
