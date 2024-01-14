@@ -34,7 +34,6 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
         return self.organization.name if self.organization is not None else "None"
 
     class Meta:
-        verbose_name = "Jäsenrekisterin asetukset"
         verbose_name = "Jäsenrekisterien asetukset"
 
     def get_group(self, suffix):
