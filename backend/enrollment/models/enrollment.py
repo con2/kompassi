@@ -148,15 +148,15 @@ class Enrollment(models.Model):
 
     def get_form_field_values(self):
         FormClass = self.event.enrollment_event_meta.form_class
-
-        return [
-            # FIXME hideous hack
-            # ', '.join(str(opt) for opt in getattr(self, field_name).all())
-            # if isinstance(getattr(self.__class__, field_name, None), ManyToManyDescriptor)
-            # else
-            getattr(self, f"get_{field_name}_display", lambda: getattr(self, field_name))()
-            for field_name in FormClass._meta.fields
-        ]
+        values = []
+        # FIXME hideous hack
+        for field_name in FormClass._meta.fields:
+            getter = f"get_{field_name}_display"
+            if hasattr(self, getter):
+                values.append(getattr(self, getter)())
+            else:
+                values.append(getattr(self, field_name))
+        return values
 
     @classmethod
     def get_form_field_header(cls, field_name):

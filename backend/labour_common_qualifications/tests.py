@@ -46,5 +46,5 @@ class JVKorttiTest(TestCase):
             invalid = JVKortti(
                 personqualification=personqualification, card_number=invalid_example, expiration_date=today
             )
-
-            pytest.raises(ValidationError, (lambda: invalid.full_clean()))
+            with pytest.raises(ValidationError):
+                invalid.full_clean()
