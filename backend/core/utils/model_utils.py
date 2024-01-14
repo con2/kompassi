@@ -80,7 +80,7 @@ def get_previous_and_next(queryset, current):
     previous_item = None
     candidate = None
 
-    for next_item in signups + [None]:
+    for next_item in (*signups, None):
         if candidate and candidate.pk == current.pk:
             return previous_item, next_item
 

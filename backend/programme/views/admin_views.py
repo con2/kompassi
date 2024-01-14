@@ -22,7 +22,8 @@ from ..models.programme import (
     VIDEO_PERMISSION_CHOICES,
 )
 
-EXPORT_FORMATS = EXPORT_FORMATS + [
+EXPORT_FORMATS = [
+    *EXPORT_FORMATS,
     ExportFormat("Tulostettava versio", "html", "html"),
 ]
 logger = logging.getLogger("kompassi")

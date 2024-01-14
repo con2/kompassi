@@ -11,6 +11,7 @@ extend-select = [
     "I", # import sorting
     "PERF",
     "PGH004",  # specific noqa
+    "RUF005",  # avoid iterable concatenation
     "RUF013",  # implicit `optional` (contra type annotations)
     "RUF100",  # unused noqa
     "UP",

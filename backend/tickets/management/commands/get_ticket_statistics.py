@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 stats[-days_to_event][event_slug] += op.count
 
         writer = csv.writer(stdout, dialect="excel")
-        writer.writerow(["days_to_event"] + event_slugs)
+        writer.writerow(["days_to_event", *event_slugs])
 
         cumulative = Counter()
 

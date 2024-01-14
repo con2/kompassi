@@ -166,7 +166,7 @@ class Membership(models.Model, CsvExportMixin):
         previous_membership = None
         current_membership = None
 
-        for next_signup in memberships + [None]:
+        for next_signup in (*memberships, None):
             if current_membership and current_membership.pk == self.pk:
                 return previous_membership, next_signup
 
