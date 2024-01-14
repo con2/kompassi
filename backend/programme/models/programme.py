@@ -1669,7 +1669,7 @@ class Programme(models.Model, CsvExportMixin):
         ]:
             for genre in possible_genres:
                 if getattr(self, f"{prefix}_genre_{genre}"):
-                    found_genres.append(genre)
+                    found_genres.append(genre)  # noqa: PERF401
 
         return found_genres
 
@@ -1687,7 +1687,7 @@ class Programme(models.Model, CsvExportMixin):
             "combat_driven",
         ]:
             if getattr(self, "ropecon2018_style_" + style):
-                styles.append(style)
+                styles.append(style)  # noqa: PERF401
 
         return styles
 

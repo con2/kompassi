@@ -60,7 +60,7 @@ def qualifications_related():
             "labour:person_qualify_view",
             "labour:person_disqualify_view",
         ]:
-            result.append(url(view_name, qual.slug))
+            result.append(url(view_name, qual.slug))  # noqa: PERF401
 
     return result
 

@@ -34,15 +34,10 @@ CSV_EXPORT_FORMATS = dict(
 class CsvExportMixin:
     @classmethod
     def get_csv_fields(cls, event):
-        fields = []
-
-        for field in cls._meta.fields:
-            fields.append((cls, field))
-
-        for field in cls._meta.many_to_many:
-            fields.append((cls, field))
-
-        return fields
+        return [
+            *((cls, field) for field in cls._meta.fields),
+            *((cls, field) for field in cls._meta.many_to_many),
+        ]
 
     def get_csv_related(self):
         return dict()

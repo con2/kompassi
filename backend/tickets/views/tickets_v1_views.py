@@ -133,12 +133,14 @@ class Phase:
     def get(self, request, event, form, errors):
         order = get_order(request, event)
 
-        phases = []
-
-        for phase in ALL_PHASES:
-            phases.append(
-                dict(url=url(phase.name, event.slug), friendly_name=phase.friendly_name, current=phase is self)
+        phases = [
+            dict(
+                url=url(phase.name, event.slug),
+                friendly_name=phase.friendly_name,
+                current=phase is self,
             )
+            for phase in ALL_PHASES
+        ]
 
         phase = dict(
             url=url(self.name, event.slug),

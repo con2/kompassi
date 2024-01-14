@@ -45,7 +45,7 @@ def get_reference_fields(related_model=Person):
 
         for field in meta.get_fields():
             if field.concrete and not field.auto_created and field.related_model is related_model:
-                reference_fields.append((ModelClass, field))
+                reference_fields.append((ModelClass, field))  # noqa: PERF401
 
     return reference_fields
 

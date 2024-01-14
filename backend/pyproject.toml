@@ -9,6 +9,7 @@ extend-select = [
     "B",
     "C",
     "I", # import sorting
+    "PERF",
     "PGH004",  # specific noqa
     "RUF100",  # unused noqa
 ]
@@ -26,4 +27,5 @@ extend-ignore = [
 "events/**/setup_*.py" = [
     "B007",  # loop control variable not used
     "F841",  # local variable is assigned to but never used
+    "PERF",  # setups are one-off, PERF is not relevant
 ]
