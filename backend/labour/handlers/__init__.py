@@ -1,1 +1,1 @@
-from . import signup  # noqa
+from . import signup

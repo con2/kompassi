@@ -1,1 +1,1 @@
-from . import feedback_message  # noqa
+from . import feedback_message

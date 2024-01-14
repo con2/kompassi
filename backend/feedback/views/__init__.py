@@ -1,1 +1,1 @@
-from .feedback_view import feedback_view  # noqa
+from .feedback_view import feedback_view

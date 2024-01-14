@@ -7,4 +7,4 @@ class ProgrammeAppConfig(AppConfig):
     verbose_name = _("programme management")
 
     def ready(self):
-        from . import handlers  # noqa
+        from . import handlers  # noqa: F401

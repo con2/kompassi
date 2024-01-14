@@ -7,4 +7,4 @@ class EventLogAppConfig(AppConfig):
     verbose_name = _("event log")
 
     def ready(self):
-        from . import handlers  # noqa
+        from . import handlers  # noqa: F401

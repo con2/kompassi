@@ -7,4 +7,4 @@ class LabourAppConfig(AppConfig):
     verbose_name = _("Volunteer management")
 
     def ready(self):
-        from . import event_log_entry_types  # noqa
+        from . import event_log_entry_types  # noqa: F401
