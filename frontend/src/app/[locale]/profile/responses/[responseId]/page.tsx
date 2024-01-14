@@ -4,7 +4,11 @@ import { notFound } from "next/navigation";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { defaultLayout, Field } from "@/components/SchemaForm/models";
+import {
+  defaultLayout,
+  Field,
+  validateFields,
+} from "@/components/SchemaForm/models";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
 import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
@@ -81,9 +85,10 @@ export default async function SurveyResponsePage({ params }: Props) {
   const response = data.profile.forms.response;
   const { createdAt, form } = response;
   const language = form.language;
-  const fields: Field[] = form.fields ?? [];
-  const layout = form.layout ?? defaultLayout;
+  const { fields, layout } = form;
   const values: Record<string, any> = response.values ?? {};
+
+  validateFields(fields);
 
   // TODO using synthetic form fields for presentation is a hack
   // but it shall suffice until someone comes up with a Design Vision™

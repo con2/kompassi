@@ -5,6 +5,7 @@ import { submit } from "./actions";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { SchemaForm } from "@/components/SchemaForm";
+import { validateFields } from "@/components/SchemaForm/models";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
 import { getTranslations } from "@/translations";
 
@@ -67,7 +68,9 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
   }
   const skipOfferFormSelection = event.program?.skipOfferFormSelection ?? false;
   const { form } = offerForm;
-  const { title, description, fields, layout } = form!;
+  const { title, description, layout, fields } = form!;
+
+  validateFields(fields);
 
   return (
     <main className="container mt-4">

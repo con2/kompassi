@@ -170,3 +170,7 @@ export const emptyField: Field = {
   title: "",
   slug: "",
 };
+
+export function validateFields(fields: unknown): asserts fields is Field[] {
+  // TODO
+}

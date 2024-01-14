@@ -5,7 +5,7 @@ import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import { SchemaForm } from "@/components/SchemaForm";
-import { Field } from "@/components/SchemaForm/models";
+import { Field, validateFields } from "@/components/SchemaForm/models";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -69,10 +69,9 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     notFound();
   }
   const { form } = survey;
-  const { title, description, layout } = form!;
+  const { title, description, layout, fields } = form!;
 
-  // TODO validate
-  const fields: Field[] = form!.fields ?? [];
+  validateFields(fields);
 
   return (
     <ViewContainer>
