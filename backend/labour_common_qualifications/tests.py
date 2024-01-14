@@ -1,5 +1,6 @@
 from datetime import date
 
+import pytest
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
@@ -46,4 +47,4 @@ class JVKorttiTest(TestCase):
                 personqualification=personqualification, card_number=invalid_example, expiration_date=today
             )
 
-            self.assertRaises(ValidationError, lambda: invalid.full_clean())
+            pytest.raises(ValidationError, (lambda: invalid.full_clean()))

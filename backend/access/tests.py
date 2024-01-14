@@ -18,12 +18,12 @@ class FakePerson:
 
 class EmailifyTestCase(NonDatabaseTestCase):
     def test_emailify(self):
-        self.assertEqual(emailify(""), "")
-        self.assertEqual(emailify("Santtu Pajukanta"), "santtu.pajukanta")
-        self.assertEqual(emailify("Kalle-Jooseppi Mäki-Kangas-Ketelä"), "kalle-jooseppi.maki-kangas-ketela")
+        assert emailify("") == ""
+        assert emailify("Santtu Pajukanta") == "santtu.pajukanta"
+        assert emailify("Kalle-Jooseppi Mäki-Kangas-Ketelä") == "kalle-jooseppi.maki-kangas-ketela"
 
     def test_firstname_surname(self):
-        self.assertEqual(firstname_surname(FakePerson()), "santtu.pajukanta")
+        assert firstname_surname(FakePerson()) == "santtu.pajukanta"
 
 
 class EmailAliasesTestCase(TestCase):
@@ -34,7 +34,7 @@ class EmailAliasesTestCase(TestCase):
 
     def test_email_alias_create(self):
         email_alias, unused = EmailAlias.get_or_create_dummy()
-        self.assertEqual(email_alias.email_address, "markku.mahtinen@example.com")
+        assert email_alias.email_address == "markku.mahtinen@example.com"
 
     def test_ensure_aliases(self):
         alias_type, unused = EmailAliasType.get_or_create_dummy()
@@ -42,12 +42,12 @@ class EmailAliasesTestCase(TestCase):
         self.group_grant, unused = GroupEmailAliasGrant.objects.get_or_create(group=self.group, type=alias_type)
         GroupEmailAliasGrant.ensure_aliases(person=self.person)
 
-        self.assertEqual(alias_type.email_aliases.count(), 0)
+        assert alias_type.email_aliases.count() == 0
 
         self.person.user.groups.add(self.group)
         GroupEmailAliasGrant.ensure_aliases(person=self.person)
 
-        self.assertEqual(alias_type.email_aliases.count(), 1)
+        assert alias_type.email_aliases.count() == 1
 
     def test_account_name_generator_returning_none(self):
         alias_type, unused = EmailAliasType.get_or_create_dummy(
@@ -60,11 +60,11 @@ class EmailAliasesTestCase(TestCase):
         self.person.nick = ""
         self.person.save()
 
-        self.assertEqual(alias_type.email_aliases.count(), 0)
+        assert alias_type.email_aliases.count() == 0
 
         GroupEmailAliasGrant.ensure_aliases(self.person)
 
-        self.assertEqual(alias_type.email_aliases.count(), 0)
+        assert alias_type.email_aliases.count() == 0
 
 
 def get_claims(event: Event, app_name: str) -> Claims:
