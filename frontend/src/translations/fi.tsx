@@ -226,14 +226,6 @@ const translations: Translations = {
     submit: "Lähetä",
   },
 
-  SurveyView: {
-    thankYou: {
-      title: "Kiitos vastauksistasi!",
-      defaultMessage:
-        "Vastauksesi on tallennettu. Voit nyt sulkea tämän välilehden.",
-    },
-  },
-
   Survey: {
     listTitle: "Kyselyt",
     singleTitle: "Kysely",
@@ -255,6 +247,26 @@ const translations: Translations = {
       },
       languages: "Kielet",
       actions: "Toiminnot",
+      anonymity: {
+        secondPerson: {
+          title: "Vastausten yhdistäminen sinuun",
+          choices: {
+            HARD: "Vastaukset ovat anonyymejä. Et voi palata katsomaan tai muokkaamaan vastauksiasi. IP-osoitettasi ei tallenneta.",
+            SOFT: "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi, jotta voit palata katsomaan tai muokkaamaan vastauksiasi, mutta henkilöllisyyttäsi ei jaeta kyselyn omistajan kanssa. IP-osoitteesi tallennetaan, mutta sitä ei jaeta kyselyn omistajan kanssa.",
+            NAME_AND_EMAIL:
+              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Nimesi ja sähköpostiosoitteesi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi. IP-osoitteesi tallennetaan, mutta sitä ei jaeta kyselyn omistajan kanssa.",
+          },
+        },
+        thirdPerson: {
+          title: "Vastausten yhdistäminen käyttäjään",
+          choices: {
+            HARD: "Vastaukset ovat anonyymejä. Käyttäjät eivät voi palata katsomaan tai muokkaamaan vastauksiaan. IP-osoitteita ei tallenneta.",
+            SOFT: "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä, jotta hän voi palata katsomaan tai muokkaamaan vastauksiaan, mutta hänen henkilöllisyyttään ei jaeta sinulle. IP-osoitteet tallennetaan, mutta niitä ei jaeta sinulle.",
+            NAME_AND_EMAIL:
+              "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Hänen nimensä ja sähköpostiosoitteensa jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan. IP-osoitteet tallennetaan, mutta niitä ei jaeta sinulle.",
+          },
+        },
+      },
     },
     actions: {
       fillIn: {
@@ -267,6 +279,20 @@ const translations: Translations = {
         success: "Linkki kyselyyn on kopioitu leikepöydälle.",
       },
       viewResponses: "Vastaukset",
+      submit: "Lähetä",
+    },
+    thankYou: {
+      title: "Kiitos vastauksistasi!",
+      defaultMessage:
+        "Vastauksesi on tallennettu. Voit nyt sulkea tämän välilehden.",
+    },
+    maxResponsesPerUserReached: {
+      title: "Olet jo vastannut tähän kyselyyn",
+      defaultMessage: (
+        maxResponsesPerUser: number,
+        countResponsesByCurrentUser: number,
+      ) =>
+        `Olet jo vastannut tähän kyselyyn${countResponsesByCurrentUser === 1 ? "" : " " + countResponsesByCurrentUser + " kertaa"}. Voit vastata tähän kyselyyn enintään ${maxResponsesPerUser} ${maxResponsesPerUser === 1 ? "kerran" : "kertaa"}.`,
     },
   },
 
@@ -281,9 +307,10 @@ const translations: Translations = {
     ),
     attributes: {
       createdAt: "Lähetysaika",
-      language: "Kieli",
+      createdBy: "Lähettäjä",
       event: "Tapahtuma",
       formTitle: "Kyselyn otsikko",
+      language: "Kieli",
     },
     actions: {
       downloadAsExcel: "Lataa Excel-tiedostona",

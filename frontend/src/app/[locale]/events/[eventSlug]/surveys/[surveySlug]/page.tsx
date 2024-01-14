@@ -1,12 +1,15 @@
 import { notFound } from "next/navigation";
+import { ReactNode } from "react";
 
 import { submit } from "./actions";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
+import { auth } from "@/auth";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import { SchemaForm } from "@/components/SchemaForm";
 import { Field, validateFields } from "@/components/SchemaForm/models";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
+import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
@@ -18,6 +21,11 @@ const query = gql(`
 
       forms {
         survey(slug: $surveySlug) {
+          loginRequired
+          anonymity
+          maxResponsesPerUser
+          countResponsesByCurrentUser
+
           form(lang: $locale) {
             title
             description
@@ -55,7 +63,8 @@ export async function generateMetadata({ params }: SurveyPageProps) {
 
 export default async function SurveyPage({ params }: SurveyPageProps) {
   const { locale, eventSlug, surveySlug } = params;
-  const t = getTranslations(locale).NewProgrammeView;
+  const translations = getTranslations(locale);
+  const t = translations.Survey;
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, surveySlug, locale },
@@ -68,8 +77,39 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
   if (!survey) {
     notFound();
   }
-  const { form } = survey;
+  const {
+    form,
+    loginRequired,
+    anonymity,
+    maxResponsesPerUser,
+    countResponsesByCurrentUser,
+  } = survey;
   const { title, description, layout, fields } = form!;
+  const anonymityMessages =
+    translations.Survey.attributes.anonymity.secondPerson;
+
+  if (loginRequired) {
+    const session = await auth();
+    if (!session) {
+      return <SignInRequired messages={translations.SignInRequired} />;
+    }
+  }
+
+  if (maxResponsesPerUser && countResponsesByCurrentUser) {
+    if (countResponsesByCurrentUser >= maxResponsesPerUser) {
+      return (
+        <ViewContainer>
+          <ViewHeading>{t.maxResponsesPerUserReached.title}</ViewHeading>
+          <p>
+            {t.maxResponsesPerUserReached.defaultMessage(
+              maxResponsesPerUser,
+              countResponsesByCurrentUser,
+            )}
+          </p>
+        </ViewContainer>
+      );
+    }
+  }
 
   validateFields(fields);
 
@@ -80,9 +120,15 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
       <ParagraphsDangerousHtml html={description} />
+      <p>
+        <small>
+          <strong>{anonymityMessages.title}: </strong>
+          {anonymityMessages.choices[anonymity]}
+        </small>
+      </p>
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
         <SchemaForm fields={fields} layout={layout} />
-        <SubmitButton layout={layout}>{t.submit}</SubmitButton>
+        <SubmitButton layout={layout}>{t.actions.submit}</SubmitButton>
       </form>
     </ViewContainer>
   );

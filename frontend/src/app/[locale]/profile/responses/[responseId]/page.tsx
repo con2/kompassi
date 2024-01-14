@@ -35,6 +35,9 @@ const query = gql(`
               slug
               name
             }
+            survey {
+              anonymity
+            }
           }
         }
       }
@@ -88,6 +91,10 @@ export default async function SurveyResponsePage({ params }: Props) {
   const { fields, layout } = form;
   const values: Record<string, any> = response.values ?? {};
 
+  const anonymity = form.survey.anonymity;
+  const anonymityMessages =
+    translations.Survey.attributes.anonymity.secondPerson;
+
   validateFields(fields);
 
   // TODO using synthetic form fields for presentation is a hack
@@ -117,6 +124,13 @@ export default async function SurveyResponsePage({ params }: Props) {
         {t.singleTitle}
         <ViewHeading.Sub>{form.title}</ViewHeading.Sub>
       </ViewHeading>
+
+      <p>
+        <small>
+          <strong>{anonymityMessages.title}: </strong>
+          {anonymityMessages.choices[anonymity]}
+        </small>
+      </p>
 
       <SchemaFormField field={createdAtField} layout={layout}>
         <SchemaFormInput

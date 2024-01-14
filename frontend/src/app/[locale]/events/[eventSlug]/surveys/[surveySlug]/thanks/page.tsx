@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: SurveyPageProps) {
 
 export default async function SurveyPage({ params }: SurveyPageProps) {
   const { locale, eventSlug, surveySlug } = params;
-  const t = getTranslations(locale).SurveyView;
+  const t = getTranslations(locale).Survey;
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, surveySlug, locale },
@@ -61,7 +61,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     notFound();
   }
   const { form } = survey;
-  const { title, thankYouMessage } = form!;
+  const { thankYouMessage } = form!;
   const message = thankYouMessage || t.thankYou.defaultMessage;
 
   return (

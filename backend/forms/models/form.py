@@ -1,7 +1,7 @@
 import logging
 from copy import deepcopy
 from functools import cached_property
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.conf import settings
 from django.db import models
@@ -14,6 +14,7 @@ from .field import Field
 
 if TYPE_CHECKING:
     from .response import Response
+    from .survey import Survey
 
 
 logger = logging.getLogger("kompassi")
@@ -89,5 +90,11 @@ class Form(models.Model):
         return [Field.model_validate(field_dict) for field_dict in self.enriched_fields]
 
     @property
-    def survey(self):
-        return self.event.surveys.filter(languages=self).get()
+    def survey(self) -> Optional["Survey"]:
+        from .survey import Survey
+
+        # there can only be one
+        try:
+            return self.event.surveys.filter(languages=self).get()
+        except Survey.DoesNotExist:
+            return None

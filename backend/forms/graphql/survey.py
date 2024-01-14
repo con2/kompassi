@@ -1,7 +1,6 @@
 import graphene
 from django.conf import settings
 from graphene.types.generic import GenericScalar
-from graphene_django import DjangoObjectType
 
 from access.cbac import graphql_query_cbac_required
 from core.utils import normalize_whitespace
@@ -9,24 +8,13 @@ from core.utils import normalize_whitespace
 from ..models.form import Form
 from ..models.survey import Survey
 from .form import FormType
-from .form_response import FullResponseType, LimitedResponseType
+from .limited_survey import LimitedSurveyType
+from .response import FullResponseType, LimitedResponseType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
-class SurveyType(DjangoObjectType):
-    title = graphene.Field(graphene.String, lang=graphene.String())
-
-    @staticmethod
-    def resolve_title(parent: Survey, info, lang: str = DEFAULT_LANGUAGE):
-        return form.title if (form := parent.get_form(lang)) else None
-
-    is_active = graphene.Field(graphene.NonNull(graphene.Boolean))
-
-    @staticmethod
-    def resolve_is_active(parent: Survey, info) -> bool:
-        return parent.is_active
-
+class SurveyType(LimitedSurveyType):
     @staticmethod
     def resolve_form(
         parent: Survey,
@@ -106,6 +94,21 @@ class SurveyType(DjangoObjectType):
         id=graphene.String(required=True),
     )
 
+    @staticmethod
+    def resolve_count_responses_by_current_user(survey: Survey, info):
+        """
+        Returns the number of responses to this survey by the current user.
+        """
+        if not info.context.user.is_authenticated:
+            return 0
+
+        return survey.responses.filter(created_by=info.context.user).count()
+
+    count_responses_by_current_user = graphene.Field(
+        graphene.NonNull(graphene.Int),
+        description=normalize_whitespace(resolve_count_responses_by_current_user.__doc__ or ""),
+    )
+
     class Meta:
         model = Survey
         fields = (
@@ -114,4 +117,7 @@ class SurveyType(DjangoObjectType):
             "active_until",
             "languages",
             "key_fields",
+            "login_required",
+            "anonymity",
+            "max_responses_per_user",
         )

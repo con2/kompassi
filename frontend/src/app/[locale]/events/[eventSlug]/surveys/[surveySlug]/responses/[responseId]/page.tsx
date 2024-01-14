@@ -26,10 +26,15 @@ const query = gql(`
         survey(slug: $surveySlug) {
           title(lang: $locale)
           slug
+          anonymity
 
           response(id: $responseId) {
             id
             createdAt
+            createdBy {
+              displayName
+              email
+            }
             language
             values
 
@@ -102,6 +107,7 @@ export default async function SurveyResponsePage({ params }: Props) {
 
   const t = translations.SurveyResponse;
 
+  const { anonymity } = data.event.forms.survey;
   const { createdAt, language, form } = data.event.forms.survey.response;
   const { fields, layout } = form;
   const values: Record<string, any> =
@@ -126,6 +132,20 @@ export default async function SurveyResponsePage({ params }: Props) {
     title: t.attributes.language,
   };
 
+  const createdByField: Field | undefined =
+    anonymity == "NAME_AND_EMAIL"
+      ? {
+          slug: "createdBy",
+          type: "SingleLineText",
+          title: t.attributes.createdBy,
+        }
+      : undefined;
+
+  const createdBy = data.event.forms.survey.response.createdBy;
+  const formattedCreatedBy = createdBy
+    ? `${createdBy.displayName} <${createdBy.email}>`
+    : "-";
+
   return (
     <ViewContainer>
       <Link
@@ -139,6 +159,16 @@ export default async function SurveyResponsePage({ params }: Props) {
         {t.singleTitle}
         <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
       </ViewHeading>
+
+      {createdByField && (
+        <SchemaFormField field={createdByField} layout={layout}>
+          <SchemaFormInput
+            field={createdByField}
+            value={formattedCreatedBy}
+            readOnly
+          />
+        </SchemaFormField>
+      )}
 
       <SchemaFormField field={createdAtField} layout={layout}>
         <SchemaFormInput

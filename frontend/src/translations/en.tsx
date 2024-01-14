@@ -225,14 +225,6 @@ const translations = {
     submit: "Submit",
   },
 
-  SurveyView: {
-    thankYou: {
-      title: "Thank you for your answers!",
-      defaultMessage:
-        "Your answers have been recorded. You can now close this tab.",
-    },
-  },
-
   Survey: {
     listTitle: "Surveys",
     singleTitle: "Survey",
@@ -254,6 +246,26 @@ const translations = {
       },
       languages: "Languages",
       actions: "Actions",
+      anonymity: {
+        secondPerson: {
+          title: "Connecting your response to you",
+          choices: {
+            HARD: "Responses are anonymous. You cannot return to view or edit your responses. Your IP address is not recorded.",
+            SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your identity will not be shared with the survey owner. Your IP address is recorded but not shared with the query owner.",
+            NAME_AND_EMAIL:
+              "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses. Your IP address is recorded but not shared with the query owner.",
+          },
+        },
+        thirdPerson: {
+          title: "Connecting responses to users",
+          choices: {
+            HARD: "Responses are anonymous. Users cannot return to view or edit their responses. IP addresses are not recorded.",
+            SOFT: "If the user answer thiss survey while logged in, their response will be connected to their user account, so that they can return to view or edit their responses, but their identities will not be shared with you. IP addresses are recorded but not shared with you.",
+            NAME_AND_EMAIL:
+              "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses. IP addresses are recorded but not shared with the you.",
+          },
+        },
+      },
     },
     actions: {
       fillIn: {
@@ -266,6 +278,20 @@ const translations = {
         success: "A link to the survey has been copied to clipboard.",
       },
       viewResponses: "View responses",
+      submit: "Submit",
+    },
+    thankYou: {
+      title: "Thank you for your answers!",
+      defaultMessage:
+        "Your answers have been recorded. You can now close this tab.",
+    },
+    maxResponsesPerUserReached: {
+      title: "Maximum number of responses reached",
+      defaultMessage: (
+        maxResponsesPerUser: number,
+        countResponsesByCurrentUser: number,
+      ) =>
+        `You have already submitted ${countResponsesByCurrentUser} response${countResponsesByCurrentUser === 1 ? "" : "s"} to this survey. The maximum number of responses per user is ${maxResponsesPerUser}.`,
     },
   },
 
@@ -280,9 +306,10 @@ const translations = {
     ),
     attributes: {
       createdAt: "Created at",
-      language: "Language",
+      createdBy: "Created by",
       event: "Event",
       formTitle: "Survey title",
+      language: "Language",
     },
     actions: {
       downloadAsExcel: "Download as Excel",

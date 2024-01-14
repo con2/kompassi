@@ -18,6 +18,9 @@ gql(`
   fragment SurveyResponse on LimitedResponseType {
     id
     createdAt
+    createdBy {
+      displayName
+    }
     language
     values(keyFieldsOnly: true)
   }
@@ -31,6 +34,7 @@ const query = gql(`
       forms {
         survey(slug: $surveySlug) {
           title(lang: $locale)
+          anonymity
 
           fields(lang: $locale, keyFieldsOnly: true)
 
@@ -99,6 +103,10 @@ export default async function FormResponsesPage({ params }: Props) {
     notFound();
   }
 
+  const { anonymity } = data.event.forms.survey;
+  const anonymityMessages =
+    translations.Survey.attributes.anonymity.thirdPerson;
+
   const keyFields = data.event.forms.survey.fields;
   validateFields(keyFields);
 
@@ -114,11 +122,20 @@ export default async function FormResponsesPage({ params }: Props) {
         </Link>
       ),
     },
-    {
-      slug: "language",
-      title: t.attributes.language,
-    },
   ];
+
+  if (anonymity === "NAME_AND_EMAIL") {
+    columns.push({
+      slug: "createdBy",
+      title: t.attributes.createdBy,
+      getCell: (row) => row.createdBy?.displayName || "",
+    });
+  }
+
+  columns.push({
+    slug: "language",
+    title: t.attributes.language,
+  });
 
   keyFields.forEach((keyField) => {
     columns.push({
@@ -152,6 +169,14 @@ export default async function FormResponsesPage({ params }: Props) {
           </a>
         </div>
       </div>
+
+      <p>
+        <small>
+          <strong>{anonymityMessages.title}: </strong>
+          {anonymityMessages.choices[anonymity]}
+        </small>
+      </p>
+
       <DataTable rows={responses} columns={columns} />
       <p>{t.tableFooter(responses.length)}</p>
     </ViewContainer>
