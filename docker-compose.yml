@@ -35,6 +35,8 @@ services:
     environment:
       <<: *environment
   frontend:
+    profiles:
+      - frontend
     build:
       context: frontend
       dockerfile: Dockerfile.dev
