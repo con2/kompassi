@@ -16,7 +16,6 @@ class AccessOrganizationMeta(models.Model, GroupManagementMixin):
 
     class Meta:
         verbose_name = _("access management settings")
-        verbose_name = _("access management settings")
 
     def get_group(self, suffix):
         group_name = self.make_group_name(self.organization, suffix)

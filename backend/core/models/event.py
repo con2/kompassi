@@ -46,8 +46,6 @@ class Event(models.Model):
         help_text="Esimerkki: Susiconissa",
     )
 
-    description = models.TextField(blank=True, verbose_name="Kuvaus")
-
     venue = models.ForeignKey(
         "core.Venue",
         on_delete=models.CASCADE,
@@ -268,5 +266,4 @@ class Event(models.Model):
         """
         Shorthand for commonly used CBAC claims.
         """
-        return dict(organization=self.organization.slug, event=self.slug, **extra_claims)
         return dict(organization=self.organization.slug, event=self.slug, **extra_claims)
