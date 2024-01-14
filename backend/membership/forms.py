@@ -75,7 +75,6 @@ class MembershipFeePaymentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-
     class Meta:
         model = MembershipFeePayment
         fields = ("payment_type", "payment_method", "payment_date", "amount_cents")

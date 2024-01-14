@@ -27,4 +27,4 @@ $("body").on("click", "a", function() {
       return false;
     }
   }
-}); 
+});

@@ -112,6 +112,7 @@ class SignupMixin:
 
         else:
             from warnings import warn
+
             warn(f"Unknown state: {state}")
             labels = []
 

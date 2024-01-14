@@ -49,7 +49,6 @@ __all__ = [
 
 @tickets_admin_required
 def tickets_admin_stats_view(request, vars, event):
-
     confirmed_orders = event.order_set.filter(confirm_time__isnull=False)
     cancelled_orders = confirmed_orders.filter(cancellation_time__isnull=False)
     paid_orders = confirmed_orders.filter(cancellation_time__isnull=True, payment_date__isnull=False)
