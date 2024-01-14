@@ -1,6 +1,6 @@
+import { Field, Layout } from "./models";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
-import { Field, Layout } from "./models";
 
 interface SchemaFormProps {
   fields: Field[];

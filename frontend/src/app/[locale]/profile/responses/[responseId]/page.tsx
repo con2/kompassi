@@ -1,17 +1,17 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
+import { gql } from "@/__generated__";
+import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { defaultLayout, Field } from "@/components/SchemaForm/models";
-import { getClient } from "@/apolloClient";
-import { getTranslations } from "@/translations";
-import { gql } from "@/__generated__";
-import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
+import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { getTranslations } from "@/translations";
 
 const query = gql(`
   query OwnResponseDetail($responseId: String!) {

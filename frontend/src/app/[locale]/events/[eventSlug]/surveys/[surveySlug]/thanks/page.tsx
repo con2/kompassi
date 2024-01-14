@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 
-import { getClient } from "@/apolloClient";
-import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
+import { getClient } from "@/apolloClient";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { getTranslations } from "@/translations";
 
 const query = gql(`
   query SurveyThankYouPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {

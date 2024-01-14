@@ -19,25 +19,25 @@ export type Scalars = {
    * value as specified by
    * [iso8601](https://en.wikipedia.org/wiki/ISO_8601).
    */
-  DateTime: { input: any; output: any; }
+  DateTime: { input: string; output: string; }
   /**
    * The `GenericScalar` scalar type represents a generic
    * GraphQL scalar value that could be:
    * String, Boolean, Int, Float, List or Object.
    */
-  GenericScalar: { input: any; output: any; }
+  GenericScalar: { input: unknown; output: unknown; }
   /**
    * Allows use of a JSON String for input / output from the GraphQL schema.
    *
    * Use of this type is *not recommended* as you lose the benefits of having a defined, static
    * schema (one of the key benefits of GraphQL).
    */
-  JSONString: { input: any; output: any; }
+  JSONString: { input: string; output: string; }
   /**
    * Leverages the internal Python implementation of UUID (uuid.UUID) to provide native UUID objects
    * in fields, resolvers and input.
    */
-  UUID: { input: any; output: any; }
+  UUID: { input: string; output: string; }
 };
 
 export type CreateSurveyResponse = {
@@ -326,7 +326,7 @@ export type NewProgramQueryQueryVariables = Exact<{
 }>;
 
 
-export type NewProgramQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, program?: { __typename?: 'ProgramV2EventMetaType', skipOfferFormSelection: boolean, offerForm?: { __typename?: 'OfferFormType', form?: { __typename?: 'FormType', title: string, description: string, fields?: any | null, layout: FormsFormLayoutChoices } | null } | null } | null } | null };
+export type NewProgramQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, program?: { __typename?: 'ProgramV2EventMetaType', skipOfferFormSelection: boolean, offerForm?: { __typename?: 'OfferFormType', form?: { __typename?: 'FormType', title: string, description: string, fields?: unknown | null, layout: FormsFormLayoutChoices } | null } | null } | null } | null };
 
 export type NewProgramFormSelectionQueryQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -344,7 +344,7 @@ export type CreateSurveyResponseMutationVariables = Exact<{
 }>;
 
 
-export type CreateSurveyResponseMutation = { __typename?: 'Mutation', createSurveyResponse?: { __typename?: 'CreateSurveyResponse', response?: { __typename?: 'FullResponseType', id: any } | null } | null };
+export type CreateSurveyResponseMutation = { __typename?: 'Mutation', createSurveyResponse?: { __typename?: 'CreateSurveyResponse', response?: { __typename?: 'FullResponseType', id: string } | null } | null };
 
 export type SurveyPageQueryQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -353,7 +353,7 @@ export type SurveyPageQueryQueryVariables = Exact<{
 }>;
 
 
-export type SurveyPageQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'SurveyType', form?: { __typename?: 'FormType', title: string, description: string, fields?: any | null, layout: FormsFormLayoutChoices } | null } | null } | null } | null };
+export type SurveyPageQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'SurveyType', form?: { __typename?: 'FormType', title: string, description: string, fields?: unknown | null, layout: FormsFormLayoutChoices } | null } | null } | null } | null };
 
 export type SurveyResponseDetailQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -363,9 +363,9 @@ export type SurveyResponseDetailQueryVariables = Exact<{
 }>;
 
 
-export type SurveyResponseDetailQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'SurveyType', title?: string | null, slug: string, response?: { __typename?: 'FullResponseType', id: any, createdAt: any, language: string, values?: any | null, form: { __typename?: 'FormType', fields?: any | null, layout: FormsFormLayoutChoices } } | null } | null } | null } | null };
+export type SurveyResponseDetailQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'SurveyType', title?: string | null, slug: string, response?: { __typename?: 'FullResponseType', id: string, createdAt: string, language: string, values?: unknown | null, form: { __typename?: 'FormType', fields?: unknown | null, layout: FormsFormLayoutChoices } } | null } | null } | null } | null };
 
-export type SurveyResponseFragment = { __typename?: 'LimitedResponseType', id: any, createdAt: any, language: string, values?: any | null };
+export type SurveyResponseFragment = { __typename?: 'LimitedResponseType', id: string, createdAt: string, language: string, values?: unknown | null };
 
 export type FormResponsesQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -374,7 +374,7 @@ export type FormResponsesQueryVariables = Exact<{
 }>;
 
 
-export type FormResponsesQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'SurveyType', title?: string | null, responses?: Array<{ __typename?: 'LimitedResponseType', id: any, createdAt: any, language: string, values?: any | null }> | null } | null } | null } | null };
+export type FormResponsesQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'SurveyType', title?: string | null, responses?: Array<{ __typename?: 'LimitedResponseType', id: string, createdAt: string, language: string, values?: unknown | null }> | null } | null } | null } | null };
 
 export type SurveyThankYouPageQueryQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -385,7 +385,7 @@ export type SurveyThankYouPageQueryQueryVariables = Exact<{
 
 export type SurveyThankYouPageQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'SurveyType', form?: { __typename?: 'FormType', title: string, thankYouMessage: string } | null } | null } | null } | null };
 
-export type SurveyFragment = { __typename?: 'SurveyType', slug: string, title?: string | null, isActive: boolean, activeFrom?: any | null, activeUntil?: any | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> };
+export type SurveyFragment = { __typename?: 'SurveyType', slug: string, title?: string | null, isActive: boolean, activeFrom?: string | null, activeUntil?: string | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> };
 
 export type SurveysQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -393,21 +393,21 @@ export type SurveysQueryVariables = Exact<{
 }>;
 
 
-export type SurveysQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', surveys?: Array<{ __typename?: 'SurveyType', slug: string, title?: string | null, isActive: boolean, activeFrom?: any | null, activeUntil?: any | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> }> | null } | null } | null };
+export type SurveysQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', surveys?: Array<{ __typename?: 'SurveyType', slug: string, title?: string | null, isActive: boolean, activeFrom?: string | null, activeUntil?: string | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> }> | null } | null } | null };
 
 export type OwnResponseDetailQueryVariables = Exact<{
   responseId: Scalars['String']['input'];
 }>;
 
 
-export type OwnResponseDetailQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', forms: { __typename?: 'FormsProfileMetaType', response?: { __typename?: 'FullResponseType', id: any, createdAt: any, values?: any | null, form: { __typename?: 'FormType', slug: string, title: string, language: FormsFormLanguageChoices, fields?: any | null, layout: FormsFormLayoutChoices, event: { __typename?: 'LimitedEventType', slug: string, name: string } } } | null } } | null };
+export type OwnResponseDetailQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', forms: { __typename?: 'FormsProfileMetaType', response?: { __typename?: 'FullResponseType', id: string, createdAt: string, values?: unknown | null, form: { __typename?: 'FormType', slug: string, title: string, language: FormsFormLanguageChoices, fields?: unknown | null, layout: FormsFormLayoutChoices, event: { __typename?: 'LimitedEventType', slug: string, name: string } } } | null } } | null };
 
-export type OwnResponseFragment = { __typename?: 'FullResponseType', id: any, createdAt: any, form: { __typename?: 'FormType', slug: string, title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string } } };
+export type OwnResponseFragment = { __typename?: 'FullResponseType', id: string, createdAt: string, form: { __typename?: 'FormType', slug: string, title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string } } };
 
 export type OwnFormResponsesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type OwnFormResponsesQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', forms: { __typename?: 'FormsProfileMetaType', responses: Array<{ __typename?: 'FullResponseType', id: any, createdAt: any, form: { __typename?: 'FormType', slug: string, title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string } } }> } } | null };
+export type OwnFormResponsesQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', forms: { __typename?: 'FormsProfileMetaType', responses: Array<{ __typename?: 'FullResponseType', id: string, createdAt: string, form: { __typename?: 'FormType', slug: string, title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string } } }> } } | null };
 
 export const SurveyResponseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SurveyResponse"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedResponseType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"language"}},{"kind":"Field","name":{"kind":"Name","value":"values"}}]}}]} as unknown as DocumentNode<SurveyResponseFragment, unknown>;
 export const SurveyFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Survey"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SurveyType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"activeFrom"}},{"kind":"Field","name":{"kind":"Name","value":"activeUntil"}},{"kind":"Field","name":{"kind":"Name","value":"languages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"}}]}}]}}]} as unknown as DocumentNode<SurveyFragment, unknown>;

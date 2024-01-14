@@ -1,5 +1,5 @@
-import { kompassiBaseUrl } from "@/config";
 import { getTranslations, supportedLanguages } from "../../translations";
+import { kompassiBaseUrl } from "@/config";
 
 interface SplashViewProps {
   params: {
@@ -11,7 +11,7 @@ export function generateStaticParams() {
   return supportedLanguages.map((locale) => ({ locale }));
 }
 
-export default function SplashView({ params: { locale }}: SplashViewProps) {
+export default function SplashView({ params: { locale } }: SplashViewProps) {
   const translations = getTranslations(locale);
 
   return (

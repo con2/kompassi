@@ -6,10 +6,10 @@ build:
   local:
     useBuildkit: true
   artifacts:
-  - image: kompassi2
-    context: .
+    - image: kompassi2
+      context: .
 deploy:
   statusCheckDeadlineSeconds: 300
   kubectl:
     manifests:
-    - kubernetes/*.json
+      - kubernetes/*.json

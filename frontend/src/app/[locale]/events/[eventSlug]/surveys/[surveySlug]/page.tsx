@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
 
-import { Field } from "@/components/SchemaForm/models";
-import { getClient } from "@/apolloClient";
-import { getTranslations } from "@/translations";
-import { gql } from "@/__generated__";
-import { SchemaForm } from "@/components/SchemaForm";
 import { submit } from "./actions";
+import { gql } from "@/__generated__";
+import { getClient } from "@/apolloClient";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
+import { SchemaForm } from "@/components/SchemaForm";
+import { Field } from "@/components/SchemaForm/models";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { getTranslations } from "@/translations";
 
 const query = gql(`
   query SurveyPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {

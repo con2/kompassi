@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Accepts one prop, `text`, and displays it so that single line breaks get
@@ -15,7 +15,7 @@ export default function LinebreaksDangerousHtml({ html }: { html: string }) {
         <p key={index}>
           {paragraph.split(/\r?\n/g).map((line, ind, lines) => (
             <React.Fragment key={ind}>
-              <span dangerouslySetInnerHTML={{ __html: line}} />
+              <span dangerouslySetInnerHTML={{ __html: line }} />
               {ind === lines.length - 1 ? null : <br />}
             </React.Fragment>
           ))}
@@ -23,4 +23,4 @@ export default function LinebreaksDangerousHtml({ html }: { html: string }) {
       ))}
     </>
   );
-};
+}

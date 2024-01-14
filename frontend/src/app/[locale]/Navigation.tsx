@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 
-import { authOptions } from "@/auth";
-import { SupportedLanguage, getTranslations } from "@/translations";
 import LanguageSwitcher from "./LanguageSwitcher";
 import UserMenu from "./UserMenu";
+import { authOptions } from "@/auth";
+import { SupportedLanguage, getTranslations } from "@/translations";
 
 interface NavigationProps {
   locale: SupportedLanguage;

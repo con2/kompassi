@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Accepts one prop, `text`, and displays it so that
@@ -12,8 +12,8 @@ export default function ParagraphsDangerousHtml({ html }: { html: string }) {
   return (
     <>
       {paragraphs.map((paragraph, index) => (
-        <p key={index} dangerouslySetInnerHTML={{ __html: paragraph}} />
+        <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
       ))}
     </>
   );
-};
+}

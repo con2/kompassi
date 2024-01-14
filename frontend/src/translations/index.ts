@@ -17,7 +17,7 @@ export const defaultLanguage: SupportedLanguage = "en";
 export const languages = { en, fi };
 
 export function isSupportedLanguage(
-  language?: string
+  language?: string,
 ): language is SupportedLanguage {
   return (
     typeof language === "string" &&
@@ -26,7 +26,9 @@ export function isSupportedLanguage(
 }
 
 export function getTranslations(language: string): Translations {
-  const supportedLanguage = isSupportedLanguage(language) ? language : defaultLanguage;
+  const supportedLanguage = isSupportedLanguage(language)
+    ? language
+    : defaultLanguage;
   return languages[supportedLanguage];
 }
 

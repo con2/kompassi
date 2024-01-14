@@ -1,15 +1,15 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
-import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import { getClient } from "@/apolloClient";
-import { getTranslations } from "@/translations";
 import { gql } from "@/__generated__";
 import { OwnResponseFragment } from "@/__generated__/graphql";
+import { getClient } from "@/apolloClient";
+import { auth } from "@/auth";
+import { Column, DataTable } from "@/components/DataTable";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { getTranslations } from "@/translations";
 
 gql(`
   fragment OwnResponse on FullResponseType {

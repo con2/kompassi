@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
+import Navigation from "./Navigation";
 import { toSupportedLanguage } from "@/translations";
 
-import Navigation from "./Navigation";
 import "./globals.scss";
 
 export const metadata: Metadata = {

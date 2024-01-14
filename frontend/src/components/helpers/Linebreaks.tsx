@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Accepts one prop, `text`, and displays it so that single line breaks get

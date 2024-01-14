@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { gql } from "@/__generated__";
+import { SurveyResponseFragment } from "@/__generated__/graphql";
+import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { DataTable } from "@/components/DataTable";
-import { getClient } from "@/apolloClient";
-import { getTranslations } from "@/translations";
-import { gql } from "@/__generated__";
-import { kompassiBaseUrl } from "@/config";
-import { SurveyResponseFragment } from "@/__generated__/graphql";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { kompassiBaseUrl } from "@/config";
+import { getTranslations } from "@/translations";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 gql(`

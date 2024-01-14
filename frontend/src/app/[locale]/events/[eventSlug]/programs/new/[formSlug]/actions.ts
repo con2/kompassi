@@ -6,7 +6,7 @@ export async function submit(
   locale: string,
   eventSlug: string,
   formSlug: string,
-  formData: FormData
+  formData: FormData,
 ) {
   console.log({
     locale,

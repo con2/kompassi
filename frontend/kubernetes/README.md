@@ -4,7 +4,7 @@ Generate Kubernetes manifests using
 
     npm run k8s:generate
 
-This runs the `kubernetes/manifest.ts` that  is intended to be a brutally simple Node.js program with no other dependencies than `fs`. It accepts one environment variable, `ENV`, with the values `dev` (the default), `staging` and `production`, and outputs Kubernetes manifests as JSON files in the directory it was run.
+This runs the `kubernetes/manifest.ts` that is intended to be a brutally simple Node.js program with no other dependencies than `fs`. It accepts one environment variable, `ENV`, with the values `dev` (the default), `staging` and `production`, and outputs Kubernetes manifests as JSON files in the directory it was run.
 
 Test with Skaffold (with Docker Desktop or similar local Kubernetes cluster):
 

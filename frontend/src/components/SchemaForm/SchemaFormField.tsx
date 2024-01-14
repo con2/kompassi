@@ -5,7 +5,9 @@ import { Field, Layout } from "./models";
 function Label({ field, layout }: { field: Field; layout: Layout }) {
   const { type, title, required, slug } = field;
   const classNames =
-    type === "SingleCheckbox" ? ["form-check-label"] : ["form-label", "fw-bold"];
+    type === "SingleCheckbox"
+      ? ["form-check-label"]
+      : ["form-label", "fw-bold"];
 
   if (layout === Layout.Horizontal && type !== "SingleCheckbox") {
     classNames.push("col-md-3");
@@ -62,9 +64,7 @@ export default function SchemaFormField({
                 <div className="form-check">
                   {children}
                   <Label field={field} layout={layout} />
-                  {helpText && (
-                    <div className="form-text">{helpText}</div>
-                  )}
+                  {helpText && <div className="form-text">{helpText}</div>}
                 </div>
               </div>
             </div>
@@ -74,9 +74,7 @@ export default function SchemaFormField({
             <div className="form-check mb-4">
               {children}
               <Label field={field} layout={layout} />
-              {helpText && (
-                <div className="form-text">{helpText}</div>
-              )}
+              {helpText && <div className="form-text">{helpText}</div>}
             </div>
           );
       }
@@ -89,9 +87,7 @@ export default function SchemaFormField({
               <Label field={field} layout={layout} />
               <div className="col-md-9">
                 {children}
-                {helpText && (
-                  <div className="form-text">{helpText}</div>
-                )}
+                {helpText && <div className="form-text">{helpText}</div>}
               </div>
             </div>
           );
@@ -101,7 +97,10 @@ export default function SchemaFormField({
               <Label field={field} layout={layout} />
               {children}
               {helpText && (
-                <div className="form-text" dangerouslySetInnerHTML={{__html: helpText}} />
+                <div
+                  className="form-text"
+                  dangerouslySetInnerHTML={{ __html: helpText }}
+                />
               )}
             </div>
           );

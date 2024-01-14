@@ -122,7 +122,7 @@ export default async function TicketsView({
         </div>
         <div className="mb-3">
           <label htmlFor="phone" className="form-label">
-          {tCommon.formFields.phone.title}
+            {tCommon.formFields.phone.title}
           </label>
           <input type="text" className="form-control" id="phone" name="phone" />
         </div>
@@ -134,14 +134,21 @@ export default async function TicketsView({
             name="acceptTermsAndConditions"
             required={true}
           />
-          <label className="form-check-label" htmlFor="acceptTermsAndConditions">
-            {t.acceptTermsAndConditions("https://example.com/terms-and-conditions")}
+          <label
+            className="form-check-label"
+            htmlFor="acceptTermsAndConditions"
+          >
+            {t.acceptTermsAndConditions(
+              "https://example.com/terms-and-conditions",
+            )}
           </label>
         </div>
       </div>
 
       <div className="d-grid gap-2 mb-4">
-        <button className="btn btn-primary btn-lg">{t.purchaseButtonText}</button>
+        <button className="btn btn-primary btn-lg">
+          {t.purchaseButtonText}
+        </button>
       </div>
     </div>
   );

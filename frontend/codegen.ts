@@ -16,6 +16,14 @@ const config: CodegenConfig = {
     },
   },
   ignoreNoDocuments: true,
+  config: {
+    scalars: {
+      DateTime: "string",
+      GenericScalar: "unknown",
+      JSONString: "string",
+      UUID: "string",
+    },
+  },
 };
 
 export default config;

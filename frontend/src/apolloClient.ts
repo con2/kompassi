@@ -1,12 +1,12 @@
 import { HttpLink, DefaultContext } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { registerApolloClient } from "@apollo/experimental-nextjs-app-support/rsc";
 import {
   NextSSRInMemoryCache,
   NextSSRApolloClient,
 } from "@apollo/experimental-nextjs-app-support/ssr";
-import { registerApolloClient } from "@apollo/experimental-nextjs-app-support/rsc";
-import { kompassiBaseUrl } from "./config";
 import { auth } from "./auth";
+import { kompassiBaseUrl } from "./config";
 
 const authLink = setContext(async (_, context) => {
   const session = await auth();

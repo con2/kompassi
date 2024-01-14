@@ -3,37 +3,44 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently -kn nextdev,codegen \"next dev\" \"graphql-codegen -w\"",
     "build": "next build",
-    "start": "node .next/standalone/server.js",
-    "lint": "next lint",
+    "dev": "concurrently -kn nextdev,codegen \"next dev\" \"graphql-codegen -w\"",
+    "format": "prettier --write .",
+    "k8s:dev": "npm run k8s:generate && skaffold dev",
     "k8s:generate": "cd kubernetes && ts-node manifest.ts",
-    "k8s:dev": "npm run k8s:generate && skaffold dev"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "start": "node .next/standalone/server.js",
+    "test": "npm run lint && npm run test:format",
+    "test:format": "prettier --check ."
   },
   "dependencies": {
     "@apollo/client": "^3.9.0-alpha.3",
     "@apollo/experimental-nextjs-app-support": "^0.5.2",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@types/node": "20.8.10",
-    "@types/react": "18.2.34",
-    "@types/react-dom": "18.2.14",
     "bootstrap": "^5.3.2",
-    "eslint": "8.52.0",
-    "eslint-config-next": "14.0.1",
-    "next": "14.0.1",
+    "next": "^14.0.1",
     "next-auth": "^4.24.5",
     "next-intl": "^3.0.0-rc.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "sass": "^1.69.5",
-    "typescript": "5.2.2"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "license": "MIT",
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@parcel/watcher": "^2.3.0",
+    "@types/node": "^20.8.10",
+    "@types/react": "^18.2.34",
+    "@types/react-dom": "^18.2.14",
     "concurrently": "^8.2.2",
-    "ts-node": "^10.9.2"
+    "eslint": "^8.52.0",
+    "eslint-config-next": "^14.0.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "3.2.1",
+    "sass": "^1.69.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.2.2"
   }
 }

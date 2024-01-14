@@ -8,14 +8,19 @@ interface LanguageSwitcherProps {
   otherLanguage: Translations["LanguageSelection"]["otherLanguage"];
 }
 
-export default function LanguageSwitcher({ otherLanguage }: LanguageSwitcherProps) {
+export default function LanguageSwitcher({
+  otherLanguage,
+}: LanguageSwitcherProps) {
   let pathname = usePathname();
 
   // Remove the language prefix from the pathname
   // If we were using <Link>, Next.js would handle this for us
   // But that also sometimes preloads the link, causing a language change
   for (const supportedLanguage of supportedLanguages) {
-    if (pathname === `/${supportedLanguage}` || pathname.startsWith(`/${supportedLanguage}/`)) {
+    if (
+      pathname === `/${supportedLanguage}` ||
+      pathname.startsWith(`/${supportedLanguage}/`)
+    ) {
       pathname = pathname.slice(supportedLanguage.length + 1);
       break;
     }

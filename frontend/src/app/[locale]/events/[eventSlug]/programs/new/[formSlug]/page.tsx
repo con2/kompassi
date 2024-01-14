@@ -1,12 +1,12 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
-import { SchemaForm } from "@/components/SchemaForm";
-import { getTranslations } from "@/translations";
+import { submit } from "./actions";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import { submit } from "./actions";
+import { SchemaForm } from "@/components/SchemaForm";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
+import { getTranslations } from "@/translations";
 
 const query = gql(`
   query NewProgramQuery($eventSlug:String!, $formSlug:String!, $locale:String) {
