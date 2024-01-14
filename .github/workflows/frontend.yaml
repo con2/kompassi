@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-json
-          path: build.json
+          path: frontend/build.json
 
   deploy_staging:
     runs-on: self-hosted

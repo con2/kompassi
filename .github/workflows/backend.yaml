@@ -63,7 +63,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build-json
-          path: build.json
+          path: backend/build.json
 
   # TODO DRY
   deploy_staging:
