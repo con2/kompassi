@@ -295,9 +295,8 @@ class CheckoutPayment(models.Model):
         if self.tickets_order:
             if self.status == "ok" and not self.tickets_order.is_paid:
                 self.tickets_order.confirm_payment()
-        elif self.membership_fee_payment:
-            if self.status == "ok" and not self.membership_fee_payment.is_paid:
-                self.membership_fee_payment.confirm_payment(payment_method="checkout")
+        elif self.membership_fee_payment and self.status == "ok" and not self.membership_fee_payment.is_paid:
+            self.membership_fee_payment.confirm_payment(payment_method="checkout")
 
     def admin_get_customer_email(self):
         try:

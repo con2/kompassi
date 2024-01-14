@@ -17,6 +17,7 @@ extend-select = [
     "RUF005",  # avoid iterable concatenation
     "RUF013",  # implicit `optional` (contra type annotations)
     "RUF100",  # unused noqa
+    "SIM",
     "UP",
 ]
 extend-ignore = [
@@ -30,6 +31,8 @@ extend-ignore = [
     "PLR0915",  # too many statements
     "PLW2901",  # for loop variable overwritten (too many false positives)
     "RET505",  # Unnecessary `else` after `return` statement
+    "SIM105",  # contextlib.suppress has a performance cost
+    "SIM108",  # ternary operators can be less readable
 ]
 
 [tool.ruff.extend-per-file-ignores]

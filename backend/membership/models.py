@@ -423,8 +423,7 @@ class MembershipFeePayment(models.Model):
     admin_get_formatted_amount.admin_order_field = "amount_cents"
 
     def save(self, *args, **kwargs):
-        if self.term and self.member:
-            if not self.reference_number:
-                self.reference_number = self.term.get_reference_number_for_member(self.member)
+        if self.term and self.member and not self.reference_number:
+            self.reference_number = self.term.get_reference_number_for_member(self.member)
 
         return super().save(*args, **kwargs)

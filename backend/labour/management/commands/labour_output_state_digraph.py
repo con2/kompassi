@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *opts, **args):
         print("digraph foo {")
-        for originating_state in SIGNUP_STATE_NAMES.keys():
+        for originating_state in SIGNUP_STATE_NAMES:
             if originating_state == "beyond_logic":
                 continue
 
