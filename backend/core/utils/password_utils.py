@@ -106,7 +106,7 @@ def get_hibp_page(hash_prefix):
     try:
         int(hash_prefix, 16)
     except ValueError:
-        raise AssertionError("Hash prefix is not valid hex")
+        raise AssertionError("Hash prefix is not valid hex") from None
 
     hash_prefix = hash_prefix.upper()
 

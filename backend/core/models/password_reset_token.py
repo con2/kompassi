@@ -25,8 +25,8 @@ class PasswordResetToken(OneTimeCode):
     def reset_password(cls, code, new_password):
         try:
             code = cls.objects.get(code=code, state="valid")
-        except cls.DoesNotExist:
-            raise PasswordResetError("invalid_code")
+        except cls.DoesNotExist as dne:
+            raise PasswordResetError("invalid_code") from dne
 
         code.mark_used()
 

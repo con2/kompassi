@@ -98,8 +98,8 @@ def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_
 
     try:
         phone_number = phonenumbers.parse(value, region)
-    except phonenumbers.NumberParseException:
-        raise ValidationError(exc)
+    except phonenumbers.NumberParseException as npe:
+        raise ValidationError(exc) from npe
     else:
         if not phonenumbers.is_valid_number(phone_number):
             raise ValidationError(exc)

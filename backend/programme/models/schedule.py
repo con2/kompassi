@@ -31,8 +31,8 @@ class OrderingMixin:
                 unused, swappee = get_previous_and_next(queryset, self)
             else:
                 raise AssertionError(f"Invalid direction: {direction}")
-        except self.__class__.DoesNotExist:
-            raise IndexError(f"Cannot go {direction} from here")
+        except self.__class__.DoesNotExist as dne:
+            raise IndexError(f"Cannot go {direction} from here") from dne
 
         if self.order == swappee.order:
             raise ValueError(f"Unable to swap because {self} and {swappee} have same order: {self.order}")

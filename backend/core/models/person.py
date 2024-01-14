@@ -37,8 +37,8 @@ def birth_date_validator(value):
             raise ValidationError(exc)
         # Following actually also checks that year is >= 1900. Even then, ensure the date can be formatted.
         value.strftime("%Y-%m-%d")
-    except ValueError:
-        raise ValidationError(exc)
+    except ValueError as ve:
+        raise ValidationError(exc) from ve
 
 
 class Person(models.Model):
@@ -369,8 +369,8 @@ class Person(models.Model):
         if isinstance(code, str):
             try:
                 code = EmailVerificationToken.objects.get(code=code)
-            except EmailVerificationToken.DoesNotExist:
-                raise EmailVerificationError("invalid_code")
+            except EmailVerificationToken.DoesNotExist as dne:
+                raise EmailVerificationError("invalid_code") from dne
 
         if code:
             # Verify with a single code. The code needs to be checked.
