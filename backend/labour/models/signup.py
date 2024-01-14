@@ -419,7 +419,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
 
         query_params = []
 
-        for time_field_name, flag_value in zip(STATE_TIME_FIELDS, flag_values):
+        for time_field_name, flag_value in zip(STATE_TIME_FIELDS, flag_values, strict=False):
             time_field_preposition = f"{time_field_name}__isnull"
             query_params.append((time_field_preposition, not flag_value))
 
