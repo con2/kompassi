@@ -35,7 +35,7 @@ TOTAL_WORK_CHOICES = [
     ("10h", "10h minimi - 2 ruokalippua, 1 työvoimatuote"),
     ("12h", "12h - 3 ruokalippua, 1 työvoimatuote"),
     ("14h", "14h - 3 ruokalippua, 2 työvoimatuotetta"),
-    ("16h", "16h - 4 ruokalippua, 2 työvoimatuotetta")
+    ("16h", "16h - 4 ruokalippua, 2 työvoimatuotetta"),
 ]
 
 
