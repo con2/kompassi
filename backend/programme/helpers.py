@@ -18,8 +18,7 @@ def programme_event_required(view_func):
         if not meta:
             messages.error(request, "Tämä tapahtuma ei käytä tätä sivustoa ohjelman hallintaan.")
             return redirect("core_event_view", event.slug)
-
-        return view_func(request, event=event, *args, **kwargs)
+        return view_func(request, *args, **{**kwargs, "event": event})
 
     return wrapper
 
@@ -35,7 +34,7 @@ def public_programme_required(view_func):
                 messages.error(request, "Tämän tapahtuman ohjelma ei ole vielä julkinen.")
                 return redirect("core_event_view", event.slug)
 
-        return view_func(request, event=event, *args, **kwargs)
+        return view_func(request, *args, **{**kwargs, "event": event})
 
     return wrapper
 

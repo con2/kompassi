@@ -75,13 +75,14 @@ class ViewForm(forms.ModelForm):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-    def save(self, *args, **kwargs):
-        view = super().save(commit=False, *args, **kwargs)
+    def save(self, commit=True):
+        view = super().save(commit=False)
 
         if self.event:
             view.event = self.event
 
-        view.save()
+        if commit:
+            view.save()
         return view
 
     class Meta:
