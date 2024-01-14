@@ -57,9 +57,9 @@ class SignupTest(TestCase):
     def test_get_state_query_params(self):
         params = Signup.get_state_query_params("accepted")
 
-        self.assertTrue(params["is_active"])
-        self.assertFalse(params["time_accepted__isnull"])
-        self.assertTrue(params["time_finished__isnull"])
+        assert params["is_active"]
+        assert not params["time_accepted__isnull"]
+        assert params["time_finished__isnull"]
 
 
 class JobCategoryTestCase(TestCase):

@@ -15,10 +15,10 @@ class PersonTestCase(TestCase):
         from core.models import Person
 
         p = Person(phone="0505551234")
-        self.assertEqual(p.normalized_phone_number, "+358 50 5551234")
+        assert p.normalized_phone_number == "+358 50 5551234"
 
         p = Person(phone="ööää")
-        self.assertEqual(p.normalized_phone_number, "ööää")
+        assert p.normalized_phone_number == "ööää"
 
 
 class UtilsTestCase(TestCase):
@@ -42,48 +42,33 @@ class UtilsTestCase(TestCase):
         )
 
         # valid cases
-        self.assertEqual(
-            full_hours_between(
-                datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz),
-                datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz),
+        assert full_hours_between(
+            datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz),
+            datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz),
+        ) == [datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz)]
+        assert full_hours_between(
+            datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz),
+            datetime(2013, 8, 15, 21, 0, 0, tzinfo=tz),
+        ) == [datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz), datetime(2013, 8, 15, 21, 0, 0, tzinfo=tz)]
+        assert full_hours_between(
+            datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),
+            datetime(2013, 8, 16, 1, 0, 0, tzinfo=tz),
+        ) == [
+            datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),
+            datetime(2013, 8, 16, 0, 0, 0, tzinfo=tz),
+            datetime(2013, 8, 16, 1, 0, 0, tzinfo=tz),
+        ]
+        assert full_hours_between(
+            datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),
+            datetime(2013, 8, 16, 3, 0, 0, tzinfo=tz),
+            unless=(
+                lambda t: (datetime(2013, 8, 16, 1, 0, 0, tzinfo=tz) <= t <= datetime(2013, 8, 16, 2, 0, 0, tzinfo=tz))
             ),
-            [datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz)],
-        )
-        self.assertEqual(
-            full_hours_between(
-                datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz),
-                datetime(2013, 8, 15, 21, 0, 0, tzinfo=tz),
-            ),
-            [
-                datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz),
-                datetime(2013, 8, 15, 21, 0, 0, tzinfo=tz),
-            ],
-        )
-        self.assertEqual(
-            full_hours_between(
-                datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),
-                datetime(2013, 8, 16, 1, 0, 0, tzinfo=tz),
-            ),
-            [
-                datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),
-                datetime(2013, 8, 16, 0, 0, 0, tzinfo=tz),
-                datetime(2013, 8, 16, 1, 0, 0, tzinfo=tz),
-            ],
-        )
-        self.assertEqual(
-            full_hours_between(
-                datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),
-                datetime(2013, 8, 16, 3, 0, 0, tzinfo=tz),
-                unless=lambda t: datetime(2013, 8, 16, 1, 0, 0, tzinfo=tz)
-                <= t
-                <= datetime(2013, 8, 16, 2, 0, 0, tzinfo=tz),
-            ),
-            [
-                datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),
-                datetime(2013, 8, 16, 0, 0, 0, tzinfo=tz),
-                datetime(2013, 8, 16, 3, 0, 0, tzinfo=tz),
-            ],
-        )
+        ) == [
+            datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),
+            datetime(2013, 8, 16, 0, 0, 0, tzinfo=tz),
+            datetime(2013, 8, 16, 3, 0, 0, tzinfo=tz),
+        ]
 
     def test_slugify(self):
         assert slugify("Matti Lundén") == "matti-lunden"
@@ -124,7 +109,7 @@ class UtilsTestCase(TestCase):
 
         for start_date, end_date, expected in examples:
             actual = format_date_range(start_date, end_date)
-            self.assertEqual(actual, expected)
+            assert actual == expected
 
     def test_format_interval(self):
         tz = tzlocal()
@@ -134,9 +119,6 @@ class UtilsTestCase(TestCase):
         d1 = datetime(2016, 4, 27, 23, 0, 0, tzinfo=tz)
         d2 = datetime(2016, 4, 28, 1, 0, 0, tzinfo=tz)
 
-        self.assertEqual(format_interval(d0, d1, locale=locale), "ke 27.4. 21.00–23.00")
+        assert format_interval(d0, d1, locale=locale) == "ke 27.4. 21.00–23.00"
 
-        self.assertEqual(
-            format_interval(d0, d2, locale=locale),
-            "ke 27.4. 21.00 – to 28.4. 1.00",
-        )
+        assert format_interval(d0, d2, locale=locale) == "ke 27.4. 21.00 – to 28.4. 1.00"

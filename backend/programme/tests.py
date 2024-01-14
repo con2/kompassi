@@ -17,15 +17,9 @@ class UtilsTestCase(TestCase):
     def test_next_full_hour(self):
         tz = tzlocal()
 
-        self.assertEqual(
-            next_full_hour(datetime(2013, 8, 15, 19, 4, 25, tzinfo=tz)),
-            datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz),
-        )
+        assert next_full_hour(datetime(2013, 8, 15, 19, 4, 25, tzinfo=tz)) == datetime(2013, 8, 15, 20, 0, 0, tzinfo=tz)
 
-        self.assertEqual(
-            next_full_hour(datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)),
-            datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz),
-        )
+        assert next_full_hour(datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)) == datetime(2013, 8, 15, 14, 0, 0, tzinfo=tz)
 
     def test_schedule_is_public(self):
         meta, unused = ProgrammeEventMeta.get_or_create_dummy()

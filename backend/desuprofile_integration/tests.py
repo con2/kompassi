@@ -1,3 +1,4 @@
+import pytest
 from django.test import TestCase
 from jsonschema import ValidationError
 
@@ -19,7 +20,7 @@ class DesuprofileValidationTestCase(TestCase):
             birth_date="2014-04-24",
         )
 
-        self.assertEqual(Desuprofile.from_dict(valid_profile)._asdict(), valid_profile)
+        assert Desuprofile.from_dict(valid_profile)._asdict() == valid_profile
 
     def test_desuprofile_without_required_attributes(self):
         blank_email = dict(
@@ -33,7 +34,7 @@ class DesuprofileValidationTestCase(TestCase):
             birth_date="2014-04-24",
         )
 
-        with self.assertRaises(ValidationError):
+        with pytest.raises(ValidationError):
             Desuprofile.from_dict(blank_email)
 
         missing_first_name = dict(
@@ -47,7 +48,7 @@ class DesuprofileValidationTestCase(TestCase):
             birth_date="2014-04-24",
         )
 
-        with self.assertRaises(ValidationError):
+        with pytest.raises(ValidationError):
             Desuprofile.from_dict(missing_first_name)
 
     def test_invalid_values(self):
@@ -62,7 +63,7 @@ class DesuprofileValidationTestCase(TestCase):
             birth_date="2014-04b-24",
         )
 
-        with self.assertRaises(ValidationError):
+        with pytest.raises(ValidationError):
             Desuprofile.from_dict(malformed_birth_date)
 
         malformed_email = dict(
@@ -76,7 +77,7 @@ class DesuprofileValidationTestCase(TestCase):
             birth_date="2014-04-24",
         )
 
-        with self.assertRaises(ValidationError):
+        with pytest.raises(ValidationError):
             Desuprofile.from_dict(malformed_email)
 
     def test_quirks(self):
