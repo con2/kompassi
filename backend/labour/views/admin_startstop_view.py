@@ -30,15 +30,16 @@ def generic_publish_unpublish_view(
     meta,
     template,
     FormClass,
-    save_success_message=_("Application period start and end times were saved."),
-    end_time_clear_message=_(
+    # B008 is a false positive here; `_` is lazy
+    save_success_message=_("Application period start and end times were saved."),  # noqa: B008
+    end_time_clear_message=_(  # noqa: B008
         "The end of the application period was in the past and has now been cleared. "
         "If you have an ending date for the application period, please set it below."
     ),
-    start_now_success_message=_("The application period was started."),
-    already_public_message=_("The application period is already underway."),
-    stop_now_success_message=_("The application period was ended."),
-    not_public_message=_("The application period is not currently underway."),
+    start_now_success_message=_("The application period was started."),  # noqa: B008
+    already_public_message=_("The application period is already underway."),  # noqa: B008
+    stop_now_success_message=_("The application period was ended."),  # noqa: B008
+    not_public_message=_("The application period is not currently underway."),  # noqa: B008
 ):
     form = initialize_form(FormClass, request, instance=meta)
 
