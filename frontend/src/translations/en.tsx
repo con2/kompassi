@@ -309,15 +309,11 @@ const translations = {
   },
 
   // Do not translate
-  LanguageSelection: {
-    // NOTE: quality of life hack only until we have a third language
-    currentLanguage: {
-      nameInCurrentLanguage: "In English",
-      code: "en",
-    },
-    otherLanguage: {
-      nameInOtherLanguage: "suomeksi",
-      code: "fi",
+  LanguageSwitcher: {
+    // NOTE: value always in target language
+    supportedLanguages: {
+      fi: "suomeksi",
+      en: "In English",
     },
   },
 };

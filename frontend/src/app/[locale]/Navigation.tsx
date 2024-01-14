@@ -22,7 +22,8 @@ export default async function Navigation({ locale }: NavigationProps) {
         </Link>
         <div className="navbar-nav ms-auto">
           <LanguageSwitcher
-            otherLanguage={translations.LanguageSelection.otherLanguage}
+            messages={translations.LanguageSwitcher}
+            locale={locale}
           />
           <UserMenu session={session} messages={translations.UserMenu} />
         </div>

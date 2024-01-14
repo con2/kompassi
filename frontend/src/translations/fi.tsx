@@ -310,15 +310,11 @@ const translations: Translations = {
   },
 
   // Do not translate
-  LanguageSelection: {
-    // NOTE: quality of life hack only until we have a third language
-    currentLanguage: {
-      nameInCurrentLanguage: "suomeksi",
-      code: "fi",
-    },
-    otherLanguage: {
-      nameInOtherLanguage: "In English",
-      code: "en",
+  LanguageSwitcher: {
+    // NOTE: value always in target language
+    supportedLanguages: {
+      fi: "suomeksi",
+      en: "In English",
     },
   },
 };
