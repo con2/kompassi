@@ -1,3 +1,4 @@
+import logging
 from collections import OrderedDict
 from dataclasses import dataclass
 from functools import cached_property
@@ -33,6 +34,8 @@ from .constants import (
 
 if TYPE_CHECKING:
     from .roster import Shift
+
+logger = logging.getLogger("kompassi")
 
 
 @dataclass
@@ -111,9 +114,7 @@ class SignupMixin:
             labels = [(label_class, label_text, None) for label_text in label_texts]
 
         else:
-            from warnings import warn
-
-            warn(f"Unknown state: {state}")
+            logger.warning("Unknown state: %s", state)
             labels = []
 
         return labels

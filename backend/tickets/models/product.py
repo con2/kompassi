@@ -49,9 +49,9 @@ class Product(models.Model):
         from warnings import warn
 
         warn(
-            DeprecationWarning(
-                "sell_limit is deprecated, convert everything to use LimitGroup and amount_available directly"
-            )
+            "sell_limit is deprecated, convert everything to use LimitGroup and amount_available directly",
+            DeprecationWarning,
+            stacklevel=2,
         )
         return self.amount_available
 
