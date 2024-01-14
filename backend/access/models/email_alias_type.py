@@ -100,7 +100,7 @@ class EmailAliasType(models.Model):
             newly_created.save()
             return newly_created
         else:
-            logger.warn(
+            logger.warning(
                 "Not creating alias of type %s for %s (account name generator said None)",
                 self,
                 person,

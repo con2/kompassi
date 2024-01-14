@@ -26,7 +26,7 @@ def populate_recipient_group_job_category(apps, schema_editor):
         try:
             recipient_group = RecipientGroup.objects.get(group__name=group_name)
         except RecipientGroup.DoesNotExist:
-            logger.warn("Job category %s/%s has no recipient group", event.slug, job_category.slug)
+            logger.warning("Job category %s/%s has no recipient group", event.slug, job_category.slug)
         else:
             recipient_group.job_category = job_category
             recipient_group.save()

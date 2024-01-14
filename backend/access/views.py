@@ -184,7 +184,7 @@ def access_admin_aliases_api(request, domain_name):
         if alias.normalized_target_emails:
             lines.append(f"{alias.account_name}: {alias.normalized_target_emails}")
         else:
-            logger.warn("Internal alias %s does not have target emails", alias)
+            logger.warning("Internal alias %s does not have target emails", alias)
 
     return HttpResponse("\n".join(lines), content_type="text/plain; charset=UTF-8")
 

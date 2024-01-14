@@ -21,7 +21,7 @@ def profile_detail_view(request, programme_id):
         programme_role = get_object_or_404(programme_role_qs)
     except ProgrammeRole.MultipleObjectsReturned:
         programme_role = programme_role_qs.first()
-        logger.warn("Multiple roles for same programme/person: %s", programme_role.programme)
+        logger.warning("Multiple roles for same programme/person: %s", programme_role.programme)
 
     programme = programme_role.programme
     event = programme.category.event

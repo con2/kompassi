@@ -94,7 +94,7 @@ class ViewMethodsMixin:
                         cur_row.append((None, None))
                 else:
                     if num_programmes > 1:
-                        logger.warn("Room %s has multiple programs starting at %s", room, start_time)
+                        logger.warning("Room %s has multiple programs starting at %s", room, start_time)
 
                         if request is not None and self.event.programme_event_meta.is_user_admin(request.user):
                             messages.warning(

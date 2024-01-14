@@ -10,6 +10,7 @@ extend-select = [
     "C",
     "I", # import sorting
     "PERF",
+    "PGH002",  # .warn is deprecated
     "PGH004",  # specific noqa
     "RUF005",  # avoid iterable concatenation
     "RUF013",  # implicit `optional` (contra type annotations)

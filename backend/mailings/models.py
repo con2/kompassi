@@ -234,7 +234,7 @@ class DedupMixin:
                 ),
             )
         except cls.MultipleObjectsReturned:
-            logger.warn("Multiple %s returned for hash %s", cls.__name__, the_hash)
+            logger.warning("Multiple %s returned for hash %s", cls.__name__, the_hash)
             return cls.objects.filter(digest=the_hash, text=text).first(), False
 
 
