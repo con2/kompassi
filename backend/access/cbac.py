@@ -21,9 +21,9 @@ def get_default_claims(request, **overrides: str):
     claims = {}
 
     # from core.middleware.EventOrganizationMiddleware
-    if event := getattr(request, "event"):
+    if event := request.event:
         claims["event"] = event.slug
-    if organization := getattr(request, "organization"):
+    if organization := request.organization:
         claims["organization"] = organization.slug
 
     # from Django router

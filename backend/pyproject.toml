@@ -6,6 +6,7 @@ target-version = "py312"
 line-length = 120
 ignore-init-module-imports = true
 extend-select = [
+    "B",
     "C",
     "I", # import sorting
     "PGH004",  # specific noqa
