@@ -130,7 +130,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
 
         groups = super().get_or_create_groups(event, suffixes)
 
-        for subject, group in zip(subjects, groups, strict=False):
+        for subject, group in zip(subjects, groups, strict=True):
             if isinstance(subject, Category):
                 verbose_name = subject.title
                 category = subject
