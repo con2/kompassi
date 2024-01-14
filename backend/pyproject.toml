@@ -13,6 +13,7 @@ extend-select = [
     "PGH002",  # .warn is deprecated
     "PGH004",  # specific noqa
     "PL",  # pylint
+    "RET",
     "RUF005",  # avoid iterable concatenation
     "RUF013",  # implicit `optional` (contra type annotations)
     "RUF100",  # unused noqa
@@ -28,6 +29,7 @@ extend-ignore = [
     "PLR0913",  # too many args
     "PLR0915",  # too many statements
     "PLW2901",  # for loop variable overwritten (too many false positives)
+    "RET505",  # Unnecessary `else` after `return` statement
 ]
 
 [tool.ruff.extend-per-file-ignores]

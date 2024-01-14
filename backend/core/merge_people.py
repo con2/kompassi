@@ -75,7 +75,7 @@ def find_best_candidate(people_to_merge):
     return person_to_spare, people_to_merge
 
 
-def compare_persons(left, right):
+def compare_persons(left, right) -> int:
     # If only one has .user, it's better
     if left.user is not None and right.user is None:
         return 1
@@ -99,6 +99,7 @@ def compare_persons(left, right):
         return -1
     if right.pk > left.pk:
         return 1
+    return 0
 
 
 @atomic

@@ -105,6 +105,7 @@ class EmailAliasType(models.Model):
                 self,
                 person,
             )
+            return None
 
     class Meta:
         verbose_name = _("e-mail alias type")

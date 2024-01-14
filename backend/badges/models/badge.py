@@ -375,8 +375,5 @@ class Badge(models.Model, CsvExportMixin):
 
         with connection.cursor() as cursor:
             cursor.execute(ArrivalsRow.QUERY, [event_slug])
-            results = [ArrivalsRow(*row) for row in cursor.fetchall()]
-
-        # TODO backfill missing hours
-
-        return results
+            # TODO backfill missing hours
+            return [ArrivalsRow(*row) for row in cursor.fetchall()]

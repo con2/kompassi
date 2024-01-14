@@ -61,7 +61,7 @@ def get_slugifier(sep: str = "-"):
         ustr = "".join(char_map.get(c, c) for c in ustr)
         ustr = forbannad_re.sub("", ustr)
         ustr = multisep_re.sub(sep, ustr)
-        return ustr
+        return ustr  # noqa: RET504
 
     return _slugify
 

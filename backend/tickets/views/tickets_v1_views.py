@@ -276,7 +276,7 @@ class AccommodationPhase(Phase):
         # If the above step failed, not all forms have cleaned_data.
         if errors:
             messages.error(request, _("Please check the form."))
-            return errors
+        return errors
 
     def make_form(self, request, event):
         order = get_order(request, event)

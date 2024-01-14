@@ -128,7 +128,8 @@ class AddRoomForm(forms.Form):
 
         if not existing_room and not new_room_name:
             raise forms.ValidationError(NEW_ROOM_HELP_TEXT)
-        elif existing_room and new_room_name:
+
+        if existing_room and new_room_name:
             raise forms.ValidationError(NEW_ROOM_HELP_TEXT)
 
     def save(self, *args, **kwargs):
@@ -138,8 +139,7 @@ class AddRoomForm(forms.Form):
         else:
             room = self.cleaned_data["existing_room"]
 
-        view_room = ViewRoom.objects.create(view=self.view, room=room)
-        return view_room
+        return ViewRoom.objects.create(view=self.view, room=room)
 
 
 class RoomIdForm(forms.Form):

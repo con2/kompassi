@@ -32,7 +32,7 @@ def emailify(ustr):
     ustr = EMAILIFY_FORBANNAD_RE.sub("", ustr)
     ustr = EMAILIFY_MULTIDOT_RE.sub(".", ustr)
     ustr = EMAILIFY_MULTIDASH_RE.sub("-", ustr)
-    return ustr
+    return ustr  # noqa: RET504
 
 
 PASSWORD_ALPHABET = "bcdfghjklmnpqrstvwxz0123456789"

@@ -376,12 +376,12 @@ class Person(models.Model):
 
             if code.person != self:
                 raise EmailVerificationError("wrong_person")
-            elif code.state != "valid":
+            if code.state != "valid":
                 raise EmailVerificationError("code_not_valid")
-            elif code.email != self.email:
+            if code.email != self.email:
                 raise EmailVerificationError("email_changed")
-            else:
-                code.mark_used()
+
+            code.mark_used()
         else:
             # Forcibly verify, regardless of codes.
             EmailVerificationToken.objects.filter(person=self, state="valid").update(state="revoked")
