@@ -61,11 +61,10 @@ class BadgePrivacyAdapter:
                     return self.badge.surname
             else:
                 return ""
-        else:
+        elif self.badge.is_surname_visible:
             # SANTTU
             # Pajukanta <- this
             # Chief Technology Officer
-            if self.badge.is_surname_visible:
-                return self.badge.surname
-            else:
-                return ""
+            return self.badge.surname
+        else:
+            return ""

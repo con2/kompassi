@@ -11,9 +11,8 @@ from ..models import Dimension, DimensionValue, Program, ProgramDimensionValue
 def program_dimension_value_pre_save(sender, instance: ProgramDimensionValue, **kwargs):
     if instance.dimension is None:
         instance.dimension = instance.value.dimension
-    else:
-        if instance.dimension != instance.value.dimension:
-            raise ValidationError({"dimension": "Dimension value does not belong to the dimension"})
+    elif instance.dimension != instance.value.dimension:
+        raise ValidationError({"dimension": "Dimension value does not belong to the dimension"})
 
 
 @receiver([post_save, post_delete], sender=Dimension)

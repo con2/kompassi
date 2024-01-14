@@ -12,6 +12,7 @@ extend-select = [
     "PERF",
     "PGH002",  # .warn is deprecated
     "PGH004",  # specific noqa
+    "PL",  # pylint
     "RUF005",  # avoid iterable concatenation
     "RUF013",  # implicit `optional` (contra type annotations)
     "RUF100",  # unused noqa
@@ -22,6 +23,11 @@ extend-ignore = [
     "C901",  # function is too complex
     "E401",  # multiple imports on one line (handled by I)
     "E731",  # do not assign a lambda expression, use a def
+    "PLR0911",  # too many returns
+    "PLR0912",  # too many branches
+    "PLR0913",  # too many args
+    "PLR0915",  # too many statements
+    "PLW2901",  # for loop variable overwritten (too many false positives)
 ]
 
 [tool.ruff.extend-per-file-ignores]
@@ -32,4 +38,8 @@ extend-ignore = [
     "B007",  # loop control variable not used
     "F841",  # local variable is assigned to but never used
     "PERF",  # setups are one-off, PERF is not relevant
+    "PLR2004",  # magic values are ok in setup
+]
+"**/test*.py" = [
+    "PLR2004",  # magic values are ok in tests
 ]

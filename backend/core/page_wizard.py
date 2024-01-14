@@ -10,7 +10,7 @@ def page_wizard_init(request, pages):
     all_related = set()
 
     for index, page in enumerate(pages):
-        if len(page) == 2:
+        if len(page) == 2:  # noqa: PLR2004
             name, title = page
             cur_related = []
         else:

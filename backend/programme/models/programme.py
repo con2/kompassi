@@ -1594,9 +1594,7 @@ class Programme(models.Model, CsvExportMixin):
                 ropecon2023_celebratory_year=self.ropecon2023_celebratory_year,
                 styles=self.ropecon_styles,
                 revolving_door=self.is_revolving_door if self.category.slug == "rpg" else None,
-                short_blurb=self.three_word_description
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
+                short_blurb=self.three_word_description if self.category.slug in ("rpg", "larp") else None,
                 ropecon2023_accessibility_cant_use_mic=self.ropecon2023_accessibility_cant_use_mic,
                 ropecon2021_accessibility_loud_sounds=self.ropecon2021_accessibility_loud_sounds,
                 ropecon2021_accessibility_flashing_lights=self.ropecon2021_accessibility_flashing_lights,

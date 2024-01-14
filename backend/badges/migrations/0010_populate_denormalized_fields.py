@@ -17,11 +17,10 @@ def populate_denormalized_fields(apps, schema_editor):
 
         if badge.person.preferred_name_display_style:
             name_display_style = badge.person.preferred_name_display_style
+        elif badge.person.nick:
+            name_display_style = "firstname_nick_surname"
         else:
-            if badge.person.nick:
-                name_display_style = "firstname_nick_surname"
-            else:
-                name_display_style = "firstname_surname"
+            name_display_style = "firstname_surname"
 
         badge.first_name = badge.person.first_name
         badge.is_first_name_visible = "firstname" in name_display_style

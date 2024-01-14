@@ -186,11 +186,10 @@ class Person(models.Model):
     def get_name_display_style(self, preferred_name_display_style):
         if preferred_name_display_style:
             return preferred_name_display_style
+        elif self.nick:
+            return "firstname_nick_surname"
         else:
-            if self.nick:
-                return "firstname_nick_surname"
-            else:
-                return "firstname_surname"
+            return "firstname_surname"
 
     @property
     def name_display_style(self):

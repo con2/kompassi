@@ -14,7 +14,7 @@ def notification_callback(subscription, entry):
 
 class EventFilterTestCase(TestCase):
     def setUp(self):
-        global notifications
+        global notifications  # noqa: PLW0603
         notifications = []
 
     def test_event_filter(self):
