@@ -14,8 +14,8 @@ class ResponseAdmin(admin.ModelAdmin):
     model = Response
     list_display = ("created_at", "form", "created_by")
     list_filter = ("form__event", "form")
-    fields = ("form", "form_data", "created_by", "ip_address", "created_at", "updated_at")
     readonly_fields = ("form", "form_data", "created_by", "ip_address", "created_at", "updated_at")
+    fields = readonly_fields
 
     def has_add_permission(self, *args, **kwargs):
         return False
