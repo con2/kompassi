@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { ReactNode } from "react";
 
 import { submit } from "./actions";
 import { gql } from "@/__generated__";
@@ -7,7 +6,7 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import { SchemaForm } from "@/components/SchemaForm";
-import { Field, validateFields } from "@/components/SchemaForm/models";
+import { validateFields } from "@/components/SchemaForm/models";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
@@ -85,8 +84,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     countResponsesByCurrentUser,
   } = survey;
   const { title, description, layout, fields } = form!;
-  const anonymityMessages =
-    t.attributes.anonymity.secondPerson;
+  const anonymityMessages = t.attributes.anonymity.secondPerson;
 
   if (loginRequired) {
     const session = await auth();
