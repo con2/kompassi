@@ -45,7 +45,7 @@ class LimitedResponseType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_created_by(response: Response, info):
+    def resolve_created_by(response: Response, info) -> User | None:
         """
         Returns the user who submitted the response. If response is to an anonymous survey,
         this information will not be available.
