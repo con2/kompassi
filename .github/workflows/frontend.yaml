@@ -16,16 +16,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_PASSWORD }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
       - id: cache-bin
         uses: actions/cache@v3
@@ -42,9 +43,14 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
       - id: build
+        name: skaffold build
         run: |
-          cd frontend
+          # set SKAFFOLD_PUSH to false unless pushing to main
+          if ! [[ "$GITHUB_EVENT_NAME" == 'push' && "$GITHUB_REF" == 'refs/heads/main' ]]; then
+            export SKAFFOLD_PUSH=false
+          fi
           skaffold build --file-output build.json
+        working-directory: frontend
       - name: Store build.json artifact
         uses: actions/upload-artifact@v3
         with:
@@ -57,7 +63,7 @@ jobs:
     environment: Staging
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
         with:
           name: build-json
@@ -79,12 +85,14 @@ jobs:
           curl -Lo bin/kubectl https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
-
-      - run: |
-          cd frontend
-          npm ci
-          cd kubernetes && ENV=staging npx ts-node manifest.ts && cd ..
-          skaffold deploy -n kompassi2-staging -a ../build.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx ts-node manifest.ts
+        working-directory: frontend/kubernetes
+        env:
+          ENV: staging
+      - run: skaffold deploy -n kompassi2-staging -a ../build.json
+        working-directory: frontend
 
   deploy_production:
     runs-on: self-hosted
@@ -92,7 +100,7 @@ jobs:
     environment: Production
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
         with:
           name: build-json
@@ -115,8 +123,11 @@ jobs:
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
-      - run: |
-          cd frontend
-          npm ci
-          cd kubernetes && ENV=production npx ts-node manifest.ts && cd ..
-          skaffold deploy -n kompassi2-production -a ../build.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx ts-node manifest.ts
+        working-directory: frontend/kubernetes
+        env:
+          ENV: production
+      - run: skaffold deploy -n kompassi2-production -a ../build.json
+        working-directory: frontend
