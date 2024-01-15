@@ -100,3 +100,5 @@ class Form(models.Model):
             return self.event.surveys.filter(languages=self).get()
         except Survey.DoesNotExist:
             return None
+        except Survey.MultipleObjectsReturned:
+            raise
